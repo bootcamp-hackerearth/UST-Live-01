@@ -21,7 +21,6 @@ namespace HealthAxisTest.ServiceTests
             _service = new AppointmentService(_repoMock.Object);
         }
 
-        // ✅ Helpers (IMPORTANT FIX)
         private static DateTime GetNextWeekday()
         {
             var date = DateTime.Today.AddDays(1);
