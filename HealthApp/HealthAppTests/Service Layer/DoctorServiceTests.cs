@@ -22,7 +22,7 @@ namespace HealthAppTests.Service_Layer
             _service = new DoctorService(_mockRepo.Object);
         }
 
-        // ✅ Helper
+      
         private static Doctor GetDoctor() => new Doctor
         {
             DoctorId = 1,
