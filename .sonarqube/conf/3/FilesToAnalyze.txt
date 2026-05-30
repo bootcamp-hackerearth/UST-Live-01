@@ -1,0 +1,13 @@
+﻿C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\AppointmentRepositoryTests.cs
+C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\AppointmentServiceTests.cs
+C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\DoctorRepositoryTests.cs
+C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\DoctorServiceTests.cs
+C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\HealthRecordRepositoryTests.cs
+C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\HealthRecordServiceTests.cs
+C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\PatientRepositoryTests.cs
+C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\PatientServiceTests.cs
+C:\Users\290626\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.cs
+C:\Users\290626\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.exe
+C:\Users\290626\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.dll
+C:\Users\290626\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.abstractions.dll
+C:\Users\290626\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.runner.visualstudio.testadapter.dll

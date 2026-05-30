@@ -1,0 +1,13 @@
+ù
+ëC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\obj\Debug\net10.0\HealthCare_Appointments_Portal_Tests.AssemblyInfo.csutf-8ò
+åC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8ü
+ìC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\obj\Debug\net10.0\HealthCare_Appointments_Portal_Tests.GlobalUsings.g.csutf-8x
+mC:\Users\290626\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.csutf-8j
+aC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\PatientServiceTests.csutf-8m
+dC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\PatientRepositoryTests.csutf-8o
+fC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\HealthRecordServiceTests.csutf-8r
+iC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\HealthRecordRepositoryTests.csutf-8i
+`C:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\DoctorServiceTests.csutf-8l
+cC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\DoctorRepositoryTests.csutf-8n
+eC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\AppointmentServiceTests.csutf-8q
+hC:\HAP\HealthCare-Appointments-Portal\HealthCare_Appointments_Portal_Tests\AppointmentRepositoryTests.csutf-8

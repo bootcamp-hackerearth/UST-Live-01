@@ -1,0 +1,1 @@
+ÅRjC:\HAP\HealthCare-Appointments-Portal\HealthCare-Appointments-Portal\HealthCare-Appointments-Portal.csproj¢net10.0ÚCSharp14
