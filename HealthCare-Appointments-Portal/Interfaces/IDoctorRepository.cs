@@ -2,7 +2,6 @@
 
 namespace HealthCare_Appointments_Portal.Interfaces
 {
-
     public interface IDoctorRepository
     {
 

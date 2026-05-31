@@ -26,20 +26,19 @@ namespace HealthCare_Appointments_Portal.Services
         public void AddRecord(
             HealthRecord record)
         {
-            bool recordExists =
+            HealthRecord? existingRecord =
                 _healthRecordRepository
-                .GetAllRecords()
-                .Any(r =>
-                    r.AppointmentId ==
+                .GetRecordByAppointmentId(
                     record.AppointmentId);
 
-            if (recordExists)
+            if (existingRecord != null)
             {
                 throw new DuplicateHealthRecordException();
             }
 
             _healthRecordRepository
                 .AddRecord(record);
+        
         }
 
         // Get Health Record By Id
@@ -75,14 +74,17 @@ namespace HealthCare_Appointments_Portal.Services
                 int patientId)
         {
 
+            //return _healthRecordRepository
+            //    .GetAllRecords()
+            //    .Where(r =>
+            //        r.Patient.PatientId ==
+            //        patientId)
+            //    .OrderByDescending(r =>
+            //        r.VisitDate)
+            //    .ToList();
             return _healthRecordRepository
-                .GetAllRecords()
-                .Where(r =>
-                    r.Patient.PatientId ==
-                    patientId)
-                .OrderByDescending(r =>
-                    r.VisitDate)
-                .ToList();
+                .GetRecordsByPatientId(
+                    patientId);
         }
 
         // Get Records By Doctor
@@ -91,14 +93,17 @@ namespace HealthCare_Appointments_Portal.Services
                 int doctorId)
         {
 
+            //return _healthRecordRepository
+            //    .GetAllRecords()
+            //    .Where(r =>
+            //        r.Doctor.DoctorId ==
+            //        doctorId)
+            //    .OrderByDescending(r =>
+            //        r.VisitDate)
+            //    .ToList();
             return _healthRecordRepository
-                .GetAllRecords()
-                .Where(r =>
-                    r.Doctor.DoctorId ==
-                    doctorId)
-                .OrderByDescending(r =>
-                    r.VisitDate)
-                .ToList();
+                .GetRecordsByDoctorId(
+                    doctorId);
         }
 
         // Update Existing Health Record
@@ -148,6 +153,9 @@ namespace HealthCare_Appointments_Portal.Services
         {
             return new HealthRecord
             {
+                AppointmentId =
+                    appointment.AppointmentId,
+
                 Patient =
                     appointment.Patient,
 

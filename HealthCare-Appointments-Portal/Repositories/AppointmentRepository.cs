@@ -1,4 +1,5 @@
 ﻿using HealthCare_Appointments_Portal.Data;
+using HealthCare_Appointments_Portal.Enums;
 using HealthCare_Appointments_Portal.Interfaces;
 using HealthCare_Appointments_Portal.Models;
 
@@ -100,6 +101,77 @@ namespace HealthCare_Appointments_Portal.Repositories
                 _dataStore.Appointments
                     .Remove(appointment);
             }
+        }
+
+
+
+
+
+
+
+
+
+
+        /////////////////////////////////////////////////
+        ///
+        public List<Appointment> GetAppointmentsByPatientId(
+    int patientId)
+        {
+            return _dataStore.Appointments
+                .Where(a =>
+                    a.Patient.PatientId == patientId)
+                .OrderBy(a =>
+                    a.ScheduledDate)
+                .ToList();
+        }
+
+        public List<Appointment> GetAppointmentsByDoctorId(
+            int doctorId)
+        {
+            return _dataStore.Appointments
+                .Where(a =>
+                    a.Doctor.DoctorId == doctorId)
+                .OrderBy(a =>
+                    a.ScheduledDate)
+                .ToList();
+        }
+
+        public Appointment? GetConflictingAppointment(
+            int doctorId,
+            DateOnly date,
+            TimeOnly slot)
+        {
+            return _dataStore.Appointments
+                .FirstOrDefault(a =>
+                    a.Doctor.DoctorId == doctorId &&
+                    a.ScheduledDate == date &&
+                    a.TimeSlot == slot &&
+                    a.Status != AppointmentStatus.Cancelled);
+        }
+
+        public List<Appointment> GetUpcomingAppointments()
+        {
+            DateOnly today =
+                DateOnly.FromDateTime(
+                    DateTime.Now);
+
+            return _dataStore.Appointments
+                .Where(a =>
+                    a.ScheduledDate >= today &&
+                    a.Status ==
+                    AppointmentStatus.Confirmed)
+                .OrderBy(a =>
+                    a.ScheduledDate)
+                .ToList();
+        }
+
+        public List<Appointment> GetCompletedAppointments()
+        {
+            return _dataStore.Appointments
+                .Where(a =>
+                    a.Status ==
+                    AppointmentStatus.Completed)
+                .ToList();
         }
     }
 }

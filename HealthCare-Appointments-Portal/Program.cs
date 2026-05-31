@@ -8,11 +8,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HealthCare_Appointments_Portal;
 
-[ExcludeFromCodeCoverage]
 public static class Program
 {
     public static void Main(string[] args)
     {
+        Console.WriteLine("Hello World");
         ServiceProvider serviceProvider =
             ConfigureServices();
 
@@ -91,3 +91,4 @@ public static class Program
         controller.Run();
     }
 }
+

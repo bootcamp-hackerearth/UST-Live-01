@@ -148,11 +148,15 @@ namespace HealthCare_Appointments_Portal.Services
                 throw new DoctorNotFoundException();
             }
 
+            //List<Appointment> doctorAppointments =
+            //    _appointmentRepository
+            //    .GetAllAppointments()
+            //    .Where(a => a.Doctor.DoctorId == doctorId)
+            //    .ToList();
+
             List<Appointment> doctorAppointments =
                 _appointmentRepository
-                .GetAllAppointments()
-                .Where(a => a.Doctor.DoctorId == doctorId)
-                .ToList();
+                .GetAppointmentsByDoctorId(doctorId);
 
             bool hasConfirmedAppointments =
                 doctorAppointments

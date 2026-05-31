@@ -33,12 +33,23 @@ namespace HealthCare_Appointments_Portal.Repositories
                     p.PatientId == patientId);
         }
 
+        // Get Patient By Email
+        public Patient? GetPatientByEmail(string email)
+        {
+            return _dataStore.Patients
+                .FirstOrDefault(p =>
+                    p.Email.Equals(
+                        email,
+                        StringComparison.OrdinalIgnoreCase));
+        }
+
         // Get All Patients
         public List<Patient> GetAllPatients()
         {
 
             return _dataStore.Patients.ToList();
         }
+
 
         // Update Existing Patient
         public void UpdatePatient(Patient updatedPatient)

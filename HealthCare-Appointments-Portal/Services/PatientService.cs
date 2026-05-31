@@ -29,11 +29,14 @@ namespace HealthCare_Appointments_Portal.Services
         public void AddPatient(Patient patient)
         {
 
+            //Patient? existingPatient =
+            //    _patientRepository
+            //    .GetAllPatients()
+            //    .FirstOrDefault(p =>
+            //        p.Email == patient.Email);
             Patient? existingPatient =
                 _patientRepository
-                .GetAllPatients()
-                .FirstOrDefault(p =>
-                    p.Email == patient.Email);
+                .GetPatientByEmail(patient.Email);
 
             if (existingPatient != null)
             {
@@ -75,11 +78,7 @@ namespace HealthCare_Appointments_Portal.Services
         {
             Patient? patient =
                 _patientRepository
-                .GetAllPatients()
-                .FirstOrDefault(p =>
-                    p.Email.Equals(
-                        email,
-                        StringComparison.OrdinalIgnoreCase));
+                .GetPatientByEmail(email);
 
             if (patient == null)
             {

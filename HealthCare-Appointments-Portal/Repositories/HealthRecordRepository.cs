@@ -94,5 +94,36 @@ namespace HealthCare_Appointments_Portal.Repositories
                     .Remove(record);
             }
         }
+
+        ///////////////////////////////////////////////
+        public HealthRecord? GetRecordByAppointmentId(
+        int appointmentId)
+        {
+            return _dataStore.HealthRecords
+                .FirstOrDefault(r =>
+                    r.AppointmentId == appointmentId);
+        }
+
+        public List<HealthRecord> GetRecordsByPatientId(
+    int patientId)
+        {
+            return _dataStore.HealthRecords
+                .Where(r =>
+                    r.Patient.PatientId == patientId)
+                .OrderByDescending(r =>
+                    r.VisitDate)
+                .ToList();
+        }
+
+        public List<HealthRecord> GetRecordsByDoctorId(
+            int doctorId)
+        {
+            return _dataStore.HealthRecords
+                .Where(r =>
+                    r.Doctor.DoctorId == doctorId)
+                .OrderByDescending(r =>
+                    r.VisitDate)
+                .ToList();
+        }
     }
 }
