@@ -176,21 +176,22 @@ namespace HealthCare_Appointments_Portal.Tests
             List<HealthRecord> records =
             [
                 new HealthRecord
-                {
-                    Patient = patient,
-                    Doctor = CreateDoctor(),
-                    VisitDate =
-                        DateOnly.FromDateTime(
-                            DateTime.Now),
-                    Diagnosis = "Fever",
-                    Prescription = "Paracetamol",
-                    Notes = "Take Rest"
-                }
+        {
+            Patient = patient,
+            Doctor = CreateDoctor(),
+            VisitDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now),
+            Diagnosis = "Fever",
+            Prescription = "Paracetamol",
+            Notes = "Take Rest"
+        }
             ];
 
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
+                    r.GetRecordsByPatientId(
+                        patient.PatientId))
                 .Returns(records);
 
             // Act
@@ -210,7 +211,7 @@ namespace HealthCare_Appointments_Portal.Tests
             // Arrange
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
+                    r.GetRecordsByPatientId(1))
                 .Returns(new List<HealthRecord>());
 
             // Act
@@ -227,15 +228,10 @@ namespace HealthCare_Appointments_Portal.Tests
         public void GetRecordsByPatient_UnmatchedPatient_ShouldReturnEmpty()
         {
             // Arrange
-            List<HealthRecord> records =
-            [
-                CreateHealthRecord()
-            ];
-
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
-                .Returns(records);
+                    r.GetRecordsByPatientId(999))
+                .Returns(new List<HealthRecord>());
 
             // Act
             List<HealthRecord> result =
@@ -245,6 +241,7 @@ namespace HealthCare_Appointments_Portal.Tests
             // Assert
             Assert.Empty(result);
         }
+
 
         // Get Records By Patient Ordered Descending
         [Fact]
@@ -257,31 +254,32 @@ namespace HealthCare_Appointments_Portal.Tests
             List<HealthRecord> records =
             [
                 new HealthRecord
-                {
-                    Patient = patient,
-                    Doctor = CreateDoctor(),
-                    VisitDate =
-                        new DateOnly(2024, 1, 1),
-                    Diagnosis = "Cold",
-                    Prescription = "Tablet",
-                    Notes = "Rest"
-                },
+        {
+            Patient = patient,
+            Doctor = CreateDoctor(),
+            VisitDate =
+                new DateOnly(2025, 1, 1),
+            Diagnosis = "Fever",
+            Prescription = "Paracetamol",
+            Notes = "Rest"
+        },
 
-                new HealthRecord
-                {
-                    Patient = patient,
-                    Doctor = CreateDoctor(),
-                    VisitDate =
-                        new DateOnly(2025, 1, 1),
-                    Diagnosis = "Fever",
-                    Prescription = "Paracetamol",
-                    Notes = "Rest"
-                }
+        new HealthRecord
+        {
+            Patient = patient,
+            Doctor = CreateDoctor(),
+            VisitDate =
+                new DateOnly(2024, 1, 1),
+            Diagnosis = "Cold",
+            Prescription = "Tablet",
+            Notes = "Rest"
+        }
             ];
 
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
+                    r.GetRecordsByPatientId(
+                        patient.PatientId))
                 .Returns(records);
 
             // Act
@@ -307,21 +305,22 @@ namespace HealthCare_Appointments_Portal.Tests
             List<HealthRecord> records =
             [
                 new HealthRecord
-                {
-                    Patient = CreatePatient(),
-                    Doctor = doctor,
-                    VisitDate =
-                        DateOnly.FromDateTime(
-                            DateTime.Now),
-                    Diagnosis = "Cold",
-                    Prescription = "Tablet",
-                    Notes = "Daily"
-                }
+        {
+            Patient = CreatePatient(),
+            Doctor = doctor,
+            VisitDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now),
+            Diagnosis = "Cold",
+            Prescription = "Tablet",
+            Notes = "Daily"
+        }
             ];
 
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
+                    r.GetRecordsByDoctorId(
+                        doctor.DoctorId))
                 .Returns(records);
 
             // Act
@@ -341,7 +340,7 @@ namespace HealthCare_Appointments_Portal.Tests
             // Arrange
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
+                    r.GetRecordsByDoctorId(1))
                 .Returns(new List<HealthRecord>());
 
             // Act
@@ -358,15 +357,10 @@ namespace HealthCare_Appointments_Portal.Tests
         public void GetRecordsByDoctor_UnmatchedDoctor_ShouldReturnEmpty()
         {
             // Arrange
-            List<HealthRecord> records =
-            [
-                CreateHealthRecord()
-            ];
-
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
-                .Returns(records);
+                    r.GetRecordsByDoctorId(999))
+                .Returns(new List<HealthRecord>());
 
             // Act
             List<HealthRecord> result =
@@ -388,31 +382,32 @@ namespace HealthCare_Appointments_Portal.Tests
             List<HealthRecord> records =
             [
                 new HealthRecord
-                {
-                    Patient = CreatePatient(),
-                    Doctor = doctor,
-                    VisitDate =
-                        new DateOnly(2024, 1, 1),
-                    Diagnosis = "Cold",
-                    Prescription = "Tablet",
-                    Notes = "Rest"
-                },
+        {
+            Patient = CreatePatient(),
+            Doctor = doctor,
+            VisitDate =
+                new DateOnly(2025, 1, 1),
+            Diagnosis = "Fever",
+            Prescription = "Paracetamol",
+            Notes = "Rest"
+        },
 
-                new HealthRecord
-                {
-                    Patient = CreatePatient(),
-                    Doctor = doctor,
-                    VisitDate =
-                        new DateOnly(2025, 1, 1),
-                    Diagnosis = "Fever",
-                    Prescription = "Paracetamol",
-                    Notes = "Rest"
-                }
+        new HealthRecord
+        {
+            Patient = CreatePatient(),
+            Doctor = doctor,
+            VisitDate =
+                new DateOnly(2024, 1, 1),
+            Diagnosis = "Cold",
+            Prescription = "Tablet",
+            Notes = "Rest"
+        }
             ];
 
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
+                    r.GetRecordsByDoctorId(
+                        doctor.DoctorId))
                 .Returns(records);
 
             // Act
@@ -622,21 +617,20 @@ namespace HealthCare_Appointments_Portal.Tests
 
             newRecord.AppointmentId = 1;
 
-            List<HealthRecord> records =
-            [
-                existingRecord
-            ];
-
             _mockRepository
                 .Setup(r =>
-                    r.GetAllRecords())
-                .Returns(records);
+                    r.GetRecordByAppointmentId(1))
+                .Returns(existingRecord);
 
             // Act & Assert
             Assert.Throws<
                 DuplicateHealthRecordException>(() =>
                     _healthRecordService
                     .AddRecord(newRecord));
+
+            _mockRepository.Verify(
+                r => r.GetRecordByAppointmentId(1),
+                Times.Once);
         }
 
         // Add Record Unique AppointmentId Should Add Record

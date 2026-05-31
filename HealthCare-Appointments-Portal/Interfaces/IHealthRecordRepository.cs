@@ -16,8 +16,6 @@ namespace HealthCare_Appointments_Portal.Interfaces
 
         void DeleteRecordById(int recordId);
 
-        /////////////////////////////////////////
-        ///
         HealthRecord? GetRecordByAppointmentId(int appointmentId);
         List<HealthRecord> GetRecordsByPatientId(
     int patientId);

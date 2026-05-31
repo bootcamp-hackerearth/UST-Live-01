@@ -95,7 +95,6 @@ namespace HealthCare_Appointments_Portal.Repositories
             }
         }
 
-        ///////////////////////////////////////////////
         public HealthRecord? GetRecordByAppointmentId(
         int appointmentId)
         {

@@ -427,6 +427,137 @@ namespace HealthCare_Appointments_Portal.Tests
                 _dataStore.Patients);
         }
 
+        // Existing Email
+        [Fact]
+        public void GetPatientByEmail_ExistingEmail_ShouldReturnPatient()
+        {
+            // Arrange
+            Patient patient = new()
+            {
+                FullName = "Ragu",
+
+                DateOfBirth =
+                    new DateOnly(
+                        2001,
+                        4,
+                        22),
+
+                Gender =
+                    Gender.Male,
+
+                PhoneNumber =
+                    "9876543210",
+
+                Email =
+                    "ragu@gmail.com",
+
+                InsuranceId =
+                    "INS101"
+            };
+
+            _dataStore.Patients.Add(
+                patient);
+
+            // Act
+            Patient? result =
+                _repository.GetPatientByEmail(
+                    "ragu@gmail.com");
+
+            // Assert
+            Assert.NotNull(
+                result);
+
+            Assert.Equal(
+                "ragu@gmail.com",
+                result?.Email);
+        }
+        // Case Insensitive Search
+        [Fact]
+        public void GetPatientByEmail_DifferentCase_ShouldReturnPatient()
+        {
+            // Arrange
+            Patient patient = new()
+            {
+                FullName = "Ragu",
+
+                DateOfBirth =
+                    new DateOnly(
+                        2001,
+                        4,
+                        22),
+
+                Gender =
+                    Gender.Male,
+
+                PhoneNumber =
+                    "9876543210",
+
+                Email =
+                    "ragu@gmail.com",
+
+                InsuranceId =
+                    "INS101"
+            };
+
+            _dataStore.Patients.Add(
+                patient);
+
+            // Act
+            Patient? result =
+                _repository.GetPatientByEmail(
+                    "RAGU@GMAIL.COM");
+
+            // Assert
+            Assert.NotNull(
+                result);
+
+            Assert.Equal(
+                "ragu@gmail.com",
+                result?.Email);
+        }
+
+        // Invalid Email
+        [Fact]
+        public void GetPatientByEmail_InvalidEmail_ShouldReturnNull()
+        {
+            // Arrange
+            Patient patient = new()
+            {
+                FullName = "Ragu",
+
+                DateOfBirth =
+                    new DateOnly(
+                        2001,
+                        4,
+                        22),
+
+                Gender =
+                    Gender.Male,
+
+                PhoneNumber =
+                    "9876543210",
+
+                Email =
+                    "ragu@gmail.com",
+
+                InsuranceId =
+                    "INS101"
+            };
+
+            _dataStore.Patients.Add(
+                patient);
+
+            // Act
+            Patient? result =
+                _repository.GetPatientByEmail(
+                    "test@gmail.com");
+
+            // Assert
+            Assert.Null(
+                result);
+        }
+
+
         // Delete Invalid Patient
         [Fact]
         public void DeletePatientById_InvalidId_ShouldNotRemoveAnything()

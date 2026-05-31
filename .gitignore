@@ -17,3 +17,6 @@ obj/
 
 # Sonarqube
 .sonarqube/
+
+# Test Results
+HealthCare-Appointments-Portal-Tests/TestResults/

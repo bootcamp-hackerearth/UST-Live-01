@@ -337,6 +337,371 @@ namespace HealthCare_Appointments_Portal.Tests
                 _dataStore.Appointments);
         }
 
+        // GetAppointmentsByPatientId
+        [Fact]
+        public void GetAppointmentsByPatientId_ExistingPatient_ShouldReturnAppointments()
+        {
+            // Arrange
+            Appointment appointment1 = CreateAppointment();
+            appointment1.Patient.PatientId = 1;
+
+            Appointment appointment2 = CreateAppointment();
+            appointment2.Patient.PatientId = 2;
+
+            _dataStore.Appointments.Add(appointment1);
+            _dataStore.Appointments.Add(appointment2);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetAppointmentsByPatientId(1);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(1, result[0].Patient.PatientId);
+        }
+
+        // GetAppointmentsByDoctorId
+        [Fact]
+        public void GetAppointmentsByDoctorId_ExistingDoctor_ShouldReturnAppointments()
+        {
+            // Arrange
+            Appointment appointment1 = CreateAppointment();
+            appointment1.Doctor.DoctorId = 1;
+
+            Appointment appointment2 = CreateAppointment();
+            appointment2.Doctor.DoctorId = 2;
+
+            _dataStore.Appointments.Add(appointment1);
+            _dataStore.Appointments.Add(appointment2);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetAppointmentsByDoctorId(1);
+
+            // Assert
+            Assert.Single(result);
+            Assert.Equal(1, result[0].Doctor.DoctorId);
+        }
+
+        // GetConflictingAppointment - Conflict Exists
+        [Fact]
+        public void GetConflictingAppointment_ConflictExists_ShouldReturnAppointment()
+        {
+            // Arrange
+            Appointment appointment = CreateAppointment();
+
+            appointment.Doctor.DoctorId = 1;
+            appointment.ScheduledDate =
+                new DateOnly(2026, 5, 10);
+            appointment.TimeSlot =
+                new TimeOnly(10, 0);
+
+            _dataStore.Appointments.Add(appointment);
+
+            // Act
+            Appointment? result =
+                _repository.GetConflictingAppointment(
+                    1,
+                    new DateOnly(2026, 5, 10),
+                    new TimeOnly(10, 0));
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        // GetConflictingAppointment - Cancelled Appointment
+        [Fact]
+        public void GetConflictingAppointment_CancelledAppointment_ShouldReturnNull()
+        {
+            // Arrange
+            Appointment appointment = CreateAppointment();
+
+            appointment.Doctor.DoctorId = 1;
+            appointment.Status =
+                AppointmentStatus.Cancelled;
+
+            _dataStore.Appointments.Add(appointment);
+
+            // Act
+            Appointment? result =
+                _repository.GetConflictingAppointment(
+                    1,
+                    appointment.ScheduledDate,
+                    appointment.TimeSlot);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        // GetUpcomingAppointments
+        [Fact]
+        public void GetUpcomingAppointments_ShouldReturnConfirmedAppointmentsOnly()
+        {
+            // Arrange
+            Appointment confirmedAppointment =
+                CreateAppointment();
+
+            confirmedAppointment.ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1));
+
+            confirmedAppointment.Status =
+                AppointmentStatus.Confirmed;
+
+            Appointment completedAppointment =
+                CreateAppointment();
+
+            completedAppointment.ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1));
+
+            completedAppointment.Status =
+                AppointmentStatus.Completed;
+
+            _dataStore.Appointments.Add(
+                confirmedAppointment);
+
+            _dataStore.Appointments.Add(
+                completedAppointment);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetUpcomingAppointments();
+
+            // Assert
+            Assert.Single(result);
+
+            Assert.Equal(
+                AppointmentStatus.Confirmed,
+                result[0].Status);
+        }
+
+        // GetCompletedAppointments
+        [Fact]
+        public void GetCompletedAppointments_ShouldReturnCompletedAppointmentsOnly()
+        {
+            // Arrange
+            Appointment completedAppointment =
+                CreateAppointment();
+
+            completedAppointment.Status =
+                AppointmentStatus.Completed;
+
+            Appointment pendingAppointment =
+                CreateAppointment();
+
+            pendingAppointment.Status =
+                AppointmentStatus.Pending;
+
+            _dataStore.Appointments.Add(
+                completedAppointment);
+
+            _dataStore.Appointments.Add(
+                pendingAppointment);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetCompletedAppointments();
+
+            // Assert
+            Assert.Single(result);
+
+            Assert.Equal(
+                AppointmentStatus.Completed,
+                result[0].Status);
+        }
+
+        [Fact]
+        public void GetAppointmentsByPatientId_ShouldReturnAppointmentsInDateOrder()
+        {
+            // Arrange
+            Appointment olderAppointment =
+                CreateAppointment();
+
+            olderAppointment.Patient.PatientId = 1;
+
+            olderAppointment.ScheduledDate =
+                new DateOnly(
+                    2026,
+                    1,
+                    1);
+
+            Appointment newerAppointment =
+                CreateAppointment();
+
+            newerAppointment.Patient.PatientId = 1;
+
+            newerAppointment.ScheduledDate =
+                new DateOnly(
+                    2026,
+                    12,
+                    1);
+
+            _dataStore.Appointments.Add(
+                newerAppointment);
+
+            _dataStore.Appointments.Add(
+                olderAppointment);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetAppointmentsByPatientId(
+                    1);
+
+            // Assert
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    1,
+                    1),
+                result[0].ScheduledDate);
+
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    12,
+                    1),
+                result[1].ScheduledDate);
+        }
+
+        [Fact]
+        public void GetAppointmentsByDoctorId_ShouldReturnAppointmentsInDateOrder()
+        {
+            // Arrange
+            Appointment olderAppointment =
+                CreateAppointment();
+
+            olderAppointment.Doctor.DoctorId = 1;
+
+            olderAppointment.ScheduledDate =
+                new DateOnly(
+                    2026,
+                    1,
+                    1);
+
+            Appointment newerAppointment =
+                CreateAppointment();
+
+            newerAppointment.Doctor.DoctorId = 1;
+
+            newerAppointment.ScheduledDate =
+                new DateOnly(
+                    2026,
+                    12,
+                    1);
+
+            _dataStore.Appointments.Add(
+                newerAppointment);
+
+            _dataStore.Appointments.Add(
+                olderAppointment);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetAppointmentsByDoctorId(
+                    1);
+
+            // Assert
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    1,
+                    1),
+                result[0].ScheduledDate);
+
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    12,
+                    1),
+                result[1].ScheduledDate);
+        }
+
+        [Fact]
+        public void GetAppointmentsByPatientId_ShouldReturnAppointmentsSortedByDate()
+        {
+            // Arrange
+            Appointment appointment1 =
+                CreateAppointment();
+
+            appointment1.Patient.PatientId = 1;
+            appointment1.ScheduledDate =
+                new DateOnly(2026, 12, 1);
+
+            Appointment appointment2 =
+                CreateAppointment();
+
+            appointment2.Patient.PatientId = 1;
+            appointment2.ScheduledDate =
+                new DateOnly(2026, 1, 1);
+
+            _dataStore.Appointments.Add(appointment1);
+            _dataStore.Appointments.Add(appointment2);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetAppointmentsByPatientId(1);
+
+            // Assert
+            Assert.Equal(2, result.Count);
+
+            Assert.Equal(
+                new DateOnly(2026, 1, 1),
+                result[0].ScheduledDate);
+
+            Assert.Equal(
+                new DateOnly(2026, 12, 1),
+                result[1].ScheduledDate);
+        }
+
+        [Fact]
+        public void GetUpcomingAppointments_ShouldReturnAppointmentsSortedByDate()
+        {
+            // Arrange
+            Appointment laterAppointment =
+                CreateAppointment();
+
+            laterAppointment.Status =
+                AppointmentStatus.Confirmed;
+
+            laterAppointment.ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(10));
+
+            Appointment earlierAppointment =
+                CreateAppointment();
+
+            earlierAppointment.Status =
+                AppointmentStatus.Confirmed;
+
+            earlierAppointment.ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1));
+
+            _dataStore.Appointments.Add(
+                laterAppointment);
+
+            _dataStore.Appointments.Add(
+                earlierAppointment);
+
+            // Act
+            List<Appointment> result =
+                _repository.GetUpcomingAppointments();
+
+            // Assert
+            Assert.Equal(
+                2,
+                result.Count);
+
+            Assert.Equal(
+                earlierAppointment.ScheduledDate,
+                result[0].ScheduledDate);
+
+            Assert.Equal(
+                laterAppointment.ScheduledDate,
+                result[1].ScheduledDate);
+        }
+
         // Helper Method
         private static Appointment CreateAppointment()
         {

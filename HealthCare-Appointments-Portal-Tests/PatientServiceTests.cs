@@ -63,15 +63,11 @@ namespace HealthCare_Appointments_Portal.Tests
             Patient patient =
                 CreatePatient();
 
-            List<Patient> patients =
-            [
-                patient
-            ];
-
             _mockRepository
                 .Setup(r =>
-                    r.GetAllPatients())
-                .Returns(patients);
+                    r.GetPatientByEmail(
+                        patient.Email))
+                .Returns(patient);
 
             // Act & Assert
             Assert.Throws<
@@ -179,15 +175,11 @@ namespace HealthCare_Appointments_Portal.Tests
             Patient patient =
                 CreatePatient();
 
-            List<Patient> patients =
-            [
-                patient
-            ];
-
             _mockRepository
                 .Setup(r =>
-                    r.GetAllPatients())
-                .Returns(patients);
+                    r.GetPatientByEmail(
+                        patient.Email))
+                .Returns(patient);
 
             // Act
             Patient? result =

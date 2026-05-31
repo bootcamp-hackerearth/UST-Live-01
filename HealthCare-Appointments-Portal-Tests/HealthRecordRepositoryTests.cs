@@ -294,6 +294,238 @@ namespace HealthCare_Appointments_Portal.Tests
                 _dataStore.HealthRecords);
         }
 
+        // GetRecordByAppointmentId - Record Exists
+        [Fact]
+        public void GetRecordByAppointmentId_ExistingAppointmentId_ShouldReturnRecord()
+        {
+            // Arrange
+            HealthRecord record =
+                CreateHealthRecord();
+
+            record.AppointmentId = 1;
+
+            _dataStore.HealthRecords.Add(
+                record);
+
+            // Act
+            HealthRecord? result =
+                _repository.GetRecordByAppointmentId(
+                    1);
+
+            // Assert
+            Assert.NotNull(
+                result);
+
+            Assert.Equal(
+                1,
+                result?.AppointmentId);
+        }
+
+        // GetRecordByAppointmentId - Invalid Appointment Id
+        [Fact]
+        public void GetRecordByAppointmentId_InvalidAppointmentId_ShouldReturnNull()
+        {
+            // Arrange
+            HealthRecord record =
+                CreateHealthRecord();
+
+            record.AppointmentId = 1;
+
+            _dataStore.HealthRecords.Add(
+                record);
+
+            // Act
+            HealthRecord? result =
+                _repository.GetRecordByAppointmentId(
+                    99);
+
+            // Assert
+            Assert.Null(
+                result);
+        }
+
+        // GetRecordsByPatientId
+        [Fact]
+        public void GetRecordsByPatientId_ExistingPatient_ShouldReturnMatchingRecords()
+        {
+            // Arrange
+            HealthRecord record1 =
+                CreateHealthRecord();
+
+            record1.Patient.PatientId = 1;
+
+            HealthRecord record2 =
+                CreateHealthRecord();
+
+            record2.Patient.PatientId = 2;
+
+            _dataStore.HealthRecords.Add(
+                record1);
+
+            _dataStore.HealthRecords.Add(
+                record2);
+
+            // Act
+            List<HealthRecord> result =
+                _repository.GetRecordsByPatientId(
+                    1);
+
+            // Assert
+            Assert.Single(
+                result);
+
+            Assert.Equal(
+                1,
+                result[0]
+                    .Patient
+                    .PatientId);
+        }
+
+        // GetRecordsByDoctorId
+        [Fact]
+        public void GetRecordsByDoctorId_ExistingDoctor_ShouldReturnMatchingRecords()
+        {
+            // Arrange
+            HealthRecord record1 =
+                CreateHealthRecord();
+
+            record1.Doctor.DoctorId = 1;
+
+            HealthRecord record2 =
+                CreateHealthRecord();
+
+            record2.Doctor.DoctorId = 2;
+
+            _dataStore.HealthRecords.Add(
+                record1);
+
+            _dataStore.HealthRecords.Add(
+                record2);
+
+            // Act
+            List<HealthRecord> result =
+                _repository.GetRecordsByDoctorId(
+                    1);
+
+            // Assert
+            Assert.Single(
+                result);
+
+            Assert.Equal(
+                1,
+                result[0]
+                    .Doctor
+                    .DoctorId);
+        }
+
+        //GetRecordsByPatientId - Verify Descending Order
+        [Fact]
+        public void GetRecordsByPatientId_ShouldReturnRecordsInDescendingOrder()
+        {
+            // Arrange
+            HealthRecord olderRecord =
+                CreateHealthRecord();
+
+            olderRecord.Patient.PatientId = 1;
+
+            olderRecord.VisitDate =
+                new DateOnly(
+                    2026,
+                    1,
+                    1);
+
+            HealthRecord newerRecord =
+                CreateHealthRecord();
+
+            newerRecord.Patient.PatientId = 1;
+
+            newerRecord.VisitDate =
+                new DateOnly(
+                    2026,
+                    12,
+                    1);
+
+            _dataStore.HealthRecords.Add(
+                olderRecord);
+
+            _dataStore.HealthRecords.Add(
+                newerRecord);
+
+            // Act
+            List<HealthRecord> result =
+                _repository.GetRecordsByPatientId(
+                    1);
+
+            // Assert
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    12,
+                    1),
+                result[0].VisitDate);
+
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    1,
+                    1),
+                result[1].VisitDate);
+        }
+
+        // GetRecordsByDoctorId - Verify Descending Order
+        [Fact]
+        public void GetRecordsByDoctorId_ShouldReturnRecordsInDescendingOrder()
+        {
+            // Arrange
+            HealthRecord olderRecord =
+                CreateHealthRecord();
+
+            olderRecord.Doctor.DoctorId = 1;
+
+            olderRecord.VisitDate =
+                new DateOnly(
+                    2026,
+                    1,
+                    1);
+
+            HealthRecord newerRecord =
+                CreateHealthRecord();
+
+            newerRecord.Doctor.DoctorId = 1;
+
+            newerRecord.VisitDate =
+                new DateOnly(
+                    2026,
+                    12,
+                    1);
+
+            _dataStore.HealthRecords.Add(
+                olderRecord);
+
+            _dataStore.HealthRecords.Add(
+                newerRecord);
+
+            // Act
+            List<HealthRecord> result =
+                _repository.GetRecordsByDoctorId(
+                    1);
+
+            // Assert
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    12,
+                    1),
+                result[0].VisitDate);
+
+            Assert.Equal(
+                new DateOnly(
+                    2026,
+                    1,
+                    1),
+                result[1].VisitDate);
+        }
+
         // Helper Method
         private static HealthRecord CreateHealthRecord()
         {

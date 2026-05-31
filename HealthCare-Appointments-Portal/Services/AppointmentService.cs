@@ -56,16 +56,6 @@ namespace HealthCare_Appointments_Portal.Services
                 throw new DoctorUnavailableException();
             }
 
-            //Appointment? existingAppointment =
-            //    _appointmentRepository
-            //    .GetAllAppointments()
-            //    .FirstOrDefault(a =>
-            //        a.Doctor.DoctorId ==
-            //        doctor.DoctorId &&
-            //        a.ScheduledDate == date &&
-            //        a.TimeSlot == slot &&
-            //        a.Status !=
-            //        AppointmentStatus.Cancelled);
             Appointment? existingAppointment =
                 _appointmentRepository
                 .GetConflictingAppointment(
@@ -131,14 +121,6 @@ namespace HealthCare_Appointments_Portal.Services
                 int patientId)
         {
 
-            //return _appointmentRepository
-            //    .GetAllAppointments()
-            //    .Where(a =>
-            //        a.Patient.PatientId ==
-            //        patientId)
-            //    .OrderBy(a =>
-            //        a.ScheduledDate)
-            //    .ToList();
             return _appointmentRepository
                 .GetAppointmentsByPatientId(
                     patientId);
@@ -150,14 +132,6 @@ namespace HealthCare_Appointments_Portal.Services
                 int doctorId)
         {
 
-            //return _appointmentRepository
-            //    .GetAllAppointments()
-            //    .Where(a =>
-            //        a.Doctor.DoctorId ==
-            //        doctorId)
-            //    .OrderBy(a =>
-            //        a.ScheduledDate)
-            //    .ToList();
             return _appointmentRepository
                 .GetAppointmentsByDoctorId(
                     doctorId);
@@ -168,19 +142,6 @@ namespace HealthCare_Appointments_Portal.Services
             GetUpcomingAppointments()
         {
 
-            DateOnly today =
-                DateOnly.FromDateTime(
-                    DateTime.Now);
-
-            //return _appointmentRepository
-            //    .GetAllAppointments()
-            //    .Where(a =>
-            //        a.ScheduledDate >= today &&
-            //        a.Status ==
-            //        AppointmentStatus.Confirmed)
-            //    .OrderBy(a =>
-            //        a.ScheduledDate)
-            //    .ToList();
             return _appointmentRepository
                 .GetUpcomingAppointments();
         }
@@ -189,12 +150,6 @@ namespace HealthCare_Appointments_Portal.Services
         public List<Appointment> GetCompletedAppointments()
         {
 
-            //return _appointmentRepository
-            //    .GetAllAppointments()
-            //    .Where(a =>
-            //        a.Status ==
-            //        AppointmentStatus.Completed)
-            //    .ToList();
             return _appointmentRepository
                 .GetCompletedAppointments();
         }

@@ -367,13 +367,17 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockAppointmentRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByDoctorId(1))
                 .Returns(new List<Appointment>());
 
             _doctorService.DeleteDoctorById(1);
 
             _mockRepository.Verify(
                 r => r.DeleteDoctorById(1),
+                Times.Once);
+
+            _mockAppointmentRepository.Verify(
+                r => r.GetAppointmentsByDoctorId(1),
                 Times.Once);
         }
 
@@ -411,7 +415,7 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockAppointmentRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByDoctorId(1))
                 .Returns(
                 [
                     appointment
@@ -420,6 +424,10 @@ namespace HealthCare_Appointments_Portal.Tests
             Assert.Throws<
                 DoctorDeletionException>(() =>
                     _doctorService.DeleteDoctorById(1));
+
+            _mockAppointmentRepository.Verify(
+                r => r.GetAppointmentsByDoctorId(1),
+                Times.Once);
         }
 
         // Pending Appointment
@@ -441,7 +449,7 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockAppointmentRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByDoctorId(1))
                 .Returns(
                 [
                     appointment
@@ -460,6 +468,10 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockRepository.Verify(
                 r => r.DeleteDoctorById(1),
+                Times.Once);
+
+            _mockAppointmentRepository.Verify(
+                r => r.GetAppointmentsByDoctorId(1),
                 Times.Once);
         }
 
@@ -482,7 +494,7 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockAppointmentRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByDoctorId(1))
                 .Returns(
                 [
                     appointment
@@ -492,6 +504,10 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockRepository.Verify(
                 r => r.DeleteDoctorById(1),
+                Times.Once);
+
+            _mockAppointmentRepository.Verify(
+                r => r.GetAppointmentsByDoctorId(1),
                 Times.Once);
         }
 
@@ -514,7 +530,7 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockAppointmentRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByDoctorId(1))
                 .Returns(
                 [
                     appointment
@@ -524,6 +540,10 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockRepository.Verify(
                 r => r.DeleteDoctorById(1),
+                Times.Once);
+
+            _mockAppointmentRepository.Verify(
+                r => r.GetAppointmentsByDoctorId(1),
                 Times.Once);
         }
 
@@ -551,11 +571,11 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockAppointmentRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByDoctorId(1))
                 .Returns(
                 [
                     appointment1,
-                    appointment2
+            appointment2
                 ]);
 
             _doctorService.DeleteDoctorById(1);
@@ -564,6 +584,10 @@ namespace HealthCare_Appointments_Portal.Tests
                 r => r.UpdateAppointment(
                     It.IsAny<Appointment>()),
                 Times.Exactly(2));
+
+            _mockRepository.Verify(
+                r => r.DeleteDoctorById(1),
+                Times.Once);
         }
 
         // Helper Doctor

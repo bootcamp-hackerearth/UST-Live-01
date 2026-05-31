@@ -16,11 +16,6 @@ namespace HealthCare_Appointments_Portal.Interfaces
 
         void DeleteAppointmentById(int appointmentId);
 
-
-
-        ///////////////////////////////////////
-        ///List<Appointment> GetAppointmentsByPatientId(int patientId);
-
         List<Appointment> GetAppointmentsByDoctorId(int doctorId);
         List<Appointment> GetAppointmentsByPatientId(int patientId);
 

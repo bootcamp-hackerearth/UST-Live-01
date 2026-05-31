@@ -103,17 +103,6 @@ namespace HealthCare_Appointments_Portal.Repositories
             }
         }
 
-
-
-
-
-
-
-
-
-
-        /////////////////////////////////////////////////
-        ///
         public List<Appointment> GetAppointmentsByPatientId(
     int patientId)
         {

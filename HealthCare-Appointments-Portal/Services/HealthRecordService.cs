@@ -74,14 +74,6 @@ namespace HealthCare_Appointments_Portal.Services
                 int patientId)
         {
 
-            //return _healthRecordRepository
-            //    .GetAllRecords()
-            //    .Where(r =>
-            //        r.Patient.PatientId ==
-            //        patientId)
-            //    .OrderByDescending(r =>
-            //        r.VisitDate)
-            //    .ToList();
             return _healthRecordRepository
                 .GetRecordsByPatientId(
                     patientId);
@@ -93,14 +85,6 @@ namespace HealthCare_Appointments_Portal.Services
                 int doctorId)
         {
 
-            //return _healthRecordRepository
-            //    .GetAllRecords()
-            //    .Where(r =>
-            //        r.Doctor.DoctorId ==
-            //        doctorId)
-            //    .OrderByDescending(r =>
-            //        r.VisitDate)
-            //    .ToList();
             return _healthRecordRepository
                 .GetRecordsByDoctorId(
                     doctorId);

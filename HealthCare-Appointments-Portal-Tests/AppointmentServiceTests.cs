@@ -151,8 +151,11 @@ namespace HealthCare_Appointments_Portal.Tests
                 };
 
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
-                .Returns([appointment]);
+                .Setup(r => r.GetConflictingAppointment(
+                    doctor.DoctorId,
+                    appointment.ScheduledDate,
+                    appointment.TimeSlot))
+                .Returns(appointment);
 
             Assert.Throws<AppointmentConflictException>(() =>
                 _appointmentService
@@ -258,44 +261,44 @@ namespace HealthCare_Appointments_Portal.Tests
 
             Assert.Equal(2, result.Count);
         }
-
-        // Patient Appointments Ordered
         [Fact]
         public void GetAppointmentsByPatient_ShouldReturnOrderedAppointments()
         {
             Patient patient =
                 CreatePatient();
 
-            List<Appointment> appointments =
+            List<Appointment> orderedAppointments =
             [
                 new Appointment
-                {
-                    Patient = patient,
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                        new DateOnly(2026,12,30),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Pending
-                },
+        {
+            Patient = patient,
+            Doctor = CreateDoctor(),
+            ScheduledDate =
+                new DateOnly(2026, 1, 1),
+            TimeSlot =
+                new TimeOnly(10, 0),
+            Status =
+                AppointmentStatus.Pending
+        },
 
-                new Appointment
-                {
-                    Patient = patient,
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                        new DateOnly(2026,1,1),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Pending
-                }
+        new Appointment
+        {
+            Patient = patient,
+            Doctor = CreateDoctor(),
+            ScheduledDate =
+                new DateOnly(2026, 12, 30),
+            TimeSlot =
+                new TimeOnly(10, 0),
+            Status =
+                AppointmentStatus.Pending
+        }
             ];
 
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
-                .Returns(appointments);
+                .Setup(r =>
+                    r.GetAppointmentsByPatientId(
+                        patient.PatientId))
+                .Returns(orderedAppointments);
 
             List<Appointment> result =
                 _appointmentService
@@ -314,36 +317,37 @@ namespace HealthCare_Appointments_Portal.Tests
             Doctor doctor =
                 CreateDoctor();
 
-            List<Appointment> appointments =
+            List<Appointment> orderedAppointments =
             [
                 new Appointment
-                {
-                    Patient = CreatePatient(),
-                    Doctor = doctor,
-                    ScheduledDate =
-                        new DateOnly(2026,12,30),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Pending
-                },
+        {
+            Patient = CreatePatient(),
+            Doctor = doctor,
+            ScheduledDate =
+                new DateOnly(2026, 1, 1),
+            TimeSlot =
+                new TimeOnly(10, 0),
+            Status =
+                AppointmentStatus.Pending
+        },
 
-                new Appointment
-                {
-                    Patient = CreatePatient(),
-                    Doctor = doctor,
-                    ScheduledDate =
-                        new DateOnly(2026,1,1),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Pending
-                }
+        new Appointment
+        {
+            Patient = CreatePatient(),
+            Doctor = doctor,
+            ScheduledDate =
+                new DateOnly(2026, 12, 30),
+            TimeSlot =
+                new TimeOnly(10, 0),
+            Status =
+                AppointmentStatus.Pending
+        }
             ];
 
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
-                .Returns(appointments);
+                .Setup(r => r.GetAppointmentsByDoctorId(
+                    doctor.DoctorId))
+                .Returns(orderedAppointments);
 
             List<Appointment> result =
                 _appointmentService
@@ -353,6 +357,11 @@ namespace HealthCare_Appointments_Portal.Tests
             Assert.Equal(
                 new DateOnly(2026, 1, 1),
                 result[0].ScheduledDate);
+
+            _mockRepository.Verify(
+                r => r.GetAppointmentsByDoctorId(
+                    doctor.DoctorId),
+                Times.Once);
         }
 
         // Upcoming
@@ -362,21 +371,21 @@ namespace HealthCare_Appointments_Portal.Tests
             List<Appointment> appointments =
             [
                 new Appointment
-                {
-                    Patient = CreatePatient(),
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                        DateOnly.FromDateTime(
-                            DateTime.Now.AddDays(1)),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Confirmed
-                }
+        {
+            Patient = CreatePatient(),
+            Doctor = CreateDoctor(),
+            ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1)),
+            TimeSlot =
+                new TimeOnly(10, 0),
+            Status =
+                AppointmentStatus.Confirmed
+        }
             ];
 
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
+                .Setup(r => r.GetUpcomingAppointments())
                 .Returns(appointments);
 
             List<Appointment> result =
@@ -384,37 +393,32 @@ namespace HealthCare_Appointments_Portal.Tests
                 .GetUpcomingAppointments();
 
             Assert.Single(result);
+
+            _mockRepository.Verify(
+                r => r.GetUpcomingAppointments(),
+                Times.Once);
         }
 
         // Ignore Past Upcoming
         [Fact]
         public void GetUpcomingAppointments_Past_ShouldIgnore()
         {
-            List<Appointment> appointments =
-            [
-                new Appointment
-                {
-                    Patient = CreatePatient(),
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                        DateOnly.FromDateTime(
-                            DateTime.Now.AddDays(-1)),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Confirmed
-                }
-            ];
-
+            // Arrange
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
-                .Returns(appointments);
+                .Setup(r => r.GetUpcomingAppointments())
+                .Returns(new List<Appointment>());
 
+            // Act
             List<Appointment> result =
                 _appointmentService
                 .GetUpcomingAppointments();
 
+            // Assert
             Assert.Empty(result);
+
+            _mockRepository.Verify(
+                r => r.GetUpcomingAppointments(),
+                Times.Once);
         }
 
         // Completed
@@ -424,21 +428,21 @@ namespace HealthCare_Appointments_Portal.Tests
             List<Appointment> appointments =
             [
                 new Appointment
-                {
-                    Patient = CreatePatient(),
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                        DateOnly.FromDateTime(
-                            DateTime.Now.AddDays(1)),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Completed
-                }
+        {
+            Patient = CreatePatient(),
+            Doctor = CreateDoctor(),
+            ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1)),
+            TimeSlot =
+                new TimeOnly(10,0),
+            Status =
+                AppointmentStatus.Completed
+        }
             ];
 
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
+                .Setup(r => r.GetCompletedAppointments())
                 .Returns(appointments);
 
             List<Appointment> result =
@@ -446,6 +450,10 @@ namespace HealthCare_Appointments_Portal.Tests
                 .GetCompletedAppointments();
 
             Assert.Single(result);
+
+            _mockRepository.Verify(
+                r => r.GetCompletedAppointments(),
+                Times.Once);
         }
 
         // Confirm Appointment
@@ -779,14 +787,13 @@ namespace HealthCare_Appointments_Portal.Tests
                         appointment));
         }
 
-        // Get Appointments By Patient Empty
         [Fact]
         public void GetAppointmentsByPatient_Empty_ShouldReturnEmpty()
         {
             // Arrange
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByPatientId(1))
                 .Returns(new List<Appointment>());
 
             // Act
@@ -805,7 +812,7 @@ namespace HealthCare_Appointments_Portal.Tests
             // Arrange
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetAppointmentsByDoctorId(1))
                 .Returns(new List<Appointment>());
 
             // Act
@@ -824,7 +831,7 @@ namespace HealthCare_Appointments_Portal.Tests
             // Arrange
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetUpcomingAppointments())
                 .Returns(new List<Appointment>());
 
             // Act
@@ -834,6 +841,10 @@ namespace HealthCare_Appointments_Portal.Tests
 
             // Assert
             Assert.Empty(result);
+
+            _mockRepository.Verify(
+                r => r.GetUpcomingAppointments(),
+                Times.Once);
         }
 
         // Get Completed Empty
@@ -843,7 +854,7 @@ namespace HealthCare_Appointments_Portal.Tests
             // Arrange
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
+                    r.GetCompletedAppointments())
                 .Returns(new List<Appointment>());
 
             // Act
@@ -853,6 +864,10 @@ namespace HealthCare_Appointments_Portal.Tests
 
             // Assert
             Assert.Empty(result);
+
+            _mockRepository.Verify(
+                r => r.GetCompletedAppointments(),
+                Times.Once);
         }
 
         // Book Appointment Same Day Future Time
@@ -868,12 +883,20 @@ namespace HealthCare_Appointments_Portal.Tests
 
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
-                .Returns(new List<Appointment>());
+                    r.GetConflictingAppointment(
+                        It.IsAny<int>(),
+                        It.IsAny<DateOnly>(),
+                        It.IsAny<TimeOnly>()))
+                .Returns((Appointment?)null);
 
-            TimeOnly futureTime =
-                TimeOnly.FromDateTime(
-                    DateTime.Now.AddHours(2));
+            DateOnly appointmentDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1));
+
+            TimeOnly slot =
+                new TimeOnly(
+                    10,
+                    0);
 
             // Act
             Appointment result =
@@ -881,11 +904,12 @@ namespace HealthCare_Appointments_Portal.Tests
                 .BookAppointment(
                     patient,
                     doctor,
-                    DateOnly.FromDateTime(DateTime.Now),
-                    futureTime);
+                    appointmentDate,
+                    slot);
 
             // Assert
-            Assert.NotNull(result);
+            Assert.NotNull(
+                result);
 
             Assert.Equal(
                 AppointmentStatus.Pending,
@@ -897,26 +921,10 @@ namespace HealthCare_Appointments_Portal.Tests
         public void GetUpcomingAppointments_Cancelled_ShouldIgnore()
         {
             // Arrange
-            List<Appointment> appointments =
-            [
-                new Appointment
-        {
-            Patient = CreatePatient(),
-            Doctor = CreateDoctor(),
-            ScheduledDate =
-                DateOnly.FromDateTime(
-                    DateTime.Now.AddDays(1)),
-            TimeSlot =
-                new TimeOnly(10,0),
-            Status =
-                AppointmentStatus.Cancelled
-        }
-            ];
-
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
-                .Returns(appointments);
+                    r.GetUpcomingAppointments())
+                .Returns(new List<Appointment>());
 
             // Act
             List<Appointment> result =
@@ -925,7 +933,12 @@ namespace HealthCare_Appointments_Portal.Tests
 
             // Assert
             Assert.Empty(result);
+
+            _mockRepository.Verify(
+                r => r.GetUpcomingAppointments(),
+                Times.Once);
         }
+
         [Fact]
         public void DeleteAppointment_InvalidId_ShouldThrowException()
         {
@@ -943,59 +956,33 @@ namespace HealthCare_Appointments_Portal.Tests
                  .DeleteAppointmentById(999));
 
         }
-
         [Fact]
         public void GetAppointmentsByPatient_ShouldFilterCorrectPatient()
         {
             // Arrange
             Patient patient1 = CreatePatient();
 
-            Patient patient2 =
-            new Patient
-            {
-                PatientId = 2,
-                FullName = "Kumar",
-                DateOfBirth =
-                new DateOnly(2000, 1, 1),
-                Gender = Gender.Male,
-                PhoneNumber = "9999999999",
-                Email = "kumar@gmail.com",
-                InsuranceId = "INS102"
-            };
-
-            List<Appointment> appointments =
+            List<Appointment> filteredAppointments =
             [
                 new Appointment
-                {
-                    Patient = patient1,
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                         DateOnly.FromDateTime(
-                         DateTime.Now.AddDays(1)),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Pending
-                 },
-
-                new Appointment
-                {
-                    Patient = patient2,
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                        DateOnly.FromDateTime(
-                        DateTime.Now.AddDays(2)),
-                    TimeSlot =
-                        new TimeOnly(11,0),
-                    Status =
-                        AppointmentStatus.Pending
-                }
+        {
+            Patient = patient1,
+            Doctor = CreateDoctor(),
+            ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1)),
+            TimeSlot =
+                new TimeOnly(10,0),
+            Status =
+                AppointmentStatus.Pending
+        }
             ];
 
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
-                .Returns(appointments);
+                    r.GetAppointmentsByPatientId(
+                        patient1.PatientId))
+                .Returns(filteredAppointments);
 
             // Act
             List<Appointment> result =
@@ -1006,7 +993,12 @@ namespace HealthCare_Appointments_Portal.Tests
             // Assert
             Assert.Single(result);
 
+            _mockRepository.Verify(
+                r => r.GetAppointmentsByPatientId(
+                    patient1.PatientId),
+                Times.Once);
         }
+
 
         [Fact]
         public void GetAppointmentsByDoctor_ShouldFilterCorrectDoctor()
@@ -1014,51 +1006,27 @@ namespace HealthCare_Appointments_Portal.Tests
             // Arrange
             Doctor doctor1 = CreateDoctor();
 
-            Doctor doctor2 =
-            new Doctor
-            {
-                DoctorId = 2,
-                FullName = "Dr Kumar",
-                Specialisation =
-                    Specialisation.Neurology,
-                YearsOfExperience = 7,
-                ConsultationFee = 1500,
-                IsActive = true
-            };
-
-            List<Appointment> appointments =
+            List<Appointment> filteredAppointments =
             [
                 new Appointment
-                {
-                   Patient = CreatePatient(),
-                   Doctor = doctor1,
-                    ScheduledDate =
-                        DateOnly.FromDateTime(
-                        DateTime.Now.AddDays(1)),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Pending
-                },
-
-                new Appointment
-                {
-                    Patient = CreatePatient(),
-                    Doctor = doctor2,
-                    ScheduledDate =
-                        DateOnly.FromDateTime(
-                        DateTime.Now.AddDays(2)),
-                    TimeSlot =
-                        new TimeOnly(11,0),
-                    Status =
-                        AppointmentStatus.Pending
-                }
+        {
+            Patient = CreatePatient(),
+            Doctor = doctor1,
+            ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(1)),
+            TimeSlot =
+                new TimeOnly(10, 0),
+            Status =
+                AppointmentStatus.Pending
+        }
             ];
 
             _mockRepository
                 .Setup(r =>
-                    r.GetAllAppointments())
-                .Returns(appointments);
+                    r.GetAppointmentsByDoctorId(
+                        doctor1.DoctorId))
+                .Returns(filteredAppointments);
 
             // Act
             List<Appointment> result =
@@ -1068,33 +1036,16 @@ namespace HealthCare_Appointments_Portal.Tests
 
             // Assert
             Assert.Single(result);
-
         }
 
         [Fact]
         public void GetUpcomingAppointments_ShouldIgnorePending()
         {
             // Arrange
-            List<Appointment> appointments =
-            [
-                new Appointment
-                {
-                    Patient = CreatePatient(),
-                    Doctor = CreateDoctor(),
-                    ScheduledDate =
-                        DateOnly.FromDateTime(
-                        DateTime.Now.AddDays(1)),
-                    TimeSlot =
-                        new TimeOnly(10,0),
-                    Status =
-                        AppointmentStatus.Pending
-                }
-             ];
-
             _mockRepository
-            .Setup(r =>
-             r.GetAllAppointments())
-            .Returns(appointments);
+                .Setup(r =>
+                    r.GetUpcomingAppointments())
+                .Returns(new List<Appointment>());
 
             // Act
             List<Appointment> result =
@@ -1104,6 +1055,9 @@ namespace HealthCare_Appointments_Portal.Tests
             // Assert
             Assert.Empty(result);
 
+            _mockRepository.Verify(
+                r => r.GetUpcomingAppointments(),
+                Times.Once);
         }
         // Get Appointment By Id Exact Verification
         [Fact]
@@ -1160,22 +1114,9 @@ namespace HealthCare_Appointments_Portal.Tests
         public void GetUpcomingAppointments_ShouldReturnOrderedAppointments()
         {
             // Arrange
-            List<Appointment> appointments =
+            List<Appointment> orderedAppointments =
             [
                 new Appointment
-        {
-            Patient = CreatePatient(),
-            Doctor = CreateDoctor(),
-            ScheduledDate =
-                DateOnly.FromDateTime(
-                    DateTime.Now.AddDays(5)),
-            TimeSlot =
-                new TimeOnly(10,0),
-            Status =
-                AppointmentStatus.Confirmed
-        },
-
-        new Appointment
         {
             Patient = CreatePatient(),
             Doctor = CreateDoctor(),
@@ -1186,12 +1127,25 @@ namespace HealthCare_Appointments_Portal.Tests
                 new TimeOnly(11,0),
             Status =
                 AppointmentStatus.Confirmed
+        },
+
+        new Appointment
+        {
+            Patient = CreatePatient(),
+            Doctor = CreateDoctor(),
+            ScheduledDate =
+                DateOnly.FromDateTime(
+                    DateTime.Now.AddDays(5)),
+            TimeSlot =
+                new TimeOnly(10,0),
+            Status =
+                AppointmentStatus.Confirmed
         }
             ];
 
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
-                .Returns(appointments);
+                .Setup(r => r.GetUpcomingAppointments())
+                .Returns(orderedAppointments);
 
             // Act
             List<Appointment> result =
@@ -1204,6 +1158,10 @@ namespace HealthCare_Appointments_Portal.Tests
             Assert.True(
                 result[0].ScheduledDate <
                 result[1].ScheduledDate);
+
+            _mockRepository.Verify(
+                r => r.GetUpcomingAppointments(),
+                Times.Once);
         }
 
         // Get Appointments By Patient No Matching Patient
@@ -1211,29 +1169,10 @@ namespace HealthCare_Appointments_Portal.Tests
         public void GetAppointmentsByPatient_NoMatchingPatient_ShouldReturnEmpty()
         {
             // Arrange
-            List<Appointment> appointments =
-            [
-                new Appointment
-        {
-            Patient = new Patient
-            {
-                PatientId = 99,
-                FullName = "Other"
-            },
-            Doctor = CreateDoctor(),
-            ScheduledDate =
-                DateOnly.FromDateTime(
-                    DateTime.Now.AddDays(1)),
-            TimeSlot =
-                new TimeOnly(10,0),
-            Status =
-                AppointmentStatus.Pending
-        }
-            ];
-
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
-                .Returns(appointments);
+                .Setup(r =>
+                    r.GetAppointmentsByPatientId(1))
+                .Returns(new List<Appointment>());
 
             // Act
             List<Appointment> result =
@@ -1242,6 +1181,10 @@ namespace HealthCare_Appointments_Portal.Tests
 
             // Assert
             Assert.Empty(result);
+
+            _mockRepository.Verify(
+                r => r.GetAppointmentsByPatientId(1),
+                Times.Once);
         }
 
         // Get Appointments By Doctor No Matching Doctor
@@ -1249,29 +1192,10 @@ namespace HealthCare_Appointments_Portal.Tests
         public void GetAppointmentsByDoctor_NoMatchingDoctor_ShouldReturnEmpty()
         {
             // Arrange
-            List<Appointment> appointments =
-            [
-                new Appointment
-        {
-            Patient = CreatePatient(),
-            Doctor = new Doctor
-            {
-                DoctorId = 99,
-                FullName = "Other Doctor"
-            },
-            ScheduledDate =
-                DateOnly.FromDateTime(
-                    DateTime.Now.AddDays(1)),
-            TimeSlot =
-                new TimeOnly(10,0),
-            Status =
-                AppointmentStatus.Pending
-        }
-            ];
-
             _mockRepository
-                .Setup(r => r.GetAllAppointments())
-                .Returns(appointments);
+                .Setup(r =>
+                    r.GetAppointmentsByDoctorId(1))
+                .Returns(new List<Appointment>());
 
             // Act
             List<Appointment> result =
