@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="HAP_Pod4_ConsoleApp_au/HAP_Pod4_ConsoleApp_au.csproj" />
+  <Project Path="HealthAxisTests_au/HealthAxisTests_au.csproj" />
+</Solution>
