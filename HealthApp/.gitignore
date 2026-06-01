@@ -17,3 +17,4 @@
 .sonarqube/
 sonar-project.properties.user
 coverage.xml
+dotnet-tools.json
