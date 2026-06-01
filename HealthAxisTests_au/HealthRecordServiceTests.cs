@@ -1,4 +1,6 @@
-﻿using HAP_Pod4_ConsoleApp_au.Models;
+﻿using System;
+using System.Collections.Generic;
+using HAP_Pod4_ConsoleApp_au.Models;
 using HAP_Pod4_ConsoleApp_au.Repositories;
 using HAP_Pod4_ConsoleApp_au.Services.Impl;
 using Xunit;
@@ -19,7 +21,6 @@ namespace HealthAxisTests.ServiceTests
         [Fact]
         public void AddRecord_WhenValid_ShouldAddRecord()
         {
-            // Arrange
             HealthRecord record = new HealthRecord
             {
                 RecordId = 1,
@@ -39,10 +40,8 @@ namespace HealthAxisTests.ServiceTests
                 Notes = "Take rest"
             };
 
-            // Act
-            var result = _service.AddRecord(record);
+            HealthRecord result = _service.AddRecord(record);
 
-            // Assert
             Assert.NotNull(result);
             Assert.Equal("Fever", result.Diagnosis);
         }
@@ -50,64 +49,47 @@ namespace HealthAxisTests.ServiceTests
         [Fact]
         public void AddRecord_WhenRecordIsNull_ShouldThrowException()
         {
-            // Act & Assert
-            Exception ex = Assert.Throws<Exception>(() =>
+            ArgumentNullException ex = Assert.Throws<ArgumentNullException>(() =>
             {
                 _service.AddRecord(null!);
             });
 
-            Assert.Equal(
-                "Health record cannot be null.",
-                ex.Message);
+            // Assert against the parameter name since we removed the custom message
+            Assert.Equal("record", ex.ParamName);
         }
 
         [Fact]
         public void AddRecord_WhenDiagnosisIsEmpty_ShouldThrowException()
         {
-            // Arrange
             HealthRecord record = new HealthRecord
             {
                 RecordId = 1,
-                Patient = new Patient
-                {
-                    PatientId = 1
-                },
-                Doctor = new Doctor
-                {
-                    DoctorId = 1
-                },
+                Patient = new Patient { PatientId = 1 },
+                Doctor = new Doctor { DoctorId = 1 },
                 VisitDate = DateTime.Now,
-                Diagnosis = "",
+                Diagnosis = string.Empty,
                 Prescription = "Medicine",
                 Notes = "Notes"
             };
 
-            // Act & Assert
-            Exception ex = Assert.Throws<Exception>(() =>
+            ArgumentException ex = Assert.Throws<ArgumentException>(() =>
             {
                 _service.AddRecord(record);
             });
 
-            Assert.Equal(
-                "Diagnosis cannot be empty.",
-                ex.Message);
+            // Assert against the specific exception message and the corrected parameter name
+            Assert.Contains("Diagnosis cannot be empty.", ex.Message);
+            Assert.Equal("record", ex.ParamName);
         }
 
         [Fact]
         public void GetRecordsByPatient_ShouldReturnPatientRecords()
         {
-            // Arrange
             HealthRecord record1 = new HealthRecord
             {
                 RecordId = 1,
-                Patient = new Patient
-                {
-                    PatientId = 1
-                },
-                Doctor = new Doctor
-                {
-                    DoctorId = 1
-                },
+                Patient = new Patient { PatientId = 1 },
+                Doctor = new Doctor { DoctorId = 1 },
                 VisitDate = DateTime.Now,
                 Diagnosis = "Cold"
             };
@@ -115,14 +97,8 @@ namespace HealthAxisTests.ServiceTests
             HealthRecord record2 = new HealthRecord
             {
                 RecordId = 2,
-                Patient = new Patient
-                {
-                    PatientId = 2
-                },
-                Doctor = new Doctor
-                {
-                    DoctorId = 1
-                },
+                Patient = new Patient { PatientId = 2 },
+                Doctor = new Doctor { DoctorId = 1 },
                 VisitDate = DateTime.Now,
                 Diagnosis = "Fever"
             };
@@ -130,29 +106,20 @@ namespace HealthAxisTests.ServiceTests
             _service.AddRecord(record1);
             _service.AddRecord(record2);
 
-            // Act
-            var result = _service.GetRecordsByPatient(1);
+            List<HealthRecord> result = _service.GetRecordsByPatient(1);
 
-            // Assert
             Assert.Single(result);
-            Assert.Equal(1, result[0].Patient.PatientId);
+            Assert.Equal(1, result[0].Patient!.PatientId);
         }
 
         [Fact]
         public void GetRecordsByDoctor_ShouldReturnDoctorRecords()
         {
-            // Arrange
             HealthRecord record1 = new HealthRecord
             {
                 RecordId = 1,
-                Patient = new Patient
-                {
-                    PatientId = 1
-                },
-                Doctor = new Doctor
-                {
-                    DoctorId = 1
-                },
+                Patient = new Patient { PatientId = 1 },
+                Doctor = new Doctor { DoctorId = 1 },
                 VisitDate = DateTime.Now,
                 Diagnosis = "Headache"
             };
@@ -160,14 +127,8 @@ namespace HealthAxisTests.ServiceTests
             HealthRecord record2 = new HealthRecord
             {
                 RecordId = 2,
-                Patient = new Patient
-                {
-                    PatientId = 2
-                },
-                Doctor = new Doctor
-                {
-                    DoctorId = 2
-                },
+                Patient = new Patient { PatientId = 2 },
+                Doctor = new Doctor { DoctorId = 2 },
                 VisitDate = DateTime.Now,
                 Diagnosis = "Fever"
             };
@@ -175,12 +136,10 @@ namespace HealthAxisTests.ServiceTests
             _service.AddRecord(record1);
             _service.AddRecord(record2);
 
-            // Act
-            var result = _service.GetRecordsByDoctor(1);
+            List<HealthRecord> result = _service.GetRecordsByDoctor(1);
 
-            // Assert
             Assert.Single(result);
-            Assert.Equal(1, result[0].Doctor.DoctorId);
+            Assert.Equal(1, result[0].Doctor!.DoctorId);
         }
     }
 }

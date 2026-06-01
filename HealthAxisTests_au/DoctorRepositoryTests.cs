@@ -46,6 +46,24 @@ namespace HealthAxisTests.RepositoryTests
         }
 
         [Fact]
+        public void AddDoctor_WhenMultipleAdded_ShouldIncreaseCountAppropriately()
+        {
+            // Arrange
+            Doctor doctor1 = new Doctor { DoctorId = 100, FullName = "Dr. Alice", Specialisation = Doctor.SpecialisationOption.Neurologist };
+            Doctor doctor2 = new Doctor { DoctorId = 101, FullName = "Dr. Bob", Specialisation = Doctor.SpecialisationOption.Dermatologist };
+
+            // Act
+            _repo.AddDoctor(doctor1);
+            _repo.AddDoctor(doctor2);
+
+            // Assert
+            var allDoctors = _repo.GetAllDoctors();
+            Assert.Equal(10, allDoctors.Count); // 8 seeded + 2 new
+            Assert.Contains(allDoctors, d => d.FullName == "Dr. Alice");
+            Assert.Contains(allDoctors, d => d.FullName == "Dr. Bob");
+        }
+
+        [Fact]
         public void GetAllDoctors_ShouldReturnAllDoctors()
         {
             // Act
@@ -57,11 +75,24 @@ namespace HealthAxisTests.RepositoryTests
         }
 
         [Fact]
+        public void GetAllDoctors_WhenRepositoryIsEmpty_ShouldReturnEmptyList()
+        {
+            // Arrange - Create a fresh repository without the seeded DbContext data
+            var emptyRepo = new DoctorRepository();
+
+            // Act
+            var result = emptyRepo.GetAllDoctors();
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
         public void SearchDoctorBySpecialisation_WhenExists_ShouldReturnDoctors()
         {
             // Act
-            var result = _repo.SearchDoctorBySpecialisation(
-                Doctor.SpecialisationOption.Pediatrician);
+            var result = _repo.SearchDoctorBySpecialisation(Doctor.SpecialisationOption.Pediatrician);
 
             // Assert
             Assert.NotNull(result);
@@ -70,11 +101,32 @@ namespace HealthAxisTests.RepositoryTests
         }
 
         [Fact]
+        public void SearchDoctorBySpecialisation_WhenMultipleMatch_ShouldReturnAllMatches()
+        {
+            // Arrange - Add a second Pediatrician to the seeded 8
+            Doctor secondPediatrician = new Doctor
+            {
+                DoctorId = 99,
+                FullName = "Dr. Sarah Smith",
+                Specialisation = Doctor.SpecialisationOption.Pediatrician
+            };
+            _repo.AddDoctor(secondPediatrician);
+
+            // Act
+            var result = _repo.SearchDoctorBySpecialisation(Doctor.SpecialisationOption.Pediatrician);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
+            Assert.Contains(result, d => d.FullName == "Dr. Neha Iyer");
+            Assert.Contains(result, d => d.FullName == "Dr. Sarah Smith");
+        }
+
+        [Fact]
         public void SearchDoctorBySpecialisation_WhenNotExists_ShouldReturnEmptyList()
         {
             // Act
-            var result = _repo.SearchDoctorBySpecialisation(
-                Doctor.SpecialisationOption.Psychiatrist);
+            var result = _repo.SearchDoctorBySpecialisation(Doctor.SpecialisationOption.Psychiatrist);
 
             // Assert
             Assert.NotNull(result);
