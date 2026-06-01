@@ -17,6 +17,10 @@ namespace HealthAxis.Repository.Implementation
 
         public HealthRecord AddRecord(HealthRecord record)
         {
+            if (_Db.HealthRecords.Any(r => r.Appointment != null && record.Appointment != null && r.Appointment.AppointmentId == record.Appointment.AppointmentId))
+            {
+                return null!;
+            }
             record.RecordId = _Db.GetNextHealthRecordId();
             _Db.HealthRecords.Add(record);
             return record;

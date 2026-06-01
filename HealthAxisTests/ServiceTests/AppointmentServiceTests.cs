@@ -217,9 +217,9 @@ namespace HealthAxisTest.ServiceTests
             _repoMock.Setup(r => r.GetAppointmentsByPatient(1))
                 .Returns(new List<Appointment>
                 {
-                    new Appointment { Doctor = new Doctor { DoctorId = existingDoctorId } }
+                    new Appointment { Doctor = new Doctor { DoctorId = existingDoctorId} }
                 });
-            Assert.Throws<AppointmentConflictException>(() =>
+            Assert.Throws<DoctorUnavailableException>(() =>
                 _service.BookAppointment(patient, doctor, date)
             );
         }
@@ -234,7 +234,7 @@ namespace HealthAxisTest.ServiceTests
                 {
                     new Appointment { Doctor = doctor }
                 });
-            Assert.Throws<AppointmentConflictException>(() =>
+            Assert.Throws<DoctorUnavailableException>(() =>
                 _service.BookAppointment(patient, doctor, date)
             );
         }
@@ -249,7 +249,7 @@ namespace HealthAxisTest.ServiceTests
                 {
                     new Appointment { Doctor = doctor }
                 });
-            Assert.Throws<AppointmentConflictException>(() =>
+            Assert.Throws<DoctorUnavailableException>(() =>
                 _service.BookAppointment(patient, doctor, date)
             );
         }

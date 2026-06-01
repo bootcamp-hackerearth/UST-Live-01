@@ -30,7 +30,15 @@ namespace HealthAxis.Service.Implementation
         }
         public Patient RegisterPatient(Patient patient)
         {
-            return _repository.RegisterPatient(patient);
+            if (patient == null)
+                throw new ArgumentException("Patient is required.");
+
+            var result = _repository.RegisterPatient(patient);
+            if (result == null)
+            {
+                throw new InvalidOperationException("Failed to register patient.");
+            }
+            return result;
         }
         public bool UpdatePatient(Patient patient)
         {

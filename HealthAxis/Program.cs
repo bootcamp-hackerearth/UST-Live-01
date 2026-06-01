@@ -35,203 +35,213 @@ IHealthRecordService healthRecordService = provider.GetRequiredService<IHealthRe
 while (true)
 {
     ShowMenu();
-    return;
 }
 void ShowMenu()
-{
-    Console.WriteLine();
-    Console.WriteLine("===== Appointment Portal =====");
-    Console.WriteLine("1. Patient Menu");
-    Console.WriteLine("2. Doctor Menu");
-    Console.WriteLine("3. admin Menu");
-    Console.WriteLine("4. Exit");
-    Console.WriteLine();
-    var choice = Console.ReadLine();
-    Console.WriteLine();
-
-    switch (choice)
+{   while (true)
     {
-        case "1":
-            PatientMenu();
-            break;
-        case "2":
-            DoctorMenu();
-            break;
-        case "3":
-            AdminMenu();
-            break;
-        case "4":
-            Console.WriteLine("Exiting application...");
-            return;
-        default:
-            Console.WriteLine("Invalid choice. Please try again.");
-            break;
+        Console.WriteLine();
+        Console.WriteLine("===== Appointment Portal =====");
+        Console.WriteLine("1. Patient Menu");
+        Console.WriteLine("2. Doctor Menu");
+        Console.WriteLine("3. Admin Menu");
+        Console.WriteLine("4. Exit");
+        Console.WriteLine();
+        var choice = Console.ReadLine();
+        Console.WriteLine();
+
+        switch (choice)
+        {
+            case "1":
+                PatientMenu();
+                break;
+            case "2":
+                DoctorMenu();
+                break;
+            case "3":
+                AdminMenu();
+                break;
+            case "4":
+                Console.WriteLine("Exiting application...");
+                return;
+            default:
+                Console.WriteLine("Invalid choice. Please try again.");
+                break;
+        }
     }
 }
 void PatientMenu()
 {
-    Console.WriteLine();
-    Console.WriteLine("===== Patient Menu =====");
-    Console.WriteLine("1. Register a new patient");
-    Console.WriteLine("2. Search Doctor By Specialisation");
-    Console.WriteLine("3. Book an appointment for a patient");
-    Console.WriteLine("4. View all appointments for a patient");
-    Console.WriteLine("5. Cancel or Complete an appointment");
-    Console.WriteLine("6. View health history for a patient");
-    Console.WriteLine("7. Update Patient");
-    Console.WriteLine("8. Back to Main Menu");
-    Console.WriteLine();
-    Console.Write("Choose an option: ");
-
-    var choice = Console.ReadLine();
-    Console.WriteLine();
-
-    switch (choice)
+    while (true)
     {
-        case "1":
-            RegisterPatient();
-            break;
-        case "2":
-            SearchDoctorsBySpecialisation();
-            break;
-        case "3":
-            BookAppointment();
-            break;
-        case "4":
-            ViewAppointmentsForPatient();
-            break;
-        case "5":
-            Cancel();
-            break;
-        case "6":
-            ViewHealthHistory();
-            break;
-        case "7":
-            UpdatePatient();
-            break;
-        case "8":
-            ShowMenu();
-            break;
-        default:
-            Console.WriteLine("Enter a valid Choice");
-            break;
+        Console.WriteLine();
+        Console.WriteLine("===== Patient Menu =====");
+        Console.WriteLine("1. Register a new patient");
+        Console.WriteLine("2. Search Doctor By Specialisation");
+        Console.WriteLine("3. Book an appointment for a patient");
+        Console.WriteLine("4. View all appointments for a patient");
+        Console.WriteLine("5. Cancel or Complete an appointment");
+        Console.WriteLine("6. View health history for a patient");
+        Console.WriteLine("7. Update Patient");
+        Console.WriteLine("8. Back to Main Menu");
+        Console.WriteLine();
+        Console.Write("Choose an option: ");
 
+        var choice = Console.ReadLine();
+        Console.WriteLine();
+
+        switch (choice)
+        {
+            case "1":
+                RegisterPatient();
+                break;
+            case "2":
+                SearchDoctorsBySpecialisation();
+                break;
+            case "3":
+                BookAppointment();
+                break;
+            case "4":
+                ViewAppointmentsForPatient();
+                break;
+            case "5":
+                Cancel();
+                break;
+            case "6":
+                ViewHealthHistory();
+                break;
+            case "7":
+                UpdatePatient();
+                break;
+            case "8":
+                ShowMenu();
+                break;
+            default:
+                Console.WriteLine("Enter a valid Choice");
+                break;
+
+        }
     }
 }
 void DoctorMenu()
 {
-    Console.WriteLine();
-    Console.WriteLine("===== Doctor Menu =====");
-    Console.WriteLine("1. Add a Doctor");
-    Console.WriteLine("2. View all appointments for a patient");
-    Console.WriteLine("3. Confirm/Cancel/Complete appointment");
-    Console.WriteLine("4. Add Health Record after a completed appointment");
-    Console.WriteLine("5. View health history for a patient");
-    Console.WriteLine("6. View Patient Details");
-    Console.WriteLine("7. Update Doctor");
-    Console.WriteLine("8. Back");
-    Console.Write("Choose an option: ");
-
-    var docChoice = Console.ReadLine();
-    Console.WriteLine();
-
-    switch (docChoice)
+    while (true)
     {
-        case "1":
-            AddDoctor();
-            break;
-        case "2":
-            ViewAppointmentsForPatient();
-            break;
-        case "3":
-            CancelConfirmOrCompleteAppointment();
-            break;
-        case "4":
-            AddHealthRecord();
-            break;
-        case "5":
-            ViewHealthHistory();
-            break;
-        case "6":
-            ViewPatientById();
-            break;
-        case "7":
-            UpdateDoctor();
-            break;
-        case "8":
-            ShowMenu();
-            break;
-        default:
-            Console.WriteLine("Invalid choice. Please try again.");
-            break;
+        Console.WriteLine();
+        Console.WriteLine("===== Doctor Menu =====");
+        Console.WriteLine("1. Add a Doctor");
+        Console.WriteLine("2. View all appointments for a patient");
+        Console.WriteLine("3. Confirm/Cancel/Complete appointment");
+        Console.WriteLine("4. Add Health Record after a completed appointment");
+        Console.WriteLine("5. View health history for a patient");
+        Console.WriteLine("6. View Patient Details");
+        Console.WriteLine("7. Update Doctor");
+        Console.WriteLine("8. Back");
+        Console.Write("Choose an option: ");
+
+        var docChoice = Console.ReadLine();
+        Console.WriteLine();
+
+        switch (docChoice)
+        {
+            case "1":
+                AddDoctor();
+                break;
+            case "2":
+                ViewAppointmentsForPatient();
+                break;
+            case "3":
+                CancelConfirmOrCompleteAppointment();
+                break;
+            case "4":
+                AddHealthRecord();
+                break;
+            case "5":
+                ViewHealthHistory();
+                break;
+            case "6":
+                ViewPatientById();
+                break;
+            case "7":
+                UpdateDoctor();
+                break;
+            case "8":
+                ShowMenu();
+                break;
+            default:
+                Console.WriteLine("Invalid choice. Please try again.");
+                break;
+        }
     }
 }
 void AdminMenu()
 {
-    Console.WriteLine();
-    Console.WriteLine("===== Admin Menu =====");
-    Console.WriteLine("1. Register a new patient");
-    Console.WriteLine("2. Add a new doctor");
-    Console.WriteLine("3. Search doctors by specialisation");
-    Console.WriteLine("4. Book an appointment for a patient");
-    Console.WriteLine("5. View all appointments for a patient");
-    Console.WriteLine("6. Cancel or Complete an appointment");
-    Console.WriteLine("7. Add a health record after a completed appointment");
-    Console.WriteLine("8. View health history for a patient");
-    Console.WriteLine("9. View all patients");
-    Console.WriteLine("10. View all doctors");
-    Console.WriteLine("11. Update Portal");
-    Console.WriteLine("12. Change Doctor status");
-    Console.WriteLine("13. Back");
-    Console.Write("Choose an option: ");
-
-    var choice = Console.ReadLine();
-    Console.WriteLine();
-
-    switch (choice)
+    while (true)
     {
-        case "1":
-            RegisterPatient();
-            break;
-        case "2":
-            AddDoctor();
-            break;
-        case "3":
-            SearchDoctorsBySpecialisation();
-            break;
-        case "4":
-            BookAppointment();
-            break;
-        case "5":
-            ViewAppointmentsForPatient();
-            break;
-        case "6":
-            CancelConfirmOrCompleteAppointment();
-            break;
-        case "7":
-            AddHealthRecord();
-            break;
-        case "8":
-            ViewHealthHistory();
-            break;
-        case "9":
-            ViewAllPatients();
-            break;
-        case "10":
-            ViewAllDoctors();
-            break;
-        case "11":
-            Update();
-            break;
-        case "12":
-            ToggleDoctorStatus();
-            break;
-        case "13":
-            ShowMenu();
-            break;
-        default:
-            Console.WriteLine("Invalid choice. Please try again.");
-            break;
+        Console.WriteLine();
+        Console.WriteLine("===== Admin Menu =====");
+        Console.WriteLine("1. Register a new patient");
+        Console.WriteLine("2. Add a new doctor");
+        Console.WriteLine("3. Search doctors by specialisation");
+        Console.WriteLine("4. Book an appointment for a patient");
+        Console.WriteLine("5. View all appointments for a patient");
+        Console.WriteLine("6. Cancel or Complete an appointment");
+        Console.WriteLine("7. Add a health record after a completed appointment");
+        Console.WriteLine("8. View health history for a patient");
+        Console.WriteLine("9. View all patients");
+        Console.WriteLine("10. View all doctors");
+        Console.WriteLine("11. Update Portal");
+        Console.WriteLine("12. Change Doctor status");
+        Console.WriteLine("13. Back");
+        Console.Write("Choose an option: ");
+
+        var choice = Console.ReadLine();
+        Console.WriteLine();
+
+        switch (choice)
+        {
+            case "1":
+                RegisterPatient();
+                break;
+            case "2":
+                AddDoctor();
+                break;
+            case "3":
+                SearchDoctorsBySpecialisation();
+                break;
+            case "4":
+                BookAppointment();
+                break;
+            case "5":
+                ViewAppointmentsForPatient();
+                break;
+            case "6":
+                CancelConfirmOrCompleteAppointment();
+                break;
+            case "7":
+                AddHealthRecord();
+                break;
+            case "8":
+                ViewHealthHistory();
+                break;
+            case "9":
+                ViewAllPatients();
+                break;
+            case "10":
+                ViewAllDoctors();
+                break;
+            case "11":
+                Update();
+                break;
+            case "12":
+                ToggleDoctorStatus();
+                break;
+            case "13":
+                ShowMenu();
+                break;
+            default:
+                Console.WriteLine("Invalid choice. Please try again.");
+                break;
+        }
     }
 }
 
@@ -259,8 +269,8 @@ void RegisterPatient()
     p.Email = GetValidEmail(Email);
 
     Console.Write("Enter your Insurance ID: ");
-    p.InsuranceId = Console.ReadLine() ?? string.Empty;
-
+    string InsuranceID = Console.ReadLine() ?? string.Empty;
+    p.InsuranceId = GetValidInsuranceID(InsuranceID);
     DateTime now = DateTime.Now;
     p.RegisteredDate = now;
     p.PatientId = db.GetNextPatientId();
@@ -281,7 +291,7 @@ void AddDoctor()
 
         Console.Write("Enter Years of Experience: ");
         var Experience = Convert.ToInt32(Console.ReadLine());
-        if (Experience > 0)
+        if ((Experience >=0) && (Experience <=50))
         {
             doctor.Experience = Experience;
 
@@ -380,9 +390,10 @@ void BookAppointment()
 
         if (patient == null)
         {
-            Console.WriteLine("Patient not found.");
+            Console.WriteLine("Patient not found. Enter a valid Patient Id");
             return;
         }
+        
         var specialization = GetSpecialisationFromUser();
 
         var doctors = doctorService.SearchDoctorBySpecialisation(specialization);
@@ -442,39 +453,54 @@ void BookAppointment()
 }
 void ViewAppointmentsForPatient()
 {
-    Console.Write("Enter Patient ID: ");
-    int patientId = int.Parse(Console.ReadLine() ?? "0");
-
-    var patient = patientService.GetPatientById(patientId);
-
-    if (patient == null)
+    try
     {
-        Console.WriteLine("Patient not found.");
-        return;
-    }
+        int patientId;
+        while (true)
+        {
+            Console.Write("Enter Patient ID: ");
+            if (int.TryParse(Console.ReadLine(), out patientId))
+            {
+                break;
+            }
+            Console.WriteLine("Invalid patient ID. Please try again.");
+        }
+        var patient = patientService.GetPatientById(patientId);
+        if (patient == null)
+        {
+            Console.WriteLine("Patient not found.");
+            return;
+        }
+        var appointments = appointmentService.GetAppointmentsByPatient(patientId);
+        if (appointments.Count == 0)
+        {
+            Console.WriteLine("No appointments found for this patient.");
+            return;
+        }
 
-    var appointments = appointmentService.GetAppointmentsByPatient(patientId);
+        Console.WriteLine($"\nAppointments for {patient.PatientName}:\n");
 
-    if (appointments.Count==0)
-    {
-        Console.WriteLine("No appointments found for this patient.");
-        return;
-    }
+        foreach (var appointment in appointments)
+        {
+            Console.WriteLine("----------------------------------------");
+            Console.WriteLine($"Appointment ID : {appointment.AppointmentId}");
+            Console.WriteLine($"Doctor         : {appointment.Doctor.DoctorName} ({appointment.Doctor.Specialisation})");
+            Console.WriteLine($"Date           : {appointment.ScheduledDate:yyyy-MM-dd}");
+            Console.WriteLine($"Time Slot      : {appointment.Slot}");
+            Console.WriteLine($"Status         : {appointment.Status}");
+            Console.WriteLine($"Cancellation   : {(string.IsNullOrWhiteSpace(appointment.CancellationReason) ? "N/A" : appointment.CancellationReason)}");
+        }
 
-    Console.WriteLine($"\nAppointments for {patient.PatientName}:\n");
-
-    foreach (var appointment in appointments)
-    {
         Console.WriteLine("----------------------------------------");
-        Console.WriteLine($"Appointment ID : {appointment.AppointmentId}");
-        Console.WriteLine($"Doctor         : {appointment.Doctor.DoctorName} ({appointment.Doctor.Specialisation})");
-        Console.WriteLine($"Date           : {appointment.ScheduledDate:yyyy-MM-dd}");
-        Console.WriteLine($"Time Slot      : {appointment.Slot}");
-        Console.WriteLine($"Status         : {appointment.Status}");
-        Console.WriteLine($"Cancellation   : {(string.IsNullOrWhiteSpace(appointment.CancellationReason) ? "N/A" : appointment.CancellationReason)}");
     }
-
-    Console.WriteLine("----------------------------------------");
+    catch (PatientNotFoundException ex)
+    {
+        Console.WriteLine(ex.Message);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error while viewing appointments: {ex.Message}");
+    }
 }
 void Cancel()
 {
@@ -947,6 +973,23 @@ string? GetValidEmail(string Email)
         Console.WriteLine("Enter a Valid Email Id");
         Email=Console.ReadLine()?? String.Empty;
         return GetValidEmail(Email);
+    }
+}
+String? GetValidInsuranceID(string InsuranceId)
+{
+    if (string.IsNullOrWhiteSpace(InsuranceId))
+    {
+        return InsuranceId;
+    }
+    else if (System.Text.RegularExpressions.Regex.IsMatch(InsuranceId, "^INS\\d{4}$", System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+    {
+        return InsuranceId.ToUpperInvariant();
+    }
+    else
+    {
+        Console.WriteLine("Insurance ID must follow format INSXXXX where X are digits.");
+        InsuranceId = Console.ReadLine() ?? string.Empty;
+        return GetValidInsuranceID(InsuranceId);
     }
 }
     [ExcludeFromCodeCoverage]

@@ -9,6 +9,7 @@ namespace HealthAxis.Models
         public int RecordId { get; set; }
         public Patient Patient { get; set; } = null!;
         public Doctor Doctor { get; set; } = null!;
+        public Appointment? Appointment { get; set; }
         public DateTime VisitedDate { get; set; }
         public string Diagnosis { get; set; } = string.Empty;
         public string Prescription { get; set; } = string.Empty;

@@ -45,7 +45,8 @@ namespace HealthAxis.Service.Implementation
 
 
             var hasConflict = _repository.GetAppointmentsByPatient(patient.PatientId)
-                .Any(a => a.Doctor.DoctorId == doctor.DoctorId);
+                .Any(a => a.Doctor.DoctorId == doctor.DoctorId &&
+                            a.ScheduledDate.Date == date.Date);
 
             if (hasConflict)
             {
@@ -86,9 +87,18 @@ namespace HealthAxis.Service.Implementation
             {
                 return false;
             }
+            if (appointment.Status == Appointment.AppointmentStatus.Completed)
+            {
+                Console.WriteLine("Completed Appointment Cannot be Cancelled");
+                return false;
+            }
             appointment.Cancel(reason);
-            _repository.Remove(appointment);
-            return true;
+            if (appointment.Status == Appointment.AppointmentStatus.Cancelled)
+            {
+                _repository.Remove(appointment);
+                return true;
+            }
+            return false;
         }
         public List<Appointment> GetUpcomingAppointments()
         {

@@ -11,11 +11,12 @@ namespace HealthAxis.Models
         public Doctor Doctor { get; set; } = null!;
         public DateTime ScheduledDate { get; set; }
         public string Slot { get; set; } = string.Empty;
-        public AppointmentStatus Status { get; set; } = AppointmentStatus.Confirmed;
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
         public string CancellationReason { get; set; } = string.Empty;
 
         public enum AppointmentStatus
         {
+            Pending,
             Confirmed,
             Cancelled,
             Completed
@@ -31,6 +32,7 @@ namespace HealthAxis.Models
                 Console.WriteLine("You have already completed the appointment. If you need another appointment, please book a new appointment.");
             }
             Status = AppointmentStatus.Confirmed;
+            Console.WriteLine("Your Appointment is confirmed.");
         }
         public void Cancel(string reason)
         {
@@ -40,6 +42,7 @@ namespace HealthAxis.Models
             }
             Status = AppointmentStatus.Cancelled;
             CancellationReason = reason;
+            Console.WriteLine("Appointment cancelled.");
         }
         public void Complete()
         {
