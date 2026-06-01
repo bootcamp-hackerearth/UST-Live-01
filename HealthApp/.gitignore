@@ -16,3 +16,4 @@
 .sonar/
 .sonarqube/
 sonar-project.properties.user
+.HealthApp/coverage.xml
