@@ -34,23 +34,7 @@ namespace HealthApp.ConsoleApp.Helpers
                 ConsoleHelper.Pause(); 
                 return "";
             }
-
-            // // Validate choice is in range
-            // if (choice < 1 || choice > AvailableSlots.Count)
-            //     throw new ArgumentException("Invalid slot choice.");
-
             return AvailableSlots[slotChoice - 1]; // return the actual string
-        }
-        private static void PrintError(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"{msg}");
-            Console.ResetColor();
-        }
-        private static void Pause()
-        {
-            Console.WriteLine("\nPress any key to continue...");
-            Console.ReadKey(intercept: true);
         }
     }
 }

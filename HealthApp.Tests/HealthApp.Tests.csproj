@@ -25,6 +25,7 @@
 
   <PropertyGroup>
   <IsTestProject>true</IsTestProject>
+  <SonarQubeTestProject>true</SonarQubeTestProject>
 </PropertyGroup>
 
 </Project>
