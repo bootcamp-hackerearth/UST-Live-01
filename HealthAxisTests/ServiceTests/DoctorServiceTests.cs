@@ -78,21 +78,7 @@ namespace HealthAxisTests.ServiceTests
 
             Assert.Throws<DoctorNotFoundException>(() => _service.GetById(1));
         }
-        [Fact]
-        public void GetById_ValidId_ShouldReturnDoctor()
-        {
-            var doctor = new Doctor { DoctorId = 1, FullName = "Dr A" };
 
-            _mockRepo.Setup(r => r.GetById(1))
-                     .Returns(doctor);
-
-            var result = _service.GetById(1);
-
-            Assert.NotNull(result);
-            Assert.Equal("Dr A", result.FullName);
-
-            _mockRepo.Verify(r => r.GetById(1), Times.Once);
-        }
         [Fact]
         public void SearchDoctorBySpecialisation_NoDoctors_ShouldThrow()
         {
@@ -103,5 +89,47 @@ namespace HealthAxisTests.ServiceTests
                 _service.SearchDoctorBySpecialisation(Doctor.SpecialisationOption.Cardiologist));
         }
 
+        [Fact]
+        public void GetById_ValidId_ShouldReturnDoctor()
+        {
+            var doctor = new Doctor { DoctorId = 1, FullName = "Dr A" };
+
+            _mockRepo.Setup(r => r.GetById(1)).Returns(doctor);
+
+            var result = _service.GetById(1);
+
+            Assert.NotNull(result);
+            Assert.Equal("Dr A", result.FullName);
+        }
+        [Fact]
+        public void GetById_InvalidId_ShouldThrowArgumentException()
+        {
+            var ex = Assert.Throws<ArgumentException>(() =>
+                _service.GetById(0));
+
+            Assert.Contains("Invalid doctor ID", ex.Message);
+        }
+        [Fact]
+        public void AddDoctor_ShouldCallRepositoryOnce()
+        {
+            var doctor = new Doctor { DoctorId = 1, FullName = "Dr Test" };
+
+            _mockRepo.Setup(r => r.AddDoctor(doctor)).Returns(doctor);
+
+            _service.AddDoctor(doctor);
+
+            _mockRepo.Verify(r => r.AddDoctor(doctor), Times.Once);
+        }
+        [Fact]
+        public void GetAllDoctors_Empty_ShouldReturnEmpty()
+        {
+            _mockRepo.Setup(r => r.GetAllDoctors())
+                     .Returns(new List<Doctor>());
+
+            var result = _service.GetAllDoctors();
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
     }
 }

@@ -41,7 +41,8 @@ namespace HealthAxis.Services
 
 
             var hasConflict = _appointmentRepository.GetByPatientId(patient.PatientId)
-                .Any(a => a.Doctor.DoctorId == doctor.DoctorId);
+                .Any(a => a.Doctor.DoctorId == doctor.DoctorId &&
+                a.ScheduledDate.Date == date.Date);
 
             if (hasConflict)
             {
@@ -52,7 +53,6 @@ namespace HealthAxis.Services
 
             if (availableSlot == null)
             {
-                // fallback to any available slot for the doctor
                 availableSlot = _appointmentRepository.GetNextAvailableSlot(doctor.DoctorId, date);
             }
 
@@ -84,6 +84,12 @@ namespace HealthAxis.Services
             {
                 return false;
             }
+            if (appointment.Status == Appointment.AppointmentStatus.Completed)
+            {
+                Console.WriteLine("Completed Appointment Cannot be Cancelled");
+                return false;
+            }
+
             appointment.Cancel(reason);
 
             if (appointment.Status == Appointment.AppointmentStatus.Cancelled)
@@ -91,6 +97,7 @@ namespace HealthAxis.Services
                 _appointmentRepository.Remove(appointment);
                 return true;
             }
+
             return false;
         }
 

@@ -37,22 +37,11 @@ namespace HealthAxis.Services.Impl
             if (patient == null)
                 throw new ArgumentException("Patient is required.");
 
-            if (!string.IsNullOrWhiteSpace(patient.InsuranceID))
-            {
-                if (!System.Text.RegularExpressions.Regex.IsMatch(
-                        patient.InsuranceID,
-                        "^INS\\d{4}$",
-                        System.Text.RegularExpressions.RegexOptions.IgnoreCase,
-                        TimeSpan.FromMilliseconds(100)))
-                {
-                    throw new ArgumentException("Insurance ID must follow format INSXXXX where X are digits.");
-                }
-
-                patient.InsuranceID = patient.InsuranceID.ToUpperInvariant();
-            }
-
             var result = _repository.RegisterPatient(patient);
-
+            if (result == null)
+            {
+                throw new InvalidOperationException("Failed to register patient.");
+            }
             return result;
         }
 

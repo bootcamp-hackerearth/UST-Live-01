@@ -16,6 +16,11 @@ namespace HealthAxis.Repositories.Impl
 
         public HealthRecord AddRecord(HealthRecord record)
         {
+            if (_dbContext.HealthRecords.Any(r => r.Appointment != null && record.Appointment != null && r.Appointment.AppointmentId == record.Appointment.AppointmentId))
+            {
+                return null!;
+            }
+
             record.HealthRecordId = _dbContext.GetNextHealthRecordId();
             _dbContext.HealthRecords.Add(record);
             return record;

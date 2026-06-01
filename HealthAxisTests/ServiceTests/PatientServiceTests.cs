@@ -60,11 +60,71 @@ namespace HealthAxisTests.ServiceTests
             Assert.NotNull(result);
             Assert.Equal("Sam", result.FullName);
         }
+        [Fact]
+        public void GetPatientById_NotFound_ShouldThrow()
+        {
+            _mockRepo.Setup(r => r.GetPatientById(1)).Returns((Patient?)null);
+
+            Assert.Throws<PatientNotFoundException>(() => _service.GetPatientById(1));
+        }
 
         [Fact]
         public void UpdatePatient_Null_ShouldThrow()
         {
             Assert.Throws<ArgumentException>(() => _service.UpdatePatient(null!));
+        }
+        [Fact]
+        public void RegisterPatient_ValidRealInput_ShouldSucceed()
+        {
+            var patient = new Patient
+            {
+                PatientId = 1,
+                FullName = "John Doe",
+                PhoneNumber = "9876543210",
+                Email = "john@example.com",
+                DateOfBirth = DateTime.Today.AddYears(-25),
+                InsuranceID = "INS1234"
+            };
+
+            _mockRepo.Setup(r => r.RegisterPatient(patient))
+                     .Returns(patient);
+
+            var result = _service.RegisterPatient(patient);
+
+            Assert.NotNull(result);
+            Assert.Equal("John Doe", result.FullName);
+        }
+
+        [Fact]
+        public void RegisterPatient_WhenRepoFails_ShouldThrowInvalidOperation()
+        {
+            var patient = new Patient
+            {
+                PatientId = 1,
+                FullName = "Test User"
+            };
+
+            _mockRepo.Setup(r => r.RegisterPatient(patient))
+                     .Returns((Patient)null!);
+
+            Assert.Throws<InvalidOperationException>(() =>
+                _service.RegisterPatient(patient));
+        }
+
+        [Fact]
+        public void UpdatePatient_PartialData_ShouldStillUpdate()
+        {
+            var patient = new Patient
+            {
+                PatientId = 1,
+                FullName = "Name Only"
+            };
+
+            _mockRepo.Setup(r => r.UpdatePatient(patient)).Returns(true);
+
+            var result = _service.UpdatePatient(patient);
+
+            Assert.True(result);
         }
 
     }

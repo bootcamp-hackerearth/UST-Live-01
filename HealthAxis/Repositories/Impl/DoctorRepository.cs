@@ -37,11 +37,6 @@ namespace HealthAxis.Repositories.Impl
                 .Where(doc => doc.Specialisation == specialisation)
                 .ToList();
 
-            if (doctors == null || doctors.Count == 0)
-            {
-                throw new DoctorNotFoundException("No doctors found with the given specialization.");
-            }
-
             return doctors;
         }
         public bool UpdateDoctor(Doctor doctor)

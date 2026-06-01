@@ -65,19 +65,23 @@ namespace HealthAxisTests.ServiceTests
             _repoMock.Verify(r => r.AddRecord(record), Times.Once);
         }
 
+
         [Fact]
-        public void AddRecord_NullRecord_ShouldThrowArgumentNullException()
+        public void AddRecord_Null_ShouldThrowException()
         {
-            var ex = Assert.Throws<ArgumentNullException>(() =>
+
+            var ex = Assert.Throws<ArgumentException>(() =>
                 _service.AddRecord(null!)
             );
-            Assert.Contains("record", ex.ParamName);
+
+            Assert.Contains("cannot be null", ex.Message);
         }
 
 
         [Fact]
-        public void AddRecord_EmptyDiagnosis_ShouldThrowArgumentException()
+        public void AddRecord_EmptyDiagnosis_ShouldThrowException()
         {
+
             var record = new HealthRecord
             {
                 Patient = CreatePatient(1),
@@ -85,6 +89,7 @@ namespace HealthAxisTests.ServiceTests
                 VisitDate = DateTime.Today,
                 Diagnosis = ""
             };
+
 
             var ex = Assert.Throws<ArgumentException>(() =>
                 _service.AddRecord(record)
@@ -116,5 +121,85 @@ namespace HealthAxisTests.ServiceTests
             Assert.Equal(2, result.Count);
             Assert.True(result[0].VisitDate >= result[1].VisitDate);
         }
+        [Fact]
+        public void AddRecord_DuplicateAppointment_ShouldThrowException()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1
+            };
+
+            var record = new HealthRecord
+            {
+                Patient = CreatePatient(1),
+                Doctor = CreateDoctor(1),
+                Appointment = appointment,
+                VisitDate = DateTime.Today,
+                Diagnosis = "Test",
+                Prescription = "Test"
+            };
+
+            _repoMock.Setup(r => r.AddRecord(record))
+                     .Throws(new InvalidOperationException("A health record already exists for this appointment."));
+
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+                _service.AddRecord(record)
+            );
+
+            Assert.Contains("already exists", ex.Message);
+
+            _repoMock.Verify(r => r.AddRecord(record), Times.Once);
+        }
+
+        [Fact]
+        public void GetRecordsByPatient_Empty_ShouldReturnEmptyList()
+        {
+            _repoMock.Setup(r => r.GetRecordsByPatient(1))
+                     .Returns(new List<HealthRecord>());
+
+            var result = _service.GetRecordsByPatient(1);
+
+            Assert.NotNull(result);
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void AddRecord_ShouldCallRepositoryOnce()
+        {
+            var record = new HealthRecord
+            {
+                Patient = CreatePatient(1),
+                Doctor = CreateDoctor(1),
+                VisitDate = DateTime.Today,
+                Diagnosis = "Flu"
+            };
+
+            _repoMock.Setup(r => r.AddRecord(record))
+                     .Returns(record);
+
+            _service.AddRecord(record);
+
+            _repoMock.Verify(r => r.AddRecord(record), Times.Once);
+        }
+        [Fact]
+        public void AddRecord_RepositoryReturnsNull_ShouldThrow()
+        {
+            var record = new HealthRecord
+            {
+                Patient = CreatePatient(1),
+                Doctor = CreateDoctor(1),
+                VisitDate = DateTime.Today,
+                Diagnosis = "Test"
+            };
+
+            _repoMock.Setup(r => r.AddRecord(record))
+                     .Returns((HealthRecord)null!);
+
+            var ex = Assert.Throws<InvalidOperationException>(() =>
+                _service.AddRecord(record));
+
+            Assert.Contains("already exists", ex.Message);
+        }
+
     }
 }

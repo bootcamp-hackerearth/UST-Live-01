@@ -17,9 +17,23 @@ namespace HealthAxis.Repositories.Impl
 
         public Patient RegisterPatient(Patient patient)
         {
+
+            if (!string.IsNullOrWhiteSpace(patient.InsuranceID))
+            {
+                var exists = _db.Patients.Any(p => !string.IsNullOrWhiteSpace(p.InsuranceID) &&
+                                                  p.InsuranceID.Equals(patient.InsuranceID, StringComparison.OrdinalIgnoreCase));
+
+                if (exists)
+                {
+
+                    return null!;
+                }
+            }
+
             _db.Patients.Add(patient);
             return patient;
         }
+
 
         public List<Patient> GetAllPatients()
         {
