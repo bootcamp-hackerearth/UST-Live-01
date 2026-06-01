@@ -2,14 +2,15 @@
 .vs/
 **/bin/
 **/obj/
-
+**/.sonarqube/
+**/TestResults/
+**/coverage.xml/
+coverage.xml
+\ncoverage.xml\n
 # Optional project-specific ignores
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
 
-.sonarqube/*
-
 *.lscache
-coverage.xml
