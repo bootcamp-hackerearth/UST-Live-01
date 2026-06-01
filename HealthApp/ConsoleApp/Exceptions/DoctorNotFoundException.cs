@@ -1,0 +1,10 @@
+namespace HealthApp.ConsoleApp.Exceptions
+{
+    public class DoctorNotFoundException : Exception
+    {
+        public DoctorNotFoundException(string message) : base(message)
+        {
+            Console.WriteLine("Doctor not found: " + message);
+        }
+    }
+}
