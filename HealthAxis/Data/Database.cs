@@ -41,20 +41,6 @@ namespace HealthAxis.Data
         {
             return _nextHealthRecordId++;
         }
-        public void Reset()
-        {
-            Patients.Clear();
-            Doctors.Clear();
-            Appointments.Clear();
-            HealthRecords.Clear();
-
-            _nextPatientId = 1;
-            _nextDoctorId = 1;
-            _nextAppointmentId = 1;
-            _nextHealthRecordId = 1;
-
-            SeedData();
-        }
 
         public List<string> DailySlots { get; set; } = new()
         {

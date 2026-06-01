@@ -31,7 +31,7 @@ namespace HealthAxis.Repositories.Impl
 			return _ContextDb.Doctors
 				.FirstOrDefault(d => d.DoctorId == id);
 		}
-        public List<Doctor> SearchDoctorBySpecialisation(Doctor.SpecialisationOption specialisation)
+		public List<Doctor> SearchDoctorBySpecialisation(Doctor.SpecialisationOption specialisation)
         {
             var doctors = _ContextDb.Doctors
                 .Where(doc => doc.Specialisation == specialisation)
@@ -39,12 +39,11 @@ namespace HealthAxis.Repositories.Impl
 
             if (doctors == null || doctors.Count == 0)
             {
-                throw new Exception("No doctors found with the given specialization.");
+                throw new DoctorNotFoundException("No doctors found with the given specialization.");
             }
 
             return doctors;
         }
-
         public bool UpdateDoctor(Doctor doctor)
         {
             var existing = _ContextDb.Doctors.FirstOrDefault(d => d.DoctorId == doctor.DoctorId);
