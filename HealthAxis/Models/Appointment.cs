@@ -16,7 +16,7 @@ namespace HealthAxis.Models
 
         public string Slot { get; set; } = string.Empty;
 
-        public AppointmentStatus Status { get; set; } = AppointmentStatus.Confirmed;
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 
         public string CancellationReason { get; set; } = string.Empty;
 
@@ -37,7 +37,7 @@ namespace HealthAxis.Models
             }
             if (Status == AppointmentStatus.Completed)
             {
-                Console.WriteLine("Cannot confirm a completed appointment.");
+                Console.WriteLine("Appointment already completed. Cannot be confirmed.");
                 return;
             }
             Status = AppointmentStatus.Confirmed;
@@ -74,7 +74,7 @@ namespace HealthAxis.Models
 
         public string? GetDetails(List<Appointment> allAppointments)
         {
-            return $"Appointment ID: {AppointmentId} \n{Patient.GetProfileSummary()} \n{Doctor.GetScheduleSummary(allAppointments)}\n Scheduled Date: {ScheduledDate:dd-MM-yyyy} \n Time Slot: {Slot}  Status: {Status} \n  Cancellation reason(if any): {CancellationReason}";
+            return $"\n=============================== \nAppointment ID: {AppointmentId} \n{Patient.GetProfileSummary()} \n{Doctor.GetScheduleSummary(allAppointments)}\n Scheduled Date: {ScheduledDate:dd-MM-yyyy} \n Time Slot: {Slot}  Status: {Status} \n  Cancellation reason(if any): {CancellationReason}\n ===============================\n";
         }
     }
 }

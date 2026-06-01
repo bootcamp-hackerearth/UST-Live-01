@@ -22,7 +22,7 @@ namespace HealthAxis.Models
 
         public string GetRecordSummary()
         {
-            return $"HealthRecordId: {HealthRecordId}, Patient: {Patient.GetProfileSummary()}, Doctor: {Doctor.GetProfileSummary()}, VisitDate: {VisitDate.ToShortDateString()}, Diagnosis: {Diagnosis}, Prescription: {Prescription}, Notes: {Notes}";
+            return $"Record ID: {HealthRecordId}, Patient: {Patient.FullName}, Doctor: {Doctor.FullName}, Visit Date: {VisitDate.ToShortDateString()}, Diagnosis: {Diagnosis}, Prescription: {Prescription}";
         }
     }
 }

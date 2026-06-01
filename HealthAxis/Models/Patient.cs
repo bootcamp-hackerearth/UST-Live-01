@@ -45,7 +45,7 @@ namespace HealthAxis.Models
 
         public string GetProfileSummary()
         {
-            return $"PatientId: {PatientId}, FullName: {FullName}, Age : {GetAge()}, Gender: {Gender}, PhoneNumber: {PhoneNumber}, Email: {Email}";
+            return $"\n===============================\n Patient ID: {PatientId}, \n Name: {FullName},\n Age: {GetAge()},\n Gender: {Gender},\n Phone: {PhoneNumber}, \n Email: {Email},\n Created Date: {CreatedDate}\n===============================\n";
         }
     }
 }

@@ -84,7 +84,6 @@ namespace HealthAxis.Repositories.Impl
                 appointment.Doctor.Appointments.RemoveAll(a => a.AppointmentId == appointment.AppointmentId);
             }
         }
-
         public int GetBookedSlotCount(int doctorId, DateTime date)
         {
             return _dbContext.Appointments.Count(a =>
@@ -125,7 +124,7 @@ namespace HealthAxis.Repositories.Impl
                 return slot;
             }
 
-            return null!;
+            return null;
         }
     }
 }

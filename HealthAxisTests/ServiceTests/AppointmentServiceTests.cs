@@ -72,30 +72,23 @@ namespace HealthAxisTests.ServiceTests
         [Fact]
         public void BookAppointment_ValidSlot_ShouldCreateAppointment()
         {
-
             var patient = CreatePatient(1);
             var doctor = CreateDoctor(1);
-            var date = DateTime.Today.AddDays(1);
+            var date = GetNextWeekday();
 
-            _repoMock.Setup(r => r.GetByPatientId(1))
-                .Returns(new List<Appointment>());
-
+            _repoMock.Setup(r => r.GetByPatientId(1)).Returns(new List<Appointment>());
             _repoMock.Setup(r => r.GetNextAvailableSlotAvoidingPatientConflicts(1, date, 1))
-                .Returns("09:00 AM");
-
+                     .Returns("09:00 AM");
             _repoMock.Setup(r => r.PatientHasAppointmentAt(1, date, "09:00 AM"))
-                .Returns(false);
-
+                     .Returns(false);
             _repoMock.Setup(r => r.AddAppointment(It.IsAny<Appointment>()))
-                .Returns((Appointment a) => a);
-
+                     .Returns((Appointment a) => a);
 
             var result = _service.BookAppointment(patient, doctor, date);
 
-
             Assert.NotNull(result);
             Assert.Equal("09:00 AM", result.Slot);
-            Assert.Equal(Appointment.AppointmentStatus.Confirmed, result.Status);
+            Assert.Equal(Appointment.AppointmentStatus.Pending, result.Status);
 
             _repoMock.Verify(r => r.AddAppointment(It.IsAny<Appointment>()), Times.Once);
         }

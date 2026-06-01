@@ -18,14 +18,19 @@ namespace HealthAxis.Services.Impl
         public HealthRecord AddRecord(HealthRecord record)
         {
             if (record == null)
-                throw new ArgumentNullException(nameof(record), "Health record cannot be null.");
+                throw new ArgumentException("Health record cannot be null.");
 
-
-            if(string.IsNullOrWhiteSpace(record.Diagnosis))
+            if (string.IsNullOrWhiteSpace(record.Diagnosis))
                 throw new ArgumentException("Diagnosis cannot be empty.");
-            //, nameof(record.Diagnosis)
 
-            return _repository.AddRecord(record);
+            var result = _repository.AddRecord(record);
+
+            if (result == null)
+            {
+                throw new InvalidOperationException("A health record already exists for this appointment.");
+            }
+
+            return result;
         }
 
         public List<HealthRecord> GetRecordsByPatient(int patientId)

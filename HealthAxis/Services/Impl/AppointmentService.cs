@@ -71,7 +71,7 @@ namespace HealthAxis.Services
                 Doctor = doctor,
                 ScheduledDate = date.Date,
                 Slot = availableSlot,
-                Status = Appointment.AppointmentStatus.Confirmed
+                Status = Appointment.AppointmentStatus.Pending
             };
             return _appointmentRepository.AddAppointment(appointment);
         }

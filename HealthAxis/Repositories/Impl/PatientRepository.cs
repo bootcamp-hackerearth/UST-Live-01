@@ -18,7 +18,6 @@ namespace HealthAxis.Repositories.Impl
         public Patient RegisterPatient(Patient patient)
         {
             _db.Patients.Add(patient);
-            Console.WriteLine("Patient registered successfully.");
             return patient;
         }
 
