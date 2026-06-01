@@ -86,6 +86,7 @@ namespace HealthAxis.Services
             }
             if (appointment.Status == Appointment.StatusOption.Completed)
             {
+                Console.WriteLine("Completed Appointment Cannot be Cancelled");
                 return false;
             }
 

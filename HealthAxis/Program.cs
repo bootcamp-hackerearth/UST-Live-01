@@ -536,13 +536,12 @@ void BookAppointment()
             if (!selectedDoctor.IsActive)
             {
                 Console.WriteLine("Selected doctor is inactive. Please choose another doctor.");
-                continue;
+                return;
             }
 
             doctor = selectedDoctor;
             break;
         }
-
         DateTime date;
 
         while (true)
