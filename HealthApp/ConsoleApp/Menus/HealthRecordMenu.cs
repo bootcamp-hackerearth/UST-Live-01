@@ -126,7 +126,7 @@ namespace HealthApp.ConsoleApp.Menus
             {
                 Console.Clear();
                 ConsoleHelper.PrintHeader("VIEW HEALTH RECORDS");
-                Console.WriteLine("  Type 'q' or 'back' to return.\n");             
+                Console.WriteLine("  Type 'q' or 'back' to return.\n");
                 Console.WriteLine("  ╔══════════════════════════════╗");
                 Console.WriteLine("  ║  1.  By Patient ID           ║");
                 Console.WriteLine("  ║  2.  By Doctor ID            ║");
@@ -290,13 +290,6 @@ namespace HealthApp.ConsoleApp.Menus
             {
                 ConsoleHelper.PrintError(ex.Message);
             }
-
-        private static void Pause()
-        {
-            Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.WriteLine("\n  Press any key to continue...");
-            Console.ResetColor();
-            Console.ReadKey(intercept: true);
         }
     }
 }

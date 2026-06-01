@@ -91,11 +91,6 @@ namespace HealthApp.ConsoleApp.Menus
                 int years = int.Parse(yearsRaw);
                 decimal fee = decimal.Parse(feeRaw);
 
-                // Collect leave dates to exclude from availability
-                List<DateTime> leaveDates = new();
-                DateTime startDate = DateTime.Today;
-                DateTime endDate = DateTime.Today.AddDays(30);
-
                 Console.WriteLine("\n  Doctor will be available for the next 30 days.");
                 Console.WriteLine("  Enter leave dates one by one. Type 'done' when finished.\n");
 
@@ -137,34 +132,34 @@ namespace HealthApp.ConsoleApp.Menus
             List<DateTime> leaveDates = new();
 
             while (true)
-                {
-                    Console.Write("  Leave Date (dd/MM/yyyy) or 'done' : ");
-                    string input = Console.ReadLine()?.Trim() ?? "";
+            {
+                Console.Write("  Leave Date (dd/MM/yyyy) or 'done' : ");
+                string input = Console.ReadLine()?.Trim() ?? "";
 
-                    if (input.Equals("q", StringComparison.OrdinalIgnoreCase) ||
-                        input.Equals("back", StringComparison.OrdinalIgnoreCase))
-                        throw new OperationCanceledException();
+                if (input.Equals("q", StringComparison.OrdinalIgnoreCase) ||
+                    input.Equals("back", StringComparison.OrdinalIgnoreCase))
+                    throw new OperationCanceledException();
 
-                    if (input.Equals("done", StringComparison.OrdinalIgnoreCase)) break;
+                if (input.Equals("done", StringComparison.OrdinalIgnoreCase)) break;
 
-                    if (!DateTime.TryParseExact(input, "dd/MM/yyyy",
-                        System.Globalization.CultureInfo.InvariantCulture,
-                        System.Globalization.DateTimeStyles.None, out DateTime leaveDate))
-                    { ConsoleHelper.PrintError("Invalid format. Use dd/MM/yyyy."); continue; }
+                if (!DateTime.TryParseExact(input, "dd/MM/yyyy",
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.None, out DateTime leaveDate))
+                { ConsoleHelper.PrintError("Invalid format. Use dd/MM/yyyy."); continue; }
 
-                    if (leaveDate < startDate || leaveDate > endDate)
-                    { ConsoleHelper.PrintError("Only dates within the next 30 days allowed."); continue; }
+                if (leaveDate < startDate || leaveDate > endDate)
+                { ConsoleHelper.PrintError("Only dates within the next 30 days allowed."); continue; }
 
-                    if (leaveDates.Contains(leaveDate))
-                    { ConsoleHelper.PrintError("Already added."); continue; }
+                if (leaveDates.Contains(leaveDate))
+                { ConsoleHelper.PrintError("Already added."); continue; }
 
-                    leaveDates.Add(leaveDate);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"     Leave added : {leaveDate:dd/MM/yyyy}");
-                    Console.ResetColor();
-                }
+                leaveDates.Add(leaveDate);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"     Leave added : {leaveDate:dd/MM/yyyy}");
+                Console.ResetColor();
+            }
 
-                return leaveDates;
+            return leaveDates;
         }
 
         public static List<DateTime> BuildAvailableDates()
@@ -175,9 +170,9 @@ namespace HealthApp.ConsoleApp.Menus
             List<DateTime> leaveDates = AcceptLeaveDates(startDate, endDate);
 
             List<DateTime> availableDates = new();
-                for (DateTime d = startDate; d <= endDate; d = d.AddDays(1))
-                    if (!leaveDates.Contains(d))
-                        availableDates.Add(d);
+            for (DateTime d = startDate; d <= endDate; d = d.AddDays(1))
+                if (!leaveDates.Contains(d))
+                    availableDates.Add(d);
 
             return availableDates;
         }
@@ -185,70 +180,43 @@ namespace HealthApp.ConsoleApp.Menus
         // Display and select time slots
         public static List<string> AcceptSlotTimes()
         {
-                SlotHelper slotHelper = new();
-                List<string> allSlots = slotHelper.AvailableSlots;
-                List<string> selectedSlots = new();
+            SlotHelper slotHelper = new();
+            List<string> allSlots = slotHelper.AvailableSlots;
+            List<string> selectedSlots = new();
 
-                while (true)
+            while (true)
+            {
+                Console.WriteLine("\n  Available Time Slots:");
+                Console.WriteLine("  " + new string('─', 30));
+                for (int i = 0; i < allSlots.Count; i++)
+                    Console.WriteLine($"    {i + 1}.  {allSlots[i]}");
+                Console.WriteLine("  " + new string('─', 30));
+
+                string slotInput = InputValidator.GetValidatedInput(
+                    "  Select slots (e.g. 1,2,3) : ",
+                    InputValidator.IsNonEmpty,
+                    "  Please select at least one slot.")!;
+
+                List<string> picked = new();
+                bool valid = true;
+
+                foreach (string c in slotInput.Split(','))
                 {
-                    Console.WriteLine("\n  Available Time Slots:");
-                    Console.WriteLine("  " + new string('─', 30));
-                    for (int i = 0; i < allSlots.Count; i++)
-                        Console.WriteLine($"    {i + 1}.  {allSlots[i]}");
-                    Console.WriteLine("  " + new string('─', 30));
+                    if (!int.TryParse(c.Trim(), out int idx) ||
+                        idx < 1 || idx > allSlots.Count)
+                    { ConsoleHelper.PrintError($"Invalid slot: {c.Trim()}"); valid = false; break; }
 
-                    string slotInput = InputValidator.GetValidatedInput(
-                        "  Select slots (e.g. 1,2,3) : ",
-                        InputValidator.IsNonEmpty,
-                        "  Please select at least one slot.")!;
-
-                    List<string> picked = new();
-                    bool valid = true;
-
-                    foreach (string c in slotInput.Split(','))
-                    {
-                        if (!int.TryParse(c.Trim(), out int idx) ||
-                            idx < 1 || idx > allSlots.Count)
-                        { ConsoleHelper.PrintError($"Invalid slot: {c.Trim()}"); valid = false; break; }
-
-                        string slot = allSlots[idx - 1];
-                        if (!picked.Contains(slot)) picked.Add(slot);
-                    }
-
-                    if (!valid || picked.Count == 0) continue;
-
-                    selectedSlots = picked;
-                    break;
+                    string slot = allSlots[idx - 1];
+                    if (!picked.Contains(slot)) picked.Add(slot);
                 }
 
-                // Build and save the doctor
-                Doctor doctor = new()
-                {
-                    Name = fullName,
-                    Specialisation = spec,
-                    YearsOfExperience = years,
-                    ConsultationFee = fee,
-                    IsActive = true,
-                    AvailableDates = availableDates,
-                    AvailableSlots = selectedSlots
-                };
+                if (!valid || picked.Count == 0) continue;
 
-                _doctorService.AddDoctor(doctor);
-
-                PrintSuccess("Doctor Added Successfully!");
-                Console.WriteLine($"\n  {doctor.GetScheduleSummary()}");
-                Console.WriteLine($"  Slots : {string.Join(", ", doctor.AvailableSlots)}");
-            }
-            catch (OperationCanceledException)
-            {
-                Console.WriteLine("\n  Returning to menu...");
-            }
-            catch (Exception ex)
-            {
-                PrintError(ex.Message);
+                selectedSlots = picked;
+                break;
             }
 
-                return selectedSlots;
+            return selectedSlots;
         }
         // Update an existing doctor's details keeping old values where not changed
         public void UpdateDoctor()
@@ -331,13 +299,6 @@ namespace HealthApp.ConsoleApp.Menus
                     updatedSlots = AcceptSlotTimes();
                 }
 
-                        if (!valid || picked.Count == 0) continue;
-
-                        updatedSlots = picked;
-                        break;
-                    }
-                }
-
                 // Build updated doctor — fall back to existing values where unchanged
                 Doctor updated = new()
                 {
@@ -417,7 +378,8 @@ namespace HealthApp.ConsoleApp.Menus
                     try
                     {
                         Console.WriteLine($"       {d.GetScheduleSummary(_appointmentService.GetAppointmentsByDoctorId(d.DoctorId))}");
-                    } catch (AppointmentNotFoundException)
+                    }
+                    catch (AppointmentNotFoundException)
                     {
                         Console.WriteLine("");
                     }
@@ -452,13 +414,6 @@ namespace HealthApp.ConsoleApp.Menus
                     "  Please enter a valid positive number.")!;
 
                 var doctor = _doctorService.GetDoctorById(int.Parse(raw));
-
-                if (doctor == null)
-                {
-                    PrintError($"No doctor found with ID {raw}.");
-                    Pause();
-                    return;
-                }
 
                 Console.WriteLine("  " + new string('─', 40));
                 Console.WriteLine($"  ID             : {doctor.DoctorId}");
@@ -509,7 +464,6 @@ namespace HealthApp.ConsoleApp.Menus
             ConsoleHelper.Pause();
         }
 
-        // Fetch and display all appointments for a specific doctor
         public void GetAppointmentsByDoctorId()
         {
             try
@@ -528,24 +482,11 @@ namespace HealthApp.ConsoleApp.Menus
 
                 // Verify doctor exists before fetching appointments
                 var doctor = _doctorService.GetDoctorById(doctorId);
-                if (doctor == null)
-                {
-                    PrintError($"No doctor found with ID {doctorId}.");
-                    Pause();
-                    return;
-                }
 
                 Console.WriteLine($"\n  Dr. {doctor.FullName}  —  {doctor.Specialisation}\n");
 
                 // Fetch all appointments for this doctor
                 var appointments = _appointmentService.GetAppointmentsByDoctorId(doctorId);
-
-                if (appointments.Count == 0)
-                {
-                    PrintError("No appointments found for this doctor.");
-                    Pause();
-                    return;
-                }
 
                 Console.WriteLine($"  {appointments.Count} appointment(s) found:\n");
 

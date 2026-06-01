@@ -107,7 +107,6 @@ namespace HealthApp.ConsoleApp.Menus
                     PhoneNumber = phone,
                     Email = email,
                     InsuranceId = insurance ?? "",
-                    CreatedAt = DateTime.Now
                 };
 
                 _patientService.RegisterPatient(patient);
@@ -137,21 +136,16 @@ namespace HealthApp.ConsoleApp.Menus
 
                 var patients = _patientService.GetAllPatients();
 
-            if (patients.Count == 0)
-            {
-                PrintError("No patients registered yet.");
-                Pause();
-                return;
-            }
-
                 foreach (var p in patients)
                 {
                     Console.WriteLine($"  {p.GetProfileSummary()}");
                     Console.WriteLine("  " + new string('─', 70));
                 }
 
-                ConsoleHelper.Pause(); 
-            } catch (PatientNotFoundException ex) {
+                ConsoleHelper.Pause();
+            }
+            catch (PatientNotFoundException ex)
+            {
                 Console.WriteLine(ex.Message);
                 ConsoleHelper.Pause();
             }
@@ -176,11 +170,6 @@ namespace HealthApp.ConsoleApp.Menus
 
                 if (patient is not null)
                 {
-                    PrintError($"No patient found with ID {raw}.");
-                    Pause();
-                    return;
-                }
-
                     Console.WriteLine($"\n  {patient.GetProfileSummary()}");
                 }
             }

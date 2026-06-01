@@ -64,12 +64,6 @@ namespace HealthApp.ConsoleApp.Menus
                     ValidPositiveNumber)!;
 
                 var patient = _patientService.GetPatientById(int.Parse(rawPatient));
-                if (patient == null)
-                {
-                    PrintError($"No patient found with ID {rawPatient}.");
-                    Pause();
-                    return;
-                }
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n     Patient : {patient.FullName}");
@@ -110,22 +104,12 @@ namespace HealthApp.ConsoleApp.Menus
                 Console.WriteLine("  " + new string('─', 30));
 
                 // Get and validate appointment date
-                DateTime selectedDate;
-                while (true)
-                {
-                    selectedDate = InputValidator.GetValidDate(
-                        "\n  Appointment Date (dd/MM/yyyy) : ");
 
-                    if (selectedDate.Date < DateTime.Today)
-                    { PrintError("Date cannot be in the past."); continue; }
-                
                 DateTime selectedDate = InputValidator.GetValidAppointmentDate(
                     "\n  Appointment Date (dd/MM/yyyy) : ",
                     doctor.AvailableDates
                 );
 
-                    break;
-                }
 
                 // Calculate which slots are still free
                 var bookedSlots = _appointmentService
@@ -150,18 +134,6 @@ namespace HealthApp.ConsoleApp.Menus
                     Console.WriteLine($"    {i + 1}.  {freeSlots[i]}");
                 Console.WriteLine("  " + new string('─', 25));
 
-                // Get and validate slot choice
-                string selectedSlot = "";
-                while (true)
-                {
-                    string rawSlot = InputValidator.GetValidatedInput(
-                        "\n  Choose slot number : ",
-                        InputValidator.IsValidId,
-                        "  Please enter a valid positive number.")!;
-
-                    int idx = int.Parse(rawSlot);
-                    if (idx < 1 || idx > freeSlots.Count)
-                    { PrintError($"Enter a number between 1 and {freeSlots.Count}."); continue; }
 
                 // Get and validate slot choice
                 string selectedSlot = GetSlot(freeSlots);
@@ -206,20 +178,20 @@ namespace HealthApp.ConsoleApp.Menus
         public static string GetSlot(List<string> freeSlots)
         {
             string selectedSlot = "";
-                while (true)
-                {
-                    string rawSlot = InputValidator.GetValidatedInput(
-                        "\n  Choose slot number : ",
-                        InputValidator.IsValidId,
-                        ValidPositiveNumber)!;
+            while (true)
+            {
+                string rawSlot = InputValidator.GetValidatedInput(
+                    "\n  Choose slot number : ",
+                    InputValidator.IsValidId,
+                    ValidPositiveNumber)!;
 
-                    int idx = int.Parse(rawSlot);
-                    if (idx < 1 || idx > freeSlots.Count)
-                    { ConsoleHelper.PrintError($"Enter a number between 1 and {freeSlots.Count}."); continue; }
+                int idx = int.Parse(rawSlot);
+                if (idx < 1 || idx > freeSlots.Count)
+                { ConsoleHelper.PrintError($"Enter a number between 1 and {freeSlots.Count}."); continue; }
 
-                    selectedSlot = freeSlots[idx - 1];
-                    break;
-                }
+                selectedSlot = freeSlots[idx - 1];
+                break;
+            }
             return selectedSlot;
         }
 
@@ -239,13 +211,6 @@ namespace HealthApp.ConsoleApp.Menus
                     ValidPositiveNumber)!;
 
                 var appointments = _appointmentService.GetAppointmentsByPatientId(int.Parse(raw));
-
-                if (appointments.Count == 0)
-                {
-                    PrintError($"No appointments found for patient ID {raw}.");
-                    Pause();
-                    return;
-                }
 
                 Console.WriteLine($"\n  {appointments.Count} appointment(s) found:\n");
 

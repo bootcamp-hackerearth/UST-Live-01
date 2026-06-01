@@ -8,31 +8,26 @@ using HealthApp;
 
 // Register all dependencies
 var services = new ServiceCollection();
-
 // Register databases as singletons
 services.AddSingleton<DoctorDb>();
 services.AddSingleton<AppointmentDb>();
 services.AddSingleton<HealthRecordDB>();
 services.AddSingleton<PatientDb>();
-
 // Register repositories as singletons for shared in-memory data access
 services.AddSingleton<IPatientRepository, PatientRepository>();
 services.AddSingleton<IDoctorRepository, DoctorRepository>();
 services.AddSingleton<IAppointmentRepository, AppointmentRepository>();
 services.AddSingleton<IHealthRecordRepository, HealthRecordRepository>();
-
 // Register services as scoped for business logic operations
 services.AddScoped<IPatientService, PatientService>();
 services.AddScoped<IDoctorService, DoctorService>();
 services.AddScoped<IAppointmentService, AppointmentService>();
 services.AddScoped<IHealthRecordService, HealthRecordService>();
-
 // Register menus as scoped for user interaction handling
 services.AddScoped<PatientMenu>();
 services.AddScoped<DoctorMenu>();
 services.AddScoped<AppointmentMenu>();
 services.AddScoped<HealthRecordMenu>();
-
 // Build the service provider and resolve the main menus
 var provider = services.BuildServiceProvider();
 var patientMenu = provider.GetRequiredService<PatientMenu>();
