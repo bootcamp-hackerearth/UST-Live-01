@@ -1007,7 +1007,7 @@ void UpdatePatient()
 
         if (!string.IsNullOrWhiteSpace(name))
         {
-            if (FullNameRegex().IsMatch(name))
+            if (!FullNameRegex().IsMatch(name))
             {
                 throw new ArgumentException("Enter a valid name.");
             }
@@ -1020,7 +1020,7 @@ void UpdatePatient()
 
         if (!string.IsNullOrWhiteSpace(phone))
         {
-            if (PhoneNumberRegex().IsMatch(phone))
+            if (!PhoneNumberRegex().IsMatch(phone))
             {
                 throw new ArgumentException("Enter a valid phone number.");
             }
@@ -1033,7 +1033,7 @@ void UpdatePatient()
 
         if (!string.IsNullOrWhiteSpace(email))
         {
-            if (EmailRegex().IsMatch(email))
+            if (!EmailRegex().IsMatch(email))
             {
                 throw new ArgumentException("Enter a valid email id.");
             }
@@ -1128,7 +1128,7 @@ void UpdateDoctor()
 
         if (!string.IsNullOrWhiteSpace(name))
         {
-            if (FullNameRegex().IsMatch(name))
+            if (!FullNameRegex().IsMatch(name))
             {
                 throw new ArgumentException("Enter a valid name.");
             }

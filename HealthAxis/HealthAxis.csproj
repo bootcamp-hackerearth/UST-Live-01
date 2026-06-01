@@ -6,7 +6,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
-		<!-- ✅ FIX 1: Mark this as MAIN (production) project -->
 		<SonarQubeTestProject>false</SonarQubeTestProject>
 	</PropertyGroup>
 

@@ -5,8 +5,6 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<IsPackable>false</IsPackable>
-
-		<!-- ✅ FIX 2: Explicitly mark this as TEST project -->
 		<SonarQubeTestProject>true</SonarQubeTestProject>
 	</PropertyGroup>
 
