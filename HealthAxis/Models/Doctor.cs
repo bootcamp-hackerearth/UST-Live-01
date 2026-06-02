@@ -5,6 +5,7 @@ using System.Text;
 
 namespace HealthAxis.Models
 {
+    [ExcludeFromCodeCoverage]
     public class Doctor
     {
         public int DoctorId { get; set; }

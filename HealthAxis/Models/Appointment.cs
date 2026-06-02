@@ -1,10 +1,11 @@
 ﻿    using HealthAxis.Services;
     using HealthAxis.Models;
     using System;
+using System.Diagnostics.CodeAnalysis;
 
-    namespace HealthAxis.Models
+namespace HealthAxis.Models
     {
-
+        [ExcludeFromCodeCoverage]
         public class Appointment
         {
             public int AppointmentId { get; set; }
