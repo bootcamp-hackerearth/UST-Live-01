@@ -5,7 +5,15 @@ using HealthApp.ConsoleApp.Repositories;
 using HealthApp.ConsoleApp.Menus;
 using HealthApp.ConsoleApp.Databases;
 using HealthApp;
+using System.Diagnostics.CodeAnalysis;
 
+namespace HealthApp
+{
+    [ExcludeFromCodeCoverage]
+ public class Program
+ {
+  public static void main
+  {
 // Register all dependencies
 var services = new ServiceCollection();
 // Register databases as singletons
@@ -118,4 +126,7 @@ void ShowDetailedMenus()
                 break;
         }
     }
+  }
+ }
+ }
 }

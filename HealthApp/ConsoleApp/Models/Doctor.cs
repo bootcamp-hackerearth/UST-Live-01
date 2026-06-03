@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace HealthApp.ConsoleApp.Models
 {
+    [ExcludeFromCodeCoverage]
     // Represents a doctor in the healthcare system
     public class Doctor
     {

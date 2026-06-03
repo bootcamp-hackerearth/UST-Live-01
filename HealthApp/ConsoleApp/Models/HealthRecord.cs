@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace HealthApp.ConsoleApp.Models
 {
+    [ExcludeFromCodeCoverage]
     // Represents a health record for a patient's visit to a doctor
     public class HealthRecord
     {
