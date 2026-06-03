@@ -11,7 +11,6 @@ namespace HealthApp.ConsoleApp.Services
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _appointmentRepo;
-
         public AppointmentService(IAppointmentRepository appointmentRepository)
         {
             _appointmentRepo = appointmentRepository;

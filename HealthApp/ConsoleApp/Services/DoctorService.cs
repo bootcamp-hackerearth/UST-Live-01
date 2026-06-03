@@ -9,7 +9,6 @@ namespace HealthApp.ConsoleApp.Services
     public class DoctorService : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepo;
-
         public DoctorService(IDoctorRepository doctorRepository)
         {
             _doctorRepo = doctorRepository;

@@ -9,7 +9,6 @@ namespace HealthApp.ConsoleApp.Repositories
     public class HealthRecordRepository : IHealthRecordRepository
     {
         private readonly HealthRecordDB _healthRecordDb;
-
         public HealthRecordRepository(HealthRecordDB healthRecordDB)
         {
             _healthRecordDb = healthRecordDB;

@@ -11,7 +11,6 @@ namespace HealthApp.ConsoleApp.Repositories
     public class DoctorRepository : IDoctorRepository
     {
         private readonly DoctorDb _doctorDb;
-
         public DoctorRepository(DoctorDb doctorDb)
         {
             _doctorDb = doctorDb;

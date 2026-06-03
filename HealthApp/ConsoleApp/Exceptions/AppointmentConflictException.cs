@@ -4,7 +4,6 @@ namespace HealthApp.ConsoleApp.Exceptions
     {
         public AppointmentConflictException(string message) : base(message)
         {
-            
         }
     }
 }

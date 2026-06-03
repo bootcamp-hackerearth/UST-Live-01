@@ -7,7 +7,6 @@ namespace HealthApp.ConsoleApp.Repositories
     public class AppointmentRepository : IAppointmentRepository
     {
         private readonly AppointmentDb _appointmentDb;
-
         public AppointmentRepository(AppointmentDb appointmentDb)
         {
             _appointmentDb = appointmentDb;
