@@ -12,8 +12,8 @@ namespace HealthApp
     [ExcludeFromCodeCoverage]
  public class Program
  {
-  public static void main
-  {
+ public static void Main(string[] args)
+ {
 // Register all dependencies
 var services = new ServiceCollection();
 // Register databases as singletons
