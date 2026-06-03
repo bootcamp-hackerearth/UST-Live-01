@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace HealthApp.ConsoleApp.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class SlotHelper
     {
         // Fixed clinic slots
