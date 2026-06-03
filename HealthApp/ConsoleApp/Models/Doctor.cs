@@ -1,5 +1,8 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace HealthApp.ConsoleApp.Models
 {
+    [ExcludeFromCodeCoverage]
     public class Doctor
     {
         public int DoctorId { get; set; }

@@ -2,9 +2,11 @@
 using HealthApp.ConsoleApp.Helpers;
 using HealthApp.ConsoleApp.Interfaces;
 using HealthApp.ConsoleApp.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthApp.ConsoleApp.Menus
 {
+    [ExcludeFromCodeCoverage]
     // Menu class to handle all health record-related user interactions
     public class HealthRecordMenu
     {

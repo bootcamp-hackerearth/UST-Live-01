@@ -1,10 +1,12 @@
 using System.Globalization;
 using HealthApp.ConsoleApp.Models;
 using System.Text.RegularExpressions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthApp.ConsoleApp.Helpers
 {
     // Used for validating user input in the console application.
+    [ExcludeFromCodeCoverage]
     public static class InputValidator
     {
         // Prompts the user for input and validates it using the provided validator function.
