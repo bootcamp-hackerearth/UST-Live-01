@@ -1,10 +1,12 @@
 ﻿using HealthAxis.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace HealthAxis.Data
 {
+    [ExcludeFromCodeCoverage]
     public class Database
     {
         public List<Patient> Patients { get; set; } = new();
@@ -71,141 +73,52 @@ namespace HealthAxis.Data
             SeedData();
         }
 
+        private Patient CreatePatient(string name, DateTime dob, Patient.Genders gender, string phone, string email, string insuranceId)
+        {
+            return new Patient
+            {
+                PatientId = GetNextPatientId(),
+                PatientName = name,
+                DateOfBirth = dob,
+                Gender = gender,
+                PhoneNumber = phone,
+                Email = email,
+                InsuranceId = insuranceId,
+                RegisteredDate = DateTime.Now
+            };
+        }
+        private Doctor CreateDoctor(string name, Doctor.Specialisations specialization, int experience, int fees)
+        {
+            return new Doctor
+            {
+                DoctorId = GetNextDoctorId(),
+                DoctorName = name,
+                Specialisation = specialization,
+                Experience = experience,
+                Fees = fees,
+                IsPractising = true
+            };
+        }
         private void SeedData()
         {
             Patients.AddRange(new List<Patient>
             {
-                new Patient
-                {
-                    PatientId = GetNextPatientId(),
-                    PatientName = "Arun Kumar",
-                    DateOfBirth = new DateTime(1992, 5, 14, 12, 24, 33, DateTimeKind.Unspecified),
-                    Gender = Patient.Genders.Male,
-                    PhoneNumber = "9876543210",
-                    Email = "arun.kumar@example.com",
-                    InsuranceId = "INS1001",
-                    RegisteredDate = DateTime.Now
-                },
-                new Patient
-                {
-                    PatientId = GetNextPatientId(),
-                    PatientName = "Meera Nair",
-                    DateOfBirth = new DateTime(1988, 9, 22, 22, 15, 30, DateTimeKind.Unspecified),
-                    Gender = Patient.Genders.Male,
-                    PhoneNumber = "9876543211",
-                    Email = "meera.nair@example.com",
-                    InsuranceId = "INS1002",
-                    RegisteredDate = DateTime.Now
-                },
-                new Patient
-                {
-                    PatientId = GetNextPatientId(),
-                    PatientName = "Rahul Menon",
-                    DateOfBirth = new DateTime(2000, 1, 10, 16, 17, 18, DateTimeKind.Unspecified),
-                    Gender = Patient.Genders.Male,
-                    PhoneNumber = "9876543212",
-                    Email = "rahul.menon@example.com",
-                    InsuranceId = "INS1003",
-                    RegisteredDate = DateTime.Now
-                },
-                new Patient
-                {
-                    PatientId = GetNextPatientId(),
-                    PatientName = "Anjali Thomas",
-                    DateOfBirth = new DateTime(1995, 12, 3, 01, 02, 03, DateTimeKind.Unspecified),
-                    Gender = Patient.Genders.Male,
-                    PhoneNumber = "9876543213",
-                    Email = "anjali.thomas@example.com",
-                    InsuranceId = "INS1004",
-                    RegisteredDate = DateTime.Now
-                },
-                new Patient
-                {
-                    PatientId = GetNextPatientId(),
-                    PatientName = "Vivek Pillai",
-                    DateOfBirth = new DateTime(1983, 7, 19, 5,6,7, DateTimeKind.Unspecified),
-                    Gender = Patient.Genders.Male,
-                    PhoneNumber = "9876543214",
-                    Email = "vivek.pillai@example.com",
-                    InsuranceId = "INS1005",
-                    RegisteredDate = DateTime.Now
-                }
+                CreatePatient("Arun Kumar",new DateTime(1992, 5, 14, 12, 24, 33, DateTimeKind.Unspecified),Patient.Genders.Male,"9876543210","arun.kumar@example.com","INS1001"),
+                CreatePatient("Meera Nair",new DateTime(1988, 9, 22, 22, 15, 30, DateTimeKind.Unspecified), Patient.Genders.Male, "9876543211","meera.nair@example.com","INS1002"),
+                CreatePatient("Rahul Menon", new DateTime(2000, 1, 10, 16, 17, 18, DateTimeKind.Unspecified),Patient.Genders.Male, "9876543212", "rahul.menon@example.com","INS1003"),
+                CreatePatient("Anjali Thomas", new DateTime(1995, 12, 3, 01, 02, 03, DateTimeKind.Unspecified),Patient.Genders.Male,"9876543213","anjali.thomas@example.com","INS1004"),
+                CreatePatient("Vivek Pillai",new DateTime(1983, 7, 19, 5, 6, 7, DateTimeKind.Unspecified),Patient.Genders.Male,"9876543214","vivek.pillai@example.com","INS1005")
             });
-
             Doctors.AddRange(new List<Doctor>
             {
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Priya Sharma",
-                    Specialisation = Doctor.Specialisations.Cardiologist,
-                    Experience = 12,
-                    Fees = 800,
-                    IsPractising = true
-                },
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Suresh Mathew",
-                    Specialisation = Doctor.Specialisations.Dermatologist,
-                    Experience = 9,
-                    Fees = 600,
-                    IsPractising = true
-                },
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Neha Iyer",
-                    Specialisation = Doctor.Specialisations.Pediatrician,
-                    Experience = 10,
-                    Fees = 700,
-                    IsPractising = true
-                },
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Thomas George",
-                    Specialisation = Doctor.Specialisations.OrthopedicSurgeon,
-                    Experience = 15,
-                    Fees = 900,
-                    IsPractising = true
-                },
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Kavitha Rao",
-                    Specialisation = Doctor.Specialisations.Neurologist,
-                    Experience = 14,
-                    Fees = 1000,
-                    IsPractising = true
-                },
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Mohammed Ali",
-                    Specialisation = Doctor.Specialisations.GeneralPractitioner,
-                    Experience = 11,
-                    Fees = 500,
-                    IsPractising = true
-                },
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Lakshmi Menon",
-                    Specialisation = Doctor.Specialisations.Endocrinologist,
-                    Experience = 8,
-                    Fees = 550,
-                    IsPractising = true
-                },
-                new Doctor
-                {
-                    DoctorId = GetNextDoctorId(),
-                    DoctorName = "Dr. Rajesh Nambiar",
-                    Specialisation = Doctor.Specialisations.Oncologist,
-                    Experience = 13,
-                    Fees = 650,
-                    IsPractising = true
-                }
+                CreateDoctor("Dr. Priya Sharma", Doctor.Specialisations.Cardiologist, 12, 800),
+                CreateDoctor("Dr. Suresh Mathew", Doctor.Specialisations.Dermatologist, 9, 600),
+                CreateDoctor("Dr. Neha Iyer", Doctor.Specialisations.Pediatrician, 10, 700),
+                CreateDoctor("Dr. Thomas George", Doctor.Specialisations.OrthopedicSurgeon, 15, 900),
+                CreateDoctor("Dr. Kavitha Rao", Doctor.Specialisations.Neurologist, 14, 1000),
+                CreateDoctor("Dr. Mohammed Ali", Doctor.Specialisations.GeneralPractitioner, 11, 500),
+                CreateDoctor("Dr. Lakshmi Menon", Doctor.Specialisations.Endocrinologist, 8, 550),
+                CreateDoctor("Dr. Rajesh Nambiar", Doctor.Specialisations.Oncologist, 13, 650)
             });
         }
     }

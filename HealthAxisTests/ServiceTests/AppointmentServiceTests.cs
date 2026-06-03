@@ -257,10 +257,54 @@ namespace HealthAxisTest.ServiceTests
         [InlineData(0)]
         [InlineData(-1)]
         [InlineData(99)]
-        public void GetAppointmentById_returnsNull_ShouldReturnNull( int id)
+        public void GetAppointmentById_returnsNull_ShouldReturnNull(int id)
         {
             var result = _service.GetAppointmentById(id);
             Assert.Null(result);
+        }
+        [Fact]
+        public void BookAppointment_PatientIsNotRegistered_ShouldThrowArgumentException()
+        {
+            var doctor = CreateDoctor(1);
+            var date = GetNextWeekday();
+            Assert.Throws<ArgumentException>(() =>
+                _service.BookAppointment(null!, doctor, date)
+            );
+        }
+        [Fact]
+        public void BookAppointment_DoctorIsNotPractising_ShouldThrowDoctorUnavailableException()
+        {
+            var patient = CreatePatient(1);
+            var doctor = CreateDoctor(1);
+            doctor.IsPractising = false;
+            var date = GetNextWeekday();
+            Assert.Throws<DoctorUnavailableException>(() =>
+                _service.BookAppointment(patient, doctor, date)
+            );
+        }
+        [Fact]
+        public void BookAppointmentOnSunday_ShouldThrowInvalidOperationException()
+        {
+            var patient = CreatePatient(1);
+            var doctor = CreateDoctor(1);
+            var nextSunday = DateTime.Today.AddDays(((int)DayOfWeek.Sunday - (int)DateTime.Today.DayOfWeek + 7) % 7);
+            Assert.Throws<DoctorUnavailableException>(() =>
+                _service.BookAppointment(patient, doctor, nextSunday)
+            );
+        }
+        [Fact]
+        public void GetAllAppointments_ShouldReturnAllAppointments()
+        {
+            var appointments = new List<Appointment>
+            {
+                new Appointment { AppointmentId = 1 },
+                new Appointment { AppointmentId = 2 }
+            };
+            _repoMock.Setup(r => r.GetAllAppointments())
+                .Returns(appointments);
+            var result = _service.GetAllAppointments();
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count);
         }
     }
 }
