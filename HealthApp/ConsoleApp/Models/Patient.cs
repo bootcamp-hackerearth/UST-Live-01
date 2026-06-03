@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace HealthApp.ConsoleApp.Models
 {
     public enum GenderType { Male, Female, Other };
-
+    [ExcludeFromCodeCoverage]
     public class Patient
     {
         public int PatientId { get; set; }

@@ -1,10 +1,12 @@
 using System;
+
 using System.Numerics;
 using System.Text;
 using HealthApp.ConsoleApp.Models;
 
 namespace HealthApp.ConsoleApp.Models
 {
+   
     public class Appointment
     {
         public int AppointmentId { get; set; }
