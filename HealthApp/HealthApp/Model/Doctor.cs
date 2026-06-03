@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace HealthApp.Model
+namespace HealthApp.Models
 {
     public enum SpecialisationType
     {
@@ -21,7 +21,7 @@ namespace HealthApp.Model
     {
         public int DoctorId { get; set; }
 
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         public SpecialisationType Specialisation { get; set; }
         public string DoctorPhoneNo { get; set; } = string.Empty;
@@ -35,25 +35,23 @@ namespace HealthApp.Model
 
         public string GetDoctorDetailsSummary()
         {
-            Console.WriteLine();
-            Console.WriteLine($"Doctor Name: {FullName}");
-            Console.WriteLine($"Doctor Specialisation: {Specialisation}");
-            Console.WriteLine($"Doctor Phone Number: {DoctorPhoneNo}");
-            Console.WriteLine($"Doctor Email: {DoctorEmail}");
-            Console.WriteLine($"Doctor Years of Experience: {YearsOfExperience}");
-            Console.WriteLine($"Doctor Consultation Fees: {ConsultationFee}");
-            Console.WriteLine();
-            return "Doctor Registered Successfully";
+            return
+                $"Doctor Id: {DoctorId}\n" +
+                $"Doctor Name: {FullName}\n" +
+                $"Doctor Specialisation: {Specialisation}\n" +
+                $"Doctor Phone Number: {DoctorPhoneNo}\n" +
+                $"Doctor Email: {DoctorEmail}\n" +
+                $"Doctor Years of Experience: {YearsOfExperience}\n" +
+                $"Doctor Consultation Fees: {ConsultationFee}\n";
         }
         public bool IsValidEmail()
         {
             string pattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
             return Regex.IsMatch(
-       DoctorEmail,
-       pattern,
-       RegexOptions.None,
-       TimeSpan.FromSeconds(1)
-   );
+                DoctorEmail,
+                pattern,
+                RegexOptions.None,
+                TimeSpan.FromSeconds(1));
         }
         public bool IsValidPhoneNumber()
         {

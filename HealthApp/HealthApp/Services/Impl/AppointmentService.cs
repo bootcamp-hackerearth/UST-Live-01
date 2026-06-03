@@ -1,6 +1,6 @@
 ﻿using HealthApp.Constant;
 using HealthApp.Exceptions;
-using HealthApp.Model;
+using HealthApp.Models;
 using HealthApp.Repository.Interface;
 using HealthApp.Service.Interface;
 using System;

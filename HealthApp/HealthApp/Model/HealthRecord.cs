@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HealthApp.Model
+namespace HealthApp.Models
 {
     public class HealthRecord
     {
