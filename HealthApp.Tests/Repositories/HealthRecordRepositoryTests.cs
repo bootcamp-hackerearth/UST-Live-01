@@ -217,5 +217,5 @@ namespace HealthApp.Tests.Repositories
             Assert.Equal("NewMed", result.Prescription);
             Assert.Equal("NewNote", result.DoctorNotes);
         }
-    }
+   }
 }

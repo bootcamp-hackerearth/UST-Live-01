@@ -10,6 +10,5 @@
 *.sln.docstates
 
 .sonarqube/
-
 *.lscache
 coverage.xml

@@ -94,5 +94,5 @@ namespace HealthApp.ConsoleApp.Databases
                 Status = AppointmentStatus.Completed
             }
         };
-    }
+   }
 }

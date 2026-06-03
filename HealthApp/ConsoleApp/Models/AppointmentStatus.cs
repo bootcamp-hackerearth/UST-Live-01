@@ -6,5 +6,5 @@ namespace HealthApp.ConsoleApp.Models
         Confirmed,
         Completed,
         Cancelled
-    }
+   }
 }
