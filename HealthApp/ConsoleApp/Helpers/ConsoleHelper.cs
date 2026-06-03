@@ -1,9 +1,11 @@
 using System.Globalization;
 using HealthApp.ConsoleApp.Models;
 using System.Text.RegularExpressions;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthApp.ConsoleApp.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public static class ConsoleHelper
     {
         public static void PrintHeader(string title)

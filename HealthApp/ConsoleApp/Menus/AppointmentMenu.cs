@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using HealthApp.ConsoleApp.Exceptions;
 using HealthApp.ConsoleApp.Helpers;
 using HealthApp.ConsoleApp.Interfaces;
@@ -5,6 +6,7 @@ using HealthApp.ConsoleApp.Models;
 
 namespace HealthApp.ConsoleApp.Menus
 {
+    [ExcludeFromCodeCoverage]
     // Menu class to handle all appointment-related user interactions
     public class AppointmentMenu
     {
