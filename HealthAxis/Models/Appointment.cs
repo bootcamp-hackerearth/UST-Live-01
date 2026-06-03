@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace HealthAxis.Models
 {
+    [ExcludeFromCodeCoverage]
     public class Appointment
     {
         public int AppointmentId { get; set; }

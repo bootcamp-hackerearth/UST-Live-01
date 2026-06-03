@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxis.Models
 {
+    [ExcludeFromCodeCoverage]
     public class HealthRecord
     {
         public int HealthRecordId { get; set; }

@@ -358,7 +358,12 @@ namespace HealthAxisTests.ServiceTests
         {
             var patient = CreatePatient(1);
             var doctor = CreateDoctor(1);
+
             var date = DateTime.Today.AddMonths(7);
+            if (date.DayOfWeek == DayOfWeek.Sunday)
+            {
+                date = date.AddDays(1);
+            }
 
             _repoMock.Setup(r => r.GetByPatientId(1)).Returns(new List<Appointment>());
             _repoMock.Setup(r => r.GetNextAvailableSlotAvoidingPatientConflicts(1, date, 1))
