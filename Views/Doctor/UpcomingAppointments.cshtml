@@ -1,0 +1,113 @@
+@model List<HealthcareMvcApp.Models.Appointment>
+@using HealthcareMvcApp.Enums
+
+@{
+    ViewBag.Title = "Doctor Upcoming Appointments";
+    int doctorId = ViewBag.DoctorId;
+}
+
+<h2 class="text-success">Upcoming Appointments</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    @Html.ActionLink("Back to Dashboard", "Dashboard", "Doctor", new { doctorId = doctorId }, new { @class = "btn btn-secondary" })
+</p>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>No upcoming appointments found.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Patient ID</th>
+                <th>Date</th>
+                <th>Slot</th>
+                <th>Status</th>
+                <th>Confirm</th>
+                <th>Cancel</th>
+                <th>Complete</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var appointment in Model)
+            {
+                <tr>
+                    <td>@appointment.AppointmentId</td>
+                    <td>@appointment.PatientId</td>
+                    <td>@appointment.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                    <td>@appointment.SlotNumber</td>
+                    <td>@appointment.Status</td>
+
+                    <td>
+                        @if (appointment.Status == AppointmentStatus.Pending)
+                        {
+                            using (Html.BeginForm("ConfirmAppointment", "Doctor", FormMethod.Post))
+                            {
+                                @Html.Hidden("appointmentId", appointment.AppointmentId)
+                                @Html.Hidden("doctorId", doctorId)
+
+                                <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">N/A</span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (appointment.Status == AppointmentStatus.Pending ||
+                             appointment.Status == AppointmentStatus.Confirmed)
+                        {
+                            using (Html.BeginForm("CancelAppointment", "Doctor", FormMethod.Post))
+                            {
+                                @Html.Hidden("appointmentId", appointment.AppointmentId)
+                                @Html.Hidden("doctorId", doctorId)
+
+                                <input type="text" name="reason" class="form-control mb-1" placeholder="Reason" />
+
+                                <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">N/A</span>
+                        }
+                    </td>
+
+                    <td>
+                        @if (appointment.Status == AppointmentStatus.Confirmed &&
+                                appointment.ScheduledDate.Date == DateTime.Today)
+                        {
+                            using (Html.BeginForm("CompleteAppointment", "Doctor", FormMethod.Post))
+                            {
+                                @Html.Hidden("appointmentId", appointment.AppointmentId)
+                                @Html.Hidden("doctorId", doctorId)
+
+                                <button type="submit" class="btn btn-primary btn-sm">Complete</button>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">N/A</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

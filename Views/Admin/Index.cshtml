@@ -1,0 +1,65 @@
+@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<h2 class="text-success">Admin Dashboard</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="dashboard-panel">
+    <h4>Administration</h4>
+
+    <div class="dashboard-actions">
+        @Html.ActionLink(
+            "Manage Patients",
+            "Patients",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+
+        @Html.ActionLink(
+            "Manage Doctors",
+            "Doctors",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+
+        @Html.ActionLink(
+            "Manage Appointments",
+            "Appointments",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+
+        @Html.ActionLink(
+            "Manage Health Records",
+            "HealthRecords",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+
+        @Html.ActionLink(
+            "Back to Home",
+            "Index",
+            "Home",
+            null,
+            new { @class = "btn btn-secondary" }
+        )
+    </div>
+</div>

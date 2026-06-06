@@ -1,0 +1,90 @@
+@model List<HealthcareMvcApp.Models.Doctor>
+@using HealthcareMvcApp.Enums
+
+@{
+    ViewBag.Title = "Search Doctors";
+    int patientId = ViewBag.PatientId;
+}
+
+<h2 class="text-success">Search Doctors by Specialisation</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+<div class="col-5">
+    @using (Html.BeginForm("SearchDoctors", "Patient", FormMethod.Post))
+    {
+        @Html.Hidden("patientId", patientId)
+
+        <div class="mb-2">
+            <label class="fw-bold">Specialisation</label>
+            @Html.DropDownList(
+                "specialisation",
+                new SelectList(Enum.GetValues(typeof(Specialisation))),
+                "Select Specialisation",
+                new { @class = "form-control border-dark" }
+            )
+        </div>
+
+        <div class="d-flex">
+            <button class="btn btn-primary me-2 w-50">Search</button>
+
+            @Html.ActionLink(
+                "Back",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary w-50" }
+            )
+        </div>
+    }
+</div>
+
+@if (Model != null)
+{
+    <h4 class="mt-4">Search Results</h4>
+
+    if (Model.Count == 0)
+    {
+        <p>No doctors found.</p>
+    }
+    else
+    {
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Doctor ID</th>
+                    <th>Name</th>
+                    <th>Specialisation</th>
+                    <th>Experience</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var doctor in Model)
+                {
+                    <tr>
+                        <td>@doctor.DoctorId</td>
+                        <td>@doctor.FullName</td>
+                        <td>@doctor.Specialisation</td>
+                        <td>@doctor.YearsOfExperience</td>
+                        <td>@doctor.ConsultationFee</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

@@ -1,0 +1,277 @@
+﻿/* Global layout reset */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Page body */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f4f7fb;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #263238;
+}
+
+/* Main page wrapper */
+.app-page {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    padding: 40px 20px;
+}
+
+/* Main white card */
+.app-card {
+    width: 100%;
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Footer */
+.app-footer {
+    background-color: #212529;
+    color: #ffffff;
+    text-align: center;
+    padding: 16px;
+    margin-top: auto;
+}
+
+    .app-footer p {
+        margin: 0;
+        color: #ffffff;
+    }
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Headings */
+h1,
+h2,
+h3,
+h4 {
+    text-align: center;
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+
+/* Paragraphs */
+p {
+    text-align: center;
+}
+
+/* Forms */
+form {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Override old MVC input width rules */
+.form-control,
+input,
+select,
+textarea {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+/* Centre common Bootstrap column wrappers used in your views */
+.col-3,
+.col-4,
+.col-5,
+.col-6,
+.col-7,
+.col-8 {
+    float: none !important;
+    width: 100% !important;
+    max-width: 650px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Wider areas for table-heavy pages */
+.table,
+.app-card table {
+    width: 100%;
+    margin-top: 20px;
+}
+
+    /* Table styling */
+    .table th {
+        background-color: #198754;
+        color: white;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+/* Prevent tables from breaking page layout */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-weight: 500;
+    min-width: 130px;
+    margin: 4px;
+}
+
+.btn-sm {
+    min-width: 80px;
+    padding: 5px 10px;
+    margin: 2px;
+}
+
+/* Bootstrap flex/grid wrappers used in views */
+.d-flex {
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.d-grid {
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Generic button/link groups */
+.button-group,
+.action-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* Dashboard button stacks */
+.dashboard-actions {
+    max-width: 450px;
+    margin: 24px auto;
+    display: grid;
+    gap: 12px;
+}
+
+    .dashboard-actions .btn {
+        width: 100%;
+    }
+
+    .dashboard-actions form {
+        width: 100%;
+    }
+
+        .dashboard-actions form .btn {
+            width: 100%;
+        }
+
+/* Alerts */
+.alert {
+    text-align: center;
+    border-radius: 8px;
+}
+
+/* Validation messages */
+.text-danger {
+    text-align: center;
+    display: block;
+}
+
+/* Read-only inputs */
+input[readonly],
+textarea[readonly] {
+    background-color: #f1f3f5;
+}
+
+/* Small screen adjustments */
+@media (max-width: 768px) {
+    .app-page {
+        padding: 20px 10px;
+    }
+
+    .app-card {
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .btn-sm {
+        width: auto;
+    }
+}
+.dashboard-panel {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.dashboard-actions {
+    width: 100%;
+    max-width: 450px;
+    margin: 28px auto 0 auto;
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+    .dashboard-actions .btn,
+    .dashboard-actions form,
+    .dashboard-actions form .btn {
+        width: 100%;
+    }
+
+    .dashboard-actions form {
+        margin: 0;
+    }
+
+.gender-options {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+    .gender-options .form-check-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }

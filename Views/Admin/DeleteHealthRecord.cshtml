@@ -1,0 +1,55 @@
+@model HealthcareMvcApp.Models.HealthRecord
+
+@{
+    ViewBag.Title = "Delete Health Record";
+}
+
+<h2 class="text-danger">Do you wish to delete this health record?</h2>
+
+<div class="col-6">
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <td>Record ID</td>
+                <td>@Model.HealthRecordId</td>
+            </tr>
+            <tr>
+                <td>Patient ID</td>
+                <td>@Model.PatientId</td>
+            </tr>
+            <tr>
+                <td>Doctor ID</td>
+                <td>@Model.DoctorId</td>
+            </tr>
+            <tr>
+                <td>Appointment ID</td>
+                <td>@Model.AppointmentId</td>
+            </tr>
+            <tr>
+                <td>Visit Date</td>
+                <td>@Model.VisitDate.ToString("yyyy-MM-dd")</td>
+            </tr>
+            <tr>
+                <td>Diagnosis</td>
+                <td>@Model.Diagnosis</td>
+            </tr>
+            <tr>
+                <td>Prescription</td>
+                <td>@Model.Prescription</td>
+            </tr>
+            <tr>
+                <td>Notes</td>
+                <td>@Model.Notes</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex">
+        @using (Html.BeginForm("DeleteHealthRecord", "Admin", new { id = Model.HealthRecordId }, FormMethod.Post))
+        {
+            <button type="submit" class="btn btn-danger me-2">Delete</button>
+        }
+
+        @Html.ActionLink("Cancel", "HealthRecords", "Admin", null, new { @class = "btn btn-secondary" })
+    </div>
+</div>

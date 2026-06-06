@@ -1,0 +1,75 @@
+@model List<HealthcareMvcApp.Models.Patient>
+
+@{
+    ViewBag.Title = "Patients";
+}
+
+<h2 class="text-success">Patients</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+<p>
+    @Html.ActionLink("Add Patient", "CreatePatient", "Admin", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Back to Admin", "Index", "Admin", null, new { @class = "btn btn-secondary" })
+</p>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>No patients found.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Patient ID</th>
+                <th>Name</th>
+                <th>Date of Birth</th>
+                <th>Age</th>
+                <th>Gender</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Insurance ID</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var patient in Model)
+            {
+                <tr>
+                    <td>@patient.PatientId</td>
+                    <td>@patient.FullName</td>
+                    <td>@patient.DateOfBirth.ToString("yyyy-MM-dd")</td>
+                    <td>@patient.GetAge()</td>
+                    <td>@patient.Gender</td>
+                    <td>@patient.PhoneNumber</td>
+                    <td>@patient.Email</td>
+                    <td>@patient.InsuranceId</td>
+                    <td>
+                        @Html.ActionLink(
+                            "Edit",
+                            "EditPatient",
+                            "Admin",
+                            new { id = patient.PatientId },
+                            new { @class = "btn btn-warning btn-sm" }
+                        )
+                    </td>
+                    <td>
+                        @Html.ActionLink(
+                            "Delete",
+                            "DeletePatient",
+                            "Admin",
+                            new { id = patient.PatientId },
+                            new { @class = "btn btn-danger btn-sm" }
+                        )
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

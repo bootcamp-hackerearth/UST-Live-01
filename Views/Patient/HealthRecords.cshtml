@@ -1,0 +1,109 @@
+@model List<HealthcareMvcApp.Models.HealthRecord>
+@using HealthcareMvcApp.Models
+
+@{
+    ViewBag.Title = "Health Records";
+    int patientId = ViewBag.PatientId;
+    List<Appointment> cancelledAppointments = ViewBag.CancelledAppointments as List<Appointment>;
+}
+
+<h2 class="text-success">My Health Records</h2>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<p>
+    @Html.ActionLink(
+        "Back to Dashboard",
+        "Dashboard",
+        "Patient",
+        new { patientId = patientId },
+        new { @class = "btn btn-secondary" }
+    )
+</p>
+
+<h4>Health Records</h4>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>No health records found.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Appointment ID</th>
+                <th>Doctor ID</th>
+                <th>Visit Date</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var record in Model)
+            {
+                <tr>
+                    <td>@record.HealthRecordId</td>
+                    <td>@record.AppointmentId</td>
+                    <td>@record.DoctorId</td>
+                    <td>@record.VisitDate.ToString("yyyy-MM-dd")</td>
+                    <td>@record.Diagnosis</td>
+                    <td>@record.Prescription</td>
+                    <td>@record.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h4>Cancelled Appointments</h4>
+
+@if (cancelledAppointments == null || cancelledAppointments.Count == 0)
+{
+    <p>No cancelled appointments found.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Doctor ID</th>
+                <th>Date</th>
+                <th>Slot</th>
+                <th>Status</th>
+                <th>Cancellation Reason</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var appointment in cancelledAppointments)
+            {
+                <tr>
+                    <td>@appointment.AppointmentId</td>
+                    <td>@appointment.DoctorId</td>
+                    <td>@appointment.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                    <td>@appointment.SlotNumber</td>
+                    <td>@appointment.Status</td>
+                    <td>@appointment.CancellationReason</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

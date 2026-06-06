@@ -1,0 +1,53 @@
+@model HealthcareMvcApp.Models.Doctor
+
+@{
+    ViewBag.Title = "Reactivate Doctor";
+}
+
+<h2 class="text-success">Do you wish to reactivate this doctor?</h2>
+
+<div class="col-5">
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <td>Doctor ID</td>
+                <td>@Model.DoctorId</td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@Model.FullName</td>
+            </tr>
+            <tr>
+                <td>Specialisation</td>
+                <td>@Model.Specialisation</td>
+            </tr>
+            <tr>
+                <td>Practice Start Date</td>
+                <td>@Model.PracticeStartDate.ToString("yyyy-MM-dd")</td>
+            </tr>
+            <tr>
+                <td>Years of Experience</td>
+                <td>@Model.YearsOfExperience</td>
+            </tr>
+            <tr>
+                <td>Consultation Fee</td>
+                <td>@Model.ConsultationFee</td>
+            </tr>
+            <tr>
+                <td>Active</td>
+                <td>@Model.IsActive</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex">
+        @using (Html.BeginForm("ReactivateDoctor", "Admin", new { id = Model.DoctorId }, FormMethod.Post))
+        {
+            <button type="submit" class="btn btn-success me-2">
+                Reactivate
+            </button>
+        }
+
+        @Html.ActionLink("Cancel", "Doctors", "Admin", null, new { @class = "btn btn-secondary" })
+    </div>
+</div>

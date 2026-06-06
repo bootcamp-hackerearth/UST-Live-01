@@ -1,0 +1,104 @@
+﻿@model HealthcareMvcApp.Models.Patient
+
+@{
+    ViewBag.Title = "Patient Dashboard";
+}
+
+<h2 class="text-success">Patient Dashboard</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="dashboard-panel">
+    <h4>Welcome, @Model.FullName</h4>
+
+    <table class="table table-striped table-bordered">
+        <tbody>
+            <tr>
+                <td>Patient ID</td>
+                <td>@Model.PatientId</td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@Model.FullName</td>
+            </tr>
+            <tr>
+                <td>Age</td>
+                <td>@Model.GetAge()</td>
+            </tr>
+            <tr>
+                <td>Gender</td>
+                <td>@Model.Gender</td>
+            </tr>
+            <tr>
+                <td>Phone</td>
+                <td>@Model.PhoneNumber</td>
+            </tr>
+            <tr>
+                <td>Email</td>
+                <td>@Model.Email</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="dashboard-actions">
+        @Html.ActionLink(
+            "View Upcoming Appointments",
+            "UpcomingAppointments",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-primary" }
+        )
+
+        @Html.ActionLink(
+            "Book Appointment",
+            "BookAppointment",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-success" }
+        )
+
+        @Html.ActionLink(
+            "Update My Information",
+            "EditProfile",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-warning" }
+        )
+
+        @Html.ActionLink(
+            "View Health Records",
+            "HealthRecords",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-info" }
+        )
+
+        @Html.ActionLink(
+            "Search Doctors",
+            "SearchDoctors",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-secondary" }
+        )
+
+        @Html.ActionLink(
+            "Logout",
+            "Index",
+            "Home",
+            null,
+            new { @class = "btn btn-dark" }
+        )
+    </div>
+</div>

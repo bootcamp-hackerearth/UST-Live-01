@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Healthcare Portal";
+}
+
+<h2 class="text-success">Healthcare Appointment Portal</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="dashboard-actions">
+    @Html.ActionLink(
+        "New Patient",
+        "Register",
+        "Patient",
+        null,
+        new { @class = "btn btn-primary" }
+    )
+
+    @Html.ActionLink(
+        "Registered Patient",
+        "Login",
+        "Patient",
+        null,
+        new { @class = "btn btn-secondary" }
+    )
+
+    @Html.ActionLink(
+        "Registered Doctor",
+        "Login",
+        "Doctor",
+        null,
+        new { @class = "btn btn-secondary" }
+    )
+
+    @Html.ActionLink(
+        "Admin",
+        "Index",
+        "Admin",
+        null,
+        new { @class = "btn btn-dark" }
+    )
+</div>
