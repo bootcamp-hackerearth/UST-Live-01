@@ -1,0 +1,162 @@
+@model IEnumerable<HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto>
+
+@{
+    ViewBag.Title = "Health Records";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+
+        @TempData["Success"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+
+        @TempData["Error"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Health Records
+        </h2>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>
+                            Record Id
+                        </th>
+
+                        <th>
+                            Patient
+                        </th>
+
+                        <th>
+                            Doctor
+                        </th>
+
+                        <th>
+                            Specialisation
+                        </th>
+
+                        <th>
+                            Visit Date
+                        </th>
+
+                        <th>
+                            Diagnosis
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+
+                            <td colspan="7"
+                                class="text-center">
+
+                                No health records found.
+
+                            </td>
+
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var record in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @record.RecordId
+                                </td>
+
+                                <td>
+                                    @record.PatientName
+                                </td>
+
+                                <td>
+                                    @record.DoctorName
+                                </td>
+
+                                <td>
+                                    @record.Specialisation
+                                </td>
+
+                                <td>
+                                    @record.VisitDate.ToString(
+                                        "dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    @record.Diagnosis
+                                </td>
+
+                                <td>
+
+                                    <a href="@Url.Action(
+                                                "Details",
+                                                "HealthRecord",
+                                                new
+                                                {
+                                                    id = record.RecordId
+                                                })"
+                                       class="btn btn-info btn-sm">
+
+                                        View
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

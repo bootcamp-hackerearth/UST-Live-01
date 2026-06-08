@@ -1,0 +1,176 @@
+@model HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto
+
+@{
+    ViewBag.Title = "Patient Details";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Patient Details
+        </h2>
+
+        <a href="@Url.Action("Index", "Patient")"
+           class="btn btn-secondary">
+
+            Back
+
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Patient Id</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.PatientId
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Full Name</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.FullName
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Date Of Birth</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.DateOfBirth.ToString(
+                        "dd-MMM-yyyy")
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Age</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.Age Years
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Gender</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.Gender
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Email</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.Email
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Phone Number</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.PhoneNumber
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>Appointment Count</strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.AppointmentCount
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    @if (Session["Role"]?.ToString() == "Admin")
+    {
+        <div class="mt-4">
+
+            <a href="@Url.Action(
+                     "Edit",
+                     "Patient",
+                     new
+                     {
+                         id = Model.PatientId
+                     })"
+               class="btn btn-warning">
+
+                Edit Patient
+
+            </a>
+
+            <a href="@Url.Action(
+                     "Deactivate",
+                     "Patient",
+                     new
+                     {
+                         id = Model.PatientId
+                     })"
+               class="btn btn-danger">
+
+                Deactivate Patient
+
+            </a>
+
+        </div>
+    }
+
+</div>

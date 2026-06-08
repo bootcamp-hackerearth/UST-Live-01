@@ -1,0 +1,254 @@
+@model HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto
+
+@{
+    ViewBag.Title = "Patient Dashboard";
+}
+
+<div class="container-fluid">
+
+    <!-- Welcome Banner -->
+
+    <div class="card border-0 shadow-sm mb-4"
+         style="background: linear-gradient(135deg,#1E3A7A,#2563EB,#4AA3D9);
+                color:white;
+                border-radius:20px;">
+
+        <div class="card-body p-5">
+
+            <h1 class="fw-bold">
+                Patient Dashboard
+            </h1>
+
+            <p class="fs-5 mb-0">
+                Welcome, @Model.FullName
+            </p>
+
+        </div>
+
+    </div>
+
+    <!-- Statistics -->
+
+    <div class="row mb-4">
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="mb-3">
+
+                        <i class="fas fa-calendar-check
+                                  fa-3x text-primary"></i>
+
+                    </div>
+
+                    <h6 class="text-muted">
+                        Total Appointments
+                    </h6>
+
+                    <h2 class="fw-bold text-primary">
+                        @Model.AppointmentCount
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="mb-3">
+
+                        <i class="fas fa-envelope
+                                  fa-3x text-success"></i>
+
+                    </div>
+
+                    <h6 class="text-muted">
+                        Email Address
+                    </h6>
+
+                    <h6 class="fw-semibold">
+                        @Model.Email
+                    </h6>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4 mb-3">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <div class="mb-3">
+
+                        <i class="fas fa-phone
+                                  fa-3x text-info"></i>
+
+                    </div>
+
+                    <h6 class="text-muted">
+                        Phone Number
+                    </h6>
+
+                    <h6 class="fw-semibold">
+                        @Model.PhoneNumber
+                    </h6>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Access -->
+
+    <div class="row">
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <i class="fas fa-calendar-plus
+                              fa-3x text-primary mb-3"></i>
+
+                    <h4 class="fw-bold">
+                        Appointments
+                    </h4>
+
+                    <p class="text-muted">
+
+                        Schedule and manage your appointments.
+
+                    </p>
+
+                    <a href="@Url.Action(
+                                "Create",
+                                "Appointment")"
+                       class="btn btn-primary w-100 mb-2">
+
+                        <i class="fas fa-plus-circle me-2"></i>
+
+                        Book Appointment
+
+                    </a>
+
+                    <a href="@Url.Action(
+                                "MyAppointments",
+                                "Appointment")"
+                       class="btn btn-outline-primary w-100">
+
+                        <i class="fas fa-list me-2"></i>
+
+                        My Appointments
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <i class="fas fa-file-medical
+                              fa-3x text-success mb-3"></i>
+
+                    <h4 class="fw-bold">
+                        Health Records
+                    </h4>
+
+                    <p class="text-muted">
+
+                        Access your complete medical history.
+
+                    </p>
+
+                    <a href="@Url.Action(
+                                "PatientHistory",
+                                "HealthRecord")"
+                       class="btn btn-success w-100">
+
+                        <i class="fas fa-notes-medical me-2"></i>
+
+                        View Health History
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4 mb-4">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <i class="fas fa-user-doctor
+                              fa-3x text-info mb-3"></i>
+
+                    <h4 class="fw-bold">
+                        Doctors Directory
+                    </h4>
+
+                    <p class="text-muted">
+
+                        Browse available doctors and specialists.
+
+                    </p>
+
+                    <a href="@Url.Action(
+                                "Index",
+                                "Doctor")"
+                       class="btn btn-info text-white w-100">
+
+                        <i class="fas fa-stethoscope me-2"></i>
+
+                        View Doctors
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    .card {
+        border-radius: 20px;
+        transition: all .3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+</style>

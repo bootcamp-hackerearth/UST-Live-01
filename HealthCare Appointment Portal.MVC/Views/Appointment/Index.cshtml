@@ -1,0 +1,159 @@
+@model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
+
+@{
+    ViewBag.Title = "Appointments";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            All Appointments
+        </h2>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>
+                            Appointment Id
+                        </th>
+
+                        <th>
+                            Patient
+                        </th>
+
+                        <th>
+                            Doctor
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Time Slot
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+
+                            <td colspan="7"
+                                class="text-center">
+
+                                No appointments found.
+
+                            </td>
+
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var appointment in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @appointment.AppointmentId
+                                </td>
+
+                                <td>
+                                    @appointment.PatientName
+                                </td>
+
+                                <td>
+                                    @appointment.DoctorName
+                                </td>
+
+                                <td>
+                                    @appointment.ScheduledDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    @appointment.TimeSlot
+                                </td>
+
+                                <td>
+
+                                    @if (appointment.Status.ToString() == "Pending")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Confirmed")
+                                    {
+                                        <span class="badge bg-success">
+                                            Confirmed
+                                        </span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Cancelled")
+                                    {
+                                        <span class="badge bg-danger">
+                                            Cancelled
+                                        </span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Completed")
+                                    {
+                                        <span class="badge bg-primary">
+                                            Completed
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    <a href="@Url.Action(
+                                                "Details",
+                                                "Appointment",
+                                                new
+                                                {
+                                                    id =
+                                                    appointment.AppointmentId
+                                                })"
+                                       class="btn btn-info btn-sm">
+
+                                        View
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

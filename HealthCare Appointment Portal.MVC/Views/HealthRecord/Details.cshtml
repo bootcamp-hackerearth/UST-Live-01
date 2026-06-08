@@ -1,0 +1,263 @@
+@model HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto
+
+@{
+    ViewBag.Title = "Health Record Details";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+
+        @TempData["Success"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+
+        @TempData["Error"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Health Record Details
+        </h2>
+
+        <a href="javascript:history.back()"
+           class="btn btn-secondary">
+
+            Back
+
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Record Id
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.RecordId
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Appointment Id
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.AppointmentId
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Patient
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.PatientName
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Doctor
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.DoctorName
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Specialisation
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.Specialisation
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Visit Date
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.VisitDate.ToString(
+                        "dd MMM yyyy")
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Diagnosis
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.Diagnosis
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Prescription
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.Prescription
+
+                </div>
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(
+                Model.Notes))
+            {
+                <hr />
+
+                <div class="row mb-3">
+
+                    <div class="col-md-3">
+
+                        <strong>
+                            Notes
+                        </strong>
+
+                    </div>
+
+                    <div class="col-md-9">
+
+                        @Model.Notes
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    @if (Session["Role"]?.ToString() == "Doctor")
+    {
+        <div class="mt-4">
+
+            <a href="@Url.Action(
+                        "Edit",
+                        "HealthRecord",
+                        new
+                        {
+                            id = Model.RecordId
+                        })"
+               class="btn btn-warning">
+
+                Edit Record
+
+            </a>
+
+        </div>
+    }
+
+</div>
