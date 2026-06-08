@@ -1,37 +1,41 @@
 using System.Web.Http;
 using Unity;
+using Unity.Lifetime;
 using Unity.WebApi;
-using HealthAxis_Web.Database;
 using HealthAxis_MVC.Repositories;
 using HealthAxis_MVC.Repositories.Impl;
 using HealthAxis_MVC.Services;
 using HealthAxis_MVC.Services.Impl;
 using AutoMapper;
 using HealthAxis_Web.App_Start;
+using HealthAxis_Web.Database;
 
-namespace HealthAxis_Web
+public static class UnityConfig
 {
-    public static class UnityConfig
+    public static void RegisterComponents()
     {
-        public static void RegisterComponents()
+        var container = new UnityContainer();
+
+        // DB Context
+        container.RegisterType<AppDBContext>(new HierarchicalLifetimeManager());
+
+        // Repository
+        container.RegisterType<IDoctorRepository, DoctorRepository>();
+
+        // Service
+        container.RegisterType<IDoctorService, DoctorServiceImpl>();
+
+        // AutoMapper
+        var mapperConfig = new MapperConfiguration(cfg =>
         {
-			var container = new UnityContainer();
-            container.RegisterType<AppDBContext>();
-            container.RegisterType<IDoctorRepository, DoctorRepository>();
-            container.RegisterType<IDoctorService, DoctorServiceImpl>();
-            var mappingConfig = new MapperConfiguration(config =>
-            {
-                config.AddProfile<MappingProfile>();
-            });
-            IMapper mapper = mappingConfig.CreateMapper();
-            container.RegisterInstance<IMapper>(mapper);
+            cfg.AddProfile<MappingProfile>();
+        });
 
-            // register all your components with the container here
-            // it is NOT necessary to register your controllers
+        IMapper mapper = mapperConfig.CreateMapper();
+        container.RegisterInstance(mapper);
 
-            // e.g. container.RegisterType<ITestService, TestService>();
-
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
-        }
+        // Set Web API resolver
+        GlobalConfiguration.Configuration.DependencyResolver =
+            new UnityDependencyResolver(container);
     }
 }

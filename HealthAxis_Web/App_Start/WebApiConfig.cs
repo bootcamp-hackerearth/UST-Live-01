@@ -1,8 +1,11 @@
-﻿using Newtonsoft.Json.Serialization;
+﻿using HealthAxis_Web.Handlers;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using System.Web.Http.Cors;
+using System.Web.Http.ExceptionHandling;
 
 namespace HealthAxis_Web
 {
@@ -14,6 +17,14 @@ namespace HealthAxis_Web
 
             // Web API routes
             config.MapHttpAttributeRoutes();
+
+            var cors = new EnableCorsAttribute(
+                      origins: "*",
+                      methods: "*",
+                      headers: "*"
+                      );
+            config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
+            config.EnableCors(cors);
             var settings = config.Formatters.JsonFormatter.SerializerSettings;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             settings.Formatting = Newtonsoft.Json.Formatting.Indented;
