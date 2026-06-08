@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System.Linq;
 using HealthCare_Appointment_Portal.DTOs.AppointmentDtos;
 using HealthCare_Appointment_Portal.DTOs.DoctorDtos;
 using HealthCare_Appointment_Portal.DTOs.HealthRecordDtos;
@@ -54,7 +55,11 @@ namespace HealthCare_Appointment_Portal.Mappings
                 .ForMember(
                     dest => dest.DoctorName,
                     opt => opt.MapFrom(
-                        src => src.Doctor.FullName));
+                        src => src.Doctor.FullName))
+               .ForMember(
+                    dest => dest.HasHealthRecord,
+                     opt => opt.MapFrom(src =>
+                    src.HealthRecords.Any()));
 
             CreateMap<CreateAppointmentDto,
                 Appointment>();

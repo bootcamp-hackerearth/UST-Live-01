@@ -9,22 +9,38 @@ using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal_MVC.Services
 {
-    public class HealthRecordApiService : IHealthRecordApiService
-
+    public class HealthRecordApiService
+        : IHealthRecordApiService
     {
         private readonly HttpClient
             _client;
 
         public HealthRecordApiService()
+            : this(
+                CreateHttpClient())
+        {
+        }
+
+        public HealthRecordApiService(
+            HttpClient client)
         {
             _client =
-                new HttpClient();
+                client ??
+                throw new ArgumentNullException(
+                    nameof(client));
+        }
 
-            _client.BaseAddress =
-                new Uri(
-                    ConfigurationManager
-                        .AppSettings[
-                            "ApiBaseUrl"]);
+        private static HttpClient
+            CreateHttpClient()
+        {
+            return new HttpClient
+            {
+                BaseAddress =
+                    new Uri(
+                        ConfigurationManager
+                            .AppSettings[
+                                "ApiBaseUrl"])
+            };
         }
 
         public async Task<
@@ -42,8 +58,7 @@ namespace HealthCare_Appointment_Portal_MVC.Services
             return await response
                 .Content
                 .ReadAsAsync<
-                    IEnumerable<
-                        HealthRecordDto>>();
+                    IEnumerable<HealthRecordDto>>();
         }
 
         public async Task<
@@ -81,8 +96,7 @@ namespace HealthCare_Appointment_Portal_MVC.Services
             return await response
                 .Content
                 .ReadAsAsync<
-                    IEnumerable<
-                        HealthRecordDto>>();
+                    IEnumerable<HealthRecordDto>>();
         }
 
         public async Task<
@@ -101,8 +115,7 @@ namespace HealthCare_Appointment_Portal_MVC.Services
             return await response
                 .Content
                 .ReadAsAsync<
-                    IEnumerable<
-                        HealthRecordDto>>();
+                    IEnumerable<HealthRecordDto>>();
         }
 
         public async Task<int>

@@ -1,5 +1,7 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
 
+@using HealthCare_Appointment_Portal.Enums
+
 @{
     ViewBag.Title = "Weekly Schedule";
 }
@@ -23,11 +25,39 @@
 
     </div>
 
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
     <div class="card shadow-sm">
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover align-middle">
 
                 <thead class="table-light">
 
@@ -53,7 +83,7 @@
                             Status
                         </th>
 
-                        <th width="250">
+                        <th width="350">
                             Actions
                         </th>
 
@@ -92,7 +122,7 @@
 
                                 <td>
                                     @appointment.ScheduledDate.ToString(
-                                    "dd MMM yyyy")
+                                        "dd MMM yyyy")
                                 </td>
 
                                 <td>
@@ -101,30 +131,20 @@
 
                                 <td>
 
-                                    @if (appointment.Status.ToString() == "Pending")
-                                    {
-                                        <span class="badge bg-warning text-dark">
-                                            Pending
-                                        </span>
+                                    @{
+                                        string badgeClass =
+                                            appointment.Status == AppointmentStatus.Pending
+                                                ? "bg-warning text-dark"
+                                                : appointment.Status == AppointmentStatus.Confirmed
+                                                    ? "bg-success"
+                                                    : appointment.Status == AppointmentStatus.Cancelled
+                                                        ? "bg-danger"
+                                                        : "bg-primary";
                                     }
-                                    else if (appointment.Status.ToString() == "Confirmed")
-                                    {
-                                        <span class="badge bg-success">
-                                            Confirmed
-                                        </span>
-                                    }
-                                    else if (appointment.Status.ToString() == "Cancelled")
-                                    {
-                                        <span class="badge bg-danger">
-                                            Cancelled
-                                        </span>
-                                    }
-                                    else if (appointment.Status.ToString() == "Completed")
-                                    {
-                                        <span class="badge bg-primary">
-                                            Completed
-                                        </span>
-                                    }
+
+                                    <span class="badge @badgeClass">
+                                        @appointment.Status
+                                    </span>
 
                                 </td>
 
@@ -136,7 +156,7 @@
                                                 new
                                                 {
                                                     id =
-                                                    appointment.AppointmentId
+                                                        appointment.AppointmentId
                                                 })"
                                        class="btn btn-info btn-sm">
 
@@ -144,7 +164,8 @@
 
                                     </a>
 
-                                    @if (appointment.Status.ToString() == "Pending")
+                                    @if (appointment.Status ==
+                                         AppointmentStatus.Pending)
                                     {
                                         using (Html.BeginForm(
                                             "Confirm",
@@ -169,14 +190,21 @@
 
                                             </button>
                                         }
+                                    }
 
+                                    @if (appointment.Status ==
+                                         AppointmentStatus.Pending
+                                         ||
+                                         appointment.Status ==
+                                         AppointmentStatus.Confirmed)
+                                    {
                                         <a href="@Url.Action(
                                                     "Cancel",
                                                     "Appointment",
                                                     new
                                                     {
                                                         id =
-                                                        appointment.AppointmentId
+                                                            appointment.AppointmentId
                                                     })"
                                            class="btn btn-danger btn-sm">
 
@@ -185,7 +213,8 @@
                                         </a>
                                     }
 
-                                    @if (appointment.Status.ToString() == "Confirmed")
+                                    @if (appointment.Status ==
+                                         AppointmentStatus.Confirmed)
                                     {
                                         using (Html.BeginForm(
                                             "Complete",
@@ -212,24 +241,36 @@
                                         }
                                     }
 
-                                    @if (appointment.Status.ToString() == "Completed")
+                                    @if (appointment.Status ==
+                                         AppointmentStatus.Completed)
                                     {
-                                        <a href="@Url.Action(
-                                                    "Create",
-                                                    "HealthRecord",
-                                                    new
-                                                    {
-                                                        appointmentId =
-                                                            appointment.AppointmentId,
+                                        if (!appointment.HasHealthRecord)
+                                        {
+                                            <a href="@Url.Action(
+                                                        "Create",
+                                                        "HealthRecord",
+                                                        new
+                                                        {
+                                                            appointmentId =
+                                                                appointment.AppointmentId,
 
-                                                        patientId =
-                                                            appointment.PatientId
-                                                    })"
-                                           class="btn btn-dark btn-sm">
+                                                            patientId =
+                                                                appointment.PatientId
+                                                        })"
+                                               class="btn btn-dark btn-sm">
 
-                                            Add Health Record
+                                                Add Health Record
 
-                                        </a>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">
+
+                                                Health Record Added
+
+                                            </span>
+                                        }
                                     }
 
                                 </td>

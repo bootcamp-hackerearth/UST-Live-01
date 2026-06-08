@@ -1,5 +1,7 @@
 @model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
 
+@using HealthCare_Appointment_Portal.Enums
+
 @{
     ViewBag.Title = "Appointment Details";
 }
@@ -20,6 +22,34 @@
         </a>
 
     </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
 
     <div class="card shadow-sm">
 
@@ -138,35 +168,47 @@
 
                 <div class="col-md-9">
 
-                    @if (Model.Status.ToString() == "Pending")
+                    @switch (Model.Status)
                     {
-                        <span class="badge bg-warning text-dark">
-                            Pending
-                        </span>
-                    }
-                    else if (Model.Status.ToString() == "Confirmed")
-                    {
-                        <span class="badge bg-success">
-                            Confirmed
-                        </span>
-                    }
-                    else if (Model.Status.ToString() == "Cancelled")
-                    {
-                        <span class="badge bg-danger">
-                            Cancelled
-                        </span>
-                    }
-                    else if (Model.Status.ToString() == "Completed")
-                    {
-                        <span class="badge bg-primary">
-                            Completed
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">
-                            @Model.Status
-                        </span>
+                        case AppointmentStatus.Pending:
+
+                            <span class="badge bg-warning text-dark">
+                                Pending
+                            </span>
+
+                            break;
+
+                        case AppointmentStatus.Confirmed:
+
+                            <span class="badge bg-success">
+                                Confirmed
+                            </span>
+
+                            break;
+
+                        case AppointmentStatus.Cancelled:
+
+                            <span class="badge bg-danger">
+                                Cancelled
+                            </span>
+
+                            break;
+
+                        case AppointmentStatus.Completed:
+
+                            <span class="badge bg-primary">
+                                Completed
+                            </span>
+
+                            break;
+
+                        default:
+
+                            <span class="badge bg-secondary">
+                                @Model.Status
+                            </span>
+
+                            break;
                     }
 
                 </div>
@@ -205,12 +247,18 @@
     {
         <div class="mt-4">
 
-            @if (Model.Status.ToString() == "Pending")
+            @if (Model.Status ==
+                 AppointmentStatus.Pending)
             {
                 using (Html.BeginForm(
                     "Confirm",
                     "Appointment",
-                    FormMethod.Post))
+                    FormMethod.Post,
+                    new
+                    {
+                        style =
+                        "display:inline;"
+                    }))
                 {
                     @Html.AntiForgeryToken()
 
@@ -225,14 +273,22 @@
 
                     </button>
                 }
+            }
 
+            @if (Model.Status ==
+                 AppointmentStatus.Pending
+                 ||
+                 Model.Status ==
+                 AppointmentStatus.Confirmed)
+            {
                 <a href="@Url.Action(
-                            "Cancel",
-                            "Appointment",
-                            new
-                            {
-                                id = Model.AppointmentId
-                            })"
+                        "Cancel",
+                        "Appointment",
+                        new
+                        {
+                            id =
+                                Model.AppointmentId
+                        })"
                    class="btn btn-danger">
 
                     Cancel Appointment
@@ -240,12 +296,18 @@
                 </a>
             }
 
-            @if (Model.Status.ToString() == "Confirmed")
+            @if (Model.Status ==
+                 AppointmentStatus.Confirmed)
             {
                 using (Html.BeginForm(
                     "Complete",
                     "Appointment",
-                    FormMethod.Post))
+                    FormMethod.Post,
+                    new
+                    {
+                        style =
+                        "display:inline;"
+                    }))
                 {
                     @Html.AntiForgeryToken()
 

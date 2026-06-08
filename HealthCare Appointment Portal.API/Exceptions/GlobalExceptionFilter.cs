@@ -21,7 +21,8 @@ namespace HealthCare_Appointment_Portal.Filters
                 || context.Exception is DoctorNotFoundException
                 || context.Exception is AppointmentNotFoundException
                 || context.Exception is HealthRecordNotFoundException
-                || context.Exception is InsuranceNotFoundException)
+                || context.Exception is InsuranceNotFoundException
+                || context.Exception is UserNotFoundException)
             {
                 statusCode =
                     HttpStatusCode.NotFound;

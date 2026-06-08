@@ -10,21 +10,35 @@ using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal_MVC.Services
 {
-    public class PatientApiService : IPatientApiService
+    public class PatientApiService
+        : IPatientApiService
     {
         private readonly HttpClient
             _client;
 
         public PatientApiService()
+            : this(CreateHttpClient())
+        {
+        }
+
+        public PatientApiService(
+            HttpClient client)
         {
             _client =
-                new HttpClient();
+                client;
+        }
 
-            _client.BaseAddress =
-                new Uri(
-                    ConfigurationManager
-                        .AppSettings[
-                            "ApiBaseUrl"]);
+        private static HttpClient
+            CreateHttpClient()
+        {
+            return new HttpClient
+            {
+                BaseAddress =
+                    new Uri(
+                        ConfigurationManager
+                            .AppSettings[
+                                "ApiBaseUrl"])
+            };
         }
 
         public async Task<
@@ -152,4 +166,3 @@ namespace HealthCare_Appointment_Portal_MVC.Services
         }
     }
 }
-

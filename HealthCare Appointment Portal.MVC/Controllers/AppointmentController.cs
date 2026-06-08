@@ -9,14 +9,14 @@ public class AppointmentController
 : Controller
 {
     private readonly IAppointmentApiService
-     _appointmentService;
+    _appointmentService;
 
     private readonly IDoctorApiService
-        _doctorService;
+    _doctorService;
 
     public AppointmentController(
-     IAppointmentApiService appointmentService,
-     IDoctorApiService doctorService)
+        IAppointmentApiService appointmentService,
+        IDoctorApiService doctorService)
     {
         _appointmentService =
             appointmentService;
@@ -138,7 +138,8 @@ public class AppointmentController
                     "DoctorId",
                     "FullName");
 
-            return View(dto);
+            return View(
+                dto);
         }
 
         try
@@ -152,11 +153,15 @@ public class AppointmentController
                     .CreateAppointmentAsync(
                         dto);
 
+            TempData["Success"] =
+                "Appointment created successfully.";
+
             return RedirectToAction(
                 "Details",
                 new
                 {
-                    id = appointmentId
+                    id =
+                        appointmentId
                 });
         }
         catch (Exception ex)
@@ -176,7 +181,8 @@ public class AppointmentController
                 "",
                 ex.Message);
 
-            return View(dto);
+            return View(
+                dto);
         }
     }
 
@@ -301,6 +307,9 @@ public class AppointmentController
                 .ConfirmAppointmentAsync(
                     id);
 
+            TempData["Success"] =
+                "Appointment confirmed successfully.";
+
             return RedirectToAction(
                 "Details",
                 new { id });
@@ -336,7 +345,8 @@ public class AppointmentController
                 ex.Message;
 
             return RedirectToAction(
-                "Index");
+                "Details",
+                new { id });
         }
     }
 
@@ -353,6 +363,9 @@ public class AppointmentController
                 .CancelAppointmentAsync(
                     id,
                     reason);
+
+            TempData["Success"] =
+                "Appointment cancelled successfully.";
 
             return RedirectToAction(
                 "Details",
@@ -391,6 +404,9 @@ public class AppointmentController
                     .GetAppointmentByIdAsync(
                         id);
 
+            TempData["Success"] =
+                "Appointment completed successfully.";
+
             return RedirectToAction(
                 "Create",
                 "HealthRecord",
@@ -413,5 +429,4 @@ public class AppointmentController
                 new { id });
         }
     }
-
 }

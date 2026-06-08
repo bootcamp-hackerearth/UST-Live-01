@@ -1,0 +1,325 @@
+@model HealthCare_Appointment_Portal.DTOs.PatientDtos.CreatePatientDto
+
+@{
+    ViewBag.Title = "Patient Registration";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1" />
+
+    <title>
+        HealthAxis Health - Patient Registration
+    </title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          rel="stylesheet" />
+
+    <style>
+
+        :root {
+            --primary-dark: #1E3A7A;
+            --primary-blue: #2563EB;
+            --primary-light: #4AA3D9;
+        }
+
+        body {
+            background: linear-gradient( 135deg, var(--primary-dark), var(--primary-blue), var(--primary-light));
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .register-card {
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,.15);
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 2.5rem;
+        }
+
+        .logo-image {
+            max-height: 100px;
+            width: auto;
+        }
+
+        .portal-title {
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .form-control,
+        .form-select {
+            height: 55px;
+            border-radius: 12px;
+        }
+
+            .form-control:focus,
+            .form-select:focus {
+                border-color: var(--primary-blue);
+                box-shadow: 0 0 0 .2rem rgba(37,99,235,.15);
+            }
+
+        .btn-register {
+            background-color: var(--primary-dark);
+            border-color: var(--primary-dark);
+            height: 55px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+            .btn-register:hover {
+                background-color: #163172;
+                border-color: #163172;
+            }
+
+        .validation-summary-valid {
+            display: none;
+        }
+
+        .validation-summary-errors ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .alert {
+            border-radius: 12px;
+        }
+
+        @@media (max-width: 768px) {
+
+            .card-body {
+                padding: 2rem;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="row justify-content-center align-items-center min-vh-100 py-4">
+
+            <div class="col-md-8 col-lg-7">
+
+                <div class="card register-card">
+
+                    <div class="card-body">
+
+                        <div class="text-center mb-4">
+
+                            <img src="@Url.Content("~/Content/Images/healthaxis-logo.png")"
+                                 alt="HealthAxis Health"
+                                 class="img-fluid logo-image mb-3" />
+
+                            <h2 class="portal-title">
+                                Patient Registration
+                            </h2>
+
+                            <p class="text-muted">
+                                Create your patient account
+                            </p>
+
+                        </div>
+
+                        @using (Html.BeginForm(
+                            "Register",
+                            "User",
+                            FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            if (!ViewData.ModelState.IsValid)
+                            {
+                                @Html.ValidationSummary(
+                                    false,
+                                    "",
+                                    new
+                                    {
+                                        @class = "alert alert-danger mb-4"
+                                    })
+                            }
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Full Name
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.FullName,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = "Enter Full Name"
+                                    })
+
+                                @Html.ValidationMessageFor(
+                                    m => m.FullName,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger"
+                                    })
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Date Of Birth
+                                </label>
+
+                                <input type="date"
+                                       id="DateOfBirth"
+                                       name="DateOfBirth"
+                                       class="form-control"
+                                       max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+
+                                @Html.ValidationMessageFor(
+                                    m => m.DateOfBirth,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger"
+                                    })
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Gender
+                                </label>
+
+                                @Html.EnumDropDownListFor(
+                                    m => m.Gender,
+                                    "-- Select Gender --",
+                                    new
+                                    {
+                                        @class = "form-select"
+                                    })
+
+                                @Html.ValidationMessageFor(
+                                    m => m.Gender,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger"
+                                    })
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label class="form-label">
+                                    Phone Number
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.PhoneNumber,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = "Enter Phone Number"
+                                    })
+
+                                @Html.ValidationMessageFor(
+                                    m => m.PhoneNumber,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger"
+                                    })
+
+                            </div>
+
+                            <div class="mb-4">
+
+                                <label class="form-label">
+                                    Email Address
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.Email,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        placeholder = "Enter Email Address"
+                                    })
+
+                                @Html.ValidationMessageFor(
+                                    m => m.Email,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger"
+                                    })
+
+                            </div>
+
+                            <button type="submit"
+                                    class="btn btn-register text-white w-100">
+
+                                <i class="fa-solid fa-user-plus me-2"></i>
+
+                                Register
+
+                            </button>
+                        }
+
+                        <div class="text-center mt-4">
+
+                            <a href="@Url.Action(
+                                "Login",
+                                "User")"
+                               class="text-decoration-none">
+
+                                <i class="fa-solid fa-arrow-left me-1"></i>
+
+                                Back To Login
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

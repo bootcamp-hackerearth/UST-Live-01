@@ -1,5 +1,6 @@
 using System.Web.Mvc;
 using Unity;
+using Unity.Injection;
 using Unity.Mvc5;
 using HealthCare_Appointment_Portal_MVC.Services;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
@@ -13,27 +14,30 @@ namespace HealthCare_Appointment_Portal
             var container =
                 new UnityContainer();
 
-            // API Services
-
             container.RegisterType<
                 IAppointmentApiService,
-                AppointmentApiService>();
+                AppointmentApiService>(
+                    new InjectionConstructor());
 
             container.RegisterType<
                 IDoctorApiService,
-                DoctorApiService>();
+                DoctorApiService>(
+                    new InjectionConstructor());
 
             container.RegisterType<
                 IPatientApiService,
-                PatientApiService>();
+                PatientApiService>(
+                    new InjectionConstructor());
 
             container.RegisterType<
                 IHealthRecordApiService,
-                HealthRecordApiService>();
+                HealthRecordApiService>(
+                    new InjectionConstructor());
 
             container.RegisterType<
                 IUserApiService,
-                UserApiService>();
+                UserApiService>(
+                    new InjectionConstructor());
 
             DependencyResolver.SetResolver(
                 new UnityDependencyResolver(

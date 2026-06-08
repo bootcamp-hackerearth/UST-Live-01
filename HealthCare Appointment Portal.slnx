@@ -1,5 +1,10 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
   <Project Path="HealthCare Appointment Portal.API/HealthCare Appointment Portal.API.csproj" Id="1ae64edb-29dd-4394-a5be-ddccbc850aad" />
   <Project Path="HealthCare Appointment Portal.MVC/HealthCare Appointment Portal.MVC.csproj" Id="e979a388-aea2-4559-afa8-90ee0c42f1cc" />
   <Project Path="HealthCare Appointment Portal.Shared/HealthCare Appointment Portal.Shared.csproj" Id="65780306-a49f-4f0d-b63d-c814d73b7fee" />
+  <Project Path="HealthCare Appointment Portal.Tests/HealthCare Appointment Portal.Tests.csproj" Id="6ecb5c30-73d1-4ef1-a0ad-14de1ae8ea5c" />
+  <Project Path="HealthCare_Appointment_Portal_MVC.Tests/HealthCare_Appointment_Portal_MVC.Tests.csproj" Id="578b1331-d912-4c3f-b967-88f503fa8da6" />
 </Solution>

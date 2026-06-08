@@ -32,19 +32,21 @@
             --primary-dark: #1E3A7A;
             --primary-blue: #2563EB;
             --primary-light: #4AA3D9;
-            --background-color: #F3F4F6;
         }
 
         body {
-            background: linear-gradient( 135deg, var(--primary-dark), var(--primary-blue), var(--primary-light) );
+            background: linear-gradient( 135deg, var(--primary-dark), var(--primary-blue), var(--primary-light));
             min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
         }
 
         .login-card {
             border: none;
-            border-radius: 20px;
-            box-shadow: 0 12px 35px rgba(0,0,0,.18);
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,.15);
             overflow: hidden;
+            background: white;
         }
 
         .card-body {
@@ -56,9 +58,31 @@
             width: auto;
         }
 
+        .portal-title {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .form-control {
+            height: 55px;
+            border-radius: 12px;
+        }
+
+            .form-control:focus {
+                border-color: var(--primary-blue);
+                box-shadow: 0 0 0 .2rem rgba(37,99,235,.15);
+            }
+
         .btn-login {
             background-color: var(--primary-dark);
             border-color: var(--primary-dark);
+            height: 55px;
+            border-radius: 12px;
             font-weight: 600;
         }
 
@@ -71,6 +95,11 @@
             border: 2px solid var(--primary-light);
             color: var(--primary-light);
             font-weight: 600;
+            height: 55px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
             .btn-register:hover {
@@ -78,18 +107,28 @@
                 color: white;
             }
 
-        .form-control {
-            border-radius: 10px;
+        .validation-summary-valid {
+            display: none;
         }
 
-            .form-control:focus {
-                box-shadow: 0 0 0 .2rem rgba(37,99,235,.15);
-                border-color: var(--primary-blue);
+        .validation-summary-errors ul {
+            margin-bottom: 0;
+            padding-left: 20px;
+        }
+
+        .alert {
+            border-radius: 12px;
+        }
+
+        @@media (max-width: 768px) {
+
+            .card-body {
+                padding: 2rem;
             }
 
-        .portal-title {
-            color: var(--primary-dark);
-            font-weight: 700;
+            .portal-title {
+                font-size: 1.75rem;
+            }
         }
     </style>
 
@@ -99,9 +138,9 @@
 
     <div class="container">
 
-        <div class="row justify-content-center align-items-center vh-100">
+        <div class="row justify-content-center align-items-center min-vh-100 py-4">
 
-            <div class="col-md-6 col-lg-5">
+            <div class="col-md-8 col-lg-5">
 
                 <div class="card login-card">
 
@@ -113,19 +152,33 @@
                                  alt="HealthAxis Health"
                                  class="img-fluid logo-image mb-3" />
 
-                            <h3 class="portal-title">
-
+                            <h2 class="portal-title">
                                 HealthAxis Health
+                            </h2>
 
-                            </h3>
-
-                            <p class="text-muted">
-
+                            <p class="text-muted fs-5">
                                 Login using your User Code
-
                             </p>
 
                         </div>
+
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success alert-dismissible fade show mb-4"
+                                 role="alert">
+
+                                <i class="fa-solid fa-circle-check me-2"></i>
+
+                                @TempData["SuccessMessage"]
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="alert"
+                                        aria-label="Close">
+                                </button>
+
+                            </div>
+                        }
 
                         @using (Html.BeginForm(
                             "Login",
@@ -134,20 +187,21 @@
                         {
                             @Html.AntiForgeryToken()
 
-                            @Html.ValidationSummary(
-                                true,
-                                "",
-                                new
-                                {
-                                    @class = "alert alert-danger"
-                                })
+                            if (!ViewData.ModelState.IsValid)
+                            {
+                                @Html.ValidationSummary(
+                                    false,
+                                    "",
+                                    new
+                                    {
+                                        @class = "alert alert-danger mb-4"
+                                    })
+                            }
 
-                            <div class="mb-3">
+                            <div class="mb-4">
 
                                 <label class="form-label">
-
                                     User Code
-
                                 </label>
 
                                 @Html.TextBoxFor(
@@ -169,12 +223,7 @@
                                     })
 
                                 <small class="text-muted">
-
-                                    Examples:
-                                    A1001,
-                                    D1001,
-                                    P1001
-
+                                    Examples: A1001, D1001, P1001
                                 </small>
 
                             </div>
@@ -194,14 +243,12 @@
                             <hr />
 
                             <p class="text-muted mb-3">
-
                                 New Patient?
-
                             </p>
 
                             <a href="@Url.Action(
-                                        "Register",
-                                        "User")"
+                                "Register",
+                                "User")"
                                class="btn btn-register w-100">
 
                                 <i class="fa-solid fa-user-plus me-2"></i>
@@ -227,6 +274,8 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@4.0.0/dist/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

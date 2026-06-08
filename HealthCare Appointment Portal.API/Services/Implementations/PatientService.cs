@@ -4,7 +4,6 @@ using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
-using HealthCare_Appointment_Portal.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -7,6 +7,7 @@ using HealthCare_Appointment_Portal.Models;
 using HealthCare_Appointment_Portal.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Services
@@ -356,8 +357,8 @@ namespace HealthCare_Appointment_Portal.Services
         }
 
         public async Task<IEnumerable<AppointmentDto>>
-            GetAppointmentsByDoctorAsync(
-                int doctorId)
+     GetAppointmentsByDoctorAsync(
+         int doctorId)
         {
             var appointments =
                 await _unitOfWork
@@ -365,14 +366,28 @@ namespace HealthCare_Appointment_Portal.Services
                     .GetAppointmentsByDoctorAsync(
                         doctorId);
 
-            return _mapper.Map<
-                IEnumerable<AppointmentDto>>(
+            var recordedAppointmentIds =
+                await _unitOfWork
+                    .HealthRecords
+                    .GetRecordedAppointmentIdsAsync();
+
+            var appointmentDtos =
+                _mapper.Map<List<AppointmentDto>>(
                     appointments);
+
+            foreach (var appointment in appointmentDtos)
+            {
+                appointment.HasHealthRecord =
+                    recordedAppointmentIds.Contains(
+                        appointment.AppointmentId);
+            }
+
+            return appointmentDtos;
         }
 
         public async Task<IEnumerable<AppointmentDto>>
-            GetTodayScheduleAsync(
-                int doctorId)
+     GetTodayScheduleAsync(
+         int doctorId)
         {
             var appointments =
                 await _unitOfWork
@@ -380,14 +395,28 @@ namespace HealthCare_Appointment_Portal.Services
                     .GetTodayScheduleAsync(
                         doctorId);
 
-            return _mapper.Map<
-                IEnumerable<AppointmentDto>>(
+            var recordedAppointmentIds =
+                await _unitOfWork
+                    .HealthRecords
+                    .GetRecordedAppointmentIdsAsync();
+
+            var appointmentDtos =
+                _mapper.Map<List<AppointmentDto>>(
                     appointments);
+
+            foreach (var appointment in appointmentDtos)
+            {
+                appointment.HasHealthRecord =
+                    recordedAppointmentIds.Contains(
+                        appointment.AppointmentId);
+            }
+
+            return appointmentDtos;
         }
 
         public async Task<IEnumerable<AppointmentDto>>
-            GetWeeklyScheduleAsync(
-                int doctorId)
+     GetWeeklyScheduleAsync(
+         int doctorId)
         {
             var appointments =
                 await _unitOfWork
@@ -395,9 +424,23 @@ namespace HealthCare_Appointment_Portal.Services
                     .GetWeeklyScheduleAsync(
                         doctorId);
 
-            return _mapper.Map<
-                IEnumerable<AppointmentDto>>(
+            var recordedAppointmentIds =
+                await _unitOfWork
+                    .HealthRecords
+                    .GetRecordedAppointmentIdsAsync();
+
+            var appointmentDtos =
+                _mapper.Map<List<AppointmentDto>>(
                     appointments);
+
+            foreach (var appointment in appointmentDtos)
+            {
+                appointment.HasHealthRecord =
+                    recordedAppointmentIds.Contains(
+                        appointment.AppointmentId);
+            }
+
+            return appointmentDtos;
         }
 
         public async Task<AppointmentDto>
