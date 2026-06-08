@@ -1,0 +1,198 @@
+@model IEnumerable<HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto>
+
+@{
+    ViewBag.Title = "Patients";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Patient Management
+        </h2>
+
+        @if (Session["Role"]?.ToString() == "Admin")
+        {
+            <a href="@Url.Action("Create","Patient")"
+               class="btn btn-primary">
+
+                Add Patient
+
+            </a>
+        }
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-4">
+
+                    @using (Html.BeginForm(
+                        "Index",
+                        "Patient",
+                        FormMethod.Get))
+                    {
+                        <div class="input-group">
+
+                            <select name="status"
+                                    class="form-select">
+
+                                <option value="">
+                                    All Insurance Status
+                                </option>
+
+                                @foreach (var status in Enum.GetValues(
+                                    typeof(HealthCare_Appointment_Portal.Enums.InsuranceStatus)))
+                                {
+                                    <option value="@status">
+                                        @status
+                                    </option>
+                                }
+
+                            </select>
+
+                            <button type="submit"
+                                    class="btn btn-outline-primary">
+
+                                Filter
+
+                            </button>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th>
+                            Patient Id
+                        </th>
+
+                        <th>
+                            Full Name
+                        </th>
+
+                        <th>
+                            Gender
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Phone Number
+                        </th>
+
+                        <th>
+                            Appointments
+                        </th>
+
+                        <th width="250">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var patient in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @patient.PatientId
+                            </td>
+
+                            <td>
+                                @patient.FullName
+                            </td>
+
+                            <td>
+                                @patient.Gender
+                            </td>
+
+                            <td>
+                                @patient.Email
+                            </td>
+
+                            <td>
+                                @patient.PhoneNumber
+                            </td>
+
+                            <td>
+                                @patient.AppointmentCount
+                            </td>
+
+                            <td>
+
+                                <a href="@Url.Action(
+                                         "Details",
+                                         "Patient",
+                                         new
+                                         {
+                                             id = patient.PatientId
+                                         })"
+                                   class="btn btn-sm btn-info">
+
+                                    View
+
+                                </a>
+
+                                @if (Session["Role"]?.ToString() == "Admin")
+                                {
+                                    <a href="@Url.Action(
+                                             "Edit",
+                                             "Patient",
+                                             new
+                                             {
+                                                 id = patient.PatientId
+                                             })"
+                                       class="btn btn-sm btn-warning">
+
+                                        Edit
+
+                                    </a>
+
+                                    <a href="@Url.Action(
+                                             "Deactivate",
+                                             "Patient",
+                                             new
+                                             {
+                                                 id = patient.PatientId
+                                             })"
+                                       class="btn btn-sm btn-danger">
+
+                                        Deactivate
+
+                                    </a>
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

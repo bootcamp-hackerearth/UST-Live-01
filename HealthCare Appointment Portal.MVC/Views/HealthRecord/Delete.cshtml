@@ -1,0 +1,191 @@
+@model HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto
+
+@{
+    ViewBag.Title = "Delete Health Record";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+
+        @TempData["Success"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+
+        @TempData["Error"]
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+}
+
+<div class="container-fluid">
+
+    <div class="row mb-4">
+
+        <div class="col">
+
+            <h2 class="text-danger">
+                Delete Health Record
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div class="card border-danger shadow-sm">
+
+        <div class="card-body">
+
+            <div class="alert alert-danger">
+
+                <strong>
+                    Warning!
+                </strong>
+
+                This action cannot be undone.
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Record Id
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.RecordId
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Patient
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.PatientName
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Doctor
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.DoctorName
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Visit Date
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.VisitDate.ToString(
+                        "dd MMM yyyy")
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-4">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Diagnosis
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.Diagnosis
+
+                </div>
+
+            </div>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="btn btn-danger">
+
+                    Delete Record
+
+                </button>
+
+                <a href="@Url.Action(
+                            "Details",
+                            "HealthRecord",
+                            new
+                            {
+                                id = Model.RecordId
+                            })"
+                   class="btn btn-secondary">
+
+                    Cancel
+
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+</div>

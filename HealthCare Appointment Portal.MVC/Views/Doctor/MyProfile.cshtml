@@ -1,0 +1,187 @@
+@model HealthCare_Appointment_Portal.DTOs.DoctorDtos.DoctorDto
+
+@{
+    ViewBag.Title = "My Profile";
+}
+
+<div class="container-fluid">
+
+    <div class="row mb-4">
+
+        <div class="col">
+
+            <h2>
+                My Profile
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>
+                        Doctor Id
+                    </strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.DoctorId
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>
+                        Full Name
+                    </strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.FullName
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>
+                        Specialisation
+                    </strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.Specialisation
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>
+                        Years Of Experience
+                    </strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.YearsOfExperience Years
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>
+                        Consultation Fee
+                    </strong>
+                </div>
+
+                <div class="col-md-9">
+                    Rs. @Model.ConsultationFee
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>
+                        Status
+                    </strong>
+                </div>
+
+                <div class="col-md-9">
+
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Inactive
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+                    <strong>
+                        Upcoming Appointments
+                    </strong>
+                </div>
+
+                <div class="col-md-9">
+                    @Model.UpcomingAppointmentCount
+                </div>
+
+            </div>
+
+            <div class="mt-4">
+
+                <a href="@Url.Action(
+                            "EditMyProfile",
+                            "Doctor")"
+                   class="btn btn-primary">
+
+                    Edit Profile
+
+                </a>
+
+                <a href="@Url.Action(
+                            "ToggleStatus",
+                            "Doctor",
+                            new
+                            {
+                                id = Model.DoctorId
+                            })"
+                   class="btn btn-warning">
+
+                    Toggle Status
+
+                </a>
+
+                <a href="@Url.Action(
+                            "Dashboard",
+                            "Doctor")"
+                   class="btn btn-secondary">
+
+                    Back
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

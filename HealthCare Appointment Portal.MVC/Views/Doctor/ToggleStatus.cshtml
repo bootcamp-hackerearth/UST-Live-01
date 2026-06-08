@@ -1,0 +1,170 @@
+@model HealthCare_Appointment_Portal.DTOs.DoctorDtos.DoctorDto
+
+@{
+    ViewBag.Title = "Toggle Doctor Status";
+}
+
+<div class="container-fluid">
+
+    <div class="row mb-4">
+
+        <div class="col">
+
+            <h2>
+                Change Availability Status
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Doctor Id
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.DoctorId
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Full Name
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.FullName
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Specialisation
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.Specialisation
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-4">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Current Status
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Inactive
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="alert alert-warning">
+
+                @if (Model.IsActive)
+                {
+                    <text>
+                        You are about to mark yourself as
+                        <strong>Inactive</strong>.
+                        Patients will not be able to book new appointments.
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        You are about to mark yourself as
+                        <strong>Active</strong>.
+                        Patients can book appointments again.
+                    </text>
+                }
+
+            </div>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(
+                    true,
+                    "",
+                    new
+                    {
+                        @class = "text-danger"
+                    })
+
+                <button type="submit"
+                        class="btn btn-warning">
+
+                    @(Model.IsActive
+                        ? "Deactivate Account"
+                        : "Activate Account")
+
+                </button>
+
+                <a href="@Url.Action(
+                            "MyProfile",
+                            "Doctor")"
+                   class="btn btn-secondary">
+
+                    Cancel
+
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+</div>

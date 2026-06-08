@@ -1,0 +1,267 @@
+@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
+
+@{
+    ViewBag.Title = "Appointment Details";
+}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2>
+            Appointment Details
+        </h2>
+
+        <a href="javascript:history.back()"
+           class="btn btn-secondary">
+
+            Back
+
+        </a>
+
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Appointment Id
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.AppointmentId
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Patient
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.PatientName
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Doctor
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.DoctorName
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Appointment Date
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.ScheduledDate.ToString(
+                        "dd MMM yyyy")
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Time Slot
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.TimeSlot
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Status
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @if (Model.Status.ToString() == "Pending")
+                    {
+                        <span class="badge bg-warning text-dark">
+                            Pending
+                        </span>
+                    }
+                    else if (Model.Status.ToString() == "Confirmed")
+                    {
+                        <span class="badge bg-success">
+                            Confirmed
+                        </span>
+                    }
+                    else if (Model.Status.ToString() == "Cancelled")
+                    {
+                        <span class="badge bg-danger">
+                            Cancelled
+                        </span>
+                    }
+                    else if (Model.Status.ToString() == "Completed")
+                    {
+                        <span class="badge bg-primary">
+                            Completed
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">
+                            @Model.Status
+                        </span>
+                    }
+
+                </div>
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(
+                Model.CancellationReason))
+            {
+                <hr />
+
+                <div class="row mb-3">
+
+                    <div class="col-md-3">
+
+                        <strong>
+                            Cancellation Reason
+                        </strong>
+
+                    </div>
+
+                    <div class="col-md-9 text-danger">
+
+                        @Model.CancellationReason
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    @if (Session["Role"]?.ToString() == "Doctor")
+    {
+        <div class="mt-4">
+
+            @if (Model.Status.ToString() == "Pending")
+            {
+                using (Html.BeginForm(
+                    "Confirm",
+                    "Appointment",
+                    FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.AppointmentId" />
+
+                    <button type="submit"
+                            class="btn btn-success">
+
+                        Confirm Appointment
+
+                    </button>
+                }
+
+                <a href="@Url.Action(
+                            "Cancel",
+                            "Appointment",
+                            new
+                            {
+                                id = Model.AppointmentId
+                            })"
+                   class="btn btn-danger">
+
+                    Cancel Appointment
+
+                </a>
+            }
+
+            @if (Model.Status.ToString() == "Confirmed")
+            {
+                using (Html.BeginForm(
+                    "Complete",
+                    "Appointment",
+                    FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.AppointmentId" />
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        Mark As Completed
+
+                    </button>
+                }
+            }
+        </div>
+    }
+
+</div>
