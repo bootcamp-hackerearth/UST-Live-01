@@ -1,4 +1,3 @@
 <Solution>
-  <Project Path="../HealthcareApi/HealthcareApi.csproj" Id="426e5d61-18cc-44de-a421-c3a2bf6ac56c" />
   <Project Path="HealthcareMvcApp.csproj" Id="89c254ff-818c-4273-81e5-9e6047da04e4" />
 </Solution>
