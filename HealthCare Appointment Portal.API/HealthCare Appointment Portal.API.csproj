@@ -307,29 +307,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Mappings\MappingProfile.cs" />
-    <Compile Include="Migrations\202606041004362_InitialCreate.cs" />
-    <Compile Include="Migrations\202606041004362_InitialCreate.Designer.cs">
-      <DependentUpon>202606041004362_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202606050647153_AddUserCodeToUser.cs" />
-    <Compile Include="Migrations\202606050647153_AddUserCodeToUser.Designer.cs">
-      <DependentUpon>202606050647153_AddUserCodeToUser.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202606050655421_PasswordChanges.cs" />
-    <Compile Include="Migrations\202606050655421_PasswordChanges.Designer.cs">
-      <DependentUpon>202606050655421_PasswordChanges.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202606050703042_SyncUserTable.cs" />
-    <Compile Include="Migrations\202606050703042_SyncUserTable.Designer.cs">
-      <DependentUpon>202606050703042_SyncUserTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202606050725047_SyncUserTable1.cs" />
-    <Compile Include="Migrations\202606050725047_SyncUserTable1.Designer.cs">
-      <DependentUpon>202606050725047_SyncUserTable1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202606050730116_SyncUserTable2.cs" />
-    <Compile Include="Migrations\202606050730116_SyncUserTable2.Designer.cs">
-      <DependentUpon>202606050730116_SyncUserTable2.cs</DependentUpon>
+    <Compile Include="Migrations\202606081558305_InitialCreate.cs" />
+    <Compile Include="Migrations\202606081558305_InitialCreate.Designer.cs">
+      <DependentUpon>202606081558305_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Repositories\Interfaces\IAppointmentRepository.cs" />
@@ -433,24 +413,10 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202606041004362_InitialCreate.resx">
-      <DependentUpon>202606041004362_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202606050647153_AddUserCodeToUser.resx">
-      <DependentUpon>202606050647153_AddUserCodeToUser.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202606050655421_PasswordChanges.resx">
-      <DependentUpon>202606050655421_PasswordChanges.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202606050703042_SyncUserTable.resx">
-      <DependentUpon>202606050703042_SyncUserTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202606050725047_SyncUserTable1.resx">
-      <DependentUpon>202606050725047_SyncUserTable1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202606050730116_SyncUserTable2.resx">
-      <DependentUpon>202606050730116_SyncUserTable2.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="..\HealthCare Appointment Portal.Shared\HealthCare Appointment Portal.Shared.csproj">
+      <Project>{65780306-a49f-4f0d-b63d-c814d73b7fee}</Project>
+      <Name>HealthCare Appointment Portal.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -480,10 +446,9 @@
     <Content Include="Scripts\jquery-3.7.0.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HealthCare Appointment Portal.Shared\HealthCare Appointment Portal.Shared.csproj">
-      <Project>{65780306-a49f-4f0d-b63d-c814d73b7fee}</Project>
-      <Name>HealthCare Appointment Portal.Shared</Name>
-    </ProjectReference>
+    <EmbeddedResource Include="Migrations\202606081558305_InitialCreate.resx">
+      <DependentUpon>202606081558305_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

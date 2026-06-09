@@ -48,10 +48,12 @@ namespace HealthCare_Appointment_Portal.Data
         }
 
         protected override void OnModelCreating(
-            DbModelBuilder modelBuilder)
+        DbModelBuilder modelBuilder)
         {
-            base.OnModelCreating(
-                modelBuilder);
+            modelBuilder.Conventions.Remove<
+                System.Data.Entity.ModelConfiguration.Conventions.OneToManyCascadeDeleteConvention>();
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
