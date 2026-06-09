@@ -1,0 +1,46 @@
+﻿@model List<HealthAxis.Shared.Dtos.DoctorDto>
+
+<h2 class="text-primary">Doctor Details</h2>
+
+@Html.ActionLink("Back", "Index", null, new { @class = "btn btn-secondary mb-3" })
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Doctor Id</th>
+                <th>FullName</th>
+                <th>Specialisation</th>
+                <th>Years of Experience</th>
+                <th>Consultation Fee</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var doc in Model)
+            {
+                <tr>
+                    <td>@doc.DoctorId</td>
+                    <td>@doc.FullName</td>
+                    <td>@doc.Specialisation</td>
+                    <td>@doc.YearsOfExperience</td>
+                    <td>@doc.ConsultationFee</td>
+                    <td>@(doc.IsActive ? "Active" : "Inactive")</td>
+
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", "Doctor",
+                            new { id = doc.DoctorId },
+                            new { @class = "btn btn-outline-primary btn-sm" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No doctors found</div>
+}

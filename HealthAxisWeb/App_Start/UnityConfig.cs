@@ -14,7 +14,7 @@ namespace HealthAxisWeb
 			var container = new UnityContainer();
             var httpClient = new HttpClient
             {
-                BaseAddress = new Uri("https://localhost:44315/api/doctor")
+                BaseAddress = new Uri("https://localhost:44315/")
 
             };
             container.RegisterInstance<HttpClient>(httpClient); //httpclient is like a singleton

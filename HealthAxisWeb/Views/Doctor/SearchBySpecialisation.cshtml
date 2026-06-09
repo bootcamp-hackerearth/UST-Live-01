@@ -1,0 +1,39 @@
+﻿@model List<HealthAxis.Shared.Dtos.DoctorDto>
+@using HealthAxis.Shared.Dtos
+
+<h3>Search by Specialisation</h3>
+
+@using (Html.BeginForm("SearchBySpecialisation", "Doctor", FormMethod.Get))
+{
+    @Html.DropDownList(
+        "specialisation",
+        new SelectList(Enum.GetValues(typeof(DoctorDto.SpecialisationType))),
+        "-- Select Specialisation --",
+        new { @class = "form-control mb-2" })
+
+    <button class="btn btn-warning">Search</button>
+}
+
+<hr />
+
+@if (Model != null && Model.Any())
+{
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Specialisation</th>
+        </tr>
+
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.FullName</td>
+                <td>@d.Specialisation</td>
+            </tr>
+        }
+    </table>
+}
+else if (ViewBag.Message != null)
+{
+    <div class="alert alert-danger">@ViewBag.Message</div>
+}

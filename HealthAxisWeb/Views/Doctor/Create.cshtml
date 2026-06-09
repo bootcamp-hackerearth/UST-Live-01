@@ -1,4 +1,6 @@
-﻿@model HealthAxis_Web.Models.Dtos.DoctorDto
+﻿@model HealthAxis.Shared.Dtos.DoctorDto
+@using HealthAxis.Shared.Dtos
+
 
 <h2 class="text-success">Add Doctor</h2>
 
@@ -11,11 +13,12 @@
             @Html.ValidationMessageFor(m => m.FullName)
         </div>
 
-        <div class="mb-2">
-            @Html.LabelFor(m => m.Specialisation)
-            @Html.TextBoxFor(m => m.Specialisation, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.Specialisation)
-        </div>
+        @Html.LabelFor(m => m.Specialisation)
+
+        @Html.DropDownListFor(m => m.Specialisation,
+            new SelectList(Enum.GetValues(typeof(DoctorDto.SpecialisationType))),
+            "-- Select Specialisation --",
+            new { @class = "form-control" })
 
         <div class="mb-2">
             @Html.LabelFor(m => m.YearsOfExperience)

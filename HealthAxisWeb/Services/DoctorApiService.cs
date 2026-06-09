@@ -1,4 +1,4 @@
-﻿using HealthAxis_Web.Models.Dtos;
+﻿using HealthAxis.Shared.Dtos;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace HealthAxisWeb.Services
         {
             var json = JsonConvert.SerializeObject(doctorDto);
             var contents = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("", contents);
+            var response = await _httpClient.PostAsync("api/doctor", contents);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<DoctorDto>(result);
@@ -30,7 +30,7 @@ namespace HealthAxisWeb.Services
 
         public async Task<List<DoctorDto>> GetAllAsync()
         {
-            var response = await _httpClient.GetAsync("");
+            var response = await _httpClient.GetAsync("api/doctor");
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<DoctorDto>>(result);
@@ -38,7 +38,9 @@ namespace HealthAxisWeb.Services
 
         public async Task<DoctorDto> GetByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"{id}");
+            var response = await _httpClient.GetAsync($"api/doctor/{id}");
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<DoctorDto>(result);
@@ -48,7 +50,7 @@ namespace HealthAxisWeb.Services
         {
             var json = JsonConvert.SerializeObject(doctorDto); //got json
             var contents = new StringContent(json, Encoding.UTF8, "application/json");// to send we need a http content
-            var response = await _httpClient.PutAsync($"{id}", contents);//send a request to server , _httpvlient is the communication mechanism here
+            var response = await _httpClient.PutAsync($"api/doctor/{id}", contents);//send a request to server , _httpvlient is the communication mechanism here
             response.EnsureSuccessStatusCode(); // to check response is succes or not 
             var result = await response.Content.ReadAsStringAsync(); // getting response as a string
             return JsonConvert.DeserializeObject<DoctorDto>(result); // convert to dto

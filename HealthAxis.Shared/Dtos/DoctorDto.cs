@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace HealthAxis_Web.Models.Dtos
+namespace HealthAxis.Shared.Dtos
 {
     public class DoctorDto
     {
@@ -14,7 +14,8 @@ namespace HealthAxis_Web.Models.Dtos
         public string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Specialisation is required")]
-        public string Specialisation { get; set; }
+        //public string Specialisation { get; set; }
+        public SpecialisationType Specialisation { get; set; }
 
         [Required(ErrorMessage = "Years of Experience is required")]
         [Range(0, 50, ErrorMessage = "Enter valid experience")]
@@ -25,5 +26,19 @@ namespace HealthAxis_Web.Models.Dtos
         public int ConsultationFee { get; set; }
 
         public bool IsActive { get; set; }
+
+        public enum SpecialisationType
+        {
+            Cardiology,
+            Dermatology,
+            Neurology,
+            Pediatrics,
+            Psychiatry,
+            Radiology,
+            GeneralParticioner,
+            Orthopedics,
+            Gynecology,
+            Oncology
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿@model HealthAxis_Web.Models.Dtos.DoctorDto
+﻿@model HealthAxis.Shared.Dtos.DoctorDto
+@using HealthAxis.Shared.Dtos
 
 <h2 class="text-success">Update Doctor</h2>
 
@@ -14,8 +15,13 @@
 
         <div class="mb-2">
             @Html.LabelFor(m => m.Specialisation)
-            @Html.TextBoxFor(m => m.Specialisation, new { @class = "form-control" })
+
+            @Html.DropDownListFor(m => m.Specialisation,
+                new SelectList(Enum.GetValues(typeof(DoctorDto.SpecialisationType))),
+                "-- Select Specialisation --",
+                new { @class = "form-control" })
         </div>
+
 
         <div class="mb-2">
             @Html.LabelFor(m => m.YearsOfExperience)

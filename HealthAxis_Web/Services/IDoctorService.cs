@@ -1,4 +1,4 @@
-﻿using HealthAxis_Web.Models.Dtos;
+﻿using HealthAxis.Shared.Dtos;
 using System.Collections.Generic;
 
 namespace HealthAxis_MVC.Services
@@ -9,6 +9,5 @@ namespace HealthAxis_MVC.Services
         List<DoctorDto> GetAllDoctors();
         DoctorDto GetById(int doctorId);
         DoctorDto UpdateDoctor(int id,DoctorDto entity);
-        //List<Doctor> SearchDoctorBySpecialisation(Doctor.SpecialisationOption specialisation);
     }
 }

@@ -1,4 +1,4 @@
-﻿using HealthAxis_Web.Models.Dtos;
+﻿using HealthAxis.Shared.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;

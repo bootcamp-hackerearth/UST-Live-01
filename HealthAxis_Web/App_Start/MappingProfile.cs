@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
 using HealthAxis_Web.Models;
-using HealthAxis_Web.Models.Dtos;
+using HealthAxis.Shared.Dtos;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace HealthAxis_Web.App_Start
 {
@@ -12,8 +9,20 @@ namespace HealthAxis_Web.App_Start
     {
         public MappingProfile()
         {
-            CreateMap<Doctor, DoctorDto>();
-            CreateMap<DoctorDto, Doctor>();
+            CreateMap<Doctor, DoctorDto>()
+                .ForMember(dest => dest.Specialisation,
+                    opt => opt.MapFrom(src =>
+                        (DoctorDto.SpecialisationType)Enum.Parse(
+                            typeof(DoctorDto.SpecialisationType),
+                            src.Specialisation.Trim(),
+                            true)));
+
+            CreateMap<DoctorDto, Doctor>()
+                .ForMember(dest => dest.Specialisation,
+                    opt => opt.MapFrom(src => src.Specialisation.ToString()));
+
+            CreateMap<Patient, PatientDto>();
+            CreateMap<PatientDto, Patient>();
 
         }
     }
