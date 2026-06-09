@@ -1,0 +1,1 @@
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\.sonarqube\out\2

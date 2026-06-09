@@ -1,34 +1,489 @@
 ﻿@{
-    ViewBag.Title = "HealthCare Appointment Portal";
+    ViewBag.Title = "HealthAxis Health";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
 }
 
-<div class="container mt-5">
+<!-- HERO SECTION -->
 
-    <div class="text-center">
+<section id="home" class="hero-section">
 
-        <h1 class="display-4">
+    <div class="container">
 
-            HealthCare Appointment Portal
+        <div class="row align-items-center min-vh-75">
 
-        </h1>
+            <div class="col-lg-6">
 
-        <p class="lead">
+                <span class="badge bg-primary px-3 py-2 mb-3">
+                    Smart Healthcare Platform
+                </span>
 
-            Appointment Booking and Health Record Management System
+                <h1 class="display-3 fw-bold mb-4">
 
-        </p>
+                    Better Healthcare
+                    For A Better Tomorrow
 
-        <hr />
+                </h1>
 
-        <a href="@Url.Action(
-                    "Login",
-                    "User")"
-           class="btn btn-primary btn-lg">
+                <p class="lead text-muted mb-4">
 
-            Login
+                    HealthAxis Health connects patients,
+                    doctors and healthcare providers through
+                    one secure, intelligent and modern platform.
 
-        </a>
+                </p>
+
+                <div>
+
+                    <a href="@Url.Action("Login","User")"
+                       class="btn btn-primary btn-lg me-3">
+
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        Login
+
+                    </a>
+
+                    <a href="@Url.Action("Register","User")"
+                       class="btn btn-outline-primary btn-lg">
+
+                        <i class="fas fa-user-plus me-2"></i>
+                        Register
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-6 text-center">
+
+                <img src="@Url.Content("~/Content/Images/Elevence.png")"
+                     alt="Healthcare Platform"
+                     class="img-fluid hero-image" />
+
+            </div>
+
+        </div>
 
     </div>
 
-</div>
+</section>
+
+<!-- ABOUT -->
+
+<section id="about" class="py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="section-title">
+                Who We Are
+            </h2>
+
+            <p class="text-muted">
+                Transforming healthcare through innovation and technology.
+            </p>
+
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-9">
+
+                <div class="card shadow-sm border-0 p-5">
+
+                    <p class="fs-5 text-center">
+
+                        HealthAxis Health is a comprehensive
+                        healthcare management platform that
+                        simplifies appointment booking,
+                        doctor management, patient management,
+                        and health record maintenance.
+
+                    </p>
+
+                    <p class="text-center text-muted">
+
+                        Our mission is to deliver a secure,
+                        efficient and patient-friendly
+                        healthcare experience.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- SERVICES -->
+
+<section id="services" class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="section-title">
+                Our Services
+            </h2>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-3 mb-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body text-center">
+
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+
+                        <h4>Patients</h4>
+
+                        <p>
+                            Manage patient profiles,
+                            appointments and records.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-3 mb-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body text-center">
+
+                        <i class="fas fa-user-doctor fa-3x text-success mb-3"></i>
+
+                        <h4>Doctors</h4>
+
+                        <p>
+                            Manage schedules,
+                            availability and specialization.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-3 mb-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body text-center">
+
+                        <i class="fas fa-calendar-check fa-3x text-warning mb-3"></i>
+
+                        <h4>Appointments</h4>
+
+                        <p>
+                            Book and track appointments
+                            with ease.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-3 mb-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body text-center">
+
+                        <i class="fas fa-file-medical fa-3x text-info mb-3"></i>
+
+                        <h4>Health Records</h4>
+
+                        <p>
+                            Secure digital storage
+                            of medical history.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- WHY CHOOSE US -->
+
+<section class="py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="section-title">
+                Why Choose HealthAxis?
+            </h2>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body text-center">
+
+                        <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+
+                        <h4>Secure Platform</h4>
+
+                        <p>
+                            Enterprise-grade security
+                            for healthcare data.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body text-center">
+
+                        <i class="fas fa-clock fa-3x text-success mb-3"></i>
+
+                        <h4>24/7 Access</h4>
+
+                        <p>
+                            Access healthcare services
+                            anytime and anywhere.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body text-center">
+
+                        <i class="fas fa-heartbeat fa-3x text-danger mb-3"></i>
+
+                        <h4>Quality Care</h4>
+
+                        <p>
+                            Better healthcare outcomes
+                            through technology.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- HOW IT WORKS -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="section-title">
+                How It Works
+            </h2>
+
+        </div>
+
+        <div class="row text-center">
+
+            <div class="col-md-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body">
+
+                        <h1 class="text-primary">1</h1>
+
+                        <h4>Register</h4>
+
+                        <p>Create your account.</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body">
+
+                        <h1 class="text-primary">2</h1>
+
+                        <h4>Book Appointment</h4>
+
+                        <p>Select doctor and schedule.</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card feature-card">
+
+                    <div class="card-body">
+
+                        <h1 class="text-primary">3</h1>
+
+                        <h4>Get Care</h4>
+
+                        <p>Manage healthcare digitally.</p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- STATS -->
+
+<section class="stats-section">
+
+    <div class="container">
+
+        <div class="row text-center">
+
+            <div class="col-md-3">
+                <h2>24/7</h2>
+                <p>Online Access</p>
+            </div>
+
+            <div class="col-md-3">
+                <h2>100%</h2>
+                <p>Digital Records</p>
+            </div>
+
+            <div class="col-md-3">
+                <h2>Secure</h2>
+                <p>Data Protection</p>
+            </div>
+
+            <div class="col-md-3">
+                <h2>Fast</h2>
+                <p>Appointments</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- CONTACT -->
+
+<section id="contact" class="py-5">
+
+    <div class="container text-center">
+
+        <h2 class="section-title mb-4">
+            Contact Us
+        </h2>
+
+        <p>
+            <i class="fas fa-envelope me-2"></i>
+            support@healthaxishealth.com
+        </p>
+
+        <p>
+            <i class="fas fa-phone me-2"></i>
+            +91 98765 43210
+        </p>
+
+        <p>
+            <i class="fas fa-globe me-2"></i>
+            Online Healthcare Platform
+        </p>
+
+    </div>
+
+</section>
+
+<style>
+
+    .hero-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg,#F8FAFC,#E0F2FE);
+        border-radius: 20px;
+    }
+
+    .hero-image {
+        border-radius: 25px;
+        box-shadow: 0 15px 40px rgba(0,0,0,.15);
+        max-height: 500px;
+    }
+
+    .section-title {
+        color: #1E3A7A;
+        font-weight: 700;
+    }
+
+    .feature-card {
+        border: none;
+        border-radius: 20px;
+        transition: .3s;
+        height: 100%;
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+        }
+
+    .stats-section {
+        background: linear-gradient(135deg,#1E3A7A,#2563EB);
+        color: white;
+        padding: 70px 0;
+    }
+</style>

@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using HealthCare_Appointment_Portal.Data;
 using HealthCare_Appointment_Portal.DTOs.HealthRecordDtos;
 using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
 using HealthCare_Appointment_Portal.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -14,18 +14,32 @@ namespace HealthCare_Appointment_Portal.Services
     public class HealthRecordService
         : IHealthRecordService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
+        private readonly IHealthRecordRepository
+            _healthRecordRepository;
+
+        private readonly IAppointmentRepository
+            _appointmentRepository;
+
+        private readonly ApplicationDbContext
+            _context;
 
         private readonly IMapper
             _mapper;
 
         public HealthRecordService(
-            IUnitOfWork unitOfWork,
+            IHealthRecordRepository healthRecordRepository,
+            IAppointmentRepository appointmentRepository,
+            ApplicationDbContext context,
             IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
+            _healthRecordRepository =
+                healthRecordRepository;
+
+            _appointmentRepository =
+                appointmentRepository;
+
+            _context =
+                context;
 
             _mapper =
                 mapper;
@@ -36,8 +50,7 @@ namespace HealthCare_Appointment_Portal.Services
             GetAllHealthRecordsAsync()
         {
             var records =
-                await _unitOfWork
-                    .HealthRecords
+                await _healthRecordRepository
                     .GetAllRecordsWithDetailsAsync();
 
             return _mapper.Map<
@@ -50,8 +63,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int recordId)
         {
             var record =
-                await _unitOfWork
-                    .HealthRecords
+                await _healthRecordRepository
                     .GetByIdAsync(
                         recordId);
 
@@ -71,8 +83,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int patientId)
         {
             var records =
-                await _unitOfWork
-                    .HealthRecords
+                await _healthRecordRepository
                     .GetRecordsByPatientAsync(
                         patientId);
 
@@ -87,8 +98,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int doctorId)
         {
             var records =
-                await _unitOfWork
-                    .HealthRecords
+                await _healthRecordRepository
                     .GetRecordsByDoctorAsync(
                         doctorId);
 
@@ -102,8 +112,7 @@ namespace HealthCare_Appointment_Portal.Services
                 CreateHealthRecordDto dto)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetByIdAsync(
                         dto.AppointmentId);
 
@@ -122,8 +131,7 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             bool recordExists =
-                await _unitOfWork
-                    .HealthRecords
+                await _healthRecordRepository
                     .RecordExistsAsync(
                         dto.AppointmentId);
 
@@ -136,13 +144,12 @@ namespace HealthCare_Appointment_Portal.Services
                 _mapper.Map<HealthRecord>(
                     dto);
 
-            await _unitOfWork
-                .HealthRecords
+            await _healthRecordRepository
                 .AddAsync(
                     record);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context
+                .SaveChangesAsync();
 
             return record.RecordId;
         }
@@ -153,8 +160,7 @@ namespace HealthCare_Appointment_Portal.Services
                 UpdateHealthRecordDto dto)
         {
             var record =
-                await _unitOfWork
-                    .HealthRecords
+                await _healthRecordRepository
                     .GetByIdAsync(
                         recordId);
 
@@ -167,13 +173,12 @@ namespace HealthCare_Appointment_Portal.Services
                 dto,
                 record);
 
-            await _unitOfWork
-                .HealthRecords
+            await _healthRecordRepository
                 .UpdateAsync(
                     record);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task
@@ -181,8 +186,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int recordId)
         {
             var record =
-                await _unitOfWork
-                    .HealthRecords
+                await _healthRecordRepository
                     .GetByIdAsync(
                         recordId);
 
@@ -191,13 +195,12 @@ namespace HealthCare_Appointment_Portal.Services
                 throw new HealthRecordNotFoundException();
             }
 
-            await _unitOfWork
-                .HealthRecords
+            await _healthRecordRepository
                 .DeleteAsync(
                     recordId);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context
+                .SaveChangesAsync();
         }
     }
 }

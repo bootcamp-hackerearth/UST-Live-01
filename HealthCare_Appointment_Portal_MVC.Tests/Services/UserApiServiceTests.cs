@@ -12,7 +12,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
 {
     public class UserApiServiceTests
     {
-        private HttpClient CreateClient(
+        private static HttpClient CreateClient(
             HttpResponseMessage response)
         {
             var handler =
@@ -33,7 +33,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
             };
         }
 
-        private StringContent JsonContent(
+        private static StringContent JsonContent(
             object data)
         {
             return new StringContent(
@@ -103,7 +103,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
+                await Assert.ThrowsAsync<HttpRequestException>(
                     () =>
                         service.GetUserByCodeAsync(
                             "INVALID"));
@@ -136,7 +136,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
+                await Assert.ThrowsAsync<HttpRequestException>(
                     () =>
                         service.GetUserByCodeAsync(
                             "P001"));

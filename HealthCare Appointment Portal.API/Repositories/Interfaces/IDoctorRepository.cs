@@ -6,10 +6,18 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Interfaces
 {
     public interface IDoctorRepository
-        : IRepository<Doctor>
     {
-        Task<IEnumerable<Doctor>>
-            GetDoctorsBySpecialisationAsync(
-                Specialisation specialisation);
+        Task<Doctor> GetByIdAsync(int id);
+
+        Task<IEnumerable<Doctor>> GetAllAsync();
+
+        Task AddAsync(Doctor doctor);
+
+        Task UpdateAsync(Doctor doctor);
+
+        Task DeleteAsync(int id);
+
+        Task<IEnumerable<Doctor>> GetDoctorsBySpecialisationAsync(
+            Specialisation specialisation);
     }
 }

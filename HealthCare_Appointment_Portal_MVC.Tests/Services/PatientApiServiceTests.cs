@@ -12,7 +12,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
 {
     public class PatientApiServiceTests
     {
-        private HttpClient CreateClient(
+        private static HttpClient CreateClient(
             HttpResponseMessage response)
         {
             var handler =
@@ -228,10 +228,13 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new PatientApiService(
                     CreateClient(response));
 
-            await service
-                .UpdatePatientAsync(
-                    1,
-                    new UpdatePatientDto());
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.UpdatePatientAsync(
+                        1,
+                        new UpdatePatientDto()));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -245,9 +248,12 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new PatientApiService(
                     CreateClient(response));
 
-            await service
-                .DeletePatientAsync(
-                    1);
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.DeletePatientAsync(
+                        1));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -277,7 +283,8 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
+                await Assert.ThrowsAsync<
+                    HttpRequestException>(
                     () =>
                         service.GetPatientByIdAsync(
                             999));

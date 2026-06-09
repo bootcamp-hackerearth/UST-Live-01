@@ -6,8 +6,22 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Interfaces
 {
     public interface IInsuranceRepository
-        : IRepository<Insurance>
     {
+        Task<Insurance> GetByIdAsync(
+            int id);
+
+        Task<IEnumerable<Insurance>>
+            GetAllAsync();
+
+        Task AddAsync(
+            Insurance insurance);
+
+        Task UpdateAsync(
+            Insurance insurance);
+
+        Task DeleteAsync(
+            int id);
+
         Task<IEnumerable<Insurance>>
             GetInsurancesByPatientAsync(
                 int patientId);

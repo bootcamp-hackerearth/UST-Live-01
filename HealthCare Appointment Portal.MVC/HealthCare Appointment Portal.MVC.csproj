@@ -156,7 +156,6 @@
     <Compile Include="Services\Implementations\AppointmentApiService.cs" />
     <Compile Include="Services\Implementations\DoctorApiService.cs" />
     <Compile Include="Services\Implementations\HealthRecordApiService.cs" />
-    <Compile Include="Services\Implementations\InsuranceApiService.cs" />
     <Compile Include="Services\Implementations\PatientApiService.cs" />
     <Compile Include="Services\Implementations\UserApiService.cs" />
     <Compile Include="Services\Interfaces\IAppointmentApiService.cs" />
@@ -184,6 +183,8 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\Images\Elevence.png" />
+    <Content Include="Content\Images\healthaxis-logo.png" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -251,6 +252,7 @@
     <Content Include="Views\HealthRecord\DoctorRecords.cshtml" />
     <Content Include="Views\HealthRecord\Delete.cshtml" />
     <Content Include="Views\User\Register.cshtml" />
+    <Content Include="Views\Shared\_PublicLayout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

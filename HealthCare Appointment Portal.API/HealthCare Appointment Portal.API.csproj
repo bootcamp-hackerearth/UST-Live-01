@@ -393,8 +393,6 @@
     <Compile Include="Services\Interfaces\IHealthRecordService.cs" />
     <Compile Include="Services\Interfaces\IInsuranceService.cs" />
     <Compile Include="Services\Interfaces\IPatientService.cs" />
-    <Compile Include="Repositories\Interfaces\IRepository.cs" />
-    <Compile Include="Repositories\Interfaces\IUnitOfWork.cs" />
     <Compile Include="Repositories\Interfaces\IUserRepository.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\Doctor.cs" />
@@ -408,8 +406,6 @@
     <Compile Include="Repositories\Implementations\HealthRecordRepository.cs" />
     <Compile Include="Repositories\Implementations\InsuranceRepository.cs" />
     <Compile Include="Repositories\Implementations\PatientRepository.cs" />
-    <Compile Include="Repositories\Implementations\Repository.cs" />
-    <Compile Include="Repositories\Implementations\UnitOfWork.cs" />
     <Compile Include="Repositories\Implementations\UserRepository.cs" />
     <Compile Include="Services\Interfaces\IUserService.cs" />
   </ItemGroup>

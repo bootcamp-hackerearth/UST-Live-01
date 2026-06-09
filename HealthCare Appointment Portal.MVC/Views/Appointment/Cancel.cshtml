@@ -7,27 +7,20 @@
 <div class="container-fluid">
 
     <div class="row mb-4">
-
         <div class="col">
-
             <h2 class="text-danger">
                 Cancel Appointment
             </h2>
-
         </div>
-
     </div>
 
     <div class="card shadow-sm border-danger">
-
         <div class="card-body">
 
             @if (TempData["Error"] != null)
             {
                 <div class="alert alert-danger">
-
                     @TempData["Error"]
-
                 </div>
             }
 
@@ -40,141 +33,104 @@
                 })
 
             <div class="alert alert-warning">
-
-                <strong>
-                    Warning!
-                </strong>
-
+                <strong>Warning!</strong>
                 You are about to cancel this appointment.
-
             </div>
 
             <div class="row mb-3">
-
                 <div class="col-md-3">
-
-                    <strong>
-                        Appointment Id
-                    </strong>
-
+                    <strong>Appointment Id</strong>
                 </div>
-
                 <div class="col-md-9">
-
                     @Model.AppointmentId
-
                 </div>
-
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
                 <div class="col-md-3">
-
-                    <strong>
-                        Patient
-                    </strong>
-
+                    <strong>Patient</strong>
                 </div>
-
                 <div class="col-md-9">
-
                     @Model.PatientName
-
                 </div>
-
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
                 <div class="col-md-3">
-
-                    <strong>
-                        Doctor
-                    </strong>
-
+                    <strong>Doctor</strong>
                 </div>
-
                 <div class="col-md-9">
-
                     @Model.DoctorName
-
                 </div>
-
             </div>
 
             <hr />
 
             <div class="row mb-4">
-
                 <div class="col-md-3">
-
-                    <strong>
-                        Appointment Date
-                    </strong>
-
+                    <strong>Appointment Date</strong>
                 </div>
-
                 <div class="col-md-9">
-
-                    @Model.ScheduledDate.ToString(
-                        "dd MMM yyyy")
-
+                    @Model.ScheduledDate.ToString("dd MMM yyyy")
                     -
-
                     @Model.TimeSlot
-
                 </div>
-
             </div>
 
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
 
+                @Html.HiddenFor(m => m.AppointmentId)
+
                 <div class="mb-4">
 
-                    <label class="form-label">
-
+                    <label for="reason"
+                           class="form-label">
                         Cancellation Reason
-
                     </label>
 
-                    <textarea name="reason"
+                    <textarea id="reason"
+                              name="reason"
                               rows="4"
                               class="form-control"
-                              required
+                              required="required"
+                              aria-required="true"
                               placeholder="Enter cancellation reason..."></textarea>
 
                 </div>
 
-                <button type="submit"
-                        class="btn btn-danger">
+                <div class="d-flex gap-2">
 
-                    Confirm Cancellation
+                    <button type="submit"
+                            class="btn btn-danger">
+                        Confirm Cancellation
+                    </button>
 
-                </button>
+                    <a href="@Url.Action(
+                                "Details",
+                                "Appointment",
+                                new
+                                {
+                                    id = Model.AppointmentId
+                                })"
+                       class="btn btn-secondary">
+                        Back
+                    </a>
 
-                <a href="@Url.Action(
-                            "Details",
-                            "Appointment",
-                            new
-                            {
-                                id = Model.AppointmentId
-                            })"
-                   class="btn btn-secondary">
-
-                    Back
-
-                </a>
+                </div>
             }
 
         </div>
-
     </div>
 
 </div>
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}

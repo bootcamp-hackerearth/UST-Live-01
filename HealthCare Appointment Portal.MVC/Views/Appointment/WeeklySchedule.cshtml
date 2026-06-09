@@ -33,7 +33,8 @@
 
             <button type="button"
                     class="btn-close"
-                    data-bs-dismiss="alert">
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
             </button>
 
         </div>
@@ -47,7 +48,8 @@
 
             <button type="button"
                     class="btn-close"
-                    data-bs-dismiss="alert">
+                    data-bs-dismiss="alert"
+                    aria-label="Close">
             </button>
 
         </div>
@@ -83,7 +85,7 @@
                             Status
                         </th>
 
-                        <th width="350">
+                        <th style="width:350px;">
                             Actions
                         </th>
 
@@ -155,8 +157,7 @@
                                                 "Appointment",
                                                 new
                                                 {
-                                                    id =
-                                                        appointment.AppointmentId
+                                                    id = appointment.AppointmentId
                                                 })"
                                        class="btn btn-info btn-sm">
 
@@ -170,18 +171,17 @@
                                         using (Html.BeginForm(
                                             "Confirm",
                                             "Appointment",
+                                            new
+                                            {
+                                                id = appointment.AppointmentId
+                                            },
                                             FormMethod.Post,
                                             new
                                             {
-                                                style =
-                                                "display:inline;"
+                                                style = "display:inline;"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
-
-                                            <input type="hidden"
-                                                   name="id"
-                                                   value="@appointment.AppointmentId" />
 
                                             <button type="submit"
                                                     class="btn btn-success btn-sm">
@@ -203,8 +203,7 @@
                                                     "Appointment",
                                                     new
                                                     {
-                                                        id =
-                                                            appointment.AppointmentId
+                                                        id = appointment.AppointmentId
                                                     })"
                                            class="btn btn-danger btn-sm">
 
@@ -219,18 +218,17 @@
                                         using (Html.BeginForm(
                                             "Complete",
                                             "Appointment",
+                                            new
+                                            {
+                                                id = appointment.AppointmentId
+                                            },
                                             FormMethod.Post,
                                             new
                                             {
-                                                style =
-                                                "display:inline;"
+                                                style = "display:inline;"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
-
-                                            <input type="hidden"
-                                                   name="id"
-                                                   value="@appointment.AppointmentId" />
 
                                             <button type="submit"
                                                     class="btn btn-primary btn-sm">
@@ -251,11 +249,8 @@
                                                         "HealthRecord",
                                                         new
                                                         {
-                                                            appointmentId =
-                                                                appointment.AppointmentId,
-
-                                                            patientId =
-                                                                appointment.PatientId
+                                                            appointmentId = appointment.AppointmentId,
+                                                            patientId = appointment.PatientId
                                                         })"
                                                class="btn btn-dark btn-sm">
 

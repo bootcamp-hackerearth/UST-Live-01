@@ -7,7 +7,7 @@ using System.Web.Routing;
 
 namespace HealthCare_Appointment_Portal
 {
-    public class RouteConfig
+    public static class RouteConfig
     {
         public static void RegisterRoutes(RouteCollection routes)
         {

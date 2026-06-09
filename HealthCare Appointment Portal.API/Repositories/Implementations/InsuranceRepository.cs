@@ -11,13 +11,61 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Repositories
 {
     public class InsuranceRepository
-        : Repository<Insurance>,
-          IInsuranceRepository
+        : IInsuranceRepository
     {
+        private readonly ApplicationDbContext _context;
+
         public InsuranceRepository(
             ApplicationDbContext context)
-            : base(context)
         {
+            _context = context;
+        }
+
+        public async Task<Insurance>
+            GetByIdAsync(
+                int id)
+        {
+            return await _context.Insurances
+                .FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Insurance>>
+            GetAllAsync()
+        {
+            return await _context.Insurances
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(
+            Insurance insurance)
+        {
+            _context.Insurances
+                .Add(insurance);
+
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateAsync(
+            Insurance insurance)
+        {
+            _context.Entry(insurance)
+                .State = EntityState.Modified;
+
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteAsync(
+            int id)
+        {
+            Insurance insurance =
+                await _context.Insurances
+                    .FindAsync(id);
+
+            if (insurance != null)
+            {
+                _context.Insurances
+                    .Remove(insurance);
+            }
         }
 
         public async Task<
@@ -25,11 +73,11 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetInsurancesByPatientAsync(
                 int patientId)
         {
-            return await _dbSet
+            return await _context.Insurances
                 .Include(i => i.Patient)
                 .Where(i =>
-                    i.PatientId
-                    == patientId)
+                    i.PatientId ==
+                    patientId)
                 .OrderByDescending(
                     i => i.ExpiryDate)
                 .ToListAsync();
@@ -40,7 +88,7 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetInsurancesByStatusAsync(
                 InsuranceStatus status)
         {
-            return await _dbSet
+            return await _context.Insurances
                 .Include(i => i.Patient)
                 .Where(i =>
                     i.Status == status)
@@ -53,22 +101,22 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetInsuranceByPolicyNumberAsync(
                 string policyNumber)
         {
-            return await _dbSet
+            return await _context.Insurances
                 .Include(i => i.Patient)
                 .FirstOrDefaultAsync(i =>
-                    i.PolicyNumber
-                    == policyNumber);
+                    i.PolicyNumber ==
+                    policyNumber);
         }
 
         public async Task<
             IEnumerable<Insurance>>
             GetExpiredInsurancesAsync()
         {
-            return await _dbSet
+            return await _context.Insurances
                 .Include(i => i.Patient)
                 .Where(i =>
-                    i.ExpiryDate
-                    < DateTime.Today)
+                    i.ExpiryDate <
+                    DateTime.Today)
                 .OrderBy(
                     i => i.ExpiryDate)
                 .ToListAsync();
@@ -78,7 +126,7 @@ namespace HealthCare_Appointment_Portal.Repositories
             IEnumerable<Insurance>>
             GetActiveInsurancesAsync()
         {
-            return await _dbSet
+            return await _context.Insurances
                 .Include(i => i.Patient)
                 .Where(i =>
                     i.Status ==

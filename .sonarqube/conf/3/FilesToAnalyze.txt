@@ -1,0 +1,16 @@
+﻿C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Models\AppointmentTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Models\DoctorTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Models\InsuranceTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Models\PatientTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Models\UserTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Services\AppointmentServiceTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Services\DoctorServiceTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Services\HealthRecordServiceTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Services\InsuranceServiceTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Services\PatientServiceTests.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.Tests\Services\UserServiceTests.cs
+C:\Users\290626\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.cs
+C:\Users\290626\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.exe
+C:\Users\290626\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.dll
+C:\Users\290626\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.abstractions.dll
+C:\Users\290626\.nuget\packages\xunit.runner.visualstudio\3.1.4\build\net8.0\xunit.runner.visualstudio.testadapter.dll

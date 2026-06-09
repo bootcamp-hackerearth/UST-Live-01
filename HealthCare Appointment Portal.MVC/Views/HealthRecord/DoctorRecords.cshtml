@@ -12,7 +12,8 @@
 
         <button type="button"
                 class="btn-close"
-                data-bs-dismiss="alert">
+                data-bs-dismiss="alert"
+                aria-label="Close">
         </button>
 
     </div>
@@ -26,7 +27,8 @@
 
         <button type="button"
                 class="btn-close"
-                data-bs-dismiss="alert">
+                data-bs-dismiss="alert"
+                aria-label="Close">
         </button>
 
     </div>
@@ -82,7 +84,7 @@
 
                 <tbody>
 
-                    @if (!Model.Any())
+                    @if (Model == null || !Model.Any())
                     {
                         <tr>
 
@@ -97,9 +99,7 @@
                     }
                     else
                     {
-                        foreach (var record in
-                            Model.OrderByDescending(
-                                r => r.VisitDate))
+                        foreach (var record in Model.OrderByDescending(r => r.VisitDate))
                         {
                             <tr>
 
@@ -112,8 +112,7 @@
                                 </td>
 
                                 <td>
-                                    @record.VisitDate.ToString(
-                                        "dd MMM yyyy")
+                                    @record.VisitDate.ToString("dd MMM yyyy")
                                 </td>
 
                                 <td>
@@ -131,8 +130,7 @@
                                                 "HealthRecord",
                                                 new
                                                 {
-                                                    id =
-                                                        record.RecordId
+                                                    id = record.RecordId
                                                 })"
                                        class="btn btn-info btn-sm">
 
@@ -145,8 +143,7 @@
                                                 "HealthRecord",
                                                 new
                                                 {
-                                                    id =
-                                                        record.RecordId
+                                                    id = record.RecordId
                                                 })"
                                        class="btn btn-warning btn-sm">
 

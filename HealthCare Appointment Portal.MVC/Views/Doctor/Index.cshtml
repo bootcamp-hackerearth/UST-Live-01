@@ -14,7 +14,7 @@
 
         @if (Session["Role"]?.ToString() == "Admin")
         {
-            <a href="@Url.Action("Create","Doctor")"
+            <a href="@Url.Action("Create", "Doctor")"
                class="btn btn-primary">
 
                 Add Doctor
@@ -39,7 +39,13 @@
                     {
                         <div class="input-group">
 
-                            <select name="specialisation"
+                            <label for="specialisation"
+                                   class="visually-hidden">
+                                Specialisation
+                            </label>
+
+                            <select id="specialisation"
+                                    name="specialisation"
                                     class="form-select">
 
                                 <option value="">
@@ -105,7 +111,7 @@
                             Upcoming Appointments
                         </th>
 
-                        <th width="250">
+                        <th style="width:250px;">
                             Actions
                         </th>
 
@@ -115,85 +121,101 @@
 
                 <tbody>
 
-                    @foreach (var doctor in Model)
+                    @if (!Model.Any())
                     {
                         <tr>
 
-                            <td>
-                                @doctor.DoctorId
-                            </td>
+                            <td colspan="8"
+                                class="text-center">
 
-                            <td>
-                                @doctor.FullName
-                            </td>
-
-                            <td>
-                                @doctor.Specialisation
-                            </td>
-
-                            <td>
-                                @doctor.YearsOfExperience
-                            </td>
-
-                            <td>
-                                Rs.@doctor.ConsultationFee
-                            </td>
-
-                            <td>
-
-                                @if (doctor.IsActive)
-                                {
-                                    <span class="badge bg-success">
-                                        Active
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">
-                                        Inactive
-                                    </span>
-                                }
-
-                            </td>
-
-                            <td>
-                                @doctor.UpcomingAppointmentCount
-                            </td>
-
-                            <td>
-
-                                <a href="@Url.Action(
-                                         "Details",
-                                         "Doctor",
-                                         new
-                                         {
-                                             id = doctor.DoctorId
-                                         })"
-                                   class="btn btn-info btn-sm">
-
-                                    View
-
-                                </a>
-
-                                @if (Session["Role"]?.ToString() == "Admin")
-                                {
-                                    <a href="@Url.Action(
-                                             "Edit",
-                                             "Doctor",
-                                             new
-                                             {
-                                                 id = doctor.DoctorId
-                                             })"
-                                       class="btn btn-warning btn-sm">
-
-                                        Edit
-
-                                    </a>
-                                }
+                                No doctors found.
 
                             </td>
 
                         </tr>
+                    }
+                    else
+                    {
+                        foreach (var doctor in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @doctor.DoctorId
+                                </td>
+
+                                <td>
+                                    @doctor.FullName
+                                </td>
+
+                                <td>
+                                    @doctor.Specialisation
+                                </td>
+
+                                <td>
+                                    @doctor.YearsOfExperience
+                                </td>
+
+                                <td>
+                                    Rs. @doctor.ConsultationFee
+                                </td>
+
+                                <td>
+
+                                    @if (doctor.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Inactive
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+                                    @doctor.UpcomingAppointmentCount
+                                </td>
+
+                                <td>
+
+                                    <a href="@Url.Action(
+                                                 "Details",
+                                                 "Doctor",
+                                                 new
+                                                 {
+                                                     id = doctor.DoctorId
+                                                 })"
+                                       class="btn btn-info btn-sm">
+
+                                        View
+
+                                    </a>
+
+                                    @if (Session["Role"]?.ToString() == "Admin")
+                                    {
+                                        <a href="@Url.Action(
+                                                     "Edit",
+                                                     "Doctor",
+                                                     new
+                                                     {
+                                                         id = doctor.DoctorId
+                                                     })"
+                                           class="btn btn-warning btn-sm">
+
+                                            Edit
+
+                                        </a>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
                     }
 
                 </tbody>

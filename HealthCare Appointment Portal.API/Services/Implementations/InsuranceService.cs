@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HealthCare_Appointment_Portal.Data;
 using HealthCare_Appointment_Portal.DTOs.InsuranceDtos;
 using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
@@ -12,18 +13,32 @@ namespace HealthCare_Appointment_Portal.Services
     public class InsuranceService
         : IInsuranceService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
+        private readonly IInsuranceRepository
+            _insuranceRepository;
+
+        private readonly IPatientRepository
+            _patientRepository;
+
+        private readonly ApplicationDbContext
+            _context;
 
         private readonly IMapper
             _mapper;
 
         public InsuranceService(
-            IUnitOfWork unitOfWork,
+            IInsuranceRepository insuranceRepository,
+            IPatientRepository patientRepository,
+            ApplicationDbContext context,
             IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
+            _insuranceRepository =
+                insuranceRepository;
+
+            _patientRepository =
+                patientRepository;
+
+            _context =
+                context;
 
             _mapper =
                 mapper;
@@ -34,8 +49,7 @@ namespace HealthCare_Appointment_Portal.Services
             GetAllInsurancesAsync()
         {
             var insurances =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetAllAsync();
 
             return _mapper.Map<
@@ -48,8 +62,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int insuranceId)
         {
             var insurance =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetByIdAsync(
                         insuranceId);
 
@@ -68,9 +81,18 @@ namespace HealthCare_Appointment_Portal.Services
             GetInsurancesByPatientAsync(
                 int patientId)
         {
+            var patient =
+                await _patientRepository
+                    .GetByIdAsync(
+                        patientId);
+
+            if (patient == null)
+            {
+                throw new PatientNotFoundException();
+            }
+
             var insurances =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetInsurancesByPatientAsync(
                         patientId);
 
@@ -85,8 +107,7 @@ namespace HealthCare_Appointment_Portal.Services
                 Enums.InsuranceStatus status)
         {
             var insurances =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetInsurancesByStatusAsync(
                         status);
 
@@ -100,8 +121,7 @@ namespace HealthCare_Appointment_Portal.Services
             GetExpiredInsurancesAsync()
         {
             var insurances =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetExpiredInsurancesAsync();
 
             return _mapper.Map<
@@ -114,8 +134,7 @@ namespace HealthCare_Appointment_Portal.Services
             GetActiveInsurancesAsync()
         {
             var insurances =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetActiveInsurancesAsync();
 
             return _mapper.Map<
@@ -127,9 +146,18 @@ namespace HealthCare_Appointment_Portal.Services
             AddInsuranceAsync(
                 CreateInsuranceDto insuranceDto)
         {
+            var patient =
+                await _patientRepository
+                    .GetByIdAsync(
+                        insuranceDto.PatientId);
+
+            if (patient == null)
+            {
+                throw new PatientNotFoundException();
+            }
+
             var existingInsurance =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetInsuranceByPolicyNumberAsync(
                         insuranceDto.PolicyNumber);
 
@@ -142,13 +170,15 @@ namespace HealthCare_Appointment_Portal.Services
                 _mapper.Map<Insurance>(
                     insuranceDto);
 
-            await _unitOfWork
-                .Insurances
+            insurance.PatientId =
+                insuranceDto.PatientId;
+
+            await _insuranceRepository
                 .AddAsync(
                     insurance);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context
+                .SaveChangesAsync();
 
             return insurance
                 .InsuranceId;
@@ -160,8 +190,7 @@ namespace HealthCare_Appointment_Portal.Services
                 UpdateInsuranceDto insuranceDto)
         {
             var insurance =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetByIdAsync(
                         insuranceId);
 
@@ -171,7 +200,7 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             if (insurance.ExpiryDate.Date <
-                    DateTime.Today)
+                DateTime.Today)
             {
                 throw new
                     InsuranceExpiredException();
@@ -181,13 +210,12 @@ namespace HealthCare_Appointment_Portal.Services
                 insuranceDto,
                 insurance);
 
-            await _unitOfWork
-                .Insurances
+            await _insuranceRepository
                 .UpdateAsync(
                     insurance);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task
@@ -195,8 +223,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int insuranceId)
         {
             var insurance =
-                await _unitOfWork
-                    .Insurances
+                await _insuranceRepository
                     .GetByIdAsync(
                         insuranceId);
 
@@ -205,13 +232,12 @@ namespace HealthCare_Appointment_Portal.Services
                 throw new InsuranceNotFoundException();
             }
 
-            await _unitOfWork
-                .Insurances
+            await _insuranceRepository
                 .DeleteAsync(
                     insuranceId);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context
+                .SaveChangesAsync();
         }
     }
 }

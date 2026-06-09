@@ -1,13 +1,30 @@
 ﻿using HealthCare_Appointment_Portal.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Interfaces
 {
     public interface IUserRepository
-        : IRepository<User>
     {
+        Task<User> GetByIdAsync(
+            int id);
+
+        Task<IEnumerable<User>>
+            GetAllAsync();
+
+        Task AddAsync(
+            User user);
+
+        Task UpdateAsync(
+            User user);
+
+        Task DeleteAsync(
+            int id);
+
         User GetByEmail(
             string email);
 
-        User GetByUserCode(string userCode);
+        User GetByUserCode(
+            string userCode);
     }
 }

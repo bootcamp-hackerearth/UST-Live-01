@@ -35,52 +35,26 @@
                 <thead class="table-light">
 
                     <tr>
-
-                        <th>
-                            Appointment Id
-                        </th>
-
-                        <th>
-                            Patient
-                        </th>
-
-                        <th>
-                            Doctor
-                        </th>
-
-                        <th>
-                            Date
-                        </th>
-
-                        <th>
-                            Time Slot
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th width="420">
-                            Actions
-                        </th>
-
+                        <th>Appointment Id</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th style="width:420px;">Actions</th>
                     </tr>
 
                 </thead>
 
                 <tbody>
 
-                    @if (!Model.Any())
+                    @if (Model == null || !Model.Any())
                     {
                         <tr>
-
                             <td colspan="7"
                                 class="text-center">
-
                                 No appointments found.
-
                             </td>
-
                         </tr>
                     }
                     else
@@ -89,26 +63,17 @@
                         {
                             <tr>
 
-                                <td>
-                                    @appointment.AppointmentId
-                                </td>
+                                <td>@appointment.AppointmentId</td>
+
+                                <td>@appointment.PatientName</td>
+
+                                <td>@appointment.DoctorName</td>
 
                                 <td>
-                                    @appointment.PatientName
+                                    @appointment.ScheduledDate.ToString("dd MMM yyyy")
                                 </td>
 
-                                <td>
-                                    @appointment.DoctorName
-                                </td>
-
-                                <td>
-                                    @appointment.ScheduledDate.ToString(
-                                        "dd MMM yyyy")
-                                </td>
-
-                                <td>
-                                    @appointment.TimeSlot
-                                </td>
+                                <td>@appointment.TimeSlot</td>
 
                                 <td>
 
@@ -136,8 +101,7 @@
                                                 "Appointment",
                                                 new
                                                 {
-                                                    id =
-                                                        appointment.AppointmentId
+                                                    id = appointment.AppointmentId
                                                 })"
                                        class="btn btn-info btn-sm">
 
@@ -154,13 +118,13 @@
                                             FormMethod.Post,
                                             new
                                             {
-                                                style =
-                                                "display:inline;"
+                                                style = "display:inline;"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
 
                                             <input type="hidden"
+                                                   id="confirm-@appointment.AppointmentId"
                                                    name="id"
                                                    value="@appointment.AppointmentId" />
 
@@ -184,8 +148,7 @@
                                                     "Appointment",
                                                     new
                                                     {
-                                                        id =
-                                                            appointment.AppointmentId
+                                                        id = appointment.AppointmentId
                                                     })"
                                            class="btn btn-danger btn-sm">
 
@@ -203,13 +166,13 @@
                                             FormMethod.Post,
                                             new
                                             {
-                                                style =
-                                                "display:inline;"
+                                                style = "display:inline;"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
 
                                             <input type="hidden"
+                                                   id="complete-@appointment.AppointmentId"
                                                    name="id"
                                                    value="@appointment.AppointmentId" />
 
@@ -232,11 +195,8 @@
                                                         "HealthRecord",
                                                         new
                                                         {
-                                                            appointmentId =
-                                                                appointment.AppointmentId,
-
-                                                            patientId =
-                                                                appointment.PatientId
+                                                            appointmentId = appointment.AppointmentId,
+                                                            patientId = appointment.PatientId
                                                         })"
                                                class="btn btn-dark btn-sm">
 
@@ -247,9 +207,7 @@
                                         else
                                         {
                                             <span class="badge bg-success">
-
                                                 Health Record Added
-
                                             </span>
                                         }
                                     }

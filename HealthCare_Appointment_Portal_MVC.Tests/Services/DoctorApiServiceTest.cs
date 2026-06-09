@@ -19,7 +19,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
 {
     public class DoctorApiServiceTests
     {
-        private HttpClient CreateClient(
+        private static HttpClient CreateClient(
             HttpResponseMessage response)
         {
             var handler =
@@ -212,22 +212,20 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new DoctorApiService(
                     CreateClient(response));
 
-            await service
-                .UpdateDoctorAsync(
-                    1,
-                    new UpdateDoctorDto
-                    {
-                        FullName =
-                            "Updated Doctor",
-                        Specialisation =
-                            Specialisation.Neurology,
-                        YearsOfExperience =
-                            10,
-                        ConsultationFee =
-                            1000,
-                        IsActive =
-                            true
-                    });
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.UpdateDoctorAsync(
+                        1,
+                        new UpdateDoctorDto
+                        {
+                            FullName = "Updated Doctor",
+                            Specialisation = Specialisation.Neurology,
+                            YearsOfExperience = 10,
+                            ConsultationFee = 1000,
+                            IsActive = true
+                        }));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -241,9 +239,12 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new DoctorApiService(
                     CreateClient(response));
 
-            await service
-                .DeleteDoctorAsync(
-                    1);
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.DeleteDoctorAsync(
+                        1));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -273,10 +274,8 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
-                    () => service
-                        .GetDoctorByIdAsync(
-                            999));
+                 await Assert.ThrowsAsync<HttpRequestException>(
+                    () => service.GetDoctorByIdAsync(999));
 
             Assert.Equal(
                 "Doctor not found",
@@ -310,9 +309,8 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
-                    () => service
-                        .GetAllDoctorsAsync());
+                 await Assert.ThrowsAsync<HttpRequestException>(
+                    () => service.GetAllDoctorsAsync());
 
             Assert.Equal(
                 "Internal Server Error",
@@ -346,10 +344,8 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
-                    () => service
-                        .DeleteDoctorAsync(
-                            1));
+                  await Assert.ThrowsAsync<HttpRequestException>(
+                      () => service.DeleteDoctorAsync(1));
 
             Assert.Equal(
                 "Doctor cannot be deleted",

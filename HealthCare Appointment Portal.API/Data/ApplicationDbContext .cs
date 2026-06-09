@@ -11,37 +11,43 @@ namespace HealthCare_Appointment_Portal.Data
         {
         }
 
-        public DbSet<Patient> Patients
+        public virtual DbSet<Patient>
+            Patients
         {
             get;
             set;
         }
 
-        public DbSet<Doctor> Doctors
+        public virtual DbSet<Doctor>
+            Doctors
         {
             get;
             set;
         }
 
-        public DbSet<Appointment> Appointments
+        public virtual DbSet<Appointment>
+            Appointments
         {
             get;
             set;
         }
 
-        public DbSet<HealthRecord> HealthRecords
+        public virtual DbSet<HealthRecord>
+            HealthRecords
         {
             get;
             set;
         }
 
-        public DbSet<Insurance> Insurances
+        public virtual DbSet<Insurance>
+            Insurances
         {
             get;
             set;
         }
 
-        public DbSet<User> Users
+        public virtual DbSet<User>
+            Users
         {
             get;
             set;

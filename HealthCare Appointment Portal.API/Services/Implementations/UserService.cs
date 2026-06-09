@@ -7,18 +7,23 @@ namespace HealthCare_Appointment_Portal.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserRepository
+            _userRepository;
 
         public UserService(
-            IUnitOfWork unitOfWork)
+            IUserRepository userRepository)
         {
-            _unitOfWork = unitOfWork;
+            _userRepository =
+                userRepository;
         }
 
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<User>
+            GetByIdAsync(
+                int id)
         {
-            var user = await _unitOfWork.Users
-                .GetByIdAsync(id);
+            var user =
+                await _userRepository
+                    .GetByIdAsync(id);
 
             if (user == null)
             {
@@ -29,11 +34,14 @@ namespace HealthCare_Appointment_Portal.Services
             return user;
         }
 
-        public async Task<User> GetByUserCodeAsync(
-            string userCode)
+        public Task<User>
+            GetByUserCodeAsync(
+                string userCode)
         {
-            var user = _unitOfWork.Users
-                .GetByUserCode(userCode);
+            var user =
+                _userRepository
+                    .GetByUserCode(
+                        userCode);
 
             if (user == null)
             {
@@ -41,14 +49,18 @@ namespace HealthCare_Appointment_Portal.Services
                     $"User with code '{userCode}' was not found.");
             }
 
-            return await Task.FromResult(user);
+            return Task.FromResult(
+                user);
         }
 
-        public async Task<User> GetByEmailAsync(
-            string email)
+        public Task<User>
+            GetByEmailAsync(
+                string email)
         {
-            var user = _unitOfWork.Users
-                .GetByEmail(email);
+            var user =
+                _userRepository
+                    .GetByEmail(
+                        email);
 
             if (user == null)
             {
@@ -56,7 +68,8 @@ namespace HealthCare_Appointment_Portal.Services
                     $"User with email '{email}' was not found.");
             }
 
-            return await Task.FromResult(user);
+            return Task.FromResult(
+                user);
         }
     }
 }

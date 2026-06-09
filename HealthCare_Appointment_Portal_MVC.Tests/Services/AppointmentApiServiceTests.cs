@@ -18,7 +18,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
 {
     public class AppointmentApiServiceTests
     {
-        private HttpClient CreateClient(
+        private static HttpClient CreateClient(
             HttpResponseMessage response)
         {
             var handler =
@@ -39,7 +39,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
             };
         }
 
-        private StringContent JsonContent(
+        private static StringContent JsonContent(
             object data)
         {
             return new StringContent(
@@ -161,10 +161,13 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new AppointmentApiService(
                     CreateClient(response));
 
-            await service
-                .UpdateAppointmentAsync(
-                    1,
-                    new UpdateAppointmentDto());
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.UpdateAppointmentAsync(
+                        1,
+                        new UpdateAppointmentDto()));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -178,10 +181,14 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new AppointmentApiService(
                     CreateClient(response));
 
-            await service
-                .DeleteAppointmentAsync(
-                    1);
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.DeleteAppointmentAsync(
+                        1));
+
+            Assert.Null(exception);
         }
+
 
         [Fact]
         public async Task GetAppointmentsByPatientAsync_ReturnsAppointments()
@@ -351,9 +358,12 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                         new HttpResponseMessage(
                             HttpStatusCode.NoContent)));
 
-            await service
-                .ConfirmAppointmentAsync(
-                    1);
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.ConfirmAppointmentAsync(
+                        1));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -365,9 +375,12 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                         new HttpResponseMessage(
                             HttpStatusCode.NoContent)));
 
-            await service
-                .CompleteAppointmentAsync(
-                    1);
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.CompleteAppointmentAsync(
+                        1));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -379,10 +392,13 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                         new HttpResponseMessage(
                             HttpStatusCode.NoContent)));
 
-            await service
-                .CancelAppointmentAsync(
-                    1,
-                    "Doctor unavailable");
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.CancelAppointmentAsync(
+                        1,
+                        "Doctor unavailable"));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -400,8 +416,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     HttpStatusCode.NotFound)
                 {
                     Content =
-                        JsonContent(
-                            error)
+                        JsonContent(error)
                 };
 
             var service =
@@ -409,7 +424,8 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
+                await Assert.ThrowsAsync<
+                    HttpRequestException>(
                     () =>
                         service.GetAppointmentByIdAsync(
                             999));

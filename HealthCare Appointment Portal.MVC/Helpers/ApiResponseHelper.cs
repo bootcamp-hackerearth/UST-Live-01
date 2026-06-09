@@ -1,5 +1,4 @@
 ﻿using HealthCare_Appointment_Portal_MVC.Models;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -7,9 +6,8 @@ namespace HealthCare_Appointment_Portal_MVC.Helpers
 {
     public static class ApiResponseHelper
     {
-        public static async Task
-            EnsureSuccessAsync(
-                HttpResponseMessage response)
+        public static async Task EnsureSuccessAsync(
+            HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
             {
@@ -17,8 +15,9 @@ namespace HealthCare_Appointment_Portal_MVC.Helpers
                     await response.Content
                         .ReadAsAsync<ApiErrorResponse>();
 
-                throw new Exception(
-                    error.Message);
+                throw new HttpRequestException(
+                    error?.Message ??
+                    "An unexpected API error occurred.");
             }
         }
     }

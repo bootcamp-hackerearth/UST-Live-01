@@ -6,14 +6,20 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Interfaces
 {
     public interface IPatientRepository
-        : IRepository<Patient>
     {
-        Task<Patient>
-            GetPatientByEmailAsync(
-                string email);
+        Task<Patient> GetByIdAsync(int id);
 
-        Task<IEnumerable<Patient>>
-            GetPatientsByInsuranceStatusAsync(
-                InsuranceStatus status);
+        Task<IEnumerable<Patient>> GetAllAsync();
+
+        Task AddAsync(Patient patient);
+
+        Task UpdateAsync(Patient patient);
+
+        Task DeleteAsync(int id);
+
+        Task<Patient> GetPatientByEmailAsync(string email);
+
+        Task<IEnumerable<Patient>> GetPatientsByInsuranceStatusAsync(
+            InsuranceStatus status);
     }
 }

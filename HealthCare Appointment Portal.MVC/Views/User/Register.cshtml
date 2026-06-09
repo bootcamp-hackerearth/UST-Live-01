@@ -7,7 +7,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
 
@@ -161,9 +161,13 @@
 
                             <div class="mb-3">
 
-                                <label class="form-label">
-                                    Full Name
-                                </label>
+                                @Html.LabelFor(
+                                    m => m.FullName,
+                                    "Full Name",
+                                    new
+                                    {
+                                        @class = "form-label"
+                                    })
 
                                 @Html.TextBoxFor(
                                     m => m.FullName,
@@ -185,15 +189,23 @@
 
                             <div class="mb-3">
 
-                                <label class="form-label">
-                                    Date Of Birth
-                                </label>
+                                @Html.LabelFor(
+                                    m => m.DateOfBirth,
+                                    "Date Of Birth",
+                                    new
+                                    {
+                                        @class = "form-label"
+                                    })
 
-                                <input type="date"
-                                       id="DateOfBirth"
-                                       name="DateOfBirth"
-                                       class="form-control"
-                                       max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                @Html.TextBoxFor(
+                                    m => m.DateOfBirth,
+                                    "{0:yyyy-MM-dd}",
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        type = "date",
+                                        max = DateTime.Today.ToString("yyyy-MM-dd")
+                                    })
 
                                 @Html.ValidationMessageFor(
                                     m => m.DateOfBirth,
@@ -207,9 +219,13 @@
 
                             <div class="mb-3">
 
-                                <label class="form-label">
-                                    Gender
-                                </label>
+                                @Html.LabelFor(
+                                    m => m.Gender,
+                                    "Gender",
+                                    new
+                                    {
+                                        @class = "form-label"
+                                    })
 
                                 @Html.EnumDropDownListFor(
                                     m => m.Gender,
@@ -231,9 +247,13 @@
 
                             <div class="mb-3">
 
-                                <label class="form-label">
-                                    Phone Number
-                                </label>
+                                @Html.LabelFor(
+                                    m => m.PhoneNumber,
+                                    "Phone Number",
+                                    new
+                                    {
+                                        @class = "form-label"
+                                    })
 
                                 @Html.TextBoxFor(
                                     m => m.PhoneNumber,
@@ -255,15 +275,20 @@
 
                             <div class="mb-4">
 
-                                <label class="form-label">
-                                    Email Address
-                                </label>
+                                @Html.LabelFor(
+                                    m => m.Email,
+                                    "Email Address",
+                                    new
+                                    {
+                                        @class = "form-label"
+                                    })
 
                                 @Html.TextBoxFor(
                                     m => m.Email,
                                     new
                                     {
                                         @class = "form-control",
+                                        type = "email",
                                         placeholder = "Enter Email Address"
                                     })
 

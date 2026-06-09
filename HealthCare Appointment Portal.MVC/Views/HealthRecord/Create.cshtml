@@ -37,25 +37,20 @@
                         })
                 }
 
-                @Html.HiddenFor(
-                    m => m.AppointmentId)
-
-                @Html.HiddenFor(
-                    m => m.PatientId)
-
-                @Html.HiddenFor(
-                    m => m.DoctorId)
-
-                @Html.HiddenFor(
-                    m => m.VisitDate)
+                @Html.HiddenFor(m => m.AppointmentId)
+                @Html.HiddenFor(m => m.PatientId)
+                @Html.HiddenFor(m => m.DoctorId)
+                @Html.HiddenFor(m => m.VisitDate)
 
                 <div class="mb-3">
 
-                    <label class="form-label">
+                    <label for="appointmentIdDisplay"
+                           class="form-label">
                         Appointment Id
                     </label>
 
                     <input type="text"
+                           id="appointmentIdDisplay"
                            class="form-control"
                            value="@Model.AppointmentId"
                            readonly />
@@ -64,11 +59,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
+                    <label for="patientIdDisplay"
+                           class="form-label">
                         Patient Id
                     </label>
 
                     <input type="text"
+                           id="patientIdDisplay"
                            class="form-control"
                            value="@Model.PatientId"
                            readonly />
@@ -77,11 +74,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
+                    <label for="visitDateDisplay"
+                           class="form-label">
                         Visit Date
                     </label>
 
                     <input type="text"
+                           id="visitDateDisplay"
                            class="form-control"
                            value="@Model.VisitDate.ToString("dd MMM yyyy")"
                            readonly />
@@ -90,9 +89,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Diagnosis
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Diagnosis,
+                        "Diagnosis",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextAreaFor(
                         m => m.Diagnosis,
@@ -115,9 +118,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Prescription
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Prescription,
+                        "Prescription",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextAreaFor(
                         m => m.Prescription,
@@ -140,9 +147,13 @@
 
                 <div class="mb-4">
 
-                    <label class="form-label">
-                        Notes
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Notes,
+                        "Notes",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextAreaFor(
                         m => m.Notes,

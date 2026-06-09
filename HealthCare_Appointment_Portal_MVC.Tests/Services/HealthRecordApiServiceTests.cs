@@ -18,7 +18,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
 {
     public class HealthRecordApiServiceTests
     {
-        private HttpClient CreateClient(
+        private static HttpClient CreateClient(
             HttpResponseMessage response)
         {
             var handler =
@@ -39,7 +39,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
             };
         }
 
-        private StringContent JsonContent(
+        private static StringContent JsonContent(
             object data)
         {
             return new StringContent(
@@ -222,10 +222,13 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new HealthRecordApiService(
                     CreateClient(response));
 
-            await service
-                .UpdateHealthRecordAsync(
-                    1,
-                    new UpdateHealthRecordDto());
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.UpdateHealthRecordAsync(
+                        1,
+                        new UpdateHealthRecordDto()));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -239,9 +242,12 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                 new HealthRecordApiService(
                     CreateClient(response));
 
-            await service
-                .DeleteHealthRecordAsync(
-                    1);
+            var exception =
+                await Record.ExceptionAsync(
+                    () => service.DeleteHealthRecordAsync(
+                        1));
+
+            Assert.Null(exception);
         }
 
         [Fact]
@@ -267,11 +273,11 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
-                    () =>
-                        service
-                            .GetHealthRecordByIdAsync(
-                                999));
+               await Assert.ThrowsAsync<HttpRequestException>(
+                  () =>
+                    service
+                        .GetHealthRecordByIdAsync(
+                            999));
 
             Assert.Equal(
                 "Record not found",
@@ -301,7 +307,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
+                await Assert.ThrowsAsync<HttpRequestException>(
                     () =>
                         service
                             .GetAllHealthRecordsAsync());
@@ -334,7 +340,7 @@ namespace HealthCare_Appointment_Portal_MVC.Tests.Services
                     CreateClient(response));
 
             var exception =
-                await Assert.ThrowsAsync<Exception>(
+                await Assert.ThrowsAsync<HttpRequestException>(
                     () =>
                         service
                             .DeleteHealthRecordAsync(

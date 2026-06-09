@@ -9,24 +9,52 @@ using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Repositories
 {
-    public class DoctorRepository
-        : Repository<Doctor>,
-          IDoctorRepository
+    public class DoctorRepository : IDoctorRepository
     {
-        public DoctorRepository(
-            ApplicationDbContext context)
-            : base(context)
+        private readonly ApplicationDbContext _context;
+
+        public DoctorRepository(ApplicationDbContext context)
         {
+            _context = context;
         }
 
-        public async Task<IEnumerable<Doctor>>
-            GetDoctorsBySpecialisationAsync(
-                Specialisation specialisation)
+        public async Task<Doctor> GetByIdAsync(int id)
         {
-            return await _dbSet
-                .Where(d =>
-                    d.Specialisation ==
-                    specialisation)
+            return await _context.Doctors.FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Doctor>> GetAllAsync()
+        {
+            return await _context.Doctors.ToListAsync();
+        }
+
+        public async Task AddAsync(Doctor doctor)
+        {
+            _context.Doctors.Add(doctor);
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateAsync(Doctor doctor)
+        {
+            _context.Entry(doctor).State = EntityState.Modified;
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            Doctor doctor = await _context.Doctors.FindAsync(id);
+
+            if (doctor != null)
+            {
+                _context.Doctors.Remove(doctor);
+            }
+        }
+
+        public async Task<IEnumerable<Doctor>> GetDoctorsBySpecialisationAsync(
+            Specialisation specialisation)
+        {
+            return await _context.Doctors
+                .Where(d => d.Specialisation == specialisation)
                 .ToListAsync();
         }
     }

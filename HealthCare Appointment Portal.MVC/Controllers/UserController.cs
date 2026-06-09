@@ -1,6 +1,7 @@
 ﻿using HealthCare_Appointment_Portal.DTOs.PatientDtos;
 using HealthCare_Appointment_Portal.DTOs.UserDtos;
 using HealthCare_Appointment_Portal.Enums;
+using HealthCare_Appointment_Portal.Utilities;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -33,7 +34,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 return RedirectUserByRole();
             }
 
-            return View(new LoginDto());
+            return View(
+                new LoginDto());
         }
 
         [HttpPost]
@@ -56,7 +58,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 if (!user.IsActive)
                 {
                     ModelState.AddModelError(
-                        "",
+                        string.Empty,
                         "User account is inactive.");
 
                     return View(dto);
@@ -68,7 +70,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 Session["UserCode"] =
                     user.UserCode;
 
-                Session["ReferenceId"] =
+                Session[Constants.ReferenceIdKey] =
                     user.ReferenceId;
 
                 Session["Role"] =
@@ -79,7 +81,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(
-                    "",
+                    string.Empty,
                     ex.Message);
 
                 return View(dto);
@@ -117,12 +119,12 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     "Registration successful. Please login using your User Code.";
 
                 return RedirectToAction(
-                    "Login");
+                    Constants.LoginAction);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(
-                    "",
+                    string.Empty,
                     ex.Message);
 
                 return View(patient);
@@ -140,7 +142,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             Session.Abandon();
 
             return RedirectToAction(
-                "Login");
+                Constants.LoginAction);
         }
 
         // ==========================
@@ -154,7 +156,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 Session.Clear();
 
                 return RedirectToAction(
-                    "Login");
+                    Constants.LoginAction);
             }
 
             Role role =
@@ -163,29 +165,25 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             switch (role)
             {
                 case Role.Admin:
-
                     return RedirectToAction(
-                        "Dashboard",
+                        Constants.DashboardAction,
                         "Admin");
 
                 case Role.Doctor:
-
                     return RedirectToAction(
-                        "Dashboard",
-                        "Doctor");
+                        Constants.DashboardAction,
+                        Constants.DoctorController);
 
                 case Role.Patient:
-
                     return RedirectToAction(
-                        "Dashboard",
-                        "Patient");
+                        Constants.DashboardAction,
+                        Constants.PatientController);
 
                 default:
-
                     Session.Clear();
 
                     return RedirectToAction(
-                        "Login");
+                        Constants.LoginAction);
             }
         }
     }

@@ -36,16 +36,15 @@ namespace HealthCare_Appointment_Portal
             var mapperConfiguration =
                 new MapperConfiguration(cfg =>
                 {
-                    cfg.AddProfile<
-                        MappingProfile>();
+                    cfg.AddProfile<MappingProfile>();
                 });
 
             IMapper mapper =
                 mapperConfiguration
                     .CreateMapper();
 
-            container.RegisterInstance<
-                IMapper>(mapper);
+            container.RegisterInstance<IMapper>(
+                mapper);
 
             container.RegisterType<
                 ApplicationDbContext,
@@ -95,6 +94,7 @@ namespace HealthCare_Appointment_Portal
                 IHealthRecordService,
                 HealthRecordService>();
 
+
             // Insurance
 
             container.RegisterType<
@@ -105,11 +105,9 @@ namespace HealthCare_Appointment_Portal
                 IInsuranceService,
                 InsuranceService>();
 
-            container.RegisterType<
-                IUnitOfWork,
-                UnitOfWork>();
 
             // User
+
             container.RegisterType<
                 IUserRepository,
                 UserRepository>();
@@ -117,8 +115,6 @@ namespace HealthCare_Appointment_Portal
             container.RegisterType<
                 IUserService,
                 UserService>();
-
-
         }
     }
 }

@@ -10,21 +10,67 @@ using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Repositories
 {
-    public class AppointmentRepository
-        : Repository<Appointment>,
-          IAppointmentRepository
+    public class AppointmentRepository : IAppointmentRepository
     {
+        private readonly ApplicationDbContext _context;
+
         public AppointmentRepository(
             ApplicationDbContext context)
-            : base(context)
         {
+            _context = context;
+        }
+
+        public async Task<Appointment> GetByIdAsync(int id)
+        {
+            return await _context.Appointments
+                .FindAsync(id);
+        }
+
+        public async Task<IEnumerable<Appointment>> GetAllAsync()
+        {
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(
+            Appointment appointment)
+        {
+            _context.Appointments.Add(
+                appointment);
+
+            await Task.CompletedTask;
+        }
+
+        public async Task UpdateAsync(
+            Appointment appointment)
+        {
+            _context.Entry(appointment)
+                .State = EntityState.Modified;
+
+            await Task.CompletedTask;
+        }
+
+        public async Task DeleteAsync(
+            int id)
+        {
+            Appointment appointment =
+                await _context.Appointments
+                    .FindAsync(id);
+
+            if (appointment != null)
+            {
+                _context.Appointments
+                    .Remove(appointment);
+            }
         }
 
         public async Task<IEnumerable<Appointment>>
             GetAppointmentsByPatientAsync(
                 int patientId)
         {
-            return await _dbSet
+            return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .Where(a =>
@@ -38,7 +84,7 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetAppointmentsByDoctorAsync(
                 int doctorId)
         {
-            return await _dbSet
+            return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .Where(a =>
@@ -51,7 +97,7 @@ namespace HealthCare_Appointment_Portal.Repositories
         public async Task<IEnumerable<Appointment>>
             GetUpcomingAppointmentsAsync()
         {
-            return await _dbSet
+            return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .Where(a =>
@@ -67,7 +113,7 @@ namespace HealthCare_Appointment_Portal.Repositories
         public async Task<IEnumerable<Appointment>>
             GetCompletedAppointmentsAsync()
         {
-            return await _dbSet
+            return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .Where(a =>
@@ -82,7 +128,7 @@ namespace HealthCare_Appointment_Portal.Repositories
                 DateTime date,
                 string timeSlot)
         {
-            return await _dbSet
+            return await _context.Appointments
                 .FirstOrDefaultAsync(a =>
                     a.DoctorId == doctorId
                     &&
@@ -104,7 +150,7 @@ namespace HealthCare_Appointment_Portal.Repositories
                 DateTime date,
                 string timeSlot)
         {
-            return !await _dbSet
+            return !await _context.Appointments
                 .AnyAsync(a =>
                     a.DoctorId == doctorId
                     &&
@@ -124,7 +170,7 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetTodayScheduleAsync(
                 int doctorId)
         {
-            return await _dbSet
+            return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .Where(a =>
@@ -150,7 +196,7 @@ namespace HealthCare_Appointment_Portal.Repositories
             DateTime weekEnd =
                 today.AddDays(7);
 
-            return await _dbSet
+            return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .Where(a =>
@@ -170,7 +216,7 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetNextAppointmentByPatientAsync(
                 int patientId)
         {
-            return await _dbSet
+            return await _context.Appointments
                 .Include(a => a.Doctor)
                 .Where(a =>
                     a.PatientId == patientId

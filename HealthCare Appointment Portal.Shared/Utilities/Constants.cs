@@ -105,5 +105,51 @@ namespace HealthCare_Appointment_Portal.Utilities
         public const string CompleteOnlyConfirmed = "Only confirmed appointments can be completed.";
 
         #endregion
+
+        #region MVC Constants
+
+        public const string ErrorKey =
+            "Error";
+
+        public const string SuccessKey =
+            "Success";
+
+        public const string ReferenceIdKey =
+            "ReferenceId";
+
+        public const string LoginAction =
+            "Login";
+
+        public const string DetailsAction =
+            "Details";
+
+        public const string IndexAction =
+            "Index";
+
+        public const string DashboardAction =
+            "Dashboard";
+
+        public const string CreateAction =
+            "Create";
+
+        public const string MyProfileAction =
+            "MyProfile";
+
+        public const string UserController =
+            "User";
+
+        public const string PatientController =
+            "Patient";
+
+        public const string DoctorController =
+            "Doctor";
+
+        public const string HealthRecordController =
+            "HealthRecord";
+
+        public const string EditMyProfileAction =
+            "EditMyProfile";
+
+        #endregion
     }
 }
