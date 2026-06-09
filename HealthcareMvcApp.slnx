@@ -1,6 +1,7 @@
 <Solution>
-  <Project Path="../HealthcareWeb/HealthcareWeb.csproj" Id="afcf679b-75bf-4c00-970b-5f00af27ebf4" />
-  <Project Path="../SharedClasses/SharedClasses.csproj" Id="302c7621-3b7b-4fe7-ae54-6414a7bde31d" />
+  <Project Path="../HealthcareMvcApiTests/HealthcareMvcApiTests.csproj" Id="7d8a9d6d-0211-4076-a461-fa9024858602" />
   <Project Path="HealthcareApi/HealthcareApi.csproj" Id="426e5d61-18cc-44de-a421-c3a2bf6ac56c" />
   <Project Path="HealthcareMvcApp.csproj" Id="89c254ff-818c-4273-81e5-9e6047da04e4" />
+  <Project Path="HealthcareWeb/HealthcareWeb.csproj" Id="afcf679b-75bf-4c00-970b-5f00af27ebf4" />
+  <Project Path="SharedClasses/SharedClasses.csproj" Id="302c7621-3b7b-4fe7-ae54-6414a7bde31d" />
 </Solution>

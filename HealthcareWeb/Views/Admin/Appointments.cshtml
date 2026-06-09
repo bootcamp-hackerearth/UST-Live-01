@@ -1,0 +1,130 @@
+@model List<SharedClasses.Dtos.AppointmentDto>
+
+@{
+    ViewBag.Title = "Appointments";
+}
+
+<h2 class="text-success">Appointments</h2>
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Appointment Register</h4>
+
+            @if (ViewBag.Patient != null)
+            {
+                <p>Filtered by patient: @ViewBag.Patient.FullName</p>
+            }
+            else if (ViewBag.Doctor != null)
+            {
+                <p>Filtered by doctor: Dr. @ViewBag.Doctor.FullName</p>
+            }
+            else
+            {
+                <p>Review, update, and manage appointment bookings across the portal.</p>
+            }
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Create Appointment",
+                "CreateAppointment",
+                "Admin",
+                null,
+                new { @class = "btn btn-primary" }
+            )
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Index",
+                "Admin",
+                null,
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No appointments found</h4>
+            <p>There are no appointment records matching this view.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Patient ID</th>
+                            <th>Doctor ID</th>
+                            <th>Scheduled Date</th>
+                            <th>Slot</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.AppointmentId</td>
+                                <td>@appointment.PatientId</td>
+                                <td>@appointment.DoctorId</td>
+                                <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                                <td>@appointment.SlotNumber</td>
+                                <td>
+                                    @if (appointment.Status.ToString() == "Pending")
+                                    {
+                                        <span class="status-badge status-badge-warning">Pending</span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Confirmed")
+                                    {
+                                        <span class="status-badge status-badge-info">Confirmed</span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Completed")
+                                    {
+                                        <span class="status-badge status-badge-success">Completed</span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Cancelled")
+                                    {
+                                        <span class="status-badge status-badge-danger">Cancelled</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-badge-muted">
+                                            @appointment.Status
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="data-table-actions">
+                                        @Html.ActionLink(
+                                            "Edit",
+                                            "EditAppointment",
+                                            "Admin",
+                                            new { id = appointment.AppointmentId },
+                                            new { @class = "btn btn-warning btn-sm" }
+                                        )
+
+                                        @Html.ActionLink(
+                                            "Delete",
+                                            "DeleteAppointment",
+                                            "Admin",
+                                            new { id = appointment.AppointmentId },
+                                            new { @class = "btn btn-danger btn-sm" }
+                                        )
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

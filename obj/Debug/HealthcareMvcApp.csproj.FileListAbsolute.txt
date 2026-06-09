@@ -149,6 +149,7 @@ C:\Users\310511\source\repos\HealthcareMvcApp\bin\Microsoft.CodeDom.Providers.Do
 C:\Users\310511\source\repos\HealthcareMvcApp\bin\Microsoft.Web.Infrastructure.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\bin\Newtonsoft.Json.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\bin\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\310511\source\repos\HealthcareMvcApp\bin\System.Web.Cors.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\bin\System.Web.Helpers.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\bin\System.Web.Mvc.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\bin\System.Web.Optimization.dll
@@ -182,4 +183,3 @@ C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\HealthcareMvcApp.csproj.
 C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\Healthca.CF8BED0F.Up2Date
 C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\HealthcareMvcApp.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\HealthcareMvcApp.pdb
-C:\Users\310511\source\repos\HealthcareMvcApp\bin\System.Web.Cors.dll

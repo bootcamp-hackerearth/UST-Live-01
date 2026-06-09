@@ -1,0 +1,132 @@
+@model SharedClasses.Dtos.AddHealthRecordDto
+
+@{
+    ViewBag.Title = "Add Health Record";
+
+    int doctorId = ViewBag.DoctorId != null ? Convert.ToInt32(ViewBag.DoctorId) : 0;
+    var appointment = ViewBag.Appointment as SharedClasses.Dtos.AppointmentDto;
+}
+
+<h2>Add Health Record</h2>
+
+<p class="page-subtitle">
+    Record diagnosis, prescription, and clinical notes for the completed appointment.
+</p>
+
+<div class="form-panel form-panel-wide">
+    <div class="form-panel-header">
+        <h4>Clinical Record Entry</h4>
+        <p>Review appointment context and enter the patient’s health record details.</p>
+    </div>
+
+    @if (appointment != null)
+    {
+        <div class="form-meta-card">
+            <div class="form-meta-grid">
+                <div class="form-meta-item">
+                    <span>Appointment ID</span>
+                    <strong>@appointment.AppointmentId</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Patient ID</span>
+                    <strong>@appointment.PatientId</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Doctor ID</span>
+                    <strong>@appointment.DoctorId</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Scheduled Date</span>
+                    <strong>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Slot</span>
+                    <strong>@appointment.SlotNumber</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Status</span>
+                    <strong>@appointment.Status</strong>
+                </div>
+            </div>
+        </div>
+    }
+
+    @using (Html.BeginForm("AddHealthRecord", "Doctor", FormMethod.Post))
+    {
+        <input type="hidden" name="doctorId" value="@doctorId" />
+        <input type="hidden" name="AppointmentId" value="@Model.AppointmentId" />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-row-grid">
+            <div class="mb-2 form-row-full">
+                <label class="fw-bold">Appointment ID</label>
+                <input type="text"
+                       class="form-control border-dark"
+                       value="@Model.AppointmentId"
+                       readonly="readonly" />
+            </div>
+
+            <div class="mb-2 form-row-full">
+                @Html.LabelFor(m => m.Diagnosis, new { @class = "fw-bold" })
+                @Html.TextAreaFor(
+                    m => m.Diagnosis,
+                    new
+                    {
+                        @class = "form-control border-dark",
+                        rows = "4",
+                        placeholder = "Enter diagnosis details"
+                    }
+                )
+                @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-2 form-row-full">
+                @Html.LabelFor(m => m.Prescription, new { @class = "fw-bold" })
+                @Html.TextAreaFor(
+                    m => m.Prescription,
+                    new
+                    {
+                        @class = "form-control border-dark",
+                        rows = "4",
+                        placeholder = "Enter prescription details"
+                    }
+                )
+                @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-2 form-row-full">
+                @Html.LabelFor(m => m.Notes, new { @class = "fw-bold" })
+                @Html.TextAreaFor(
+                    m => m.Notes,
+                    new
+                    {
+                        @class = "form-control border-dark",
+                        rows = "4",
+                        placeholder = "Optional clinical notes"
+                    }
+                )
+                @Html.ValidationMessageFor(m => m.Notes, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Save Health Record
+            </button>
+
+            @Html.ActionLink(
+                "Back to Appointments",
+                "UpcomingAppointments",
+                "Doctor",
+                new { doctorId = doctorId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
+</div>

@@ -1,0 +1,170 @@
+﻿@model SharedClasses.Dtos.PatientDto
+
+@{
+    ViewBag.Title = "Patient Dashboard";
+}
+
+<div class="dashboard-hero">
+    <div class="dashboard-hero-content">
+        <div class="dashboard-kicker">Patient Portal</div>
+
+        <h2>Welcome, @Model.FullName</h2>
+
+        <p>
+            View appointments, book consultations, update your profile, and access your health record history.
+        </p>
+    </div>
+</div>
+
+<div class="profile-summary-card">
+    <div class="profile-summary-header">
+        <div>
+            <h4>Patient Profile</h4>
+            <p>Core registration and contact information</p>
+        </div>
+
+        <span class="status-pill status-active">Patient ID: @Model.PatientId</span>
+    </div>
+
+    <div class="profile-summary-grid">
+        <div class="profile-field">
+            <span>Name</span>
+            <strong>@Model.FullName</strong>
+        </div>
+
+        <div class="profile-field">
+            <span>Date of Birth</span>
+            <strong>@Model.DateOfBirth.ToString("dd-MM-yyyy")</strong>
+        </div>
+
+        <div class="profile-field">
+            <span>Gender</span>
+            <strong>@Model.Gender</strong>
+        </div>
+
+        <div class="profile-field">
+            <span>Phone</span>
+            <strong>@Model.PhoneNumber</strong>
+        </div>
+
+        <div class="profile-field">
+            <span>Email</span>
+            <strong>@Model.Email</strong>
+        </div>
+
+        <div class="profile-field">
+            <span>Insurance ID</span>
+            <strong>@Model.InsuranceId</strong>
+        </div>
+    </div>
+</div>
+
+<div class="dashboard-card-grid dashboard-card-grid-three">
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">A</div>
+
+        <h4>Appointments</h4>
+
+        <p>
+            Review upcoming appointments and cancel appointments when required.
+        </p>
+
+        @Html.ActionLink(
+            "View Upcoming",
+            "UpcomingAppointments",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-primary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">B</div>
+
+        <h4>Book Consultation</h4>
+
+        <p>
+            Search doctors by specialisation and book your next consultation.
+        </p>
+
+        @Html.ActionLink(
+            "Book Appointment",
+            "BookAppointment",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-primary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">H</div>
+
+        <h4>Health Records</h4>
+
+        <p>
+            View medical history, diagnoses, prescriptions, and cancelled appointments.
+        </p>
+
+        @Html.ActionLink(
+            "View Records",
+            "HealthRecords",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-primary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">D</div>
+
+        <h4>Search Doctors</h4>
+
+        <p>
+            Find doctors by specialisation and review their experience and consultation fee.
+        </p>
+
+        @Html.ActionLink(
+            "Search Doctors",
+            "SearchDoctors",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-secondary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">P</div>
+
+        <h4>Profile</h4>
+
+        <p>
+            Keep your personal, contact, and insurance information up to date.
+        </p>
+
+        @Html.ActionLink(
+            "Update Profile",
+            "EditProfile",
+            "Patient",
+            new { patientId = Model.PatientId },
+            new { @class = "btn btn-secondary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">L</div>
+
+        <h4>Session</h4>
+
+        <p>
+            Return to the portal home page when you are finished.
+        </p>
+
+        @Html.ActionLink(
+            "Logout",
+            "Index",
+            "Home",
+            null,
+            new { @class = "btn btn-dark" }
+        )
+    </div>
+</div>

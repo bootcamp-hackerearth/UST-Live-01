@@ -1,0 +1,134 @@
+@model List<SharedClasses.Dtos.HealthRecordDto>
+
+@{
+    ViewBag.Title = "Health Records";
+    int patientId = ViewBag.PatientId != null ? Convert.ToInt32(ViewBag.PatientId) : 0;
+    var cancelledAppointments = ViewBag.CancelledAppointments as List<SharedClasses.Dtos.AppointmentDto>;
+}
+
+<h2 class="text-success">Health Records</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (ViewBag.Patient != null)
+{
+    <p>
+        <strong>Patient:</strong> @ViewBag.Patient.FullName
+    </p>
+}
+
+<div class="button-group">
+    @Html.ActionLink(
+        "Back to Dashboard",
+        "Dashboard",
+        "Patient",
+        new { patientId = patientId },
+        new { @class = "btn btn-secondary" }
+    )
+</div>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>No health records found.</p>
+}
+else
+{
+    <h4>Medical Records</h4>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Appointment ID</th>
+                <th>Doctor ID</th>
+                <th>Visit Date</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var record in Model)
+            {
+                <tr>
+                    <td>@record.HealthRecordId</td>
+                    <td>@record.AppointmentId</td>
+                    <td>@record.DoctorId</td>
+                    <td>@record.VisitDate.ToString("dd-MM-yyyy")</td>
+                    <td>@record.Diagnosis</td>
+                    <td>@record.Prescription</td>
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(record.Notes))
+                        {
+                            <span>-</span>
+                        }
+                        else
+                        {
+                            @record.Notes
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h4>Cancelled Appointments</h4>
+
+@if (cancelledAppointments == null || cancelledAppointments.Count == 0)
+{
+    <p>No cancelled appointments found.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Doctor ID</th>
+                <th>Scheduled Date</th>
+                <th>Slot Number</th>
+                <th>Status</th>
+                <th>Cancellation Reason</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var appointment in cancelledAppointments)
+            {
+                <tr>
+                    <td>@appointment.AppointmentId</td>
+                    <td>@appointment.DoctorId</td>
+                    <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                    <td>@appointment.SlotNumber</td>
+                    <td>@appointment.Status</td>
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(appointment.CancellationReason))
+                        {
+                            <span>-</span>
+                        }
+                        else
+                        {
+                            @appointment.CancellationReason
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,109 @@
+@model List<SharedClasses.Dtos.PatientDto>
+
+@{
+    ViewBag.Title = "Patients";
+}
+
+<h2 class="text-success">Patients</h2>
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Patient Directory</h4>
+            <p>View, update, and manage registered patient records.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Create Patient",
+                "CreatePatient",
+                "Admin",
+                null,
+                new { @class = "btn btn-primary" }
+            )
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Index",
+                "Admin",
+                null,
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No patients found</h4>
+            <p>There are no patient records available yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Full Name</th>
+                            <th>Date of Birth</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Insurance ID</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var patient in Model)
+                        {
+                            <tr>
+                                <td>@patient.PatientId</td>
+                                <td class="text-left">@patient.FullName</td>
+                                <td>@patient.DateOfBirth.ToString("dd-MM-yyyy")</td>
+                                <td>
+                                    <span class="status-badge status-badge-info">
+                                        @patient.Gender
+                                    </span>
+                                </td>
+                                <td>@patient.PhoneNumber</td>
+                                <td class="text-left">@patient.Email</td>
+                                <td>@patient.InsuranceId</td>
+                                <td>
+                                    <div class="data-table-actions">
+                                        @Html.ActionLink(
+                                            "Edit",
+                                            "EditPatient",
+                                            "Admin",
+                                            new { id = patient.PatientId },
+                                            new { @class = "btn btn-warning btn-sm" }
+                                        )
+
+                                        @Html.ActionLink(
+                                            "Delete",
+                                            "DeletePatient",
+                                            "Admin",
+                                            new { id = patient.PatientId },
+                                            new { @class = "btn btn-danger btn-sm" }
+                                        )
+
+                                        @Html.ActionLink(
+                                            "Appointments",
+                                            "AppointmentsByPatient",
+                                            "Admin",
+                                            new { patientId = patient.PatientId },
+                                            new { @class = "btn btn-info btn-sm" }
+                                        )
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

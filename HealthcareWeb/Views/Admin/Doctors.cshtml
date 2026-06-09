@@ -1,0 +1,133 @@
+@model List<SharedClasses.Dtos.DoctorDto>
+
+@{
+    ViewBag.Title = "Doctors";
+}
+
+<h2 class="text-success">Doctors</h2>
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Doctor Directory</h4>
+            <p>Manage doctor profiles, specialisations, consultation fees, and account availability.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Create Doctor",
+                "CreateDoctor",
+                "Admin",
+                null,
+                new { @class = "btn btn-primary" }
+            )
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Index",
+                "Admin",
+                null,
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No doctors found</h4>
+            <p>There are no doctor records available yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor ID</th>
+                            <th>Full Name</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Consultation Fee</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var doctor in Model)
+                        {
+                            <tr>
+                                <td>@doctor.DoctorId</td>
+                                <td class="text-left">Dr. @doctor.FullName</td>
+                                <td>
+                                    <span class="status-badge status-badge-info">
+                                        @doctor.Specialisation
+                                    </span>
+                                </td>
+                                <td>@doctor.YearsOfExperience years</td>
+                                <td>@doctor.ConsultationFee</td>
+                                <td>
+                                    @if (doctor.IsActive)
+                                    {
+                                        <span class="status-badge status-badge-success">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-badge-danger">
+                                            Inactive
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="data-table-actions">
+                                        @Html.ActionLink(
+                                            "Edit",
+                                            "EditDoctor",
+                                            "Admin",
+                                            new { id = doctor.DoctorId },
+                                            new { @class = "btn btn-warning btn-sm" }
+                                        )
+
+                                        @if (doctor.IsActive)
+                                        {
+                                            @Html.ActionLink(
+                                                "Deactivate",
+                                                "DeactivateDoctor",
+                                                "Admin",
+                                                new { id = doctor.DoctorId },
+                                                new { @class = "btn btn-danger btn-sm" }
+                                            )
+                                        }
+                                        else
+                                        {
+                                            @Html.ActionLink(
+                                                "Reactivate",
+                                                "ReactivateDoctor",
+                                                "Admin",
+                                                new { id = doctor.DoctorId },
+                                                new { @class = "btn btn-success btn-sm" }
+                                            )
+                                        }
+
+                                        @Html.ActionLink(
+                                            "Appointments",
+                                            "AppointmentsByDoctor",
+                                            "Admin",
+                                            new { doctorId = doctor.DoctorId },
+                                            new { @class = "btn btn-info btn-sm" }
+                                        )
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

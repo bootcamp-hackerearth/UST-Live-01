@@ -1,0 +1,161 @@
+@model SharedClasses.Dtos.BookAppointmentDto
+@using SharedClasses.Enums
+
+@{
+    ViewBag.Title = "Book Appointment";
+
+    var doctors = ViewBag.Doctors as System.Collections.Generic.List<SharedClasses.Dtos.DoctorDto>;
+
+    string selectedSpecialisation =
+        ViewBag.SelectedSpecialisation != null
+            ? ViewBag.SelectedSpecialisation.ToString()
+            : "";
+
+    string scheduledDate =
+        Model != null
+            ? Model.ScheduledDate.ToString("yyyy-MM-dd")
+            : DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
+
+    int patientId =
+        Model != null
+            ? Model.PatientId
+            : 0;
+}
+
+<h2>Book Appointment</h2>
+
+<p class="page-subtitle">
+    Search doctors by specialisation and select a doctor for your appointment.
+    The system will automatically assign the next available slot.
+</p>
+
+<div class="form-panel form-panel-wide">
+    <div class="form-panel-header">
+        <h4>Find Available Doctors</h4>
+        <p>Select a specialisation and appointment date to view matching doctors.</p>
+    </div>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @using (Html.BeginForm("BookAppointment", "Patient", FormMethod.Get))
+    {
+        <input type="hidden" name="patientId" value="@patientId" />
+
+        <div class="form-row-grid">
+            <div class="mb-2">
+                <label class="fw-bold">Specialisation</label>
+
+                <select name="specialisation" class="form-control border-dark">
+                    <option value="">Select Specialisation</option>
+
+                    @foreach (Specialisation item in Enum.GetValues(typeof(Specialisation)))
+                    {
+                        string itemValue = item.ToString();
+
+                        if (itemValue == selectedSpecialisation)
+                        {
+                            <option value="@itemValue" selected="selected">@itemValue</option>
+                        }
+                        else
+                        {
+                            <option value="@itemValue">@itemValue</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Appointment Date</label>
+
+                <input type="date"
+                       name="scheduledDate"
+                       value="@scheduledDate"
+                       class="form-control border-dark" />
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Show Doctors
+            </button>
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
+</div>
+
+@if (doctors != null)
+{
+    <div class="data-section">
+        <div class="data-section-header">
+            <div class="data-section-title">
+                <h4>Available Doctors</h4>
+                <p>Select a doctor to complete the booking request.</p>
+            </div>
+        </div>
+
+        @if (doctors.Count == 0)
+        {
+            <div class="empty-state-card">
+                <h4>No doctors found</h4>
+                <p>No doctors were found for the selected specialisation.</p>
+            </div>
+        }
+        else
+        {
+            <div class="data-table-card">
+                <div class="data-table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Doctor ID</th>
+                                <th>Name</th>
+                                <th>Specialisation</th>
+                                <th>Experience</th>
+                                <th>Fee</th>
+                                <th>Book</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var doctor in doctors)
+                            {
+                                <tr>
+                                    <td>@doctor.DoctorId</td>
+                                    <td class="text-left">Dr. @doctor.FullName</td>
+                                    <td>
+                                        <span class="status-badge status-badge-info">
+                                            @doctor.Specialisation
+                                        </span>
+                                    </td>
+                                    <td>@doctor.YearsOfExperience years</td>
+                                    <td>@doctor.ConsultationFee</td>
+                                    <td>
+                                        <div class="data-table-actions">
+                                            @using (Html.BeginForm("BookAppointment", "Patient", FormMethod.Post))
+                                            {
+                                                <input type="hidden" name="PatientId" value="@patientId" />
+                                                <input type="hidden" name="DoctorId" value="@doctor.DoctorId" />
+                                                <input type="hidden" name="ScheduledDate" value="@scheduledDate" />
+
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    Select Doctor
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}

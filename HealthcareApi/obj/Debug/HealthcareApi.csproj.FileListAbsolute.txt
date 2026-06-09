@@ -1,3 +1,5 @@
+C:\Users\310511\source\repos\HealthcareApi\obj\Debug\HealthcareApi.dll
+C:\Users\310511\source\repos\HealthcareApi\obj\Debug\HealthcareApi.pdb
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\HealthcareApi.dll.config
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\HealthcareApi.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\HealthcareApi.pdb
@@ -68,6 +70,7 @@ C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\Microsoft.Identi
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\Microsoft.IdentityModel.Tokens.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\Microsoft.Web.Infrastructure.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\Newtonsoft.Json.dll
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\SharedClasses.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\Swashbuckle.Core.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Buffers.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Diagnostics.DiagnosticSource.dll
@@ -78,6 +81,7 @@ C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Runtime.C
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Text.Encodings.Web.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Text.Json.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Threading.Tasks.Extensions.dll
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Web.Cors.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Web.Helpers.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Web.Http.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Web.Http.WebHost.dll
@@ -92,6 +96,7 @@ C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\Unity.Container.
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\Unity.WebApi.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\WebActivatorEx.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\WebGrease.dll
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\SharedClasses.pdb
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\AutoMapper.xml
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\EntityFramework.xml
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\EntityFramework.SqlServer.xml
@@ -134,8 +139,3 @@ C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\Healthcare
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\Healthca.42D9C22A.Up2Date
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\HealthcareApi.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\HealthcareApi.pdb
-C:\Users\310511\source\repos\HealthcareApi\obj\Debug\HealthcareApi.dll
-C:\Users\310511\source\repos\HealthcareApi\obj\Debug\HealthcareApi.pdb
-C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\SharedClasses.dll
-C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Web.Cors.dll
-C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\SharedClasses.pdb

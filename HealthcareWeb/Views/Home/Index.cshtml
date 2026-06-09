@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div class="hero-panel">
+    <div class="hero-badge">
+        Healthcare Appointment Management
+    </div>
+
+    <h2 class="hero-title">
+        Secure, streamlined healthcare scheduling
+    </h2>
+
+    <p class="hero-subtitle">
+        Manage patient registrations, doctor appointments, health records, and administrative workflows from one central portal.
+    </p>
+
+    <div class="portal-card-grid">
+        <div class="portal-card">
+            <div class="portal-card-icon">P</div>
+            <h4>Patients</h4>
+            <p>Register, book appointments, view health records, and manage your profile.</p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink(
+                    "New Patient",
+                    "Register",
+                    "Patient",
+                    null,
+                    new { @class = "btn btn-primary" }
+                )
+
+                @Html.ActionLink(
+                    "Patient Login",
+                    "Login",
+                    "Patient",
+                    null,
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+
+        <div class="portal-card">
+            <div class="portal-card-icon">D</div>
+            <h4>Doctors</h4>
+            <p>Review appointments, confirm consultations, and maintain patient health records.</p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink(
+                    "Doctor Login",
+                    "Login",
+                    "Doctor",
+                    null,
+                    new { @class = "btn btn-primary" }
+                )
+            </div>
+        </div>
+
+        <div class="portal-card">
+            <div class="portal-card-icon">A</div>
+            <h4>Administration</h4>
+            <p>Manage patients, doctors, appointments, and health record operations.</p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink(
+                    "Admin Dashboard",
+                    "Index",
+                    "Admin",
+                    null,
+                    new { @class = "btn btn-dark" }
+                )
+            </div>
+        </div>
+    </div>
+</div>

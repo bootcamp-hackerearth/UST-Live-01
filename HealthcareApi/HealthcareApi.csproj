@@ -422,7 +422,7 @@
     <Content Include="Scripts\jquery-3.7.0.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SharedClasses\SharedClasses.csproj">
+    <ProjectReference Include="..\SharedClasses\SharedClasses.csproj">
       <Project>{302c7621-3b7b-4fe7-ae54-6414a7bde31d}</Project>
       <Name>SharedClasses</Name>
     </ProjectReference>

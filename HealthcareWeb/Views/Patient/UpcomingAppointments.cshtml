@@ -1,0 +1,112 @@
+@model List<SharedClasses.Dtos.AppointmentDto>
+
+@{
+    ViewBag.Title = "Upcoming Appointments";
+    int patientId = ViewBag.PatientId != null ? Convert.ToInt32(ViewBag.PatientId) : 0;
+}
+
+<h2 class="text-success">Upcoming Appointments</h2>
+
+@if (ViewBag.Patient != null)
+{
+    <p>
+        <strong>Patient:</strong> @ViewBag.Patient.FullName
+    </p>
+}
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Upcoming Appointment Schedule</h4>
+            <p>Review scheduled consultations and cancel appointments when required.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Book Appointment",
+                "BookAppointment",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-primary" }
+            )
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No upcoming appointments</h4>
+            <p>You do not currently have any upcoming appointments.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Doctor ID</th>
+                            <th>Scheduled Date</th>
+                            <th>Slot</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.AppointmentId</td>
+                                <td>@appointment.DoctorId</td>
+                                <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                                <td>@appointment.SlotNumber</td>
+                                <td>
+                                    @if (appointment.Status.ToString() == "Pending")
+                                    {
+                                        <span class="status-badge status-badge-warning">Pending</span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Confirmed")
+                                    {
+                                        <span class="status-badge status-badge-info">Confirmed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-badge-muted">
+                                            @appointment.Status
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="data-table-actions">
+                                        @Html.ActionLink(
+                                            "Cancel",
+                                            "CancelAppointment",
+                                            "Patient",
+                                            new
+                                            {
+                                                appointmentId = appointment.AppointmentId,
+                                                patientId = patientId
+                                            },
+                                            new { @class = "btn btn-danger btn-sm" }
+                                        )
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

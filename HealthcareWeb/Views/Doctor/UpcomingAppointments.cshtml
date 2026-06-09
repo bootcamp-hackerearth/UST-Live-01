@@ -1,0 +1,166 @@
+@model List<SharedClasses.Dtos.AppointmentDto>
+@using SharedClasses.Enums
+
+@{
+    ViewBag.Title = "Upcoming Appointments";
+    int doctorId = ViewBag.DoctorId != null ? Convert.ToInt32(ViewBag.DoctorId) : 0;
+}
+
+<h2 class="text-success">Upcoming Appointments</h2>
+
+@if (ViewBag.Doctor != null)
+{
+    <p>
+        <strong>Doctor:</strong> Dr. @ViewBag.Doctor.FullName
+    </p>
+}
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Upcoming Consultation Schedule</h4>
+            <p>Review pending and confirmed appointments, manage cancellations, and complete consultations.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Doctor",
+                new { doctorId = doctorId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No upcoming appointments</h4>
+            <p>You do not currently have any upcoming appointments.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Patient ID</th>
+                            <th>Scheduled Date</th>
+                            <th>Slot</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            bool isPending = appointment.Status == AppointmentStatus.Pending;
+                            bool isConfirmed = appointment.Status == AppointmentStatus.Confirmed;
+                            bool isToday = appointment.ScheduledDate.Date == DateTime.Today;
+
+                            <tr>
+                                <td>@appointment.AppointmentId</td>
+                                <td>@appointment.PatientId</td>
+                                <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                                <td>@appointment.SlotNumber</td>
+
+                                <td>
+                                    @if (appointment.Status == AppointmentStatus.Pending)
+                                    {
+                                        <span class="status-badge status-badge-warning">Pending</span>
+                                    }
+                                    else if (appointment.Status == AppointmentStatus.Confirmed)
+                                    {
+                                        <span class="status-badge status-badge-info">Confirmed</span>
+                                    }
+                                    else if (appointment.Status == AppointmentStatus.Completed)
+                                    {
+                                        <span class="status-badge status-badge-success">Completed</span>
+                                    }
+                                    else if (appointment.Status == AppointmentStatus.Cancelled)
+                                    {
+                                        <span class="status-badge status-badge-danger">Cancelled</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-badge-muted">
+                                            @appointment.Status
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="doctor-action-stack">
+                                        @if (isPending)
+                                        {
+                                            using (Html.BeginForm("ConfirmAppointment", "Doctor", FormMethod.Post))
+                                            {
+                                                <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                <input type="hidden" name="doctorId" value="@doctorId" />
+
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    Confirm
+                                                </button>
+                                            }
+                                        }
+
+                                        @if (isConfirmed && isToday)
+                                        {
+                                            using (Html.BeginForm("CompleteAppointment", "Doctor", FormMethod.Post))
+                                            {
+                                                <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                <input type="hidden" name="doctorId" value="@doctorId" />
+
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    Complete
+                                                </button>
+                                            }
+                                        }
+
+                                        @if (isPending || isConfirmed)
+                                        {
+                                            using (Html.BeginForm("CancelAppointment", "Doctor", FormMethod.Post))
+                                            {
+                                                <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
+                                                <input type="hidden" name="doctorId" value="@doctorId" />
+
+                                                <div class="doctor-cancel-group">
+                                                    <input type="text"
+                                                           name="reason"
+                                                           class="form-control compact-reason-input"
+                                                           placeholder="Cancellation reason"
+                                                           required="required" />
+
+                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            }
+                                        }
+
+                                        @if (!isPending && !isConfirmed)
+                                        {
+                                            <span class="text-muted">No actions available</span>
+                                        }
+
+                                        @if (isConfirmed && !isToday)
+                                        {
+                                            <span class="text-muted small-note">
+                                                Complete available on scheduled date
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
