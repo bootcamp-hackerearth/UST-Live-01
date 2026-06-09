@@ -259,6 +259,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Handlers\GlobalExceptionHandler.cs" />
+    <Compile Include="Migrations\202606042020561_InitialCreate.cs" />
+    <Compile Include="Migrations\202606042020561_InitialCreate.Designer.cs">
+      <DependentUpon>202606042020561_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\Doctor.cs" />
     <Compile Include="Models\HealthRecord.cs" />
@@ -426,6 +431,11 @@
       <Project>{302c7621-3b7b-4fe7-ae54-6414a7bde31d}</Project>
       <Name>SharedClasses</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202606042020561_InitialCreate.resx">
+      <DependentUpon>202606042020561_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">17.0</VisualStudioVersion>

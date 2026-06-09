@@ -139,3 +139,5 @@ C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\Healthcare
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\Healthca.42D9C22A.Up2Date
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\HealthcareApi.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\HealthcareApi.pdb
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\HealthcareMvcApp.Migrations.InitialCreate.resources
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\HealthcareApi.csproj.GenerateResource.cache
