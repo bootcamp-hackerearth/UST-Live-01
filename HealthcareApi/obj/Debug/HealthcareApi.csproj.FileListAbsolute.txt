@@ -136,3 +136,6 @@ C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\Healthcare
 C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\obj\Debug\HealthcareApi.pdb
 C:\Users\310511\source\repos\HealthcareApi\obj\Debug\HealthcareApi.dll
 C:\Users\310511\source\repos\HealthcareApi\obj\Debug\HealthcareApi.pdb
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\SharedClasses.dll
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\System.Web.Cors.dll
+C:\Users\310511\source\repos\HealthcareMvcApp\HealthcareApi\bin\SharedClasses.pdb

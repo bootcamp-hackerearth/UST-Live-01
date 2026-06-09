@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using HealthcareApi.Handlers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Web.Http;
-using HealthcareApi.Filters;
+using System.Web.Http.ExceptionHandling;
 
 namespace HealthcareApi
 {
@@ -9,9 +10,11 @@ namespace HealthcareApi
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapHttpAttributeRoutes();
+            config.Services.Replace(
+                typeof(IExceptionHandler),
+                new GlobalExceptionHandler());
 
-            config.Filters.Add(new ApiExceptionFilter());
+            config.MapHttpAttributeRoutes();
 
             var settings = config.Formatters.JsonFormatter.SerializerSettings;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();

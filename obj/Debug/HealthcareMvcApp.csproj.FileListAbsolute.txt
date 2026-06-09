@@ -182,3 +182,4 @@ C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\HealthcareMvcApp.csproj.
 C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\Healthca.CF8BED0F.Up2Date
 C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\HealthcareMvcApp.dll
 C:\Users\310511\source\repos\HealthcareMvcApp\obj\Debug\HealthcareMvcApp.pdb
+C:\Users\310511\source\repos\HealthcareMvcApp\bin\System.Web.Cors.dll

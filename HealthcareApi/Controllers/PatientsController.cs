@@ -1,7 +1,5 @@
-﻿using HealthcareApi.Dtos;
-using HealthcareApi.Exceptions;
+﻿using SharedClasses.Dtos;
 using HealthcareApi.Services;
-using System.Net;
 using System.Web.Http;
 
 namespace HealthcareApi.Controllers
@@ -29,20 +27,9 @@ namespace HealthcareApi.Controllers
         [Route("{id:int}")]
         public IHttpActionResult GetById(int id)
         {
-            try
-            {
-                var patient = _service.GetPatientById(id);
+            var patient = _service.GetPatientById(id);
 
-                return Ok(patient);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(patient);
         }
 
         [HttpPost]
@@ -54,64 +41,37 @@ namespace HealthcareApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.RegisterPatient(dto);
+            var result = _service.RegisterPatient(dto);
 
-                return CreatedAtRoute(
-                    "DefaultApi",
-                    new { controller = "patients", id = result.PatientId },
-                    result);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return CreatedAtRoute(
+                "DefaultApi",
+                new { controller = "patients", id = result.PatientId },
+                result);
         }
 
         [HttpPut]
         [Route("{id:int}")]
-        public IHttpActionResult UpdatePatient(int id, [FromBody] UpdatePatientDto dto)
+        public IHttpActionResult UpdatePatient(
+            int id,
+            [FromBody] UpdatePatientDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.UpdatePatient(id, dto);
+            var result = _service.UpdatePatient(id, dto);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public IHttpActionResult DeletePatient(int id)
         {
-            try
-            {
-                var result = _service.DeletePatient(id);
+            var result = _service.DeletePatient(id);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
     }
 }

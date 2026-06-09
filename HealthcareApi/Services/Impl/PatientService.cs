@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthcareApi.Dtos;
+using SharedClasses.Dtos;
 using HealthcareApi.Exceptions;
 using HealthcareApi.Models;
 using HealthcareApi.Repositories;

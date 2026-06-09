@@ -1,4 +1,4 @@
-﻿using HealthcareApi.Enums;
+﻿using SharedClasses.Enums;
 using HealthcareApi.Models;
 using System;
 using System.Collections.Generic;
@@ -34,6 +34,8 @@ namespace HealthcareApi.Repositories
         List<Appointment> GetAppointmentsByDoctorId(int doctorId);
 
         List<Appointment> GetCancelledAppointmentsByPatientId(int patientId);
+
+        List<Appointment> GetCancelledAppointmentsByDoctorId(int doctorId);
 
         int CountActiveAppointmentsByDoctorAndDate(int doctorId, DateTime date);
 

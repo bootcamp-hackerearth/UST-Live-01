@@ -1,5 +1,5 @@
-﻿using HealthcareApi.Dtos;
-using HealthcareApi.Enums;
+﻿using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using System.Collections.Generic;
 
 namespace HealthcareApi.Services

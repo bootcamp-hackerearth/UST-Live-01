@@ -1,5 +1,5 @@
 ﻿using HealthcareApi.Data;
-using HealthcareApi.Enums;
+using SharedClasses.Enums;
 using HealthcareApi.Models;
 using System;
 using System.Collections.Generic;
@@ -151,6 +151,17 @@ namespace HealthcareApi.Repositories.Implementations
             return _context.Appointments
                 .Where(a =>
                     a.PatientId == patientId &&
+                    a.Status == AppointmentStatus.Cancelled)
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.SlotNumber)
+                .ToList();
+        }
+
+        public List<Appointment> GetCancelledAppointmentsByDoctorId(int doctorId)
+        {
+            return _context.Appointments
+                .Where(a =>
+                    a.DoctorId == doctorId &&
                     a.Status == AppointmentStatus.Cancelled)
                 .OrderByDescending(a => a.ScheduledDate)
                 .ThenBy(a => a.SlotNumber)

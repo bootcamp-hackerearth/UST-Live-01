@@ -1,7 +1,5 @@
-﻿using HealthcareApi.Dtos;
-using HealthcareApi.Exceptions;
+﻿using SharedClasses.Dtos;
 using HealthcareApi.Services;
-using System.Net;
 using System.Web.Http;
 
 namespace HealthcareApi.Controllers
@@ -29,120 +27,63 @@ namespace HealthcareApi.Controllers
         [Route("{id:int}")]
         public IHttpActionResult GetById(int id)
         {
-            try
-            {
-                var appointment = _service.GetAppointmentById(id);
+            var appointment = _service.GetAppointmentById(id);
 
-                return Ok(appointment);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(appointment);
         }
 
         [HttpGet]
         [Route("patient/{patientId:int}")]
         public IHttpActionResult GetByPatient(int patientId)
         {
-            try
-            {
-                var appointments = _service.GetAppointmentsByPatient(patientId);
+            var appointments = _service.GetAppointmentsByPatient(patientId);
 
-                return Ok(appointments);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(appointments);
         }
 
         [HttpGet]
         [Route("doctor/{doctorId:int}")]
         public IHttpActionResult GetByDoctor(int doctorId)
         {
-            try
-            {
-                var appointments = _service.GetAppointmentsByDoctor(doctorId);
+            var appointments = _service.GetAppointmentsByDoctor(doctorId);
 
-                return Ok(appointments);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(appointments);
         }
 
         [HttpGet]
         [Route("patient/{patientId:int}/upcoming")]
         public IHttpActionResult GetUpcomingByPatient(int patientId)
         {
-            try
-            {
-                var appointments = _service.GetUpcomingAppointmentsByPatient(patientId);
+            var appointments = _service.GetUpcomingAppointmentsByPatient(patientId);
 
-                return Ok(appointments);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(appointments);
         }
 
         [HttpGet]
         [Route("doctor/{doctorId:int}/upcoming")]
         public IHttpActionResult GetUpcomingByDoctor(int doctorId)
         {
-            try
-            {
-                var appointments = _service.GetUpcomingAppointmentsByDoctor(doctorId);
+            var appointments = _service.GetUpcomingAppointmentsByDoctor(doctorId);
 
-                return Ok(appointments);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(appointments);
         }
 
         [HttpGet]
         [Route("patient/{patientId:int}/cancelled")]
         public IHttpActionResult GetCancelledByPatient(int patientId)
         {
-            try
-            {
-                var appointments = _service.GetCancelledAppointmentsByPatient(patientId);
+            var appointments = _service.GetCancelledAppointmentsByPatient(patientId);
 
-                return Ok(appointments);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(appointments);
+        }
+
+        [HttpGet]
+        [Route("doctor/{doctorId:int}/cancelled")]
+        public IHttpActionResult GetCancelledByDoctor(int doctorId)
+        {
+            var appointments = _service.GetCancelledAppointmentsByDoctor(doctorId);
+
+            return Ok(appointments);
         }
 
         [HttpPost]
@@ -154,64 +95,37 @@ namespace HealthcareApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.BookAppointment(dto);
+            var result = _service.BookAppointment(dto);
 
-                return CreatedAtRoute(
-                    "DefaultApi",
-                    new { controller = "appointments", id = result.AppointmentId },
-                    result);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return CreatedAtRoute(
+                "DefaultApi",
+                new { controller = "appointments", id = result.AppointmentId },
+                result);
         }
 
         [HttpPut]
         [Route("{id:int}")]
-        public IHttpActionResult UpdateAppointment(int id, [FromBody] UpdateAppointmentDto dto)
+        public IHttpActionResult UpdateAppointment(
+            int id,
+            [FromBody] UpdateAppointmentDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.UpdateAppointment(id, dto);
+            var result = _service.UpdateAppointment(id, dto);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public IHttpActionResult DeleteAppointment(int id)
         {
-            try
-            {
-                var result = _service.DeleteAppointment(id);
+            var result = _service.DeleteAppointment(id);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpPost]
@@ -225,20 +139,9 @@ namespace HealthcareApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.ConfirmAppointment(id, dto);
+            var result = _service.ConfirmAppointment(id, dto);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpPost]
@@ -252,20 +155,9 @@ namespace HealthcareApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.CancelAppointmentByPatient(id, dto);
+            var result = _service.CancelAppointmentByPatient(id, dto);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpPost]
@@ -279,20 +171,9 @@ namespace HealthcareApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.CancelAppointmentByDoctor(id, dto);
+            var result = _service.CancelAppointmentByDoctor(id, dto);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpPost]
@@ -306,20 +187,9 @@ namespace HealthcareApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.CompleteAppointment(id, dto);
+            var result = _service.CompleteAppointment(id, dto);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
     }
 }

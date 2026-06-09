@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthcareApi.Dtos;
+using SharedClasses.Dtos;
 using HealthcareApi.Models;
 
 namespace HealthcareApi.App_Start

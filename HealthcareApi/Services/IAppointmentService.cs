@@ -1,4 +1,4 @@
-﻿using HealthcareApi.Dtos;
+﻿using SharedClasses.Dtos;
 using System.Collections.Generic;
 
 namespace HealthcareApi.Services
@@ -32,5 +32,7 @@ namespace HealthcareApi.Services
         AppointmentDto CancelAppointmentByDoctor(int appointmentId, CancelByDoctorDto dto);
 
         AppointmentDto CompleteAppointment(int appointmentId, CompleteAppointmentDto dto);
+
+        List<AppointmentDto> GetCancelledAppointmentsByDoctor(int doctorId);
     }
 }

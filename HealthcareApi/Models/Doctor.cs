@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using HealthcareApi.Enums;
+using SharedClasses.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthcareApi.Models

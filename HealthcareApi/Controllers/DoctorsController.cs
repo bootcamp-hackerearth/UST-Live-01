@@ -1,8 +1,6 @@
-﻿using HealthcareApi.Dtos;
-using HealthcareApi.Enums;
-using HealthcareApi.Exceptions;
+﻿using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using HealthcareApi.Services;
-using System.Net;
 using System.Web.Http;
 
 namespace HealthcareApi.Controllers
@@ -39,36 +37,18 @@ namespace HealthcareApi.Controllers
         [Route("{id:int}")]
         public IHttpActionResult GetById(int id)
         {
-            try
-            {
-                var doctor = _service.GetDoctorById(id);
+            var doctor = _service.GetDoctorById(id);
 
-                return Ok(doctor);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(doctor);
         }
 
         [HttpGet]
         [Route("specialisation/{specialisation}")]
         public IHttpActionResult SearchBySpecialisation(Specialisation specialisation)
         {
-            try
-            {
-                var doctors = _service.SearchDoctorsBySpecialisation(specialisation);
+            var doctors = _service.SearchDoctorsBySpecialisation(specialisation);
 
-                return Ok(doctors);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(doctors);
         }
 
         [HttpPost]
@@ -80,84 +60,46 @@ namespace HealthcareApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.AddDoctor(dto);
+            var result = _service.AddDoctor(dto);
 
-                return CreatedAtRoute(
-                    "DefaultApi",
-                    new { controller = "doctors", id = result.DoctorId },
-                    result);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return CreatedAtRoute(
+                "DefaultApi",
+                new { controller = "doctors", id = result.DoctorId },
+                result);
         }
 
         [HttpPut]
         [Route("{id:int}")]
-        public IHttpActionResult UpdateDoctor(int id, [FromBody] UpdateDoctorDto dto)
+        public IHttpActionResult UpdateDoctor(
+            int id,
+            [FromBody] UpdateDoctorDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var result = _service.UpdateDoctor(id, dto);
+            var result = _service.UpdateDoctor(id, dto);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public IHttpActionResult DeactivateDoctor(int id)
         {
-            try
-            {
-                var result = _service.DeactivateDoctor(id);
+            var result = _service.DeactivateDoctor(id);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
 
         [HttpPost]
         [Route("{id:int}/reactivate")]
         public IHttpActionResult ReactivateDoctor(int id)
         {
-            try
-            {
-                var result = _service.ReactivateDoctor(id);
+            var result = _service.ReactivateDoctor(id);
 
-                return Ok(result);
-            }
-            catch (EntityNotFoundException ex)
-            {
-                return Content(HttpStatusCode.NotFound, ex.Message);
-            }
-            catch (HealthcareAppException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(result);
         }
     }
 }

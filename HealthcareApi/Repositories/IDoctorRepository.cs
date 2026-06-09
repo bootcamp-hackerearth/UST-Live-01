@@ -1,4 +1,4 @@
-﻿using HealthcareApi.Enums;
+﻿using SharedClasses.Enums;
 using HealthcareApi.Models;
 using System.Collections.Generic;
 

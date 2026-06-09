@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using HealthcareApi.Dtos;
-using HealthcareApi.Enums;
+using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using HealthcareApi.Exceptions;
 using HealthcareApi.Models;
 using HealthcareApi.Repositories;

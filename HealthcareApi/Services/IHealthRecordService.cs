@@ -1,4 +1,4 @@
-﻿using HealthcareApi.Dtos;
+﻿using SharedClasses.Dtos;
 using System.Collections.Generic;
 
 namespace HealthcareApi.Services

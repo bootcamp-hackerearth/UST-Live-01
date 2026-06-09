@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using HealthcareApi.Dtos;
-using HealthcareApi.Enums;
+using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using HealthcareApi.Exceptions;
 using HealthcareApi.Models;
 using HealthcareApi.Repositories;
@@ -109,17 +109,17 @@ namespace HealthcareApi.Services.Implementations
             Doctor doctor = ValidateDoctorExists(dto.DoctorId);
 
             ValidateAppointmentDate(dto.ScheduledDate);
-            ValidateSlotNumber(dto.SlotNumber);
             ValidateDoctorAvailability(doctor, dto.ScheduledDate);
-            ValidateSlotAvailability(dto.DoctorId, dto.ScheduledDate, dto.SlotNumber);
             ValidatePatientDuplicateAppointment(dto.PatientId, dto.DoctorId, dto.ScheduledDate);
+
+            int assignedSlotNumber = FindNextAvailableSlot(dto.DoctorId, dto.ScheduledDate);
 
             Appointment appointment = new Appointment
             {
                 PatientId = dto.PatientId,
                 DoctorId = dto.DoctorId,
                 ScheduledDate = dto.ScheduledDate.Date,
-                SlotNumber = dto.SlotNumber,
+                SlotNumber = assignedSlotNumber,
                 Status = AppointmentStatus.Pending,
                 CancellationReason = string.Empty
             };
@@ -381,6 +381,15 @@ namespace HealthcareApi.Services.Implementations
 
             return appointment;
         }
+        public List<AppointmentDto> GetCancelledAppointmentsByDoctor(int doctorId)
+        {
+            ValidateDoctorExists(doctorId);
+
+            List<Appointment> appointments =
+                _appointmentRepository.GetCancelledAppointmentsByDoctorId(doctorId);
+
+            return _mapper.Map<List<AppointmentDto>>(appointments);
+        }
 
         private void ValidateAppointmentId(int appointmentId)
         {
@@ -512,6 +521,25 @@ namespace HealthcareApi.Services.Implementations
                 throw new AppointmentRuleException(
                     "Cancellation reason cannot exceed 500 characters.");
             }
+        }
+        private int FindNextAvailableSlot(int doctorId, DateTime scheduledDate)
+        {
+            for (int slotNumber = 1; slotNumber <= MaximumSlotsPerDoctorPerDay; slotNumber++)
+            {
+                bool slotBooked =
+                    _appointmentRepository.IsSlotBooked(
+                        doctorId,
+                        scheduledDate.Date,
+                        slotNumber);
+
+                if (!slotBooked)
+                {
+                    return slotNumber;
+                }
+            }
+
+            throw new AppointmentRuleException(
+                "Doctor has reached the maximum number of appointments for this date.");
         }
     }
 }
