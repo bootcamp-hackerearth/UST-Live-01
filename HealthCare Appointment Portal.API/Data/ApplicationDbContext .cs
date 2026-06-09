@@ -1,5 +1,6 @@
-﻿using System.Data.Entity;
-using HealthCare_Appointment_Portal.Models;
+﻿using HealthCare_Appointment_Portal.Models;
+using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
 
 namespace HealthCare_Appointment_Portal.Data
 {
@@ -47,11 +48,13 @@ namespace HealthCare_Appointment_Portal.Data
             set;
         }
 
+
         protected override void OnModelCreating(
-            DbModelBuilder modelBuilder)
+        DbModelBuilder modelBuilder)
         {
-            base.OnModelCreating(
-                modelBuilder);
+            modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+
+            base.OnModelCreating(modelBuilder);
         }
-    }
+}
 }

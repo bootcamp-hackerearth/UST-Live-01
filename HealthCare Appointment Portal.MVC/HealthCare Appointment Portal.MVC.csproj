@@ -250,6 +250,8 @@
     <Content Include="Views\Doctor\EditMyProfile.cshtml" />
     <Content Include="Views\HealthRecord\DoctorRecords.cshtml" />
     <Content Include="Views\HealthRecord\Delete.cshtml" />
+    <Content Include="Views\Appointment\Confirm.cshtml" />
+    <Content Include="Views\HealthRecord\SelectAppointment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

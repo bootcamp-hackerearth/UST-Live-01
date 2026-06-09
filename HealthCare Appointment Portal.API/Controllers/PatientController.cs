@@ -1,6 +1,7 @@
 ﻿using HealthCare_Appointment_Portal.DTOs.PatientDtos;
 using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Interfaces;
+using HealthCare_Appointment_Portal.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;

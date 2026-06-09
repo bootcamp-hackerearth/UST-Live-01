@@ -1,0 +1,98 @@
+﻿@model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
+
+@{
+    ViewBag.Title = "Select Appointment";
+}
+
+<div class="container-fluid">
+
+    <h2 class="mb-4">
+        Completed Appointments
+    </h2>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Appointment Id
+                        </th>
+
+                        <th>
+                            Patient
+                        </th>
+
+                        <th>
+                            Doctor
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var appointment in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @appointment.AppointmentId
+                            </td>
+
+                            <td>
+                                @appointment.PatientName
+                            </td>
+
+                            <td>
+                                @appointment.DoctorName
+                            </td>
+
+                            <td>
+                                @appointment.ScheduledDate.ToString("dd MMM yyyy")
+                            </td>
+
+                            <td>
+                                <a href="@Url.Action(
+            "Create",
+            "HealthRecord",
+            new
+            {
+                appointmentId = appointment.AppointmentId,
+                patientId = appointment.PatientId,
+                doctorId = appointment.DoctorId
+            })"
+                                   class="btn btn-success btn-sm">
+
+                                    Create Record
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

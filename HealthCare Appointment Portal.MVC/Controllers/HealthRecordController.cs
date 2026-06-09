@@ -1,6 +1,7 @@
 ﻿using HealthCare_Appointment_Portal.DTOs.HealthRecordDtos;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -11,12 +12,17 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
     {
         private readonly IHealthRecordApiService
              _healthRecordService;
-
+        private readonly IAppointmentApiService
+    _appointmentService;
         public HealthRecordController(
-            IHealthRecordApiService healthRecordService)
+            IHealthRecordApiService healthRecordService,
+            IAppointmentApiService appointmentService)
         {
             _healthRecordService =
                 healthRecordService;
+
+            _appointmentService =
+                appointmentService;
         }
         // ==================================
         // ADMIN
@@ -78,33 +84,33 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: HealthRecord/Create
-        public ActionResult
-            Create(
-                int appointmentId,
-                int patientId)
-        {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
+        //public ActionResult
+        //    Create(
+        //        int appointmentId,
+        //        int patientId)
+        //{
+        //    return View(
+        //        new CreateHealthRecordDto
+        //        {
+        //            AppointmentId = appointmentId,
+        //            PatientId = patientId,
+        //            VisitDate = DateTime.Today
+        //        });
+        //}
 
+        public ActionResult
+    Create(
+        int appointmentId,
+        int patientId,
+        int doctorId)
+        {
             return View(
                 new CreateHealthRecordDto
                 {
-                    AppointmentId =
-                        appointmentId,
-
-                    PatientId =
-                        patientId,
-
-                    DoctorId =
-                        Convert.ToInt32(
-                            Session["ReferenceId"]),
-
-                    VisitDate =
-                        DateTime.Today
+                    AppointmentId = appointmentId,
+                    PatientId = patientId,
+                    DoctorId = doctorId,
+                    VisitDate = DateTime.Today
                 });
         }
 
@@ -115,12 +121,12 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             Create(
                 CreateHealthRecordDto dto)
         {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
+            //if (Session["ReferenceId"] == null)
+            //{
+            //    return RedirectToAction(
+            //        "Login",
+            //        "User");
+            //}
 
             if (!ModelState.IsValid)
             {
@@ -130,9 +136,9 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             try
             {
-                dto.DoctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
+                //dto.DoctorId =
+                //    Convert.ToInt32(
+                //        Session["ReferenceId"]);
 
                 int recordId =
                     await _healthRecordService
@@ -405,6 +411,44 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                         id
                     });
             }
+        }
+
+        public async Task<ActionResult>
+    SelectAppointment()
+        {
+            //var appointments =
+            //    await _appointmentService
+            //        .GetAllAppointmentsAsync();
+
+            //var completedAppointments =
+            //    appointments.Where(
+            //        a => a.Status.ToString() == "Completed");
+
+            //return View(
+            //    completedAppointments);
+            var appointments =
+    await _appointmentService
+        .GetAllAppointmentsAsync();
+
+            var records =
+                await _healthRecordService
+                    .GetAllHealthRecordsAsync();
+
+            var usedAppointmentIds =
+                records.Select(
+                    r => r.AppointmentId);
+
+            var completedAppointments =
+                appointments
+                    .Where(a =>
+                        a.Status.ToString() == "Completed"
+                        &&
+                        !usedAppointmentIds.Contains(
+                            a.AppointmentId))
+                    .ToList();
+
+            return View(
+                completedAppointments);
         }
     }
 }

@@ -4,6 +4,7 @@ using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Mappings;
 using HealthCare_Appointment_Portal.Repositories;
 using HealthCare_Appointment_Portal.Services;
+using HealthCare_Appointment_Portal.Services.Interfaces;
 using System;
 using Unity;
 

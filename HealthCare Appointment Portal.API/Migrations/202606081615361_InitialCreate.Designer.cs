@@ -7,13 +7,13 @@ namespace HealthCare_Appointment_Portal.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.2")]
-    public sealed partial class PasswordChanges : IMigrationMetadata
+    public sealed partial class InitialCreate : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(PasswordChanges));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialCreate));
         
         string IMigrationMetadata.Id
         {
-            get { return "202606050655421_PasswordChanges"; }
+            get { return "202606081615361_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

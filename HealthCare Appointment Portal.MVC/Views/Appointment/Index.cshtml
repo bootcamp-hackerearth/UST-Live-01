@@ -1,7 +1,7 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
 
 @{
-    ViewBag.Title = "Appointments";
+    ViewBag.Title = "Appointment Management";
 }
 
 <div class="container-fluid">
@@ -9,8 +9,15 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <h2>
-            All Appointments
+            Appointment Management
         </h2>
+
+        <a href="@Url.Action("Create","Appointment")"
+           class="btn btn-success">
+
+            Add Appointment
+
+        </a>
 
     </div>
 
@@ -24,33 +31,13 @@
 
                     <tr>
 
-                        <th>
-                            Appointment Id
-                        </th>
-
-                        <th>
-                            Patient
-                        </th>
-
-                        <th>
-                            Doctor
-                        </th>
-
-                        <th>
-                            Date
-                        </th>
-
-                        <th>
-                            Time Slot
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Actions
-                        </th>
+                        <th>Appointment Id</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th width="300">Actions</th>
 
                     </tr>
 
@@ -77,17 +64,11 @@
                         {
                             <tr>
 
-                                <td>
-                                    @appointment.AppointmentId
-                                </td>
+                                <td>@appointment.AppointmentId</td>
 
-                                <td>
-                                    @appointment.PatientName
-                                </td>
+                                <td>@appointment.PatientName</td>
 
-                                <td>
-                                    @appointment.DoctorName
-                                </td>
+                                <td>@appointment.DoctorName</td>
 
                                 <td>
                                     @appointment.ScheduledDate.ToString("dd MMM yyyy")
@@ -117,7 +98,7 @@
                                             Cancelled
                                         </span>
                                     }
-                                    else if (appointment.Status.ToString() == "Completed")
+                                    else
                                     {
                                         <span class="badge bg-primary">
                                             Completed
@@ -129,18 +110,82 @@
                                 <td>
 
                                     <a href="@Url.Action(
-                                                "Details",
-                                                "Appointment",
-                                                new
-                                                {
-                                                    id =
-                                                    appointment.AppointmentId
-                                                })"
+                "Details",
+                "Appointment",
+                new
+                {
+                    id = appointment.AppointmentId
+                })"
                                        class="btn btn-info btn-sm">
 
                                         View
 
                                     </a>
+
+                                    @if (appointment.Status.ToString() == "Pending")
+                                    {
+                                        using (Html.BeginForm(
+                                                    "Confirm",
+                                                    "Appointment",
+                                                    FormMethod.Post,
+                                                    new
+                                                    {
+                                                        style = "display:inline;"
+                                                    }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@appointment.AppointmentId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-success btn-sm">
+
+                                                Confirm
+
+                                            </button>
+                                        }
+
+                                        <a href="@Url.Action(
+                    "Cancel",
+                    "Appointment",
+                    new
+                    {
+                        id = appointment.AppointmentId
+                    })"
+                                           class="btn btn-danger btn-sm">
+
+                                            Cancel
+
+                                        </a>
+                                    }
+
+                                    @if (appointment.Status.ToString() == "Confirmed")
+                                    {
+                                        using (Html.BeginForm(
+                                                    "Complete",
+                                                    "Appointment",
+                                                    FormMethod.Post,
+                                                    new
+                                                    {
+                                                        style = "display:inline;"
+                                                    }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@appointment.AppointmentId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-primary btn-sm">
+
+                                                Complete
+
+                                            </button>
+                                        }
+                                    }
 
                                 </td>
 

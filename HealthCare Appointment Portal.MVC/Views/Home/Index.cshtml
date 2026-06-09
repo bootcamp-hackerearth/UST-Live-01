@@ -1,33 +1,158 @@
-﻿@{
-    ViewBag.Title = "HealthCare Appointment Portal";
+﻿@*@{
+        ViewBag.Title = "HealthCare Appointment Portal";
+    }
+
+    <div class="container mt-5">
+
+        <div class="text-center">
+
+            <h1 class="display-4">
+
+                HealthCare Appointment Portal
+
+            </h1>
+
+            <p class="lead">
+
+                Appointment Booking and Health Record Management System
+
+            </p>
+
+            <hr />
+
+            <a href="@Url.Action(
+                        "Login",
+                        "User")"
+               class="btn btn-primary btn-lg">
+
+                Login
+
+            </a>
+
+        </div>
+
+    </div>*@
+
+@{
+    ViewBag.Title = "Healthcare Management System";
 }
 
 <div class="container mt-5">
 
-    <div class="text-center">
+    <div class="text-center mb-5">
 
         <h1 class="display-4">
-
-            HealthCare Appointment Portal
-
+            Healthcare Management System
         </h1>
 
         <p class="lead">
-
-            Appointment Booking and Health Record Management System
-
+            Manage Patients, Doctors, Appointments and Medical Records
+            through a centralized healthcare platform.
         </p>
 
-        <hr />
+    </div>
 
-        <a href="@Url.Action(
-                    "Login",
-                    "User")"
-           class="btn btn-primary btn-lg">
+    <div class="row">
 
-            Login
+        <div class="col-md-3 mb-4">
 
-        </a>
+            <div class="card shadow h-100">
+
+                <div class="card-body text-center">
+
+                    <h1>👥</h1>
+
+                    <h4>Patients</h4>
+
+                    <p>
+                        Register and manage patient information.
+                    </p>
+
+                    <a href="@Url.Action("Index", "Patient")"
+                       class="btn btn-primary">
+                        Manage Patients
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow h-100">
+
+                <div class="card-body text-center">
+
+                    <h1>🩺</h1>
+
+                    <h4>Doctors</h4>
+
+                    <p>
+                        Manage doctor profiles and specializations.
+                    </p>
+
+                    <a href="@Url.Action("Index", "Doctor")"
+                       class="btn btn-success">
+                        Manage Doctors
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow h-100">
+
+                <div class="card-body text-center">
+
+                    <h1>📅</h1>
+
+                    <h4>Appointments</h4>
+
+                    <p>
+                        Schedule and track appointments.
+                    </p>
+
+                    <a href="@Url.Action("Index", "Appointment")"
+                       class="btn btn-warning">
+                        Manage Appointments
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow h-100">
+
+                <div class="card-body text-center">
+
+                    <h1>📋</h1>
+
+                    <h4>Health Records</h4>
+
+                    <p>
+                        Maintain patient diagnoses and prescriptions.
+                    </p>
+
+                    <a href="@Url.Action("Index", "HealthRecord")"
+                       class="btn btn-info">
+                        Manage Records
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 

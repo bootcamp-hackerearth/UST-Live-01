@@ -1,7 +1,7 @@
 @model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.CreateAppointmentDto
 
 @{
-    ViewBag.Title = "Book Appointment";
+    ViewBag.Title = "Create Appointment";
 }
 
 <div class="container-fluid">
@@ -11,7 +11,7 @@
         <div class="col">
 
             <h2>
-                Book Appointment
+                Create Appointment
             </h2>
 
         </div>
@@ -36,6 +36,31 @@
                             @class = "alert alert-danger"
                         })
                 }
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Patient
+                    </label>
+
+                    @Html.DropDownListFor(
+                        m => m.PatientId,
+                        (SelectList)ViewBag.Patients,
+                        "-- Select Patient --",
+                        new
+                        {
+                            @class = "form-select"
+                        })
+
+                    @Html.ValidationMessageFor(
+                        m => m.PatientId,
+                        "",
+                        new
+                        {
+                            @class = "text-danger d-block mt-1"
+                        })
+
+                </div>
 
                 <div class="mb-3">
 
@@ -144,13 +169,13 @@
                     <button type="submit"
                             class="btn btn-success">
 
-                        Book Appointment
+                        Create Appointment
 
                     </button>
 
                     <a href="@Url.Action(
-                                "Dashboard",
-                                "Patient")"
+                                "Index",
+                                "Appointment")"
                        class="btn btn-secondary">
 
                         Cancel

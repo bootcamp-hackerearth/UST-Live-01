@@ -1,0 +1,146 @@
+﻿@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
+
+@{
+    ViewBag.Title = "Confirm Appointment";
+}
+
+<div class="container-fluid">
+
+    <div class="row mb-4">
+
+        <div class="col">
+
+            <h2 class="text-success">
+                Confirm Appointment
+            </h2>
+
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm border-success">
+
+        <div class="card-body">
+
+            <div class="alert alert-success">
+
+                <strong>
+                    Confirmation
+                </strong>
+
+                You are about to confirm this appointment.
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Appointment Id
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.AppointmentId
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Patient
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.PatientName
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Doctor
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.DoctorName
+
+                </div>
+
+            </div>
+
+            <div class="row mb-4">
+
+                <div class="col-md-3">
+
+                    <strong>
+                        Date & Time
+                    </strong>
+
+                </div>
+
+                <div class="col-md-9">
+
+                    @Model.ScheduledDate.ToString("dd MMM yyyy")
+
+                    -
+
+                    @Model.TimeSlot
+
+                </div>
+
+            </div>
+
+            @using (Html.BeginForm(
+                        "Confirm",
+                        "Appointment",
+                        FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(
+                    m => m.AppointmentId)
+
+                <button type="submit"
+                        class="btn btn-success">
+
+                    Confirm Appointment
+
+                </button>
+
+                <a href="@Url.Action(
+                            "Details",
+                            "Appointment",
+                            new
+                            {
+                                id = Model.AppointmentId
+                            })"
+                   class="btn btn-secondary">
+
+                    Return
+
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+</div>

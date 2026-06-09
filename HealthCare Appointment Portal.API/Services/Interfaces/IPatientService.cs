@@ -3,7 +3,7 @@ using HealthCare_Appointment_Portal.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace HealthCare_Appointment_Portal.Interfaces
+namespace HealthCare_Appointment_Portal.Services.Interfaces
 {
     public interface IPatientService
     {
