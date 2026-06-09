@@ -5,7 +5,6 @@ using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
 using HealthCare_Appointment_Portal.Services.Interfaces;
-using HealthCare_Appointment_Portal.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,105 +12,72 @@ using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Services
 {
-    public class PatientService
-        : IPatientService
+    public class PatientService : IPatientService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        private readonly IMapper
-            _mapper;
-
-        public PatientService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper)
+        public PatientService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
-
-            _mapper =
-                mapper;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PatientDto>>
-            GetAllPatientsAsync()
+        public async Task<IEnumerable<PatientDto>> GetAllPatientsAsync(string searchTerm = null)
         {
-            var patients =
-                await _unitOfWork
-                    .Patients
-                    .GetAllAsync();
+            var patients = await _unitOfWork.Patients.GetAllAsync();
 
-            return _mapper.Map<
-                IEnumerable<PatientDto>>(
-                    patients);
+            // Perform filtering if a search term is provided
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.Trim().ToLower();
+
+                patients = patients.Where(p =>
+                    p.FullName.ToLower().Contains(searchTerm) ||
+                    p.Email.ToLower().Contains(searchTerm) ||
+                    (p.PhoneNumber != null && p.PhoneNumber.Contains(searchTerm)));
+            }
+
+            return _mapper.Map<IEnumerable<PatientDto>>(patients);
         }
 
-        public async Task<PatientDto>
-            GetPatientByIdAsync(
-                int patientId)
+        public async Task<PatientDto> GetPatientByIdAsync(int patientId)
         {
-            var patient =
-                await _unitOfWork
-                    .Patients
-                    .GetByIdAsync(
-                        patientId);
+            var patient = await _unitOfWork.Patients.GetByIdAsync(patientId);
 
             if (patient == null)
             {
                 throw new PatientNotFoundException();
             }
 
-            return _mapper.Map<
-                PatientDto>(
-                    patient);
+            return _mapper.Map<PatientDto>(patient);
         }
 
-        public async Task<PatientDto>
-            GetPatientByEmailAsync(
-                string email)
+        public async Task<PatientDto> GetPatientByEmailAsync(string email)
         {
-            var patient =
-                await _unitOfWork
-                    .Patients
-                    .GetPatientByEmailAsync(
-                        email);
+            var patient = await _unitOfWork.Patients.GetPatientByEmailAsync(email);
 
             if (patient == null)
             {
                 throw new PatientNotFoundException();
             }
 
-            return _mapper.Map<
-                PatientDto>(
-                    patient);
+            return _mapper.Map<PatientDto>(patient);
         }
 
-        public async Task<int>
-            AddPatientAsync(
-                CreatePatientDto patientDto)
+        public async Task<int> AddPatientAsync(CreatePatientDto patientDto)
         {
-            var existingPatient =
-                await _unitOfWork
-                    .Patients
-                    .GetPatientByEmailAsync(
-                        patientDto.Email);
+            var existingPatient = await _unitOfWork.Patients.GetPatientByEmailAsync(patientDto.Email);
 
             if (existingPatient != null)
             {
                 throw new DuplicatePatientException();
             }
 
-            var patient =
-                _mapper.Map<Patient>(
-                    patientDto);
+            var patient = _mapper.Map<Patient>(patientDto);
 
-            await _unitOfWork
-                .Patients
-                .AddAsync(
-                    patient);
-
-            await _unitOfWork
-                .CommitAsync();
+            await _unitOfWork.Patients.AddAsync(patient);
+            await _unitOfWork.CommitAsync();
 
             var user = new User
             {
@@ -123,108 +89,53 @@ namespace HealthCare_Appointment_Portal.Services
             };
 
             await _unitOfWork.Users.AddAsync(user);
-
             await _unitOfWork.CommitAsync();
 
             return patient.PatientId;
         }
 
-        public async Task
-            UpdatePatientAsync(
-                int patientId,
-                UpdatePatientDto patientDto)
+        public async Task UpdatePatientAsync(int patientId, UpdatePatientDto patientDto)
         {
-            var patient =
-                await _unitOfWork
-                    .Patients
-                    .GetByIdAsync(
-                        patientId);
+            var patient = await _unitOfWork.Patients.GetByIdAsync(patientId);
 
             if (patient == null)
             {
                 throw new PatientNotFoundException();
             }
 
-            var existingPatient =
-                await _unitOfWork
-                    .Patients
-                    .GetPatientByEmailAsync(
-                        patientDto.Email);
+            var existingPatient = await _unitOfWork.Patients.GetPatientByEmailAsync(patientDto.Email);
 
-            if (existingPatient != null
-                &&
-                existingPatient.PatientId
-                != patientId)
+            if (existingPatient != null && existingPatient.PatientId != patientId)
             {
                 throw new DuplicatePatientException();
             }
 
-            _mapper.Map(
-                patientDto,
-                patient);
+            _mapper.Map(patientDto, patient);
 
-            await _unitOfWork
-                .Patients
-                .UpdateAsync(
-                    patient);
-
-            await _unitOfWork
-                .CommitAsync();
+            await _unitOfWork.Patients.UpdateAsync(patient);
+            await _unitOfWork.CommitAsync();
         }
 
-        public async Task
-            DeletePatientAsync(
-                int patientId)
+        public async Task DeletePatientAsync(int patientId)
         {
-            var patient =
-                await _unitOfWork
-                    .Patients
-                    .GetByIdAsync(
-                        patientId);
+            var patient = await _unitOfWork.Patients.GetByIdAsync(patientId);
 
             if (patient == null)
             {
                 throw new PatientNotFoundException();
             }
 
-            var appointments =
-                await _unitOfWork
-                .Appointments
-                .GetAppointmentsByPatientAsync(
-                patientId);
+            var appointments = await _unitOfWork.Appointments.GetAppointmentsByPatientAsync(patientId);
 
-            bool hasConfirmedAppointments =
-                appointments.Any(a =>
-                    a.Status ==
-                    AppointmentStatus.Confirmed);
+            bool hasConfirmedAppointments = appointments.Any(a => a.Status == AppointmentStatus.Confirmed);
 
             if (hasConfirmedAppointments)
             {
                 throw new PatientDeletionException();
             }
 
-            await _unitOfWork
-                .Patients
-                .DeleteAsync(
-                    patientId);
-
-            await _unitOfWork
-                .CommitAsync();
-        }
-
-        public async Task<IEnumerable<PatientDto>>
-            GetPatientsByInsuranceStatusAsync(
-                InsuranceStatus status)
-        {
-            var patients =
-                await _unitOfWork
-                    .Patients
-                    .GetPatientsByInsuranceStatusAsync(
-                        status);
-
-            return _mapper.Map<
-                IEnumerable<PatientDto>>(
-                    patients);
+            await _unitOfWork.Patients.DeleteAsync(patientId);
+            await _unitOfWork.CommitAsync();
         }
     }
 }

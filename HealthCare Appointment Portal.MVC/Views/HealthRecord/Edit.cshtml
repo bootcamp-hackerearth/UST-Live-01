@@ -39,9 +39,12 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Diagnosis
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Diagnosis,
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextAreaFor(
                         m => m.Diagnosis,
@@ -63,9 +66,12 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Prescription
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Prescription,
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextAreaFor(
                         m => m.Prescription,
@@ -87,9 +93,12 @@
 
                 <div class="mb-4">
 
-                    <label class="form-label">
-                        Notes
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Notes,
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextAreaFor(
                         m => m.Notes,

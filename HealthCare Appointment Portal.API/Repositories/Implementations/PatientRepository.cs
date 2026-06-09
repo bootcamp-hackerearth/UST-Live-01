@@ -28,16 +28,5 @@
                         p => p.Email == email);
             }
 
-            public async Task<IEnumerable<Patient>>
-                GetPatientsByInsuranceStatusAsync(
-                    InsuranceStatus status)
-            {
-                return await _dbSet
-                    .Include(p => p.Insurances)
-                    .Where(p =>
-                        p.Insurances.Any(i =>
-                            i.Status == status))
-                    .ToListAsync();
-            }
         }
     }

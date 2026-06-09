@@ -11,9 +11,5 @@ namespace HealthCare_Appointment_Portal.Interfaces
         Task<Patient>
             GetPatientByEmailAsync(
                 string email);
-
-        Task<IEnumerable<Patient>>
-            GetPatientsByInsuranceStatusAsync(
-                InsuranceStatus status);
     }
 }

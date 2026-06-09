@@ -41,9 +41,12 @@
 
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
-                            Full Name
-                        </label>
+                        @Html.LabelFor(
+                            m => m.FullName,
+                            new
+                            {
+                                @class = "form-label"
+                            })
 
                         @Html.TextBoxFor(
                             m => m.FullName,
@@ -64,9 +67,13 @@
 
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
-                            Date Of Birth
-                        </label>
+                        @Html.LabelFor(
+                            m => m.DateOfBirth,
+                            "Date Of Birth",
+                            new
+                            {
+                                @class = "form-label"
+                            })
 
                         @Html.TextBoxFor(
                             m => m.DateOfBirth,
@@ -93,9 +100,12 @@
 
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
-                            Gender
-                        </label>
+                        @Html.LabelFor(
+                            m => m.Gender,
+                            new
+                            {
+                                @class = "form-label"
+                            })
 
                         @Html.EnumDropDownListFor(
                             m => m.Gender,
@@ -117,9 +127,13 @@
 
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
-                            Phone Number
-                        </label>
+                        @Html.LabelFor(
+                            m => m.PhoneNumber,
+                            "Phone Number",
+                            new
+                            {
+                                @class = "form-label"
+                            })
 
                         @Html.TextBoxFor(
                             m => m.PhoneNumber,
@@ -142,9 +156,12 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Email
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Email,
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextBoxFor(
                         m => m.Email,

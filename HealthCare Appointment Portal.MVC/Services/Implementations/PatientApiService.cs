@@ -1,5 +1,4 @@
 ﻿using HealthCare_Appointment_Portal.DTOs.PatientDtos;
-using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal_MVC.Helpers;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
@@ -12,144 +11,65 @@ namespace HealthCare_Appointment_Portal_MVC.Services
 {
     public class PatientApiService : IPatientApiService
     {
-        private readonly HttpClient
-            _client;
+        private readonly HttpClient _client;
 
         public PatientApiService()
         {
-            _client =
-                new HttpClient();
-
-            _client.BaseAddress =
-                new Uri(
-                    ConfigurationManager
-                        .AppSettings[
-                            "ApiBaseUrl"]);
+            _client = new HttpClient();
+            _client.BaseAddress = new Uri(ConfigurationManager.AppSettings["ApiBaseUrl"]);
         }
 
-        public async Task<
-            IEnumerable<PatientDto>>
-            GetAllPatientsAsync()
+        public async Task<IEnumerable<PatientDto>> GetAllPatientsAsync(string searchTerm = null)
         {
-            HttpResponseMessage response =
-                await _client.GetAsync(
-                    "api/patients");
+            string url = "api/patients";
 
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
+            // If a search term is provided, append it to the URL
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                url += $"?searchTerm={Uri.EscapeDataString(searchTerm)}";
+            }
 
-            return await response
-                .Content
-                .ReadAsAsync<
-                    IEnumerable<PatientDto>>();
+            HttpResponseMessage response = await _client.GetAsync(url);
+            await ApiResponseHelper.EnsureSuccessAsync(response);
+
+            return await response.Content.ReadAsAsync<IEnumerable<PatientDto>>();
         }
 
-        public async Task<PatientDto>
-            GetPatientByIdAsync(
-                int id)
+        public async Task<PatientDto> GetPatientByIdAsync(int id)
         {
-            HttpResponseMessage response =
-                await _client.GetAsync(
-                    $"api/patients/{id}");
+            HttpResponseMessage response = await _client.GetAsync($"api/patients/{id}");
+            await ApiResponseHelper.EnsureSuccessAsync(response);
 
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
-
-            return await response
-                .Content
-                .ReadAsAsync<
-                    PatientDto>();
+            return await response.Content.ReadAsAsync<PatientDto>();
         }
 
-        public async Task<PatientDto>
-            GetPatientByEmailAsync(
-                string email)
+        public async Task<PatientDto> GetPatientByEmailAsync(string email)
         {
-            HttpResponseMessage response =
-                await _client.GetAsync(
-                    $"api/patients/email?email={email}");
+            HttpResponseMessage response = await _client.GetAsync($"api/patients/email?email={email}");
+            await ApiResponseHelper.EnsureSuccessAsync(response);
 
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
-
-            return await response
-                .Content
-                .ReadAsAsync<
-                    PatientDto>();
+            return await response.Content.ReadAsAsync<PatientDto>();
         }
 
-        public async Task<
-            IEnumerable<PatientDto>>
-            GetPatientsByInsuranceStatusAsync(
-                InsuranceStatus status)
+        public async Task<int> CreatePatientAsync(CreatePatientDto dto)
         {
-            HttpResponseMessage response =
-                await _client.GetAsync(
-                    $"api/patients/insurance/{status}");
+            HttpResponseMessage response = await _client.PostAsJsonAsync("api/patients", dto);
+            await ApiResponseHelper.EnsureSuccessAsync(response);
 
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
-
-            return await response
-                .Content
-                .ReadAsAsync<
-                    IEnumerable<PatientDto>>();
+            var createdPatient = await response.Content.ReadAsAsync<PatientDto>();
+            return createdPatient.PatientId;
         }
 
-        public async Task<int>
-            CreatePatientAsync(
-                CreatePatientDto dto)
+        public async Task UpdatePatientAsync(int id, UpdatePatientDto dto)
         {
-            HttpResponseMessage response =
-                await _client.PostAsJsonAsync(
-                    "api/patients",
-                    dto);
-
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
-
-            var createdPatient =
-                await response
-                    .Content
-                    .ReadAsAsync<
-                        PatientDto>();
-
-            return createdPatient
-                .PatientId;
+            HttpResponseMessage response = await _client.PutAsJsonAsync($"api/patients/{id}", dto);
+            await ApiResponseHelper.EnsureSuccessAsync(response);
         }
 
-        public async Task
-            UpdatePatientAsync(
-                int id,
-                UpdatePatientDto dto)
+        public async Task DeletePatientAsync(int id)
         {
-            HttpResponseMessage response =
-                await _client.PutAsJsonAsync(
-                    $"api/patients/{id}",
-                    dto);
-
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
-        }
-
-        public async Task
-            DeletePatientAsync(
-                int id)
-        {
-            HttpResponseMessage response =
-                await _client.DeleteAsync(
-                    $"api/patients/{id}");
-
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
+            HttpResponseMessage response = await _client.DeleteAsync($"api/patients/{id}");
+            await ApiResponseHelper.EnsureSuccessAsync(response);
         }
     }
 }
-
