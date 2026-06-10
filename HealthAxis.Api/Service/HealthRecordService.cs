@@ -30,8 +30,21 @@ namespace HealthAxis.Api.Services
         {
             errorMessage = string.Empty;
 
-            var healthRecord = new HealthRecord
+            if (dto.AppointmentId.HasValue)
             {
+                var existingRecord = _healthRecordRepository
+                    .GetByAppointmentId(dto.AppointmentId.Value);
+
+                if (existingRecord != null)
+                {
+                    errorMessage = "A health record already exists for this appointment.";
+                    return false;
+                }
+            }
+
+            var record = new HealthRecord
+            {
+                AppointmentId = dto.AppointmentId,
                 PatientId = dto.PatientId,
                 DoctorId = dto.DoctorId,
                 VisitDate = DateTime.Now,
@@ -40,7 +53,7 @@ namespace HealthAxis.Api.Services
                 Notes = dto.Notes
             };
 
-            _healthRecordRepository.Add(healthRecord);
+            _healthRecordRepository.Add(record);
 
             return true;
         }
@@ -66,6 +79,27 @@ namespace HealthAxis.Api.Services
                         record.Doctor.Specialisation)
                     : null,
 
+                VisitDate = record.VisitDate,
+                Diagnosis = record.Diagnosis,
+                Prescription = record.Prescription,
+                Notes = record.Notes
+            };
+        }
+        public HealthRecordDto GetByAppointmentId(int appointmentId)
+        {
+            var record = _healthRecordRepository.GetByAppointmentId(appointmentId);
+
+            if (record == null)
+            {
+                return null;
+            }
+
+            return new HealthRecordDto
+            {
+                RecordId = record.RecordId,
+                AppointmentId = record.AppointmentId,
+                PatientId = record.PatientId,
+                DoctorId = record.DoctorId,
                 VisitDate = record.VisitDate,
                 Diagnosis = record.Diagnosis,
                 Prescription = record.Prescription,

@@ -78,11 +78,11 @@
                                 <td>@doctor.ConsultationFee</td>
                                 <td>
                                     @Html.ActionLink(
-                                        "Book",
-                                        "Book",
-                                        "Appointments",
-                                        null,
-                                        new { @class = "btn btn-success btn-sm" })
+                                    "Book",
+                                    "Book",
+                                    "Appointments",
+                                    new { doctorId = doctor.DoctorId },
+                                    new { @class = "btn btn-success btn-sm" })
                                 </td>
                             </tr>
                         }

@@ -61,5 +61,23 @@ namespace HealthAxis.Mvc.Services
                 return false;
             }
         }
+        public HealthRecordDto GetByAppointmentId(int appointmentId)
+        {
+            using (var client = CreateClient())
+            {
+                var response = client
+                    .GetAsync("healthrecords/by-appointment/" + appointmentId)
+                    .Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return null;
+                }
+
+                var json = response.Content.ReadAsStringAsync().Result;
+
+                return JsonConvert.DeserializeObject<HealthRecordDto>(json);
+            }
+        }
     }
 }

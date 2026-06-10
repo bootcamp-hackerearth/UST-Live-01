@@ -21,6 +21,7 @@
             {
                 @Html.AntiForgeryToken()
 
+                @Html.HiddenFor(m => m.AppointmentId)
                 @Html.HiddenFor(m => m.PatientId)
                 @Html.HiddenFor(m => m.DoctorId)
 

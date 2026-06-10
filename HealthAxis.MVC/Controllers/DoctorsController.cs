@@ -30,10 +30,26 @@ namespace HealthAxis.Mvc.Controllers
 
             return View(doctors);
         }
-        public new ActionResult Profile()
+
+        public new ActionResult Profile(int? id)
         {
-            return View();
+            if (!id.HasValue)
+            {
+                TempData["Error"] = "Doctor ID is required.";
+                return RedirectToAction("Index");
+            }
+
+            var doctor = _doctors.GetById(id.Value);
+
+            if (doctor == null)
+            {
+                TempData["Error"] = "Doctor not found.";
+                return RedirectToAction("Index");
+            }
+
+            return View(doctor);
         }
+
 
         public ActionResult PatientList(string insuranceStatus, string sortOrder)
         {

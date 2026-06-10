@@ -8,12 +8,18 @@ namespace HealthAxis.Shared.DTOs
     public class AppointmentDto
     {
         public int AppointmentId { get; set; }
-        [Range(1, int.MaxValue)] public int PatientId { get; set; }
+        [Range(1, int.MaxValue)] 
+        public int PatientId { get; set; }
+        [Display(Name ="Patient Name")]
         public string PatientName { get; set; }
-        [Range(1, int.MaxValue)] public int DoctorId { get; set; }
+        [Range(1, int.MaxValue)] 
+        public int DoctorId { get; set; }
+        [Display(Name = "Doctor Name")]
         public string DoctorName { get; set; }
         public SpecialisationEnum? DoctorSpecialisation { get; set; }
+        [Display(Name = "Doctor Specialisation")]
         [Required, DataType(DataType.Date)] public DateTime ScheduledDate { get; set; }
+        [Display(Name ="Time Slot")]
         [Required, StringLength(20)] public string TimeSlot { get; set; }
         public AppointmentStatusEnum Status { get; set; }
         [StringLength(225)] public string CancellationReason { get; set; }

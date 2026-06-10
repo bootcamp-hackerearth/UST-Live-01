@@ -131,5 +131,10 @@ namespace HealthAxis.Api.Repositories
 
             return true;
         }
+
+        public bool Exists(Func<Appointment, bool> condition)
+        {
+            return _context.Appointments.Any(condition);
+        }
     }
 }

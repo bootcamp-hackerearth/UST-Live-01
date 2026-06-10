@@ -1,5 +1,5 @@
-﻿@using HealthAxis.Shared.Enums
-@model IEnumerable<HealthAxis.Shared.DTOs.AppointmentDto>
+﻿@model IEnumerable<HealthAxis.Shared.DTOs.AppointmentDto>
+@using HealthAxis.Shared.Enums
 
 @{
     ViewBag.Title = "Doctor Appointments";
@@ -11,41 +11,28 @@
         <div class="ha-card" style="padding:30px;">
 
             <!-- HEADER -->
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid #334155; padding-bottom:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;border-bottom:1px solid #334155;padding-bottom:18px;">
                 <div>
-                    <h2 class="ha-title" style="margin:0;">
-                        Doctor Appointments
-                    </h2>
-
-                    <p class="ha-muted" style="margin:6px 0 0 0;">
-                        Manage patient appointments and update status.
-                    </p>
+                    <h2 class="ha-title">Doctor Appointments</h2>
+                    <p class="ha-muted">Manage patient appointments and update status.</p>
                 </div>
 
-                @Html.ActionLink(
-                    "Back",
-                    "Index",
-                    "Doctors",
-                    null,
+                @Html.ActionLink("Back", "Index", "Doctors", null,
                     new { @class = "btn btn-dark-back" })
             </div>
 
-            <!-- SUCCESS / ERROR -->
+          
             @if (TempData["Success"] != null)
             {
-                <div class="alert alert-success">
-                    @TempData["Success"]
-                </div>
+                <div class="alert alert-success">@TempData["Success"]</div>
             }
 
             @if (TempData["Error"] != null)
             {
-                <div class="alert alert-danger">
-                    @TempData["Error"]
-                </div>
+                <div class="alert alert-danger">@TempData["Error"]</div>
             }
 
-            <!-- TABLE -->
+       
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -65,7 +52,6 @@
                             <td>@a.ScheduledDate.ToString("dd-MMM-yyyy")</td>
                             <td>@a.TimeSlot</td>
 
-                            <!-- STATUS -->
                             <td>
                                 @if (a.Status == AppointmentStatusEnum.Pending)
                                 {
@@ -85,18 +71,15 @@
                                 }
                             </td>
 
-                            <!-- ACTIONS -->
                             <td>
-                                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <div style="display:flex;gap:6px;flex-wrap:wrap;">
 
-                                    <!-- ✅ PENDING -->
+                                    
                                     @if (a.Status == AppointmentStatusEnum.Pending)
                                     {
-                                        <!-- APPROVE -->
                                         using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
                                         {
                                             @Html.AntiForgeryToken()
-
                                             @Html.Hidden("AppointmentId", a.AppointmentId)
                                             @Html.Hidden("Status", AppointmentStatusEnum.Confirmed)
                                             @Html.Hidden("patientId", a.PatientId)
@@ -106,54 +89,45 @@
                                                 Approve
                                             </button>
                                         }
-
-                                        <!-- CANCEL -->
-                                        using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
-                                        {
-                                            @Html.AntiForgeryToken()
-
-                                            @Html.Hidden("AppointmentId", a.AppointmentId)
-                                            @Html.Hidden("Status", AppointmentStatusEnum.Cancelled)
-                                            @Html.Hidden("patientId", a.PatientId)
-                                            @Html.Hidden("doctorId", a.DoctorId)
-
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                Cancel
-                                            </button>
-                                        }
                                     }
 
-                                    
-                                    else if (a.Status == AppointmentStatusEnum.Confirmed)
+                                
+                                    @if (a.Status == AppointmentStatusEnum.Pending ||
+                                         a.Status == AppointmentStatusEnum.Confirmed)
                                     {
-                                    using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
-                                    {
-                                        @Html.AntiForgeryToken()
-
-                                        @Html.Hidden("AppointmentId", a.AppointmentId)
-                                        @Html.Hidden("Status", AppointmentStatusEnum.Completed)
-                                        @Html.Hidden("patientId", a.PatientId)
-                                        @Html.Hidden("doctorId", a.DoctorId)
-
-                                        <button type="submit" class="btn btn-warning btn-sm">
-                                            Mark Completed
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                data-toggle="modal"
+                                                data-target="#cancelModal-@a.AppointmentId">
+                                            Cancel
                                         </button>
                                     }
+
+                                    
+                                    @if (a.Status == AppointmentStatusEnum.Confirmed)
+                                    {
+                                        <button type="button"
+                                                class="btn btn-warning btn-sm"
+                                                data-toggle="modal"
+                                                data-target="#completeModal-@a.AppointmentId">
+                                            Complete
+                                        </button>
                                     }
 
                                     
-                                    else if (a.Status == AppointmentStatusEnum.Completed)
+                                    @if (a.Status == AppointmentStatusEnum.Completed)
                                     {
-                                    @Html.ActionLink(
-                                        "Add Record",
-                                        "Create",
-                                        "HealthRecords",
-                                        new
-                                        {
-                                            patientId = a.PatientId,
-                                            doctorId = a.DoctorId
-                                        },
-                                        new { @class = "btn btn-purple btn-sm" })
+                                        @Html.ActionLink(
+                                            "Add Record",
+                                            "Create",
+                                            "HealthRecords",
+                                            new
+                                            {
+                                                patientId = a.PatientId,
+                                                doctorId = a.DoctorId,
+                                                appointmentId = a.AppointmentId
+                                            },
+                                            new { @class = "btn btn-purple btn-sm" })
                                     }
 
                                 </div>
@@ -164,6 +138,91 @@
             </table>
 
         </div>
-
     </div>
 </div>
+
+<!-- ✅ MODALS OUTSIDE TABLE -->
+@foreach (var a in Model)
+{
+    <!-- CANCEL MODAL -->
+    <div class="modal fade" id="cancelModal-@a.AppointmentId">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Cancel Appointment</h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    @using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.Hidden("AppointmentId", a.AppointmentId)
+                        @Html.Hidden("Status", AppointmentStatusEnum.Cancelled)
+                        @Html.Hidden("patientId", a.PatientId)
+                        @Html.Hidden("doctorId", a.DoctorId)
+
+                        <div class="form-group">
+                            <label>Reason</label>
+                            <textarea name="CancellationReason"
+                                      class="form-control"
+                                      required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger">
+                            Confirm Cancel
+                        </button>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <!-- COMPLETE MODAL -->
+    <div class="modal fade" id="completeModal-@a.AppointmentId">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5>Confirm Completion</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    Are you sure you want to complete this appointment?
+                </div>
+
+                <div class="modal-footer">
+
+                    @using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.Hidden("AppointmentId", a.AppointmentId)
+                        @Html.Hidden("Status", AppointmentStatusEnum.Completed)
+                        @Html.Hidden("patientId", a.PatientId)
+                        @Html.Hidden("doctorId", a.DoctorId)
+
+                        <button type="submit" class="btn btn-success">
+                            Yes
+                        </button>
+                    }
+
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        No
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -43,5 +43,19 @@ namespace HealthAxis.Api.Controllers
 
             return Ok("Health record created.");
         }
+
+        [HttpGet]
+        [Route("by-appointment/{appointmentId:int}")]
+        public IHttpActionResult GetByAppointment(int appointmentId)
+        {
+            var record = _service.GetByAppointmentId(appointmentId);
+
+            if (record == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(record);
+        }
     }
 }

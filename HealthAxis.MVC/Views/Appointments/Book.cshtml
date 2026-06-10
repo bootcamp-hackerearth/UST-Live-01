@@ -8,7 +8,12 @@
     <div class="container">
 
         <div class="ha-card" style="max-width: 760px; margin: 0 auto; padding: 34px;">
-
+            @if (TempData["Error"] != null)
+{
+        <div class="alert alert-danger">
+            @TempData["Error"]
+            </div>
+}
             <div style="text-align: center; border-bottom: 1px solid #334155; padding-bottom: 22px; margin-bottom: 30px;">
                 <h2 class="ha-title">Book Appointment</h2>
                 <p class="ha-muted">

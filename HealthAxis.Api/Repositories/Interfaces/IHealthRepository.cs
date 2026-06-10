@@ -8,5 +8,6 @@ namespace HealthAxis.Api.Repositories.Interfaces
         IEnumerable<HealthRecord> GetByPatient(int patientId);
 
         HealthRecord Add(HealthRecord record);
+        HealthRecord GetByAppointmentId(int appointmentId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using HealthAxis.Shared.DTOs;
+﻿using HealthAxis.Api.Data;
+using HealthAxis.Shared.DTOs;
 using System.Collections.Generic;
 
 namespace HealthAxis.Api.Services.Interfaces
@@ -10,5 +11,7 @@ namespace HealthAxis.Api.Services.Interfaces
         bool Create(
             HealthRecordDto dto,
             out string errorMessage);
+        HealthRecordDto GetByAppointmentId(int appointmentId);
+
     }
 }

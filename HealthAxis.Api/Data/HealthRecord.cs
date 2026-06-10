@@ -21,8 +21,10 @@ namespace HealthAxis.Api.Data
         public string Diagnosis { get; set; }
         public string Prescription { get; set; }
         public string Notes { get; set; }
+        public Nullable<int> AppointmentId { get; set; }
     
         public virtual Doctor Doctor { get; set; }
         public virtual Patient Patient { get; set; }
+        public virtual Appointment Appointment { get; set; }
     }
 }

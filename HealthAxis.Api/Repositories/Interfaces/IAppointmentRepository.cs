@@ -34,5 +34,6 @@ namespace HealthAxis.Api.Repositories.Interfaces
             string reason);
 
         bool Delete(int id);
+        bool Exists(Func<Appointment, bool> condition);
     }
 }

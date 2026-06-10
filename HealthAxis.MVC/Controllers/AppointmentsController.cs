@@ -4,7 +4,6 @@ using HealthAxis.Shared.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Web.Mvc;
 
 namespace HealthAxis.Mvc.Controllers
@@ -18,20 +17,22 @@ namespace HealthAxis.Mvc.Controllers
         public AppointmentsController(
             IAppointmentMvcService appointments,
             IDoctorMvcService doctors,
-            IPatientMvcService patient)
+            IPatientMvcService patients)
         {
             _appointments = appointments;
             _doctors = doctors;
-            _patients = patient;
-
+            _patients = patients;
         }
 
-        private void LoadDropdowns()
+        private void LoadDropdowns(int? selectedDoctorId = null)
         {
+            var doctors = _doctors.GetAll(null, true);
+
             ViewBag.DoctorId = new SelectList(
-                _doctors.GetAll(null, true),
+                doctors,
                 "DoctorId",
-                "FullName");
+                "FullName",
+                selectedDoctorId);
 
             ViewBag.TimeSlots = new SelectList(new List<string>
             {
@@ -41,42 +42,41 @@ namespace HealthAxis.Mvc.Controllers
                 "10:30 AM - 11:00 AM",
                 "11:00 AM - 11:30 AM",
                 "02:00 PM - 02:30 PM",
-                "02:30 PM - 03:00 PM",
+                "02:30 AM - 03:00 PM",
                 "03:00 PM - 03:30 PM"
             });
         }
 
-        public ActionResult Book()
+        public ActionResult Book(int? doctorId)
         {
-            LoadDropdowns();
+            LoadDropdowns(doctorId);
 
-            return View();
+            var dto = new AppointmentDto();
+
+            if (doctorId.HasValue)
+            {
+                dto.DoctorId = doctorId.Value;
+            }
+
+            return View(dto);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Book(AppointmentDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                LoadDropdowns();
-                return View(dto);
-            }
-
             string errorMessage;
 
-            bool result = _appointments.Book(dto, out errorMessage);
+            bool success = _appointments.Book(dto, out errorMessage);
 
-            if (!result)
+            if (!success)
             {
-                ModelState.AddModelError("", errorMessage);
-                LoadDropdowns();
-                return View(dto);
+                TempData["Error"] = errorMessage;
+                return RedirectToAction("Book");
             }
 
-            return RedirectToAction(
-                "MyAppointments",
-                new { patientId = dto.PatientId });
+            TempData["Success"] = "Appointment booked successfully.";
+            return RedirectToAction("MyAppointments", new { patientId = dto.PatientId });
         }
 
         public ActionResult MyAppointments(int? patientId)
@@ -84,7 +84,7 @@ namespace HealthAxis.Mvc.Controllers
             if (patientId == null)
             {
                 TempData["Error"] = "Please enter a Patient ID.";
-                return RedirectToAction("PatientIdRequired");
+                return RedirectToAction("Index","Patients");
             }
 
             var patient = _patients.GetById(patientId.Value);
@@ -92,7 +92,7 @@ namespace HealthAxis.Mvc.Controllers
             if (patient == null)
             {
                 TempData["Error"] = "Patient ID " + patientId.Value + " does not exist.";
-                return RedirectToAction("PatientIdRequired");
+                return RedirectToAction("Index","Patients");
             }
 
             var appointments = _appointments.GetByPatient(patientId.Value);
@@ -100,14 +100,16 @@ namespace HealthAxis.Mvc.Controllers
             if (appointments == null || !appointments.Any())
             {
                 TempData["Error"] = "No appointments found for Patient ID " + patientId.Value + ".";
-                return RedirectToAction("PatientIdRequired");
+                return RedirectToAction("Index","Patients");
             }
 
             return View(appointments);
         }
 
-        public ActionResult DoctorAppointments(int? doctorId)
+        public ActionResult DoctorAppointments(int? doctorId, int? cancelId = null)
         {
+            ViewBag.CancelId = cancelId;
+
             if (doctorId == null)
             {
                 return View("DoctorIdRequired");
@@ -145,6 +147,7 @@ namespace HealthAxis.Mvc.Controllers
 
             return View("DoctorAppointments", appointments);
         }
+
         public ActionResult PatientIdRequired()
         {
             return View();
@@ -153,9 +156,9 @@ namespace HealthAxis.Mvc.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult UpdateStatus(
-    AppointmentStatusUpdateDto dto,
-    int patientId,
-    int doctorId)
+            AppointmentStatusUpdateDto dto,
+            int patientId,
+            int doctorId)
         {
             string errorMessage;
 
@@ -166,6 +169,7 @@ namespace HealthAxis.Mvc.Controllers
 
             TempData[result ? "Success" : "Error"] =
                 result ? "Status updated." : errorMessage;
+
             if (result && dto.Status == AppointmentStatusEnum.Completed)
             {
                 return RedirectToAction(
@@ -174,7 +178,8 @@ namespace HealthAxis.Mvc.Controllers
                     new
                     {
                         patientId = patientId,
-                        doctorId = doctorId
+                        doctorId = doctorId,
+                        appointmentId = dto.AppointmentId
                     });
             }
 

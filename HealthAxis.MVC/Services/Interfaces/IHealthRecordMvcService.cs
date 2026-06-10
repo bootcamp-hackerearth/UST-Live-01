@@ -10,5 +10,7 @@ namespace HealthAxis.Mvc.Services.Interfaces
         bool Create(
             HealthRecordDto dto,
             out string error);
+
+        HealthRecordDto GetByAppointmentId(int appointmentId);
     }
 }

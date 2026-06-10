@@ -1,7 +1,8 @@
 ﻿using HealthAxis.Mvc.Services.Interfaces;
 using HealthAxis.Shared.DTOs;
-using System.Web.Mvc;
+using System;
 using System.Linq;
+using System.Web.Mvc;
 
 namespace HealthAxis.Mvc.Controllers
 {
@@ -26,7 +27,7 @@ namespace HealthAxis.Mvc.Controllers
             if (patientId == null)
             {
                 TempData["Error"] = "Please enter a Patient ID.";
-                return RedirectToAction("PatientIdRequired");
+                return RedirectToAction("Index","Patients");
             }
 
             var patient = _patients.GetById(patientId.Value);
@@ -34,7 +35,7 @@ namespace HealthAxis.Mvc.Controllers
             if (patient == null)
             {
                 TempData["Error"] = "Patient ID " + patientId.Value + " does not exist.";
-                return RedirectToAction("PatientIdRequired");
+                return RedirectToAction("Index","Patients");
             }
 
             var records = _records.GetByPatient(patientId.Value);
@@ -42,18 +43,34 @@ namespace HealthAxis.Mvc.Controllers
             if (records == null || !records.Any())
             {
                 TempData["Error"] = "No health records found for Patient ID " + patientId.Value + ".";
-                return RedirectToAction("PatientIdRequired");
+                return RedirectToAction("Index", "Patients");
             }
 
             return View(records);
         }
 
-        public ActionResult Create(int patientId, int doctorId)
+        public ActionResult Create(int patientId, int doctorId, int? appointmentId)
         {
+            if (appointmentId.HasValue)
+            {
+                var existingRecord = _records.GetByAppointmentId(appointmentId.Value);
+
+                if (existingRecord != null)
+                {
+                    TempData["Error"] = "A health record already exists for this appointment.";
+                    return RedirectToAction(
+                        "DoctorAppointments",
+                        "Appointments",
+                        new { doctorId = doctorId });
+                }
+            }
+
             var dto = new HealthRecordDto
             {
                 PatientId = patientId,
-                DoctorId = doctorId
+                DoctorId = doctorId,
+                AppointmentId = appointmentId,
+                VisitDate = DateTime.Now
             };
 
             return View(dto);
@@ -77,6 +94,8 @@ namespace HealthAxis.Mvc.Controllers
                 ModelState.AddModelError("", errorMessage);
                 return View(dto);
             }
+
+            TempData["Success"] = "Health record added successfully.";
 
             return RedirectToAction(
                 "PatientHistory",

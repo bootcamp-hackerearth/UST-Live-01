@@ -33,5 +33,11 @@ namespace HealthAxis.Api.Repositories
 
             return record;
         }
+
+        public HealthRecord GetByAppointmentId(int appointmentId)
+        {
+            return _context.HealthRecords
+                .FirstOrDefault(r => r.AppointmentId == appointmentId);
+        }
     }
 }

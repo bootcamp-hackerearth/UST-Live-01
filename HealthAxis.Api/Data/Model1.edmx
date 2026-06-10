@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="HealthAxisModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="HealthAxisModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Appointment">
           <Key>
             <PropertyRef Name="AppointmentId" />
@@ -39,6 +39,7 @@
           <Property Name="Diagnosis" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="Prescription" Type="nvarchar" MaxLength="500" Nullable="false" />
           <Property Name="Notes" Type="nvarchar" MaxLength="1000" />
+          <Property Name="AppointmentId" Type="int" />
         </EntityType>
         <EntityType Name="Patient">
           <Key>
@@ -101,6 +102,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_HealthRecord_Appointment">
+          <End Role="Appointment" Type="Self.Appointment" Multiplicity="0..1" />
+          <End Role="HealthRecord" Type="Self.HealthRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Appointment">
+              <PropertyRef Name="AppointmentId" />
+            </Principal>
+            <Dependent Role="HealthRecord">
+              <PropertyRef Name="AppointmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="HealthAxisModelStoreContainer">
           <EntitySet Name="Appointment" EntityType="Self.Appointment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Doctor" EntityType="Self.Doctor" Schema="dbo" store:Type="Tables" />
@@ -122,9 +135,12 @@
             <End Role="Patient" EntitySet="Patient" />
             <End Role="HealthRecord" EntitySet="HealthRecord" />
           </AssociationSet>
+          <AssociationSet Name="FK_HealthRecord_Appointment" Association="Self.FK_HealthRecord_Appointment">
+            <End Role="Appointment" EntitySet="Appointment" />
+            <End Role="HealthRecord" EntitySet="HealthRecord" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="HealthAxisModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -141,6 +157,7 @@
           <Property Name="CancellationReason" Type="String" MaxLength="225" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Doctor" Relationship="Self.FK__Appointme__Docto__59063A47" FromRole="Appointment" ToRole="Doctor" />
           <NavigationProperty Name="Patient" Relationship="Self.FK__Appointme__Patie__5812160E" FromRole="Appointment" ToRole="Patient" />
+          <NavigationProperty Name="HealthRecords" Relationship="HealthAxisModel.FK_HealthRecord_Appointment" FromRole="Appointment" ToRole="HealthRecord" />
         </EntityType>
         <EntityType Name="Doctor">
           <Key>
@@ -168,6 +185,8 @@
           <Property Name="Notes" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Doctor" Relationship="Self.FK__HealthRec__Docto__5EBF139D" FromRole="HealthRecord" ToRole="Doctor" />
           <NavigationProperty Name="Patient" Relationship="Self.FK__HealthRec__Patie__5DCAEF64" FromRole="HealthRecord" ToRole="Patient" />
+          <Property Name="AppointmentId" Type="Int32" />
+          <NavigationProperty Name="Appointment" Relationship="HealthAxisModel.FK_HealthRecord_Appointment" FromRole="HealthRecord" ToRole="Appointment" />
         </EntityType>
         <EntityType Name="Patient">
           <Key>
@@ -253,7 +272,23 @@
             <End Role="Patient" EntitySet="Patients" />
             <End Role="HealthRecord" EntitySet="HealthRecords" />
           </AssociationSet>
+          <AssociationSet Name="FK_HealthRecord_Appointment" Association="HealthAxisModel.FK_HealthRecord_Appointment">
+            <End Role="Appointment" EntitySet="Appointments" />
+            <End Role="HealthRecord" EntitySet="HealthRecords" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_HealthRecord_Appointment">
+          <End Type="HealthAxisModel.Appointment" Role="Appointment" Multiplicity="0..1" />
+          <End Type="HealthAxisModel.HealthRecord" Role="HealthRecord" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Appointment">
+              <PropertyRef Name="AppointmentId" />
+            </Principal>
+            <Dependent Role="HealthRecord">
+              <PropertyRef Name="AppointmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -288,6 +323,7 @@
           <EntitySetMapping Name="HealthRecords">
             <EntityTypeMapping TypeName="HealthAxisModel.HealthRecord">
               <MappingFragment StoreEntitySet="HealthRecord">
+                <ScalarProperty Name="AppointmentId" ColumnName="AppointmentId" />
                 <ScalarProperty Name="RecordId" ColumnName="RecordId" />
                 <ScalarProperty Name="PatientId" ColumnName="PatientId" />
                 <ScalarProperty Name="DoctorId" ColumnName="DoctorId" />

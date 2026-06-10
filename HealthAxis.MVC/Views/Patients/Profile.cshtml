@@ -1,58 +1,37 @@
-﻿@{
-    ViewBag.Title = "Patient Profile";
-}
+﻿@model HealthAxis.Shared.DTOs.PatientDto
 
-<div class="ha-page" style="display:flex; align-items:center;">
+<div class="ha-page">
     <div class="container">
 
-        <div class="ha-card" style="max-width:500px; margin:0 auto; padding:38px; text-align:center;">
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger">
-                    @TempData["Error"]
-                </div>
-            }
+        <div class="ha-card" style="max-width:600px;margin:auto;padding:40px;text-align:center">
             <div class="ha-action-icon"
-                 style="background:linear-gradient(135deg,#0f766e,#2dd4bf); margin-bottom:20px;">
+                 style="width:70px;height:70px;margin:0 auto 20px;
+            background:linear-gradient(135deg,#0f766e,#2dd4bf)">
                 <svg viewBox="0 0 24 24">
                     <circle cx="12" cy="8" r="4"></circle>
                     <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
-                    <path d="M16 19h4"></path>
-                    <path d="M18 17v4"></path>
                 </svg>
             </div>
+            <h2 class="ha-title">@Model.FullName</h2>
 
-            <h2 class="ha-title">Patient Profile</h2>
+            <div style="margin-top:25px;text-align:left">
 
-            <p class="ha-muted">
-                Enter Patient ID to view profile summary and appointment count.
-            </p>
+                <p><b>Patient ID:</b> @Model.PatientId</p>
+                <p><b>Date of Birth:</b> @Model.DateOfBirth.ToString("dd-MMM-yyyy")</p>
+                <p><b>Gender:</b> @Model.Gender</p>
+                <p><b>Phone:</b> @Model.PhoneNumber</p>
+                <p><b>Email:</b> @Model.Email</p>
+                <p><b>Insurance ID:</b> @Model.InsuranceID</p>
+                <p><b>Total Appointments:</b> @Model.AppointmentCount</p>
 
-            @using (Html.BeginForm("Details", "Patients", FormMethod.Get))
-            {
-                <input type="number"
-                       name="id"
-                       class="form-control"
-                       placeholder="Enter Patient ID"
-                       required
-                       min="1"
-                       style="max-width:420px; margin:25px auto; text-align:center;" />
+            </div>
 
-                <div class="ha-actions">
-                    <button type="submit" class="btn btn-primary pill-btn">
-                        View Profile
-                    </button>
-
-                    @Html.ActionLink(
-                        "Back",
-                        "Index",
-                        "Patients",
-                        null,
-                        new { @class = "btn btn-dark-back" })
-                </div>
-            }
+            <div class="ha-actions">
+                @Html.ActionLink("Back", "Index", "Patients", null, new { @class = "btn btn-dark-back" })
+            </div>
 
         </div>
 
     </div>
 </div>
+`

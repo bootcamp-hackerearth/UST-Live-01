@@ -27,10 +27,28 @@ namespace HealthAxis.Mvc.Controllers
 
             return View(patients);
         }
-        public new ActionResult Profile()
+
+
+        public new ActionResult Profile(int? id)
         {
-            return View();
+            if (!id.HasValue)
+            {
+                TempData["Error"] = "Patient ID is required.";
+                return RedirectToAction("Index");
+            }
+
+            var patient = _patients.GetById(id.Value);
+
+            if (patient == null)
+            {
+                TempData["Error"] = "Patient not found.";
+                return RedirectToAction("Index");
+            }
+
+            return View(patient);
         }
+
+
         public ActionResult Details(int? id)
         {
             if (id == null)

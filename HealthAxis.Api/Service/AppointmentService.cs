@@ -70,21 +70,50 @@ namespace HealthAxis.Api.Services
         {
             errorMessage = string.Empty;
 
+            // ✅ VALIDATE PATIENT
             if (_patientRepository.GetById(dto.PatientId) == null)
             {
                 errorMessage = "Invalid patient.";
                 return false;
             }
 
+            // ✅ VALIDATE DOCTOR
             if (_doctorRepository.GetById(dto.DoctorId) == null)
             {
                 errorMessage = "Invalid doctor.";
                 return false;
             }
 
+            // ✅ DATE VALIDATION
             if (dto.ScheduledDate.Date < DateTime.Today)
             {
                 errorMessage = "Appointment date cannot be in the past.";
+                return false;
+            }
+
+            // ✅ RULE 1: SAME DOCTOR SAME DAY
+            bool alreadyBookedSameDoctor = _appointmentRepository.Exists(a =>
+                a.PatientId == dto.PatientId &&
+                a.DoctorId == dto.DoctorId &&
+                a.ScheduledDate.Date == dto.ScheduledDate.Date &&
+                a.Status != AppointmentStatusEnum.Cancelled.ToString());
+
+            if (alreadyBookedSameDoctor)
+            {
+                errorMessage = "You already have an appointment with this doctor on this day.";
+                return false;
+            }
+
+           
+            bool sameTimeConflict = _appointmentRepository.Exists(a =>
+                a.PatientId == dto.PatientId &&
+                a.ScheduledDate.Date == dto.ScheduledDate.Date &&
+                a.TimeSlot == dto.TimeSlot &&
+                a.Status != AppointmentStatusEnum.Cancelled.ToString());
+
+            if (sameTimeConflict)
+            {
+                errorMessage = "You already have another appointment at this time slot.";
                 return false;
             }
 
@@ -97,6 +126,7 @@ namespace HealthAxis.Api.Services
                 return false;
             }
 
+            
             var appointment = new Appointment
             {
                 PatientId = dto.PatientId,

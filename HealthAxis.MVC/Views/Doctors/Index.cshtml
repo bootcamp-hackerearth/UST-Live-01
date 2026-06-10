@@ -6,7 +6,12 @@
 
 <div class="ha-page">
     <div class="container">
-
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["Error"]
+            </div>
+        }
         <div class="ha-card"
              style="padding:30px;margin-bottom:30px;background:linear-gradient(135deg,#16a34a,#4ade80)">
             <h2 style="color:white;font-weight:800">
@@ -59,16 +64,14 @@
                     <p>View doctor profile, full details, and upcoming appointment count.</p>
                 </div>
 
-                @Html.ActionLink(
-                    "View Profile",
-                    "Profile",
-                    "Doctors",
-                    null,
-                    new
-                    {
-                        @class = "btn",
-                        style = "background:#0f766e;color:white"
-                    })
+
+                <button class="btn"
+                        style="background:#0f766e;color:white"
+                        data-toggle="modal"
+                        data-target="#doctorProfileModal">
+                    View Profile
+                </button>
+
             </div>
 
             <div class="ha-action-card">
@@ -89,12 +92,11 @@
                     <p>View doctor appointments and update appointment status.</p>
                 </div>
 
-                @Html.ActionLink(
-                    "Open",
-                    "DoctorAppointments",
-                    "Appointments",
-                    null,
-                    new { @class = "btn btn-primary" })
+                <button class="btn btn-primary"
+                        data-toggle="modal"
+                        data-target="#doctorAppointmentModal">
+                    Open
+                </button>
             </div>
 
             <div class="ha-action-card">
@@ -189,20 +191,120 @@
                     <h4>View Health Records</h4>
                     <p>View diagnosis, prescription, notes, and visit history for a patient.</p>
                 </div>
-
-                @Html.ActionLink(
-                    "View Records",
-                    "PatientHistory",
-                    "HealthRecords",
-                    null,
-                    new
-                    {
-                        @class = "btn",
-                        style = "background:#db2777;color:white"
-                    })
+                <button class="btn"
+                        style="background:#db2777;color:white"
+                        data-toggle="modal"
+                        data-target="#doctorRecordModal">
+                    View Records
+                </button>
             </div>
 
         </div>
 
+    </div>
+</div>
+<div class="modal fade" id="doctorProfileModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Enter Doctor ID</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                @using (Html.BeginForm("Profile", "Doctors", FormMethod.Get))
+                {
+                    <div class="form-group d-flex justify-content-center">
+                        <input type="number"
+                               name="id"
+                               class="form-control modal-input text-center"
+                               placeholder="Enter Doctor ID"
+                               required />
+                    </div>
+
+                    <button type="submit"
+                            class="btn modal-btn"
+                            style="background:#0f766e;color:white;">
+                        View Profile
+                    </button>
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="doctorAppointmentModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Enter Doctor ID</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                @using (Html.BeginForm("DoctorAppointments", "Appointments", FormMethod.Get))
+                {
+                    <div class="form-group d-flex justify-content-center">
+                        <input type="number"
+                               name="doctorId"
+                               class="form-control modal-input text-center"
+                               placeholder="Enter Doctor ID"
+                               required />
+                    </div>
+
+                    <button type="submit"
+                            class="btn modal-btn btn-primary">
+                        Open Appointments
+                    </button>
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="doctorRecordModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Enter Doctor ID</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                @using (Html.BeginForm("PatientHistory", "HealthRecords", FormMethod.Get))
+                {
+                    <div class="form-group d-flex justify-content-center">
+                        <input type="number"
+                               name="doctorId"
+                               class="form-control modal-input text-center"
+                               placeholder="Enter Doctor ID"
+                               required />
+                    </div>
+
+                    <button type="submit"
+                            class="btn modal-btn"
+                            style="background:#db2777;color:white;">
+                        View Records
+                    </button>
+                }
+
+            </div>
+
+        </div>
     </div>
 </div>
