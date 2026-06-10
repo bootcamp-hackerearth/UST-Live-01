@@ -3,6 +3,8 @@ using HealthAxis.Shared.DTOs;
 using HealthAxis.Shared.Enums;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using System.Web.Mvc;
 
 namespace HealthAxis.Mvc.Controllers
@@ -11,13 +13,17 @@ namespace HealthAxis.Mvc.Controllers
     {
         private readonly IAppointmentMvcService _appointments;
         private readonly IDoctorMvcService _doctors;
+        private readonly IPatientMvcService _patients;
 
         public AppointmentsController(
             IAppointmentMvcService appointments,
-            IDoctorMvcService doctors)
+            IDoctorMvcService doctors,
+            IPatientMvcService patient)
         {
             _appointments = appointments;
             _doctors = doctors;
+            _patients = patient;
+
         }
 
         private void LoadDropdowns()
@@ -77,10 +83,25 @@ namespace HealthAxis.Mvc.Controllers
         {
             if (patientId == null)
             {
-                return View("PatientIdRequired");
+                TempData["Error"] = "Please enter a Patient ID.";
+                return RedirectToAction("PatientIdRequired");
+            }
+
+            var patient = _patients.GetById(patientId.Value);
+
+            if (patient == null)
+            {
+                TempData["Error"] = "Patient ID " + patientId.Value + " does not exist.";
+                return RedirectToAction("PatientIdRequired");
             }
 
             var appointments = _appointments.GetByPatient(patientId.Value);
+
+            if (appointments == null || !appointments.Any())
+            {
+                TempData["Error"] = "No appointments found for Patient ID " + patientId.Value + ".";
+                return RedirectToAction("PatientIdRequired");
+            }
 
             return View(appointments);
         }
@@ -123,6 +144,10 @@ namespace HealthAxis.Mvc.Controllers
                 weekStartDate);
 
             return View("DoctorAppointments", appointments);
+        }
+        public ActionResult PatientIdRequired()
+        {
+            return View();
         }
 
         [HttpPost]

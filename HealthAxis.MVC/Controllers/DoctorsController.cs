@@ -54,13 +54,20 @@ namespace HealthAxis.Mvc.Controllers
             return View(patients);
         }
 
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
-            var doctor = _doctors.GetById(id);
+            if (id == null)
+            {
+                TempData["Error"] = "Please enter a valid Doctor ID.";
+                return RedirectToAction("Profile");
+            }
+
+            var doctor = _doctors.GetById(id.Value);
 
             if (doctor == null)
             {
-                return HttpNotFound();
+                TempData["Error"] = "Doctor not found. Please check the ID.";
+                return RedirectToAction("Profile");
             }
 
             return View(doctor);

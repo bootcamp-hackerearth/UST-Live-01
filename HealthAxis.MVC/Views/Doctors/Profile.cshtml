@@ -6,6 +6,12 @@
     <div class="container">
 
         <div class="ha-card" style="max-width:500px;margin:0 auto;padding:38px;text-align:center">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
             <h2 class="ha-title">Doctor Profile</h2>
             <p class="ha-muted">Enter Doctor ID to view doctor profile and upcoming appointment count.</p>
 

@@ -6,7 +6,12 @@
     <div class="container">
 
         <div class="ha-card" style="max-width:500px; margin:0 auto; padding:38px; text-align:center;">
-
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
             <div class="ha-action-icon"
                  style="background:linear-gradient(135deg,#0f766e,#2dd4bf); margin-bottom:20px;">
                 <svg viewBox="0 0 24 24">

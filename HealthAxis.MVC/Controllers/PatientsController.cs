@@ -31,13 +31,20 @@ namespace HealthAxis.Mvc.Controllers
         {
             return View();
         }
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
-            var patient = _patients.GetById(id);
+            if (id == null)
+            {
+                TempData["Error"] = "Please enter a valid Patient ID.";
+                return RedirectToAction("Profile");
+            }
+
+            var patient = _patients.GetById(id.Value);
 
             if (patient == null)
             {
-                return HttpNotFound();
+                TempData["Error"] = "Patient not found. Please check the ID.";
+                return RedirectToAction("Profile");
             }
 
             return View(patient);
