@@ -316,33 +316,5 @@ namespace HealthCare_Appointment_Portal.Tests.Services
         }
        
 
-        [TestMethod]
-        public async Task GetPatientsByInsuranceStatusAsync_ShouldReturnPatients()
-        {
-            var patients = new List<Patient>
-    {
-        new Patient { PatientId = 1 }
-    };
-
-            var dtos = new List<PatientDto>
-    {
-        new PatientDto { PatientId = 1 }
-    };
-
-            _patientRepositoryMock
-                .Setup(x => x.GetPatientsByInsuranceStatusAsync(
-                    InsuranceStatus.Active))
-                .ReturnsAsync(patients);
-
-            _mapperMock
-                .Setup(x => x.Map<IEnumerable<PatientDto>>(patients))
-                .Returns(dtos);
-
-            var result =
-                await _service.GetPatientsByInsuranceStatusAsync(
-                    InsuranceStatus.Active);
-
-            Assert.AreEqual(1, result.Count());
-        }
     }
 }

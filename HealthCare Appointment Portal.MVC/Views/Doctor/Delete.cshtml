@@ -1,0 +1,86 @@
+﻿@model HealthCare_Appointment_Portal.DTOs.DoctorDtos.DoctorDto
+@{
+    ViewBag.Title = "Delete Doctor";
+}
+
+<div class="container-fluid">
+
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-danger">
+                <i class="fas fa-exclamation-triangle"></i> Delete Doctor
+            </h2>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-danger">
+        <div class="card-body">
+
+            <div class="alert alert-warning">
+                <strong>Warning!</strong>
+                You are about to permanently delete this doctor. This action cannot be undone.
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <strong>Doctor Id</strong>
+                </div>
+                <div class="col-md-9">
+                    @Model.DoctorId
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <strong>Full Name</strong>
+                </div>
+                <div class="col-md-9">
+                    @Model.FullName
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <strong>Specialisation</strong>
+                </div>
+                <div class="col-md-9">
+                    @Model.Specialisation
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <strong>Experience</strong>
+                </div>
+                <div class="col-md-9">
+                    @Model.YearsOfExperience Years
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <strong>Consultation Fee</strong>
+                </div>
+                <div class="col-md-9">
+                    Rs. @Model.ConsultationFee
+                </div>
+            </div>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Confirm Delete
+                </button>
+
+                <a href="@Url.Action("Index", "Doctor")" class="btn btn-secondary">
+                    Cancel
+                </a>
+            }
+
+        </div>
+    </div>
+</div>

@@ -1,6 +1,4 @@
-
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.DoctorDtos.DoctorDto>
-
 @{
     ViewBag.Title = "Doctor Registry";
 }
@@ -8,182 +6,99 @@
 <div class="container-fluid">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>
-            Doctor Registry
-        </h2>
-
-        <a href="@Url.Action("Create","Doctor")"
-           class="btn btn-success">
-
-            Add Doctor
-
+        <h2>Doctor Registry</h2>
+        <a href="@Url.Action("Create", "Doctor")" class="btn btn-success">
+            <i class="fas fa-plus"></i> Add Doctor
         </a>
-
     </div>
 
     <div class="card shadow-sm">
-
         <div class="card-body">
 
             <div class="row mb-3">
-
                 <div class="col-md-4">
-
-                    @using (Html.BeginForm(
-                        "Index",
-                        "Doctor",
-                        FormMethod.Get))
+                    @using (Html.BeginForm("Index", "Doctor", FormMethod.Get))
                     {
                         <div class="input-group">
-
-                            <select name="specialisation"
-                                    class="form-select">
-
-                                <option value="">
-                                    All Specialisations
-                                </option>
-
-                                @foreach (var item in Enum.GetValues(
-                                    typeof(
-                                    HealthCare_Appointment_Portal.Enums.Specialisation)))
+                            <select name="specialisation" class="form-select">
+                                <option value="">All Specialisations</option>
+                                @foreach (var item in Enum.GetValues(typeof(HealthCare_Appointment_Portal.Enums.Specialisation)))
                                 {
-                                    <option value="@item">
-                                        @item
-                                    </option>
+                                    <option value="@item">@item</option>
                                 }
-
                             </select>
-
-                            <button type="submit"
-                                    class="btn btn-outline-primary">
-
-                                Search
-
+                            <button type="submit" class="btn btn-primary" title="Filter">
+                                <i class="fas fa-filter"></i> Filter
                             </button>
-
                         </div>
                     }
-
                 </div>
-
             </div>
 
-            <table class="table table-bordered table-hover">
-
+            <table class="table table-bordered table-hover align-middle">
                 <thead class="table-light">
-
                     <tr>
-
-                        <th>Doctor Id</th>
-
-                        <th>Full Name</th>
-
-                        <th>Specialisation</th>
-
-                        <th>Experience</th>
-
-                        <th>Fee</th>
-
-                        <th>Status</th>
-
-                        <th>Upcoming Appointments</th>
-
-                        <th width="300">Actions</th>
-
+                        <th scope="col">Doctor Id</th>
+                        <th scope="col">Full Name</th>
+                        <th scope="col">Specialisation</th>
+                        <th scope="col">Experience</th>
+                        <th scope="col">Fee</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Upcoming Appointments</th>
+                        <th scope="col" class="text-center">Actions</th>
                     </tr>
-
                 </thead>
-
                 <tbody>
-
                     @foreach (var doctor in Model)
                     {
                         <tr>
-
                             <td>@doctor.DoctorId</td>
-
                             <td>@doctor.FullName</td>
-
                             <td>@doctor.Specialisation</td>
-
                             <td>@doctor.YearsOfExperience</td>
-
                             <td>Rs.@doctor.ConsultationFee</td>
-
                             <td>
-
                                 @if (doctor.IsActive)
                                 {
-                                    <span class="badge bg-success">
-                                        Active
-                                    </span>
+                                    <span class="badge bg-success">Active</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-danger">
-                                        Inactive
-                                    </span>
+                                    <span class="badge bg-danger">Inactive</span>
                                 }
-
                             </td>
+                            <td>@doctor.UpcomingAppointmentCount</td>
+                            <td class="text-center">
+                                @{
+                                    // Extracting this prevents SonarQube from misreading "id =" as an HTML attribute
+                                    var routeData = new { id = doctor.DoctorId };
+                                }
+                                <div class="d-flex justify-content-center gap-2">
 
-                            <td>
-                                @doctor.UpcomingAppointmentCount
+                                    <a href="@Url.Action("Details", "Doctor", routeData)"
+                                       class="btn btn-sm btn-info text-white" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <a href="@Url.Action("Edit", "Doctor", routeData)"
+                                       class="btn btn-sm btn-warning" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    @using (Html.BeginForm("Delete", "Doctor", routeData, FormMethod.Post, new { style = "display:inline;", onsubmit = "return confirm('Are you sure you want to delete this doctor?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    }
+
+                                </div>
                             </td>
-
-                            <td>
-
-                                <a href="@Url.Action(
-                                         "Details",
-                                         "Doctor",
-                                         new
-                                         {
-                                             id = doctor.DoctorId
-                                         })"
-                                   class="btn btn-info btn-sm">
-
-                                    View
-
-                                </a>
-
-                                <a href="@Url.Action(
-                                         "Edit",
-                                         "Doctor",
-                                         new
-                                         {
-                                             id = doctor.DoctorId
-                                         })"
-                                   class="btn btn-warning btn-sm">
-
-                                    Edit
-
-                                </a>
-
-                                <a href="@Url.Action(
-                                         "Delete",
-                                         "Doctor",
-                                         new
-                                         {
-                                             id = doctor.DoctorId
-                                         })"
-                                   class="btn btn-danger btn-sm">
-
-                                    Delete
-
-                                </a>
-
-                            </td>
-
                         </tr>
                     }
-
                 </tbody>
-
             </table>
-
         </div>
-
     </div>
-
 </div>

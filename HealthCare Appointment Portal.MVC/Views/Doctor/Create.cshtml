@@ -1,166 +1,76 @@
 @model HealthCare_Appointment_Portal.DTOs.DoctorDtos.CreateDoctorDto
-
 @{
     ViewBag.Title = "Add Doctor";
 }
 
 <div class="container-fluid">
 
-    <div class="row mb-4">
-
-        <div class="col">
-
-            <h2>
-                Add New Doctor
-            </h2>
-
-        </div>
-
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-user-plus me-2"></i>Add New Doctor</h2>
     </div>
 
     <div class="card shadow-sm">
-
         <div class="card-body">
 
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
 
-                if (ViewData.ModelState[""]?.Errors.Count > 0)
+                if (!ViewData.ModelState.IsValid)
                 {
-                    @Html.ValidationSummary(
-                        true,
-                        "",
-                        new
-                        {
-                            @class = "alert alert-danger"
-                        })
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
                 }
 
                 <div class="mb-3">
+                    @Html.LabelFor(m => m.FullName, "Full Name", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Full Name
-                    </label>
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
 
-                    @Html.TextBoxFor(
-                        m => m.FullName,
-                        new
-                        {
-                            @class = "form-control"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.FullName,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-3">
+                    @Html.LabelFor(m => m.Specialisation, "Specialisation", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Specialisation
-                    </label>
+                    @Html.EnumDropDownListFor(m => m.Specialisation, "-- Select Specialisation --", new { @class = "form-select" })
 
-                    @Html.EnumDropDownListFor(
-                        m => m.Specialisation,
-                        "-- Select Specialisation --",
-                        new
-                        {
-                            @class = "form-select"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.Specialisation,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-3">
+                    @Html.LabelFor(m => m.YearsOfExperience, "Years Of Experience", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Years Of Experience
-                    </label>
+                    @Html.TextBoxFor(m => m.YearsOfExperience, new { @class = "form-control", type = "number", min = "0" })
 
-                    @Html.TextBoxFor(
-                        m => m.YearsOfExperience,
-                        new
-                        {
-                            @class = "form-control",
-                            type = "number",
-                            min = "0"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.YearsOfExperience,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-4">
+                    @Html.LabelFor(m => m.ConsultationFee, "Consultation Fee", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Consultation Fee
-                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text">Rs.</span>
+                        @Html.TextBoxFor(m => m.ConsultationFee, new { @class = "form-control", type = "number", step = "0.01", min = "1" })
+                    </div>
 
-                    @Html.TextBoxFor(
-                        m => m.ConsultationFee,
-                        new
-                        {
-                            @class = "form-control",
-                            type = "number",
-                            step = "0.01",
-                            min = "1"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.ConsultationFee,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
-                <div class="mt-4">
-
-                    <button type="submit"
-                            class="btn btn-success">
-
-                        Save Doctor
-
+                <div class="mt-4 border-top pt-3">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="fas fa-save me-1"></i> Save Doctor
                     </button>
 
-                    <a href="@Url.Action("Index", "Doctor")"
-                       class="btn btn-secondary">
-
-                        Cancel
-
+                    <a href="@Url.Action("Index", "Doctor")" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
                     </a>
-
                 </div>
             }
 
         </div>
-
     </div>
-
 </div>
 
-@section Scripts
-{
+@section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }

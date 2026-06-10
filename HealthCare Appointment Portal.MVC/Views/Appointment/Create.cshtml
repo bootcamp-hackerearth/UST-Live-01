@@ -1,197 +1,99 @@
 @model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.CreateAppointmentDto
-
 @{
     ViewBag.Title = "Create Appointment";
 }
 
 <div class="container-fluid">
 
-    <div class="row mb-4">
-
-        <div class="col">
-
-            <h2>
-                Create Appointment
-            </h2>
-
-        </div>
-
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-calendar-plus me-2"></i>Create Appointment</h2>
     </div>
 
     <div class="card shadow-sm">
-
         <div class="card-body">
 
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
 
-                if (ViewData.ModelState[""]?.Errors.Count > 0)
+                if (!ViewData.ModelState.IsValid)
                 {
-                    @Html.ValidationSummary(
-                        true,
-                        "",
-                        new
-                        {
-                            @class = "alert alert-danger"
-                        })
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
                 }
 
                 <div class="mb-3">
+                    @Html.LabelFor(m => m.PatientId, "Patient", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Patient
-                    </label>
+                    @Html.DropDownListFor(m => m.PatientId, (SelectList)ViewBag.Patients, "-- Select Patient --", new { @class = "form-select" })
 
-                    @Html.DropDownListFor(
-                        m => m.PatientId,
-                        (SelectList)ViewBag.Patients,
-                        "-- Select Patient --",
-                        new
-                        {
-                            @class = "form-select"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.PatientId,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.PatientId, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-3">
+                    @Html.LabelFor(m => m.DoctorId, "Doctor", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Doctor
-                    </label>
+                    @Html.DropDownListFor(m => m.DoctorId, (SelectList)ViewBag.Doctors, "-- Select Doctor --", new { @class = "form-select" })
 
-                    @Html.DropDownListFor(
-                        m => m.DoctorId,
-                        (SelectList)ViewBag.Doctors,
-                        "-- Select Doctor --",
-                        new
-                        {
-                            @class = "form-select"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.DoctorId,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.DoctorId, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-3">
+                    @Html.LabelFor(m => m.ScheduledDate, "Appointment Date", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Appointment Date
-                    </label>
+                    @Html.TextBoxFor(m => m.ScheduledDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", min = DateTime.Today.ToString("yyyy-MM-dd") })
 
-                    @Html.TextBoxFor(
-                        m => m.ScheduledDate,
-                        "{0:yyyy-MM-dd}",
-                        new
-                        {
-                            @class = "form-control",
-                            type = "date",
-                            min = DateTime.Today.ToString("yyyy-MM-dd")
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.ScheduledDate,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.ScheduledDate, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-4">
+                    @Html.LabelFor(m => m.TimeSlot, "Time Slot", new { @class = "form-label fw-bold" })
 
-                    <label class="form-label">
-                        Time Slot
-                    </label>
+                    @Html.DropDownListFor(m => m.TimeSlot, new List<SelectListItem>
+                    {
+                        new SelectListItem { Text = "06:00 - 07:00", Value = "06:00 - 07:00" },
+                        new SelectListItem { Text = "07:00 - 08:00", Value = "07:00 - 08:00" },
+                        new SelectListItem { Text = "08:00 - 09:00", Value = "08:00 - 09:00" },
+                        new SelectListItem { Text = "09:00 - 10:00", Value = "09:00 - 10:00" },
+                        new SelectListItem { Text = "10:00 - 11:00", Value = "10:00 - 11:00" },
+                        new SelectListItem { Text = "11:00 - 12:00", Value = "11:00 - 12:00" },
+                        new SelectListItem { Text = "12:00 - 13:00", Value = "12:00 - 13:00" },
+                        new SelectListItem { Text = "13:00 - 14:00", Value = "13:00 - 14:00" },
+                        new SelectListItem { Text = "14:00 - 15:00", Value = "14:00 - 15:00" },
+                        new SelectListItem { Text = "15:00 - 16:00", Value = "15:00 - 16:00" },
+                        new SelectListItem { Text = "16:00 - 17:00", Value = "16:00 - 17:00" },
+                        new SelectListItem { Text = "17:00 - 18:00", Value = "17:00 - 18:00" },
+                        new SelectListItem { Text = "18:00 - 19:00", Value = "18:00 - 19:00" },
+                        new SelectListItem { Text = "19:00 - 20:00", Value = "19:00 - 20:00" },
+                        new SelectListItem { Text = "20:00 - 21:00", Value = "20:00 - 21:00" },
+                        new SelectListItem { Text = "21:00 - 22:00", Value = "21:00 - 22:00" },
+                        new SelectListItem { Text = "22:00 - 23:00", Value = "22:00 - 23:00" },
+                        new SelectListItem { Text = "23:00 - 00:00", Value = "23:00 - 00:00" },
+                        new SelectListItem { Text = "00:00 - 01:00", Value = "00:00 - 01:00" },
+                        new SelectListItem { Text = "01:00 - 02:00", Value = "01:00 - 02:00" },
+                        new SelectListItem { Text = "02:00 - 03:00", Value = "02:00 - 03:00" },
+                        new SelectListItem { Text = "03:00 - 04:00", Value = "03:00 - 04:00" },
+                        new SelectListItem { Text = "04:00 - 05:00", Value = "04:00 - 05:00" },
+                        new SelectListItem { Text = "05:00 - 06:00", Value = "05:00 - 06:00" }
+                    }, "-- Select Time Slot --", new { @class = "form-select" })
 
-                    @Html.DropDownListFor(
-                        m => m.TimeSlot,
-                        new List<SelectListItem>
-                        {
-                            new SelectListItem { Text = "06:00 - 07:00", Value = "06:00 - 07:00" },
-                            new SelectListItem { Text = "07:00 - 08:00", Value = "07:00 - 08:00" },
-                            new SelectListItem { Text = "08:00 - 09:00", Value = "08:00 - 09:00" },
-                            new SelectListItem { Text = "09:00 - 10:00", Value = "09:00 - 10:00" },
-                            new SelectListItem { Text = "10:00 - 11:00", Value = "10:00 - 11:00" },
-                            new SelectListItem { Text = "11:00 - 12:00", Value = "11:00 - 12:00" },
-                            new SelectListItem { Text = "12:00 - 13:00", Value = "12:00 - 13:00" },
-                            new SelectListItem { Text = "13:00 - 14:00", Value = "13:00 - 14:00" },
-                            new SelectListItem { Text = "14:00 - 15:00", Value = "14:00 - 15:00" },
-                            new SelectListItem { Text = "15:00 - 16:00", Value = "15:00 - 16:00" },
-                            new SelectListItem { Text = "16:00 - 17:00", Value = "16:00 - 17:00" },
-                            new SelectListItem { Text = "17:00 - 18:00", Value = "17:00 - 18:00" },
-                            new SelectListItem { Text = "18:00 - 19:00", Value = "18:00 - 19:00" },
-                            new SelectListItem { Text = "19:00 - 20:00", Value = "19:00 - 20:00" },
-                            new SelectListItem { Text = "20:00 - 21:00", Value = "20:00 - 21:00" },
-                            new SelectListItem { Text = "21:00 - 22:00", Value = "21:00 - 22:00" },
-                            new SelectListItem { Text = "22:00 - 23:00", Value = "22:00 - 23:00" },
-                            new SelectListItem { Text = "23:00 - 00:00", Value = "23:00 - 00:00" },
-                            new SelectListItem { Text = "00:00 - 01:00", Value = "00:00 - 01:00" },
-                            new SelectListItem { Text = "01:00 - 02:00", Value = "01:00 - 02:00" },
-                            new SelectListItem { Text = "02:00 - 03:00", Value = "02:00 - 03:00" },
-                            new SelectListItem { Text = "03:00 - 04:00", Value = "03:00 - 04:00" },
-                            new SelectListItem { Text = "04:00 - 05:00", Value = "04:00 - 05:00" },
-                            new SelectListItem { Text = "05:00 - 06:00", Value = "05:00 - 06:00" }
-                        },
-                        "-- Select Time Slot --",
-                        new
-                        {
-                            @class = "form-select"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.TimeSlot,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.TimeSlot, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
-                <div class="mt-4">
-
-                    <button type="submit"
-                            class="btn btn-success">
-
-                        Create Appointment
-
+                <div class="mt-4 border-top pt-3">
+                    <button type="submit" class="btn btn-success me-2">
+                        <i class="fas fa-calendar-check me-1"></i> Create Appointment
                     </button>
 
-                    <a href="@Url.Action(
-                                "Index",
-                                "Appointment")"
-                       class="btn btn-secondary">
-
-                        Cancel
-
+                    <a href="@Url.Action("Index", "Appointment")" class="btn btn-secondary">
+                        <i class="fas fa-times me-1"></i> Cancel
                     </a>
-
                 </div>
             }
 
         </div>
-
     </div>
-
 </div>
 
-@section Scripts
-{
+@section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
