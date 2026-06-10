@@ -1,0 +1,197 @@
+﻿@{
+    ViewBag.Title = "Patient Login";
+}
+
+<div class="patient-login-wrapper">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-5 col-md-7">
+
+                <div class="card patient-login-card">
+
+                    <div class="card-body p-5 text-center">
+
+                        <!-- Icon -->
+                        <div class="patient-icon-circle mb-4">
+                            <i class="fas fa-hospital-user"></i>
+                        </div>
+
+                        <!-- Title -->
+                        <h2 class="fw-bold mb-2">
+                            Patient Access
+                        </h2>
+
+                        <p class="text-muted mb-4">
+                            Enter your Patient ID to continue to your dashboard.
+                        </p>
+
+                        @using (Html.BeginForm())
+                        {
+                            <div class="mb-3 text-start">
+
+                                <label class="form-label fw-semibold">
+                                    Patient ID
+                                </label>
+
+                                <input type="number"
+                                       name="userId"
+                                       class="form-control form-control-lg"
+                                       placeholder="Enter Patient ID"
+                                       required />
+
+                            </div>
+
+                            if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger mt-3">
+                                    @ViewBag.Error
+                                </div>
+                            }
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-lg w-100 mt-3">
+
+                                <i class="fas fa-arrow-right-to-bracket me-2"></i>
+                                Go to Dashboard
+
+                            </button>
+                        }
+
+                        <!-- Register Patient Option -->
+                        <div class="register-box mt-4">
+
+                            <p class="mb-2 text-muted">
+                                New patient?
+                            </p>
+
+                            <a href="@Url.Action("Create", "Patient")"
+                               class="btn btn-outline-primary w-100">
+
+                                <i class="fas fa-user-plus me-2"></i>
+                                Register Patient
+
+                            </a>
+
+                        </div>
+
+                        <!-- Back Button -->
+                        <a href="@Url.Action("DashboardSelection", "Home")"
+                           class="btn btn-outline-secondary w-100 mt-3">
+
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Back to Dashboard Selection
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+    .patient-login-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #F8FAFC, #E0F2FE);
+        padding: 50px 0;
+    }
+
+    .patient-login-card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 12px 35px rgba(0,0,0,.12);
+        overflow: hidden;
+    }
+
+        .patient-login-card::before {
+            content: "";
+            display: block;
+            height: 7px;
+            background: linear-gradient(90deg, #1E3A7A, #2563EB, #4AA3D9);
+        }
+
+    .patient-icon-circle {
+        width: 95px;
+        height: 95px;
+        border-radius: 50%;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #2563EB, #4AA3D9);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        box-shadow: 0 8px 20px rgba(37,99,235,.35);
+    }
+
+    .form-control {
+        border-radius: 12px;
+        border: 1px solid #D1D5DB;
+    }
+
+        .form-control:focus {
+            border-color: #2563EB;
+            box-shadow: 0 0 0 .2rem rgba(37,99,235,.18);
+        }
+
+    .btn {
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background-color: #2563EB;
+        border-color: #2563EB;
+    }
+
+        .btn-primary:hover {
+            background-color: #1D4ED8;
+            border-color: #1D4ED8;
+        }
+
+    .register-box {
+        background: #F8FAFC;
+        border: 1px dashed #CBD5E1;
+        border-radius: 16px;
+        padding: 18px;
+    }
+
+    .btn-outline-primary {
+        color: #2563EB;
+        border-color: #2563EB;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: #2563EB;
+            border-color: #2563EB;
+            color: #ffffff;
+        }
+
+    .alert {
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    @@media(max-width: 576px) {
+        .patient-login-card .card-body {
+            padding: 32px 24px !important;
+        }
+
+        .patient-icon-circle {
+            width: 78px;
+            height: 78px;
+            font-size: 34px;
+        }
+    }
+</style>

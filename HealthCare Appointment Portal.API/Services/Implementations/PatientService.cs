@@ -4,8 +4,6 @@ using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
-using HealthCare_Appointment_Portal.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,18 +13,25 @@ namespace HealthCare_Appointment_Portal.Services
     public class PatientService
         : IPatientService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
-
-        private readonly IMapper
-            _mapper;
+        private readonly IPatientRepository _patientRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IMapper _mapper;
 
         public PatientService(
-            IUnitOfWork unitOfWork,
+            IPatientRepository patientRepository,
+            IUserRepository userRepository,
+            IAppointmentRepository appointmentRepository,
             IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
+            _patientRepository =
+                patientRepository;
+
+            _userRepository =
+                userRepository;
+
+            _appointmentRepository =
+                appointmentRepository;
 
             _mapper =
                 mapper;
@@ -36,8 +41,7 @@ namespace HealthCare_Appointment_Portal.Services
             GetAllPatientsAsync()
         {
             var patients =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetAllAsync();
 
             return _mapper.Map<
@@ -50,8 +54,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int patientId)
         {
             var patient =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetByIdAsync(
                         patientId);
 
@@ -70,8 +73,7 @@ namespace HealthCare_Appointment_Portal.Services
                 string email)
         {
             var patient =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetPatientByEmailAsync(
                         email);
 
@@ -90,8 +92,7 @@ namespace HealthCare_Appointment_Portal.Services
                 CreatePatientDto patientDto)
         {
             var existingPatient =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetPatientByEmailAsync(
                         patientDto.Email);
 
@@ -104,26 +105,32 @@ namespace HealthCare_Appointment_Portal.Services
                 _mapper.Map<Patient>(
                     patientDto);
 
-            await _unitOfWork
-                .Patients
+            await _patientRepository
                 .AddAsync(
                     patient);
 
-            await _unitOfWork
-                .CommitAsync();
+            var user =
+                new User
+                {
+                    UserCode =
+                        $"P{patient.PatientId:D3}",
 
-            var user = new User
-            {
-                UserCode = $"P{patient.PatientId:D3}",
-                Email = patient.Email,
-                PasswordHash = string.Empty,
-                Role = Role.Patient,
-                ReferenceId = patient.PatientId,
-            };
+                    Email =
+                        patient.Email,
 
-            await _unitOfWork.Users.AddAsync(user);
+                    PasswordHash =
+                        string.Empty,
 
-            await _unitOfWork.CommitAsync();
+                    Role =
+                        Role.Patient,
+
+                    ReferenceId =
+                        patient.PatientId
+                };
+
+            await _userRepository
+                .AddAsync(
+                    user);
 
             return patient.PatientId;
         }
@@ -134,8 +141,7 @@ namespace HealthCare_Appointment_Portal.Services
                 UpdatePatientDto patientDto)
         {
             var patient =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetByIdAsync(
                         patientId);
 
@@ -145,15 +151,12 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             var existingPatient =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetPatientByEmailAsync(
                         patientDto.Email);
 
-            if (existingPatient != null
-                &&
-                existingPatient.PatientId
-                != patientId)
+            if (existingPatient != null &&
+                existingPatient.PatientId != patientId)
             {
                 throw new DuplicatePatientException();
             }
@@ -162,13 +165,9 @@ namespace HealthCare_Appointment_Portal.Services
                 patientDto,
                 patient);
 
-            await _unitOfWork
-                .Patients
+            await _patientRepository
                 .UpdateAsync(
                     patient);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task
@@ -176,8 +175,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int patientId)
         {
             var patient =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetByIdAsync(
                         patientId);
 
@@ -187,10 +185,9 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             var appointments =
-                await _unitOfWork
-                .Appointments
-                .GetAppointmentsByPatientAsync(
-                patientId);
+                await _appointmentRepository
+                    .GetAppointmentsByPatientAsync(
+                        patientId);
 
             bool hasConfirmedAppointments =
                 appointments.Any(a =>
@@ -202,13 +199,9 @@ namespace HealthCare_Appointment_Portal.Services
                 throw new PatientDeletionException();
             }
 
-            await _unitOfWork
-                .Patients
+            await _patientRepository
                 .DeleteAsync(
                     patientId);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task<IEnumerable<PatientDto>>
@@ -216,8 +209,7 @@ namespace HealthCare_Appointment_Portal.Services
                 InsuranceStatus status)
         {
             var patients =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetPatientsByInsuranceStatusAsync(
                         status);
 

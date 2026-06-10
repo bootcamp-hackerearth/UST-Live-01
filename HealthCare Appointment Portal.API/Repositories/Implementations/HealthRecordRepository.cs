@@ -9,92 +9,107 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Repositories
 {
     public class HealthRecordRepository
-        : Repository<HealthRecord>,
-          IHealthRecordRepository
+        : IHealthRecordRepository
     {
+        private readonly ApplicationDbContext _context;
+
         public HealthRecordRepository(
             ApplicationDbContext context)
-            : base(context)
         {
+            _context = context;
         }
 
-        public async Task<bool>
-            RecordExistsAsync(
-                int appointmentId)
+        public async Task<IEnumerable<HealthRecord>>
+            GetAllAsync()
         {
-            return await _dbSet.AnyAsync(
-                hr => hr.AppointmentId
-                    == appointmentId);
-        }
-
-        public async Task<
-            IEnumerable<HealthRecord>>
-            GetRecordsByPatientAsync(
-                int patientId)
-        {
-            return await _dbSet
-                .Include(hr => hr.Patient)
-                .Include(hr => hr.Doctor)
-                .Include(hr => hr.Appointment)
-                .Where(hr =>
-                    hr.PatientId
-                    == patientId)
-                .OrderByDescending(
-                    hr => hr.VisitDate)
-                .ToListAsync();
-        }
-
-        public async Task<
-            IEnumerable<HealthRecord>>
-            GetRecordsByDoctorAsync(
-                int doctorId)
-        {
-            return await _dbSet
-                .Include(hr => hr.Patient)
-                .Include(hr => hr.Doctor)
-                .Include(hr => hr.Appointment)
-                .Where(hr =>
-                    hr.DoctorId
-                    == doctorId)
-                .OrderByDescending(
-                    hr => hr.VisitDate)
-                .ToListAsync();
-        }
-
-        public async Task<
-            IEnumerable<int>>
-            GetRecordedAppointmentIdsAsync()
-        {
-            return await _dbSet
-                .Select(hr =>
-                    hr.AppointmentId)
+            return await _context.HealthRecords
+                .Include(r => r.Appointment)
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
                 .ToListAsync();
         }
 
         public async Task<HealthRecord>
-            GetByAppointmentIdAsync(
-                int appointmentId)
+            GetByIdAsync(
+                int recordId)
         {
-            return await _dbSet
-                .Include(hr => hr.Patient)
-                .Include(hr => hr.Doctor)
-                .Include(hr => hr.Appointment)
-                .FirstOrDefaultAsync(hr =>
-                    hr.AppointmentId
-                    == appointmentId);
+            return await _context.HealthRecords
+                .FirstOrDefaultAsync(r =>
+                    r.RecordId ==
+                    recordId);
         }
 
-        public async Task<
-            IEnumerable<HealthRecord>>
-            GetAllRecordsWithDetailsAsync()
+        public async Task<IEnumerable<HealthRecord>>
+            GetByPatientAsync(
+                int patientId)
         {
-            return await _dbSet
-                .Include(hr => hr.Patient)
-                .Include(hr => hr.Doctor)
-                .Include(hr => hr.Appointment)
-                .OrderByDescending(
-                    hr => hr.VisitDate)
+            return await _context.HealthRecords
+                .Where(r =>
+                    r.PatientId ==
+                    patientId)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<HealthRecord>>
+            GetByDoctorAsync(
+                int doctorId)
+        {
+            return await _context.HealthRecords
+                .Where(r =>
+                    r.DoctorId ==
+                    doctorId)
+                .ToListAsync();
+        }
+
+        public async Task<bool>
+            ExistsByAppointmentAsync(
+                int appointmentId)
+        {
+            return await _context.HealthRecords
+                .AnyAsync(r =>
+                    r.AppointmentId ==
+                    appointmentId);
+        }
+
+        public async Task
+            AddAsync(
+                HealthRecord record)
+        {
+            _context.HealthRecords
+                .Add(record);
+
+            await _context
+                .SaveChangesAsync();
+        }
+
+        public async Task
+            UpdateAsync(
+                HealthRecord record)
+        {
+            _context.Entry(record)
+                .State =
+                EntityState.Modified;
+
+            await _context
+                .SaveChangesAsync();
+        }
+
+        public async Task
+            DeleteAsync(
+                int recordId)
+        {
+            var record =
+                await GetByIdAsync(
+                    recordId);
+
+            if (record != null)
+            {
+                _context.HealthRecords
+                    .Remove(record);
+
+                await _context
+                    .SaveChangesAsync();
+            }
         }
     }
 }

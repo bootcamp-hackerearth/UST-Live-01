@@ -1,5 +1,6 @@
-﻿using System.Data.Entity;
-using HealthCare_Appointment_Portal.Models;
+﻿using HealthCare_Appointment_Portal.Models;
+using System.Data.Common;
+using System.Data.Entity;
 
 namespace HealthCare_Appointment_Portal.Data
 {
@@ -8,6 +9,10 @@ namespace HealthCare_Appointment_Portal.Data
     {
         public ApplicationDbContext()
             : base("HealthCareDb")
+        {
+        }
+        public ApplicationDbContext(DbConnection connection)
+        : base(connection, true)
         {
         }
 

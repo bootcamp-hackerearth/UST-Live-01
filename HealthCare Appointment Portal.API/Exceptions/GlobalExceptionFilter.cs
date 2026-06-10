@@ -1,67 +1,58 @@
 ﻿using HealthCare_Appointment_Portal.Exceptions;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http.Filters;
 
 namespace HealthCare_Appointment_Portal.Filters
 {
-    public class GlobalExceptionFilter
-        : ExceptionFilterAttribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+    public class GlobalExceptionFilterAttribute : ExceptionFilterAttribute
     {
-        public override void OnException(
-            HttpActionExecutedContext context)
+        public override void OnException(HttpActionExecutedContext actionExecutedContext)
         {
-            HttpStatusCode statusCode =
-                HttpStatusCode.BadRequest;
+            var exception = actionExecutedContext.Exception;
 
-            string message =
-                context.Exception.Message;
+            HttpStatusCode statusCode;
+            string message = exception.Message;
 
-            if (context.Exception is PatientNotFoundException
-                || context.Exception is DoctorNotFoundException
-                || context.Exception is AppointmentNotFoundException
-                || context.Exception is HealthRecordNotFoundException
-                || context.Exception is InsuranceNotFoundException)
+            if (exception is PatientNotFoundException
+                || exception is DoctorNotFoundException
+                || exception is AppointmentNotFoundException
+                || exception is HealthRecordNotFoundException
+                || exception is InsuranceNotFoundException)
             {
-                statusCode =
-                    HttpStatusCode.NotFound;
+                statusCode = HttpStatusCode.NotFound;
             }
-            else if (context.Exception is DuplicatePatientException
-                     || context.Exception is DuplicatePolicyNumberException
-                     || context.Exception is DuplicateHealthRecordException
-                     || context.Exception is AppointmentConflictException)
+            else if (exception is DuplicatePatientException
+                     || exception is DuplicatePolicyNumberException
+                     || exception is DuplicateHealthRecordException
+                     || exception is AppointmentConflictException)
             {
-                statusCode =
-                    HttpStatusCode.Conflict;
+                statusCode = HttpStatusCode.Conflict;
             }
-            else if (context.Exception is InvalidAppointmentStatusException
-                     || context.Exception is PastDateException
-                     || context.Exception is PastTimeSlotException
-                     || context.Exception is AdvanceBookingLimitException
-                     || context.Exception is DoctorUnavailableException
-                     || context.Exception is DoctorDeletionException
-                     || context.Exception is PatientDeletionException
-                     || context.Exception is ValidationException)
+            else if (exception is InvalidAppointmentStatusException
+                     || exception is PastDateException
+                     || exception is PastTimeSlotException
+                     || exception is AdvanceBookingLimitException
+                     || exception is DoctorUnavailableException
+                     || exception is DoctorDeletionException
+                     || exception is PatientDeletionException
+                     || exception is ValidationException)
             {
-                statusCode =
-                    HttpStatusCode.BadRequest;
+                statusCode = HttpStatusCode.BadRequest;
             }
             else
             {
-                statusCode =
-                    HttpStatusCode.InternalServerError;
-
-                message =
-                    "An unexpected error occurred.";
+                statusCode = HttpStatusCode.InternalServerError;
+                message = "An unexpected error occurred.";
             }
 
-            context.Response =
-                context.Request.CreateResponse(
+            actionExecutedContext.Response =
+                actionExecutedContext.Request.CreateResponse(
                     statusCode,
-                    new
-                    {
-                        Message = message
-                    });
+                    new { Message = message });
         }
     }
 }
+

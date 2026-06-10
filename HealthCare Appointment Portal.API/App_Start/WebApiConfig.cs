@@ -28,7 +28,7 @@ namespace HealthCare_Appointment_Portal
                     });
 
             config.Filters.Add(
-                new GlobalExceptionFilter());
+                new GlobalExceptionFilterAttribute());
         }
     }
 }

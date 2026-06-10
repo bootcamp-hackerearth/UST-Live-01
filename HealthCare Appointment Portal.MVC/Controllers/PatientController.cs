@@ -2,8 +2,10 @@
 using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Linq;
 
 namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
@@ -12,6 +14,29 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
     {
         private readonly IPatientApiService
             _patientService;
+
+
+        // GET: Patient/Login
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Patient/Login
+        [HttpPost]
+        public ActionResult Login(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                ViewBag.Error = "Please enter User ID";
+                return View();
+            }
+
+            // ✅ Store in session
+            Session["ReferenceId"] = userId;
+
+            return RedirectToAction("Dashboard");
+        }
 
         public PatientController(
             IPatientApiService patientService)
@@ -136,25 +161,53 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // GET: Patient
         public async Task<ActionResult>
             Index(
-                InsuranceStatus? status)
+                InsuranceStatus? status,
+                string sortOrder)
         {
+            IEnumerable<PatientDto>
+                patients;
+
             if (status.HasValue)
             {
-                var patients =
+                patients =
                     await _patientService
                         .GetPatientsByInsuranceStatusAsync(
                             status.Value);
-
-                return View(
-                    patients);
+            }
+            else
+            {
+                patients =
+                    await _patientService
+                        .GetAllPatientsAsync();
             }
 
-            var patientsList =
-                await _patientService
-                    .GetAllPatientsAsync();
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    patients = patients
+                        .OrderByDescending(p => p.FullName.ToLower());
+                    break;
+
+                default:
+                    patients = patients
+                        .OrderBy(p => p.FullName.ToLower());
+                    break;
+            }
+
+
+            ViewBag.CurrentSort =
+                sortOrder;
+
+            ViewBag.NameSortParm =
+                string.IsNullOrEmpty(sortOrder)
+                    ? "name_desc"
+                    : "";
+
+            ViewBag.SelectedStatus =
+                status;
 
             return View(
-                patientsList);
+                patients);
         }
 
         // GET: Patient/Details/5

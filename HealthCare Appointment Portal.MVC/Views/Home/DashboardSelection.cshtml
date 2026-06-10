@@ -1,0 +1,203 @@
+﻿@{
+    ViewBag.Title = "Select Dashboard";
+}
+
+<div class="dashboard-selection-wrapper">
+
+    <div class="container text-center py-5">
+
+        <div class="mb-5">
+            <h2 class="fw-bold page-title">
+                Select Your Dashboard
+            </h2>
+
+            <p class="text-muted">
+                Choose your role to continue to HealthAxis Health
+            </p>
+        </div>
+
+        <div class="row justify-content-center">
+
+            <!-- Patient -->
+            <div class="col-md-4 mb-4">
+                <div class="card dashboard-card patient-card h-100">
+
+                    <div class="card-body p-5">
+
+                        <div class="icon-circle patient-icon">
+                            <i class="fas fa-hospital-user"></i>
+                        </div>
+
+                        <h4 class="fw-bold mt-4">
+                            Patient
+                        </h4>
+
+                        <p class="text-muted mb-4">
+                            Access your appointments, health records and doctor directory.
+                        </p>
+
+                        <a href="@Url.Action("Login", "Patient")"
+                           class="btn btn-primary w-100">
+                            Go to Patient Dashboard
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Doctor -->
+            <div class="col-md-4 mb-4">
+                <div class="card dashboard-card doctor-card h-100">
+
+                    <div class="card-body p-5">
+
+                        <div class="icon-circle doctor-icon">
+                            <i class="fas fa-user-doctor"></i>
+                        </div>
+
+                        <h4 class="fw-bold mt-4">
+                            Doctor
+                        </h4>
+
+                        <p class="text-muted mb-4">
+                            View schedules, manage patients and access medical records.
+                        </p>
+
+                        <a href="@Url.Action("Login", "Doctor")"
+                           class="btn btn-success w-100">
+                            Go to Doctor Dashboard
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Admin -->
+            <div class="col-md-4 mb-4">
+                <div class="card dashboard-card admin-card h-100">
+
+                    <div class="card-body p-5">
+
+                        <div class="icon-circle admin-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+
+                        <h4 class="fw-bold mt-4">
+                            Admin
+                        </h4>
+
+                        <p class="text-muted mb-4">
+                            Manage patients, doctors, appointments and health records.
+                        </p>
+
+                        <a href="@Url.Action("Dashboard", "Admin")"
+                           class="btn btn-dark w-100">
+                            Go to Admin Dashboard
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+    .dashboard-selection-wrapper {
+        min-height: 85vh;
+        background: linear-gradient(135deg, #F8FAFC, #E0F2FE);
+        display: flex;
+        align-items: center;
+    }
+
+    .page-title {
+        color: #1E3A7A;
+        font-size: 2.3rem;
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.10);
+        transition: all .3s ease;
+        background: #ffffff;
+        overflow: hidden;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 18px 45px rgba(0,0,0,.16);
+        }
+
+    .icon-circle {
+        width: 95px;
+        height: 95px;
+        border-radius: 50%;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        color: white;
+    }
+
+    .patient-icon {
+        background: linear-gradient(135deg, #2563EB, #4AA3D9);
+    }
+
+    .doctor-icon {
+        background: linear-gradient(135deg, #16A34A, #22C55E);
+    }
+
+    .admin-icon {
+        background: linear-gradient(135deg, #111827, #374151);
+    }
+
+    .patient-card {
+        border-top: 6px solid #2563EB;
+    }
+
+    .doctor-card {
+        border-top: 6px solid #16A34A;
+    }
+
+    .admin-card {
+        border-top: 6px solid #111827;
+    }
+
+    .dashboard-card h4 {
+        color: #1F2937;
+    }
+
+    .dashboard-card p {
+        min-height: 72px;
+    }
+
+    .btn {
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 10px 14px;
+    }
+
+    @@media(max-width: 767px) {
+        .dashboard-selection-wrapper {
+            align-items: flex-start;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            font-size: 34px;
+        }
+    }
+</style>

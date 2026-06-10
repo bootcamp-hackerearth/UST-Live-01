@@ -1,44 +1,36 @@
-﻿using System.Threading.Tasks;
+﻿using HealthCare_Appointment_Portal.Data;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Services
 {
-    public class UserService
-        : IUserService
+    public class UserService : IUserService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
+        private readonly ApplicationDbContext _context;
 
-        public UserService(
-            IUnitOfWork unitOfWork)
+        public UserService(ApplicationDbContext context)
         {
-            _unitOfWork = unitOfWork;
+            _context = context;
         }
 
-        public async Task<User>
-            GetByIdAsync(int id)
+        public async Task<User> GetByIdAsync(int id)
         {
-            return await _unitOfWork.Users
-                .GetByIdAsync(id);
+            return await _context.Users.FindAsync(id);
         }
 
-        public async Task<User>
-            GetByUserCodeAsync(
-                string userCode)
+        public async Task<User> GetByUserCodeAsync(string userCode)
         {
-            return await Task.FromResult(
-                _unitOfWork.Users
-                    .GetByUserCode(userCode));
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.UserCode == userCode);
         }
 
-        public async Task<User>
-            GetByEmailAsync(
-                string email)
+        public async Task<User> GetByEmailAsync(string email)
         {
-            return await Task.FromResult(
-                _unitOfWork.Users
-                    .GetByEmail(email));
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }

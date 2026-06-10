@@ -6,8 +6,26 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Interfaces
 {
     public interface IAppointmentRepository
-        : IRepository<Appointment>
     {
+        Task<IEnumerable<Appointment>>
+            GetAllAsync();
+
+        Task<Appointment>
+            GetByIdAsync(
+                int appointmentId);
+
+        Task
+            AddAsync(
+                Appointment appointment);
+
+        Task
+            UpdateAsync(
+                Appointment appointment);
+
+        Task
+            DeleteAsync(
+                int appointmentId);
+
         Task<IEnumerable<Appointment>>
             GetAppointmentsByPatientAsync(
                 int patientId);
@@ -15,18 +33,6 @@ namespace HealthCare_Appointment_Portal.Interfaces
         Task<IEnumerable<Appointment>>
             GetAppointmentsByDoctorAsync(
                 int doctorId);
-
-        Task<IEnumerable<Appointment>>
-            GetUpcomingAppointmentsAsync();
-
-        Task<IEnumerable<Appointment>>
-            GetCompletedAppointmentsAsync();
-
-        Task<Appointment>
-            GetConflictingAppointmentAsync(
-                int doctorId,
-                DateTime date,
-                string timeSlot);
 
         Task<IEnumerable<Appointment>>
             GetTodayScheduleAsync(
@@ -39,11 +45,17 @@ namespace HealthCare_Appointment_Portal.Interfaces
         Task<Appointment>
             GetNextAppointmentByPatientAsync(
                 int patientId);
-
         Task<bool>
             IsSlotAvailableAsync(
                 int doctorId,
-                DateTime date,
+                DateTime scheduledDate,
+                string timeSlot);
+
+        Task<bool>
+            IsSlotAvailableForUpdateAsync(
+                int appointmentId,
+                int doctorId,
+                DateTime scheduledDate,
                 string timeSlot);
     }
 }

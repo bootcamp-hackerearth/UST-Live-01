@@ -5,28 +5,36 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Interfaces
 {
     public interface IHealthRecordRepository
-        : IRepository<HealthRecord>
     {
-        Task<bool>
-            RecordExistsAsync(
-                int appointmentId);
+        Task<IEnumerable<HealthRecord>>
+            GetAllAsync();
+
+        Task<HealthRecord>
+            GetByIdAsync(
+                int recordId);
 
         Task<IEnumerable<HealthRecord>>
-            GetRecordsByPatientAsync(
+            GetByPatientAsync(
                 int patientId);
 
         Task<IEnumerable<HealthRecord>>
-            GetRecordsByDoctorAsync(
+            GetByDoctorAsync(
                 int doctorId);
 
-        Task<IEnumerable<int>>
-            GetRecordedAppointmentIdsAsync();
-
-        Task<HealthRecord>
-            GetByAppointmentIdAsync(
+        Task<bool>
+            ExistsByAppointmentAsync(
                 int appointmentId);
 
-        Task<IEnumerable<HealthRecord>>
-            GetAllRecordsWithDetailsAsync();
+        Task
+            AddAsync(
+                HealthRecord record);
+
+        Task
+            UpdateAsync(
+                HealthRecord record);
+
+        Task
+            DeleteAsync(
+                int recordId);
     }
 }

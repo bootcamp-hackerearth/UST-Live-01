@@ -11,26 +11,82 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Repositories
 {
     public class AppointmentRepository
-        : Repository<Appointment>,
-          IAppointmentRepository
+        : IAppointmentRepository
     {
+        private readonly ApplicationDbContext _context;
+
         public AppointmentRepository(
             ApplicationDbContext context)
-            : base(context)
         {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Appointment>>
+            GetAllAsync()
+        {
+            return await _context.Appointments
+                .ToListAsync();
+        }
+
+        public async Task<Appointment>
+            GetByIdAsync(
+                int appointmentId)
+        {
+            return await _context.Appointments
+                .FirstOrDefaultAsync(a =>
+                    a.AppointmentId ==
+                    appointmentId);
+        }
+
+        public async Task
+            AddAsync(
+                Appointment appointment)
+        {
+            _context.Appointments
+                .Add(appointment);
+
+            await _context
+                .SaveChangesAsync();
+        }
+
+        public async Task
+            UpdateAsync(
+                Appointment appointment)
+        {
+            _context.Entry(appointment)
+                .State =
+                EntityState.Modified;
+
+            await _context
+                .SaveChangesAsync();
+        }
+
+        public async Task
+            DeleteAsync(
+                int appointmentId)
+        {
+            var appointment =
+                await GetByIdAsync(
+                    appointmentId);
+
+            if (appointment != null)
+            {
+                _context.Appointments
+                    .Remove(appointment);
+
+                await _context
+                    .SaveChangesAsync();
+            }
         }
 
         public async Task<IEnumerable<Appointment>>
             GetAppointmentsByPatientAsync(
                 int patientId)
         {
-            return await _dbSet
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
+            return await _context.Appointments
                 .Where(a =>
-                    a.PatientId == patientId)
-                .OrderBy(a =>
-                    a.ScheduledDate)
+                    a.PatientId ==
+                    patientId)
                 .ToListAsync();
         }
 
@@ -38,105 +94,24 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetAppointmentsByDoctorAsync(
                 int doctorId)
         {
-            return await _dbSet
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
+            return await _context.Appointments
                 .Where(a =>
-                    a.DoctorId == doctorId)
-                .OrderBy(a =>
-                    a.ScheduledDate)
+                    a.DoctorId ==
+                    doctorId)
                 .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Appointment>>
-            GetUpcomingAppointmentsAsync()
-        {
-            return await _dbSet
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
-                .Where(a =>
-                    a.ScheduledDate >= DateTime.Today
-                    &&
-                    a.Status ==
-                    AppointmentStatus.Confirmed)
-                .OrderBy(a =>
-                    a.ScheduledDate)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Appointment>>
-            GetCompletedAppointmentsAsync()
-        {
-            return await _dbSet
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
-                .Where(a =>
-                    a.Status ==
-                    AppointmentStatus.Completed)
-                .ToListAsync();
-        }
-
-        public async Task<Appointment>
-            GetConflictingAppointmentAsync(
-                int doctorId,
-                DateTime date,
-                string timeSlot)
-        {
-            return await _dbSet
-                .FirstOrDefaultAsync(a =>
-                    a.DoctorId == doctorId
-                    &&
-                    DbFunctions.TruncateTime(
-                        a.ScheduledDate)
-                    ==
-                    DbFunctions.TruncateTime(
-                        date)
-                    &&
-                    a.TimeSlot == timeSlot
-                    &&
-                    a.Status !=
-                    AppointmentStatus.Cancelled);
-        }
-
-        public async Task<bool>
-            IsSlotAvailableAsync(
-                int doctorId,
-                DateTime date,
-                string timeSlot)
-        {
-            return !await _dbSet
-                .AnyAsync(a =>
-                    a.DoctorId == doctorId
-                    &&
-                    DbFunctions.TruncateTime(
-                        a.ScheduledDate)
-                    ==
-                    DbFunctions.TruncateTime(
-                        date)
-                    &&
-                    a.TimeSlot == timeSlot
-                    &&
-                    a.Status !=
-                    AppointmentStatus.Cancelled);
         }
 
         public async Task<IEnumerable<Appointment>>
             GetTodayScheduleAsync(
                 int doctorId)
         {
-            return await _dbSet
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
+            var today = DateTime.Today;
+
+            return await _context.Appointments
                 .Where(a =>
-                    a.DoctorId == doctorId
-                    &&
+                    a.DoctorId == doctorId &&
                     DbFunctions.TruncateTime(
-                        a.ScheduledDate)
-                    ==
-                    DbFunctions.TruncateTime(
-                        DateTime.Today))
-                .OrderBy(a =>
-                    a.TimeSlot)
+                        a.ScheduledDate) == today)
                 .ToListAsync();
         }
 
@@ -144,25 +119,14 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetWeeklyScheduleAsync(
                 int doctorId)
         {
-            DateTime today =
-                DateTime.Today;
+            var start = DateTime.Today;
+            var end = start.AddDays(7);
 
-            DateTime weekEnd =
-                today.AddDays(7);
-
-            return await _dbSet
-                .Include(a => a.Patient)
-                .Include(a => a.Doctor)
+            return await _context.Appointments
                 .Where(a =>
-                    a.DoctorId == doctorId
-                    &&
-                    a.ScheduledDate >= today
-                    &&
-                    a.ScheduledDate <= weekEnd)
-                .OrderBy(a =>
-                    a.ScheduledDate)
-                .ThenBy(a =>
-                    a.TimeSlot)
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate >= start &&
+                    a.ScheduledDate <= end)
                 .ToListAsync();
         }
 
@@ -170,19 +134,41 @@ namespace HealthCare_Appointment_Portal.Repositories
             GetNextAppointmentByPatientAsync(
                 int patientId)
         {
-            return await _dbSet
-                .Include(a => a.Doctor)
+            return await _context.Appointments
                 .Where(a =>
-                    a.PatientId == patientId
-                    &&
-                    a.Status !=
-                    AppointmentStatus.Cancelled
-                    &&
-                    a.ScheduledDate >=
-                    DateTime.Today)
+                    a.PatientId == patientId &&
+                    a.ScheduledDate >= DateTime.Now)
                 .OrderBy(a =>
                     a.ScheduledDate)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool>
+    IsSlotAvailableAsync(
+        int doctorId,
+        DateTime scheduledDate,
+        string timeSlot)
+        {
+            return !await _context.Appointments
+                .AnyAsync(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate == scheduledDate &&
+                    a.TimeSlot == timeSlot);
+        }
+
+        public async Task<bool>
+     IsSlotAvailableForUpdateAsync(
+         int appointmentId,
+         int doctorId,
+         DateTime scheduledDate,
+         string timeSlot)
+        {
+            return !await _context.Appointments
+                .AnyAsync(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate == scheduledDate &&
+                    a.TimeSlot == timeSlot &&
+                    a.AppointmentId != appointmentId);
         }
     }
 }

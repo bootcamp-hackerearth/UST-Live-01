@@ -20,6 +20,29 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 doctorService;
         }
 
+        // GET: Doctor/Login
+        public ActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Doctor/Login
+        [HttpPost]
+        public ActionResult Login(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                ViewBag.Error = "Please enter Doctor ID";
+                return View();
+            }
+
+            // Store doctor id in session
+            Session["ReferenceId"] = userId;
+
+            return RedirectToAction("Dashboard");
+        }
+
+
         // ==================================
         // DOCTOR
         // ==================================

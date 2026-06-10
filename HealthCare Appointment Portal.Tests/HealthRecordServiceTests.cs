@@ -1,289 +1,398 @@
 ﻿using AutoMapper;
-using Moq;
-using Xunit;
-
-using HealthCare_Appointment_Portal.Services;
-using HealthCare_Appointment_Portal.Interfaces;
-using HealthCare_Appointment_Portal.Models;
 using HealthCare_Appointment_Portal.DTOs.HealthRecordDtos;
 using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Exceptions;
-
+using HealthCare_Appointment_Portal.Interfaces;
+using HealthCare_Appointment_Portal.Models;
+using HealthCare_Appointment_Portal.Services;
+using HealthCare_Appointment_Portal.Utilities;
+using Moq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace HealthCare_Appointment_Portal.Tests.Services
 {
     public class HealthRecordServiceTests
     {
-        private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-        private readonly Mock<IMapper> _mapperMock;
-        private readonly HealthRecordService _service;
+        private readonly Mock<IHealthRecordRepository>
+            _healthRecordRepositoryMock;
+
+        private readonly Mock<IAppointmentRepository>
+            _appointmentRepositoryMock;
+
+        private readonly Mock<IMapper>
+            _mapperMock;
+
+        private readonly HealthRecordService
+            _service;
 
         public HealthRecordServiceTests()
         {
-            _unitOfWorkMock = new Mock<IUnitOfWork>();
-            _mapperMock = new Mock<IMapper>();
+            _healthRecordRepositoryMock =
+                new Mock<IHealthRecordRepository>();
 
-            _service = new HealthRecordService(
-                _unitOfWorkMock.Object,
-                _mapperMock.Object);
+            _appointmentRepositoryMock =
+                new Mock<IAppointmentRepository>();
+
+            _mapperMock =
+                new Mock<IMapper>();
+
+            _service =
+                new HealthRecordService(
+                    _healthRecordRepositoryMock.Object,
+                    _appointmentRepositoryMock.Object,
+                    _mapperMock.Object);
         }
 
         [Fact]
         public async Task GetAllHealthRecordsAsync_ReturnsRecords()
         {
-            var records = new List<HealthRecord>
-            {
-                new HealthRecord { RecordId = 1 }
-            };
+            var records =
+                new List<HealthRecord>
+                {
+                    new HealthRecord(),
+                    new HealthRecord()
+                };
 
-            var dtos = new List<HealthRecordDto>
-            {
-                new HealthRecordDto { RecordId = 1 }
-            };
+            var recordDtos =
+                new List<HealthRecordDto>
+                {
+                    new HealthRecordDto(),
+                    new HealthRecordDto()
+                };
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetAllRecordsWithDetailsAsync())
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetAllAsync())
                 .ReturnsAsync(records);
 
             _mapperMock
-                .Setup(x => x.Map<IEnumerable<HealthRecordDto>>(records))
-                .Returns(dtos);
+                .Setup(x =>
+                    x.Map<IEnumerable<HealthRecordDto>>(records))
+                .Returns(recordDtos);
 
-            var result = await _service.GetAllHealthRecordsAsync();
+            var result =
+                await _service.GetAllHealthRecordsAsync();
 
-            Assert.Single(result);
+            Assert.Equal(
+                2,
+                result.Count());
         }
 
         [Fact]
-        public async Task GetHealthRecordByIdAsync_ValidId_ReturnsRecord()
+        public async Task GetHealthRecordByIdAsync_ReturnsRecord()
         {
-            var record = new HealthRecord { RecordId = 1 };
+            var record =
+                new HealthRecord
+                {
+                    RecordId = 1
+                };
 
-            var dto = new HealthRecordDto { RecordId = 1 };
+            var recordDto =
+                new HealthRecordDto();
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetByIdAsync(1))
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(record);
 
             _mapperMock
-                .Setup(x => x.Map<HealthRecordDto>(record))
-                .Returns(dto);
+                .Setup(x =>
+                    x.Map<HealthRecordDto>(record))
+                .Returns(recordDto);
 
-            var result = await _service.GetHealthRecordByIdAsync(1);
+            var result =
+                await _service.GetHealthRecordByIdAsync(1);
 
             Assert.NotNull(result);
-            Assert.Equal(1, result.RecordId);
         }
 
         [Fact]
-        public async Task GetHealthRecordByIdAsync_InvalidId_ThrowsException()
+        public async Task GetHealthRecordByIdAsync_WhenNotFound_ThrowsException()
         {
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetByIdAsync(1))
-                .ReturnsAsync((HealthRecord)null);
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((HealthRecord)null!);
 
-            await Assert.ThrowsAsync<HealthRecordNotFoundException>(
+            await Assert.ThrowsAsync<
+                HealthRecordNotFoundException>(
                 () => _service.GetHealthRecordByIdAsync(1));
         }
 
         [Fact]
         public async Task GetRecordsByPatientAsync_ReturnsRecords()
         {
-            var records = new List<HealthRecord>
-            {
-                new HealthRecord { RecordId = 1 }
-            };
+            var records =
+                new List<HealthRecord>
+                {
+                    new HealthRecord()
+                };
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetRecordsByPatientAsync(1))
+            var recordDtos =
+                new List<HealthRecordDto>
+                {
+                    new HealthRecordDto()
+                };
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByPatientAsync(1))
                 .ReturnsAsync(records);
 
             _mapperMock
-                .Setup(x => x.Map<IEnumerable<HealthRecordDto>>(records))
-                .Returns(new List<HealthRecordDto>());
+                .Setup(x =>
+                    x.Map<IEnumerable<HealthRecordDto>>(records))
+                .Returns(recordDtos);
 
-            var result = await _service.GetRecordsByPatientAsync(1);
+            var result =
+                await _service.GetRecordsByPatientAsync(1);
 
-            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
         [Fact]
         public async Task GetRecordsByDoctorAsync_ReturnsRecords()
         {
-            var records = new List<HealthRecord>
-            {
-                new HealthRecord { RecordId = 1 }
-            };
+            var records =
+                new List<HealthRecord>
+                {
+                    new HealthRecord()
+                };
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetRecordsByDoctorAsync(1))
+            var recordDtos =
+                new List<HealthRecordDto>
+                {
+                    new HealthRecordDto()
+                };
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByDoctorAsync(1))
                 .ReturnsAsync(records);
 
             _mapperMock
-                .Setup(x => x.Map<IEnumerable<HealthRecordDto>>(records))
-                .Returns(new List<HealthRecordDto>());
+                .Setup(x =>
+                    x.Map<IEnumerable<HealthRecordDto>>(records))
+                .Returns(recordDtos);
 
-            var result = await _service.GetRecordsByDoctorAsync(1);
+            var result =
+                await _service.GetRecordsByDoctorAsync(1);
 
-            Assert.NotNull(result);
+            Assert.Single(result);
         }
 
         [Fact]
-        public async Task AddHealthRecordAsync_Valid_ReturnsId()
+        public async Task AddHealthRecordAsync_ReturnsRecordId()
         {
-            var dto = new CreateHealthRecordDto
-            {
-                AppointmentId = 1
-            };
+            var dto =
+                new CreateHealthRecordDto
+                {
+                    AppointmentId = 1
+                };
 
-            var appointment = new Appointment
-            {
-                AppointmentId = 1,
-                Status = AppointmentStatus.Completed
-            };
+            var appointment =
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    Status =
+                        AppointmentStatus.Completed
+                };
 
-            var record = new HealthRecord { RecordId = 1 };
+            var record =
+                new HealthRecord
+                {
+                    RecordId = 1
+                };
 
-            _unitOfWorkMock
-                .Setup(x => x.Appointments.GetByIdAsync(1))
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(appointment);
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.RecordExistsAsync(1))
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.ExistsByAppointmentAsync(1))
                 .ReturnsAsync(false);
 
             _mapperMock
-                .Setup(x => x.Map<HealthRecord>(dto))
+                .Setup(x =>
+                    x.Map<HealthRecord>(dto))
                 .Returns(record);
 
-            var result = await _service.AddHealthRecordAsync(dto);
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.AddAsync(record))
+                .Returns(Task.CompletedTask);
 
-            Assert.Equal(1, result);
+            var result =
+                await _service.AddHealthRecordAsync(dto);
+
+            Assert.Equal(
+                1,
+                result);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.AddAsync(record),
+                Times.Once);
         }
 
         [Fact]
-        public async Task AddHealthRecordAsync_AppointmentNotFound_ThrowsException()
+        public async Task AddHealthRecordAsync_WhenAppointmentNotFound_ThrowsException()
         {
-            var dto = new CreateHealthRecordDto
-            {
-                AppointmentId = 1
-            };
+            _appointmentRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((Appointment)null!);
 
-            _unitOfWorkMock
-                .Setup(x => x.Appointments.GetByIdAsync(1))
-                .ReturnsAsync((Appointment)null);
-
-            await Assert.ThrowsAsync<AppointmentNotFoundException>(
-                () => _service.AddHealthRecordAsync(dto));
+            await Assert.ThrowsAsync<
+                AppointmentNotFoundException>(
+                () => _service.AddHealthRecordAsync(
+                    new CreateHealthRecordDto()));
         }
 
         [Fact]
-        public async Task AddHealthRecordAsync_InvalidAppointmentStatus_ThrowsException()
+        public async Task AddHealthRecordAsync_WhenAppointmentNotCompleted_ThrowsException()
         {
-            var dto = new CreateHealthRecordDto
-            {
-                AppointmentId = 1
-            };
+            var appointment =
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    Status =
+                        AppointmentStatus.Pending
+                };
 
-            var appointment = new Appointment
-            {
-                Status = AppointmentStatus.Pending
-            };
-
-            _unitOfWorkMock
-                .Setup(x => x.Appointments.GetByIdAsync(1))
+            _appointmentRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(1))
                 .ReturnsAsync(appointment);
 
-            await Assert.ThrowsAsync<InvalidAppointmentStatusException>(
-                () => _service.AddHealthRecordAsync(dto));
+            await Assert.ThrowsAsync<
+                InvalidAppointmentStatusException>(
+                () => _service.AddHealthRecordAsync(
+                    new CreateHealthRecordDto
+                    {
+                        AppointmentId = 1
+                    }));
         }
 
         [Fact]
-        public async Task AddHealthRecordAsync_DuplicateRecord_ThrowsException()
+        public async Task AddHealthRecordAsync_WhenDuplicateExists_ThrowsException()
         {
-            var dto = new CreateHealthRecordDto
-            {
-                AppointmentId = 1
-            };
+            var appointment =
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    Status =
+                        AppointmentStatus.Completed
+                };
 
-            var appointment = new Appointment
-            {
-                Status = AppointmentStatus.Completed
-            };
-
-            _unitOfWorkMock
-                .Setup(x => x.Appointments.GetByIdAsync(1))
+            _appointmentRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(1))
                 .ReturnsAsync(appointment);
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.RecordExistsAsync(1))
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.ExistsByAppointmentAsync(1))
                 .ReturnsAsync(true);
 
-            await Assert.ThrowsAsync<DuplicateHealthRecordException>(
-                () => _service.AddHealthRecordAsync(dto));
+            await Assert.ThrowsAsync<
+                DuplicateHealthRecordException>(
+                () => _service.AddHealthRecordAsync(
+                    new CreateHealthRecordDto
+                    {
+                        AppointmentId = 1
+                    }));
         }
 
         [Fact]
-        public async Task UpdateHealthRecordAsync_Valid_UpdatesSuccessfully()
+        public async Task UpdateHealthRecordAsync_UpdatesSuccessfully()
         {
-            var record = new HealthRecord { RecordId = 1 };
+            var record =
+                new HealthRecord
+                {
+                    RecordId = 1
+                };
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetByIdAsync(1))
+            var dto =
+                new UpdateHealthRecordDto();
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(1))
                 .ReturnsAsync(record);
 
-            await _service.UpdateHealthRecordAsync(1, new UpdateHealthRecordDto());
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.UpdateAsync(record))
+                .Returns(Task.CompletedTask);
 
-            _unitOfWorkMock.Verify(
-                x => x.HealthRecords.UpdateAsync(record),
+            await _service.UpdateHealthRecordAsync(
+                1,
+                dto);
+
+            _mapperMock.Verify(
+                x => x.Map(
+                    dto,
+                    record),
                 Times.Once);
 
-            _unitOfWorkMock.Verify(
-                x => x.CommitAsync(),
+            _healthRecordRepositoryMock.Verify(
+                x => x.UpdateAsync(record),
                 Times.Once);
         }
 
         [Fact]
-        public async Task UpdateHealthRecordAsync_NotFound_ThrowsException()
+        public async Task UpdateHealthRecordAsync_WhenNotFound_ThrowsException()
         {
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetByIdAsync(1))
-                .ReturnsAsync((HealthRecord)null);
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(1))
+                .ReturnsAsync((HealthRecord)null!);
 
-            await Assert.ThrowsAsync<HealthRecordNotFoundException>(
-                () => _service.UpdateHealthRecordAsync(1, new UpdateHealthRecordDto()));
+            await Assert.ThrowsAsync<
+                HealthRecordNotFoundException>(
+                () => _service.UpdateHealthRecordAsync(
+                    1,
+                    new UpdateHealthRecordDto()));
         }
 
         [Fact]
-        public async Task DeleteHealthRecordAsync_Valid_DeletesSuccessfully()
+        public async Task DeleteHealthRecordAsync_DeletesSuccessfully()
         {
-            var record = new HealthRecord { RecordId = 1 };
+            var record =
+                new HealthRecord
+                {
+                    RecordId = 1
+                };
 
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetByIdAsync(1))
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(1))
                 .ReturnsAsync(record);
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.DeleteAsync(1))
+                .Returns(Task.CompletedTask);
 
             await _service.DeleteHealthRecordAsync(1);
 
-            _unitOfWorkMock.Verify(
-                x => x.HealthRecords.DeleteAsync(1),
-                Times.Once);
-
-            _unitOfWorkMock.Verify(
-                x => x.CommitAsync(),
+            _healthRecordRepositoryMock.Verify(
+                x => x.DeleteAsync(1),
                 Times.Once);
         }
 
         [Fact]
-        public async Task DeleteHealthRecordAsync_NotFound_ThrowsException()
+        public async Task DeleteHealthRecordAsync_WhenNotFound_ThrowsException()
         {
-            _unitOfWorkMock
-                .Setup(x => x.HealthRecords.GetByIdAsync(1))
-                .ReturnsAsync((HealthRecord)null);
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByIdAsync(1))
+                .ReturnsAsync((HealthRecord)null!);
 
-            await Assert.ThrowsAsync<HealthRecordNotFoundException>(
+            await Assert.ThrowsAsync<
+                HealthRecordNotFoundException>(
                 () => _service.DeleteHealthRecordAsync(1));
         }
     }

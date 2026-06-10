@@ -14,18 +14,25 @@ namespace HealthCare_Appointment_Portal.Services
     public class AppointmentService
         : IAppointmentService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
-
-        private readonly IMapper
-            _mapper;
+        private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IDoctorRepository _doctorRepository;
+        private readonly IPatientRepository _patientRepository;
+        private readonly IMapper _mapper;
 
         public AppointmentService(
-            IUnitOfWork unitOfWork,
+            IAppointmentRepository appointmentRepository,
+            IDoctorRepository doctorRepository,
+            IPatientRepository patientRepository,
             IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
+            _appointmentRepository =
+                appointmentRepository;
+
+            _doctorRepository =
+                doctorRepository;
+
+            _patientRepository =
+                patientRepository;
 
             _mapper =
                 mapper;
@@ -35,8 +42,7 @@ namespace HealthCare_Appointment_Portal.Services
             GetAllAppointmentsAsync()
         {
             var appointments =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetAllAsync();
 
             return _mapper.Map<
@@ -49,8 +55,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int appointmentId)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetByIdAsync(
                         appointmentId);
 
@@ -69,8 +74,7 @@ namespace HealthCare_Appointment_Portal.Services
                 CreateAppointmentDto appointmentDto)
         {
             var patient =
-                await _unitOfWork
-                    .Patients
+                await _patientRepository
                     .GetByIdAsync(
                         appointmentDto.PatientId);
 
@@ -80,8 +84,7 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             var doctor =
-                await _unitOfWork
-                    .Doctors
+                await _doctorRepository
                     .GetByIdAsync(
                         appointmentDto.DoctorId);
 
@@ -90,15 +93,14 @@ namespace HealthCare_Appointment_Portal.Services
                 throw new DoctorNotFoundException();
             }
 
-            if (appointmentDto
-                .ScheduledDate.Date
-                < DateTime.Today)
+            if (appointmentDto.ScheduledDate.Date <
+                DateTime.Today)
             {
                 throw new PastDateException();
             }
 
             if (appointmentDto.ScheduledDate.Date >
-                 DateTime.Today.AddMonths(6))
+                DateTime.Today.AddMonths(6))
             {
                 throw new AdvanceBookingLimitException();
             }
@@ -109,8 +111,7 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             bool available =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .IsSlotAvailableAsync(
                         appointmentDto.DoctorId,
                         appointmentDto.ScheduledDate,
@@ -128,16 +129,11 @@ namespace HealthCare_Appointment_Portal.Services
             appointment.Status =
                 AppointmentStatus.Pending;
 
-            await _unitOfWork
-                .Appointments
+            await _appointmentRepository
                 .AddAsync(
                     appointment);
 
-            await _unitOfWork
-                .CommitAsync();
-
-            return appointment
-                .AppointmentId;
+            return appointment.AppointmentId;
         }
 
         public async Task
@@ -146,8 +142,7 @@ namespace HealthCare_Appointment_Portal.Services
                 UpdateAppointmentDto appointmentDto)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetByIdAsync(
                         appointmentId);
 
@@ -157,9 +152,9 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             bool available =
-                await _unitOfWork
-                    .Appointments
-                    .IsSlotAvailableAsync(
+                await _appointmentRepository
+                    .IsSlotAvailableForUpdateAsync(
+                        appointmentId,
                         appointmentDto.DoctorId,
                         appointmentDto.ScheduledDate,
                         appointmentDto.TimeSlot);
@@ -170,17 +165,12 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             if (appointment.Status ==
-                AppointmentStatus.Completed)
+                    AppointmentStatus.Completed ||
+                appointment.Status ==
+                    AppointmentStatus.Cancelled)
             {
                 throw new InvalidAppointmentStatusException(
-                    "Completed appointments cannot be modified.");
-            }
-
-            if (appointment.Status ==
-                AppointmentStatus.Cancelled)
-            {
-                throw new InvalidAppointmentStatusException(
-                    "Cancelled appointments cannot be modified.");
+                    "This appointment cannot be modified.");
             }
 
             appointment.DoctorId =
@@ -192,13 +182,9 @@ namespace HealthCare_Appointment_Portal.Services
             appointment.TimeSlot =
                 appointmentDto.TimeSlot;
 
-            await _unitOfWork
-                .Appointments
+            await _appointmentRepository
                 .UpdateAsync(
                     appointment);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task
@@ -206,8 +192,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int appointmentId)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetByIdAsync(
                         appointmentId);
 
@@ -217,21 +202,16 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             if (appointment.Status ==
-                AppointmentStatus.Pending ||
+                    AppointmentStatus.Pending ||
                 appointment.Status ==
-                AppointmentStatus.Confirmed)
-
+                    AppointmentStatus.Confirmed)
             {
                 throw new AppointmentDeletionException();
             }
 
-            await _unitOfWork
-                .Appointments
+            await _appointmentRepository
                 .DeleteAsync(
                     appointmentId);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task
@@ -239,8 +219,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int appointmentId)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetByIdAsync(
                         appointmentId);
 
@@ -248,23 +227,19 @@ namespace HealthCare_Appointment_Portal.Services
             {
                 throw new AppointmentNotFoundException();
             }
+
             if (appointment.Status !=
-                  AppointmentStatus.Pending)
+                AppointmentStatus.Pending)
             {
-                throw new
-                    InvalidAppointmentStatusException(
-                        Constants.ConfirmOnlyPending);
+                throw new InvalidAppointmentStatusException(
+                    Constants.ConfirmOnlyPending);
             }
 
             appointment.Confirm();
 
-            await _unitOfWork
-                .Appointments
+            await _appointmentRepository
                 .UpdateAsync(
                     appointment);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task
@@ -273,8 +248,7 @@ namespace HealthCare_Appointment_Portal.Services
                 string reason)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetByIdAsync(
                         appointmentId);
 
@@ -284,25 +258,20 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             if (appointment.Status !=
-                 AppointmentStatus.Pending &&
-                 appointment.Status !=
-                 AppointmentStatus.Confirmed)
+                    AppointmentStatus.Pending &&
+                appointment.Status !=
+                    AppointmentStatus.Confirmed)
             {
-                throw new
-                    InvalidAppointmentStatusException(
-                        Constants
-                            .CancelOnlyPendingOrConfirmed);
+                throw new InvalidAppointmentStatusException(
+                    Constants.CancelOnlyPendingOrConfirmed);
             }
 
-            appointment.Cancel(reason);
+            appointment.Cancel(
+                reason);
 
-            await _unitOfWork
-                .Appointments
+            await _appointmentRepository
                 .UpdateAsync(
                     appointment);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task
@@ -310,8 +279,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int appointmentId)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetByIdAsync(
                         appointmentId);
 
@@ -323,21 +291,15 @@ namespace HealthCare_Appointment_Portal.Services
             if (appointment.Status !=
                 AppointmentStatus.Confirmed)
             {
-                throw new
-                    InvalidAppointmentStatusException(
-                        Constants
-                            .CompleteOnlyConfirmed);
+                throw new InvalidAppointmentStatusException(
+                    Constants.CompleteOnlyConfirmed);
             }
 
             appointment.Complete();
 
-            await _unitOfWork
-                .Appointments
+            await _appointmentRepository
                 .UpdateAsync(
                     appointment);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task<IEnumerable<AppointmentDto>>
@@ -345,8 +307,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int patientId)
         {
             var appointments =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetAppointmentsByPatientAsync(
                         patientId);
 
@@ -360,8 +321,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int doctorId)
         {
             var appointments =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetAppointmentsByDoctorAsync(
                         doctorId);
 
@@ -375,8 +335,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int doctorId)
         {
             var appointments =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetTodayScheduleAsync(
                         doctorId);
 
@@ -390,8 +349,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int doctorId)
         {
             var appointments =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetWeeklyScheduleAsync(
                         doctorId);
 
@@ -405,8 +363,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int patientId)
         {
             var appointment =
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .GetNextAppointmentByPatientAsync(
                         patientId);
 

@@ -1,217 +1,128 @@
 ﻿using AutoMapper;
+using HealthCare_Appointment_Portal.Data;
 using HealthCare_Appointment_Portal.DTOs.InsuranceDtos;
+using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Services
 {
-    public class InsuranceService
-        : IInsuranceService
+    public class InsuranceService : IInsuranceService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
+        private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        private readonly IMapper
-            _mapper;
-
-        public InsuranceService(
-            IUnitOfWork unitOfWork,
-            IMapper mapper)
+        public InsuranceService(ApplicationDbContext context, IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
-
-            _mapper =
-                mapper;
+            _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<
-            IEnumerable<InsuranceDto>>
-            GetAllInsurancesAsync()
+        public async Task<IEnumerable<InsuranceDto>> GetAllInsurancesAsync()
         {
-            var insurances =
-                await _unitOfWork
-                    .Insurances
-                    .GetAllAsync();
-
-            return _mapper.Map<
-                IEnumerable<InsuranceDto>>(
-                    insurances);
+            var insurances = await _context.Insurances.ToListAsync();
+            return _mapper.Map<IEnumerable<InsuranceDto>>(insurances);
         }
 
-        public async Task<InsuranceDto>
-            GetInsuranceByIdAsync(
-                int insuranceId)
+        public async Task<InsuranceDto> GetInsuranceByIdAsync(int insuranceId)
         {
-            var insurance =
-                await _unitOfWork
-                    .Insurances
-                    .GetByIdAsync(
-                        insuranceId);
+            var insurance = await _context.Insurances.FindAsync(insuranceId);
 
             if (insurance == null)
-            {
                 throw new InsuranceNotFoundException();
-            }
 
-            return _mapper.Map<
-                InsuranceDto>(
-                    insurance);
+            return _mapper.Map<InsuranceDto>(insurance);
         }
 
-        public async Task<
-            IEnumerable<InsuranceDto>>
-            GetInsurancesByPatientAsync(
-                int patientId)
+        public async Task<IEnumerable<InsuranceDto>> GetInsurancesByPatientAsync(int patientId)
         {
-            var insurances =
-                await _unitOfWork
-                    .Insurances
-                    .GetInsurancesByPatientAsync(
-                        patientId);
+            var insurances = await _context.Insurances
+                .Where(i => i.PatientId == patientId)
+                .ToListAsync();
 
-            return _mapper.Map<
-                IEnumerable<InsuranceDto>>(
-                    insurances);
+            return _mapper.Map<IEnumerable<InsuranceDto>>(insurances);
         }
 
-        public async Task<
-            IEnumerable<InsuranceDto>>
-            GetInsurancesByStatusAsync(
-                Enums.InsuranceStatus status)
+        public async Task<IEnumerable<InsuranceDto>> GetInsurancesByStatusAsync(InsuranceStatus status)
         {
-            var insurances =
-                await _unitOfWork
-                    .Insurances
-                    .GetInsurancesByStatusAsync(
-                        status);
+            var insurances = await _context.Insurances
+                .Where(i => i.Status == status)
+                .ToListAsync();
 
-            return _mapper.Map<
-                IEnumerable<InsuranceDto>>(
-                    insurances);
+            return _mapper.Map<IEnumerable<InsuranceDto>>(insurances);
         }
 
-        public async Task<
-            IEnumerable<InsuranceDto>>
-            GetExpiredInsurancesAsync()
+        public async Task<IEnumerable<InsuranceDto>> GetExpiredInsurancesAsync()
         {
-            var insurances =
-                await _unitOfWork
-                    .Insurances
-                    .GetExpiredInsurancesAsync();
+            var today = DateTime.Today;
 
-            return _mapper.Map<
-                IEnumerable<InsuranceDto>>(
-                    insurances);
+            var insurances = await _context.Insurances
+                .Where(i => i.ExpiryDate < today)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<InsuranceDto>>(insurances);
         }
 
-        public async Task<
-            IEnumerable<InsuranceDto>>
-            GetActiveInsurancesAsync()
+        public async Task<IEnumerable<InsuranceDto>> GetActiveInsurancesAsync()
         {
-            var insurances =
-                await _unitOfWork
-                    .Insurances
-                    .GetActiveInsurancesAsync();
+            var today = DateTime.Today;
 
-            return _mapper.Map<
-                IEnumerable<InsuranceDto>>(
-                    insurances);
+            var insurances = await _context.Insurances
+                .Where(i => i.ExpiryDate >= today)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<InsuranceDto>>(insurances);
         }
 
-        public async Task<int>
-            AddInsuranceAsync(
-                CreateInsuranceDto insuranceDto)
+        public async Task<int> AddInsuranceAsync(CreateInsuranceDto insuranceDto)
         {
-            var existingInsurance =
-                await _unitOfWork
-                    .Insurances
-                    .GetInsuranceByPolicyNumberAsync(
-                        insuranceDto.PolicyNumber);
+            var existingInsurance = await _context.Insurances
+                .FirstOrDefaultAsync(i => i.PolicyNumber == insuranceDto.PolicyNumber);
 
             if (existingInsurance != null)
-            {
                 throw new DuplicatePolicyNumberException();
-            }
 
-            var insurance =
-                _mapper.Map<Insurance>(
-                    insuranceDto);
+            var insurance = _mapper.Map<Insurance>(insuranceDto);
 
-            await _unitOfWork
-                .Insurances
-                .AddAsync(
-                    insurance);
+            _context.Insurances.Add(insurance);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context.SaveChangesAsync();
 
-            return insurance
-                .InsuranceId;
+            return insurance.InsuranceId;
         }
 
-        public async Task
-            UpdateInsuranceAsync(
-                int insuranceId,
-                UpdateInsuranceDto insuranceDto)
+        public async Task UpdateInsuranceAsync(int insuranceId, UpdateInsuranceDto insuranceDto)
         {
-            var insurance =
-                await _unitOfWork
-                    .Insurances
-                    .GetByIdAsync(
-                        insuranceId);
+            var insurance = await _context.Insurances.FindAsync(insuranceId);
 
             if (insurance == null)
-            {
                 throw new InsuranceNotFoundException();
-            }
 
-            if (insurance.ExpiryDate.Date <
-                    DateTime.Today)
-            {
-                throw new
-                    InsuranceExpiredException();
-            }
+            if (insurance.ExpiryDate.Date < DateTime.Today)
+                throw new InsuranceExpiredException();
 
-            _mapper.Map(
-                insuranceDto,
-                insurance);
+            _mapper.Map(insuranceDto, insurance);
 
-            await _unitOfWork
-                .Insurances
-                .UpdateAsync(
-                    insurance);
-
-            await _unitOfWork
-                .CommitAsync();
+            await _context.SaveChangesAsync();
         }
 
-        public async Task
-            DeleteInsuranceAsync(
-                int insuranceId)
+        public async Task DeleteInsuranceAsync(int insuranceId)
         {
-            var insurance =
-                await _unitOfWork
-                    .Insurances
-                    .GetByIdAsync(
-                        insuranceId);
+            var insurance = await _context.Insurances.FindAsync(insuranceId);
 
             if (insurance == null)
-            {
                 throw new InsuranceNotFoundException();
-            }
 
-            await _unitOfWork
-                .Insurances
-                .DeleteAsync(
-                    insuranceId);
+            _context.Insurances.Remove(insurance);
 
-            await _unitOfWork
-                .CommitAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }
+

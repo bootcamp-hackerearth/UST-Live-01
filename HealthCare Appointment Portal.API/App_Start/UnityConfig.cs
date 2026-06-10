@@ -12,15 +12,14 @@ namespace HealthCare_Appointment_Portal
     public static class UnityConfig
     {
         private static Lazy<IUnityContainer> container =
-            new Lazy<IUnityContainer>(() =>
-            {
-                var container =
-                    new UnityContainer();
+        new Lazy<IUnityContainer>(() =>
+    {
+        var unityContainer = new UnityContainer(); 
 
-                RegisterTypes(container);
+        RegisterTypes(unityContainer);
 
-                return container;
-            });
+        return unityContainer;
+    });
 
         public static IUnityContainer Container
         {

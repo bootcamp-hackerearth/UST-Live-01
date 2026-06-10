@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "Doctor Login";
+}
+
+<div class="doctor-login-wrapper">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-5 col-md-7">
+
+                <div class="card doctor-login-card">
+
+                    <div class="card-body p-5 text-center">
+
+                        <!-- Icon -->
+                        <div class="doctor-icon-circle mb-4">
+                            <i class="fas fa-user-doctor"></i>
+                        </div>
+
+                        <!-- Title -->
+                        <h2 class="fw-bold mb-2">
+                            Doctor Access
+                        </h2>
+
+                        <p class="text-muted mb-4">
+                            Enter your Doctor ID to continue to your dashboard.
+                        </p>
+
+                        @using (Html.BeginForm())
+                        {
+                            <div class="mb-3 text-start">
+
+                                <label class="form-label fw-semibold">
+                                    Doctor ID
+                                </label>
+
+                                <input type="number"
+                                       name="userId"
+                                       class="form-control form-control-lg"
+                                       placeholder="Enter Doctor ID"
+                                       required />
+
+                            </div>
+
+                            if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger mt-3">
+                                    @ViewBag.Error
+                                </div>
+                            }
+
+                            <button type="submit"
+                                    class="btn btn-success btn-lg w-100 mt-3">
+
+                                <i class="fas fa-arrow-right-to-bracket me-2"></i>
+                                Go to Dashboard
+
+                            </button>
+                        }
+
+                        <!-- Back Button -->
+                        <a href="@Url.Action("DashboardSelection","Home")"
+                           class="btn btn-outline-secondary w-100 mt-3">
+
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Back to Dashboard Selection
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+    .doctor-login-wrapper {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #F8FAFC, #DCFCE7);
+        padding: 50px 0;
+    }
+
+    .doctor-login-card {
+        border: none;
+        border-radius: 24px;
+        box-shadow: 0 12px 35px rgba(0,0,0,.12);
+        overflow: hidden;
+    }
+
+        .doctor-login-card::before {
+            content: "";
+            display: block;
+            height: 7px;
+            background: linear-gradient(90deg, #166534, #16A34A, #22C55E);
+        }
+
+    .doctor-icon-circle {
+        width: 95px;
+        height: 95px;
+        border-radius: 50%;
+        margin: 0 auto;
+        background: linear-gradient(135deg, #16A34A, #22C55E);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        box-shadow: 0 8px 20px rgba(22,163,74,.35);
+    }
+
+    .form-control {
+        border-radius: 12px;
+        border: 1px solid #D1D5DB;
+    }
+
+        .form-control:focus {
+            border-color: #16A34A;
+            box-shadow: 0 0 0 .2rem rgba(22,163,74,.18);
+        }
+
+    .btn {
+        border-radius: 12px;
+        font-weight: 600;
+    }
+
+    .btn-success {
+        background-color: #16A34A;
+        border-color: #16A34A;
+    }
+
+        .btn-success:hover {
+            background-color: #15803D;
+            border-color: #15803D;
+        }
+
+    .alert {
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    @@media(max-width: 576px) {
+        .doctor-login-card .card-body {
+            padding: 32px 24px !important;
+        }
+
+        .doctor-icon-circle {
+            width: 78px;
+            height: 78px;
+            font-size: 34px;
+        }
+    }
+</style>

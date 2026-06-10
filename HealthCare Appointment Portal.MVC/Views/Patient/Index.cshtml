@@ -6,106 +6,120 @@
 
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- HEADER -->
+    <div class="d-flex align-items-center justify-content-between mb-4 position-relative">
 
-        <h2>
-            Patient Management
-        </h2>
-
-        @if (Session["Role"]?.ToString() == "Admin")
-        {
-            <a href="@Url.Action("Create","Patient")"
-               class="btn btn-primary">
-
-                Add Patient
-
+        <!-- LEFT: BACK BUTTON -->
+        <div>
+            <a href="@Url.Action("Index","Home")"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back
             </a>
-        }
+        </div>
+
+        <!-- CENTER: TITLE -->
+        <div class="position-absolute start-50 translate-middle-x">
+            <h2 class="mb-0 fw-bold">Patient Management</h2>
+        </div>
+
+        <!--RIGHT: ADD BUTTON -->
+        <div>
+            <a href="@Url.Action("Create","Patient")"
+               class="btn btn-success">
+                <i class="fas fa-plus"></i> Add Patient
+            </a>
+        </div>
 
     </div>
 
     <div class="card shadow-sm">
-
         <div class="card-body">
 
+            <!--SEARCH + FILTER ROW -->
             <div class="row mb-3">
 
+                <!-- SEARCH BOX -->
                 <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text"
+                               id="searchBox"
+                               class="form-control"
+                               placeholder="Search by ID or Name"
+                               onkeyup="searchPatient()" />
 
-                    @using (Html.BeginForm(
-                        "Index",
-                        "Patient",
-                        FormMethod.Get))
+                        <button onclick="searchPatient()"
+                                class="btn btn-primary">
+                            Search
+                        </button>
+                    </div>
+                </div>
+
+                <!--FILTER -->
+                <div class="col-md-4">
+                    @using (Html.BeginForm("Index", "Patient", FormMethod.Get))
                     {
                         <div class="input-group">
-
                             <select name="status"
                                     class="form-select">
-
-                                <option value="">
-                                    All Insurance Status
-                                </option>
+                                <option value="">All Insurance Status</option>
 
                                 @foreach (var status in Enum.GetValues(
                                     typeof(HealthCare_Appointment_Portal.Enums.InsuranceStatus)))
                                 {
-                                    <option value="@status">
-                                        @status
-                                    </option>
+                                    <option value="@status">@status</option>
                                 }
-
                             </select>
 
                             <button type="submit"
                                     class="btn btn-outline-primary">
-
                                 Filter
-
                             </button>
-
                         </div>
                     }
+                </div>
 
+                <!--RESET BUTTON -->
+                <div class="col-md-2">
+                    <a href="@Url.Action("Index","Patient")"
+                       class="btn btn-secondary">
+                        Reset
+                    </a>
                 </div>
 
             </div>
 
-            <table class="table table-bordered table-hover">
+            <!-- TABLE -->
+            <table class="table table-bordered table-hover" id="patientTable">
 
                 <thead class="table-light">
-
                     <tr>
-
+                        <th>Patient Id</th>
                         <th>
-                            Patient Id
-                        </th>
+                            <a href="@Url.Action("Index",new
+                            {
+                                    status = ViewBag.SelectedStatus,
+                                    sortOrder = ViewBag.NameSortParm
+                            })">
 
-                        <th>
-                            Full Name
-                        </th>
+                                Full Name
 
-                        <th>
-                            Gender
-                        </th>
+                                @if (ViewBag.CurrentSort?.ToString() == "name_desc")
+                                {
+                                    <span>(Desc)</span>
+                                }
+                                else
+                                {
+                                    <span>(Asc)</span>
+                                }
 
-                        <th>
-                            Email
+                            </a>
                         </th>
-
-                        <th>
-                            Phone Number
-                        </th>
-
-                        <th>
-                            Appointments
-                        </th>
-
-                        <th width="250">
-                            Actions
-                        </th>
-
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Appointments</th>
+                        <th width="250">Actions</th>
                     </tr>
-
                 </thead>
 
                 <tbody>
@@ -113,86 +127,110 @@
                     @foreach (var patient in Model)
                     {
                         <tr>
+                            <td>@patient.PatientId</td>
+                            <td>@patient.FullName</td>
+                            <td>@patient.Gender</td>
+                            <td>@patient.Email</td>
+                            <td>@patient.PhoneNumber</td>
+                            <td>@patient.AppointmentCount</td>
 
                             <td>
-                                @patient.PatientId
-                            </td>
-
-                            <td>
-                                @patient.FullName
-                            </td>
-
-                            <td>
-                                @patient.Gender
-                            </td>
-
-                            <td>
-                                @patient.Email
-                            </td>
-
-                            <td>
-                                @patient.PhoneNumber
-                            </td>
-
-                            <td>
-                                @patient.AppointmentCount
-                            </td>
-
-                            <td>
-
-                                <a href="@Url.Action(
-                                         "Details",
-                                         "Patient",
-                                         new
-                                         {
-                                             id = patient.PatientId
-                                         })"
+                                <a href="@Url.Action("Details","Patient",
+                                        new { id = patient.PatientId })"
                                    class="btn btn-sm btn-info">
-
                                     View
-
                                 </a>
 
-                                @if (Session["Role"]?.ToString() == "Admin")
-                                {
-                                    <a href="@Url.Action(
-                                             "Edit",
-                                             "Patient",
-                                             new
-                                             {
-                                                 id = patient.PatientId
-                                             })"
-                                       class="btn btn-sm btn-warning">
+                                <a href="@Url.Action("Edit","Patient",
+                                        new { id = patient.PatientId })"
+                                   class="btn btn-sm btn-warning">
+                                    Edit
+                                </a>
 
-                                        Edit
-
-                                    </a>
-
-                                    <a href="@Url.Action(
-                                             "Deactivate",
-                                             "Patient",
-                                             new
-                                             {
-                                                 id = patient.PatientId
-                                             })"
-                                       class="btn btn-sm btn-danger">
-
-                                        Deactivate
-
-                                    </a>
-                                }
-
+                                <button class="btn btn-sm btn-danger"
+                                        onclick="confirmDeactivate(@patient.PatientId)">
+                                    Deactivate
+                                </button>
                             </td>
-
                         </tr>
                     }
 
                 </tbody>
-
             </table>
 
         </div>
-
     </div>
 
 </div>
+<!-- ✅ CONFIRM MODAL -->
+<div class="modal fade" id="deactivateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirm Deactivation</h5>
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to deactivate this patient?
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <a id="confirmDeactivateBtn"
+                   class="btn btn-danger">
+                    Yes, Deactivate
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function confirmDeactivate(patientId) {
+
+        // Set URL dynamically
+        let url = '/Patient/Deactivate/' + patientId;
+
+        document.getElementById('confirmDeactivateBtn').href = url;
+
+        // Show modal
+        let modal = new bootstrap.Modal(
+            document.getElementById('deactivateModal')
+        );
+
+        modal.show();
+    }
+</script>
+
+<!-- ✅ SEARCH SCRIPT -->
+<script>
+    function searchPatient() {
+
+        let input = document.getElementById("searchBox").value.toLowerCase();
+        let rows = document.querySelectorAll("#patientTable tbody tr");
+
+        rows.forEach(row => {
+
+            let id = row.cells[0].innerText.toLowerCase();
+            let name = row.cells[1].innerText.toLowerCase();
+
+            if (id.includes(input) || name.includes(input)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+
+        });
+    }
+</script>
+

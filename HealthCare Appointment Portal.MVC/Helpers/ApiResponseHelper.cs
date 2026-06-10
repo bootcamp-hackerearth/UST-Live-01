@@ -7,19 +7,29 @@ namespace HealthCare_Appointment_Portal_MVC.Helpers
 {
     public static class ApiResponseHelper
     {
-        public static async Task
-            EnsureSuccessAsync(
-                HttpResponseMessage response)
+        public static async Task EnsureSuccessAsync(HttpResponseMessage response)
         {
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
+                return;
+
+            string message = "Something went wrong.";
+
+            try
             {
                 var error =
-                    await response.Content
-                        .ReadAsAsync<ApiErrorResponse>();
+                    await response.Content.ReadAsAsync<ApiErrorResponse>();
 
-                throw new Exception(
-                    error.Message);
+                if (error != null && !string.IsNullOrEmpty(error.Message))
+                {
+                    message = error.Message;
+                }
             }
+            catch
+            {
+                message = response.ReasonPhrase;
+            }
+
+            throw new Exception(message);
         }
     }
 }

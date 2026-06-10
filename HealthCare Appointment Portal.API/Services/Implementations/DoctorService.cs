@@ -11,33 +11,30 @@ using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Services
 {
-    public class DoctorService
-        : IDoctorService
+    public class DoctorService : IDoctorService
     {
-        private readonly IUnitOfWork
-            _unitOfWork;
-
-        private readonly IMapper
-            _mapper;
+        private readonly IDoctorRepository _doctorRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
         public DoctorService(
-            IUnitOfWork unitOfWork,
+            IDoctorRepository doctorRepository,
+            IAppointmentRepository appointmentRepository,
+            IUserRepository userRepository,
             IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
-
-            _mapper =
-                mapper;
+            _doctorRepository = doctorRepository;
+            _appointmentRepository = appointmentRepository;
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
 
-        public async Task<
-            IEnumerable<DoctorDto>>
+        public async Task<IEnumerable<DoctorDto>>
             GetAllDoctorsAsync()
         {
             var doctors =
-                await _unitOfWork
-                    .Doctors
+                await _doctorRepository
                     .GetAllAsync();
 
             return _mapper.Map<
@@ -50,8 +47,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int doctorId)
         {
             var doctor =
-                await _unitOfWork
-                    .Doctors
+                await _doctorRepository
                     .GetByIdAsync(
                         doctorId);
 
@@ -73,26 +69,32 @@ namespace HealthCare_Appointment_Portal.Services
                 _mapper.Map<Doctor>(
                     doctorDto);
 
-            await _unitOfWork
-                .Doctors
+            await _doctorRepository
                 .AddAsync(
                     doctor);
 
-            await _unitOfWork
-                .CommitAsync();
+            var user =
+                new User
+                {
+                    UserCode =
+                        $"D{doctor.DoctorId:D3}",
 
-            var user = new User
-            {
-                UserCode = $"D{doctor.DoctorId:D3}",
-                Email = $"doctor{doctor.DoctorId}@hospital.com",
-                PasswordHash = string.Empty,
-                Role = Role.Doctor,
-                ReferenceId = doctor.DoctorId,
-            };
+                    Email =
+                        $"doctor{doctor.DoctorId}@hospital.com",
 
-            await _unitOfWork.Users.AddAsync(user);
+                    PasswordHash =
+                        string.Empty,
 
-            await _unitOfWork.CommitAsync();
+                    Role =
+                        Role.Doctor,
+
+                    ReferenceId =
+                        doctor.DoctorId
+                };
+
+            await _userRepository
+                .AddAsync(
+                    user);
 
             return doctor.DoctorId;
         }
@@ -103,8 +105,7 @@ namespace HealthCare_Appointment_Portal.Services
                 UpdateDoctorDto doctorDto)
         {
             var doctor =
-                await _unitOfWork
-                    .Doctors
+                await _doctorRepository
                     .GetByIdAsync(
                         doctorId);
 
@@ -117,13 +118,9 @@ namespace HealthCare_Appointment_Portal.Services
                 doctorDto,
                 doctor);
 
-            await _unitOfWork
-                .Doctors
+            await _doctorRepository
                 .UpdateAsync(
                     doctor);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
         public async Task
@@ -131,8 +128,7 @@ namespace HealthCare_Appointment_Portal.Services
                 int doctorId)
         {
             var doctor =
-                await _unitOfWork
-                    .Doctors
+                await _doctorRepository
                     .GetByIdAsync(
                         doctorId);
 
@@ -142,10 +138,9 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             var appointments =
-                await _unitOfWork
-                .Appointments
-                .GetAppointmentsByDoctorAsync(
-                 doctorId);
+                await _appointmentRepository
+                    .GetAppointmentsByDoctorAsync(
+                        doctorId);
 
             bool hasConfirmedAppointments =
                 appointments.Any(a =>
@@ -159,10 +154,10 @@ namespace HealthCare_Appointment_Portal.Services
 
             var pendingAppointments =
                 appointments
-                .Where(a =>
-                a.Status ==
-                AppointmentStatus.Pending)
-                .ToList();
+                    .Where(a =>
+                        a.Status ==
+                        AppointmentStatus.Pending)
+                    .ToList();
 
             foreach (var appointment
                 in pendingAppointments)
@@ -171,28 +166,22 @@ namespace HealthCare_Appointment_Portal.Services
                     Constants
                         .DoctorRemovedFromSystem);
 
-                await _unitOfWork
-                    .Appointments
+                await _appointmentRepository
                     .UpdateAsync(
                         appointment);
             }
-            await _unitOfWork
-                .Doctors
+
+            await _doctorRepository
                 .DeleteAsync(
                     doctorId);
-
-            await _unitOfWork
-                .CommitAsync();
         }
 
-        public async Task<
-            IEnumerable<DoctorDto>>
+        public async Task<IEnumerable<DoctorDto>>
             GetDoctorsBySpecialisationAsync(
                 Specialisation specialisation)
         {
             var doctors =
-                await _unitOfWork
-                    .Doctors
+                await _doctorRepository
                     .GetDoctorsBySpecialisationAsync(
                         specialisation);
 

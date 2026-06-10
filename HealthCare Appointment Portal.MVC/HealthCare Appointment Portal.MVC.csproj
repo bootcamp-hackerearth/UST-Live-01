@@ -146,6 +146,7 @@
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DoctorController.cs" />
     <Compile Include="Controllers\HealthRecordController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -255,9 +256,13 @@
     <Content Include="Views\Doctor\EditMyProfile.cshtml" />
     <Content Include="Views\HealthRecord\DoctorRecords.cshtml" />
     <Content Include="Views\HealthRecord\Delete.cshtml" />
+    <Content Include="Views\Home\DashboardSelection.cshtml" />
+    <Content Include="Views\Patient\Login.cshtml" />
+    <Content Include="Views\Doctor\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Dashboard\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HealthCare Appointment Portal.Shared\HealthCare Appointment Portal.Shared.csproj">

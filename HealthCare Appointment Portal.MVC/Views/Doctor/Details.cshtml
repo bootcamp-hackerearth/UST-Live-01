@@ -170,6 +170,18 @@
 
                     @Model.UpcomingAppointmentCount
 
+                    @if (Session["Role"]?.ToString() == "Doctor")
+                    {
+                        <a href="@Url.Action(
+                                    "WeeklySchedule",
+                                    "Appointment")"
+                           class="btn btn-link">
+
+                            View Appointments
+
+                        </a>
+                    }
+
                 </div>
 
             </div>
@@ -177,6 +189,31 @@
         </div>
 
     </div>
+
+    @if (Session["Role"]?.ToString() == "Doctor")
+    {
+        <div class="mt-4">
+
+            <a href="@Url.Action(
+                        "TodaySchedule",
+                        "Appointment")"
+               class="btn btn-primary">
+
+                Today's Schedule
+
+            </a>
+
+            <a href="@Url.Action(
+                        "WeeklySchedule",
+                        "Appointment")"
+               class="btn btn-success">
+
+                Weekly Schedule
+
+            </a>
+
+        </div>
+    }
 
     @if (Session["Role"]?.ToString() == "Admin")
     {

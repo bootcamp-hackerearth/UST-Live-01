@@ -10,20 +10,79 @@ using System.Threading.Tasks;
 namespace HealthCare_Appointment_Portal.Repositories
 {
     public class DoctorRepository
-        : Repository<Doctor>,
-          IDoctorRepository
+        : IDoctorRepository
     {
+        private readonly ApplicationDbContext _context;
+
         public DoctorRepository(
             ApplicationDbContext context)
-            : base(context)
         {
+            _context = context;
+        }
+
+        public async Task<IEnumerable<Doctor>>
+            GetAllAsync()
+        {
+            return await _context.Doctors
+                .ToListAsync();
+        }
+
+        public async Task<Doctor>
+            GetByIdAsync(
+                int doctorId)
+        {
+            return await _context.Doctors
+                .FirstOrDefaultAsync(d =>
+                    d.DoctorId ==
+                    doctorId);
+        }
+
+        public async Task
+            AddAsync(
+                Doctor doctor)
+        {
+            _context.Doctors
+                .Add(doctor);
+
+            await _context
+                .SaveChangesAsync();
+        }
+
+        public async Task
+            UpdateAsync(
+                Doctor doctor)
+        {
+            _context.Entry(doctor)
+                .State =
+                EntityState.Modified;
+
+            await _context
+                .SaveChangesAsync();
+        }
+
+        public async Task
+            DeleteAsync(
+                int doctorId)
+        {
+            var doctor =
+                await GetByIdAsync(
+                    doctorId);
+
+            if (doctor != null)
+            {
+                _context.Doctors
+                    .Remove(doctor);
+
+                await _context
+                    .SaveChangesAsync();
+            }
         }
 
         public async Task<IEnumerable<Doctor>>
             GetDoctorsBySpecialisationAsync(
                 Specialisation specialisation)
         {
-            return await _dbSet
+            return await _context.Doctors
                 .Where(d =>
                     d.Specialisation ==
                     specialisation)
