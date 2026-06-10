@@ -1,4 +1,5 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
+@using System.Web.Routing
 
 @{
     ViewBag.Title = "Weekly Schedule";
@@ -12,13 +13,9 @@
             Weekly Schedule
         </h2>
 
-        <a href="@Url.Action(
-                    "Dashboard",
-                    "Doctor")"
+        <a href="@Url.Action("Dashboard", "Doctor")"
            class="btn btn-secondary">
-
             Back
-
         </a>
 
     </div>
@@ -32,7 +29,6 @@
                 <thead class="table-light">
 
                     <tr>
-
                         <th>
                             Appointment Id
                         </th>
@@ -56,34 +52,32 @@
                         <th width="250">
                             Actions
                         </th>
-
                     </tr>
 
                 </thead>
 
                 <tbody>
 
-                    @if (!Model.Any())
+                    @if (Model == null || !Model.Any())
                     {
                         <tr>
-
                             <td colspan="6"
                                 class="text-center">
-
                                 No appointments scheduled this week.
-
                             </td>
-
                         </tr>
                     }
                     else
                     {
                         foreach (var appointment in Model)
                         {
+                            var appointmentId = appointment.AppointmentId;
+                            var appointmentStatus = appointment.Status.ToString();
+
                             <tr>
 
                                 <td>
-                                    @appointment.AppointmentId
+                                    @appointmentId
                                 </td>
 
                                 <td>
@@ -91,8 +85,7 @@
                                 </td>
 
                                 <td>
-                                    @appointment.ScheduledDate.ToString(
-                                    "dd MMM yyyy")
+                                    @appointment.ScheduledDate.ToString("dd MMM yyyy")
                                 </td>
 
                                 <td>
@@ -101,25 +94,25 @@
 
                                 <td>
 
-                                    @if (appointment.Status.ToString() == "Pending")
+                                    @if (appointmentStatus == "Pending")
                                     {
                                         <span class="badge bg-warning text-dark">
                                             Pending
                                         </span>
                                     }
-                                    else if (appointment.Status.ToString() == "Confirmed")
+                                    else if (appointmentStatus == "Confirmed")
                                     {
                                         <span class="badge bg-success">
                                             Confirmed
                                         </span>
                                     }
-                                    else if (appointment.Status.ToString() == "Cancelled")
+                                    else if (appointmentStatus == "Cancelled")
                                     {
                                         <span class="badge bg-danger">
                                             Cancelled
                                         </span>
                                     }
-                                    else if (appointment.Status.ToString() == "Completed")
+                                    else if (appointmentStatus == "Completed")
                                     {
                                         <span class="badge bg-primary">
                                             Completed
@@ -133,18 +126,15 @@
                                     <a href="@Url.Action(
                                                 "Details",
                                                 "Appointment",
-                                                new
+                                                new RouteValueDictionary
                                                 {
-                                                    id =
-                                                    appointment.AppointmentId
+                                                    { "id", appointmentId }
                                                 })"
                                        class="btn btn-info btn-sm">
-
                                         View
-
                                     </a>
 
-                                    @if (appointment.Status.ToString() == "Pending")
+                                    @if (appointmentStatus == "Pending")
                                     {
                                         using (Html.BeginForm(
                                             "Confirm",
@@ -152,40 +142,37 @@
                                             FormMethod.Post,
                                             new
                                             {
-                                                style =
-                                                "display:inline;"
+                                                id = $"confirm-form-{appointmentId}",
+                                                style = "display:inline;"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
 
                                             <input type="hidden"
+                                                   id="confirm-appointment-id-@appointmentId"
                                                    name="id"
-                                                   value="@appointment.AppointmentId" />
+                                                   value="@appointmentId" />
 
                                             <button type="submit"
+                                                    id="confirm-button-@appointmentId"
                                                     class="btn btn-success btn-sm">
-
                                                 Confirm
-
                                             </button>
                                         }
 
                                         <a href="@Url.Action(
                                                     "Cancel",
                                                     "Appointment",
-                                                    new
+                                                    new RouteValueDictionary
                                                     {
-                                                        id =
-                                                        appointment.AppointmentId
+                                                        { "id", appointmentId }
                                                     })"
                                            class="btn btn-danger btn-sm">
-
                                             Cancel
-
                                         </a>
                                     }
 
-                                    @if (appointment.Status.ToString() == "Confirmed")
+                                    @if (appointmentStatus == "Confirmed")
                                     {
                                         using (Html.BeginForm(
                                             "Complete",
@@ -193,42 +180,37 @@
                                             FormMethod.Post,
                                             new
                                             {
-                                                style =
-                                                "display:inline;"
+                                                id = $"complete-form-{appointmentId}",
+                                                style = "display:inline;"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
 
                                             <input type="hidden"
+                                                   id="complete-appointment-id-@appointmentId"
                                                    name="id"
-                                                   value="@appointment.AppointmentId" />
+                                                   value="@appointmentId" />
 
                                             <button type="submit"
+                                                    id="complete-button-@appointmentId"
                                                     class="btn btn-primary btn-sm">
-
                                                 Complete
-
                                             </button>
                                         }
                                     }
 
-                                    @if (appointment.Status.ToString() == "Completed")
+                                    @if (appointmentStatus == "Completed")
                                     {
                                         <a href="@Url.Action(
                                                     "Create",
                                                     "HealthRecord",
-                                                    new
+                                                    new RouteValueDictionary
                                                     {
-                                                        appointmentId =
-                                                            appointment.AppointmentId,
-
-                                                        patientId =
-                                                            appointment.PatientId
+                                                        { "appointmentId", appointmentId },
+                                                        { "patientId", appointment.PatientId }
                                                     })"
                                            class="btn btn-dark btn-sm">
-
                                             Add Health Record
-
                                         </a>
                                     }
 

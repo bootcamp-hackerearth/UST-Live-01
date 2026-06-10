@@ -7,7 +7,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
 
@@ -317,7 +317,7 @@
 
                 <div>
                     <div class="feature-title">
-                        Secure & Private
+                        Secure &amp; Private
                     </div>
 
                     <div class="feature-text">
@@ -335,7 +335,7 @@
 
                 <div>
                     <div class="feature-title">
-                        Smart & Efficient
+                        Smart &amp; Efficient
                     </div>
 
                     <div class="feature-text">
@@ -375,7 +375,8 @@
                 <div class="text-center">
 
                     <img src="@Url.Content("~/Content/Images/healthaxis-logo.png")"
-                         class="img-fluid logo-image" />
+                         class="img-fluid logo-image"
+                         alt="HealthAxis Health logo" />
 
                     <h2 class="welcome-title">
                         Welcome Back
@@ -387,9 +388,10 @@
 
                 </div>
 
-                @using (Html.BeginForm("Login",
-                                      "User",
-                                      FormMethod.Post))
+                @using (Html.BeginForm(
+                    "Login",
+                    "User",
+                    FormMethod.Post))
                 {
                     @Html.AntiForgeryToken()
 
@@ -403,11 +405,13 @@
 
                     <div class="mb-4">
 
-                        <label class="form-label">
-
-                            User Code
-
-                        </label>
+                        @Html.LabelFor(
+                            m => m.UserCode,
+                            "User Code",
+                            new
+                            {
+                                @class = "form-label"
+                            })
 
                         @Html.TextBoxFor(
                             m => m.UserCode,
@@ -415,6 +419,14 @@
                             {
                                 @class = "form-control",
                                 placeholder = "Enter User Code"
+                            })
+
+                        @Html.ValidationMessageFor(
+                            m => m.UserCode,
+                            "",
+                            new
+                            {
+                                @class = "text-danger d-block mt-1"
                             })
 
                     </div>

@@ -1,4 +1,5 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.DoctorDtos.DoctorDto>
+@using System.Web.Routing
 
 @{
     ViewBag.Title = "Doctors";
@@ -14,7 +15,7 @@
 
         @if (Session["Role"]?.ToString() == "Admin")
         {
-            <a href="@Url.Action("Create","Doctor")"
+            <a href="@Url.Action("Create", "Doctor")"
                class="btn btn-primary">
 
                 Add Doctor
@@ -39,7 +40,13 @@
                     {
                         <div class="input-group">
 
-                            <select name="specialisation"
+                            <label for="specialisation"
+                                   class="visually-hidden">
+                                Specialisation
+                            </label>
+
+                            <select id="specialisation"
+                                    name="specialisation"
                                     class="form-select">
 
                                 <option value="">
@@ -48,7 +55,7 @@
 
                                 @foreach (var item in Enum.GetValues(
                                     typeof(
-                                    HealthCare_Appointment_Portal.Enums.Specialisation)))
+                                        HealthCare_Appointment_Portal.Enums.Specialisation)))
                                 {
                                     <option value="@item">
                                         @item
@@ -115,93 +122,278 @@
 
                 <tbody>
 
-                    @foreach (var doctor in Model)
+                    @if (Model == null || !Model.Any())
                     {
                         <tr>
+                            <td colspan="8"
+                                class="text-center">
 
-                            <td>
-                                @doctor.DoctorId
-                            </td>
-
-                            <td>
-                                @doctor.FullName
-                            </td>
-
-                            <td>
-                                @doctor.Specialisation
-                            </td>
-
-                            <td>
-                                @doctor.YearsOfExperience
-                            </td>
-
-                            <td>
-                                Rs.@doctor.ConsultationFee
-                            </td>
-
-                            <td>
-
-                                @if (doctor.IsActive)
-                                {
-                                    <span class="badge bg-success">
-                                        Active
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">
-                                        Inactive
-                                    </span>
-                                }
+                                No doctors found.
 
                             </td>
-
-                            <td>
-                                @doctor.UpcomingAppointmentCount
-                            </td>
-
-                            <td>
-
-                                <a href="@Url.Action(
-                                         "Details",
-                                         "Doctor",
-                                         new
-                                         {
-                                             id = doctor.DoctorId
-                                         })"
-                                   class="btn btn-info btn-sm">
-
-                                    View
-
-                                </a>
-
-                                @if (Session["Role"]?.ToString() == "Admin")
-                                {
-                                    <a href="@Url.Action(
-                                             "Edit",
-                                             "Doctor",
-                                             new
-                                             {
-                                                 id = doctor.DoctorId
-                                             })"
-                                       class="btn btn-warning btn-sm">
-
-                                        Edit
-
-                                    </a>
-                                }
-
-                            </td>
-
                         </tr>
+                    }
+                    else
+                    {
+                        foreach (var doctor in Model)
+                        {
+                            var editRouteValues = new RouteValueDictionary
+                                    {
+                                { "id", doctor.DoctorId }
+                            };
+
+                            <tr>
+
+                                <td>
+                                    @doctor.DoctorId
+                                </td>
+
+                                <td>
+                                    @doctor.FullName
+                                </td>
+
+                                <td>
+                                    @doctor.Specialisation
+                                </td>
+
+                                <td>
+                                    @doctor.YearsOfExperience
+                                </td>
+
+                                <td>
+                                    Rs.@doctor.ConsultationFee
+                                </td>
+
+                                <td>
+
+                                    @if (doctor.IsActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">
+                                            Inactive
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td>
+                                    @doctor.UpcomingAppointmentCount
+                                </td>
+
+                                <td>
+
+                                    <button type="button"
+                                            class="btn btn-info btn-sm text-white"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#doctorModal_@doctor.DoctorId">
+
+                                        View
+
+                                    </button>
+
+                                    @if (Session["Role"]?.ToString() == "Admin")
+                                    {
+                                        <a href="@Url.Action(
+                                                     "Edit",
+                                                     "Doctor",
+                                                     editRouteValues)"
+                                           class="btn btn-warning btn-sm">
+
+                                            Edit
+
+                                        </a>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
                     }
 
                 </tbody>
 
             </table>
 
+            @if (Model != null && Model.Any())
+            {
+                foreach (var doctor in Model)
+                {
+                    <!-- Doctor Details Modal -->
+                    <div class="modal fade"
+                         id="doctorModal_@doctor.DoctorId"
+                         tabindex="-1"
+                         aria-labelledby="doctorModalLabel_@doctor.DoctorId"
+                         aria-hidden="true">
+
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                            <div class="modal-content doctor-modal">
+
+                                <div class="modal-header">
+
+                                    <h5 class="modal-title fw-bold"
+                                        id="doctorModalLabel_@doctor.DoctorId">
+
+                                        Doctor Details
+
+                                    </h5>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                    </button>
+
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div class="doctor-detail-row">
+                                        <strong>Doctor Id:</strong>
+                                        <span>@doctor.DoctorId</span>
+                                    </div>
+
+                                    <div class="doctor-detail-row">
+                                        <strong>Full Name:</strong>
+                                        <span>@doctor.FullName</span>
+                                    </div>
+
+                                    <div class="doctor-detail-row">
+                                        <strong>Specialisation:</strong>
+                                        <span>@doctor.Specialisation</span>
+                                    </div>
+
+                                    <div class="doctor-detail-row">
+                                        <strong>Experience:</strong>
+                                        <span>@doctor.YearsOfExperience Years</span>
+                                    </div>
+
+                                    <div class="doctor-detail-row">
+                                        <strong>Consultation Fee:</strong>
+                                        <span>Rs.@doctor.ConsultationFee</span>
+                                    </div>
+
+                                    <div class="doctor-detail-row">
+                                        <strong>Status:</strong>
+
+                                        <span>
+                                            @if (doctor.IsActive)
+                                            {
+                                                <span class="badge bg-success">
+                                                    Active
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    Inactive
+                                                </span>
+                                            }
+                                        </span>
+                                    </div>
+
+                                    <div class="doctor-detail-row">
+                                        <strong>Upcoming Appointments:</strong>
+                                        <span>@doctor.UpcomingAppointmentCount</span>
+                                    </div>
+
+                                </div>
+
+                                <div class="modal-footer">
+
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+
+                                        Close
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+                }
+            }
+
         </div>
 
     </div>
 
 </div>
+
+<style>
+    .card {
+        border-radius: 20px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.55;
+        backdrop-filter: blur(4px);
+    }
+
+    .doctor-modal {
+        border-radius: 20px;
+        border: none;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #1E3A7A, #2563EB, #4AA3D9);
+        color: white;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+    .doctor-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .doctor-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .doctor-detail-row strong {
+            color: #1f2937;
+            min-width: 180px;
+        }
+
+        .doctor-detail-row span {
+            color: #374151;
+            text-align: right;
+        }
+
+    @@media(max-width: 767px) {
+        .doctor-detail-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .doctor-detail-row span {
+                text-align: left;
+            }
+    }
+</style>

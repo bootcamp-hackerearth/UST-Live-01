@@ -8,7 +8,7 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
 
@@ -129,6 +129,19 @@
             box-shadow: 0 2px 8px rgba(0,0,0,.15);
         }
 
+        .profile-dropdown-button {
+            border: none;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+            .profile-dropdown-button:focus {
+                outline: 2px solid #ffffff;
+                outline-offset: 4px;
+                border-radius: 50%;
+            }
+
         .navbar .dropdown-toggle::after {
             display: none;
         }
@@ -186,7 +199,10 @@
             <button class="navbar-toggler"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#navbarContent">
+                    data-bs-target="#navbarContent"
+                    aria-controls="navbarContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
 
                 <span class="navbar-toggler-icon"></span>
 
@@ -319,12 +335,12 @@
 
                         <li class="nav-item dropdown">
 
-                            <a class="nav-link"
-                               href="#"
-                               id="profileDropdown"
-                               role="button"
-                               data-bs-toggle="dropdown"
-                               aria-expanded="false">
+                            <button class="nav-link dropdown-toggle profile-dropdown-button"
+                                    type="button"
+                                    id="profileDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    aria-label="Open profile menu">
 
                                 <div class="profile-avatar">
 
@@ -334,9 +350,10 @@
 
                                 </div>
 
-                            </a>
+                            </button>
 
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end"
+                                aria-labelledby="profileDropdown">
 
                                 <li>
 

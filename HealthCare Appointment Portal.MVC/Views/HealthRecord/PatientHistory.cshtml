@@ -97,15 +97,12 @@
                     }
                     else
                     {
-                        foreach (var record in
-                            Model.OrderByDescending(
-                                r => r.VisitDate))
+                        foreach (var record in Model.OrderByDescending(r => r.VisitDate))
                         {
                             <tr>
 
                                 <td>
-                                    @record.VisitDate.ToString(
-                                        "dd MMM yyyy")
+                                    @record.VisitDate.ToString("dd MMM yyyy")
                                 </td>
 
                                 <td>
@@ -126,23 +123,104 @@
 
                                 <td>
 
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "HealthRecord",
-                                                new
-                                                {
-                                                    id =
-                                                        record.RecordId
-                                                })"
-                                       class="btn btn-info btn-sm">
+                                    <button type="button"
+                                            class="btn btn-info btn-sm text-white"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#healthRecordModal_@record.RecordId">
 
                                         View
 
-                                    </a>
+                                    </button>
 
                                 </td>
 
                             </tr>
+
+                            <!-- Health Record Details Modal -->
+                            <div class="modal fade"
+                                 id="healthRecordModal_@record.RecordId"
+                                 tabindex="-1"
+                                 aria-labelledby="healthRecordModalLabel_@record.RecordId"
+                                 aria-hidden="true">
+
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                                    <div class="modal-content health-record-modal">
+
+                                        <div class="modal-header">
+
+                                            <h5 class="modal-title fw-bold"
+                                                id="healthRecordModalLabel_@record.RecordId">
+
+                                                Health Record Details
+
+                                            </h5>
+
+                                            <button type="button"
+                                                    class="btn-close"
+                                                    data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                            </button>
+
+                                        </div>
+
+                                        <div class="modal-body">
+
+                                            <div class="health-detail-row">
+                                                <strong>Record Id:</strong>
+                                                <span>@record.RecordId</span>
+                                            </div>
+
+                                            <div class="health-detail-row">
+                                                <strong>Visit Date:</strong>
+                                                <span>@record.VisitDate.ToString("dd MMM yyyy")</span>
+                                            </div>
+
+                                            <div class="health-detail-row">
+                                                <strong>Doctor:</strong>
+                                                <span>@record.DoctorName</span>
+                                            </div>
+
+                                            <div class="health-detail-row">
+                                                <strong>Specialisation:</strong>
+                                                <span>@record.Specialisation</span>
+                                            </div>
+
+                                            <div class="health-detail-block">
+                                                <strong>Diagnosis:</strong>
+
+                                                <div class="detail-box">
+                                                    @record.Diagnosis
+                                                </div>
+                                            </div>
+
+                                            <div class="health-detail-block">
+                                                <strong>Prescription:</strong>
+
+                                                <div class="detail-box">
+                                                    @record.Prescription
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+
+                                            <button type="button"
+                                                    class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">
+
+                                                Close
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
                         }
                     }
 
@@ -155,3 +233,92 @@
     </div>
 
 </div>
+
+<style>
+    .card {
+        border-radius: 20px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.55;
+        backdrop-filter: blur(4px);
+    }
+
+    .health-record-modal {
+        border-radius: 20px;
+        border: none;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #1E3A7A, #2563EB, #4AA3D9);
+        color: white;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+    .health-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 12px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .health-detail-row strong {
+            color: #1f2937;
+            min-width: 160px;
+        }
+
+        .health-detail-row span {
+            color: #374151;
+            text-align: right;
+        }
+
+    .health-detail-block {
+        padding: 14px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .health-detail-block strong {
+            color: #1f2937;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+    .detail-box {
+        background-color: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 12px;
+        color: #374151;
+        min-height: 50px;
+        white-space: pre-wrap;
+    }
+
+    .health-detail-block:last-child {
+        border-bottom: none;
+    }
+
+    @@media(max-width: 767px) {
+        .health-detail-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .health-detail-row span {
+                text-align: left;
+            }
+    }
+</style>

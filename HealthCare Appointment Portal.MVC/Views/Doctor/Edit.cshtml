@@ -39,9 +39,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Full Name
-                    </label>
+                    @Html.LabelFor(
+                        m => m.FullName,
+                        "Full Name",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextBoxFor(
                         m => m.FullName,
@@ -62,9 +66,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Specialisation
-                    </label>
+                    @Html.LabelFor(
+                        m => m.Specialisation,
+                        "Specialisation",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.EnumDropDownListFor(
                         m => m.Specialisation,
@@ -86,9 +94,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Years Of Experience
-                    </label>
+                    @Html.LabelFor(
+                        m => m.YearsOfExperience,
+                        "Years Of Experience",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextBoxFor(
                         m => m.YearsOfExperience,
@@ -111,9 +123,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Consultation Fee
-                    </label>
+                    @Html.LabelFor(
+                        m => m.ConsultationFee,
+                        "Consultation Fee",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextBoxFor(
                         m => m.ConsultationFee,
@@ -144,9 +160,13 @@
                             @class = "form-check-input"
                         })
 
-                    <label class="form-check-label">
-                        Active Doctor
-                    </label>
+                    @Html.LabelFor(
+                        m => m.IsActive,
+                        "Active Doctor",
+                        new
+                        {
+                            @class = "form-check-label"
+                        })
 
                 </div>
 

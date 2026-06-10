@@ -4,9 +4,18 @@
 
 <div class="dashboard-selection-wrapper">
 
-    <div class="container text-center py-5">
+    <div class="container py-5">
 
-        <div class="mb-5">
+        <!-- Back Button -->
+        <div class="mb-4 d-flex justify-content-end">
+            <a href="@Url.Action("Index", "Home")"
+               class="btn btn-outline-secondary back-btn">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Home
+            </a>
+        </div>
+
+        <div class="text-center mb-5">
             <h2 class="fw-bold page-title">
                 Select Your Dashboard
             </h2>
@@ -22,7 +31,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card dashboard-card patient-card h-100">
 
-                    <div class="card-body p-5">
+                    <div class="card-body p-5 text-center">
 
                         <div class="icon-circle patient-icon">
                             <i class="fas fa-hospital-user"></i>
@@ -50,7 +59,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card dashboard-card doctor-card h-100">
 
-                    <div class="card-body p-5">
+                    <div class="card-body p-5 text-center">
 
                         <div class="icon-circle doctor-icon">
                             <i class="fas fa-user-doctor"></i>
@@ -78,7 +87,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card dashboard-card admin-card h-100">
 
-                    <div class="card-body p-5">
+                    <div class="card-body p-5 text-center">
 
                         <div class="icon-circle admin-icon">
                             <i class="fas fa-user-shield"></i>
@@ -184,6 +193,16 @@
         font-weight: 600;
         padding: 10px 14px;
     }
+
+    .back-btn {
+        padding: 10px 18px;
+        font-weight: 600;
+        background-color: #ffffff;
+    }
+
+        .back-btn:hover {
+            transform: translateX(-3px);
+        }
 
     @@media(max-width: 767px) {
         .dashboard-selection-wrapper {

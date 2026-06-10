@@ -39,9 +39,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Doctor
-                    </label>
+                    @Html.LabelFor(
+                        m => m.DoctorId,
+                        "Doctor",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.DropDownListFor(
                         m => m.DoctorId,
@@ -64,9 +68,13 @@
 
                 <div class="mb-3">
 
-                    <label class="form-label">
-                        Appointment Date
-                    </label>
+                    @Html.LabelFor(
+                        m => m.ScheduledDate,
+                        "Appointment Date",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.TextBoxFor(
                         m => m.ScheduledDate,
@@ -90,9 +98,13 @@
 
                 <div class="mb-4">
 
-                    <label class="form-label">
-                        Time Slot
-                    </label>
+                    @Html.LabelFor(
+                        m => m.TimeSlot,
+                        "Time Slot",
+                        new
+                        {
+                            @class = "form-label"
+                        })
 
                     @Html.DropDownListFor(
                         m => m.TimeSlot,
@@ -143,18 +155,12 @@
 
                     <button type="submit"
                             class="btn btn-success">
-
                         Book Appointment
-
                     </button>
 
-                    <a href="@Url.Action(
-                                "Dashboard",
-                                "Patient")"
+                    <a href="@Url.Action("Dashboard", "Patient")"
                        class="btn btn-secondary">
-
                         Cancel
-
                     </a>
 
                 </div>

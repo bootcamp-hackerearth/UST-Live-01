@@ -30,13 +30,17 @@
 
                         @using (Html.BeginForm())
                         {
+                            @Html.AntiForgeryToken()
+
                             <div class="mb-3 text-start">
 
-                                <label class="form-label fw-semibold">
+                                <label for="userId"
+                                       class="form-label fw-semibold">
                                     Doctor ID
                                 </label>
 
                                 <input type="number"
+                                       id="userId"
                                        name="userId"
                                        class="form-control form-control-lg"
                                        placeholder="Enter Doctor ID"
@@ -61,7 +65,7 @@
                         }
 
                         <!-- Back Button -->
-                        <a href="@Url.Action("DashboardSelection","Home")"
+                        <a href="@Url.Action("DashboardSelection", "Home")"
                            class="btn btn-outline-secondary w-100 mt-3">
 
                             <i class="fas fa-arrow-left me-2"></i>
@@ -97,12 +101,12 @@
         overflow: hidden;
     }
 
-        .doctor-login-card::before {
-            content: "";
-            display: block;
-            height: 7px;
-            background: linear-gradient(90deg, #166534, #16A34A, #22C55E);
-        }
+    .doctor-login-card::before {
+        content: "";
+        display: block;
+        height: 7px;
+        background: linear-gradient(90deg, #166534, #16A34A, #22C55E);
+    }
 
     .doctor-icon-circle {
         width: 95px;
@@ -123,10 +127,10 @@
         border: 1px solid #D1D5DB;
     }
 
-        .form-control:focus {
-            border-color: #16A34A;
-            box-shadow: 0 0 0 .2rem rgba(22,163,74,.18);
-        }
+    .form-control:focus {
+        border-color: #16A34A;
+        box-shadow: 0 0 0 .2rem rgba(22,163,74,.18);
+    }
 
     .btn {
         border-radius: 12px;
@@ -138,10 +142,10 @@
         border-color: #16A34A;
     }
 
-        .btn-success:hover {
-            background-color: #15803D;
-            border-color: #15803D;
-        }
+    .btn-success:hover {
+        background-color: #15803D;
+        border-color: #15803D;
+    }
 
     .alert {
         border-radius: 12px;

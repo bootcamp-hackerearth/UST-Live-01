@@ -25,9 +25,7 @@
             @if (TempData["Error"] != null)
             {
                 <div class="alert alert-danger">
-
                     @TempData["Error"]
-
                 </div>
             }
 
@@ -60,9 +58,7 @@
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.AppointmentId
-
                 </div>
 
             </div>
@@ -80,9 +76,7 @@
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.PatientName
-
                 </div>
 
             </div>
@@ -100,9 +94,7 @@
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.DoctorName
-
                 </div>
 
             </div>
@@ -121,8 +113,7 @@
 
                 <div class="col-md-9">
 
-                    @Model.ScheduledDate.ToString(
-                        "dd MMM yyyy")
+                    @Model.ScheduledDate.ToString("dd MMM yyyy")
 
                     -
 
@@ -138,13 +129,13 @@
 
                 <div class="mb-4">
 
-                    <label class="form-label">
-
+                    <label for="reason"
+                           class="form-label">
                         Cancellation Reason
-
                     </label>
 
-                    <textarea name="reason"
+                    <textarea id="reason"
+                              name="reason"
                               rows="4"
                               class="form-control"
                               required
@@ -154,9 +145,7 @@
 
                 <button type="submit"
                         class="btn btn-danger">
-
                     Confirm Cancellation
-
                 </button>
 
                 <a href="@Url.Action(
@@ -167,9 +156,7 @@
                                 id = Model.AppointmentId
                             })"
                    class="btn btn-secondary">
-
                     Back
-
                 </a>
             }
 

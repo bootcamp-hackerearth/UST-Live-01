@@ -12,9 +12,7 @@
             My Appointments
         </h2>
 
-        <a href="@Url.Action(
-                    "Create",
-                    "Appointment")"
+        <a href="@Url.Action("Create", "Appointment")"
            class="btn btn-primary">
 
             Book Appointment
@@ -26,18 +24,14 @@
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success">
-
             @TempData["Success"]
-
         </div>
     }
 
     @if (TempData["Error"] != null)
     {
         <div class="alert alert-danger">
-
             @TempData["Error"]
-
         </div>
     }
 
@@ -50,31 +44,12 @@
                 <thead class="table-light">
 
                     <tr>
-
-                        <th>
-                            Appointment Id
-                        </th>
-
-                        <th>
-                            Doctor
-                        </th>
-
-                        <th>
-                            Date
-                        </th>
-
-                        <th>
-                            Time Slot
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Actions
-                        </th>
-
+                        <th>Appointment Id</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
 
                 </thead>
@@ -84,14 +59,9 @@
                     @if (!Model.Any())
                     {
                         <tr>
-
-                            <td colspan="6"
-                                class="text-center">
-
+                            <td colspan="6" class="text-center">
                                 No appointments found.
-
                             </td>
-
                         </tr>
                     }
                     else
@@ -109,8 +79,7 @@
                                 </td>
 
                                 <td>
-                                    @appointment.ScheduledDate.ToString(
-                                    "dd MMM yyyy")
+                                    @appointment.ScheduledDate.ToString("dd MMM yyyy")
                                 </td>
 
                                 <td>
@@ -118,71 +87,155 @@
                                 </td>
 
                                 <td>
-
                                     @switch (appointment.Status.ToString())
                                     {
                                         case "Pending":
-
                                             <span class="badge bg-warning text-dark">
                                                 Pending
                                             </span>
-
                                             break;
 
                                         case "Confirmed":
-
                                             <span class="badge bg-success">
                                                 Confirmed
                                             </span>
-
                                             break;
 
                                         case "Cancelled":
-
                                             <span class="badge bg-danger">
                                                 Cancelled
                                             </span>
-
                                             break;
 
                                         case "Completed":
-
                                             <span class="badge bg-primary">
                                                 Completed
                                             </span>
-
                                             break;
 
                                         default:
-
                                             <span class="badge bg-secondary">
                                                 @appointment.Status
                                             </span>
-
                                             break;
                                     }
-
                                 </td>
 
                                 <td>
-
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "Appointment",
-                                                new
-                                                {
-                                                    id =
-                                                    appointment.AppointmentId
-                                                })"
-                                       class="btn btn-info btn-sm">
-
+                                    <button type="button"
+                                            class="btn btn-info btn-sm text-white"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#appointmentModal_@appointment.AppointmentId">
                                         View
-
-                                    </a>
-
+                                    </button>
                                 </td>
 
                             </tr>
+
+                            <!-- Appointment Details Modal -->
+                            <div class="modal fade"
+                                 id="appointmentModal_@appointment.AppointmentId"
+                                 tabindex="-1"
+                                 aria-labelledby="appointmentModalLabel_@appointment.AppointmentId"
+                                 aria-hidden="true">
+
+                                <div class="modal-dialog modal-dialog-centered">
+
+                                    <div class="modal-content appointment-modal">
+
+                                        <div class="modal-header">
+
+                                            <h5 class="modal-title fw-bold"
+                                                id="appointmentModalLabel_@appointment.AppointmentId">
+                                                Appointment Details
+                                            </h5>
+
+                                            <button type="button"
+                                                    class="btn-close"
+                                                    data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                            </button>
+
+                                        </div>
+
+                                        <div class="modal-body">
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Appointment Id:</strong>
+                                                <span>@appointment.AppointmentId</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Doctor:</strong>
+                                                <span>@appointment.DoctorName</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Date:</strong>
+                                                <span>@appointment.ScheduledDate.ToString("dd MMM yyyy")</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Time Slot:</strong>
+                                                <span>@appointment.TimeSlot</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Status:</strong>
+
+                                                <span>
+                                                    @switch (appointment.Status.ToString())
+                                                    {
+                                                        case "Pending":
+                                                            <span class="badge bg-warning text-dark">
+                                                                Pending
+                                                            </span>
+                                                            break;
+
+                                                        case "Confirmed":
+                                                            <span class="badge bg-success">
+                                                                Confirmed
+                                                            </span>
+                                                            break;
+
+                                                        case "Cancelled":
+                                                            <span class="badge bg-danger">
+                                                                Cancelled
+                                                            </span>
+                                                            break;
+
+                                                        case "Completed":
+                                                            <span class="badge bg-primary">
+                                                                Completed
+                                                            </span>
+                                                            break;
+
+                                                        default:
+                                                            <span class="badge bg-secondary">
+                                                                @appointment.Status
+                                                            </span>
+                                                            break;
+                                                    }
+                                                </span>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="modal-footer">
+
+                                            <button type="button"
+                                                    class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">
+                                                Close
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
                         }
                     }
 
@@ -195,3 +248,57 @@
     </div>
 
 </div>
+
+<style>
+    .card {
+        border-radius: 20px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.55;
+        backdrop-filter: blur(4px);
+    }
+
+    .appointment-modal {
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+        background: rgba(255, 255, 255, 0.96);
+    }
+
+    .appointment-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .appointment-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .appointment-detail-row strong {
+            color: #1f2937;
+        }
+
+        .appointment-detail-row span {
+            color: #374151;
+        }
+
+    .modal-header {
+        background: linear-gradient(135deg, #1E3A7A, #2563EB, #4AA3D9);
+        color: white;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+</style>

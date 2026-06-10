@@ -28,28 +28,47 @@
                             Enter your Patient ID to continue to your dashboard.
                         </p>
 
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger mt-3">
+                                @TempData["Error"]
+                            </div>
+                        }
+
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger mt-3">
+                                @ViewBag.Error
+                            </div>
+                        }
+
                         @using (Html.BeginForm())
                         {
+                            @Html.AntiForgeryToken()
+
                             <div class="mb-3 text-start">
 
-                                <label class="form-label fw-semibold">
+                                <label for="userId"
+                                       class="form-label fw-semibold">
                                     Patient ID
                                 </label>
 
-                                <input type="number"
+                                <input type="text"
+                                       id="userId"
                                        name="userId"
                                        class="form-control form-control-lg"
                                        placeholder="Enter Patient ID"
-                                       required />
+                                       inputmode="numeric"
+                                       pattern="[0-9]{1,9}"
+                                       maxlength="9"
+                                       required
+                                       title="Please enter a valid Patient ID using numbers only." />
+
+                                <small class="text-muted">
+                                    Enter numbers only.
+                                </small>
 
                             </div>
-
-                            if (ViewBag.Error != null)
-                            {
-                                <div class="alert alert-danger mt-3">
-                                    @ViewBag.Error
-                                </div>
-                            }
 
                             <button type="submit"
                                     class="btn btn-primary btn-lg w-100 mt-3">

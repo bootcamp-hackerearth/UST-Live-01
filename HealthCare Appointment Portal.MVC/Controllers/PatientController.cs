@@ -3,18 +3,20 @@ using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Linq;
 
 namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
-    public class PatientController
-        : Controller
+    public class PatientController : Controller
     {
-        private readonly IPatientApiService
-            _patientService;
+        private readonly IPatientApiService _patientService;
 
+        public PatientController(IPatientApiService patientService)
+        {
+            _patientService = patientService;
+        }
 
         // GET: Patient/Login
         public ActionResult Login()
@@ -24,25 +26,48 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
         // POST: Patient/Login
         [HttpPost]
-        public ActionResult Login(string userId)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Login(string userId)
         {
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                ViewBag.Error = "Please enter User ID";
+                ViewBag.Error = "Please enter Patient ID.";
                 return View();
             }
 
-            // ✅ Store in session
-            Session["ReferenceId"] = userId;
+            int patientId;
 
-            return RedirectToAction("Dashboard");
-        }
+            if (!int.TryParse(userId, out patientId))
+            {
+                ViewBag.Error = "Invalid Patient ID. Please enter numbers only.";
+                return View();
+            }
 
-        public PatientController(
-            IPatientApiService patientService)
-        {
-            _patientService =
-                patientService;
+            if (patientId <= 0)
+            {
+                ViewBag.Error = "Invalid Patient ID. Please enter a valid Patient ID.";
+                return View();
+            }
+
+            try
+            {
+                var patient = await _patientService.GetPatientByIdAsync(patientId);
+
+                if (patient == null)
+                {
+                    ViewBag.Error = "Patient not found. Please enter a valid Patient ID.";
+                    return View();
+                }
+
+                Session["ReferenceId"] = patientId;
+
+                return RedirectToAction("Dashboard");
+            }
+            catch (Exception)
+            {
+                ViewBag.Error = "Patient not found. Please enter a valid Patient ID.";
+                return View();
+            }
         }
 
         // ==================================
@@ -50,107 +75,138 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: Patient/Dashboard
-        public async Task<ActionResult>
-            Dashboard()
+        public async Task<ActionResult> Dashboard()
         {
-            int patientId =
-                Convert.ToInt32(
-                    Session["ReferenceId"]);
+            try
+            {
+                int patientId;
 
-            var patient =
-                await _patientService
-                    .GetPatientByIdAsync(
-                        patientId);
+                if (!TryGetPatientIdFromSession(out patientId))
+                {
+                    TempData["Error"] = "Session expired or invalid. Please login again.";
+                    return RedirectToAction("Login");
+                }
 
-            return View(
-                patient);
+                var patient = await _patientService.GetPatientByIdAsync(patientId);
+
+                if (patient == null)
+                {
+                    Session.Remove("ReferenceId");
+                    TempData["Error"] = "Patient not found. Please login with a valid Patient ID.";
+                    return RedirectToAction("Login");
+                }
+
+                return View(patient);
+            }
+            catch (Exception)
+            {
+                Session.Remove("ReferenceId");
+                TempData["Error"] = "Unable to load patient dashboard. Please login with a valid Patient ID.";
+                return RedirectToAction("Login");
+            }
         }
 
         // GET: Patient/MyProfile
-        public async Task<ActionResult>
-            MyProfile()
+        public async Task<ActionResult> MyProfile()
         {
-            int patientId =
-                Convert.ToInt32(
-                    Session["ReferenceId"]);
+            try
+            {
+                int patientId;
 
-            var patient =
-                await _patientService
-                    .GetPatientByIdAsync(
-                        patientId);
+                if (!TryGetPatientIdFromSession(out patientId))
+                {
+                    TempData["Error"] = "Session expired or invalid. Please login again.";
+                    return RedirectToAction("Login");
+                }
 
-            return View(
-                patient);
+                var patient = await _patientService.GetPatientByIdAsync(patientId);
+
+                if (patient == null)
+                {
+                    Session.Remove("ReferenceId");
+                    TempData["Error"] = "Patient not found. Please login with a valid Patient ID.";
+                    return RedirectToAction("Login");
+                }
+
+                return View(patient);
+            }
+            catch (Exception)
+            {
+                Session.Remove("ReferenceId");
+                TempData["Error"] = "Unable to load patient profile. Please login again.";
+                return RedirectToAction("Login");
+            }
         }
 
         // GET: Patient/EditMyProfile
-        public async Task<ActionResult>
-            EditMyProfile()
+        public async Task<ActionResult> EditMyProfile()
         {
-            int patientId =
-                Convert.ToInt32(
-                    Session["ReferenceId"]);
+            try
+            {
+                int patientId;
 
-            var patient =
-                await _patientService
-                    .GetPatientByIdAsync(
-                        patientId);
-
-            return View(
-                new UpdatePatientDto
+                if (!TryGetPatientIdFromSession(out patientId))
                 {
-                    FullName =
-                        patient.FullName,
+                    TempData["Error"] = "Session expired or invalid. Please login again.";
+                    return RedirectToAction("Login");
+                }
 
-                    DateOfBirth =
-                        patient.DateOfBirth,
+                var patient = await _patientService.GetPatientByIdAsync(patientId);
 
-                    Gender =
-                        patient.Gender,
+                if (patient == null)
+                {
+                    Session.Remove("ReferenceId");
+                    TempData["Error"] = "Patient not found. Please login with a valid Patient ID.";
+                    return RedirectToAction("Login");
+                }
 
-                    PhoneNumber =
-                        patient.PhoneNumber,
-
-                    Email =
-                        patient.Email
-                });
+                return View(
+                    new UpdatePatientDto
+                    {
+                        FullName = patient.FullName,
+                        DateOfBirth = patient.DateOfBirth,
+                        Gender = patient.Gender,
+                        PhoneNumber = patient.PhoneNumber,
+                        Email = patient.Email
+                    });
+            }
+            catch (Exception)
+            {
+                Session.Remove("ReferenceId");
+                TempData["Error"] = "Unable to load profile for editing. Please login again.";
+                return RedirectToAction("Login");
+            }
         }
 
         // POST: Patient/EditMyProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            EditMyProfile(
-                UpdatePatientDto patient)
+        public async Task<ActionResult> EditMyProfile(UpdatePatientDto patient)
         {
             if (!ModelState.IsValid)
             {
-                return View(
-                    patient);
+                return View(patient);
             }
 
             try
             {
-                int patientId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
+                int patientId;
 
-                await _patientService
-                    .UpdatePatientAsync(
-                        patientId,
-                        patient);
+                if (!TryGetPatientIdFromSession(out patientId))
+                {
+                    TempData["Error"] = "Session expired or invalid. Please login again.";
+                    return RedirectToAction("Login");
+                }
 
-                return RedirectToAction(
-                    "MyProfile");
+                await _patientService.UpdatePatientAsync(patientId, patient);
+
+                return RedirectToAction("MyProfile");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ModelState.AddModelError("", ex.Message);
 
-                return View(
-                    patient);
+                return View(patient);
             }
         }
 
@@ -159,69 +215,88 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: Patient
-        public async Task<ActionResult>
-            Index(
-                InsuranceStatus? status,
-                string sortOrder)
+        public async Task<ActionResult> Index(
+            InsuranceStatus? status,
+            string sortOrder)
         {
-            IEnumerable<PatientDto>
-                patients;
+            IEnumerable<PatientDto> patients;
 
-            if (status.HasValue)
+            try
             {
-                patients =
-                    await _patientService
-                        .GetPatientsByInsuranceStatusAsync(
-                            status.Value);
+                if (status.HasValue)
+                {
+                    patients =
+                        await _patientService
+                            .GetPatientsByInsuranceStatusAsync(status.Value);
+                }
+                else
+                {
+                    patients =
+                        await _patientService
+                            .GetAllPatientsAsync();
+                }
+
+                switch (sortOrder)
+                {
+                    case "name_desc":
+                        patients = patients
+                            .OrderByDescending(p => p.FullName.ToLower());
+                        break;
+
+                    default:
+                        patients = patients
+                            .OrderBy(p => p.FullName.ToLower());
+                        break;
+                }
+
+                ViewBag.CurrentSort = sortOrder;
+
+                ViewBag.NameSortParm =
+                    string.IsNullOrEmpty(sortOrder)
+                        ? "name_desc"
+                        : "";
+
+                ViewBag.SelectedStatus = status;
+
+                return View(patients);
             }
-            else
+            catch (Exception)
             {
-                patients =
-                    await _patientService
-                        .GetAllPatientsAsync();
+                TempData["Error"] = "Unable to load patients.";
+
+                return View(new List<PatientDto>());
             }
-
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    patients = patients
-                        .OrderByDescending(p => p.FullName.ToLower());
-                    break;
-
-                default:
-                    patients = patients
-                        .OrderBy(p => p.FullName.ToLower());
-                    break;
-            }
-
-
-            ViewBag.CurrentSort =
-                sortOrder;
-
-            ViewBag.NameSortParm =
-                string.IsNullOrEmpty(sortOrder)
-                    ? "name_desc"
-                    : "";
-
-            ViewBag.SelectedStatus =
-                status;
-
-            return View(
-                patients);
         }
 
         // GET: Patient/Details/5
-        public async Task<ActionResult>
-            Details(
-                int id)
+        public async Task<ActionResult> Details(int id)
         {
-            var patient =
-                await _patientService
-                    .GetPatientByIdAsync(
-                        id);
+            try
+            {
+                if (id <= 0)
+                {
+                    TempData["Error"] = "Invalid Patient ID.";
+                    return RedirectToAction("Index");
+                }
 
-            return View(
-                patient);
+                var patient =
+                    await _patientService
+                        .GetPatientByIdAsync(id);
+
+                if (patient == null)
+                {
+                    TempData["Error"] = "Patient not found.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(patient);
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Patient not found.";
+
+                return RedirectToAction("Index");
+            }
         }
 
         // ==================================
@@ -229,8 +304,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: Patient/Create
-        public ActionResult
-            Create()
+        public ActionResult Create()
         {
             return View();
         }
@@ -238,22 +312,18 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // POST: Patient/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Create(
-                CreatePatientDto patient)
+        public async Task<ActionResult> Create(CreatePatientDto patient)
         {
             if (!ModelState.IsValid)
             {
-                return View(
-                    patient);
+                return View(patient);
             }
 
             try
             {
                 int patientId =
                     await _patientService
-                        .CreatePatientAsync(
-                            patient);
+                        .CreatePatientAsync(patient);
 
                 return RedirectToAction(
                     "Details",
@@ -264,65 +334,73 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ModelState.AddModelError("", ex.Message);
 
-                return View(
-                    patient);
+                return View(patient);
             }
         }
 
         // GET: Patient/Edit/5
-        public async Task<ActionResult>
-            Edit(
-                int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            var patient =
-                await _patientService
-                    .GetPatientByIdAsync(
-                        id);
-
-            return View(
-                new UpdatePatientDto
+            try
+            {
+                if (id <= 0)
                 {
-                    FullName =
-                        patient.FullName,
+                    TempData["Error"] = "Invalid Patient ID.";
+                    return RedirectToAction("Index");
+                }
 
-                    DateOfBirth =
-                        patient.DateOfBirth,
+                var patient =
+                    await _patientService
+                        .GetPatientByIdAsync(id);
 
-                    Gender =
-                        patient.Gender,
+                if (patient == null)
+                {
+                    TempData["Error"] = "Patient not found.";
+                    return RedirectToAction("Index");
+                }
 
-                    PhoneNumber =
-                        patient.PhoneNumber,
+                return View(
+                    new UpdatePatientDto
+                    {
+                        FullName = patient.FullName,
+                        DateOfBirth = patient.DateOfBirth,
+                        Gender = patient.Gender,
+                        PhoneNumber = patient.PhoneNumber,
+                        Email = patient.Email
+                    });
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Patient not found.";
 
-                    Email =
-                        patient.Email
-                });
+                return RedirectToAction("Index");
+            }
         }
 
         // POST: Patient/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                UpdatePatientDto patient)
+        public async Task<ActionResult> Edit(
+            int id,
+            UpdatePatientDto patient)
         {
             if (!ModelState.IsValid)
             {
-                return View(
-                    patient);
+                return View(patient);
             }
 
             try
             {
+                if (id <= 0)
+                {
+                    TempData["Error"] = "Invalid Patient ID.";
+                    return RedirectToAction("Index");
+                }
+
                 await _patientService
-                    .UpdatePatientAsync(
-                        id,
-                        patient);
+                    .UpdatePatientAsync(id, patient);
 
                 return RedirectToAction(
                     "Details",
@@ -333,60 +411,99 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ModelState.AddModelError("", ex.Message);
 
-                return View(
-                    patient);
+                return View(patient);
             }
         }
 
         // GET: Patient/Deactivate/5
-        public async Task<ActionResult>
-            Deactivate(
-                int id)
+        public async Task<ActionResult> Deactivate(int id)
         {
-            var patient =
-                await _patientService
-                    .GetPatientByIdAsync(
-                        id);
+            try
+            {
+                if (id <= 0)
+                {
+                    TempData["Error"] = "Invalid Patient ID.";
+                    return RedirectToAction("Index");
+                }
 
-            return View(
-                patient);
+                var patient =
+                    await _patientService
+                        .GetPatientByIdAsync(id);
+
+                if (patient == null)
+                {
+                    TempData["Error"] = "Patient not found.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(patient);
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Patient not found.";
+
+                return RedirectToAction("Index");
+            }
         }
 
         // POST: Patient/Deactivate/5
         [HttpPost]
         [ActionName("Deactivate")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            DeactivateConfirmed(
-                int id)
+        public async Task<ActionResult> DeactivateConfirmed(int id)
         {
             try
             {
-                await _patientService
-                    .DeletePatientAsync(
-                        id);
+                if (id <= 0)
+                {
+                    TempData["Error"] = "Invalid Patient ID.";
+                    return RedirectToAction("Index");
+                }
 
-                return RedirectToAction(
-                    "Index");
+                await _patientService
+                    .DeletePatientAsync(id);
+
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ModelState.AddModelError("", ex.Message);
 
-                var patient =
-                    await _patientService
-                        .GetPatientByIdAsync(
-                            id);
+                try
+                {
+                    var patient =
+                        await _patientService
+                            .GetPatientByIdAsync(id);
 
-                return View(
-                    patient);
+                    return View(patient);
+                }
+                catch
+                {
+                    TempData["Error"] = "Unable to deactivate patient.";
+
+                    return RedirectToAction("Index");
+                }
             }
+        }
+
+        // ==================================
+        // PRIVATE HELPER
+        // ==================================
+
+        private bool TryGetPatientIdFromSession(out int patientId)
+        {
+            patientId = 0;
+
+            if (Session["ReferenceId"] == null)
+            {
+                return false;
+            }
+
+            return int.TryParse(
+                Session["ReferenceId"].ToString(),
+                out patientId);
         }
     }
 }

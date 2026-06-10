@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SonarProjectConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sonarsource.com/msbuild/analyzer/2021/1">
+  <AnalysisConfigPath>C:\HealthCare Mvc+ WebAPi\.sonarqube\conf\SonarQubeAnalysisConfig.xml</AnalysisConfigPath>
+  <ProjectPath>C:\HealthCare Mvc+ WebAPi\HealthCare Appointment Portal.MVC\HealthCare Appointment Portal.MVC.csproj</ProjectPath>
+  <FilesToAnalyzePath>C:\HealthCare Mvc+ WebAPi\.sonarqube\conf\2\FilesToAnalyze.txt</FilesToAnalyzePath>
+  <OutPath>C:\HealthCare Mvc+ WebAPi\.sonarqube\out\2</OutPath>
+  <ProjectType>Product</ProjectType>
+</SonarProjectConfig>
