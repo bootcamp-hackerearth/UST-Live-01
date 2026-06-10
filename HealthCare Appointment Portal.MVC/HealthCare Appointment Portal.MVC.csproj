@@ -143,11 +143,11 @@
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
+    <Compile Include="Controllers\DashboardSelectionController .cs" />
     <Compile Include="Controllers\DoctorController.cs" />
     <Compile Include="Controllers\HealthRecordController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -157,7 +157,6 @@
     <Compile Include="Services\Implementations\DoctorApiService.cs" />
     <Compile Include="Services\Implementations\HealthRecordApiService.cs" />
     <Compile Include="Services\Implementations\PatientApiService.cs" />
-    <Compile Include="Services\Implementations\UserApiService.cs" />
     <Compile Include="Services\Interfaces\IAppointmentApiService.cs" />
     <Compile Include="Services\Interfaces\IDoctorApiService.cs" />
     <Compile Include="Services\Interfaces\IHealthRecordApiService.cs" />
@@ -242,7 +241,6 @@
     <Content Include="Views\HealthRecord\Details.cshtml" />
     <Content Include="Views\HealthRecord\Edit.cshtml" />
     <Content Include="Views\Admin\Dashboard.cshtml" />
-    <Content Include="Views\User\Login.cshtml" />
     <Content Include="Views\Patient\Dashboard.cshtml" />
     <Content Include="Views\Patient\MyProfile.cshtml" />
     <Content Include="Views\Patient\EditMyProfile.cshtml" />
@@ -251,8 +249,17 @@
     <Content Include="Views\Doctor\EditMyProfile.cshtml" />
     <Content Include="Views\HealthRecord\DoctorRecords.cshtml" />
     <Content Include="Views\HealthRecord\Delete.cshtml" />
-    <Content Include="Views\User\Register.cshtml" />
     <Content Include="Views\Shared\_PublicLayout.cshtml" />
+    <Content Include="Views\Appointment\_AppointmentDetailsModal.cshtml" />
+    <Content Include="Views\HealthRecord\_HealthRecordDetailsModal.cshtml" />
+    <Content Include="Views\Doctor\_DoctorDetailsModal.cshtml" />
+    <Content Include="Views\Patient\_PatientDetailsModal.cshtml" />
+    <Content Include="Views\Appointment\_ConfirmAppointmentModal.cshtml" />
+    <Content Include="Views\Appointment\_CompleteAppointmentModal.cshtml" />
+    <Content Include="Views\Appointment\_CancelAppointmentModal.cshtml" />
+    <Content Include="Views\DashboardSelection\Index.cshtml" />
+    <Content Include="Views\DashboardSelection\Patient.cshtml" />
+    <Content Include="Views\DashboardSelection\Doctor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

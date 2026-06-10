@@ -1,0 +1,195 @@
+@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
+
+@if (Model == null)
+{
+    <div class="alert alert-danger">
+
+        Appointment not found.
+
+    </div>
+}
+else
+{
+    <div class="text-center">
+
+        <div class="mb-4">
+
+            <i class="bi bi-x-circle-fill
+                      text-danger"
+               style="font-size:70px;">
+            </i>
+
+        </div>
+
+        <h4 class="fw-bold text-danger">
+
+            Cancel Appointment
+
+        </h4>
+
+        <p class="text-muted mb-4">
+
+            Please provide a reason before cancelling this appointment.
+
+        </p>
+
+    </div>
+
+    <div class="card border-0 bg-light">
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Appointment Id
+
+                    </strong>
+
+                    <div>
+
+                        #@Model.AppointmentId
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Current Status
+
+                    </strong>
+
+                    <div>
+
+                        <span class="badge bg-warning text-dark">
+
+                            @Model.Status
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Patient
+
+                    </strong>
+
+                    <div>
+
+                        @Model.PatientName
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Doctor
+
+                    </strong>
+
+                    <div>
+
+                        @Model.DoctorName
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Scheduled Date
+
+                    </strong>
+
+                    <div>
+
+                        @Model.ScheduledDate.ToString("dd MMM yyyy")
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Time Slot
+
+                    </strong>
+
+                    <div>
+
+                        @Model.TimeSlot
+
+                    </div>
+
+                </div>
+
+                <div class="col-12 mt-3">
+
+                    <label for="cancelReason"
+                           class="form-label fw-semibold">
+
+                        Cancellation Reason
+
+                    </label>
+
+                    <textarea id="cancelReason"
+                              class="form-control"
+                              rows="4"
+                              placeholder="Enter cancellation reason..."></textarea>
+
+                    <small id="reasonValidation"
+                           class="text-danger d-none">
+
+                        Cancellation reason is required.
+
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+
+            Close
+
+        </button>
+
+        <button type="button"
+                id="cancelAppointmentBtn"
+                data-id="@Model.AppointmentId"
+                class="btn btn-danger">
+
+            <i class="bi bi-x-circle me-1"></i>
+
+            Cancel Appointment
+
+        </button>
+
+    </div>
+}

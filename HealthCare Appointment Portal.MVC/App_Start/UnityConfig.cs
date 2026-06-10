@@ -34,11 +34,6 @@ namespace HealthCare_Appointment_Portal
                 HealthRecordApiService>(
                     new InjectionConstructor());
 
-            container.RegisterType<
-                IUserApiService,
-                UserApiService>(
-                    new InjectionConstructor());
-
             DependencyResolver.SetResolver(
                 new UnityDependencyResolver(
                     container));

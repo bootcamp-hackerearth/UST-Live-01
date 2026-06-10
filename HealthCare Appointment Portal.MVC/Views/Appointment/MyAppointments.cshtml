@@ -4,194 +4,771 @@
     ViewBag.Title = "My Appointments";
 }
 
-<div class="container-fluid">
+<style>
+
+    .container {
+        max-width: 1450px;
+    }
+
+    .page-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+        color: #64748b;
+    }
+
+    .search-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .search-header {
+        background: linear-gradient(135deg,#020617,#0f172a);
+        color: white;
+        padding: 18px 28px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .search-card .card-body {
+        padding: 24px;
+    }
+
+    .form-control,
+    .form-select {
+        height: 50px;
+        border-radius: 14px;
+        border: 1px solid #dbe2ea;
+        font-size: 14px;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 .2rem rgba(37,99,235,.12);
+        }
+
+    .table-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .appointment-table {
+        margin-bottom: 0;
+    }
+
+        .appointment-table thead th {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: .3px;
+        }
+
+        .appointment-table tbody td {
+            padding: 16px;
+            vertical-align: middle;
+            border-color: #eef2f7;
+        }
+
+        .appointment-table tbody tr {
+            transition: all .2s ease;
+        }
+
+            .appointment-table tbody tr:hover {
+                background: #f8fbff;
+            }
+
+    .doctor-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,#2563eb,#1d4ed8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 12px;
+        box-shadow: 0 4px 12px rgba(37,99,235,.25);
+    }
+
+    .status-pill {
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        min-width: 95px;
+    }
+
+    .view-btn {
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-weight: 600;
+    }
+
+    .pagination {
+        margin-top: 25px;
+    }
+
+        .pagination .page-item {
+            margin: 0 4px;
+        }
+
+        .pagination .page-link {
+            background: transparent;
+            border: 1px solid #dbe2ea;
+            color: #2563eb;
+            box-shadow: none;
+        }
+
+
+    .pagination-pill {
+        border-radius: 999px !important;
+        padding: 10px 20px;
+        font-weight: 600;
+        min-width: 100px;
+        text-align: center;
+        background: transparent !important;
+    }
+
+    .page-number {
+        border-radius: 999px !important;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent !important;
+    }
+
+    .pagination .active .page-link {
+        background: #2563eb !important;
+        border-color: #2563eb;
+        color: white !important;
+    }
+
+    .pagination .page-link:hover {
+        background: #2563eb !important;
+        border-color: #2563eb;
+        color: white !important;
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: #0f172a;
+        color: white;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+    .book-btn {
+        border-radius: 999px;
+        padding: 12px 28px;
+        font-weight: 600;
+        box-shadow: 0 8px 20px rgba(37,99,235,.25);
+    }
+
+    .search-btn,
+    .reset-btn {
+        height: 50px;
+        min-width: 90px;
+        border-radius: 999px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-btn {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .reset-btn {
+        min-width: 100px;
+    }
+
+</style>
+
+<div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
-            My Appointments
-        </h2>
+        <div>
 
-        <a href="@Url.Action(
-                    "Create",
-                    "Appointment")"
-           class="btn btn-primary">
+            <h1 class="page-title">
+                My Appointments
+            </h1>
 
-            Book Appointment
+            <p class="page-subtitle mb-0">
+                Manage and track all your appointments
+            </p>
 
-        </a>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a href="@Url.Action(
+                "Dashboard",
+                "Patient")"
+               class="btn btn-outline-secondary book-btn">
+
+                <i class="bi bi-arrow-left me-2"></i>
+
+                Back
+
+            </a>
+
+            <a href="@Url.Action(
+                "Create",
+                "Appointment")"
+               class="btn btn-primary book-btn">
+
+                <i class="bi bi-plus-circle me-2"></i>
+
+                Book Appointment
+
+            </a>
+
+        </div>
 
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">
+        <div class="alert alert-success alert-dismissible fade show">
 
             @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
 
         </div>
     }
 
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">
+        <div class="alert alert-danger alert-dismissible fade show">
 
             @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
 
         </div>
     }
 
-    <div class="card shadow-sm">
+    <div class="card search-card mb-4">
+
+        <div class="search-header">
+
+            <div>
+
+                <i class="bi bi-search me-2"></i>
+
+                Search Appointments
+
+            </div>
+
+        </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover">
+            <form method="get">
 
-                <thead class="table-light">
+                <div class="row g-3">
 
-                    <tr>
+                    <div class="col-lg-2 col-md-4">
 
-                        <th>
-                            Appointment Id
-                        </th>
+                        <input type="text"
+                               name="appointmentId"
+                               value="@ViewBag.AppointmentId"
+                               class="form-control"
+                               placeholder="Appointment Id" />
 
-                        <th>
-                            Doctor
-                        </th>
+                    </div>
 
-                        <th>
-                            Date
-                        </th>
+                    <div class="col-lg-2 col-md-4">
 
-                        <th>
-                            Time Slot
-                        </th>
+                        <input type="text"
+                               name="doctor"
+                               value="@ViewBag.Doctor"
+                               class="form-control"
+                               placeholder="Doctor Name" />
 
-                        <th>
-                            Status
-                        </th>
+                    </div>
 
-                        <th>
-                            Actions
-                        </th>
+                    <div class="col-lg-2 col-md-4">
 
-                    </tr>
+                        <select name="date"
+                                class="form-select">
 
-                </thead>
+                            <option value="">
+                                Date
+                            </option>
 
-                <tbody>
+                            @foreach (DateTime appointmentDate in ViewBag.Dates)
+                            {
+                                string value =
+                                    appointmentDate.ToString("yyyy-MM-dd");
 
-                    @if (!Model.Any())
-                    {
+                                <option value="@value"
+                                        @(ViewBag.Date == value ? "selected" : "")>
+
+                                    @appointmentDate.ToString("dd MMM yyyy")
+
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2 col-md-4">
+
+                        <select name="timeSlot"
+                                class="form-select">
+
+                            <option value="">
+                                Time Slot
+                            </option>
+
+                            @foreach (SelectListItem slot in ViewBag.TimeSlots)
+                            {
+                                <option value="@slot.Value"
+                                        @(ViewBag.TimeSlot == slot.Value ? "selected" : "")>
+
+                                    @slot.Text
+
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2 col-md-4">
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="">
+                                Status
+                            </option>
+
+                            <option value="Pending"
+                                    @(ViewBag.Status == "Pending" ? "selected" : "")>
+                                Pending
+                            </option>
+
+                            <option value="Confirmed"
+                                    @(ViewBag.Status == "Confirmed" ? "selected" : "")>
+                                Confirmed
+                            </option>
+
+                            <option value="Completed"
+                                    @(ViewBag.Status == "Completed" ? "selected" : "")>
+                                Completed
+                            </option>
+
+                            <option value="Cancelled"
+                                    @(ViewBag.Status == "Cancelled" ? "selected" : "")>
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2 col-md-4">
+
+                        <div class="d-flex align-items-center gap-2 h-100">
+
+                            <button type="submit"
+                                    class="btn btn-primary search-btn">
+
+                                Search
+
+                            </button>
+
+                            <a href="@Url.Action("MyAppointments","Appointment")"
+                               class="btn btn-outline-secondary reset-btn">
+
+                                Reset
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="card table-card">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <div class="text-muted">
+
+                    Showing
+                    <strong>@ViewBag.TotalRecords</strong>
+                    appointments
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table appointment-table align-middle">
+
+                    <thead>
+
                         <tr>
 
-                            <td colspan="6"
-                                class="text-center">
+                            <th>Appointment Id</th>
 
-                                No appointments found.
+                            <th>Doctor</th>
 
-                            </td>
+                            <th>Date</th>
+
+                            <th>Time Slot</th>
+
+                            <th>Status</th>
+
+                            <th>Actions</th>
 
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var appointment in Model)
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (!Model.Any())
                         {
                             <tr>
 
-                                <td>
-                                    @appointment.AppointmentId
-                                </td>
+                                <td colspan="6"
+                                    class="text-center py-5">
 
-                                <td>
-                                    @appointment.DoctorName
-                                </td>
-
-                                <td>
-                                    @appointment.ScheduledDate.ToString(
-                                    "dd MMM yyyy")
-                                </td>
-
-                                <td>
-                                    @appointment.TimeSlot
-                                </td>
-
-                                <td>
-
-                                    @switch (appointment.Status.ToString())
-                                    {
-                                        case "Pending":
-
-                                            <span class="badge bg-warning text-dark">
-                                                Pending
-                                            </span>
-
-                                            break;
-
-                                        case "Confirmed":
-
-                                            <span class="badge bg-success">
-                                                Confirmed
-                                            </span>
-
-                                            break;
-
-                                        case "Cancelled":
-
-                                            <span class="badge bg-danger">
-                                                Cancelled
-                                            </span>
-
-                                            break;
-
-                                        case "Completed":
-
-                                            <span class="badge bg-primary">
-                                                Completed
-                                            </span>
-
-                                            break;
-
-                                        default:
-
-                                            <span class="badge bg-secondary">
-                                                @appointment.Status
-                                            </span>
-
-                                            break;
-                                    }
-
-                                </td>
-
-                                <td>
-
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "Appointment",
-                                                new
-                                                {
-                                                    id =
-                                                    appointment.AppointmentId
-                                                })"
-                                       class="btn btn-info btn-sm">
-
-                                        View
-
-                                    </a>
+                                    No appointments found.
 
                                 </td>
 
                             </tr>
                         }
-                    }
+                        else
+                        {
+                            foreach (var appointment in Model)
+                            {
+                                <tr>
 
-                </tbody>
+                                    <td>
+                                        <strong>
+                                            #@appointment.AppointmentId
+                                        </strong>
+                                    </td>
 
-            </table>
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="doctor-avatar">
+
+                                                @(string.IsNullOrWhiteSpace(appointment.DoctorName)
+                                                    ? "?"
+                                                    : appointment.DoctorName.Substring(0, 1).ToUpper())
+
+                                            </div>
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                appointment.DoctorName)
+                                                ? "Unknown Doctor"
+                                                : appointment.DoctorName)
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+                                        @appointment.ScheduledDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @appointment.TimeSlot
+                                    </td>
+
+                                    <td>
+
+                                        @switch (appointment.Status.ToString())
+                                        {
+                                            case "Pending":
+                                                <span class="badge bg-warning text-dark status-pill">Pending</span>
+                                                break;
+
+                                            case "Confirmed":
+                                                <span class="badge bg-success status-pill">Confirmed</span>
+                                                break;
+
+                                            case "Cancelled":
+                                                <span class="badge bg-danger status-pill">Cancelled</span>
+                                                break;
+
+                                            case "Completed":
+                                                <span class="badge bg-primary status-pill">Completed</span>
+                                                break;
+
+                                            default:
+                                                <span class="badge bg-secondary status-pill">@appointment.Status</span>
+                                                break;
+                                        }
+
+                                    </td>
+
+                                    <td>
+
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm view-btn"
+                                                data-id="@appointment.AppointmentId">
+
+                                            <i class="bi bi-eye me-1"></i>
+
+                                            View
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-4">
+
+                    <ul class="pagination justify-content-center align-items-center">
+
+                        @* Previous *@
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "MyAppointments",
+                            new
+                            {
+                                page = ViewBag.CurrentPage - 1,
+                                appointmentId = ViewBag.AppointmentId,
+                                doctor = ViewBag.Doctor,
+                                date = ViewBag.Date,
+                                timeSlot = ViewBag.TimeSlot,
+                                status = ViewBag.Status
+                            })">
+
+                                    <i class="bi bi-chevron-left me-1"></i>
+
+                                    Prev
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @* Page Numbers *@
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+
+                                <a class="page-link page-number"
+                                   href="@Url.Action(
+                            "MyAppointments",
+                            new
+                            {
+                                page = i,
+                                appointmentId = ViewBag.AppointmentId,
+                                doctor = ViewBag.Doctor,
+                                date = ViewBag.Date,
+                                timeSlot = ViewBag.TimeSlot,
+                                status = ViewBag.Status
+                            })">
+
+                                    @i
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @* Next *@
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "MyAppointments",
+                            new
+                            {
+                                page = ViewBag.CurrentPage + 1,
+                                appointmentId = ViewBag.AppointmentId,
+                                doctor = ViewBag.Doctor,
+                                date = ViewBag.Date,
+                                timeSlot = ViewBag.TimeSlot,
+                                status = ViewBag.Status
+                            })">
+
+                                    Next
+
+                                    <i class="bi bi-chevron-right ms-1"></i>
+
+                                </a>
+
+                            </li>
+                        }
+
+                    </ul>
+
+                </nav>
+            }
 
         </div>
 
     </div>
 
 </div>
+
+<div class="modal fade"
+     id="appointmentModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Appointment Details
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body"
+                 id="appointmentContent">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            $(document).on(
+                "click",
+                ".view-btn",
+                function () {
+
+                    var id =
+                        $(this).data("id");
+
+                    $.ajax({
+
+                        url:
+                            '@Url.Action("GetDetailsModal", "Appointment")',
+
+                        type:
+                            "GET",
+
+                        data:
+                        {
+                            id: id
+                        },
+
+                        success:
+                            function (response) {
+
+                                $("#appointmentContent")
+                                    .html(response);
+
+                                var modal =
+                                    new bootstrap.Modal(
+                                        document.getElementById(
+                                            "appointmentModal"));
+
+                                modal.show();
+                            },
+
+                        error:
+                            function (xhr) {
+
+                                console.log(xhr);
+
+                                alert(
+                                    "Failed to load appointment details.");
+                            }
+
+                    });
+
+                });
+
+        });
+
+    </script>
+}

@@ -13,48 +13,70 @@ namespace HealthCare_Appointment_Portal.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public DoctorRepository(ApplicationDbContext context)
+        public DoctorRepository(
+            ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Doctor> GetByIdAsync(int id)
+        public async Task<Doctor> GetByIdAsync(
+            int id)
         {
-            return await _context.Doctors.FindAsync(id);
+            return await _context.Doctors
+                .FindAsync(id);
         }
 
         public async Task<IEnumerable<Doctor>> GetAllAsync()
         {
-            return await _context.Doctors.ToListAsync();
+            return await _context.Doctors
+                .ToListAsync();
         }
 
-        public async Task AddAsync(Doctor doctor)
+        public async Task AddAsync(
+            Doctor doctor)
         {
-            _context.Doctors.Add(doctor);
-            await Task.CompletedTask;
+            _context.Doctors
+                .Add(doctor);
+
+            await _context
+                .SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Doctor doctor)
+        public async Task UpdateAsync(
+            Doctor doctor)
         {
-            _context.Entry(doctor).State = EntityState.Modified;
-            await Task.CompletedTask;
+            _context.Entry(doctor)
+                .State = EntityState.Modified;
+
+            await _context
+                .SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(
+            int id)
         {
-            Doctor doctor = await _context.Doctors.FindAsync(id);
+            Doctor doctor =
+                await _context.Doctors
+                    .FindAsync(id);
 
             if (doctor != null)
             {
-                _context.Doctors.Remove(doctor);
+                _context.Doctors
+                    .Remove(doctor);
+
+                await _context
+                    .SaveChangesAsync();
             }
         }
 
-        public async Task<IEnumerable<Doctor>> GetDoctorsBySpecialisationAsync(
-            Specialisation specialisation)
+        public async Task<IEnumerable<Doctor>>
+            GetDoctorsBySpecialisationAsync(
+                Specialisation specialisation)
         {
             return await _context.Doctors
-                .Where(d => d.Specialisation == specialisation)
+                .Where(d =>
+                    d.Specialisation ==
+                    specialisation)
                 .ToListAsync();
         }
     }

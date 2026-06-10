@@ -1,198 +1,891 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto>
 
 @{
-    ViewBag.Title = "Patients";
+    ViewBag.Title = "Patient Management";
 }
 
-<div class="container-fluid">
+<style>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    body {
+        background: #f8fafc;
+    }
 
-        <h2>
-            Patient Management
-        </h2>
+    .page-header {
+        margin-bottom: 32px;
+    }
 
-        @if (Session["Role"]?.ToString() == "Admin")
-        {
-            <a href="@Url.Action("Create","Patient")"
-               class="btn btn-primary">
+    .page-title {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1rem;
+    }
+
+    .add-btn,
+    .back-btn {
+        border-radius: 999px;
+        padding: 12px 28px;
+        font-weight: 600;
+        min-width: 120px;
+    }
+
+    .search-card,
+    .table-card {
+        border: none;
+        border-radius: 24px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 12px 30px rgba(15,23,42,.06);
+    }
+
+    .search-header {
+        background: linear-gradient( 135deg, #020617, #0f172a);
+        color: white;
+        padding: 18px 24px;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .search-card .card-body {
+        padding: 20px;
+    }
+
+    .form-control,
+    .form-select {
+        height: 52px;
+        border-radius: 14px;
+        border: 1px solid #dbe2ea;
+        font-size: 15px;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            box-shadow: none;
+            border-color: #2563eb;
+        }
+
+    .search-btn,
+    .reset-btn {
+        height: 50px;
+        min-width: 90px;
+        border-radius: 999px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-btn {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .table-card {
+        margin-top: 28px;
+    }
+
+        .table-card .card-body {
+            padding: 20px;
+        }
+
+    .record-count {
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+
+        .record-count strong {
+            color: #0f172a;
+        }
+
+    .patient-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: linear-gradient( 135deg, #2563eb, #1d4ed8);
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+    }
+
+    .appointment-badge {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .action-btn {
+        min-width: 72px;
+        height: 36px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .patient-table {
+        margin-bottom: 0;
+    }
+
+        .patient-table thead th {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .patient-table tbody td {
+            padding: 14px 16px;
+            vertical-align: middle;
+            border-color: #eef2f7;
+        }
+
+        .patient-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+    .pagination {
+        margin-top: 25px;
+    }
+
+    .pagination-pill {
+        border-radius: 999px !important;
+        min-width: 110px;
+        height: 48px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        background: white !important;
+    }
+
+    .page-number {
+        border-radius: 999px !important;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination .page-link {
+        border: none;
+        color: #2563eb;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+        .pagination .page-link:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    .pagination .active .page-link {
+        background: #2563eb;
+        color: white;
+    }
+</style>
+
+<div class="container py-4">
+
+    <div class="page-header d-flex justify-content-between align-items-center">
+
+        <div>
+
+            <h1 class="page-title">
+
+                Patient Management
+
+            </h1>
+
+            <div class="page-subtitle">
+
+                Manage patients and appointments
+
+            </div>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a href="@Url.Action(
+                    "Dashboard",
+                    "Admin")"
+               class="btn btn-outline-secondary back-btn">
+
+                <i class="bi bi-arrow-left me-2"></i>
+
+                Back
+
+            </a>
+
+            <a href="@Url.Action(
+                    "Create",
+                    "Patient")"
+               class="btn btn-primary add-btn">
+
+                <i class="bi bi-person-plus me-2"></i>
 
                 Add Patient
 
             </a>
-        }
+
+        </div>
 
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card search-card">
+
+        <div class="search-header">
+
+            Search Patients
+
+        </div>
 
         <div class="card-body">
 
-            <div class="row mb-3">
+            <form method="get"
+                  action="@Url.Action(
+                            "Index",
+                            "Patient")">
 
-                <div class="col-md-4">
+                <input type="hidden"
+                       name="page"
+                       value="1" />
 
-                    @using (Html.BeginForm(
-                        "Index",
-                        "Patient",
-                        FormMethod.Get))
-                    {
-                        <div class="input-group">
+                <div class="row g-3 align-items-end">
 
-                            <select name="status"
-                                    class="form-select">
+                    <div class="col-lg-2">
 
-                                <option value="">
-                                    All Insurance Status
+                        <input type="text"
+                               name="patientId"
+                               value="@ViewBag.PatientId"
+                               class="form-control"
+                               placeholder="Patient Id" />
+
+                    </div>
+
+                    <div class="col-lg-3">
+
+                        <input type="text"
+                               name="patientName"
+                               value="@ViewBag.PatientName"
+                               class="form-control"
+                               placeholder="Patient Name" />
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <input type="text"
+                               name="email"
+                               value="@ViewBag.Email"
+                               class="form-control"
+                               placeholder="Email" />
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="">
+                                Insurance Status
+                            </option>
+
+                            @foreach (var status in Enum.GetValues(
+                                typeof(
+                                HealthCare_Appointment_Portal.Enums
+                                .InsuranceStatus)))
+                            {
+                                <option value="@status">
+
+                                    @status
+
                                 </option>
+                            }
 
-                                @foreach (var status in Enum.GetValues(
-                                    typeof(HealthCare_Appointment_Portal.Enums.InsuranceStatus)))
-                                {
-                                    <option value="@status">
-                                        @status
-                                    </option>
-                                }
+                        </select>
 
-                            </select>
+                    </div>
+
+                    <div class="col-lg-3">
+
+                        <div class="d-flex gap-2">
 
                             <button type="submit"
-                                    class="btn btn-outline-primary">
+                                    class="btn btn-primary search-btn">
 
-                                Filter
+                                <i class="bi bi-search me-1"></i>
+
+                                Search
 
                             </button>
 
+                            <a href="@Url.Action(
+                                        "Index",
+                                        "Patient")"
+                               class="btn btn-outline-secondary reset-btn">
+
+                                Reset
+
+                            </a>
+
                         </div>
-                    }
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+    <div class="card table-card">
+
+        <div class="card-body">
+
+            <div class="record-count">
+
+                Showing
+                <strong>
+                    @ViewBag.TotalRecords
+                </strong>
+                records
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table patient-table align-middle">
+
+                    <thead>
+
+                        <tr>
+
+                            <th style="width:90px;">
+                                ID
+                            </th>
+
+                            <th>
+                                Patient
+                            </th>
+
+                            <th style="width:120px;">
+                                Gender
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th style="width:160px;">
+                                Phone
+                            </th>
+
+                            <th style="width:120px;">
+                                Appointments
+                            </th>
+
+                            <th style="width:260px;">
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model == null || !Model.Any())
+                        {
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center py-5">
+
+                                    <div class="text-muted">
+
+                                        No patients found.
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var patient in Model)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+
+                                            #@patient.PatientId
+
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="patient-avatar">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                    patient.FullName)
+                                                    ? "?"
+                                                    : patient.FullName
+                                                        .Substring(0, 1)
+                                                        .ToUpper())
+
+                                            </div>
+
+                                            <div class="fw-semibold">
+
+                                                @patient.FullName
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        @patient.Gender
+
+                                    </td>
+
+                                    <td>
+
+                                        @patient.Email
+
+                                    </td>
+
+                                    <td>
+
+                                        @patient.PhoneNumber
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="appointment-badge">
+
+                                            @patient.AppointmentCount
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex gap-2">
+
+                                            <button type="button"
+                                                    class="btn btn-info text-white action-btn view-patient-btn"
+                                                    data-id="@patient.PatientId">
+
+                                                <i class="bi bi-eye me-1"></i>
+
+                                                View
+
+                                            </button>
+
+                                            <a href="@Url.Action(
+                                                        "Edit",
+                                                        "Patient",
+                                                        new
+                                                        {
+                                                            id =
+                                                            patient.PatientId
+                                                        })"
+                                               class="btn btn-warning action-btn">
+
+                                                <i class="bi bi-pencil-square me-1"></i>
+
+                                                Edit
+
+                                            </a>
+
+                                            <button type="button"
+                                                    class="btn btn-danger action-btn delete-patient-btn"
+                                                    data-id="@patient.PatientId"
+                                                    data-name="@patient.FullName">
+
+                                                <i class="bi bi-trash me-1"></i>
+
+                                                Delete
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-4">
+
+                    <ul class="pagination justify-content-center">
+
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "Index",
+                            new
+                            {
+                                page = ViewBag.CurrentPage - 1,
+                                patientId = ViewBag.PatientId,
+                                patientName = ViewBag.PatientName,
+                                email = ViewBag.Email,
+                                status = ViewBag.Status
+                            })">
+
+                                    <i class="bi bi-chevron-left me-1"></i>
+
+                                    Previous
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+
+                                <a class="page-link page-number"
+                                   href="@Url.Action(
+                            "Index",
+                            new
+                            {
+                                page = i,
+                                patientId = ViewBag.PatientId,
+                                patientName = ViewBag.PatientName,
+                                email = ViewBag.Email,
+                                status = ViewBag.Status
+                            })">
+
+                                    @i
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "Index",
+                            new
+                            {
+                                page = ViewBag.CurrentPage + 1,
+                                patientId = ViewBag.PatientId,
+                                patientName = ViewBag.PatientName,
+                                email = ViewBag.Email,
+                                status = ViewBag.Status
+                            })">
+
+                                    Next
+
+                                    <i class="bi bi-chevron-right ms-1"></i>
+
+                                </a>
+
+                            </li>
+                        }
+
+                    </ul>
+
+                </nav>
+            }
+        </div>
+
+    </div>
+
+</div>
+<div class="modal fade"
+     id="patientModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-primary text-white">
+
+                <h5 class="modal-title">
+
+                    Patient Details
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body"
+                 id="patientModalBody">
+
+                <div class="text-center py-5">
+
+                    <div class="spinner-border text-primary">
+
+                    </div>
 
                 </div>
 
             </div>
-
-            <table class="table table-bordered table-hover">
-
-                <thead class="table-light">
-
-                    <tr>
-
-                        <th>
-                            Patient Id
-                        </th>
-
-                        <th>
-                            Full Name
-                        </th>
-
-                        <th>
-                            Gender
-                        </th>
-
-                        <th>
-                            Email
-                        </th>
-
-                        <th>
-                            Phone Number
-                        </th>
-
-                        <th>
-                            Appointments
-                        </th>
-
-                        <th width="250">
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @foreach (var patient in Model)
-                    {
-                        <tr>
-
-                            <td>
-                                @patient.PatientId
-                            </td>
-
-                            <td>
-                                @patient.FullName
-                            </td>
-
-                            <td>
-                                @patient.Gender
-                            </td>
-
-                            <td>
-                                @patient.Email
-                            </td>
-
-                            <td>
-                                @patient.PhoneNumber
-                            </td>
-
-                            <td>
-                                @patient.AppointmentCount
-                            </td>
-
-                            <td>
-
-                                <a href="@Url.Action(
-                                         "Details",
-                                         "Patient",
-                                         new
-                                         {
-                                             id = patient.PatientId
-                                         })"
-                                   class="btn btn-sm btn-info">
-
-                                    View
-
-                                </a>
-
-                                @if (Session["Role"]?.ToString() == "Admin")
-                                {
-                                    <a href="@Url.Action(
-                                             "Edit",
-                                             "Patient",
-                                             new
-                                             {
-                                                 id = patient.PatientId
-                                             })"
-                                       class="btn btn-sm btn-warning">
-
-                                        Edit
-
-                                    </a>
-
-                                    <a href="@Url.Action(
-                                             "Deactivate",
-                                             "Patient",
-                                             new
-                                             {
-                                                 id = patient.PatientId
-                                             })"
-                                       class="btn btn-sm btn-danger">
-
-                                        Deactivate
-
-                                    </a>
-                                }
-
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
 
         </div>
 
     </div>
 
 </div>
+<div class="modal fade"
+     id="deletePatientModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-danger text-white">
+
+                <h5 class="modal-title">
+
+                    Delete Patient
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p class="mb-0">
+
+                    Are you sure you want to delete
+
+                    <strong id="deletePatientName">
+
+                    </strong>
+
+                    ?
+
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Cancel
+
+                </button>
+
+                <button type="button"
+                        id="confirmDeleteBtn"
+                        class="btn btn-danger">
+
+                    Delete
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+@section Scripts
+{
+    <script>
+
+        let selectedPatientId = 0;
+
+        $(document).ready(function () {
+
+            $(".view-patient-btn").click(function () {
+
+                let id =
+                    $(this).data("id");
+
+                $("#patientModalBody")
+                    .html(
+                        '<div class="text-center py-5">' +
+                        '<div class="spinner-border text-primary"></div>' +
+                        '</div>');
+
+                $.ajax({
+
+                    url:
+                        '@Url.Action(
+                            "PatientDetailsModal",
+                            "Patient")',
+
+                    type:
+                        'GET',
+
+                    data:
+                    {
+                        id: id
+                    },
+
+                    success:
+                        function (response) {
+
+                            $("#patientModalBody")
+                                .html(response);
+
+                            var modal =
+                                new bootstrap.Modal(
+                                    document.getElementById(
+                                        "patientModal"));
+
+                            modal.show();
+                        },
+
+                    error:
+                        function () {
+
+                            $("#patientModalBody")
+                                .html(
+                                    '<div class="alert alert-danger">' +
+                                    'Unable to load patient details.' +
+                                    '</div>');
+
+                            var modal =
+                                new bootstrap.Modal(
+                                    document.getElementById(
+                                        "patientModal"));
+
+                            modal.show();
+                        }
+
+                });
+
+            });
+
+            $(".delete-patient-btn").click(function () {
+
+                selectedPatientId =
+                    $(this).data("id");
+
+                $("#deletePatientName")
+                    .text(
+                        $(this).data("name"));
+
+                var modal =
+                    new bootstrap.Modal(
+                        document.getElementById(
+                            "deletePatientModal"));
+
+                modal.show();
+
+            });
+
+            $("#confirmDeleteBtn")
+                .click(function () {
+
+                    $.ajax({
+
+                        url:
+                            '@Url.Action(
+                                "DeletePatient",
+                                "Patient")',
+
+                        type:
+                            'POST',
+
+                        data:
+                        {
+                            id:
+                            selectedPatientId
+                        },
+
+                        success:
+                            function (response) {
+
+                                if (response.success)
+                                {
+                                    location.reload();
+                                }
+                                else
+                                {
+                                    alert(
+                                        response.message);
+                                }
+
+                            },
+
+                        error:
+                            function () {
+
+                                alert(
+                                    "Unable to delete patient.");
+
+                            }
+
+                    });
+
+                });
+
+            $(".alert")
+                .delay(4000)
+                .fadeOut("slow");
+
+        });
+
+    </script>
+}

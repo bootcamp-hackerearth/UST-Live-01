@@ -73,6 +73,8 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606050725047_SyncUserTable1.Designer.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606050730116_SyncUserTable2.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606050730116_SyncUserTable2.Designer.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606091053568_Changes.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606091053568_Changes.Designer.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\Configuration.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Interfaces\IAppointmentRepository.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Interfaces\IDoctorRepository.cs
@@ -90,8 +92,6 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Services\Interfaces\IHealthRecordService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Services\Interfaces\IInsuranceService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Services\Interfaces\IPatientService.cs
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Interfaces\IRepository.cs
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Interfaces\IUnitOfWork.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Interfaces\IUserRepository.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Models\Appointment.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Models\Doctor.cs
@@ -105,8 +105,6 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Implementations\HealthRecordRepository.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Implementations\InsuranceRepository.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Implementations\PatientRepository.cs
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Implementations\Repository.cs
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Implementations\UnitOfWork.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Repositories\Implementations\UserRepository.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Services\Interfaces\IUserService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\.gitignore
@@ -193,6 +191,7 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606050703042_SyncUserTable.resx
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606050725047_SyncUserTable1.resx
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606050730116_SyncUserTable2.resx
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Migrations\202606091053568_Changes.resx
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\packages\xunit.runner.visualstudio.3.1.5\build\net472\xunit.abstractions.dll
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\packages\xunit.runner.visualstudio.3.1.5\build\net472\xunit.runner.visualstudio.testadapter.dll
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.API\Scripts\jquery-3.7.0.intellisense.js

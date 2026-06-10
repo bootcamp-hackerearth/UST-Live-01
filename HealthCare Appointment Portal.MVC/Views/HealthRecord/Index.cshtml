@@ -4,6 +4,137 @@
     ViewBag.Title = "Health Records";
 }
 
+<style>
+
+    .page-title {
+        font-size: 4rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+        margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+        font-size: 1.15rem;
+        color: #64748b;
+    }
+
+    .search-card,
+    .table-card {
+        border: none;
+        border-radius: 32px;
+        overflow: hidden;
+        background: white;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .search-header {
+        background: linear-gradient( 135deg, #020617, #0f172a);
+        color: white;
+        padding: 24px 30px;
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .search-card .card-body {
+        padding: 32px;
+    }
+
+    .form-control {
+        height: 62px;
+        border-radius: 18px;
+        border: 1px solid #dbe2ea;
+        font-size: 16px;
+        padding-left: 18px;
+    }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 .2rem rgba(37,99,235,.12);
+        }
+
+    .search-btn {
+        background: #2563eb;
+        border: none;
+        color: white;
+        font-weight: 600;
+        font-size: 17px;
+        align-items: center;
+        height: 50px;
+        min-width: 90px;
+        border-radius: 999px;
+        padding: 0 24px;
+        display: flex;
+        justify-content: center;
+    }
+
+        .search-btn:hover {
+            background: #1d4ed8;
+        }
+
+    .reset-btn {
+        font-weight: 600;
+        font-size: 17px;
+        align-items: center;
+        height: 50px;
+        min-width: 90px;
+        border-radius: 999px;
+        padding: 0 24px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .record-avatar {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient( 135deg, #2563eb, #1d4ed8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+    .diagnosis-badge {
+        background: #2563eb;
+        color: white;
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .view-btn {
+        background: white;
+        color: #2563eb;
+        border: 2px solid #2563eb;
+        border-radius: 999px;
+        min-width: 100px;
+        height: 44px;
+        font-weight: 600;
+        transition: all .3s ease;
+    }
+
+    .view-btn:hover {
+         background: #2563eb;
+         color: white;
+         border-color: #2563eb;
+     }
+
+    .back-btn {
+        height: 56px;
+        border-radius: 999px;
+        min-width: 120px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+</style>
+
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show">
@@ -32,131 +163,623 @@
     </div>
 }
 
-<div class="container-fluid">
+<div class="container py-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
 
-        <h2>
-            Health Records
-        </h2>
+        <div>
+
+            <h1 class="page-title">
+
+                Health Records
+
+            </h1>
+
+            <p class="page-subtitle">
+
+                View and manage patient health records
+
+            </p>
+
+        </div>
+
+        <a href="@Url.Action(
+            "Dashboard",
+            "Admin")"
+           class="btn btn-outline-secondary back-btn">
+
+            <i class="bi bi-arrow-left me-2"></i>
+
+            Back
+
+        </a>
 
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card search-card mb-4">
+
+        <div class="search-header">
+
+            Search Health Records
+
+        </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover">
+            @using (Html.BeginForm(
+                "Index",
+                "HealthRecord",
+                FormMethod.Get))
+            {
+                <div class="row g-3">
 
-                <thead class="table-light">
+                    <div class="col-lg-3">
 
-                    <tr>
+                        <input type="text"
+                               name="patient"
+                               value="@ViewBag.Patient"
+                               class="form-control"
+                               placeholder="Patient Name" />
 
-                        <th>
-                            Record Id
-                        </th>
+                    </div>
 
-                        <th>
-                            Patient
-                        </th>
+                    <div class="col-lg-3">
 
-                        <th>
-                            Doctor
-                        </th>
+                        <input type="text"
+                               name="doctor"
+                               value="@ViewBag.Doctor"
+                               class="form-control"
+                               placeholder="Doctor Name" />
 
-                        <th>
-                            Specialisation
-                        </th>
+                    </div>
 
-                        <th>
-                            Visit Date
-                        </th>
+                    <div class="col-lg-2">
 
-                        <th>
-                            Diagnosis
-                        </th>
+                        <input type="text"
+                               name="diagnosis"
+                               value="@ViewBag.Diagnosis"
+                               class="form-control"
+                               placeholder="Diagnosis" />
 
-                        <th>
-                            Actions
-                        </th>
+                    </div>
 
-                    </tr>
+                    <div class="col-lg-2">
 
-                </thead>
+                        <input type="date"
+                               name="visitDate"
+                               value="@ViewBag.VisitDate"
+                               class="form-control" />
 
-                <tbody>
+                    </div>
 
-                    @if (!Model.Any())
-                    {
-                        <tr>
+                    <div class="col-lg-2">
 
-                            <td colspan="7"
-                                class="text-center">
+                        <div class="d-flex gap-2">
 
-                                No health records found.
+                            <button type="submit"
+                                    class="btn search-btn">
 
-                            </td>
+                                Search
 
-                        </tr>
-                    }
-                    else
-                    {
-                        foreach (var record in Model)
-                        {
+                            </button>
+
+                            <a href="@Url.Action(
+                                        "Index",
+                                        "HealthRecord")"
+                               class="btn btn-outline-secondary reset-btn">
+
+                                Reset
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+    <div class="card table-card">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div class="text-muted fs-5">
+
+                    Showing
+
+                    <strong>
+
+                        @ViewBag.TotalRecords
+
+                    </strong>
+
+                    records
+
+                </div>
+
+            </div>
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center py-5">
+
+                    <div class="mb-4">
+
+                        <i class="bi bi-folder-x"
+                           style="
+                            font-size:80px;
+                            color:#94a3b8;">
+                        </i>
+
+                    </div>
+
+                    <h4 class="fw-bold">
+
+                        No Health Records Found
+
+                    </h4>
+
+                    <p class="text-muted">
+
+                        Try changing your search criteria.
+
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table align-middle record-table">
+
+                        <thead>
+
                             <tr>
 
-                                <td>
-                                    @record.RecordId
-                                </td>
+                                <th>
+                                    Record Id
+                                </th>
 
-                                <td>
-                                    @record.PatientName
-                                </td>
+                                <th>
+                                    Patient
+                                </th>
 
-                                <td>
-                                    @record.DoctorName
-                                </td>
+                                <th>
+                                    Doctor
+                                </th>
 
-                                <td>
-                                    @record.Specialisation
-                                </td>
+                                <th>
+                                    Visit Date
+                                </th>
 
-                                <td>
-                                    @record.VisitDate.ToString(
-                                        "dd MMM yyyy")
-                                </td>
+                                <th>
+                                    Diagnosis
+                                </th>
 
-                                <td>
-                                    @record.Diagnosis
-                                </td>
-
-                                <td>
-
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "HealthRecord",
-                                                new
-                                                {
-                                                    id = record.RecordId
-                                                })"
-                                       class="btn btn-info btn-sm">
-
-                                        View
-
-                                    </a>
-
-                                </td>
+                                <th>
+                                    Actions
+                                </th>
 
                             </tr>
-                        }
-                    }
 
-                </tbody>
+                        </thead>
 
-            </table>
+                        <tbody>
+
+                            @foreach (var record in Model)
+                            {
+                                <tr>
+
+                                    <td>
+
+                                        <strong class="fs-5">
+
+                                            #@record.RecordId
+
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center gap-3">
+
+                                            <div class="record-avatar">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                record.PatientName)
+                                                ? "?"
+                                                : record.PatientName
+                                                    .Substring(0, 1)
+                                                    .ToUpper())
+
+                                            </div>
+
+                                            <div>
+
+                                                <div class="fw-bold fs-5">
+
+                                                    @record.PatientName
+
+                                                </div>
+
+                                                <small class="text-muted">
+
+                                                    Patient
+
+                                                </small>
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div>
+
+                                            <div class="fw-semibold fs-6">
+
+                                                @record.DoctorName
+
+                                            </div>
+
+                                            <small class="text-muted">
+
+                                                @record.Specialisation
+
+                                            </small>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="fw-semibold">
+
+                                            @(record.VisitDate.ToString(
+                                            "dd MMM yyyy"))
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="diagnosis-badge">
+
+                                            @record.Diagnosis
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <button type="button"
+                                                class="btn view-btn view-record-btn"
+                                                data-id="@record.RecordId">
+
+                                            View
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav class="mt-5">
+
+            <ul class="pagination justify-content-center">
+
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <li class="page-item">
+
+                        <a class="page-link"
+                           href="@Url.Action(
+                                "Index",
+                                new
+                                {
+                                    page =
+                                    ViewBag.CurrentPage - 1,
+
+                                    patient =
+                                    ViewBag.Patient,
+
+                                    doctor =
+                                    ViewBag.Doctor,
+
+                                    diagnosis =
+                                    ViewBag.Diagnosis,
+
+                                    visitDate =
+                                    ViewBag.VisitDate
+                                })">
+
+                            <i class="bi bi-chevron-left me-1"></i>
+
+                            Previous
+
+                        </a>
+
+                    </li>
+                }
+
+                @for (int i = 1;
+                     i <= ViewBag.TotalPages;
+                     i++)
+                {
+                    <li class="page-item
+                    @(i == ViewBag.CurrentPage
+                    ? "active"
+                    : "")">
+
+                        <a class="page-link"
+                           href="@Url.Action(
+                                "Index",
+                                new
+                                {
+                                    page = i,
+
+                                    patient =
+                                    ViewBag.Patient,
+
+                                    doctor =
+                                    ViewBag.Doctor,
+
+                                    diagnosis =
+                                    ViewBag.Diagnosis,
+
+                                    visitDate =
+                                    ViewBag.VisitDate
+                                })">
+
+                            @i
+
+                        </a>
+
+                    </li>
+                }
+
+                @if (ViewBag.CurrentPage <
+                     ViewBag.TotalPages)
+                {
+                    <li class="page-item">
+
+                        <a class="page-link"
+                           href="@Url.Action(
+                                "Index",
+                                new
+                                {
+                                    page =
+                                    ViewBag.CurrentPage + 1,
+
+                                    patient =
+                                    ViewBag.Patient,
+
+                                    doctor =
+                                    ViewBag.Doctor,
+
+                                    diagnosis =
+                                    ViewBag.Diagnosis,
+
+                                    visitDate =
+                                    ViewBag.VisitDate
+                                })">
+
+                            Next
+
+                            <i class="bi bi-chevron-right ms-1"></i>
+
+                        </a>
+
+                    </li>
+                }
+
+            </ul>
+
+        </nav>
+    }
+
+</div>
+
+<div class="modal fade"
+     id="recordModal"
+     tabindex="-1"
+     aria-hidden="true">
+
+    <div class="modal-dialog
+                modal-lg
+                modal-dialog-centered">
+
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header bg-primary text-white">
+
+                <h5 class="modal-title">
+
+                    Health Record Details
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body"
+                 id="recordContent">
+
+                <div class="text-center py-5">
+
+                    <div class="spinner-border text-primary">
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
 </div>
+
+<style>
+
+    .record-table {
+        min-width: 1100px;
+    }
+
+        .record-table thead th {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 22px 18px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .record-table tbody td {
+            padding: 24px 18px;
+            border-color: #eef2f7;
+        }
+
+        .record-table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+    .pagination {
+        gap: 8px;
+    }
+
+        .pagination .page-link {
+            border: none;
+            min-width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #0f172a;
+            box-shadow: 0 4px 10px rgba( 15, 23, 42, .08);
+        }
+
+            .pagination .page-link:hover {
+                background: #eff6ff;
+                color: #2563eb;
+            }
+
+        .pagination .active .page-link {
+            background: #2563eb;
+            color: white;
+        }
+</style>
+@section Scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            $(document).on(
+                "click",
+                ".view-record-btn",
+                function () {
+
+                    let recordId =
+                        $(this).data("id");
+
+                    $("#recordContent")
+                        .html(
+
+                            '<div class="text-center py-5">' +
+                            '<div class="spinner-border text-primary"></div>' +
+                            '<div class="mt-3">Loading Record...</div>' +
+                            '</div>'
+
+                        );
+
+                    let modal =
+                        new bootstrap.Modal(
+                            document.getElementById(
+                                "recordModal"));
+
+                    modal.show();
+
+                    $.ajax({
+
+                        url:
+                            '@Url.Action(
+                                "GetRecordDetailsModal",
+                                "HealthRecord")',
+
+                        type: "GET",
+
+                        data: {
+
+                            id: recordId
+
+                        },
+
+                        success: function (
+                            response) {
+
+                            $("#recordContent")
+                                .html(
+                                    response);
+                        },
+
+                        error: function () {
+
+                            $("#recordContent")
+                                .html(
+
+                                    '<div class="alert alert-danger">' +
+
+                                    '<h5>' +
+                                    'Unable to Load Record' +
+                                    '</h5>' +
+
+                                    '<p class="mb-0">' +
+                                    'Please try again later.' +
+                                    '</p>' +
+
+                                    '</div>'
+
+                                );
+                        }
+
+                    });
+
+                });
+
+        });
+
+    </script>
+}

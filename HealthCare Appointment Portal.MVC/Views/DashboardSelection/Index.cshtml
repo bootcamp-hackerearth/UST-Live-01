@@ -1,0 +1,130 @@
+@{
+    ViewBag.Title = "Select Dashboard";
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+}
+
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <h1 class="fw-bold text-primary">
+            Select Dashboard
+        </h1>
+
+        <p class="text-muted">
+            Choose the dashboard you want to access.
+        </p>
+
+    </div>
+
+    <div class="row justify-content-center">
+
+        <!-- Patient -->
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <i class="fas fa-user fa-4x text-primary mb-3"></i>
+
+                    <h3 class="mb-3">
+                        Patient
+                    </h3>
+
+                    <p class="text-muted">
+                        Access patient dashboard using Patient ID.
+                    </p>
+
+                    <a href="@Url.Action("Patient", "DashboardSelection")"
+                       class="btn btn-primary w-100">
+
+                        Open Patient Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Doctor -->
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <i class="fas fa-user-doctor fa-4x text-success mb-3"></i>
+
+                    <h3 class="mb-3">
+                        Doctor
+                    </h3>
+
+                    <p class="text-muted">
+                        Access doctor dashboard using Doctor ID.
+                    </p>
+
+                    <a href="@Url.Action("Doctor", "DashboardSelection")"
+                       class="btn btn-success w-100">
+
+                        Open Doctor Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Admin -->
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow border-0 h-100">
+
+                <div class="card-body text-center p-4">
+
+                    <i class="fas fa-user-shield fa-4x text-danger mb-3"></i>
+
+                    <h3 class="mb-3">
+                        Admin
+                    </h3>
+
+                    <p class="text-muted">
+                        Access administrator dashboard.
+                    </p>
+
+                    <a href="@Url.Action("Admin", "DashboardSelection")"
+                       class="btn btn-danger w-100">
+
+                        Open Admin Dashboard
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+
+    .card {
+        border-radius: 20px;
+        transition: all .3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,.15);
+        }
+</style>

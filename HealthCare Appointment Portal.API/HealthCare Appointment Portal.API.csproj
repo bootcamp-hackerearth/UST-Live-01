@@ -376,6 +376,10 @@
     <Compile Include="Migrations\202606050730116_SyncUserTable2.Designer.cs">
       <DependentUpon>202606050730116_SyncUserTable2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202606091053568_Changes.cs" />
+    <Compile Include="Migrations\202606091053568_Changes.Designer.cs">
+      <DependentUpon>202606091053568_Changes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Repositories\Interfaces\IAppointmentRepository.cs" />
     <Compile Include="Repositories\Interfaces\IDoctorRepository.cs" />
@@ -491,6 +495,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202606050730116_SyncUserTable2.resx">
       <DependentUpon>202606050730116_SyncUserTable2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606091053568_Changes.resx">
+      <DependentUpon>202606091053568_Changes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -4,11 +4,11 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\App_Start\UnityConfig.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\AdminController.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\AppointmentController.cs
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\DashboardSelectionController .cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\DoctorController.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\HealthRecordController.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\HomeController.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\PatientController.cs
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Controllers\UserController.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Global.asax.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Helpers\ApiResponseHelper.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Properties\AssemblyInfo.cs
@@ -16,7 +16,6 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Services\Implementations\DoctorApiService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Services\Implementations\HealthRecordApiService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Services\Implementations\PatientApiService.cs
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Services\Implementations\UserApiService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Services\Interfaces\IAppointmentApiService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Services\Interfaces\IDoctorApiService.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Services\Interfaces\IHealthRecordApiService.cs
@@ -93,7 +92,6 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\HealthRecord\Details.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\HealthRecord\Edit.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Admin\Dashboard.cshtml
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\User\Login.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Patient\Dashboard.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Patient\MyProfile.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Patient\EditMyProfile.cshtml
@@ -102,8 +100,17 @@ C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment 
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Doctor\EditMyProfile.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\HealthRecord\DoctorRecords.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\HealthRecord\Delete.cshtml
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\User\Register.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Shared\_PublicLayout.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Appointment\_AppointmentDetailsModal.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\HealthRecord\_HealthRecordDetailsModal.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Doctor\_DoctorDetailsModal.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Patient\_PatientDetailsModal.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Appointment\_ConfirmAppointmentModal.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Appointment\_CompleteAppointmentModal.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\Appointment\_CancelAppointmentModal.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\DashboardSelection\Index.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\DashboardSelection\Patient.cshtml
+C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Views\DashboardSelection\Doctor.cshtml
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Content\bootstrap.rtl.min.css.map
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Content\bootstrap.rtl.css.map
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare Appointment Portal.MVC\Content\bootstrap.min.css.map

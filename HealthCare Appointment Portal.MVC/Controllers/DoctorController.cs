@@ -3,6 +3,7 @@ using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Utilities;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -15,7 +16,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         public DoctorController(
             IDoctorApiService doctorService)
         {
-            _doctorService = doctorService;
+            _doctorService =
+                doctorService;
         }
 
         #region Private Helpers
@@ -23,7 +25,36 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         private int GetDoctorId()
         {
             return Convert.ToInt32(
-                Session[Constants.ReferenceIdKey]);
+                Session[
+                    Constants.ReferenceIdKey]);
+        }
+
+        private async Task<UpdateDoctorDto>
+            BuildUpdateDoctorDtoAsync(
+                int doctorId)
+        {
+            var doctor =
+                await _doctorService
+                    .GetDoctorByIdAsync(
+                        doctorId);
+
+            return new UpdateDoctorDto
+            {
+                FullName =
+                    doctor.FullName,
+
+                Specialisation =
+                    doctor.Specialisation,
+
+                YearsOfExperience =
+                    doctor.YearsOfExperience,
+
+                ConsultationFee =
+                    doctor.ConsultationFee,
+
+                IsActive =
+                    doctor.IsActive
+            };
         }
 
         #endregion
@@ -32,7 +63,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // DOCTOR
         // ==================================
 
-        public async Task<ActionResult> Dashboard()
+        public async Task<ActionResult>
+            Dashboard()
         {
             try
             {
@@ -45,7 +77,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
@@ -53,7 +86,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        public async Task<ActionResult> MyProfile()
+        public async Task<ActionResult>
+            MyProfile()
         {
             try
             {
@@ -66,7 +100,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
@@ -74,37 +109,19 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        public async Task<ActionResult> EditMyProfile()
+        public async Task<ActionResult>
+            EditMyProfile()
         {
             try
             {
-                var doctor =
-                    await _doctorService
-                        .GetDoctorByIdAsync(
-                            GetDoctorId());
-
                 return View(
-                    new UpdateDoctorDto
-                    {
-                        FullName =
-                            doctor.FullName,
-
-                        Specialisation =
-                            doctor.Specialisation,
-
-                        YearsOfExperience =
-                            doctor.YearsOfExperience,
-
-                        ConsultationFee =
-                            doctor.ConsultationFee,
-
-                        IsActive =
-                            doctor.IsActive
-                    });
+                    await BuildUpdateDoctorDtoAsync(
+                        GetDoctorId()));
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
@@ -114,8 +131,9 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditMyProfile(
-            UpdateDoctorDto doctor)
+        public async Task<ActionResult>
+            EditMyProfile(
+                UpdateDoctorDto doctor)
         {
             if (!ModelState.IsValid)
             {
@@ -128,6 +146,10 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     .UpdateDoctorAsync(
                         GetDoctorId(),
                         doctor);
+
+                TempData[
+                    Constants.SuccessKey] =
+                    "Profile updated successfully.";
 
                 return RedirectToAction(
                     Constants.MyProfileAction);
@@ -142,7 +164,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        public async Task<ActionResult> ToggleStatus()
+        public async Task<ActionResult>
+            ToggleStatus()
         {
             try
             {
@@ -155,7 +178,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
@@ -166,7 +190,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         [HttpPost]
         [ActionName("ToggleStatus")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> ToggleStatusConfirmed()
+        public async Task<ActionResult>
+            ToggleStatusConfirmed()
         {
             try
             {
@@ -178,36 +203,38 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                         .GetDoctorByIdAsync(
                             doctorId);
 
-                var updateDoctor =
-                    new UpdateDoctorDto
-                    {
-                        FullName =
-                            doctor.FullName,
-
-                        Specialisation =
-                            doctor.Specialisation,
-
-                        YearsOfExperience =
-                            doctor.YearsOfExperience,
-
-                        ConsultationFee =
-                            doctor.ConsultationFee,
-
-                        IsActive =
-                            !doctor.IsActive
-                    };
-
                 await _doctorService
                     .UpdateDoctorAsync(
                         doctorId,
-                        updateDoctor);
+                        new UpdateDoctorDto
+                        {
+                            FullName =
+                                doctor.FullName,
+
+                            Specialisation =
+                                doctor.Specialisation,
+
+                            YearsOfExperience =
+                                doctor.YearsOfExperience,
+
+                            ConsultationFee =
+                                doctor.ConsultationFee,
+
+                            IsActive =
+                                !doctor.IsActive
+                        });
+
+                TempData[
+                    Constants.SuccessKey] =
+                    "Status updated successfully.";
 
                 return RedirectToAction(
                     Constants.MyProfileAction);
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
@@ -219,54 +246,151 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ADMIN & PATIENT
         // ==================================
 
-        public async Task<ActionResult> Index(
-            Specialisation? specialisation)
+        public async Task<ActionResult>
+            Index(
+                string doctorName = "",
+                string specialisation = "",
+                int page = 1)
         {
             try
             {
-                if (specialisation.HasValue)
-                {
-                    var doctors =
-                        await _doctorService
-                            .GetDoctorsBySpecialisationAsync(
-                                specialisation.Value);
+                var doctors =
+                    (await _doctorService
+                        .GetAllDoctorsAsync())
+                    .ToList();
 
-                    return View(doctors);
+                ViewBag.Specialisations =
+                    doctors
+                    .Select(d =>
+                        d.Specialisation
+                         .ToString())
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+                if (!string.IsNullOrWhiteSpace(
+                    doctorName))
+                {
+                    doctorName =
+                        doctorName.Trim();
+
+                    doctors =
+                        doctors
+                        .Where(d =>
+                            !string.IsNullOrWhiteSpace(
+                                d.FullName)
+                            &&
+                            d.FullName.IndexOf(
+                                doctorName,
+                                StringComparison
+                                    .OrdinalIgnoreCase) >= 0)
+                        .ToList();
+                }
+                if (!string.IsNullOrWhiteSpace(
+                    specialisation))
+                {
+                    doctors =
+                        doctors
+                        .Where(d =>
+                            d.Specialisation
+                             .ToString()
+                             .Equals(
+                                specialisation,
+                                StringComparison
+                                    .OrdinalIgnoreCase))
+                        .ToList();
                 }
 
-                var allDoctors =
-                    await _doctorService
-                        .GetAllDoctorsAsync();
+                const int pageSize = 5;
 
-                return View(allDoctors);
+                int totalRecords =
+                    doctors.Count;
+
+                int totalPages =
+                    (int)Math.Ceiling(
+                        (double)totalRecords
+                        / pageSize);
+
+                var pagedDoctors =
+                    doctors
+                    .Skip(
+                        (page - 1)
+                        * pageSize)
+                    .Take(
+                        pageSize)
+                    .ToList();
+
+                ViewBag.CurrentPage =
+                    page;
+
+                ViewBag.TotalPages =
+                    totalPages;
+
+                ViewBag.TotalRecords =
+                    totalRecords;
+
+                ViewBag.DoctorName =
+                    doctorName;
+
+                ViewBag.Specialisation =
+                    specialisation;
+
+                return View(
+                    pagedDoctors);
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return View();
             }
         }
 
-        public async Task<ActionResult> Details(
-            int id)
+        public async Task<ActionResult>
+            Details(
+                int id)
         {
             try
             {
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(id);
+                        .GetDoctorByIdAsync(
+                            id);
 
                 return View(doctor);
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
                     Constants.IndexAction);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult>
+            GetDoctorDetailsModal(
+                int id)
+        {
+            try
+            {
+                var doctor =
+                    await _doctorService
+                        .GetDoctorByIdAsync(
+                            id);
+
+                return PartialView(
+                    "_DoctorDetailsModal",
+                    doctor);
+            }
+            catch (Exception ex)
+            {
+                return Content(
+                    $"<div class='alert alert-danger'>{ex.Message}</div>");
             }
         }
 
@@ -281,8 +405,9 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(
-            CreateDoctorDto doctor)
+        public async Task<ActionResult>
+            Create(
+                CreateDoctorDto doctor)
         {
             if (!ModelState.IsValid)
             {
@@ -295,6 +420,10 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     await _doctorService
                         .CreateDoctorAsync(
                             doctor);
+
+                TempData[
+                    Constants.SuccessKey] =
+                    "Doctor created successfully.";
 
                 return RedirectToAction(
                     Constants.DetailsAction,
@@ -313,37 +442,20 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        public async Task<ActionResult> Edit(
-            int id)
+        public async Task<ActionResult>
+            Edit(
+                int id)
         {
             try
             {
-                var doctor =
-                    await _doctorService
-                        .GetDoctorByIdAsync(id);
-
                 return View(
-                    new UpdateDoctorDto
-                    {
-                        FullName =
-                            doctor.FullName,
-
-                        Specialisation =
-                            doctor.Specialisation,
-
-                        YearsOfExperience =
-                            doctor.YearsOfExperience,
-
-                        ConsultationFee =
-                            doctor.ConsultationFee,
-
-                        IsActive =
-                            doctor.IsActive
-                    });
+                    await BuildUpdateDoctorDtoAsync(
+                        id));
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
@@ -353,9 +465,10 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(
-            int id,
-            UpdateDoctorDto doctor)
+        public async Task<ActionResult>
+            Edit(
+                int id,
+                UpdateDoctorDto doctor)
         {
             if (!ModelState.IsValid)
             {
@@ -368,6 +481,10 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     .UpdateDoctorAsync(
                         id,
                         doctor);
+
+                TempData[
+                    Constants.SuccessKey] =
+                    "Doctor updated successfully.";
 
                 return RedirectToAction(
                     Constants.DetailsAction,
@@ -383,20 +500,23 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        public async Task<ActionResult> Deactivate(
-            int id)
+        public async Task<ActionResult>
+            Deactivate(
+                int id)
         {
             try
             {
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(id);
+                        .GetDoctorByIdAsync(
+                            id);
 
                 return View(doctor);
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return RedirectToAction(
@@ -407,13 +527,18 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         [HttpPost]
         [ActionName("Deactivate")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeactivateConfirmed(
-            int id)
+        public async Task<ActionResult>
+            DeactivateConfirmed(
+                int id)
         {
             try
             {
                 await _doctorService
                     .DeleteDoctorAsync(id);
+
+                TempData[
+                    Constants.SuccessKey] =
+                    "Doctor deactivated successfully.";
 
                 return RedirectToAction(
                     Constants.IndexAction);

@@ -6,18 +6,208 @@
     ViewBag.Title = "Weekly Schedule";
 }
 
-<div class="container-fluid">
+<style>
+
+    .container {
+        max-width: 1450px;
+    }
+
+    .page-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+        color: #64748b;
+    }
+
+    .search-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .search-header {
+        background: linear-gradient( 135deg, #020617, #0f172a);
+        color: white;
+        padding: 18px 28px;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .search-card .card-body {
+        padding: 24px;
+    }
+
+    .search-card .row {
+        align-items: end;
+    }
+
+    .form-control,
+    .form-select {
+        height: 58px;
+        border-radius: 14px;
+        border: 1px solid #dbe2ea;
+        font-size: 14px;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 .2rem rgba(37,99,235,.12);
+        }
+
+    .search-btn,
+    .reset-btn {
+        height: 50px;
+        min-width: 90px;
+        border-radius: 999px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-btn {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .table-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .appointment-table {
+        margin-bottom: 0;
+    }
+
+        .appointment-table thead th {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-weight: 600;
+        }
+
+        .appointment-table tbody td {
+            padding: 16px;
+            vertical-align: middle;
+        }
+
+        .appointment-table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+    .patient-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient( 135deg, #2563eb, #1d4ed8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 12px;
+    }
+
+    .status-pill {
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .action-btn {
+        border-radius: 999px;
+        font-weight: 600;
+        min-width: 95px;
+    }
+    .pagination {
+        margin-top: 25px;
+    }
+
+    .pagination-pill {
+        border-radius: 999px !important;
+        min-width: 110px;
+        height: 48px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        background: white !important;
+    }
+
+    .page-number {
+        border-radius: 999px !important;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination .page-link {
+        border: none;
+        color: #2563eb;
+        box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+        .pagination .page-link:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    .pagination .active .page-link {
+        background: #2563eb;
+        color: white;
+    }
+
+    .back-btn {
+        height: 56px;
+        border-radius: 999px;
+        min-width: 120px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+
+<div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
-            Weekly Schedule
-        </h2>
+        <div>
 
+            <h1 class="page-title">
+
+                Weekly Schedule
+
+            </h1>
+
+            <p class="page-subtitle mb-0">
+
+                Manage weekly appointments
+
+            </p>
+
+        </div>
         <a href="@Url.Action(
-                    "Dashboard",
-                    "Doctor")"
-           class="btn btn-secondary">
+                "Dashboard",
+                "Doctor")"
+           class="btn btn-outline-secondary back-btn">
+
+            <i class="bi bi-arrow-left me-2"></i>
 
             Back
 
@@ -33,8 +223,7 @@
 
             <button type="button"
                     class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close">
+                    data-bs-dismiss="alert">
             </button>
 
         </div>
@@ -48,238 +237,939 @@
 
             <button type="button"
                     class="btn-close"
-                    data-bs-dismiss="alert"
-                    aria-label="Close">
+                    data-bs-dismiss="alert">
             </button>
 
         </div>
     }
 
-    <div class="card shadow-sm">
+    <div class="card search-card mb-4">
+
+        <div class="search-header">
+
+            <i class="bi bi-search me-2"></i>
+
+            Search Appointments
+
+        </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover align-middle">
+            <form method="get">
 
-                <thead class="table-light">
+                <div class="row g-3">
 
-                    <tr>
+                    <div class="col-lg-3">
 
-                        <th>
-                            Appointment Id
-                        </th>
+                        <input type="text"
+                               name="appointmentId"
+                               value="@ViewBag.AppointmentId"
+                               class="form-control"
+                               placeholder="Appointment Id" />
 
-                        <th>
-                            Patient
-                        </th>
+                    </div>
 
-                        <th>
-                            Date
-                        </th>
+                    <div class="col-lg-3">
 
-                        <th>
-                            Time Slot
-                        </th>
+                        <input type="text"
+                               name="patientName"
+                               value="@ViewBag.PatientName"
+                               class="form-control"
+                               placeholder="Patient Name" />
 
-                        <th>
-                            Status
-                        </th>
+                    </div>
 
-                        <th style="width:350px;">
-                            Actions
-                        </th>
+                    <div class="col-lg-2">
 
-                    </tr>
+                        <select name="timeSlot"
+                                class="form-select">
+                            <option value="">
+                                Time Slot
+                            </option>
 
-                </thead>
+                            @foreach (SelectListItem slot
+                                in ViewBag.TimeSlots)
+                            {
+                                <option value="@slot.Value"
+                                        @(ViewBag.TimeSlot == slot.Value ? "selected" : "")>
 
-                <tbody>
+                                    @slot.Text
 
-                    @if (!Model.Any())
-                    {
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <select name="status"
+                                class="form-select">
+
+                            <option value="">
+                                Status
+                            </option>
+
+                            <option value="Pending"
+                                    @(ViewBag.Status == "Pending" ? "selected" : "")>
+
+                                Pending
+
+                            </option>
+
+                            <option value="Confirmed"
+                                    @(ViewBag.Status == "Confirmed" ? "selected" : "")>
+
+                                Confirmed
+
+                            </option>
+
+                            <option value="Completed"
+                                    @(ViewBag.Status == "Completed" ? "selected" : "")>
+
+                                Completed
+
+                            </option>
+
+                            <option value="Cancelled"
+                                    @(ViewBag.Status == "Cancelled" ? "selected" : "")>
+
+                                Cancelled
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2 d-flex align-items-end">
+
+                        <div class="d-flex gap-2 w-100">
+
+                            <button type="submit"
+                                    class="btn btn-primary search-btn">
+
+                                <i class="bi bi-search me-1"></i>
+
+                                Search
+
+                            </button>
+
+                            <a href="@Url.Action(
+                    "WeeklySchedule",
+                    "Appointment")"
+                               class="btn btn-outline-secondary reset-btn">
+
+                                Reset
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="card table-card">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <div class="text-muted">
+
+                    Showing
+
+                    <strong>
+
+                        @ViewBag.TotalRecords
+
+                    </strong>
+
+                    appointments
+
+                </div>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table appointment-table align-middle">
+
+                    <thead>
+
                         <tr>
 
-                            <td colspan="6"
-                                class="text-center">
+                            <th>
+                                Appointment Id
+                            </th>
 
-                                No appointments scheduled this week.
+                            <th>
+                                Patient
+                            </th>
 
-                            </td>
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Time Slot
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th style="width:350px;">
+                                Actions
+                            </th>
 
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var appointment in Model)
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (!Model.Any())
                         {
                             <tr>
 
-                                <td>
-                                    @appointment.AppointmentId
-                                </td>
+                                <td colspan="6"
+                                    class="text-center py-5">
 
-                                <td>
-                                    @appointment.PatientName
-                                </td>
-
-                                <td>
-                                    @appointment.ScheduledDate.ToString(
-                                        "dd MMM yyyy")
-                                </td>
-
-                                <td>
-                                    @appointment.TimeSlot
-                                </td>
-
-                                <td>
-
-                                    @{
-                                        string badgeClass =
-                                            appointment.Status == AppointmentStatus.Pending
-                                                ? "bg-warning text-dark"
-                                                : appointment.Status == AppointmentStatus.Confirmed
-                                                    ? "bg-success"
-                                                    : appointment.Status == AppointmentStatus.Cancelled
-                                                        ? "bg-danger"
-                                                        : "bg-primary";
-                                    }
-
-                                    <span class="badge @badgeClass">
-                                        @appointment.Status
-                                    </span>
-
-                                </td>
-
-                                <td>
-
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "Appointment",
-                                                new
-                                                {
-                                                    id = appointment.AppointmentId
-                                                })"
-                                       class="btn btn-info btn-sm">
-
-                                        View
-
-                                    </a>
-
-                                    @if (appointment.Status ==
-                                         AppointmentStatus.Pending)
-                                    {
-                                        using (Html.BeginForm(
-                                            "Confirm",
-                                            "Appointment",
-                                            new
-                                            {
-                                                id = appointment.AppointmentId
-                                            },
-                                            FormMethod.Post,
-                                            new
-                                            {
-                                                style = "display:inline;"
-                                            }))
-                                        {
-                                            @Html.AntiForgeryToken()
-
-                                            <button type="submit"
-                                                    class="btn btn-success btn-sm">
-
-                                                Confirm
-
-                                            </button>
-                                        }
-                                    }
-
-                                    @if (appointment.Status ==
-                                         AppointmentStatus.Pending
-                                         ||
-                                         appointment.Status ==
-                                         AppointmentStatus.Confirmed)
-                                    {
-                                        <a href="@Url.Action(
-                                                    "Cancel",
-                                                    "Appointment",
-                                                    new
-                                                    {
-                                                        id = appointment.AppointmentId
-                                                    })"
-                                           class="btn btn-danger btn-sm">
-
-                                            Cancel
-
-                                        </a>
-                                    }
-
-                                    @if (appointment.Status ==
-                                         AppointmentStatus.Confirmed)
-                                    {
-                                        using (Html.BeginForm(
-                                            "Complete",
-                                            "Appointment",
-                                            new
-                                            {
-                                                id = appointment.AppointmentId
-                                            },
-                                            FormMethod.Post,
-                                            new
-                                            {
-                                                style = "display:inline;"
-                                            }))
-                                        {
-                                            @Html.AntiForgeryToken()
-
-                                            <button type="submit"
-                                                    class="btn btn-primary btn-sm">
-
-                                                Complete
-
-                                            </button>
-                                        }
-                                    }
-
-                                    @if (appointment.Status ==
-                                         AppointmentStatus.Completed)
-                                    {
-                                        if (!appointment.HasHealthRecord)
-                                        {
-                                            <a href="@Url.Action(
-                                                        "Create",
-                                                        "HealthRecord",
-                                                        new
-                                                        {
-                                                            appointmentId = appointment.AppointmentId,
-                                                            patientId = appointment.PatientId
-                                                        })"
-                                               class="btn btn-dark btn-sm">
-
-                                                Add Health Record
-
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success">
-
-                                                Health Record Added
-
-                                            </span>
-                                        }
-                                    }
+                                    No appointments scheduled this week.
 
                                 </td>
 
                             </tr>
                         }
-                    }
+                        else
+                        {
+                            foreach (var appointment in Model)
+                            {
+                                <tr>
 
-                </tbody>
+                                    <td>
 
-            </table>
+                                        <strong>
+
+                                            #@appointment.AppointmentId
+
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="patient-avatar">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                            appointment.PatientName)
+                                            ? "?"
+                                            : appointment.PatientName
+                                                .Substring(0, 1)
+                                                .ToUpper())
+
+                                            </div>
+
+                                            <div>
+
+                                                @(string.IsNullOrWhiteSpace(
+                                            appointment.PatientName)
+                                            ? "Unknown Patient"
+                                            : appointment.PatientName)
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        @appointment.ScheduledDate.ToString("dd MMM yyyy")
+
+                                    </td>
+
+                                    <td>
+
+                                        @appointment.TimeSlot
+
+                                    </td>
+
+                                    <td>
+
+                                        @{
+                                            string badgeClass =
+                                                appointment.Status ==
+                                                AppointmentStatus.Pending
+                                                ? "bg-warning text-dark"
+
+                                                : appointment.Status ==
+                                                  AppointmentStatus.Confirmed
+                                                ? "bg-success"
+
+                                                : appointment.Status ==
+                                                  AppointmentStatus.Cancelled
+                                                ? "bg-danger"
+
+                                                : "bg-primary";
+                                        }
+
+                                        <span class="badge @badgeClass status-pill">
+
+                                            @appointment.Status
+
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex flex-wrap gap-2">
+
+                                            <button type="button"
+                                                    class="btn btn-outline-primary btn-sm action-btn view-btn"
+                                                    data-id="@appointment.AppointmentId">
+
+                                                <i class="bi bi-eye me-1"></i>
+
+                                                View
+
+                                            </button>
+
+                                            @if (appointment.Status ==
+                                                 AppointmentStatus.Pending)
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-success btn-sm action-btn confirm-btn"
+                                                        data-id="@appointment.AppointmentId">
+
+                                                    Confirm
+
+                                                </button>
+                                            }
+
+                                            @if (appointment.Status ==
+                                                 AppointmentStatus.Pending
+                                                 ||
+                                                 appointment.Status ==
+                                                 AppointmentStatus.Confirmed)
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-danger btn-sm action-btn cancel-btn"
+                                                        data-id="@appointment.AppointmentId">
+
+                                                    Cancel
+
+                                                </button>
+                                            }
+
+                                            @if (appointment.Status ==
+                                                 AppointmentStatus.Confirmed)
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-primary btn-sm action-btn complete-btn"
+                                                        data-id="@appointment.AppointmentId">
+
+                                                    Complete
+
+                                                </button>
+                                            }
+                                            @if (appointment.Status ==
+                                                  AppointmentStatus.Completed)
+                                            {
+                                                if (!appointment.HasHealthRecord)
+                                                {
+                                                    <a href="@Url.Action(
+                                                                 "Create",
+                                                                  "HealthRecord",
+                                                         new
+                                                        {
+                                                           appointmentId =
+                                                                appointment.AppointmentId,
+
+                                                            patientId =
+                                                                 appointment.PatientId,
+
+                                                            doctorId =
+                                                                 appointment.DoctorId
+                                                            })"
+                                                       class="btn btn-dark btn-sm action-btn">
+
+                                                        Add Record
+
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-success">
+
+                                                        Record Added
+
+                                                    </span>
+                                                }
+                                            }
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-4">
+
+                    <ul class="pagination justify-content-center">
+
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                                    "WeeklySchedule",
+                                    new
+                                    {
+                                        page =
+                                        ViewBag.CurrentPage - 1,
+
+                                        appointmentId =
+                                        ViewBag.AppointmentId,
+
+                                        patientName =
+                                        ViewBag.PatientName,
+
+                                        timeSlot =
+                                        ViewBag.TimeSlot,
+
+                                        status =
+                                        ViewBag.Status
+                                    })">
+
+                                    Previous
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @for (int i = 1;
+                             i <= ViewBag.TotalPages;
+                             i++)
+                        {
+                            <li class="page-item
+                        @(i == ViewBag.CurrentPage
+                        ? "active"
+                        : "")">
+
+                                <a class="page-link page-number"
+                                   href="@Url.Action(
+                                    "WeeklySchedule",
+                                    new
+                                    {
+                                        page = i,
+
+                                        appointmentId =
+                                        ViewBag.AppointmentId,
+
+                                        patientName =
+                                        ViewBag.PatientName,
+
+                                        timeSlot =
+                                        ViewBag.TimeSlot,
+
+                                        status =
+                                        ViewBag.Status
+                                    })">
+
+                                    @i
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage <
+                             ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                                    "WeeklySchedule",
+                                    new
+                                    {
+                                        page =
+                                        ViewBag.CurrentPage + 1,
+
+                                        appointmentId =
+                                        ViewBag.AppointmentId,
+
+                                        patientName =
+                                        ViewBag.PatientName,
+
+                                        timeSlot =
+                                        ViewBag.TimeSlot,
+
+                                        status =
+                                        ViewBag.Status
+                                    })">
+
+                                    Next
+
+                                </a>
+
+                            </li>
+                        }
+
+                    </ul>
+
+                </nav>
+            }
 
         </div>
 
     </div>
 
 </div>
+
+<div class="modal fade"
+     id="appointmentModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Appointment Details
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div id="appointmentContent"
+                 class="modal-body">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="confirmModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-success text-white">
+
+                <h5 class="modal-title">
+
+                    Confirm Appointment
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div id="confirmModalBody"
+                 class="modal-body">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="completeModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+
+                <h5 class="modal-title">
+
+                    Complete Appointment
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div id="completeModalBody"
+                 class="modal-body">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="cancelModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+
+                <h5 class="modal-title">
+
+                    Cancel Appointment
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div id="cancelModalBody"
+                 class="modal-body">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@Html.AntiForgeryToken()
+@section Scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            // VIEW DETAILS
+
+            $(document).on(
+                "click",
+                ".view-btn",
+                function () {
+
+                    let id =
+                        $(this).data("id");
+
+                    $.get(
+                        '@Url.Action(
+                            "GetDetailsModal",
+                            "Appointment")',
+                        {
+                            id: id
+                        },
+                        function (response) {
+
+                            $("#appointmentContent")
+                                .html(response);
+
+                            new bootstrap.Modal(
+                                document.getElementById(
+                                    "appointmentModal"))
+                                .show();
+                        });
+
+                });
+
+            // OPEN CONFIRM MODAL
+
+            $(document).on(
+                "click",
+                ".confirm-btn",
+                function () {
+
+                    let id =
+                        $(this).data("id");
+
+                    $.get(
+                        '@Url.Action(
+                            "ConfirmModal",
+                            "Appointment")',
+                        {
+                            id: id
+                        },
+                        function (response) {
+
+                            $("#confirmModalBody")
+                                .html(response);
+
+                            new bootstrap.Modal(
+                                document.getElementById(
+                                    "confirmModal"))
+                                .show();
+                        });
+
+                });
+
+            // OPEN COMPLETE MODAL
+
+            $(document).on(
+                "click",
+                ".complete-btn",
+                function () {
+
+                    let id =
+                        $(this).data("id");
+
+                    $.get(
+                        '@Url.Action(
+                            "CompleteModal",
+                            "Appointment")',
+                        {
+                            id: id
+                        },
+                        function (response) {
+
+                            $("#completeModalBody")
+                                .html(response);
+
+                            new bootstrap.Modal(
+                                document.getElementById(
+                                    "completeModal"))
+                                .show();
+                        });
+
+                });
+
+            // OPEN CANCEL MODAL
+
+            $(document).on(
+                "click",
+                ".cancel-btn",
+                function () {
+
+                    let id =
+                        $(this).data("id");
+
+                    $.get(
+                        '@Url.Action(
+                            "CancelModal",
+                            "Appointment")',
+                        {
+                            id: id
+                        },
+                        function (response) {
+
+                            $("#cancelModalBody")
+                                .html(response);
+
+                            new bootstrap.Modal(
+                                document.getElementById(
+                                    "cancelModal"))
+                                .show();
+                        });
+
+                });
+
+            // CONFIRM APPOINTMENT
+
+            $(document).on(
+                "click",
+                "#confirmAppointmentBtn",
+                function () {
+
+                    let id =
+                        $(this).data("id");
+
+                    $.ajax({
+
+                        url:
+                            '@Url.Action(
+                                "ConfirmAppointment",
+                                "Appointment")',
+
+                        type: "POST",
+
+                        data: {
+
+                            __RequestVerificationToken:
+                            $('input[name="__RequestVerificationToken"]')
+                                .val(),
+
+                            id: id
+                        },
+
+                        success: function (response) {
+
+                            if (response.success) {
+
+                                location.reload();
+                            }
+                            else {
+
+                                alert(
+                                    response.message);
+                            }
+                        },
+
+                        error: function () {
+
+                            alert(
+                                "Unable to confirm appointment.");
+                        }
+
+                    });
+
+                });
+
+            // COMPLETE APPOINTMENT
+
+            $(document).on(
+                "click",
+                "#completeAppointmentBtn",
+                function () {
+
+                    let id =
+                        $(this).data("id");
+
+                    $.ajax({
+
+                        url:
+                            '@Url.Action(
+                                "CompleteAppointment",
+                                "Appointment")',
+
+                        type: "POST",
+
+                        data: {
+
+                            __RequestVerificationToken:
+                            $('input[name="__RequestVerificationToken"]')
+                                .val(),
+
+                            id: id
+                        },
+
+                        success: function (response) {
+
+                            if (response.success) {
+
+                                location.reload();
+                            }
+                            else {
+
+                                alert(
+                                    response.message);
+                            }
+                        },
+
+                        error: function () {
+
+                            alert(
+                                "Unable to complete appointment.");
+                        }
+
+                    });
+
+                });
+
+            // CANCEL APPOINTMENT
+
+            $(document).on(
+                "click",
+                "#cancelAppointmentBtn",
+                function () {
+
+                    let id =
+                        $(this).data("id");
+
+                    let reason =
+                        $("#cancelReason").val();
+
+                    $.ajax({
+
+                        url:
+                            '@Url.Action(
+                                "CancelAppointment",
+                                "Appointment")',
+
+                        type: "POST",
+
+                        data: {
+
+                            __RequestVerificationToken:
+                            $('input[name="__RequestVerificationToken"]')
+                                .val(),
+
+                            id: id,
+
+                            reason: reason
+                        },
+
+                        success: function (response) {
+
+                            if (response.success) {
+
+                                location.reload();
+                            }
+                            else {
+
+                                alert(
+                                    response.message);
+                            }
+                        },
+
+                        error: function () {
+
+                            alert(
+                                "Unable to cancel appointment.");
+                        }
+
+                    });
+
+                });
+
+        });
+
+    </script>
+}

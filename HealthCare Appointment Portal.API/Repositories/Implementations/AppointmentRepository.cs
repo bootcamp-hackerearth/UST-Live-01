@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace HealthCare_Appointment_Portal.Repositories
 {
-    public class AppointmentRepository : IAppointmentRepository
+    public class AppointmentRepository
+        : IAppointmentRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -20,13 +21,16 @@ namespace HealthCare_Appointment_Portal.Repositories
             _context = context;
         }
 
-        public async Task<Appointment> GetByIdAsync(int id)
+        public async Task<Appointment>
+            GetByIdAsync(
+                int id)
         {
             return await _context.Appointments
                 .FindAsync(id);
         }
 
-        public async Task<IEnumerable<Appointment>> GetAllAsync()
+        public async Task<IEnumerable<Appointment>>
+            GetAllAsync()
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
@@ -37,10 +41,11 @@ namespace HealthCare_Appointment_Portal.Repositories
         public async Task AddAsync(
             Appointment appointment)
         {
-            _context.Appointments.Add(
-                appointment);
+            _context.Appointments
+                .Add(appointment);
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task UpdateAsync(
@@ -49,7 +54,8 @@ namespace HealthCare_Appointment_Portal.Repositories
             _context.Entry(appointment)
                 .State = EntityState.Modified;
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task DeleteAsync(
@@ -63,6 +69,9 @@ namespace HealthCare_Appointment_Portal.Repositories
             {
                 _context.Appointments
                     .Remove(appointment);
+
+                await _context
+                    .SaveChangesAsync();
             }
         }
 

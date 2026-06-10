@@ -34,10 +34,22 @@
             --text-dark: #1F2937;
         }
 
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
         body {
             background: var(--bg-color);
             color: var(--text-dark);
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
         }
 
         /* NAVBAR */
@@ -93,7 +105,7 @@
 
         .page-container {
             margin-top: 30px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
 
         /* CARDS */
@@ -105,7 +117,7 @@
         }
 
         .card-header {
-            background: linear-gradient( 135deg, var(--primary-dark), var(--primary-blue));
+            background: linear-gradient( 135deg, var(--primary-dark), var(--primary-blue) );
             color: white;
             border-radius: 18px 18px 0 0 !important;
         }
@@ -122,13 +134,20 @@
                 border-color: #1D4ED8;
             }
 
+        /* FOOTER */
+
         footer {
             background: #0F172A;
             color: white;
             text-align: center;
-            padding: 15px;
-            margin-top: 40px;
+            padding: 18px;
+            margin-top: auto;
+            width: 100%;
         }
+
+            footer p {
+                margin: 0;
+            }
 
         @@media(max-width:991px) {
 
@@ -145,8 +164,6 @@
     <nav class="navbar navbar-expand-lg navbar-dark">
 
         <div class="container-fluid">
-
-            <!-- LOGO -->
 
             <a class="navbar-brand d-flex align-items-center"
                href="@Url.Action("Index","Home")">
@@ -172,8 +189,6 @@
 
             <div class="collapse navbar-collapse"
                  id="navbarContent">
-
-                <!-- LEFT MENU -->
 
                 <ul class="navbar-nav me-auto">
 
@@ -293,8 +308,6 @@
 
                 </ul>
 
-                <!-- PROFILE -->
-
                 @if (Session["UserId"] != null)
                 {
                     <ul class="navbar-nav">
@@ -309,7 +322,7 @@
 
                                     @(string.IsNullOrEmpty(userCode)
                                         ? "U"
-                                        : userCode.Substring(0,1).ToUpper())
+                                        : userCode.Substring(0, 1).ToUpper())
 
                                 </div>
 
@@ -318,53 +331,16 @@
                             <ul class="dropdown-menu dropdown-menu-end">
 
                                 <li>
-
                                     <h6 class="dropdown-header">
-
                                         @userCode
-
                                     </h6>
-
                                 </li>
 
                                 <li>
                                     <hr class="dropdown-divider" />
                                 </li>
 
-                                @if (role == "Patient")
-                                {
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="@Url.Action("MyProfile","Patient")">
-
-                                            <i class="fas fa-user me-2"></i>
-
-                                            My Profile
-
-                                        </a>
-                                    </li>
-                                }
-
-                                @if (role == "Doctor")
-                                {
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="@Url.Action("MyProfile","Doctor")">
-
-                                            <i class="fas fa-user me-2"></i>
-
-                                            My Profile
-
-                                        </a>
-                                    </li>
-                                }
-
                                 <li>
-                                    <hr class="dropdown-divider" />
-                                </li>
-
-                                <li>
-
                                     <a class="dropdown-item text-danger"
                                        href="@Url.Action("Logout","User")">
 
@@ -373,7 +349,6 @@
                                         Logout
 
                                     </a>
-
                                 </li>
 
                             </ul>
@@ -389,18 +364,26 @@
 
     </nav>
 
-    <div class="container page-container">
+    <main class="main-content">
 
-        @RenderBody()
+        <div class="container page-container">
 
-    </div>
+            @RenderBody()
+
+        </div>
+
+    </main>
 
     <footer>
 
-        © @DateTime.Now.Year HealthAxis Health
-        | Smart Healthcare Management System
+        <p>
+            © @DateTime.Now.Year HealthAxis Health |
+            Smart Healthcare Management System
+        </p>
 
     </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

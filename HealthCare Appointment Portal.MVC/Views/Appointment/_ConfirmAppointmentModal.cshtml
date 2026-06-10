@@ -1,0 +1,172 @@
+@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
+
+@if (Model == null)
+{
+    <div class="alert alert-danger">
+
+        Appointment not found.
+
+    </div>
+}
+else
+{
+    <div class="text-center">
+
+        <div class="mb-4">
+
+            <i class="bi bi-check-circle-fill
+                      text-success"
+               style="font-size:70px;">
+            </i>
+
+        </div>
+
+        <h4 class="fw-bold text-success">
+
+            Confirm Appointment
+
+        </h4>
+
+        <p class="text-muted mb-4">
+
+            Are you sure you want to confirm this appointment?
+
+        </p>
+
+    </div>
+
+    <div class="card border-0 bg-light">
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Appointment Id
+
+                    </strong>
+
+                    <div>
+
+                        #@Model.AppointmentId
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Status
+
+                    </strong>
+
+                    <div>
+
+                        <span class="badge bg-warning text-dark">
+
+                            @Model.Status
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Patient
+
+                    </strong>
+
+                    <div>
+
+                        @Model.PatientName
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Doctor
+
+                    </strong>
+
+                    <div>
+
+                        @Model.DoctorName
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Date
+
+                    </strong>
+
+                    <div>
+
+                        @Model.ScheduledDate.ToString("dd MMM yyyy")
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+
+                        Time Slot
+
+                    </strong>
+
+                    <div>
+
+                        @Model.TimeSlot
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="d-flex justify-content-end mt-4 gap-2">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+
+            Close
+
+        </button>
+
+        <button type="button"
+                class="btn btn-success"
+                id="confirmAppointmentBtn"
+                data-id="@Model.AppointmentId">
+
+            <i class="bi bi-check-circle me-1"></i>
+
+            Confirm Appointment
+
+        </button>
+
+    </div>
+}

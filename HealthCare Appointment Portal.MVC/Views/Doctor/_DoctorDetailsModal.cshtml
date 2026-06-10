@@ -1,0 +1,157 @@
+@model HealthCare_Appointment_Portal.DTOs.DoctorDtos.DoctorDto
+
+@if (Model == null)
+{
+    <div class="alert alert-danger">
+
+        Doctor details not found.
+
+    </div>
+}
+else
+{
+    <div class="container-fluid">
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                        <div class="fw-bold text-muted">
+                        Doctor Id
+                        </div>
+
+                        <div class="fs-5">
+
+                            #@Model.DoctorId
+
+                        </div>
+
+                    </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="fw-bold text-muted">
+                        Status
+                    </div>
+
+                    <div>
+
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Inactive
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="fw-bold text-muted">
+                        Full Name
+                    </div>
+
+                    <div class="fs-6">
+
+                        @Model.FullName
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="fw-bold text-muted">
+                        Specialisation
+                    </div>
+
+                    <div class="fs-6">
+
+                        @Model.Specialisation
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="fw-bold text-muted">
+                        Years Of Experience
+                    </div>
+
+                    <div class="fs-6">
+
+                        @Model.YearsOfExperience Years
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="border rounded p-3 h-100">
+
+                    <div class="fw-bold text-muted">
+                        Consultation Fee
+                    </div>
+
+                    <div class="fs-6">
+
+                        Rs @Model.ConsultationFee
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-12">
+
+                <div class="border rounded p-3">
+
+                    <div class="fw-bold text-muted">
+                        Upcoming Appointments
+                    </div>
+
+                    <div class="fs-6">
+
+                        @Model.UpcomingAppointmentCount
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}

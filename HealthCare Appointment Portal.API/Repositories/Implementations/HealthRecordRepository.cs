@@ -40,7 +40,8 @@ namespace HealthCare_Appointment_Portal.Repositories
             _context.HealthRecords
                 .Add(healthRecord);
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task UpdateAsync(
@@ -49,7 +50,8 @@ namespace HealthCare_Appointment_Portal.Repositories
             _context.Entry(healthRecord)
                 .State = EntityState.Modified;
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task DeleteAsync(
@@ -63,6 +65,9 @@ namespace HealthCare_Appointment_Portal.Repositories
             {
                 _context.HealthRecords
                     .Remove(healthRecord);
+
+                await _context
+                    .SaveChangesAsync();
             }
         }
 
@@ -76,8 +81,7 @@ namespace HealthCare_Appointment_Portal.Repositories
                     appointmentId);
         }
 
-        public async Task<
-            IEnumerable<HealthRecord>>
+        public async Task<IEnumerable<HealthRecord>>
             GetRecordsByPatientAsync(
                 int patientId)
         {
@@ -88,13 +92,12 @@ namespace HealthCare_Appointment_Portal.Repositories
                 .Where(hr =>
                     hr.PatientId ==
                     patientId)
-                .OrderByDescending(
-                    hr => hr.VisitDate)
+                .OrderByDescending(hr =>
+                    hr.VisitDate)
                 .ToListAsync();
         }
 
-        public async Task<
-            IEnumerable<HealthRecord>>
+        public async Task<IEnumerable<HealthRecord>>
             GetRecordsByDoctorAsync(
                 int doctorId)
         {
@@ -105,13 +108,12 @@ namespace HealthCare_Appointment_Portal.Repositories
                 .Where(hr =>
                     hr.DoctorId ==
                     doctorId)
-                .OrderByDescending(
-                    hr => hr.VisitDate)
+                .OrderByDescending(hr =>
+                    hr.VisitDate)
                 .ToListAsync();
         }
 
-        public async Task<
-            IEnumerable<int>>
+        public async Task<IEnumerable<int>>
             GetRecordedAppointmentIdsAsync()
         {
             return await _context.HealthRecords
@@ -133,16 +135,15 @@ namespace HealthCare_Appointment_Portal.Repositories
                     appointmentId);
         }
 
-        public async Task<
-            IEnumerable<HealthRecord>>
+        public async Task<IEnumerable<HealthRecord>>
             GetAllRecordsWithDetailsAsync()
         {
             return await _context.HealthRecords
                 .Include(hr => hr.Patient)
                 .Include(hr => hr.Doctor)
                 .Include(hr => hr.Appointment)
-                .OrderByDescending(
-                    hr => hr.VisitDate)
+                .OrderByDescending(hr =>
+                    hr.VisitDate)
                 .ToListAsync();
         }
     }

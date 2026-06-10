@@ -4,226 +4,675 @@
     ViewBag.Title = "Doctors";
 }
 
-<div class="container-fluid">
+<style>
+
+    .page-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1rem;
+    }
+
+    .search-card,
+    .table-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .search-card .row {
+        align-items: end;
+     }
+
+    .search-header {
+        background: linear-gradient( 135deg, #020617, #0f172a);
+        color: white;
+        padding: 18px 28px;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .search-card .card-body,
+    .table-card .card-body {
+        padding: 24px;
+    }
+
+    .form-control,
+    .form-select {
+        height: 56px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+    }
+
+    .search-btn,
+    .reset-btn,
+    .add-btn {
+        height: 56px;
+        border-radius: 999px;
+        min-width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-btn {
+        min-width: 100px;
+    }
+
+        .reset-btn {
+            min-width: 90px;
+        }
+
+        .add-btn {
+            padding: 0 24px;
+        }
+
+        .doctor-table {
+            margin-bottom: 0;
+        }
+
+            .doctor-table thead th {
+                background: #0f172a;
+                color: white;
+                border: none;
+                padding: 18px;
+                font-weight: 600;
+            }
+
+            .doctor-table tbody td {
+                padding: 18px;
+                vertical-align: middle;
+                border-color: #eef2f7;
+            }
+
+            .doctor-table tbody tr:hover {
+                background: #f8fafc;
+            }
+
+        .doctor-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient( 135deg, #2563eb, #1d4ed8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 12px;
+        }
+
+        .status-pill {
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .action-btn {
+            border-radius: 999px;
+            min-width: 85px;
+        }
+
+        .pagination .page-link {
+            border: none;
+            border-radius: 12px;
+            margin: 0 4px;
+            min-width: 42px;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,.08);
+        }
+
+        .pagination {
+            margin-top: 25px;
+        }
+
+        .pagination-pill {
+            border-radius: 999px !important;
+            padding: 10px 20px;
+            font-weight: 600;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .page-number {
+            border-radius: 999px !important;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagination .active .page-link {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .doctor-table {
+            min-width: 1200px;
+        }
+        .add-btn {
+        height: 56px;
+        border-radius: 999px;
+        min-width: 120px;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+</style>
+
+<div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
-            Doctors
-        </h2>
+        <div>
 
-        @if (Session["Role"]?.ToString() == "Admin")
-        {
-            <a href="@Url.Action("Create", "Doctor")"
-               class="btn btn-primary">
+            <h1 class="page-title">
+                Doctors
+            </h1>
 
-                Add Doctor
+            <p class="page-subtitle mb-0">
+                Browse and search available doctors
+            </p>
+
+        </div>
+
+        <div class="d-flex gap-2">
+
+            @{
+                string dashboardController = "Patient";
+
+                if (Session["Role"]?.ToString() == "Doctor")
+                {
+                    dashboardController = "Doctor";
+                }
+                else if (Session["Role"]?.ToString() == "Admin")
+                {
+                    dashboardController = "Admin";
+                }
+            }
+
+            <a href="@Url.Action(
+        "Dashboard",
+        dashboardController)"
+               class="btn btn-outline-secondary add-btn">
+
+                <i class="bi bi-arrow-left me-2"></i>
+
+                Back
 
             </a>
-        }
+
+            @if (Session["Role"]?.ToString() == "Admin")
+            {
+                <a href="@Url.Action(
+                    "Create",
+                    "Doctor")"
+                   class="btn btn-primary add-btn">
+
+                    <i class="bi bi-plus-circle me-2"></i>
+
+                    Add Doctor
+
+                </a>
+            }
+
+        </div>
 
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card search-card mb-4">
+
+        <div class="search-header">
+
+            <i class="bi bi-search me-2"></i>
+
+            Search Doctors
+
+        </div>
 
         <div class="card-body">
 
-            <div class="row mb-3">
+            <form method="get">
 
-                <div class="col-md-4">
+                <div class="row g-3 align-items-center">
 
-                    @using (Html.BeginForm(
-                        "Index",
-                        "Doctor",
-                        FormMethod.Get))
-                    {
-                        <div class="input-group">
+                    <div class="col-lg-5">
 
-                            <label for="specialisation"
-                                   class="visually-hidden">
-                                Specialisation
-                            </label>
+                        <input type="text"
+                               name="doctorName"
+                               value="@ViewBag.DoctorName"
+                               class="form-control"
+                               placeholder="Doctor Name" />
 
-                            <select id="specialisation"
-                                    name="specialisation"
-                                    class="form-select">
+                    </div>
 
-                                <option value="">
-                                    All Specialisations
-                                </option>
+                    <div class="col-lg-3">
 
-                                @foreach (var item in Enum.GetValues(
-                                    typeof(
-                                    HealthCare_Appointment_Portal.Enums.Specialisation)))
+                        <select name="specialisation"
+                                class="form-select">
+
+                            <option value="">
+                                All Specialisations
+                            </option>
+
+                            @if (ViewBag.Specialisations != null)
+                            {
+                                foreach (string item in ViewBag.Specialisations)
                                 {
-                                    <option value="@item">
+                                    <option value="@item"
+                                            @(ViewBag.Specialisation == item ? "selected" : "")>
+
                                         @item
+
                                     </option>
                                 }
+                            }
 
-                            </select>
+                        </select>
+
+                    </div>
+
+                    <div class="col-auto ms-auto">
+
+                        <div class="d-flex gap-2">
 
                             <button type="submit"
-                                    class="btn btn-outline-primary">
+                                    class="btn btn-primary search-btn">
 
-                                Filter
+                                <i class="bi bi-search me-1"></i>
+
+                                Search
 
                             </button>
 
+                            <a href="@Url.Action(
+                                        "Index",
+                                        "Doctor")"
+                               class="btn btn-outline-secondary reset-btn">
+
+                                Reset
+
+                            </a>
+
                         </div>
-                    }
+
+                    </div>
 
                 </div>
 
-            </div>
+            </form>
 
-            <table class="table table-bordered table-hover">
+        </div>
 
-                <thead class="table-light">
+    </div>
 
-                    <tr>
+    <div class="card table-card">
 
-                        <th>
-                            Doctor Id
-                        </th>
+        <div class="card-body">
 
-                        <th>
-                            Full Name
-                        </th>
+            <p class="text-muted mb-4">
 
-                        <th>
-                            Specialisation
-                        </th>
+                Showing @ViewBag.TotalRecords doctors
 
-                        <th>
-                            Experience
-                        </th>
+            </p>
 
-                        <th>
-                            Fee
-                        </th>
+            <div class="table-responsive">
 
-                        <th>
-                            Status
-                        </th>
+                <table class="table doctor-table">
 
-                        <th>
-                            Upcoming Appointments
-                        </th>
+                    <thead>
 
-                        <th style="width:250px;">
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @if (!Model.Any())
-                    {
                         <tr>
 
-                            <td colspan="8"
-                                class="text-center">
+                            <th>
+                                Doctor Id
+                            </th>
 
-                                No doctors found.
+                            <th>
+                                Doctor
+                            </th>
 
-                            </td>
+                            <th>
+                                Specialisation
+                            </th>
+
+                            <th>
+                                Experience
+                            </th>
+
+                            <th>
+                                Fee
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Upcoming Appointments
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
 
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var doctor in Model)
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (!Model.Any())
                         {
                             <tr>
 
-                                <td>
-                                    @doctor.DoctorId
-                                </td>
+                                <td colspan="8"
+                                    class="text-center py-5">
 
-                                <td>
-                                    @doctor.FullName
-                                </td>
-
-                                <td>
-                                    @doctor.Specialisation
-                                </td>
-
-                                <td>
-                                    @doctor.YearsOfExperience
-                                </td>
-
-                                <td>
-                                    Rs. @doctor.ConsultationFee
-                                </td>
-
-                                <td>
-
-                                    @if (doctor.IsActive)
-                                    {
-                                        <span class="badge bg-success">
-                                            Active
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger">
-                                            Inactive
-                                        </span>
-                                    }
-
-                                </td>
-
-                                <td>
-                                    @doctor.UpcomingAppointmentCount
-                                </td>
-
-                                <td>
-
-                                    <a href="@Url.Action(
-                                                 "Details",
-                                                 "Doctor",
-                                                 new
-                                                 {
-                                                     id = doctor.DoctorId
-                                                 })"
-                                       class="btn btn-info btn-sm">
-
-                                        View
-
-                                    </a>
-
-                                    @if (Session["Role"]?.ToString() == "Admin")
-                                    {
-                                        <a href="@Url.Action(
-                                                     "Edit",
-                                                     "Doctor",
-                                                     new
-                                                     {
-                                                         id = doctor.DoctorId
-                                                     })"
-                                           class="btn btn-warning btn-sm">
-
-                                            Edit
-
-                                        </a>
-                                    }
+                                    No doctors found.
 
                                 </td>
 
                             </tr>
                         }
-                    }
+                        else
+                        {
+                            foreach (var doctor in Model)
+                            {
+                                <tr>
 
-                </tbody>
+                                    <td>
 
-            </table>
+                                        <strong>
+                                            #@doctor.DoctorId
+                                        </strong>
+
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="doctor-avatar">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                    doctor.FullName)
+                                                    ? "D"
+                                                    : doctor.FullName
+                                                    .Substring(0, 1)
+                                                    .ToUpper())
+
+                                            </div>
+
+                                            <div>
+
+                                                @doctor.FullName
+
+                                            </div>
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+
+                                        @doctor.Specialisation
+
+                                    </td>
+
+                                    <td>
+
+                                        @doctor.YearsOfExperience Years
+
+                                    </td>
+
+                                    <td>
+
+                                        @Html.Raw("&#8377;")
+                                        @doctor.ConsultationFee.ToString("N2")
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (doctor.IsActive)
+                                        {
+                                            <span class="badge bg-success status-pill">
+
+                                                Active
+
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger status-pill">
+
+                                                Inactive
+
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+
+                                        @doctor.UpcomingAppointmentCount
+
+                                    </td>
+
+                                    <td>
+
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm action-btn view-doctor-btn"
+                                                data-id="@doctor.DoctorId">
+
+                                            View
+
+                                        </button>
+
+                                        @if (Session["Role"]?.ToString() == "Admin")
+                                        {
+                                            <a href="@Url.Action(
+                                                         "Edit",
+                                                         "Doctor",
+                                                         new
+                                                         {
+                                                             id = doctor.DoctorId
+                                                         })"
+                                               class="btn btn-warning btn-sm action-btn">
+
+                                                Edit
+
+                                            </a>
+                                        }
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-4">
+
+                    <ul class="pagination justify-content-center align-items-center">
+
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "Index",
+                            new
+                            {
+                                page = ViewBag.CurrentPage - 1,
+                                doctorName = ViewBag.DoctorName,
+                                specialisation = ViewBag.Specialisation
+                            })">
+
+                                    <i class="bi bi-chevron-left me-1"></i>
+
+                                    Prev
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+
+                                <a class="page-link page-number"
+                                   href="@Url.Action(
+                            "Index",
+                            new
+                            {
+                                page = i,
+                                doctorName = ViewBag.DoctorName,
+                                specialisation = ViewBag.Specialisation
+                            })">
+
+                                    @i
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "Index",
+                            new
+                            {
+                                page = ViewBag.CurrentPage + 1,
+                                doctorName = ViewBag.DoctorName,
+                                specialisation = ViewBag.Specialisation
+                            })">
+
+                                    Next
+
+                                    <i class="bi bi-chevron-right ms-1"></i>
+
+                                </a>
+
+                            </li>
+                        }
+
+                    </ul>
+
+                </nav>
+            }
 
         </div>
 
     </div>
 
 </div>
+
+<div class="modal fade"
+     id="doctorModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header bg-dark text-white">
+
+                <h5 class="modal-title">
+
+                    Doctor Details
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body"
+                 id="doctorContent">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script>
+
+        $(document).on(
+            "click",
+            ".view-doctor-btn",
+            function () {
+
+                var id =
+                    $(this).data("id");
+
+                $.ajax({
+
+                    url:
+                        '@Url.Action(
+                            "GetDoctorDetailsModal",
+                            "Doctor")',
+
+                    type:
+                        "GET",
+
+                    data:
+                    {
+                        id: id
+                    },
+
+                    success:
+                        function (response) {
+
+                            $("#doctorContent")
+                                .html(response);
+
+                            var modal =
+                                new bootstrap.Modal(
+                                    document.getElementById(
+                                        "doctorModal"));
+
+                            modal.show();
+                        }
+                });
+
+            });
+
+    </script>
+}

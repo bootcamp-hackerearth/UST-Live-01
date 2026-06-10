@@ -1,0 +1,157 @@
+@model HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto
+
+@if (Model == null)
+{
+    <div class="alert alert-danger">
+
+        Patient not found.
+
+    </div>
+}
+else
+{
+    <div class="row g-3">
+
+        <div class="col-md-6">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <strong>
+                        Patient Id
+                    </strong>
+
+                    <br />
+
+                    @Model.PatientId
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <strong>
+                        Full Name
+                    </strong>
+
+                    <br />
+
+                    @Model.FullName
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <strong>
+                        Gender
+                    </strong>
+
+                    <br />
+
+                    @Model.Gender
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <strong>
+                        Date Of Birth
+                    </strong>
+
+                    <br />
+
+                    @Model.DateOfBirth.ToString(
+                        "dd MMM yyyy")
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <strong>
+                        Email
+                    </strong>
+
+                    <br />
+
+                    @Model.Email
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <strong>
+                        Phone Number
+                    </strong>
+
+                    <br />
+
+                    @Model.PhoneNumber
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-12">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <strong>
+                        Appointments
+                    </strong>
+
+                    <br />
+
+                    @Model.AppointmentCount
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+}

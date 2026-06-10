@@ -40,12 +40,32 @@
             Health Record Details
         </h2>
 
-        <a href="javascript:history.back()"
-           class="btn btn-secondary">
+        @if (Session["Role"]?.ToString() == "Doctor")
+        {
+            <a href="@Url.Action(
+                    "Dashboard",
+                    "Doctor")"
+               class="btn btn-secondary">
 
-            Back
+                <i class="bi bi-arrow-left me-2"></i>
 
-        </a>
+                Back to Doctor Dashboard
+
+            </a>
+        }
+        else
+        {
+            <a href="@Url.Action(
+                    "Dashboard",
+                    "Admin")"
+               class="btn btn-secondary">
+
+                <i class="bi bi-arrow-left me-2"></i>
+
+                Back to Admin Dashboard
+
+            </a>
+        }
 
     </div>
 

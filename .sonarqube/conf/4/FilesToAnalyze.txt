@@ -2,7 +2,6 @@
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare_Appointment_Portal_MVC.Tests\Services\DoctorApiServiceTest.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare_Appointment_Portal_MVC.Tests\Services\HealthRecordApiServiceTests.cs
 C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare_Appointment_Portal_MVC.Tests\Services\PatientApiServiceTests.cs
-C:\Sprint 2 HealthAxis\HealthCare Appointment Portal.API\HealthCare_Appointment_Portal_MVC.Tests\Services\UserApiServiceTests.cs
 C:\Users\290626\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.cs
 C:\Users\290626\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.exe
 C:\Users\290626\.nuget\packages\microsoft.testplatform.testhost\17.14.1\build\net8.0\x64\testhost.dll

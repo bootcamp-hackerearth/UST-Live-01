@@ -2,8 +2,10 @@
 using HealthCare_Appointment_Portal.Utilities;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Globalization;
 
 namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
@@ -43,22 +45,162 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ADMIN
         // ==================================
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(
+            string patient = "",
+            string doctor = "",
+            string diagnosis = "",
+            string visitDate = "",
+            int page = 1)
         {
             try
             {
                 var records =
-                    await _healthRecordService
-                        .GetAllHealthRecordsAsync();
+                    (await _healthRecordService
+                        .GetAllHealthRecordsAsync())
+                    .ToList();
 
-                return View(records);
+                if (!string.IsNullOrWhiteSpace(
+                    patient))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            !string.IsNullOrWhiteSpace(
+                                r.PatientName)
+                            &&
+                            r.PatientName
+                            .IndexOf(
+                                patient,
+                                StringComparison
+                                .OrdinalIgnoreCase) >= 0)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    doctor))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            !string.IsNullOrWhiteSpace(
+                                r.DoctorName)
+                            &&
+                            r.DoctorName
+                            .IndexOf(
+                                doctor,
+                                StringComparison
+                                .OrdinalIgnoreCase) >= 0)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    diagnosis))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            !string.IsNullOrWhiteSpace(
+                                r.Diagnosis)
+                            &&
+                            r.Diagnosis
+                            .IndexOf(
+                                diagnosis,
+                                StringComparison
+                                .OrdinalIgnoreCase) >= 0)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    visitDate))
+                {
+                    DateTime selectedDate;
+
+                    if (DateTime.TryParse(
+                        visitDate,
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out selectedDate))
+                    {
+                        records =
+                            records
+                            .Where(r =>
+                                r.VisitDate.Date ==
+                                selectedDate.Date)
+                            .ToList();
+                    }
+                }
+
+                records =
+                    records
+                    .OrderByDescending(
+                        r => r.VisitDate)
+                    .ThenByDescending(
+                        r => r.RecordId)
+                    .ToList();
+
+                const int pageSize = 5;
+
+                int totalRecords =
+                    records.Count;
+
+                int totalPages =
+                    Math.Max(
+                        1,
+                        (int)Math.Ceiling(
+                            (double)totalRecords /
+                            pageSize));
+
+                if (page < 1)
+                {
+                    page = 1;
+                }
+
+                if (page > totalPages)
+                {
+                    page = totalPages;
+                }
+
+                var pagedRecords =
+                    records
+                    .Skip(
+                        (page - 1) *
+                        pageSize)
+                    .Take(
+                        pageSize)
+                    .ToList();
+
+                ViewBag.TotalRecords =
+                    totalRecords;
+
+                ViewBag.CurrentPage =
+                    page;
+
+                ViewBag.TotalPages =
+                    totalPages;
+
+                ViewBag.Patient =
+                    patient;
+
+                ViewBag.Doctor =
+                    doctor;
+
+                ViewBag.Diagnosis =
+                    diagnosis;
+
+                ViewBag.VisitDate =
+                    visitDate;
+
+                return View(
+                    pagedRecords);
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData["Error"] =
                     ex.Message;
 
-                return View();
+                return View(
+                    Enumerable.Empty<
+                        HealthRecordDto>());
             }
         }
 
@@ -91,30 +233,22 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // DOCTOR
         // ==================================
 
+        [HttpGet]
         public ActionResult Create(
             int appointmentId,
-            int patientId)
+            int patientId,
+            int? doctorId)
         {
-            if (!IsLoggedIn())
-            {
-                return RedirectToLogin();
-            }
-
-            return View(
+            var model =
                 new CreateHealthRecordDto
                 {
-                    AppointmentId =
-                        appointmentId,
+                    AppointmentId = appointmentId,
+                    PatientId = patientId,
+                    DoctorId = doctorId ?? 0,
+                    VisitDate = DateTime.Today
+                };
 
-                    PatientId =
-                        patientId,
-
-                    DoctorId =
-                        GetReferenceId(),
-
-                    VisitDate =
-                        DateTime.Today
-                });
+            return View(model);
         }
 
         [HttpPost]
@@ -122,11 +256,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         public async Task<ActionResult> Create(
             CreateHealthRecordDto dto)
         {
-            if (!IsLoggedIn())
-            {
-                return RedirectToLogin();
-            }
-
             if (!ModelState.IsValid)
             {
                 return View(dto);
@@ -134,9 +263,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             try
             {
-                dto.DoctorId =
-                    GetReferenceId();
-
                 int recordId =
                     await _healthRecordService
                         .CreateHealthRecordAsync(dto);
@@ -242,7 +368,11 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        public async Task<ActionResult> DoctorRecords()
+        public async Task<ActionResult> DoctorRecords(
+            string patient = "",
+            string diagnosis = "",
+            string visitDate = "",
+            int page = 1)
         {
             if (!IsLoggedIn())
             {
@@ -252,15 +382,139 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             try
             {
                 var records =
-                    await _healthRecordService
+                    (await _healthRecordService
                         .GetRecordsByDoctorAsync(
-                            GetReferenceId());
+                            GetReferenceId()))
+                    .ToList();
 
-                return View(records);
+                ViewBag.Patients =
+                    records
+                    .Select(r => r.PatientName)
+                    .Where(x =>
+                        !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+
+                ViewBag.VisitDates =
+                    records
+                    .Select(r => r.VisitDate.Date)
+                    .Distinct()
+                    .OrderByDescending(x => x)
+                    .ToList();
+
+                if (!string.IsNullOrWhiteSpace(
+                    patient))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            !string.IsNullOrWhiteSpace(
+                                r.PatientName)
+                            &&
+                            r.PatientName
+                            .ToLower()
+                            .Contains(
+                                patient
+                                .ToLower()))
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    diagnosis))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            !string.IsNullOrWhiteSpace(
+                                r.Diagnosis)
+                            &&
+                            r.Diagnosis
+                            .ToLower()
+                            .Contains(
+                                diagnosis
+                                .ToLower()))
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    visitDate))
+                {
+                    DateTime selectedDate;
+
+                    if (DateTime.TryParse(
+                        visitDate,
+                        CultureInfo.InvariantCulture,
+                        DateTimeStyles.None,
+                        out selectedDate))
+                    {
+                        records =
+                            records
+                            .Where(r =>
+                                r.VisitDate.Date ==
+                                selectedDate.Date)
+                            .ToList();
+                    }
+                }
+
+                const int pageSize = 5;
+
+                int totalRecords =
+                    records.Count;
+
+                ViewBag.TotalRecords =
+                    totalRecords;
+
+                int totalPages =
+                    Math.Max(
+                        1,
+                        (int)Math.Ceiling(
+                            (double)totalRecords /
+                            pageSize));
+
+                if (page < 1)
+                {
+                    page = 1;
+                }
+
+                if (page > totalPages)
+                {
+                    page = totalPages;
+                }
+
+                var pagedRecords =
+                    records
+                    .OrderByDescending(
+                        r => r.VisitDate)
+                    .Skip(
+                        (page - 1) *
+                        pageSize)
+                    .Take(
+                        pageSize)
+                    .ToList();
+
+                ViewBag.CurrentPage =
+                    page;
+
+                ViewBag.TotalPages =
+                    totalPages;
+
+                ViewBag.Patient =
+                    patient;
+
+                ViewBag.Diagnosis =
+                    diagnosis;
+
+                ViewBag.VisitDate =
+                    visitDate;
+
+                return View(
+                    pagedRecords);
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return View();
@@ -271,7 +525,12 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // PATIENT
         // ==================================
 
-        public async Task<ActionResult> PatientHistory()
+        public async Task<ActionResult> PatientHistory(
+            string doctor = "",
+            string specialisation = "",
+            string visitDate = "",
+            string diagnosis = "",
+            int page = 1)
         {
             if (!IsLoggedIn())
             {
@@ -281,18 +540,172 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             try
             {
                 var records =
-                    await _healthRecordService
+                    (await _healthRecordService
                         .GetRecordsByPatientAsync(
-                            GetReferenceId());
+                            GetReferenceId()))
+                    .ToList();
 
-                return View(records);
+                ViewBag.Doctors =
+                    records
+                    .Select(r => r.DoctorName)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+
+                ViewBag.Specialisations =
+                    records
+                    .Select(r => r.Specialisation)
+                    .Where(x => !string.IsNullOrWhiteSpace(x))
+                    .Distinct()
+                    .OrderBy(x => x)
+                    .ToList();
+
+                ViewBag.VisitDates =
+                    records
+                    .Select(r => r.VisitDate.Date)
+                    .Distinct()
+                    .OrderByDescending(x => x)
+                    .ToList();
+
+                if (!string.IsNullOrWhiteSpace(doctor))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            r.DoctorName ==
+                            doctor)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    specialisation))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            r.Specialisation ==
+                            specialisation)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    visitDate))
+                {
+                    var selectedDate =
+                           DateTime.Parse(
+                           visitDate,
+                           CultureInfo.InvariantCulture);
+
+                    records =
+                        records
+                        .Where(r =>
+                            r.VisitDate.Date ==
+                            selectedDate.Date)
+                        .ToList();
+                }
+
+                if (!string.IsNullOrWhiteSpace(
+                    diagnosis))
+                {
+                    records =
+                        records
+                        .Where(r =>
+                            r.Diagnosis != null
+                            &&
+                            r.Diagnosis
+                                .ToLower()
+                                .Contains(
+                                    diagnosis
+                                    .ToLower()))
+                        .ToList();
+                }
+
+                const int pageSize = 5;
+
+                int totalRecords =
+                    records.Count;
+
+                ViewBag.TotalRecords =
+                    totalRecords;
+
+                int totalPages =
+                    Math.Max(
+                        1,
+                        (int)Math.Ceiling(
+                            (double)totalRecords /
+                            pageSize));
+
+                if (page < 1)
+                {
+                    page = 1;
+                }
+
+                if (page > totalPages)
+                {
+                    page = totalPages;
+                }
+
+                var pagedRecords =
+                    records
+                    .Skip(
+                        (page - 1) *
+                        pageSize)
+                    .Take(
+                        pageSize)
+                    .ToList();
+
+                ViewBag.CurrentPage =
+                    page;
+
+                ViewBag.TotalPages =
+                    totalPages;
+
+                ViewBag.Doctor =
+                    doctor;
+
+                ViewBag.Specialisation =
+                    specialisation;
+
+                ViewBag.VisitDate =
+                    visitDate;
+
+                ViewBag.Diagnosis =
+                    diagnosis;
+
+                return View(
+                    pagedRecords);
             }
             catch (Exception ex)
             {
-                TempData[Constants.ErrorKey] =
+                TempData[
+                    Constants.ErrorKey] =
                     ex.Message;
 
                 return View();
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult>
+            GetRecordDetailsModal(
+        int id)
+        {
+            try
+            {
+                var record =
+                    await _healthRecordService
+                        .GetHealthRecordByIdAsync(
+                            id);
+
+                return PartialView(
+                    "_HealthRecordDetailsModal",
+                    record);
+            }
+            catch (Exception ex)
+            {
+                return Content(
+                    $"<div class='alert alert-danger'>{ex.Message}</div>");
             }
         }
 

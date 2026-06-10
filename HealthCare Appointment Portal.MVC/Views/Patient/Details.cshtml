@@ -119,29 +119,22 @@
     {
         <div class="mt-4">
 
-            <a href="@Url.Action(
+           <a href="@Url.Action(
                         "Edit",
                         "Patient",
-                        new
-                        {
-                            id = Model.PatientId
-                        })"
+                        new { id = Model.PatientId })"
                class="btn btn-warning">
-
-                Edit Patient
-
-            </a>
+                    
+                 Edit Patient
+           </a>
 
             <a href="@Url.Action(
                         "Deactivate",
                         "Patient",
-                        new
-                        {
-                            id = Model.PatientId
-                        })"
+                        new { id = Model.PatientId })"
                class="btn btn-danger">
 
-                Deactivate Patient
+                Delete Patient
 
             </a>
 

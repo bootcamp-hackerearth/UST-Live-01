@@ -4,6 +4,154 @@
     ViewBag.Title = "Patient Health History";
 }
 
+<style>
+
+    .page-title {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+        color: #64748b;
+        font-size: 1rem;
+    }
+
+    .search-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .search-header {
+        background: linear-gradient( 135deg, #020617, #0f172a);
+        color: white;
+        padding: 18px 28px;
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+
+    .search-card .card-body {
+        padding: 24px;
+    }
+
+    .form-control,
+    .form-select {
+        height: 56px;
+        border-radius: 16px;
+        border: 1px solid #dbe2ea;
+    }
+
+    .table-card {
+        border: none;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+    }
+
+    .history-table {
+        margin-bottom: 0;
+    }
+
+        .history-table thead th {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 16px;
+            font-weight: 600;
+        }
+
+        .history-table tbody td {
+            padding: 16px;
+            vertical-align: middle;
+            border-color: #eef2f7;
+        }
+
+        .history-table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+    .doctor-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient( 135deg, #2563eb, #1d4ed8);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        margin-right: 12px;
+    }
+
+    .view-btn {
+        border-radius: 999px;
+        padding: 8px 18px;
+        font-weight: 600;
+    }
+
+    .search-btn,
+    .reset-btn {
+        height: 56px;
+        border-radius: 999px;
+        font-weight: 600;
+        min-width: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-btn {
+        background: #2563eb;
+        border-color: #2563eb;
+    }
+
+    .reset-btn {
+        min-width: 90px;
+    }
+
+    .pagination .page-link {
+        border: none;
+        border-radius: 12px;
+        margin: 0 4px;
+        min-width: 42px;
+        text-align: center;
+    }
+
+    .pagination .active .page-link {
+        background: #2563eb;
+    }
+    .dashboard-btn {
+        border-radius: 999px;
+        padding: 12px 28px;
+        font-weight: 600;
+        min-width: 220px;
+    }
+    .pagination-pill {
+        border-radius: 999px !important;
+        padding: 10px 20px;
+        font-weight: 600;
+        margin: 0 6px;
+    }
+
+    .page-number {
+        border-radius: 999px !important;
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pagination .active .page-link {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white;
+    }
+</style>
+
 @if (TempData["Success"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show">
@@ -32,126 +180,468 @@
     </div>
 }
 
-<div class="container-fluid">
+<div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
-            Patient Health History
-        </h2>
+        <div>
+
+            <h1 class="page-title">
+                Patient Health History
+            </h1>
+
+            <p class="page-subtitle">
+                View and track all your medical records
+            </p>
+
+        </div>
+
+        <a href="@Url.Action(
+            "Dashboard",
+            "Patient")"
+           class="btn btn-outline-secondary dashboard-btn">
+
+            <i class="bi bi-arrow-left me-2"></i>
+
+                   Back
+
+        </a>
 
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card search-card mb-4">
+
+        <div class="search-header">
+
+            Search Health Records
+
+        </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover">
+            <form method="get">
 
-                <thead class="table-light">
+                <div class="row g-3">
 
-                    <tr>
+                    <div class="col-lg-3">
 
-                        <th>
-                            Visit Date
-                        </th>
+                        <select name="doctor"
+                                class="form-select">
 
-                        <th>
-                            Doctor
-                        </th>
+                            <option value="">
+                                All Doctors
+                            </option>
 
-                        <th>
-                            Specialisation
-                        </th>
+                            @foreach (string doctor in ViewBag.Doctors)
+                            {
+                                <option value="@doctor"
+                                        @(ViewBag.Doctor == doctor ? "selected" : "")>
 
-                        <th>
-                            Diagnosis
-                        </th>
+                                    @doctor
 
-                        <th>
-                            Prescription
-                        </th>
+                                </option>
+                            }
 
-                        <th>
-                            Details
-                        </th>
+                        </select>
 
-                    </tr>
+                    </div>
 
-                </thead>
+                    <div class="col-lg-3">
 
-                <tbody>
+                        <select name="specialisation"
+                                class="form-select">
 
-                    @if (!Model.Any())
-                    {
+                            <option value="">
+                                All Specialisations
+                            </option>
+
+                            @foreach (string specialisation in ViewBag.Specialisations)
+                            {
+                                <option value="@specialisation"
+                                        @(ViewBag.Specialisation == specialisation ? "selected" : "")>
+
+                                    @specialisation
+
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <select name="visitDate"
+                                class="form-select">
+
+                            <option value="">
+                                All Dates
+                            </option>
+
+                            @foreach (DateTime date in ViewBag.VisitDates)
+                            {
+                                string value =
+                                    date.ToString("yyyy-MM-dd");
+
+                                <option value="@value"
+                                        @(ViewBag.VisitDate == value ? "selected" : "")>
+
+                                    @date.ToString("dd MMM yyyy")
+
+                                </option>
+                            }
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-lg-2">
+
+                        <input type="text"
+                               name="diagnosis"
+                               value="@ViewBag.Diagnosis"
+                               class="form-control"
+                               placeholder="Diagnosis" />
+
+                    </div>
+
+                    <div class="col-lg-2 d-flex align-items-end">
+
+                        <div class="d-flex gap-2 w-100">
+
+                            <button type="submit"
+                                    class="btn btn-primary search-btn">
+
+
+                                <i class="bi bi-search me-1"></i>
+
+                                Search
+
+                            </button>
+
+                            <a href="@Url.Action(
+                                        "PatientHistory",
+                                         "HealthRecord")"
+                               class="btn btn-outline-secondary reset-btn">
+
+                                Reset
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="card table-card">
+
+        <div class="card-body">
+
+            <div class="mb-3 text-muted">
+
+                Showing
+                <strong>@ViewBag.TotalRecords</strong>
+                records
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table history-table align-middle">
+
+                    <thead>
+
                         <tr>
 
-                            <td colspan="6"
-                                class="text-center">
+                            <th>
+                                Visit Date
+                            </th>
 
-                                No health records found.
+                            <th>
+                                Doctor
+                            </th>
 
-                            </td>
+                            <th>
+                                Specialisation
+                            </th>
+
+                            <th>
+                                Diagnosis
+                            </th>
+
+                            <th>
+                                Prescription
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
 
                         </tr>
-                    }
-                    else
-                    {
-                        foreach (var record in
-                            Model.OrderByDescending(
-                                r => r.VisitDate))
+
+                    </thead>
+
+                    <tbody>
+
+                        @if (!Model.Any())
                         {
                             <tr>
 
-                                <td>
-                                    @record.VisitDate.ToString(
-                                        "dd MMM yyyy")
-                                </td>
+                                <td colspan="6"
+                                    class="text-center py-5">
 
-                                <td>
-                                    @record.DoctorName
-                                </td>
-
-                                <td>
-                                    @record.Specialisation
-                                </td>
-
-                                <td>
-                                    @record.Diagnosis
-                                </td>
-
-                                <td>
-                                    @record.Prescription
-                                </td>
-
-                                <td>
-
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "HealthRecord",
-                                                new
-                                                {
-                                                    id =
-                                                        record.RecordId
-                                                })"
-                                       class="btn btn-info btn-sm">
-
-                                        View
-
-                                    </a>
+                                    No health records found.
 
                                 </td>
 
                             </tr>
                         }
-                    }
+                        else
+                        {
+                            foreach (var record in Model)
+                            {
+                                <tr>
 
-                </tbody>
+                                    <td>
+                                        @record.VisitDate.ToString(
+                                            "dd MMM yyyy")
+                                    </td>
 
-            </table>
+                                    <td>
+
+                                        <div class="d-flex align-items-center">
+
+                                            <div class="doctor-avatar">
+
+                                                @(string.IsNullOrWhiteSpace(
+                                                      record.DoctorName)
+                                                      ? "?"
+    :                                                 record.DoctorName
+                                                      .Substring(0, 1)
+                                                      .ToUpper())
+
+                                            </div>
+
+                                            @(string.IsNullOrWhiteSpace(
+                                                record.DoctorName)
+                                                ? "Unknown Doctor"
+                                                : record.DoctorName)
+
+                                        </div>
+
+                                    </td>
+
+                                    <td>
+                                        @record.Specialisation
+                                    </td>
+
+                                    <td>
+                                        @record.Diagnosis
+                                    </td>
+
+                                    <td>
+                                        @record.Prescription
+                                    </td>
+
+                                    <td>
+
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm view-btn view-record-btn"
+                                                data-id="@record.RecordId">
+
+                                            View
+
+                                        </button>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-4">
+
+                    <ul class="pagination justify-content-center align-items-center">
+
+                        @if (ViewBag.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "PatientHistory",
+                            new
+                            {
+                                page = ViewBag.CurrentPage - 1,
+                                doctor = ViewBag.Doctor,
+                                specialisation = ViewBag.Specialisation,
+                                visitDate = ViewBag.VisitDate,
+                                diagnosis = ViewBag.Diagnosis
+                            })">
+
+                                    <i class="bi bi-chevron-left me-1"></i>
+
+                                    Prev
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+
+                                <a class="page-link page-number"
+                                   href="@Url.Action(
+                            "PatientHistory",
+                            new
+                            {
+                                page = i,
+                                doctor = ViewBag.Doctor,
+                                specialisation = ViewBag.Specialisation,
+                                visitDate = ViewBag.VisitDate,
+                                diagnosis = ViewBag.Diagnosis
+                            })">
+
+                                    @i
+
+                                </a>
+
+                            </li>
+                        }
+
+                        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                        {
+                            <li class="page-item">
+
+                                <a class="page-link pagination-pill"
+                                   href="@Url.Action(
+                            "PatientHistory",
+                            new
+                            {
+                                page = ViewBag.CurrentPage + 1,
+                                doctor = ViewBag.Doctor,
+                                specialisation = ViewBag.Specialisation,
+                                visitDate = ViewBag.VisitDate,
+                                diagnosis = ViewBag.Diagnosis
+                            })">
+
+                                    Next
+
+                                    <i class="bi bi-chevron-right ms-1"></i>
+
+                                </a>
+
+                            </li>
+                        }
+
+                    </ul>
+
+                </nav>
+            }
 
         </div>
 
     </div>
 
 </div>
+
+<div class="modal fade"
+     id="recordModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    Health Record Details
+
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body p-4"
+                 id="recordContent">
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts
+{
+    <script>
+
+        $(document).ready(function () {
+
+            $(document).on(
+                "click",
+                ".view-record-btn",
+                function () {
+
+                    var id =
+                        $(this).data("id");
+
+                    $.ajax({
+
+                        url:
+                            '@Url.Action(
+                                "GetRecordDetailsModal",
+                                "HealthRecord")',
+
+                        type:
+                            "GET",
+
+                        data:
+                        {
+                            id: id
+                        },
+
+                        success:
+                            function (response) {
+
+                                $("#recordContent")
+                                    .html(response);
+
+                                var modal =
+                                    new bootstrap.Modal(
+                                        document.getElementById(
+                                            "recordModal"));
+
+                                modal.show();
+                            }
+                    });
+
+                });
+
+        });
+
+    </script>
+}

@@ -8,7 +8,8 @@ using HealthCare_Appointment_Portal.Models;
 
 namespace HealthCare_Appointment_Portal.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepository
+        : IUserRepository
     {
         private readonly ApplicationDbContext _context;
 
@@ -36,9 +37,11 @@ namespace HealthCare_Appointment_Portal.Repositories
         public async Task AddAsync(
             User user)
         {
-            _context.Users.Add(user);
+            _context.Users
+                .Add(user);
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task UpdateAsync(
@@ -47,7 +50,8 @@ namespace HealthCare_Appointment_Portal.Repositories
             _context.Entry(user)
                 .State = EntityState.Modified;
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task DeleteAsync(
@@ -59,7 +63,11 @@ namespace HealthCare_Appointment_Portal.Repositories
 
             if (user != null)
             {
-                _context.Users.Remove(user);
+                _context.Users
+                    .Remove(user);
+
+                await _context
+                    .SaveChangesAsync();
             }
         }
 

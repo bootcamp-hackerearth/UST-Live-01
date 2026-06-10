@@ -1,0 +1,244 @@
+@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
+
+@if (Model == null)
+{
+    <div class="alert alert-danger">
+
+        Appointment details not found.
+
+    </div>
+}
+else
+{
+    <style>
+
+        .detail-card {
+            border: none;
+            border-radius: 16px;
+            background: #f8fafc;
+            padding: 15px;
+            height: 100%;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .status-pill {
+            padding: 8px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+
+    <div class="container-fluid">
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+
+                <div class="detail-card">
+
+                    <div class="detail-label">
+                        Appointment Id
+                    </div>
+
+                    <div class="detail-value">
+                        #@Model.AppointmentId
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="detail-card">
+
+                    <div class="detail-label">
+                        Status
+                    </div>
+
+                    <div>
+
+                        @switch (Model.Status.ToString())
+                        {
+                            case "Pending":
+
+                                <span class="badge bg-warning text-dark status-pill">
+                                    Pending
+                                </span>
+
+                                break;
+
+                            case "Confirmed":
+
+                                <span class="badge bg-success status-pill">
+                                    Confirmed
+                                </span>
+
+                                break;
+
+                            case "Cancelled":
+
+                                <span class="badge bg-danger status-pill">
+                                    Cancelled
+                                </span>
+
+                                break;
+
+                            case "Completed":
+
+                                <span class="badge bg-primary status-pill">
+                                    Completed
+                                </span>
+
+                                break;
+
+                            default:
+
+                                <span class="badge bg-secondary status-pill">
+                                    @Model.Status
+                                </span>
+
+                                break;
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="detail-card">
+
+                    <div class="detail-label">
+                        Patient Name
+                    </div>
+
+                    <div class="detail-value">
+                        @(Model.PatientName ?? "N/A")
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="detail-card">
+
+                    <div class="detail-label">
+                        Doctor Name
+                    </div>
+
+                    <div class="detail-value">
+                        @(Model.DoctorName ?? "N/A")
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="detail-card">
+
+                    <div class="detail-label">
+                        Scheduled Date
+                    </div>
+
+                    <div class="detail-value">
+                        @Model.ScheduledDate.ToString("dd MMM yyyy")
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="detail-card">
+
+                    <div class="detail-label">
+                        Time Slot
+                    </div>
+
+                    <div class="detail-value">
+                        @(Model.TimeSlot ?? "N/A")
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-12">
+
+                <div class="detail-card">
+
+                    <div class="detail-label">
+                        Health Record
+                    </div>
+
+                    <div>
+
+                        @if (Model.HasHealthRecord)
+                        {
+                            <span class="badge bg-success status-pill">
+
+                                Available
+
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary status-pill">
+
+                                Not Available
+
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(
+                Model.CancellationReason))
+            {
+                <div class="col-12">
+
+                    <div class="alert alert-danger mb-0">
+
+                        <strong>
+                            Cancellation Reason:
+                        </strong>
+
+                        <br />
+
+                        @Model.CancellationReason
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+}

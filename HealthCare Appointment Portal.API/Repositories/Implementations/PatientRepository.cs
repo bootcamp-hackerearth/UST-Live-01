@@ -13,55 +13,83 @@ namespace HealthCare_Appointment_Portal.Repositories
     {
         private readonly ApplicationDbContext _context;
 
-        public PatientRepository(ApplicationDbContext context)
+        public PatientRepository(
+            ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public async Task<Patient> GetByIdAsync(int id)
+        public async Task<Patient>
+            GetByIdAsync(
+                int id)
         {
-            return await _context.Patients.FindAsync(id);
+            return await _context.Patients
+                .FindAsync(id);
         }
 
-        public async Task<IEnumerable<Patient>> GetAllAsync()
+        public async Task<IEnumerable<Patient>>
+            GetAllAsync()
         {
-            return await _context.Patients.ToListAsync();
+            return await _context.Patients
+                .ToListAsync();
         }
 
-        public async Task AddAsync(Patient patient)
+        public async Task AddAsync(
+            Patient patient)
         {
-            _context.Patients.Add(patient);
-            await Task.CompletedTask;
+            _context.Patients
+                .Add(patient);
+
+            await _context
+                .SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Patient patient)
+        public async Task UpdateAsync(
+            Patient patient)
         {
-            _context.Entry(patient).State = EntityState.Modified;
-            await Task.CompletedTask;
+            _context.Entry(patient)
+                .State = EntityState.Modified;
+
+            await _context
+                .SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(
+            int id)
         {
-            Patient patient = await _context.Patients.FindAsync(id);
+            Patient patient =
+                await _context.Patients
+                    .FindAsync(id);
 
             if (patient != null)
             {
-                _context.Patients.Remove(patient);
+                _context.Patients
+                    .Remove(patient);
+
+                await _context
+                    .SaveChangesAsync();
             }
         }
 
-        public async Task<Patient> GetPatientByEmailAsync(string email)
+        public async Task<Patient>
+            GetPatientByEmailAsync(
+                string email)
         {
             return await _context.Patients
-                .FirstOrDefaultAsync(p => p.Email == email);
+                .FirstOrDefaultAsync(
+                    p => p.Email == email);
         }
 
-        public async Task<IEnumerable<Patient>> GetPatientsByInsuranceStatusAsync(
-            InsuranceStatus status)
+        public async Task<IEnumerable<Patient>>
+            GetPatientsByInsuranceStatusAsync(
+                InsuranceStatus status)
         {
             return await _context.Patients
-                .Include(p => p.Insurances)
-                .Where(p => p.Insurances.Any(i => i.Status == status))
+                .Include(
+                    p => p.Insurances)
+                .Where(
+                    p => p.Insurances.Any(
+                        i => i.Status == status))
                 .ToListAsync();
         }
     }

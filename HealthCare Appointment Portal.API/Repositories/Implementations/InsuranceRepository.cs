@@ -42,7 +42,8 @@ namespace HealthCare_Appointment_Portal.Repositories
             _context.Insurances
                 .Add(insurance);
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task UpdateAsync(
@@ -51,7 +52,8 @@ namespace HealthCare_Appointment_Portal.Repositories
             _context.Entry(insurance)
                 .State = EntityState.Modified;
 
-            await Task.CompletedTask;
+            await _context
+                .SaveChangesAsync();
         }
 
         public async Task DeleteAsync(
@@ -65,11 +67,13 @@ namespace HealthCare_Appointment_Portal.Repositories
             {
                 _context.Insurances
                     .Remove(insurance);
+
+                await _context
+                    .SaveChangesAsync();
             }
         }
 
-        public async Task<
-            IEnumerable<Insurance>>
+        public async Task<IEnumerable<Insurance>>
             GetInsurancesByPatientAsync(
                 int patientId)
         {
@@ -78,22 +82,22 @@ namespace HealthCare_Appointment_Portal.Repositories
                 .Where(i =>
                     i.PatientId ==
                     patientId)
-                .OrderByDescending(
-                    i => i.ExpiryDate)
+                .OrderByDescending(i =>
+                    i.ExpiryDate)
                 .ToListAsync();
         }
 
-        public async Task<
-            IEnumerable<Insurance>>
+        public async Task<IEnumerable<Insurance>>
             GetInsurancesByStatusAsync(
                 InsuranceStatus status)
         {
             return await _context.Insurances
                 .Include(i => i.Patient)
                 .Where(i =>
-                    i.Status == status)
-                .OrderBy(
-                    i => i.ProviderName)
+                    i.Status ==
+                    status)
+                .OrderBy(i =>
+                    i.ProviderName)
                 .ToListAsync();
         }
 
@@ -108,8 +112,7 @@ namespace HealthCare_Appointment_Portal.Repositories
                     policyNumber);
         }
 
-        public async Task<
-            IEnumerable<Insurance>>
+        public async Task<IEnumerable<Insurance>>
             GetExpiredInsurancesAsync()
         {
             return await _context.Insurances
@@ -117,13 +120,12 @@ namespace HealthCare_Appointment_Portal.Repositories
                 .Where(i =>
                     i.ExpiryDate <
                     DateTime.Today)
-                .OrderBy(
-                    i => i.ExpiryDate)
+                .OrderBy(i =>
+                    i.ExpiryDate)
                 .ToListAsync();
         }
 
-        public async Task<
-            IEnumerable<Insurance>>
+        public async Task<IEnumerable<Insurance>>
             GetActiveInsurancesAsync()
         {
             return await _context.Insurances
@@ -134,8 +136,8 @@ namespace HealthCare_Appointment_Portal.Repositories
                     &&
                     i.ExpiryDate >=
                     DateTime.Today)
-                .OrderBy(
-                    i => i.ProviderName)
+                .OrderBy(i =>
+                    i.ProviderName)
                 .ToListAsync();
         }
     }
