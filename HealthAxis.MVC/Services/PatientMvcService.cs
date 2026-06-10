@@ -1,6 +1,7 @@
 ﻿using HealthAxis.Mvc.Services.Interfaces;
 using HealthAxis.Shared.DTOs;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -47,13 +48,18 @@ namespace HealthAxis.Mvc.Services
             }
         }
 
-        public bool Create(PatientDto dto, out string error)
+        public bool Create(
+    PatientDto dto,
+    out string error,
+    out int patientId)
         {
-            return Send(
+            return SendWithId(
                 "patients",
                 dto,
                 "POST",
-                out error);
+                "PatientId",
+                out error,
+                out patientId);
         }
 
         public bool Update(PatientDto dto, out string error)
@@ -82,7 +88,88 @@ namespace HealthAxis.Mvc.Services
                 return false;
             }
         }
+        private bool SendWithId(
+    string url,
+    object dto,
+    string method,
+    string idPropertyName,
+    out string error,
+    out int createdId)
+        {
+            error = string.Empty;
+            createdId = 0;
 
+            using (var client = CreateClient())
+            {
+                string json = JsonConvert.SerializeObject(dto);
+
+                var content = new StringContent(
+                    json,
+                    Encoding.UTF8,
+                    "application/json");
+
+                HttpResponseMessage response;
+
+                if (method == "POST")
+                {
+                    response = client.PostAsync(url, content).Result;
+                }
+                else
+                {
+                    response = client.PutAsync(url, content).Result;
+                }
+
+                string responseText = response.Content.ReadAsStringAsync().Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseJson = JObject.Parse(responseText);
+
+                    if (responseJson[idPropertyName] != null)
+                    {
+                        createdId = responseJson[idPropertyName].Value<int>();
+                    }
+
+                    return true;
+                }
+
+                error = ExtractApiErrorMessage(responseText);
+                return false;
+            }
+        }
+        private string ExtractApiErrorMessage(string apiResponse)
+        {
+            if (string.IsNullOrWhiteSpace(apiResponse))
+            {
+                return "An unexpected error occurred.";
+            }
+
+            try
+            {
+                var json = JObject.Parse(apiResponse);
+
+                if (json["Message"] != null)
+                {
+                    return json["Message"].ToString();
+                }
+
+                if (json["message"] != null)
+                {
+                    return json["message"].ToString();
+                }
+
+                if (json["MessageDetail"] != null)
+                {
+                    return json["MessageDetail"].ToString();
+                }
+            }
+            catch
+            {
+                // Not JSON.
+            }
+
+            return apiResponse.Replace("\"", "");
+        }
         private bool Send(
             string url,
             object dto,

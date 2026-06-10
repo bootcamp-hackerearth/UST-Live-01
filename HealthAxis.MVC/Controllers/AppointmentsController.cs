@@ -127,25 +127,20 @@ namespace HealthAxis.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateStatus(AppointmentDto dto)
+        public ActionResult UpdateStatus(
+    AppointmentStatusUpdateDto dto,
+    int patientId,
+    int doctorId)
         {
             string errorMessage;
 
-            var statusUpdateDto = new AppointmentStatusUpdateDto
-            {
-                AppointmentId = dto.AppointmentId,
-                Status = dto.Status,
-                CancellationReason = dto.CancellationReason
-            };
-
             bool result = _appointments.UpdateStatus(
                 dto.AppointmentId,
-                statusUpdateDto,
+                dto,
                 out errorMessage);
 
             TempData[result ? "Success" : "Error"] =
                 result ? "Status updated." : errorMessage;
-
             if (result && dto.Status == AppointmentStatusEnum.Completed)
             {
                 return RedirectToAction(
@@ -153,14 +148,14 @@ namespace HealthAxis.Mvc.Controllers
                     "HealthRecords",
                     new
                     {
-                        patientId = dto.PatientId,
-                        doctorId = dto.DoctorId
+                        patientId = patientId,
+                        doctorId = doctorId
                     });
             }
 
             return RedirectToAction(
                 "DoctorAppointments",
-                new { doctorId = dto.DoctorId });
+                new { doctorId = doctorId });
         }
     }
 }

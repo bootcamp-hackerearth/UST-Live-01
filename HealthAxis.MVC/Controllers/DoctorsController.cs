@@ -84,18 +84,26 @@ namespace HealthAxis.Mvc.Controllers
             }
 
             string errorMessage;
+            int doctorId;
 
-            bool result = _doctors.Create(dto, out errorMessage);
+            bool result = _doctors.Create(
+                dto,
+                out errorMessage,
+                out doctorId);
 
             if (!result)
             {
                 ModelState.AddModelError("", errorMessage);
-
                 LoadSpecialisation();
                 return View(dto);
             }
 
-            return RedirectToAction("Index");
+            TempData["Success"] =
+                "Doctor registered successfully. Doctor ID is " + doctorId + ".";
+
+            return RedirectToAction(
+                "Details",
+                new { id = doctorId });
         }
 
         public ActionResult Edit(int id)

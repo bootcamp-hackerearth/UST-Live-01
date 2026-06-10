@@ -43,9 +43,13 @@ namespace HealthAxis.Api.Services
             return dto;
         }
 
-        public bool Create(PatientDto dto, out string errorMessage)
+        public bool Create(
+    PatientDto dto,
+    out string errorMessage,
+    out int patientId)
         {
             errorMessage = string.Empty;
+            patientId = 0;
 
             if (_patientRepository.GetByEmail(dto.Email) != null)
             {
@@ -64,7 +68,9 @@ namespace HealthAxis.Api.Services
                 CreatedDate = DateTime.Now
             };
 
-            _patientRepository.Add(patient);
+            var createdPatient = _patientRepository.Add(patient);
+
+            patientId = createdPatient.PatientId;
 
             return true;
         }

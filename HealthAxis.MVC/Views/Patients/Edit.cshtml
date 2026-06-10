@@ -56,10 +56,11 @@
                             @Html.LabelFor(m => m.DateOfBirth)
 
                             @Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new
-                            {
-                                @class = "form-control",
-                                type = "date"
-                            })
+                       {
+                           @class = "form-control",
+                           type = "date",
+                           max = DateTime.Today.ToString("yyyy-MM-dd")
+                       })
 
                             @Html.ValidationMessageFor(
                                 m => m.DateOfBirth,

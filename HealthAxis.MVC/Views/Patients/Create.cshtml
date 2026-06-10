@@ -25,9 +25,7 @@
             {
                 @Html.AntiForgeryToken()
 
-                @Html.HiddenFor(m => m.PatientId)
-
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
                 <div class="ha-section-title">
                     Personal Information
@@ -58,7 +56,8 @@
                             @Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new
                             {
                                 @class = "form-control",
-                                type = "date"
+                                type = "date",
+                                max = DateTime.Today.ToString("yyyy-MM-dd")
                             })
 
                             @Html.ValidationMessageFor(

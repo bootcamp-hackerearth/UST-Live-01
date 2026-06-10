@@ -12,8 +12,9 @@ namespace HealthAxis.Mvc.Services.Interfaces
         DoctorDto GetById(int id);
 
         bool Create(
-            DoctorDto dto,
-            out string error);
+    DoctorDto dto,
+    out string error,
+    out int doctorId);
 
         bool Update(
             DoctorDto dto,

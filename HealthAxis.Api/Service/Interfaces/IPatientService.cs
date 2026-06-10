@@ -10,8 +10,9 @@ namespace HealthAxis.Api.Services.Interfaces
         PatientDto GetById(int id);
 
         bool Create(
-            PatientDto dto,
-            out string errorMessage);
+    PatientDto dto,
+    out string errorMessage,
+    out int patientId);
 
         bool Update(
             int id,

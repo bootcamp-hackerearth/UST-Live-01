@@ -44,9 +44,13 @@ namespace HealthAxis.Api.Services
             return dto;
         }
 
-        public bool Create(DoctorDto dto, out string errorMessage)
+        public bool Create(
+    DoctorDto dto,
+    out string errorMessage,
+    out int doctorId)
         {
             errorMessage = string.Empty;
+            doctorId = 0;
 
             if (dto.ConsultationFee < 0)
             {
@@ -63,7 +67,9 @@ namespace HealthAxis.Api.Services
                 IsActive = true
             };
 
-            _doctorRepository.Add(doctor);
+            var createdDoctor = _doctorRepository.Add(doctor);
+
+            doctorId = createdDoctor.DoctorId;
 
             return true;
         }

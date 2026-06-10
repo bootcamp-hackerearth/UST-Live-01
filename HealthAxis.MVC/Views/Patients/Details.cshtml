@@ -8,6 +8,12 @@
     <div class="container">
 
         <div class="ha-card" style="max-width:900px; margin:0 auto; padding:34px;">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
 
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #334155; padding-bottom:20px; margin-bottom:28px;">
                 <div>

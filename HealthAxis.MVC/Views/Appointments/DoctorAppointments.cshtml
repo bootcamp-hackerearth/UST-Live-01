@@ -1,84 +1,167 @@
-﻿@model IEnumerable<HealthAxis.Shared.DTOs.AppointmentDto>
+﻿@using HealthAxis.Shared.Enums
+@model IEnumerable<HealthAxis.Shared.DTOs.AppointmentDto>
 
 @{
-    ViewBag.Title = "Doctor Schedule";
+    ViewBag.Title = "Doctor Appointments";
 }
 
 <div class="ha-page">
     <div class="container">
 
-        <div class="ha-card" style="padding: 30px;">
+        <div class="ha-card" style="padding:30px;">
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; border-bottom: 1px solid #334155; padding-bottom: 18px;">
+            <!-- HEADER -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid #334155; padding-bottom:18px;">
                 <div>
-                    <h2 class="ha-title" style="margin: 0;">Doctor Schedule</h2>
-                    <p class="ha-muted" style="margin: 6px 0 0 0;">
-                        View appointments assigned to the doctor.
+                    <h2 class="ha-title" style="margin:0;">
+                        Doctor Appointments
+                    </h2>
+
+                    <p class="ha-muted" style="margin:6px 0 0 0;">
+                        Manage patient appointments and update status.
                     </p>
                 </div>
 
                 @Html.ActionLink(
-                    "Back to Doctors",
+                    "Back",
                     "Index",
                     "Doctors",
                     null,
                     new { @class = "btn btn-dark-back" })
             </div>
 
-            @if (Model == null || !Model.Any())
+            <!-- SUCCESS / ERROR -->
+            @if (TempData["Success"] != null)
             {
-                <div class="alert alert-info">
-                    No appointments found.
+                <div class="alert alert-success">
+                    @TempData["Success"]
                 </div>
             }
-            else
-            {
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Appointment ID</th>
-                            <th>Patient</th>
-                            <th>Date</th>
-                            <th>Slot</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
 
-                    <tbody>
-                        @foreach (var appointment in Model)
-                        {
-                            <tr>
-                                <td>@appointment.AppointmentId</td>
-                                <td>@appointment.PatientName</td>
-                                <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
-                                <td>@appointment.TimeSlot</td>
-                                <td>
-                                    @if (appointment.Status == HealthAxis.Shared.Enums.AppointmentStatusEnum.Pending)
-                                    {
-                                        <span class="label label-warning">Pending</span>
-                                    }
-                                    else if (appointment.Status == HealthAxis.Shared.Enums.AppointmentStatusEnum.Confirmed)
-                                    {
-                                        <span class="label label-success">Confirmed</span>
-                                    }
-                                    else if (appointment.Status == HealthAxis.Shared.Enums.AppointmentStatusEnum.Cancelled)
-                                    {
-                                        <span class="label label-danger">Cancelled</span>
-                                    }
-                                    else if (appointment.Status == HealthAxis.Shared.Enums.AppointmentStatusEnum.Completed)
-                                    {
-                                        <span class="label label-info">Completed</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="label label-default">@appointment.Status</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
             }
+
+            <!-- TABLE -->
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th style="width:300px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td>@a.PatientName</td>
+                            <td>@a.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                            <td>@a.TimeSlot</td>
+
+                            <!-- STATUS -->
+                            <td>
+                                @if (a.Status == AppointmentStatusEnum.Pending)
+                                {
+                                    <span class="badge badge-warning">Pending</span>
+                                }
+                                else if (a.Status == AppointmentStatusEnum.Confirmed)
+                                {
+                                    <span class="badge badge-primary">Confirmed</span>
+                                }
+                                else if (a.Status == AppointmentStatusEnum.Completed)
+                                {
+                                    <span class="badge badge-success">Completed</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-danger">Cancelled</span>
+                                }
+                            </td>
+
+                            <!-- ACTIONS -->
+                            <td>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+
+                                    <!-- ✅ PENDING -->
+                                    @if (a.Status == AppointmentStatusEnum.Pending)
+                                    {
+                                        <!-- APPROVE -->
+                                        using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            @Html.Hidden("AppointmentId", a.AppointmentId)
+                                            @Html.Hidden("Status", AppointmentStatusEnum.Confirmed)
+                                            @Html.Hidden("patientId", a.PatientId)
+                                            @Html.Hidden("doctorId", a.DoctorId)
+
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                Approve
+                                            </button>
+                                        }
+
+                                        <!-- CANCEL -->
+                                        using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            @Html.Hidden("AppointmentId", a.AppointmentId)
+                                            @Html.Hidden("Status", AppointmentStatusEnum.Cancelled)
+                                            @Html.Hidden("patientId", a.PatientId)
+                                            @Html.Hidden("doctorId", a.DoctorId)
+
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                Cancel
+                                            </button>
+                                        }
+                                    }
+
+                                    
+                                    else if (a.Status == AppointmentStatusEnum.Confirmed)
+                                    {
+                                    using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        @Html.Hidden("AppointmentId", a.AppointmentId)
+                                        @Html.Hidden("Status", AppointmentStatusEnum.Completed)
+                                        @Html.Hidden("patientId", a.PatientId)
+                                        @Html.Hidden("doctorId", a.DoctorId)
+
+                                        <button type="submit" class="btn btn-warning btn-sm">
+                                            Mark Completed
+                                        </button>
+                                    }
+                                    }
+
+                                    
+                                    else if (a.Status == AppointmentStatusEnum.Completed)
+                                    {
+                                    @Html.ActionLink(
+                                        "Add Record",
+                                        "Create",
+                                        "HealthRecords",
+                                        new
+                                        {
+                                            patientId = a.PatientId,
+                                            doctorId = a.DoctorId
+                                        },
+                                        new { @class = "btn btn-purple btn-sm" })
+                                    }
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
         </div>
 

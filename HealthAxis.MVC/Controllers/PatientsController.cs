@@ -54,6 +54,10 @@ namespace HealthAxis.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(PatientDto dto)
         {
+            ModelState.Remove("PatientId");
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("AppointmentCount");
+
             if (!ModelState.IsValid)
             {
                 LoadGender();
@@ -61,18 +65,26 @@ namespace HealthAxis.Mvc.Controllers
             }
 
             string errorMessage;
+            int patientId;
 
-            bool result = _patients.Create(dto, out errorMessage);
+            bool result = _patients.Create(
+                dto,
+                out errorMessage,
+                out patientId);
 
             if (!result)
             {
                 ModelState.AddModelError("", errorMessage);
-
                 LoadGender();
                 return View(dto);
             }
 
-            return RedirectToAction("Index");
+            TempData["Success"] =
+                "Patient registered successfully. Patient ID is " + patientId + ".";
+
+            return RedirectToAction(
+                "Details",
+                new { id = patientId });
         }
 
         public ActionResult Edit(int id)

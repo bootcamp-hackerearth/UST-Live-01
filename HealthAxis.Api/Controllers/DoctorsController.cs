@@ -47,15 +47,23 @@ namespace HealthAxis.Api.Controllers
             }
 
             string errorMessage;
+            int doctorId;
 
-            bool result = _service.Create(dto, out errorMessage);
+            bool result = _service.Create(
+                dto,
+                out errorMessage,
+                out doctorId);
 
             if (!result)
             {
                 return BadRequest(errorMessage);
             }
 
-            return Ok("Doctor created.");
+            return Ok(new
+            {
+                Message = "Doctor created successfully.",
+                DoctorId = doctorId
+            });
         }
 
         [HttpPut]
