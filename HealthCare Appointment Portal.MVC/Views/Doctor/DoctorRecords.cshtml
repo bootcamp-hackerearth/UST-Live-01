@@ -1,7 +1,7 @@
-@model IEnumerable<HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto>
+﻿@model IEnumerable<HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto>
 
 @{
-    ViewBag.Title = "My Health Records";
+    ViewBag.Title = "Doctor Health Records";
 }
 
 <div class="container mt-5">
@@ -9,10 +9,10 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <h2>
-            My Health Record History
+            Health Records Added By Me
         </h2>
 
-        <a href="@Url.Action("Dashboard", "Patient")"
+        <a href="@Url.Action("Dashboard", "Doctor")"
            class="btn btn-secondary">
             Back to Dashboard
         </a>
@@ -40,7 +40,7 @@
             @if (Model == null || !Model.Any())
             {
                 <div class="alert alert-info text-center">
-                    No health records found for this patient.
+                    No health records added yet.
                 </div>
             }
             else

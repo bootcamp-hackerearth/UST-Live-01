@@ -154,5 +154,10 @@ namespace HealthCare_Appointment_Portal_MVC.Services
                 .EnsureSuccessAsync(
                     response);
         }
+
+        public Task<object> GetHealthRecordsByPatientAsync(int value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

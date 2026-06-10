@@ -1,193 +1,496 @@
 @model HealthCare_Appointment_Portal.DTOs.PatientDtos.CreatePatientDto
 
 @{
-    ViewBag.Title = "Add Patient";
+    ViewBag.Title = "Patient Portal";
 }
 
-<div class="container-fluid">
+<div class="container mt-5">
 
-    <div class="row mb-4">
+    <h2 class="mb-4">
+        Patient Portal
+    </h2>
 
-        <div class="col">
+    <div class="row">
 
-            <h2>
-                Add New Patient
-            </h2>
+        <div class="col-md-8 mb-4">
+
+            <div class="card shadow border-0 rounded-4">
+
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        Patient Registration
+                    </h4>
+                </div>
+
+                <div class="card-body p-4">
+
+                    @if (ViewData.ModelState[""] != null &&
+                         ViewData.ModelState[""].Errors.Count > 0)
+                    {
+                        @Html.ValidationSummary(
+                            true,
+                            "",
+                            new
+                            {
+                                @class = "alert alert-danger"
+                            })
+                    }
+
+                    @using (Html.BeginForm("Create", "Patient", FormMethod.Post, new { id = "patientForm", onsubmit = "return validatePatientForm();" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Full Name <span class="text-danger">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.FullName,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        id = "FullName",
+                                        placeholder = "Enter full name"
+                                    })
+
+                                <span id="FullNameCustomError"
+                                      class="text-danger d-block mt-1"></span>
+
+                                @Html.ValidationMessageFor(
+                                    m => m.FullName,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger d-block mt-1 field-validation-error",
+                                        id = "FullNameServerError"
+                                    })
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Date Of Birth <span class="text-danger">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.DateOfBirth,
+                                    "{0:yyyy-MM-dd}",
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        id = "DateOfBirth",
+                                        type = "date"
+                                    })
+
+                                <span id="DateOfBirthCustomError"
+                                      class="text-danger d-block mt-1"></span>
+
+                                @Html.ValidationMessageFor(
+                                    m => m.DateOfBirth,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger d-block mt-1 field-validation-error",
+                                        id = "DateOfBirthServerError"
+                                    })
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Gender <span class="text-danger">*</span>
+                                </label>
+
+                                @Html.EnumDropDownListFor(
+                                    m => m.Gender,
+                                    "-- Select Gender --",
+                                    new
+                                    {
+                                        @class = "form-select",
+                                        id = "Gender"
+                                    })
+
+                                <span id="GenderCustomError"
+                                      class="text-danger d-block mt-1"></span>
+
+                                @Html.ValidationMessageFor(
+                                    m => m.Gender,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger d-block mt-1 field-validation-error",
+                                        id = "GenderServerError"
+                                    })
+
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Phone Number <span class="text-danger">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.PhoneNumber,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        id = "PhoneNumber",
+                                        placeholder = "Enter phone number"
+                                    })
+
+                                <span id="PhoneNumberCustomError"
+                                      class="text-danger d-block mt-1"></span>
+
+                                @Html.ValidationMessageFor(
+                                    m => m.PhoneNumber,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger d-block mt-1 field-validation-error",
+                                        id = "PhoneNumberServerError"
+                                    })
+
+                            </div>
+
+                            <div class="col-md-12 mb-3">
+
+                                <label class="form-label">
+                                    Email <span class="text-danger">*</span>
+                                </label>
+
+                                @Html.TextBoxFor(
+                                    m => m.Email,
+                                    new
+                                    {
+                                        @class = "form-control",
+                                        id = "Email",
+                                        type = "email",
+                                        placeholder = "Enter email address"
+                                    })
+
+                                <span id="EmailCustomError"
+                                      class="text-danger d-block mt-1"></span>
+
+                                @Html.ValidationMessageFor(
+                                    m => m.Email,
+                                    "",
+                                    new
+                                    {
+                                        @class = "text-danger d-block mt-1 field-validation-error",
+                                        id = "EmailServerError"
+                                    })
+
+                            </div>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-success">
+                            Register Patient
+                        </button>
+
+                        <a href="@Url.Action("Index", "Home")"
+                           class="btn btn-secondary">
+                            Back to Home
+                        </a>
+                    }
+
+                </div>
+
+            </div>
 
         </div>
 
-    </div>
+        <div class="col-md-4 mb-4">
 
-    <div class="card shadow-sm">
+            <div class="card shadow border-0 rounded-4 h-100">
 
-        <div class="card-body">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        Existing Patient
+                    </h4>
+                </div>
 
-            @using (Html.BeginForm())
-            {
-                @Html.AntiForgeryToken()
+                <div class="card-body p-4 d-flex flex-column justify-content-center">
 
-                if (ViewData.ModelState[""]?.Errors.Count > 0)
-                {
-                    @Html.ValidationSummary(
-                        true,
-                        "",
-                        new
-                        {
-                            @class = "alert alert-danger"
-                        })
-                }
+                    <p class="text-muted">
+                        Enter your registered email address to go to your dashboard.
+                    </p>
 
-                <div class="row">
+                    @if (TempData["LoginError"] != null)
+                    {
+                        <div class="alert alert-danger">
+                            @TempData["LoginError"]
+                        </div>
+                    }
 
-                    <div class="col-md-6 mb-3">
+                    @using (Html.BeginForm("ExistingPatientLogin", "Patient", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
 
-                        <label class="form-label">
-                            Full Name
-                        </label>
+                        <div class="mb-3">
 
-                        @Html.TextBoxFor(
-                            m => m.FullName,
-                            new
-                            {
-                                @class = "form-control"
-                            })
+                            <label class="form-label">
+                                Registered Email
+                            </label>
 
-                        @Html.ValidationMessageFor(
-                            m => m.FullName,
-                            "",
-                            new
-                            {
-                                @class = "text-danger d-block mt-1"
-                            })
+                            <input type="email"
+                                   name="email"
+                                   class="form-control"
+                                   placeholder="example@gmail.com"
+                                   required />
 
-                    </div>
+                        </div>
 
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-                            Date Of Birth
-                        </label>
-
-                        @Html.TextBoxFor(
-                            m => m.DateOfBirth,
-                            "{0:yyyy-MM-dd}",
-                            new
-                            {
-                                @class = "form-control",
-                                type = "date"
-                            })
-
-                        @Html.ValidationMessageFor(
-                            m => m.DateOfBirth,
-                            "",
-                            new
-                            {
-                                @class = "text-danger d-block mt-1"
-                            })
-
-                    </div>
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+                            Go to Dashboard
+                        </button>
+                    }
 
                 </div>
 
-                <div class="row">
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-                            Gender
-                        </label>
-
-                        @Html.EnumDropDownListFor(
-                            m => m.Gender,
-                            "-- Select Gender --",
-                            new
-                            {
-                                @class = "form-select"
-                            })
-
-                        @Html.ValidationMessageFor(
-                            m => m.Gender,
-                            "",
-                            new
-                            {
-                                @class = "text-danger d-block mt-1"
-                            })
-
-                    </div>
-
-                    <div class="col-md-6 mb-3">
-
-                        <label class="form-label">
-                            Phone Number
-                        </label>
-
-                        @Html.TextBoxFor(
-                            m => m.PhoneNumber,
-                            new
-                            {
-                                @class = "form-control"
-                            })
-
-                        @Html.ValidationMessageFor(
-                            m => m.PhoneNumber,
-                            "",
-                            new
-                            {
-                                @class = "text-danger d-block mt-1"
-                            })
-
-                    </div>
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Email
-                    </label>
-
-                    @Html.TextBoxFor(
-                        m => m.Email,
-                        new
-                        {
-                            @class = "form-control",
-                            type = "email"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.Email,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                <div class="mt-4">
-
-                    <button type="submit"
-                            class="btn btn-success">
-
-                        Save Patient
-
-                    </button>
-
-                    <a href="@Url.Action("Index", "Patient")"
-                       class="btn btn-secondary">
-
-                        Cancel
-
-                    </a>
-
-                </div>
-            }
+            </div>
 
         </div>
 
     </div>
 
 </div>
+
+<script>
+
+    function clearError(fieldId) {
+
+        var customError =
+            document.getElementById(fieldId + "CustomError");
+
+        var serverError =
+            document.getElementById(fieldId + "ServerError");
+
+        var input =
+            document.getElementById(fieldId);
+
+        if (customError) {
+            customError.innerText = "";
+        }
+
+        if (serverError) {
+            serverError.innerText = "";
+        }
+
+        if (input) {
+            input.classList.remove("input-validation-error");
+        }
+    }
+
+    function setError(fieldId, message) {
+
+        var customError =
+            document.getElementById(fieldId + "CustomError");
+
+        var input =
+            document.getElementById(fieldId);
+
+        if (customError) {
+            customError.innerText = message;
+        }
+
+        if (input) {
+            input.classList.add("input-validation-error");
+            input.focus();
+        }
+    }
+
+    function isValidEmail(email) {
+
+        var emailPattern =
+            /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+
+        return emailPattern.test(email);
+    }
+
+    function validatePatientForm() {
+
+        var fullName =
+            document.getElementById("FullName").value.trim();
+
+        var dateOfBirth =
+            document.getElementById("DateOfBirth").value;
+
+        var gender =
+            document.getElementById("Gender").value;
+
+        var phoneNumber =
+            document.getElementById("PhoneNumber").value.trim();
+
+        var email =
+            document.getElementById("Email").value.trim();
+
+        var onlyLettersAndSpaces =
+            /^[A-Za-z ]+$/;
+
+        var phonePattern =
+            /^[0-9]{10}$/;
+
+        clearError("FullName");
+        clearError("DateOfBirth");
+        clearError("Gender");
+        clearError("PhoneNumber");
+        clearError("Email");
+
+        if (fullName === "") {
+            setError(
+                "FullName",
+                "Full Name is required.");
+
+            return false;
+        }
+
+        if (!onlyLettersAndSpaces.test(fullName)) {
+            setError(
+                "FullName",
+                "Full Name must contain only alphabets and spaces.");
+
+            return false;
+        }
+
+        if (dateOfBirth === "") {
+            setError(
+                "DateOfBirth",
+                "Date Of Birth is required.");
+
+            return false;
+        }
+
+        if (gender === "") {
+            setError(
+                "Gender",
+                "Gender is required.");
+
+            return false;
+        }
+
+        if (phoneNumber === "") {
+            setError(
+                "PhoneNumber",
+                "Phone Number is required.");
+
+            return false;
+        }
+
+        if (!phonePattern.test(phoneNumber)) {
+            setError(
+                "PhoneNumber",
+                "Phone Number must contain exactly 10 digits.");
+
+            return false;
+        }
+
+        if (email === "") {
+            setError(
+                "Email",
+                "Email is required.");
+
+            return false;
+        }
+
+        if (!isValidEmail(email)) {
+            setError(
+                "Email",
+                "Please enter a valid email address.");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    var fullNameInput =
+        document.getElementById("FullName");
+
+    var dateOfBirthInput =
+        document.getElementById("DateOfBirth");
+
+    var genderInput =
+        document.getElementById("Gender");
+
+    var phoneNumberInput =
+        document.getElementById("PhoneNumber");
+
+    var emailInput =
+        document.getElementById("Email");
+
+    if (fullNameInput) {
+        fullNameInput.addEventListener("input", function () {
+
+            var value =
+                fullNameInput.value.trim();
+
+            var onlyLettersAndSpaces =
+                /^[A-Za-z ]+$/;
+
+            if (value !== "" &&
+                onlyLettersAndSpaces.test(value)) {
+                clearError("FullName");
+            }
+        });
+    }
+
+    if (dateOfBirthInput) {
+        dateOfBirthInput.addEventListener("change", function () {
+
+            if (dateOfBirthInput.value !== "") {
+                clearError("DateOfBirth");
+            }
+        });
+    }
+
+    if (genderInput) {
+        genderInput.addEventListener("change", function () {
+
+            if (genderInput.value !== "") {
+                clearError("Gender");
+            }
+        });
+    }
+
+    if (phoneNumberInput) {
+        phoneNumberInput.addEventListener("input", function () {
+
+            var value =
+                phoneNumberInput.value.trim();
+
+            var phonePattern =
+                /^[0-9]{10}$/;
+
+            if (phonePattern.test(value)) {
+                clearError("PhoneNumber");
+            }
+        });
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener("input", function () {
+
+            var value =
+                emailInput.value.trim();
+
+            if (value !== "" &&
+                isValidEmail(value)) {
+                clearError("Email");
+            }
+        });
+    }
+
+</script>
 
 @section Scripts
 {

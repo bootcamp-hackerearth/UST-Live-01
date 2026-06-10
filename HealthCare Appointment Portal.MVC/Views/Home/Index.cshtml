@@ -1,76 +1,132 @@
-﻿@*@{
-        ViewBag.Title = "HealthCare Appointment Portal";
-    }
-
-    <div class="container mt-5">
-
-        <div class="text-center">
-
-            <h1 class="display-4">
-
-                HealthCare Appointment Portal
-
-            </h1>
-
-            <p class="lead">
-
-                Appointment Booking and Health Record Management System
-
-            </p>
-
-            <hr />
-
-            <a href="@Url.Action(
-                        "Login",
-                        "User")"
-               class="btn btn-primary btn-lg">
-
-                Login
-
-            </a>
-
-        </div>
-
-    </div>*@
-
-@{
+﻿@{
     ViewBag.Title = "Healthcare Management System";
 }
 
-<div class="container mt-5">
+<style>
 
-    <div class="text-center mb-5">
+    html {
+        scroll-behavior: smooth;
+    }
 
-        <h1 class="display-4">
-            Healthcare Management System
-        </h1>
+    body {
+        background: linear-gradient(135deg, #0d6efd, #4dabf7);
+        min-height: 100vh;
+    }
 
-        <p class="lead">
-            Manage Patients, Doctors, Appointments and Medical Records
-            through a centralized healthcare platform.
+    /* HERO */
+    .hero-section {
+        text-align: center;
+        color: white;
+        padding: 60px 0;
+    }
+
+        .hero-section h1 {
+            font-size: 55px;
+            font-weight: bold;
+        }
+
+        .hero-section p {
+            font-size: 20px;
+        }
+
+    /* CARDS */
+    .feature-card {
+        border: none;
+        border-radius: 25px;
+        transition: 0.3s;
+        background: white;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+    .icon-circle {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        margin: auto;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 45px;
+        color: white;
+    }
+
+    .patient {
+        background: #0d6efd;
+    }
+
+    .doctor {
+        background: #20c997;
+    }
+
+    .contact-section {
+        background: white;
+        border-radius: 25px;
+        padding: 40px;
+        margin-top: 50px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+
+    .feature-box {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+
+    footer {
+        text-align: center;
+        color: white;
+        margin-top: 40px;
+        padding: 20px;
+    }
+</style>
+
+<div class="container">
+
+    <!-- HERO -->
+    <div id="home" class="hero-section">
+
+        <h1>Healthcare Management System</h1>
+
+        <p>
+            Book appointments, manage doctors and maintain patient health records.
         </p>
 
     </div>
 
-    <div class="row">
+    <!-- PATIENT & DOCTOR CARDS -->
+    <div class="row justify-content-center">
 
-        <div class="col-md-3 mb-4">
+        <!-- Patient -->
+        <div class="col-md-5 mb-4">
 
-            <div class="card shadow h-100">
+            <div class="card feature-card h-100">
 
                 <div class="card-body text-center">
 
-                    <h1>👥</h1>
+                    <div class="icon-circle patient">
+                        👥
+                    </div>
 
-                    <h4>Patients</h4>
+                    <h2>
+                        Patients
+                    </h2>
 
                     <p>
-                        Register and manage patient information.
+                        Book appointments, manage profile information and
+                        view health record history.
                     </p>
 
-                    <a href="@Url.Action("Index", "Patient")"
-                       class="btn btn-primary">
-                        Manage Patients
+                    <a href="@Url.Action("Create","Patient")"
+                       class="btn btn-primary btn-lg">
+                        Patient Portal
                     </a>
 
                 </div>
@@ -79,74 +135,29 @@
 
         </div>
 
-        <div class="col-md-3 mb-4">
+        <!-- Doctor -->
+        <div class="col-md-5 mb-4">
 
-            <div class="card shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <h1>🩺</h1>
-
-                    <h4>Doctors</h4>
-
-                    <p>
-                        Manage doctor profiles and specializations.
-                    </p>
-
-                    <a href="@Url.Action("Index", "Doctor")"
-                       class="btn btn-success">
-                        Manage Doctors
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3 mb-4">
-
-            <div class="card shadow h-100">
+            <div class="card feature-card h-100">
 
                 <div class="card-body text-center">
 
-                    <h1>📅</h1>
+                    <div class="icon-circle doctor">
+                        🩺
+                    </div>
 
-                    <h4>Appointments</h4>
-
-                    <p>
-                        Schedule and track appointments.
-                    </p>
-
-                    <a href="@Url.Action("Index", "Appointment")"
-                       class="btn btn-warning">
-                        Manage Appointments
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-3 mb-4">
-
-            <div class="card shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <h1>📋</h1>
-
-                    <h4>Health Records</h4>
+                    <h2>
+                        Doctors
+                    </h2>
 
                     <p>
-                        Maintain patient diagnoses and prescriptions.
+                        Manage appointments, update appointment status and
+                        maintain patient health records.
                     </p>
-
-                    <a href="@Url.Action("Index", "HealthRecord")"
-                       class="btn btn-info">
-                        Manage Records
-                    </a>
+                    <a href="@Url.Action("Create", "Doctor")"
+                       class="btn btn-success btn-lg">
+                        Doctor Portal
+                    </a> 
 
                 </div>
 
@@ -155,5 +166,143 @@
         </div>
 
     </div>
+
+    <!-- FEATURES -->
+    <h3 class="text-white mb-4 mt-4">
+        ⭐ Features
+    </h3>
+
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+
+            <div class="feature-box">
+
+                <h5>
+                    📅Appointment Booking
+                </h5>
+
+                <p class="mb-0">
+                    Patients can book appointments with doctors based on
+                    available dates and time slots.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 mb-3">
+
+            <div class="feature-box">
+
+                <h5>
+                    🩺 Doctor Management
+                </h5>
+
+                <p class="mb-0">
+                    Manage doctor profiles, specializations and consultation details.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 mb-3">
+
+            <div class="feature-box">
+
+                <h5>
+                    📋 Health Records
+                </h5>
+
+                <p class="mb-0">
+                    Doctors can add diagnoses and prescriptions after completing appointments.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 mb-3">
+
+            <div class="feature-box">
+
+                <h5>
+                    🔒 24/7 Patient Support
+                </h5>
+
+                <p class="mb-0">
+                    Available around the clock to assist patients with appointment bookings and inquiries.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- CONTACT -->
+    <div id="contact" class="contact-section">
+
+        <h2 class="text-primary mb-4">
+            📞 Contact Us
+        </h2>
+
+        <div class="row">
+
+            <div class="col-md-4">
+
+                <h5>
+                    📍 Address
+                </h5>
+
+                <p>
+                    Trivandrum, Kerala, India
+                </p>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <h5>
+                    📧 Email
+                </h5>
+
+                <p>
+                    support@healthcare.com
+                </p>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <h5>
+                    ☎ Phone
+                </h5>
+
+                <p>
+                    +91 98765 43210
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+
+        <hr />
+
+        <h5>
+            ❤️ Caring Beyond Treatment
+        </h5>
+
+        <p>
+            © 2026 Healthcare Management System
+        </p>
+
+    </footer>
 
 </div>

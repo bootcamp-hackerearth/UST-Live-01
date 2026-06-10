@@ -227,12 +227,8 @@
     <Content Include="Views\Doctor\Create.cshtml" />
     <Content Include="Views\Doctor\Details.cshtml" />
     <Content Include="Views\Doctor\Edit.cshtml" />
-    <Content Include="Views\Doctor\ToggleStatus.cshtml" />
     <Content Include="Views\Appointment\Create.cshtml" />
-    <Content Include="Views\Appointment\MyAppointments.cshtml" />
     <Content Include="Views\Appointment\Details.cshtml" />
-    <Content Include="Views\Appointment\TodaySchedule.cshtml" />
-    <Content Include="Views\Appointment\WeeklySchedule.cshtml" />
     <Content Include="Views\Appointment\Cancel.cshtml" />
     <Content Include="Views\Appointment\Index.cshtml" />
     <Content Include="Views\HealthRecord\Index.cshtml" />
@@ -245,13 +241,26 @@
     <Content Include="Views\Patient\Dashboard.cshtml" />
     <Content Include="Views\Patient\MyProfile.cshtml" />
     <Content Include="Views\Patient\EditMyProfile.cshtml" />
-    <Content Include="Views\Doctor\Dashboard.cshtml" />
     <Content Include="Views\Doctor\MyProfile.cshtml" />
     <Content Include="Views\Doctor\EditMyProfile.cshtml" />
     <Content Include="Views\HealthRecord\DoctorRecords.cshtml" />
     <Content Include="Views\HealthRecord\Delete.cshtml" />
     <Content Include="Views\Appointment\Confirm.cshtml" />
     <Content Include="Views\HealthRecord\SelectAppointment.cshtml" />
+    <Content Include="Views\Appointment\BookingSuccess.cshtml" />
+    <Content Include="Views\Appointment\MyAppointments.cshtml" />
+    <Content Include="Views\Doctor\Dashboard.cshtml" />
+    <Content Include="Views\Doctor\UpcomingAppointments.cshtml" />
+    <Content Include="Views\Appointment\Edit.cshtml" />
+    <Content Include="Views\Doctor\DoctorRecords.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\Create.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\Delete.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\Details.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\DoctorRecords.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\Edit.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\Index.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\PatientHistory.cshtml" />
+    <Content Include="Views\HealthRecord\healthrecord\SelectAppointment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

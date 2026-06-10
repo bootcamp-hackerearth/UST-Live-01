@@ -1,16 +1,4 @@
-﻿
-
-
-
-
-
-
-
-
-
-
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html>
 
@@ -48,18 +36,22 @@
 
         .navbar {
             background: linear-gradient( 90deg, var(--primary-dark), var(--primary-blue), var(--primary-light) ) !important;
-            box-shadow: 0 2px 12px rgba(0,0,0,.15);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, .15);
+            padding-top: 14px;
+            padding-bottom: 14px;
         }
 
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
+            color: white !important;
         }
 
         .navbar-nav .nav-link {
-            color: rgba(255,255,255,.95) !important;
-            font-weight: 500;
-            margin-left: 10px;
+            color: rgba(255, 255, 255, .95) !important;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-left: 18px;
             transition: .2s;
         }
 
@@ -68,10 +60,14 @@
                 transform: translateY(-1px);
             }
 
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, .5);
+        }
+
         .card {
             border: none;
             border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,.08);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, .08);
         }
 
         .card-header {
@@ -95,7 +91,7 @@
         <div class="container-fluid">
 
             <a class="navbar-brand"
-               href="@Url.Action("Index","Home")">
+               href="@Url.Action("Index", "Home")">
 
                 <i class="fas fa-hospital-alt me-2"></i>
 
@@ -103,10 +99,14 @@
 
             </a>
 
+
             <button class="navbar-toggler"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#navbarContent">
+                    data-bs-target="#navbarContent"
+                    aria-controls="navbarContent"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
 
                 <span class="navbar-toggler-icon"></span>
 
@@ -120,24 +120,11 @@
                     <li class="nav-item">
 
                         <a class="nav-link"
-                           href="@Url.Action("Index","Patient")">
+                           href="@Url.Action("Index", "Home")">
 
-                            <i class="fas fa-users me-1"></i>
+                            <i class="fas fa-home me-1"></i>
 
-                            Patients
-
-                        </a>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <a class="nav-link"
-                           href="@Url.Action("Index","Doctor")">
-
-                            <i class="fas fa-user-doctor me-1"></i>
-
-                            Doctors
+                            Home
 
                         </a>
 
@@ -146,11 +133,11 @@
                     <li class="nav-item">
 
                         <a class="nav-link"
-                           href="@Url.Action("Index","Appointment")">
+                           href="@Url.Action("Create", "Patient")">
 
-                            <i class="fas fa-calendar-check me-1"></i>
+                            <i class="fas fa-user-injured me-1"></i>
 
-                            Appointments
+                            Patient Login
 
                         </a>
 
@@ -159,11 +146,11 @@
                     <li class="nav-item">
 
                         <a class="nav-link"
-                           href="@Url.Action("Index","HealthRecord")">
+                           href="@Url.Action("Create", "Doctor")">
 
-                            <i class="fas fa-file-medical me-1"></i>
+                            <i class="fas fa-user-md me-1"></i>
 
-                            Health Records
+                            Doctor Login
 
                         </a>
 

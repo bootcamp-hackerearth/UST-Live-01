@@ -1,0 +1,140 @@
+﻿@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
+
+@{
+    ViewBag.Title = "Appointment Booked Successfully";
+
+    var patient = ViewBag.Patient;
+    var doctor = ViewBag.Doctor;
+}
+
+<div class="container mt-5">
+
+    <div class="card shadow border-0 rounded-4">
+
+        <div class="card-body p-5">
+
+            <div class="text-center mb-4">
+
+                <h1 class="text-success">
+                    ✅ Appointment Booked Successfully
+                </h1>
+
+                <p class="lead">
+                    Your appointment has been booked successfully.
+                    Please check the details below.
+                </p>
+
+            </div>
+
+            <hr />
+
+            <table class="table table-bordered table-striped">
+
+                <tr>
+                    <th>
+                        Appointment Id
+                    </th>
+                    <td>
+                        @Model.AppointmentId
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Patient Name
+                    </th>
+                    <td>
+                        @patient.FullName
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Doctor Name
+                    </th>
+                    <td>
+                        @doctor.FullName
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Doctor Specialisation
+                    </th>
+                    <td>
+                        @doctor.Specialisation
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Consultation Fee
+                    </th>
+                    <td>
+                        ₹@doctor.ConsultationFee
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Years Of Experience
+                    </th>
+                    <td>
+                        @doctor.YearsOfExperience years
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Appointment Date
+                    </th>
+                    <td>
+                        @Model.ScheduledDate.ToString("dd-MMM-yyyy")
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Time Slot
+                    </th>
+                    <td>
+                        @Model.TimeSlot
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        Status
+                    </th>
+                    <td>
+                        <span class="badge bg-warning text-dark">
+                            @Model.Status
+                        </span>
+                    </td>
+                </tr>
+
+            </table>
+
+            <div class="mt-4 text-center">
+
+                <a href="@Url.Action("Dashboard", "Patient")"
+                   class="btn btn-primary">
+
+                    Back to Patient Dashboard
+
+                </a>
+
+                <a href="@Url.Action("Create", "Appointment")"
+                   class="btn btn-success">
+
+                    Book Another Appointment
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

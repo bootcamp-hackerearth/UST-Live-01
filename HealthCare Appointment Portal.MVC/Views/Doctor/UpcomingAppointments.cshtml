@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
 
 @{
-    ViewBag.Title = "My Appointments";
+    ViewBag.Title = "Upcoming Appointments";
 }
 
 <div class="container mt-5">
@@ -9,15 +9,22 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <h2>
-            My Appointments
+            Upcoming Appointments
         </h2>
 
-        <a href="@Url.Action("Dashboard", "Patient")"
+        <a href="@Url.Action("Dashboard", "Doctor")"
            class="btn btn-secondary">
             Back to Dashboard
         </a>
 
     </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
 
     @if (TempData["Error"] != null)
     {
@@ -40,18 +47,24 @@
             {
                 <div class="row mb-4">
 
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-4 mb-2">
                         <input type="text"
                                id="appointmentIdSearch"
                                class="form-control"
                                placeholder="Search by Appointment Id" />
                     </div>
 
-                    <div class="col-md-6 mb-2">
+                    <div class="col-md-4 mb-2">
                         <input type="text"
-                               id="doctorNameSearch"
+                               id="patientNameSearch"
                                class="form-control"
-                               placeholder="Search by Doctor Name" />
+                               placeholder="Search by Patient Name" />
+                    </div>
+
+                    <div class="col-md-4 mb-2">
+                        <input type="date"
+                               id="dateSearch"
+                               class="form-control" />
                     </div>
 
                 </div>
@@ -62,8 +75,9 @@
                     <thead class="table-light">
                         <tr>
                             <th>Appointment Id</th>
-                            <th>Doctor Name</th>
-                            <th>Appointment Date</th>
+                            <th>Patient Id</th>
+                            <th>Patient Name</th>
+                            <th>Date</th>
                             <th>Time Slot</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -77,16 +91,24 @@
                             string status =
                                 appointment.Status.ToString();
 
+                            string dateForSearch =
+                                appointment.ScheduledDate.ToString("yyyy-MM-dd");
+
                             <tr>
                                 <td class="appointment-id">
                                     @appointment.AppointmentId
                                 </td>
 
-                                <td class="doctor-name">
-                                    @appointment.DoctorName
+                                <td>
+                                    @appointment.PatientId
                                 </td>
 
-                                <td>
+                                <td class="patient-name">
+                                    @appointment.PatientName
+                                </td>
+
+                                <td class="appointment-date"
+                                    data-date="@dateForSearch">
                                     @appointment.ScheduledDate.ToString("dd-MMM-yyyy")
                                 </td>
 
@@ -128,36 +150,58 @@
                                 </td>
 
                                 <td>
-                                    <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId, returnUrl = Url.Action("MyAppointments", "Appointment"), backText = "Back to My Appointments" })"
+                                    <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId, returnUrl = Url.Action("UpcomingAppointments", "Doctor"), backText = "Back to Upcoming Appointments" })"
                                        class="btn btn-info btn-sm text-white">
                                         View
                                     </a>
 
                                     @if (status == "Pending")
                                     {
-                                        <a href="@Url.Action("Edit", "Appointment", new { id = appointment.AppointmentId })"
-                                           class="btn btn-warning btn-sm">
-                                            Update
-                                        </a>
-
-                                        using (Html.BeginForm("PatientCancel", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;" }))
+                                        using (Html.BeginForm("Confirm", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;" }))
                                         {
                                             @Html.AntiForgeryToken()
 
                                             <button type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Are you sure you want to cancel this appointment?');">
-                                                Cancel
+                                                    class="btn btn-success btn-sm">
+                                                Confirm
                                             </button>
                                         }
+
+                                        <a href="@Url.Action("Cancel", "Appointment", new { id = appointment.AppointmentId })"
+                                           class="btn btn-danger btn-sm">
+                                            Cancel
+                                        </a>
+                                    }
+                                    else if (status == "Confirmed")
+                                    {
+                                        using (Html.BeginForm("Complete", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-primary btn-sm">
+                                                Complete
+                                            </button>
+                                        }
+
+                                        <a href="@Url.Action("Cancel", "Appointment", new { id = appointment.AppointmentId })"
+                                           class="btn btn-danger btn-sm">
+                                            Cancel
+                                        </a>
+                                    }
+                                    else if (status == "Completed")
+                                    {
+                                        <a href="@Url.Action("Create", "HealthRecord", new { appointmentId = appointment.AppointmentId })"
+                                           class="btn btn-warning btn-sm">
+                                            Add Health Record
+                                        </a>
                                     }
                                 </td>
-
                             </tr>
                         }
 
                         <tr id="noDataRow" style="display:none;">
-                            <td colspan="6"
+                            <td colspan="7"
                                 class="text-center text-muted py-4">
                                 No appointments found.
                             </td>
@@ -179,8 +223,11 @@
     var appointmentIdSearch =
         document.getElementById("appointmentIdSearch");
 
-    var doctorNameSearch =
-        document.getElementById("doctorNameSearch");
+    var patientNameSearch =
+        document.getElementById("patientNameSearch");
+
+    var dateSearch =
+        document.getElementById("dateSearch");
 
     if (appointmentIdSearch) {
         appointmentIdSearch.addEventListener(
@@ -188,9 +235,15 @@
             filterAppointments);
     }
 
-    if (doctorNameSearch) {
-        doctorNameSearch.addEventListener(
+    if (patientNameSearch) {
+        patientNameSearch.addEventListener(
             "keyup",
+            filterAppointments);
+    }
+
+    if (dateSearch) {
+        dateSearch.addEventListener(
+            "change",
             filterAppointments);
     }
 
@@ -201,10 +254,14 @@
                 .value
                 .toLowerCase();
 
-        var doctorSearch =
-            document.getElementById("doctorNameSearch")
+        var nameSearch =
+            document.getElementById("patientNameSearch")
                 .value
                 .toLowerCase();
+
+        var selectedDate =
+            document.getElementById("dateSearch")
+                .value;
 
         var rows =
             document.querySelectorAll(
@@ -220,13 +277,26 @@
                     .innerText
                     .toLowerCase();
 
-            var doctorName =
-                row.querySelector(".doctor-name")
+            var patientName =
+                row.querySelector(".patient-name")
                     .innerText
                     .toLowerCase();
 
-            if (appointmentId.includes(idSearch) &&
-                doctorName.includes(doctorSearch)) {
+            var appointmentDate =
+                row.querySelector(".appointment-date")
+                    .getAttribute("data-date");
+
+            var idMatch =
+                appointmentId.includes(idSearch);
+
+            var nameMatch =
+                patientName.includes(nameSearch);
+
+            var dateMatch =
+                selectedDate === "" ||
+                appointmentDate === selectedDate;
+
+            if (idMatch && nameMatch && dateMatch) {
                 row.style.display = "";
                 visibleCount++;
             }

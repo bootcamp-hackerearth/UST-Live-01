@@ -13,7 +13,7 @@ namespace HealthCare_Appointment_Portal.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202606081615361_InitialCreate"; }
+            get { return "202606090401344_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

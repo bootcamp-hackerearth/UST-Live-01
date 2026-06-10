@@ -1,10 +1,29 @@
 @model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto
+@using HealthCare_Appointment_Portal.Enums
 
 @{
     ViewBag.Title = "Appointment Details";
+
+    string returnUrl =
+        ViewBag.ReturnUrl as string;
+
+    string backText =
+        ViewBag.BackText as string;
+
+    if (string.IsNullOrWhiteSpace(returnUrl))
+    {
+        returnUrl =
+            Url.Action("MyAppointments", "Appointment");
+    }
+
+    if (string.IsNullOrWhiteSpace(backText))
+    {
+        backText =
+            "Back to My Appointments";
+    }
 }
 
-<div class="container-fluid">
+<div class="container mt-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
@@ -12,258 +31,124 @@
             Appointment Details
         </h2>
 
-        <a href="@Url.Action(
-            "Index",
-            "Appointment")"
+        <a href="@returnUrl"
            class="btn btn-secondary">
-
-            Back
-
+            @backText
         </a>
 
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow border-0 rounded-4">
 
-        <div class="card-body">
+        <div class="card-body p-4">
 
-            <div class="row mb-3">
+            <table class="table table-borderless">
 
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th style="width: 280px;">
                         Appointment Id
-                    </strong>
+                    </th>
+                    <td>
+                        @Model.AppointmentId
+                    </td>
+                </tr>
 
-                </div>
+                <tr>
+                    <th>
+                        Patient Id
+                    </th>
+                    <td>
+                        @Model.PatientId
+                    </td>
+                </tr>
 
-                <div class="col-md-9">
-
-                    @Model.AppointmentId
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th>
                         Patient
-                    </strong>
+                    </th>
+                    <td>
+                        @Model.PatientName
+                    </td>
+                </tr>
 
-                </div>
+                <tr>
+                    <th>
+                        Doctor Id
+                    </th>
+                    <td>
+                        @Model.DoctorId
+                    </td>
+                </tr>
 
-                <div class="col-md-9">
-
-                    @Model.PatientName
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th>
                         Doctor
-                    </strong>
+                    </th>
+                    <td>
+                        @Model.DoctorName
+                    </td>
+                </tr>
 
-                </div>
-
-                <div class="col-md-9">
-
-                    @Model.DoctorName
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th>
                         Appointment Date
-                    </strong>
+                    </th>
+                    <td>
+                        @Model.ScheduledDate.ToString("dd MMM yyyy")
+                    </td>
+                </tr>
 
-                </div>
-
-                <div class="col-md-9">
-
-                    @Model.ScheduledDate.ToString(
-                        "dd MMM yyyy")
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th>
                         Time Slot
-                    </strong>
+                    </th>
+                    <td>
+                        @Model.TimeSlot
+                    </td>
+                </tr>
 
-                </div>
-
-                <div class="col-md-9">
-
-                    @Model.TimeSlot
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th>
                         Status
-                    </strong>
+                    </th>
+                    <td>
+                        @if (Model.Status == AppointmentStatus.Pending)
+                        {
+                            <span class="badge bg-warning text-dark">
+                                Pending
+                            </span>
+                        }
+                        else if (Model.Status == AppointmentStatus.Confirmed)
+                        {
+                            <span class="badge bg-success">
+                                Confirmed
+                            </span>
+                        }
+                        else if (Model.Status == AppointmentStatus.Cancelled)
+                        {
+                            <span class="badge bg-danger">
+                                Cancelled
+                            </span>
+                        }
+                        else if (Model.Status == AppointmentStatus.Completed)
+                        {
+                            <span class="badge bg-primary">
+                                Completed
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">
+                                @Model.Status
+                            </span>
+                        }
+                    </td>
+                </tr>
 
-                </div>
-
-                <div class="col-md-9">
-
-                    @if (Model.Status.ToString() == "Pending")
-                    {
-                        <span class="badge bg-warning text-dark">
-                            Pending
-                        </span>
-                    }
-                    else if (Model.Status.ToString() == "Confirmed")
-                    {
-                        <span class="badge bg-success">
-                            Confirmed
-                        </span>
-                    }
-                    else if (Model.Status.ToString() == "Cancelled")
-                    {
-                        <span class="badge bg-danger">
-                            Cancelled
-                        </span>
-                    }
-                    else if (Model.Status.ToString() == "Completed")
-                    {
-                        <span class="badge bg-primary">
-                            Completed
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-secondary">
-                            @Model.Status
-                        </span>
-                    }
-
-                </div>
-
-            </div>
-
-            @if (!string.IsNullOrWhiteSpace(
-                Model.CancellationReason))
-            {
-                <hr />
-
-                <div class="row mb-3">
-
-                    <div class="col-md-3">
-
-                        <strong>
-                            Cancellation Reason
-                        </strong>
-
-                    </div>
-
-                    <div class="col-md-9 text-danger">
-
-                        @Model.CancellationReason
-
-                    </div>
-
-                </div>
-            }
+            </table>
 
         </div>
 
     </div>
-
-    @if (Session["Role"]?.ToString() == "Doctor")
-    {
-        <div class="mt-4">
-
-            @if (Model.Status.ToString() == "Pending")
-            {
-                using (Html.BeginForm(
-                    "Confirm",
-                    "Appointment",
-                    FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
-
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.AppointmentId" />
-
-                    <button type="submit"
-                            class="btn btn-success">
-
-                        Confirm Appointment
-
-                    </button>
-                }
-
-                <a href="@Url.Action(
-                            "Cancel",
-                            "Appointment",
-                            new
-                            {
-                                id = Model.AppointmentId
-                            })"
-                   class="btn btn-danger">
-
-                    Cancel Appointment
-
-                </a>
-            }
-
-            @if (Model.Status.ToString() == "Confirmed")
-            {
-                using (Html.BeginForm(
-                    "Complete",
-                    "Appointment",
-                    FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
-
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.AppointmentId" />
-
-                    <button type="submit"
-                            class="btn btn-primary">
-
-                        Mark As Completed
-
-                    </button>
-                }
-            }
-        </div>
-    }
 
 </div>

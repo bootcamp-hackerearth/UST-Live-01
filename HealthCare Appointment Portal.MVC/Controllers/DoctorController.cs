@@ -1,151 +1,219 @@
 ﻿using HealthCare_Appointment_Portal.DTOs.DoctorDtos;
+using HealthCare_Appointment_Portal.DTOs.AppointmentDtos;
 using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
-    public class DoctorController
-    : Controller
+    public class DoctorController : Controller
     {
-        private readonly IDoctorApiService
-            _doctorService;
+        private readonly IDoctorApiService _doctorService;
+        private readonly IAppointmentApiService _appointmentService;
 
         public DoctorController(
-            IDoctorApiService doctorService)
+            IDoctorApiService doctorService,
+            IAppointmentApiService appointmentService)
         {
-            _doctorService =
-                doctorService;
+            _doctorService = doctorService;
+            _appointmentService = appointmentService;
         }
 
         // ==================================
-        // DOCTOR
+        // DOCTOR DASHBOARD
         // ==================================
 
-        public async Task<ActionResult>
-            Dashboard()
+        public async Task<ActionResult> Dashboard()
         {
             try
             {
+                if (Session["ReferenceId"] == null)
+                {
+                    return RedirectToAction("Create");
+                }
+
                 int doctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
+                    Convert.ToInt32(Session["ReferenceId"]);
 
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(
-                            doctorId);
+                        .GetDoctorByIdAsync(doctorId);
 
-                return View(
-                    doctor);
+                return View(doctor);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Create");
             }
         }
 
-        public async Task<ActionResult>
-            MyProfile()
-        {
-            try
-            {
-                int doctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
-
-                var doctor =
-                    await _doctorService
-                        .GetDoctorByIdAsync(
-                            doctorId);
-
-                return View(
-                    doctor);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] =
-                    ex.Message;
-
-                return RedirectToAction(
-                    "Index");
-            }
-        }
-
-        public async Task<ActionResult>
-            EditMyProfile()
-        {
-            try
-            {
-                int doctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
-
-                var doctor =
-                    await _doctorService
-                        .GetDoctorByIdAsync(
-                            doctorId);
-
-                return View(
-                    new UpdateDoctorDto
-                    {
-                        FullName =
-                            doctor.FullName,
-
-                        Specialisation =
-                            doctor.Specialisation,
-
-                        YearsOfExperience =
-                            doctor.YearsOfExperience,
-
-                        ConsultationFee =
-                            doctor.ConsultationFee,
-
-                        IsActive =
-                            doctor.IsActive
-                    });
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] =
-                    ex.Message;
-
-                return RedirectToAction(
-                    "MyProfile");
-            }
-        }
+        // ==================================
+        // EXISTING DOCTOR LOGIN
+        // ==================================
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            EditMyProfile(
-                UpdateDoctorDto doctor)
+        public async Task<ActionResult> ExistingDoctorLogin(int doctorId)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return View(
-                    doctor);
+                var doctor =
+                    await _doctorService
+                        .GetDoctorByIdAsync(doctorId);
+
+                if (doctor == null)
+                {
+                    TempData["LoginError"] =
+                        "No doctor found with this Doctor Id.";
+
+                    return RedirectToAction("Create");
+                }
+
+                Session["ReferenceId"] = doctor.DoctorId;
+
+                return RedirectToAction("Dashboard");
+            }
+            catch
+            {
+                TempData["LoginError"] =
+                    "No doctor found with this Doctor Id.";
+
+                return RedirectToAction("Create");
+            }
+        }
+
+        // ==================================
+        // DOCTOR UPCOMING APPOINTMENTS
+        // ==================================
+
+        public async Task<ActionResult> UpcomingAppointments()
+        {
+            try
+            {
+                if (Session["ReferenceId"] == null)
+                {
+                    return RedirectToAction("Create");
+                }
+
+                int doctorId =
+                    Convert.ToInt32(Session["ReferenceId"]);
+
+                var appointments =
+                    await _appointmentService
+                        .GetAllAppointmentsAsync();
+
+                var doctorAppointments =
+                    appointments
+                        .Where(a => a.DoctorId == doctorId)
+                        .OrderBy(a => a.ScheduledDate)
+                        .ThenBy(a => a.TimeSlot)
+                        .ToList();
+
+                return View(doctorAppointments);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+
+                return RedirectToAction("Dashboard");
+            }
+        }
+
+        // ==================================
+        // DOCTOR PROFILE
+        // ==================================
+
+        public async Task<ActionResult> MyProfile()
+        {
+            try
+            {
+                if (Session["ReferenceId"] == null)
+                {
+                    return RedirectToAction("Create");
+                }
+
+                int doctorId =
+                    Convert.ToInt32(Session["ReferenceId"]);
+
+                var doctor =
+                    await _doctorService
+                        .GetDoctorByIdAsync(doctorId);
+
+                return View(doctor);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+
+                return RedirectToAction("Dashboard");
+            }
+        }
+
+        public async Task<ActionResult> EditMyProfile()
+        {
+            if (Session["ReferenceId"] == null)
+            {
+                return RedirectToAction("Create");
             }
 
             try
             {
                 int doctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
+                    Convert.ToInt32(Session["ReferenceId"]);
 
-                await _doctorService
-                    .UpdateDoctorAsync(
-                        doctorId,
-                        doctor);
+                var doctor =
+                    await _doctorService.GetDoctorByIdAsync(doctorId);
 
-                return RedirectToAction(
-                    "MyProfile");
+                var dto =
+                    new UpdateDoctorDto
+                    {
+                        FullName = doctor.FullName,
+                        Specialisation = doctor.Specialisation,
+                        YearsOfExperience = doctor.YearsOfExperience,
+                        ConsultationFee = doctor.ConsultationFee,
+                        IsActive = doctor.IsActive
+                    };
+
+                return View(dto);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction("Dashboard");
+            }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> EditMyProfile(UpdateDoctorDto dto)
+        {
+            if (Session["ReferenceId"] == null)
+            {
+                return RedirectToAction("Create");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(dto);
+            }
+
+            try
+            {
+                int doctorId =
+                    Convert.ToInt32(Session["ReferenceId"]);
+
+                await _doctorService.UpdateDoctorAsync(doctorId, dto);
+
+                ViewBag.Success =
+                    "Doctor profile updated successfully.";
+
+                return View(dto);
             }
             catch (Exception ex)
             {
@@ -153,99 +221,87 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     "",
                     ex.Message);
 
-                return View(
-                    doctor);
+                return View(dto);
             }
         }
 
-        public async Task<ActionResult>
-            ToggleStatus()
+        // ==================================
+        // TOGGLE STATUS
+        // ==================================
+
+        public async Task<ActionResult> ToggleStatus()
         {
             try
             {
+                if (Session["ReferenceId"] == null)
+                {
+                    return RedirectToAction("Create");
+                }
+
                 int doctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
+                    Convert.ToInt32(Session["ReferenceId"]);
 
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(
-                            doctorId);
+                        .GetDoctorByIdAsync(doctorId);
 
-                return View(
-                    doctor);
+                return View(doctor);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "MyProfile");
+                return RedirectToAction("Dashboard");
             }
         }
 
         [HttpPost]
         [ActionName("ToggleStatus")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            ToggleStatusConfirmed()
+        public async Task<ActionResult> ToggleStatusConfirmed()
         {
             try
             {
+                if (Session["ReferenceId"] == null)
+                {
+                    return RedirectToAction("Create");
+                }
+
                 int doctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
+                    Convert.ToInt32(Session["ReferenceId"]);
 
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(
-                            doctorId);
+                        .GetDoctorByIdAsync(doctorId);
 
                 var updateDoctor =
                     new UpdateDoctorDto
                     {
-                        FullName =
-                            doctor.FullName,
-
-                        Specialisation =
-                            doctor.Specialisation,
-
-                        YearsOfExperience =
-                            doctor.YearsOfExperience,
-
-                        ConsultationFee =
-                            doctor.ConsultationFee,
-
-                        IsActive =
-                            !doctor.IsActive
+                        FullName = doctor.FullName,
+                        Specialisation = doctor.Specialisation,
+                        YearsOfExperience = doctor.YearsOfExperience,
+                        ConsultationFee = doctor.ConsultationFee,
+                        IsActive = !doctor.IsActive
                     };
 
                 await _doctorService
-                    .UpdateDoctorAsync(
-                        doctorId,
-                        updateDoctor);
+                    .UpdateDoctorAsync(doctorId, updateDoctor);
 
-                return RedirectToAction(
-                    "MyProfile");
+                return RedirectToAction("Dashboard");
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "MyProfile");
+                return RedirectToAction("Dashboard");
             }
         }
 
         // ==================================
-        // ADMIN & PATIENT
+        // ADMIN & PATIENT DOCTOR LIST
         // ==================================
 
-        public async Task<ActionResult>
-            Index(
-                Specialisation? specialisation)
+        public async Task<ActionResult> Index(Specialisation? specialisation)
         {
             try
             {
@@ -256,156 +312,120 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                             .GetDoctorsBySpecialisationAsync(
                                 specialisation.Value);
 
-                    return View(
-                        doctors);
+                    return View(doctors);
                 }
 
                 var allDoctors =
                     await _doctorService
                         .GetAllDoctorsAsync();
 
-                return View(
-                    allDoctors);
+                return View(allDoctors);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
                 return View();
             }
         }
 
-        public async Task<ActionResult>
-            Details(
-                int id)
+        public async Task<ActionResult> Details(int id)
         {
             try
             {
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(
-                            id);
+                        .GetDoctorByIdAsync(id);
 
-                return View(
-                    doctor);
+                return View(doctor);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Index");
             }
         }
 
         // ==================================
-        // ADMIN ONLY
+        // NEW DOCTOR REGISTRATION
         // ==================================
 
-        public ActionResult
-            Create()
+        public ActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Create(
-                CreateDoctorDto doctor)
+        public async Task<ActionResult> Create(CreateDoctorDto doctor)
         {
             if (!ModelState.IsValid)
             {
-                return View(
-                    doctor);
+                return View(doctor);
             }
 
             try
             {
                 int doctorId =
                     await _doctorService
-                        .CreateDoctorAsync(
-                            doctor);
+                        .CreateDoctorAsync(doctor);
 
-                return RedirectToAction(
-                    "Details",
-                    new
-                    {
-                        id = doctorId
-                    });
+                Session["ReferenceId"] = doctorId;
+
+                return RedirectToAction("Dashboard");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ModelState.AddModelError("", ex.Message);
 
-                return View(
-                    doctor);
+                return View(doctor);
             }
         }
 
-        public async Task<ActionResult>
-            Edit(
-                int id)
+        // ==================================
+        // ADMIN EDIT DOCTOR
+        // ==================================
+
+        public async Task<ActionResult> Edit(int id)
         {
             try
             {
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(
-                            id);
+                        .GetDoctorByIdAsync(id);
 
                 return View(
                     new UpdateDoctorDto
                     {
-                        FullName =
-                            doctor.FullName,
-
-                        Specialisation =
-                            doctor.Specialisation,
-
-                        YearsOfExperience =
-                            doctor.YearsOfExperience,
-
-                        ConsultationFee =
-                            doctor.ConsultationFee,
-
-                        IsActive =
-                            doctor.IsActive
+                        FullName = doctor.FullName,
+                        Specialisation = doctor.Specialisation,
+                        YearsOfExperience = doctor.YearsOfExperience,
+                        ConsultationFee = doctor.ConsultationFee,
+                        IsActive = doctor.IsActive
                     });
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Index");
             }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                UpdateDoctorDto doctor)
+        public async Task<ActionResult> Edit(int id, UpdateDoctorDto doctor)
         {
             if (!ModelState.IsValid)
             {
-                return View(
-                    doctor);
+                return View(doctor);
             }
 
             try
             {
                 await _doctorService
-                    .UpdateDoctorAsync(
-                        id,
-                        doctor);
+                    .UpdateDoctorAsync(id, doctor);
 
                 return RedirectToAction(
                     "Details",
@@ -416,70 +436,56 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ModelState.AddModelError("", ex.Message);
 
-                return View(
-                    doctor);
+                return View(doctor);
             }
         }
 
-        public async Task<ActionResult>
-            Deactivate(
-                int id)
+        // ==================================
+        // ADMIN DEACTIVATE DOCTOR
+        // ==================================
+
+        public async Task<ActionResult> Deactivate(int id)
         {
             try
             {
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(
-                            id);
+                        .GetDoctorByIdAsync(id);
 
-                return View(
-                    doctor);
+                return View(doctor);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Index");
             }
         }
 
         [HttpPost]
         [ActionName("Deactivate")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            DeactivateConfirmed(
-                int id)
+        public async Task<ActionResult> DeactivateConfirmed(int id)
         {
             try
             {
                 await _doctorService
-                    .DeleteDoctorAsync(
-                        id);
+                    .DeleteDoctorAsync(id);
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ModelState.AddModelError("", ex.Message);
 
                 var doctor =
                     await _doctorService
-                        .GetDoctorByIdAsync(
-                            id);
+                        .GetDoctorByIdAsync(id);
 
-                return View(
-                    doctor);
+                return View(doctor);
             }
         }
     }
-
 }

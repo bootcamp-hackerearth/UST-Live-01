@@ -1,18 +1,21 @@
-@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.CreateAppointmentDto
+﻿@model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.UpdateAppointmentDto
 
 @using HealthCare_Appointment_Portal.DTOs.DoctorDtos
 
 @{
-    ViewBag.Title = "Book Appointment";
+    ViewBag.Title = "Update Appointment";
 
     var doctors =
         ViewBag.DoctorList as IEnumerable<DoctorDto>;
+
+    var patientList =
+        ViewBag.PatientList as SelectList;
 }
 
 <div class="container mt-5">
 
     <h2 class="mb-4">
-        Book Appointment
+        Update Appointment
     </h2>
 
     <div class="card shadow border-0 rounded-4">
@@ -20,7 +23,7 @@
         <div class="card-body p-4">
 
             @if (ViewData.ModelState[""] != null &&
-     ViewData.ModelState[""].Errors.Count > 0)
+      ViewData.ModelState[""].Errors.Count > 0)
             {
                 @Html.ValidationSummary(
                     true,
@@ -31,11 +34,9 @@
                     })
             }
 
-            @using (Html.BeginForm("Create", "Appointment", FormMethod.Post))
+            @using (Html.BeginForm("Edit", "Appointment", new { id = ViewBag.AppointmentId }, FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-
-                @Html.HiddenFor(m => m.PatientId)
 
                 <div class="mb-3">
 
@@ -43,18 +44,16 @@
                         Patient Name
                     </label>
 
-                    <input type="text"
-                           class="form-control"
-                           value="@ViewBag.PatientName"
-                           />
-
-                    @Html.ValidationMessageFor(
-                        m => m.PatientId,
-                        "",
+                    @Html.DropDownList(
+                        "PatientId",
+                        patientList,
                         new
                         {
-                            @class = "text-danger d-block mt-1"
+                            @class = "form-select",
+                            disabled = "disabled"
                         })
+
+                    
 
                 </div>
 
@@ -76,7 +75,8 @@
                         {
                             foreach (var doctor in doctors)
                             {
-                                <option value="@doctor.DoctorId">
+                                <option value="@doctor.DoctorId"
+                                        @(Model.DoctorId == doctor.DoctorId ? "selected" : "")>
                                     @doctor.FullName - @doctor.Specialisation
                                 </option>
                             }
@@ -89,7 +89,7 @@
                         "",
                         new
                         {
-                            @class = "text-danger d-block mt-1"
+                            @class = "text-danger"
                         })
 
                 </div>
@@ -115,7 +115,7 @@
                         "",
                         new
                         {
-                            @class = "text-danger d-block mt-1"
+                            @class = "text-danger"
                         })
 
                 </div>
@@ -157,17 +157,17 @@
                         "",
                         new
                         {
-                            @class = "text-danger d-block mt-1"
+                            @class = "text-danger"
                         })
 
                 </div>
 
                 <button type="submit"
                         class="btn btn-success">
-                    Book Appointment
+                    Save Changes
                 </button>
 
-                <a href="@Url.Action("Dashboard", "Patient")"
+                <a href="@Url.Action("MyAppointments", "Appointment")"
                    class="btn btn-secondary">
                     Back to Dashboard
                 </a>

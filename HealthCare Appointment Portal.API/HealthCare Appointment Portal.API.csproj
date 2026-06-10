@@ -357,9 +357,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Mappings\MappingProfile.cs" />
-    <Compile Include="Migrations\202606081615361_InitialCreate.cs" />
-    <Compile Include="Migrations\202606081615361_InitialCreate.Designer.cs">
-      <DependentUpon>202606081615361_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\202606090401344_InitialCreate.cs" />
+    <Compile Include="Migrations\202606090401344_InitialCreate.Designer.cs">
+      <DependentUpon>202606090401344_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202606090406120_InitialCreate1.cs" />
+    <Compile Include="Migrations\202606090406120_InitialCreate1.Designer.cs">
+      <DependentUpon>202606090406120_InitialCreate1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Repositories\Interfaces\IAppointmentRepository.cs" />
@@ -496,13 +500,16 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202606081615361_InitialCreate.resx">
-      <DependentUpon>202606081615361_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Analyzer Include="..\packages\MSTest.Analyzers.4.2.3\analyzers\dotnet\cs\MSTest.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\MSTest.Analyzers.4.2.3\analyzers\dotnet\cs\MSTest.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\202606090401344_InitialCreate.resx">
+      <DependentUpon>202606090401344_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606090406120_InitialCreate1.resx">
+      <DependentUpon>202606090406120_InitialCreate1.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

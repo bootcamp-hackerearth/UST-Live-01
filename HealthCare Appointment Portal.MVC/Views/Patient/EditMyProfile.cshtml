@@ -22,11 +22,19 @@
 
         <div class="card-body">
 
-            @using (Html.BeginForm())
+            @if (ViewBag.Success != null)
+            {
+                <div class="alert alert-success">
+                    @ViewBag.Success
+                </div>
+            }
+
+            @using (Html.BeginForm("EditMyProfile", "Patient", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
 
-                if (ViewData.ModelState[""]?.Errors.Count > 0)
+                if (ViewData.ModelState[""] != null &&
+                    ViewData.ModelState[""].Errors.Count > 0)
                 {
                     @Html.ValidationSummary(
                         true,
@@ -165,11 +173,9 @@
 
                     </button>
 
-                    <a href="@Url.Action("MyProfile", "Patient")"
+                    <a href="@Url.Action("Dashboard", "Patient")"
                        class="btn btn-secondary">
-
-                        Cancel
-
+                        Back to Dashboard
                     </a>
 
                 </div>

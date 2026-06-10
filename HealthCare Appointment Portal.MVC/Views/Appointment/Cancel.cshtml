@@ -4,32 +4,16 @@
     ViewBag.Title = "Cancel Appointment";
 }
 
-<div class="container-fluid">
+<div class="container mt-5">
 
-    <div class="row mb-4">
+    <div class="card shadow border-0 rounded-4">
 
-        <div class="col">
+        <div class="card-body p-4">
 
-            <h2 class="text-danger">
-                Cancel Appointment
-            </h2>
-
-        </div>
-
-    </div>
-
-    <div class="card shadow-sm border-danger">
-
-        <div class="card-body">
-
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger">
-
-                    @TempData["Error"]
-
-                </div>
-            }
+            <div class="alert alert-warning">
+                <strong>Warning!</strong>
+                You are about to cancel this appointment.
+            </div>
 
             @Html.ValidationSummary(
                 true,
@@ -39,137 +23,81 @@
                     @class = "alert alert-danger"
                 })
 
-            <div class="alert alert-warning">
+            <table class="table table-borderless">
 
-                <strong>
-                    Warning!
-                </strong>
-
-                You are about to cancel this appointment.
-
-            </div>
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th style="width: 250px;">
                         Appointment Id
-                    </strong>
+                    </th>
 
-                </div>
+                    <td>
+                        @Model.AppointmentId
+                    </td>
+                </tr>
 
-                <div class="col-md-9">
-
-                    @Model.AppointmentId
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th>
                         Patient
-                    </strong>
+                    </th>
 
-                </div>
+                    <td>
+                        @Model.PatientName
+                    </td>
+                </tr>
 
-                <div class="col-md-9">
-
-                    @Model.PatientName
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
+                <tr>
+                    <th>
                         Doctor
-                    </strong>
+                    </th>
 
-                </div>
+                    <td>
+                        @Model.DoctorName
+                    </td>
+                </tr>
 
-                <div class="col-md-9">
+                <tr>
+                    <th>
+                        Appointment Date
+                    </th>
 
-                    @Model.DoctorName
+                    <td>
+                        @Model.ScheduledDate.ToString("dd MMM yyyy") - @Model.TimeSlot
+                    </td>
+                </tr>
 
-                </div>
-
-            </div>
+            </table>
 
             <hr />
 
-            <div class="row mb-4">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Appointment Date
-                    </strong>
-
-                </div>
-
-                <div class="col-md-9">
-
-                    @Model.ScheduledDate.ToString(
-                        "dd MMM yyyy")
-
-                    -
-
-                    @Model.TimeSlot
-
-                </div>
-
-            </div>
-
-            @using (Html.BeginForm())
+            @using (Html.BeginForm("Cancel", "Appointment", new { id = Model.AppointmentId }, FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
 
-                <div class="mb-4">
+                <div class="mb-3">
 
                     <label class="form-label">
-
                         Cancellation Reason
-
                     </label>
 
                     <textarea name="reason"
-                              rows="4"
                               class="form-control"
-                              required
+                              rows="5"
                               placeholder="Enter cancellation reason..."></textarea>
+
+                    <small class="text-muted">
+                        Optional
+                    </small>
 
                 </div>
 
                 <button type="submit"
                         class="btn btn-danger">
-
                     Confirm Cancellation
-
                 </button>
 
-                <a href="@Url.Action(
-                            "Details",
-                            "Appointment",
-                            new
-                            {
-                                id = Model.AppointmentId
-                            })"
+                <a href="@Url.Action("UpcomingAppointments", "Doctor")"
                    class="btn btn-secondary">
-
                     Back
-
                 </a>
             }
 
