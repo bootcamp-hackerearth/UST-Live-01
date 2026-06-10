@@ -9,199 +9,143 @@
 <div class="container-fluid">
 
     <!-- HEADER -->
-
     <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2 class="fw-bold">
-            Patient Management
-        </h2>
+        <h2 class="fw-bold">Patient Management</h2>
 
         <a href="@Url.Action("Create", "Patient")"
            class="btn btn-success">
-
-            <i class="fas fa-plus"></i>
-
-            Add Patient
-
+            <i class="fas fa-plus"></i> Add Patient
         </a>
-
-    </div>
-
-    <!-- SEARCH -->
-
-    <div class="card shadow-sm mb-4">
-
-        <div class="card-body">
-
-            @using (Html.BeginForm(
-                "Index",
-                "Patient",
-                FormMethod.Get))
-            {
-                <div class="input-group">
-
-                    <input type="text"
-                           name="search"
-                           class="form-control"
-                           placeholder="Search Patient By Id or Name" />
-
-                    <button type="submit"
-                            class="btn btn-primary">
-
-                        <i class="fas fa-search"></i>
-
-                        Search
-
-                    </button>
-
-                </div>
-            }
-
-        </div>
-
     </div>
 
     <!-- TABLE -->
-
     <div class="card shadow-sm">
-
         <div class="card-body">
 
-            <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
 
-                <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Patient Id</th>
+                        <th>Full Name</th>
+                        <th>Gender</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Appointments</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-                    <thead class="table-light">
+                <tbody>
 
-                        <tr>
-
-                            <th>
-                                Patient Id
-                            </th>
-
-                            <th>
-                                Full Name
-                            </th>
-
-                            <th>
-                                Gender
-                            </th>
-
-                            <th>
-                                Email
-                            </th>
-
-                            <th>
-                                Phone Number
-                            </th>
-
-                            <th>
-                                Appointments
-                            </th>
-
-                            <th width="220">
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var patient in Model)
-                            {
-                                <tr>
-
-                                    <td>
-                                        @patient.PatientId
-                                    </td>
-
-                                    <td>
-                                        @patient.FullName
-                                    </td>
-
-                                    <td>
-                                        @patient.Gender
-                                    </td>
-
-                                    <td>
-                                        @patient.Email
-                                    </td>
-
-                                    <td>
-                                        @patient.PhoneNumber
-                                    </td>
-
-                                    <td>
-                                        @patient.AppointmentCount
-                                    </td>
-
-                                    <td>
-
-                                        <!-- VIEW -->
-
-                                        <a href="@Url.Action(
-                                            "Details",
-                                            "Patient",
-                                            new
-                                            {
-                                                id = patient.PatientId
-                                            })"
-                                           class="btn btn-info btn-sm text-white">
-
-                                            <i class="fas fa-eye"></i>
-
-                                            View
-
-                                        </a>
-
-                                        <!-- EDIT -->
-
-                                        <a href="@Url.Action(
-                                            "Edit",
-                                            "Patient",
-                                            new
-                                            {
-                                                id = patient.PatientId
-                                            })"
-                                           class="btn btn-warning btn-sm text-dark">
-
-                                            <i class="fas fa-edit"></i>
-
-                                            Edit
-
-                                        </a>
-
-                                    </td>
-
-                                </tr>
-                            }
-                        }
-                        else
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var patient in Model)
                         {
                             <tr>
+                                <td>@patient.PatientId</td>
+                                <td>@patient.FullName</td>
+                                <td>@patient.Gender</td>
+                                <td>@patient.Email</td>
+                                <td>@patient.PhoneNumber</td>
+                                <td>@patient.AppointmentCount</td>
 
-                                <td colspan="7"
-                                    class="text-center text-muted py-4">
+                                <td>
 
-                                    No patients found.
+                                    <button class="btn btn-info btn-sm"
+                                            onclick="loadPatientDetails(@patient.PatientId)">
+                                        View
+                                    </button>
+
+                                    <a href="@Url.Action("Edit", "Patient", new { id = patient.PatientId })"
+                                       class="btn btn-warning btn-sm">
+                                        Edit
+                                    </a>
 
                                 </td>
-
                             </tr>
                         }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                No patients found.
+                            </td>
+                        </tr>
+                    }
 
-                    </tbody>
+                </tbody>
 
-                </table>
-
-            </div>
+            </table>
 
         </div>
-
     </div>
 
 </div>
+
+<!-- ✅ MODAL -->
+<div class="modal fade" id="patientModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Patient</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="patientModalContent"></div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+
+        function loadPatientDetails(id) {
+
+            $.get('/Patient/Details/' + id, function (data) {
+
+                $('#patientModalContent').html(data);
+
+                var modal = new bootstrap.Modal(
+                    document.getElementById('patientModal')
+                );
+
+                modal.show();
+            });
+
+        }
+
+        function loadPatientEdit(id) {
+
+            alert("Patient Id = " + id);
+
+            $.get('/Patient/Edit/' + id)
+
+                .done(function (data) {
+
+                    alert("Data received from controller");
+
+                    $('#patientModalContent').html(data);
+
+                    var modal = new bootstrap.Modal(
+                        document.getElementById('patientModal')
+                    );
+
+                    modal.show();
+                })
+
+                .fail(function (xhr) {
+
+                    alert("ERROR: " + xhr.status);
+
+                    console.log(xhr.responseText);
+                });
+        }
+
+    </script>
+
+}

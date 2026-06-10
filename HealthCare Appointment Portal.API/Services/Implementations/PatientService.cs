@@ -25,11 +25,8 @@ namespace HealthCare_Appointment_Portal.Services
             IUnitOfWork unitOfWork,
             IMapper mapper)
         {
-            _unitOfWork =
-                unitOfWork;
-
-            _mapper =
-                mapper;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<PatientDto>>
@@ -89,6 +86,14 @@ namespace HealthCare_Appointment_Portal.Services
             AddPatientAsync(
                 CreatePatientDto patientDto)
         {
+            // ✅ FIX: Date Validation (VERY IMPORTANT)
+            if (patientDto.DateOfBirth.Year < 1900 ||
+                patientDto.DateOfBirth > DateTime.Today)
+            {
+                throw new Exception(
+                    "Invalid Date of Birth");
+            }
+
             var existingPatient =
                 await _unitOfWork
                     .Patients
@@ -133,6 +138,14 @@ namespace HealthCare_Appointment_Portal.Services
                 int patientId,
                 UpdatePatientDto patientDto)
         {
+            // ✅ FIX: Date Validation here also
+            if (patientDto.DateOfBirth.Year < 1900 ||
+                patientDto.DateOfBirth > DateTime.Today)
+            {
+                throw new Exception(
+                    "Invalid Date of Birth");
+            }
+
             var patient =
                 await _unitOfWork
                     .Patients

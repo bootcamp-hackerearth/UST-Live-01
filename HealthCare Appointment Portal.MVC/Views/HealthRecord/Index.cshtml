@@ -9,182 +9,149 @@
 <div class="container-fluid">
 
     <!-- HEADER -->
-
     <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2 class="fw-bold">
-            Health Records
-        </h2>
+        <h2 class="fw-bold">Health Records</h2>
 
         <a href="@Url.Action("Create", "HealthRecord")"
            class="btn btn-success">
-
-            <i class="fas fa-plus"></i>
-
-            Add Record
-
+            <i class="fas fa-plus"></i> Add Record
         </a>
-
     </div>
 
     <!-- SEARCH -->
-
     <div class="card shadow-sm mb-4">
-
         <div class="card-body">
 
-            @using (Html.BeginForm(
-                "Index",
-                "HealthRecord",
-                FormMethod.Get))
+            @using (Html.BeginForm("Index", "HealthRecord", FormMethod.Get))
             {
                 <div class="input-group">
-
                     <input type="text"
                            name="search"
                            class="form-control"
                            placeholder="Search by Record Id, Patient, Doctor or Diagnosis" />
 
-                    <button class="btn btn-primary">
-
-                        <i class="fas fa-search"></i>
-
-                        Search
-
+                    <button type="submit"
+                            class="btn btn-primary">
+                        <i class="fas fa-search"></i> Search
                     </button>
-
                 </div>
             }
 
         </div>
-
     </div>
 
     <!-- TABLE -->
-
     <div class="card shadow-sm">
-
         <div class="card-body">
 
-            <table class="table table-bordered table-hover align-middle">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
 
-                <thead class="table-light">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Record Id</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Specialisation</th>
+                            <th>Visit Date</th>
+                            <th>Diagnosis</th>
+                            <th width="300">Actions</th>
+                        </tr>
+                    </thead>
 
-                    <tr>
+                    <tbody>
 
-                        <th>Record Id</th>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var record in Model)
+                            {
+                                <tr>
+                                    <td>@record.RecordId</td>
+                                    <td>@record.PatientName</td>
+                                    <td>@record.DoctorName</td>
+                                    <td>@record.Specialisation</td>
+                                    <td>@record.VisitDate.ToString("dd MMM yyyy")</td>
+                                    <td>@record.Diagnosis</td>
 
-                        <th>Patient</th>
+                                    <td>
 
-                        <th>Doctor</th>
+                                        <!-- ✅ VIEW -->
+                                        <button class="btn btn-info btn-sm text-white"
+                                                onclick="loadHealthDetails(@record.RecordId)">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
 
-                        <th>Specialisation</th>
+                                        <!-- ✅ EDIT -->
+                                        <button class="btn btn-warning btn-sm text-dark"
+                                                onclick="loadHealthEdit(@record.RecordId)">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
 
-                        <th>Visit Date</th>
+                                        <!-- ✅ DELETE (still normal) -->
+                                        <a href="@Url.Action("Delete", "HealthRecord",
+                                        new { id = record.RecordId })"
+                                           class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
 
-                        <th>Diagnosis</th>
-
-                        <th width="260">Actions</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var record in Model)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
                         {
                             <tr>
-
-                                <td>
-                                    @record.RecordId
+                                <td colspan="7"
+                                    class="text-center text-muted py-4">
+                                    No health records found.
                                 </td>
-
-                                <td>
-                                    @record.PatientName
-                                </td>
-
-                                <td>
-                                    @record.DoctorName
-                                </td>
-
-                                <td>
-                                    @record.Specialisation
-                                </td>
-
-                                <td>
-                                    @record.VisitDate.ToString("dd MMM yyyy")
-                                </td>
-
-                                <td>
-                                    @record.Diagnosis
-                                </td>
-
-                                <td>
-
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "HealthRecord",
-                                                new { id = record.RecordId })"
-                                       class="btn btn-info btn-sm text-white">
-
-                                        <i class="fas fa-eye"></i>
-
-                                        View
-
-                                    </a>
-
-                                    <a href="@Url.Action(
-                                                "Edit",
-                                                "HealthRecord",
-                                                new { id = record.RecordId })"
-                                       class="btn btn-warning btn-sm">
-
-                                        <i class="fas fa-edit"></i>
-
-                                        Edit
-
-                                    </a>
-
-                                    <a href="@Url.Action(
-                                                "Delete",
-                                                "HealthRecord",
-                                                new { id = record.RecordId })"
-                                       class="btn btn-danger btn-sm">
-
-                                        <i class="fas fa-trash"></i>
-
-                                        Delete
-
-                                    </a>
-
-                                </td>
-
                             </tr>
                         }
-                    }
-                    else
-                    {
-                        <tr>
 
-                            <td colspan="7"
-                                class="text-center text-muted py-4">
+                    </tbody>
 
-                                No health records found.
-
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
+                </table>
+            </div>
 
         </div>
-
     </div>
 
 </div>
+
+<!-- ✅ MODAL -->
+<div class="modal fade" id="healthModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Health Record</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="healthModalContent">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function loadHealthDetails(id) {
+            $.get('/HealthRecord/Details/' + id, function (data) {
+                $('#healthModalContent').html(data);
+                $('#healthModal').modal('show');
+            });
+        }
+
+        function loadHealthEdit(id) {
+            $.get('/HealthRecord/Edit/' + id, function (data) {
+                $('#healthModalContent').html(data);
+                $('#healthModal').modal('show');
+            });
+        }
+    </script>
+}

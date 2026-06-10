@@ -1,7 +1,7 @@
 @model HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto
 
 @{
-    ViewBag.Title = "Health Record Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @Html.Partial("_Alerts")
@@ -9,138 +9,68 @@
 <div class="container-fluid">
 
     <!-- HEADER -->
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2 class="fw-bold">
-            Health Record Details
-        </h2>
-
-        <a href="javascript:history.back()"
-           class="btn btn-secondary">
-
-            <i class="fas fa-arrow-left"></i>
-
-            Back
-
-        </a>
-
+    <div class="mb-3">
+        <h4>Health Record Details</h4>
     </div>
 
     <!-- DETAILS CARD -->
-
     <div class="card shadow-sm">
-
         <div class="card-body">
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Record Id</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.RecordId
-                </div>
-
+                <div class="col-md-3"><strong>Record Id</strong></div>
+                <div class="col-md-9">@Model.RecordId</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Appointment Id</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.AppointmentId
-                </div>
-
+                <div class="col-md-3"><strong>Appointment Id</strong></div>
+                <div class="col-md-9">@Model.AppointmentId</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Patient</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.PatientName
-                </div>
-
+                <div class="col-md-3"><strong>Patient</strong></div>
+                <div class="col-md-9">@Model.PatientName</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Doctor</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.DoctorName
-                </div>
-
+                <div class="col-md-3"><strong>Doctor</strong></div>
+                <div class="col-md-9">@Model.DoctorName</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Specialisation</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Specialisation
-                </div>
-
+                <div class="col-md-3"><strong>Specialisation</strong></div>
+                <div class="col-md-9">@Model.Specialisation</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Visit Date</strong>
-                </div>
-
+                <div class="col-md-3"><strong>Visit Date</strong></div>
                 <div class="col-md-9">
                     @Model.VisitDate.ToString("dd MMM yyyy")
                 </div>
-
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Diagnosis</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Diagnosis
-                </div>
-
+                <div class="col-md-3"><strong>Diagnosis</strong></div>
+                <div class="col-md-9">@Model.Diagnosis</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Prescription</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Prescription
-                </div>
-
+                <div class="col-md-3"><strong>Prescription</strong></div>
+                <div class="col-md-9">@Model.Prescription</div>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.Notes))
@@ -148,49 +78,34 @@
                 <hr />
 
                 <div class="row mb-3">
-
-                    <div class="col-md-3">
-                        <strong>Notes</strong>
-                    </div>
-
-                    <div class="col-md-9">
-                        @Model.Notes
-                    </div>
-
+                    <div class="col-md-3"><strong>Notes</strong></div>
+                    <div class="col-md-9">@Model.Notes</div>
                 </div>
             }
 
         </div>
-
     </div>
 
-    <!-- ACTION BUTTONS -->
+    <!-- ✅ ACTION BUTTONS -->
+    <div class="mt-3">
 
-    <div class="mt-4">
+        <!-- ✅ EDIT BUTTON -->
+        <button class="btn btn-warning"
+                onclick="loadHealthRecordEdit(@Model.RecordId)">
+            <i class="fas fa-edit"></i> Edit Record
+        </button>
 
-        <a href="@Url.Action(
-                    "Edit",
-                    "HealthRecord",
-                    new { id = Model.RecordId })"
-           class="btn btn-warning me-2">
-
-            <i class="fas fa-edit"></i>
-
-            Edit Record
-
-        </a>
-
-        <a href="@Url.Action(
-                    "Delete",
-                    "HealthRecord",
-                    new { id = Model.RecordId })"
+        <!-- ✅ DELETE BUTTON -->
+        <a href="@Url.Action("Delete", "HealthRecord", new { id = Model.RecordId })"
            class="btn btn-danger">
-
-            <i class="fas fa-trash"></i>
-
-            Delete Record
-
+            <i class="fas fa-trash"></i> Delete Record
         </a>
+
+        <!-- ✅ CLOSE BUTTON -->
+        <button class="btn btn-secondary"
+                data-bs-dismiss="modal">
+            Close
+        </button>
 
     </div>
 

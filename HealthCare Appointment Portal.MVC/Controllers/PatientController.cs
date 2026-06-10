@@ -212,39 +212,33 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // EDIT
         // ==================================
 
-        public async Task<ActionResult>
-            Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
             var patient =
                 await _patientService
                     .GetPatientByIdAsync(id);
 
+            if (patient == null)
+            {
+                return HttpNotFound();
+            }
+
             return View(
                 new UpdatePatientDto
                 {
-                    FullName =
-                        patient.FullName,
-
-                    DateOfBirth =
-                        patient.DateOfBirth,
-
-                    Gender =
-                        patient.Gender,
-
-                    PhoneNumber =
-                        patient.PhoneNumber,
-
-                    Email =
-                        patient.Email
+                    FullName = patient.FullName,
+                    DateOfBirth = patient.DateOfBirth,
+                    Gender = patient.Gender,
+                    PhoneNumber = patient.PhoneNumber,
+                    Email = patient.Email
                 });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                UpdatePatientDto patient)
+        public async Task<ActionResult> Edit(
+            int id,
+            UpdatePatientDto patient)
         {
             if (!ModelState.IsValid)
             {
@@ -261,12 +255,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 TempData["Success"] =
                     "Patient updated successfully.";
 
-                return RedirectToAction(
-                    "Details",
-                    new
-                    {
-                        id
-                    });
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
@@ -277,7 +266,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 return View(patient);
             }
         }
-
         // ==================================
         // DELETE
         // ==================================

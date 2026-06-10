@@ -1,176 +1,106 @@
 @model HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto
 
 @{
-    ViewBag.Title = "Patient Details";
+    Layout = null;
 }
 
 <div class="container-fluid">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>
-            Patient Details
-        </h2>
-
-        <a href="@Url.Action("Index", "Patient")"
-           class="btn btn-secondary">
-
-            Back
-
-        </a>
-
+    <div class="mb-3">
+        <h4>Patient Details</h4>
     </div>
 
     <div class="card shadow-sm">
-
         <div class="card-body">
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Patient Id</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.PatientId
-                </div>
-
+                <div class="col-md-3"><strong>Patient Id</strong></div>
+                <div class="col-md-9">@Model.PatientId</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Full Name</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.FullName
-                </div>
-
+                <div class="col-md-3"><strong>Full Name</strong></div>
+                <div class="col-md-9">@Model.FullName</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Date Of Birth</strong>
-                </div>
-
+                <div class="col-md-3"><strong>Date Of Birth</strong></div>
                 <div class="col-md-9">
-                    @Model.DateOfBirth.ToString(
-                        "dd-MMM-yyyy")
+                    @Model.DateOfBirth.ToString("dd-MMM-yyyy")
                 </div>
-
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Age</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Age Years
-                </div>
-
+                <div class="col-md-3"><strong>Age</strong></div>
+                <div class="col-md-9">@Model.Age Years</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Gender</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Gender
-                </div>
-
+                <div class="col-md-3"><strong>Gender</strong></div>
+                <div class="col-md-9">@Model.Gender</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Email</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Email
-                </div>
-
+                <div class="col-md-3"><strong>Email</strong></div>
+                <div class="col-md-9">@Model.Email</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Phone Number</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.PhoneNumber
-                </div>
-
+                <div class="col-md-3"><strong>Phone Number</strong></div>
+                <div class="col-md-9">@Model.PhoneNumber</div>
             </div>
 
             <hr />
 
             <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>Appointment Count</strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.AppointmentCount
-                </div>
-
+                <div class="col-md-3"><strong>Appointment Count</strong></div>
+                <div class="col-md-9">@Model.AppointmentCount</div>
             </div>
 
         </div>
-
     </div>
 
+    <!-- ✅ BUTTONS -->
     @if (Session["Role"]?.ToString() == "Admin")
     {
-        <div class="mt-4">
+        <div class="mt-3">
 
-            <a href="@Url.Action(
-                     "Edit",
-                     "Patient",
-                     new
-                     {
-                         id = Model.PatientId
-                     })"
-               class="btn btn-warning">
-
+            <!-- ✅ EDIT USING JS (NOT LINK) -->
+            <button class="btn btn-warning"
+                    onclick="loadPatientEdit(@Model.PatientId)">
                 Edit Patient
+            </button>
 
-            </a>
-
+            <!-- ✅ DEACTIVATE (KEEP NORMAL) -->
             <a href="@Url.Action(
                      "Deactivate",
                      "Patient",
-                     new
-                     {
-                         id = Model.PatientId
-                     })"
+                     new { id = Model.PatientId })"
                class="btn btn-danger">
-
                 Deactivate Patient
-
             </a>
 
         </div>
     }
+
+    <!-- ✅ CLOSE BUTTON -->
+    <div class="mt-3">
+        <button class="btn btn-secondary"
+                data-bs-dismiss="modal">
+            Close
+        </button>
+    </div>
 
 </div>

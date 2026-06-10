@@ -20,18 +20,12 @@ namespace HealthCare_Appointment_Portal.DTOs.PatientDtos
             set;
         }
 
-        [Required(
-            ErrorMessage = Constants.DateOfBirthRequired)]
-        [DataType(
-            DataType.Date)]
-        [CustomValidation(
-            typeof(CreatePatientDto),
-            nameof(ValidateDateOfBirth))]
-        public DateTime DateOfBirth
-        {
-            get;
-            set;
-        }
+        [Required(ErrorMessage = Constants.DateOfBirthRequired)]
+        [DataType(DataType.Date)]
+        [Range(typeof(DateTime), "1900-01-01", "2100-01-01",
+    ErrorMessage = "Date must be valid")]
+        [CustomValidation(typeof(CreatePatientDto), nameof(ValidateDateOfBirth))]
+        public DateTime DateOfBirth { get; set; }
 
         [Required(
             ErrorMessage = Constants.GenderRequired)]
@@ -66,15 +60,19 @@ namespace HealthCare_Appointment_Portal.DTOs.PatientDtos
             set;
         }
 
-        public static ValidationResult
-            ValidateDateOfBirth(
-                DateTime date,
-                ValidationContext context)
+        // ✅ FIXED VALIDATION
+        public static ValidationResult ValidateDateOfBirth(
+    DateTime date,
+    ValidationContext context)
         {
             if (date > DateTime.Today)
             {
-                return new ValidationResult(
-                    Constants.DateOfBirthCannotBeFuture);
+                return new ValidationResult("Date of Birth cannot be in future");
+            }
+
+            if (date.Year < 1900)
+            {
+                return new ValidationResult("Date of Birth year must be greater than 1900");
             }
 
             return ValidationResult.Success;

@@ -8,44 +8,26 @@
 
 <div class="container-fluid">
 
-    <!-- PAGE HEADER -->
-
+    <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2 class="fw-bold">
-            Doctor Management
-        </h2>
+        <h2 class="fw-bold">Doctor Management</h2>
 
         <a href="@Url.Action("Create", "Doctor")"
            class="btn btn-success">
-
-            <i class="fas fa-plus"></i>
-
-            Add Doctor
-
+            <i class="fas fa-plus"></i> Add Doctor
         </a>
-
     </div>
 
     <!-- SEARCH + FILTER -->
-
     <div class="card shadow-sm mb-4">
-
         <div class="card-body">
-
             <div class="row">
 
                 <!-- SEARCH -->
-
                 <div class="col-md-6 mb-3">
-
-                    @using (Html.BeginForm(
-                        "Index",
-                        "Doctor",
-                        FormMethod.Get))
+                    @using (Html.BeginForm("Index", "Doctor", FormMethod.Get))
                     {
                         <div class="input-group">
-
                             <input type="text"
                                    name="search"
                                    class="form-control"
@@ -53,69 +35,44 @@
 
                             <button type="submit"
                                     class="btn btn-primary">
-
-                                <i class="fas fa-search"></i>
-
-                                Search
-
+                                <i class="fas fa-search"></i> Search
                             </button>
-
                         </div>
                     }
-
                 </div>
 
                 <!-- FILTER -->
-
                 <div class="col-md-6 mb-3">
-
-                    @using (Html.BeginForm(
-                        "Index",
-                        "Doctor",
-                        FormMethod.Get))
+                    @using (Html.BeginForm("Index", "Doctor", FormMethod.Get))
                     {
                         <div class="input-group">
 
                             <select name="specialisation"
                                     class="form-select">
-
-                                <option value="">
-                                    All Specialisations
-                                </option>
+                                <option value="">All Specialisations</option>
 
                                 @foreach (var item in Enum.GetValues(
-                                    typeof(
-                                    HealthCare_Appointment_Portal.Enums.Specialisation)))
+                                    typeof(HealthCare_Appointment_Portal.Enums.Specialisation)))
                                 {
-                                    <option value="@item">
-                                        @item
-                                    </option>
+                                    <option value="@item">@item</option>
                                 }
-
                             </select>
 
                             <button type="submit"
                                     class="btn btn-outline-primary">
-
                                 Filter
-
                             </button>
 
                         </div>
                     }
-
                 </div>
 
             </div>
-
         </div>
-
     </div>
 
     <!-- TABLE -->
-
     <div class="card shadow-sm">
-
         <div class="card-body">
 
             <div class="table-responsive">
@@ -123,43 +80,16 @@
                 <table class="table table-bordered table-hover align-middle">
 
                     <thead class="table-light">
-
                         <tr>
-
-                            <th>
-                                Doctor Id
-                            </th>
-
-                            <th>
-                                Full Name
-                            </th>
-
-                            <th>
-                                Specialisation
-                            </th>
-
-                            <th>
-                                Experience
-                            </th>
-
-                            <th>
-                                Consultation Fee
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Upcoming Appointments
-                            </th>
-
-                            <th width="350">
-                                Actions
-                            </th>
-
+                            <th>Doctor Id</th>
+                            <th>Full Name</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Consultation Fee</th>
+                            <th>Status</th>
+                            <th>Upcoming Appointments</th>
+                            <th width="350">Actions</th>
                         </tr>
-
                     </thead>
 
                     <tbody>
@@ -169,157 +99,82 @@
                             foreach (var doctor in Model)
                             {
                                 <tr>
+                                    <td>@doctor.DoctorId</td>
+                                    <td>@doctor.FullName</td>
+                                    <td>@doctor.Specialisation</td>
+                                    <td>@doctor.YearsOfExperience Years</td>
+                                    <td>&#8377; @doctor.ConsultationFee</td>
 
                                     <td>
-                                        @doctor.DoctorId
-                                    </td>
-
-                                    <td>
-                                        @doctor.FullName
-                                    </td>
-
-                                    <td>
-                                        @doctor.Specialisation
-                                    </td>
-
-                                    <td>
-                                        @doctor.YearsOfExperience Years
-                                    </td>
-
-                                    <td>
-                                        &#8377; @doctor.ConsultationFee
-                                    </td>
-
-                                    <td>
-
                                         @if (doctor.IsActive)
                                         {
-                                            <span class="badge bg-success">
-                                                Active
-                                            </span>
+                                            <span class="badge bg-success">Active</span>
                                         }
                                         else
                                         {
-                                            <span class="badge bg-danger">
-                                                Inactive
-                                            </span>
+                                            <span class="badge bg-danger">Inactive</span>
                                         }
-
                                     </td>
 
-                                    <td>
-                                        @doctor.UpcomingAppointmentCount
-                                    </td>
+                                    <td>@doctor.UpcomingAppointmentCount</td>
 
                                     <td>
 
-                                        <!-- VIEW -->
+                                        <!-- ✅ VIEW -->
+                                        <button class="btn btn-info btn-sm text-white"
+                                                onclick="loadDoctorDetails(@doctor.DoctorId)">
+                                            <i class="fas fa-eye"></i> View
+                                        </button>
 
-                                        <a href="@Url.Action(
-                                                     "Details",
-                                                     "Doctor",
-                                                     new
-                                                     {
-                                                         id = doctor.DoctorId
-                                                     })"
-                                           class="btn btn-info btn-sm text-white">
-
-                                            <i class="fas fa-eye"></i>
-
-                                            View
-
-                                        </a>
-
-                                        <!-- EDIT -->
-
-                                        <a href="@Url.Action(
-                                                     "Edit",
-                                                     "Doctor",
-                                                     new
-                                                     {
-                                                         id = doctor.DoctorId
-                                                     })"
-                                           class="btn btn-warning btn-sm text-dark">
-
-                                            <i class="fas fa-edit"></i>
-
+                                        <!-- ✅ EDIT -->
+                                        <a href="@Url.Action("Edit", "Doctor", new { id = doctor.DoctorId })"
+                                           class="btn btn-warning btn-sm">
                                             Edit
-
                                         </a>
 
-                                        <!-- STATUS -->
-
+                                        <!-- STATUS CHANGE -->
                                         @if (doctor.IsActive)
                                         {
-                                            using (Html.BeginForm(
-                                                "Deactivate",
-                                                "Doctor",
-                                                new
-                                                {
-                                                    id = doctor.DoctorId
-                                                },
+                                            using (Html.BeginForm("Deactivate", "Doctor",
+                                                new { id = doctor.DoctorId },
                                                 FormMethod.Post,
-                                                new
-                                                {
-                                                    @class = "d-inline"
-                                                }))
+                                                new { @class = "d-inline" }))
                                             {
                                                 @Html.AntiForgeryToken()
 
                                                 <button type="submit"
                                                         class="btn btn-danger btn-sm">
-
-                                                    <i class="fas fa-user-slash"></i>
-
-                                                    Deactivate
-
+                                                    <i class="fas fa-user-slash"></i> Deactivate
                                                 </button>
                                             }
                                         }
                                         else
                                         {
-                                            using (Html.BeginForm(
-                                                "Activate",
-                                                "Doctor",
-                                                new
-                                                {
-                                                    id = doctor.DoctorId
-                                                },
+                                            using (Html.BeginForm("Activate", "Doctor",
+                                                new { id = doctor.DoctorId },
                                                 FormMethod.Post,
-                                                new
-                                                {
-                                                    @class = "d-inline"
-                                                }))
+                                                new { @class = "d-inline" }))
                                             {
                                                 @Html.AntiForgeryToken()
 
                                                 <button type="submit"
                                                         class="btn btn-success btn-sm">
-
-                                                    <i class="fas fa-user-check"></i>
-
-                                                    Activate
-
+                                                    <i class="fas fa-user-check"></i> Activate
                                                 </button>
                                             }
                                         }
 
                                     </td>
-
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-
                                 <td colspan="8"
                                     class="text-center text-muted py-4">
-
                                     No doctors found.
-
                                 </td>
-
                             </tr>
                         }
 
@@ -330,7 +185,44 @@
             </div>
 
         </div>
-
     </div>
 
 </div>
+
+<!-- ✅ MODAL -->
+<div class="modal fade" id="doctorModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Doctor Details</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="doctorModalContent">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <script>
+        function loadDoctorDetails(id) {
+            $.get('/Doctor/Details/' + id, function (data) {
+                $('#doctorModalContent').html(data);
+                $('#doctorModal').modal('show');
+            });
+        }
+
+        function loadDoctorEdit(id) {
+            $.get('/Doctor/Edit/' + id, function (data) {
+                $('#doctorModalContent').html(data);
+                $('#doctorModal').modal('show');
+            });
+        }
+    </script>
+}

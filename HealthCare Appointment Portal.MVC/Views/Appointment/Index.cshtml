@@ -1,7 +1,7 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
 
 @{
-    ViewBag.Title = "Appointments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 @Html.Partial("_Alerts")
@@ -9,37 +9,22 @@
 <div class="container-fluid">
 
     <!-- HEADER -->
-
     <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2 class="fw-bold">
-            Appointment Management
-        </h2>
+        <h2 class="fw-bold">Appointment Management</h2>
 
         <a href="@Url.Action("Create", "Appointment")"
            class="btn btn-success">
-
-            <i class="fas fa-plus"></i>
-
-            Book Appointment
-
+            <i class="fas fa-plus"></i> Book Appointment
         </a>
-
     </div>
 
     <!-- SEARCH -->
-
     <div class="card shadow-sm mb-4">
-
         <div class="card-body">
 
-            @using (Html.BeginForm(
-                "Index",
-                "Appointment",
-                FormMethod.Get))
+            @using (Html.BeginForm("Index", "Appointment", FormMethod.Get))
             {
                 <div class="input-group">
-
                     <input type="text"
                            name="search"
                            class="form-control"
@@ -47,24 +32,16 @@
 
                     <button type="submit"
                             class="btn btn-primary">
-
-                        <i class="fas fa-search"></i>
-
-                        Search
-
+                        <i class="fas fa-search"></i> Search
                     </button>
-
                 </div>
             }
 
         </div>
-
     </div>
 
     <!-- TABLE -->
-
     <div class="card shadow-sm">
-
         <div class="card-body">
 
             <div class="table-responsive">
@@ -72,39 +49,15 @@
                 <table class="table table-bordered table-hover align-middle">
 
                     <thead class="table-light">
-
                         <tr>
-
-                            <th>
-                                Appointment Id
-                            </th>
-
-                            <th>
-                                Patient
-                            </th>
-
-                            <th>
-                                Doctor
-                            </th>
-
-                            <th>
-                                Date
-                            </th>
-
-                            <th>
-                                Time Slot
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th width="350">
-                                Actions
-                            </th>
-
+                            <th>Appointment Id</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                            <th width="350">Actions</th>
                         </tr>
-
                     </thead>
 
                     <tbody>
@@ -114,197 +67,75 @@
                             foreach (var appointment in Model)
                             {
                                 <tr>
+                                    <td>@appointment.AppointmentId</td>
+                                    <td>@appointment.PatientName</td>
+                                    <td>@appointment.DoctorName</td>
+                                    <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
+                                    <td>@appointment.TimeSlot</td>
 
                                     <td>
-                                        @appointment.AppointmentId
-                                    </td>
-
-                                    <td>
-                                        @appointment.PatientName
-                                    </td>
-
-                                    <td>
-                                        @appointment.DoctorName
-                                    </td>
-
-                                    <td>
-                                        @appointment.ScheduledDate.ToString("dd MMM yyyy")
-                                    </td>
-
-                                    <td>
-                                        @appointment.TimeSlot
+                                        <span class="badge bg-secondary">
+                                            @appointment.Status
+                                        </span>
                                     </td>
 
                                     <td>
 
+                                        <!-- VIEW -->
+                                        <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId })"
+                                           class="btn btn-info btn-sm text-white">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+
+                                        <!-- CONFIRM -->
                                         @if (appointment.Status.ToString() == "Pending")
                                         {
-                                            <span class="badge bg-warning text-dark">
-                                                Pending
-                                            </span>
-                                        }
-                                        else if (appointment.Status.ToString() == "Confirmed")
-                                        {
-                                            <span class="badge bg-success">
-                                                Confirmed
-                                            </span>
-                                        }
-                                        else if (appointment.Status.ToString() == "Completed")
-                                        {
-                                            <span class="badge bg-primary">
-                                                Completed
-                                            </span>
-                                        }
-                                        else if (appointment.Status.ToString() == "Cancelled")
-                                        {
-                                            <span class="badge bg-danger">
-                                                Cancelled
-                                            </span>
+                                            using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                @Html.Hidden("id", appointment.AppointmentId)
+
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    Confirm
+                                                </button>
+                                            }
                                         }
 
-                                    </td>
-
-                                    <td>
-
-                                        @if (appointment.Status.ToString() == "Pending")
+                                        <!-- COMPLETE -->
+                                        @if (appointment.Status.ToString() == "Confirmed")
                                         {
-                                            <div class="d-flex gap-2 flex-wrap">
+                                            using (Html.BeginForm("Complete", "Appointment", FormMethod.Post))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                @Html.Hidden("id", appointment.AppointmentId)
 
-                                                @using (Html.BeginForm(
-                                                    "Confirm",
-                                                    "Appointment",
-                                                    new
-                                                    {
-                                                        id = appointment.AppointmentId
-                                                    },
-                                                    FormMethod.Post))
-                                                {
-                                                    @Html.AntiForgeryToken()
-
-                                                    <button type="submit"
-                                                            class="btn btn-success btn-sm">
-
-                                                        <i class="fas fa-check"></i>
-
-                                                        Confirm
-
-                                                    </button>
-                                                }
-
-                                                @using (Html.BeginForm(
-                                                    "Cancel",
-                                                    "Appointment",
-                                                    new
-                                                    {
-                                                        id = appointment.AppointmentId
-                                                    },
-                                                    FormMethod.Post))
-                                                {
-                                                    @Html.AntiForgeryToken()
-
-                                                    <button type="submit"
-                                                            class="btn btn-danger btn-sm">
-
-                                                        <i class="fas fa-times"></i>
-
-                                                        Cancel
-
-                                                    </button>
-                                                }
-
-                                            </div>
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    Complete
+                                                </button>
+                                            }
                                         }
 
-                                        else if (appointment.Status.ToString() == "Confirmed")
+                                        <!-- CANCEL -->
+                                        @if (appointment.Status.ToString() != "Cancelled" &&
+                                             appointment.Status.ToString() != "Completed")
                                         {
-                                            <div class="d-flex gap-2 flex-wrap">
-
-                                                @using (Html.BeginForm(
-                                                    "Complete",
-                                                    "Appointment",
-                                                    new
-                                                    {
-                                                        id = appointment.AppointmentId
-                                                    },
-                                                    FormMethod.Post))
-                                                {
-                                                    @Html.AntiForgeryToken()
-
-                                                    <button type="submit"
-                                                            class="btn btn-primary btn-sm">
-
-                                                        <i class="fas fa-check-double"></i>
-
-                                                        Complete
-
-                                                    </button>
-                                                }
-
-                                                @using (Html.BeginForm(
-                                                    "Cancel",
-                                                    "Appointment",
-                                                    new
-                                                    {
-                                                        id = appointment.AppointmentId
-                                                    },
-                                                    FormMethod.Post))
-                                                {
-                                                    @Html.AntiForgeryToken()
-
-                                                    <button type="submit"
-                                                            class="btn btn-danger btn-sm">
-
-                                                        <i class="fas fa-times"></i>
-
-                                                        Cancel
-
-                                                    </button>
-                                                }
-
-                                            </div>
-                                        }
-
-                                        else if (appointment.Status.ToString() == "Completed")
-                                        {
-                                            <a href="@Url.Action(
-                                                "Index",
-                                                "HealthRecord")"
-                                               class="btn btn-primary btn-sm">
-
-                                                <i class="fas fa-file-medical"></i>
-
-                                                View Health Record
-
+                                            <a href="@Url.Action("Cancel", "Appointment", new { id = appointment.AppointmentId })"
+                                               class="btn btn-danger btn-sm">
+                                                Cancel
                                             </a>
                                         }
 
-                                        else if (appointment.Status.ToString() == "Cancelled")
-                                        {
-                                            <span class="text-danger fw-semibold">
-
-                                                <i class="fas fa-ban"></i>
-
-                                                Appointment Cancelled
-
-                                            </span>
-                                        }
-
                                     </td>
-
                                 </tr>
                             }
                         }
                         else
                         {
                             <tr>
-
                                 <td colspan="7"
                                     class="text-center text-muted py-4">
-
                                     No appointments found.
-
                                 </td>
-
                             </tr>
                         }
 
@@ -315,7 +146,9 @@
             </div>
 
         </div>
-
     </div>
 
 </div>
+
+
+

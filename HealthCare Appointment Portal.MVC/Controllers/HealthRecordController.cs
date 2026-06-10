@@ -329,46 +329,28 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                UpdateHealthRecordDto dto)
+        public async Task<ActionResult> Edit(int id, UpdateHealthRecordDto dto)
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.RecordId = id;
-
                 return View(dto);
             }
 
             try
             {
-                await _healthRecordService
-                    .UpdateHealthRecordAsync(
-                        id,
-                        dto);
+                await _healthRecordService.UpdateHealthRecordAsync(id, dto);
 
-                TempData["Success"] =
-                    "Health record updated successfully.";
+                TempData["Success"] = "Health record updated successfully.";
 
-                return RedirectToAction(
-                    "Details",
-                    new
-                    {
-                        id
-                    });
+                return RedirectToAction("Index"); // ✅ GO BACK TO MAIN PAGE
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
-
-                ViewBag.RecordId = id;
+                TempData["Error"] = ex.Message;
 
                 return View(dto);
             }
         }
-
         // ==================================
         // DELETE
         // ==================================

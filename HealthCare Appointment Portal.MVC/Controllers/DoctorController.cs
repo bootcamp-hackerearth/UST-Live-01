@@ -319,10 +319,9 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                UpdateDoctorDto doctor)
+        public async Task<ActionResult> Edit(
+    int id,
+    UpdateDoctorDto doctor)
         {
             if (!ModelState.IsValid)
             {
@@ -331,20 +330,14 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             try
             {
-                await _doctorService
-                    .UpdateDoctorAsync(
-                        id,
-                        doctor);
+                await _doctorService.UpdateDoctorAsync(
+                    id,
+                    doctor);
 
                 TempData["Success"] =
                     "Doctor updated successfully.";
 
-                return RedirectToAction(
-                    "Details",
-                    new
-                    {
-                        id
-                    });
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
