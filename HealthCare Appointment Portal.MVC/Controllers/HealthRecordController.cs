@@ -1,30 +1,37 @@
 ﻿using HealthCare_Appointment_Portal.DTOs.HealthRecordDtos;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
-    public class HealthRecordController
-        : Controller
+    public class HealthRecordController : Controller
     {
         private readonly IHealthRecordApiService
-             _healthRecordService;
+            _healthRecordService;
+
+        private readonly IAppointmentApiService
+            _appointmentService;
 
         public HealthRecordController(
-            IHealthRecordApiService healthRecordService)
+            IHealthRecordApiService healthRecordService,
+            IAppointmentApiService appointmentService)
         {
             _healthRecordService =
                 healthRecordService;
+
+            _appointmentService =
+                appointmentService;
         }
+
         // ==================================
-        // ADMIN
+        // ALL RECORDS + SEARCH
         // ==================================
 
-        // GET: HealthRecord
         public async Task<ActionResult>
-            Index()
+            Index(string search)
         {
             try
             {
@@ -32,8 +39,25 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     await _healthRecordService
                         .GetAllHealthRecordsAsync();
 
-                return View(
-                    records);
+                // SEARCH
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    search =
+                        search.ToLower();
+
+                    records =
+                        records.Where(r =>
+                            r.PatientName.ToLower().Contains(search)
+                            ||
+                            r.DoctorName.ToLower().Contains(search)
+                            ||
+                            r.Diagnosis.ToLower().Contains(search)
+                            ||
+                            r.RecordId.ToString() == search);
+                }
+
+                return View(records);
             }
             catch (Exception ex)
             {
@@ -45,23 +69,19 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         }
 
         // ==================================
-        // COMMON
+        // DETAILS
         // ==================================
 
-        // GET: HealthRecord/Details/5
         public async Task<ActionResult>
-            Details(
-                int id)
+            Details(int id)
         {
             try
             {
                 var record =
                     await _healthRecordService
-                        .GetHealthRecordByIdAsync(
-                            id);
+                        .GetHealthRecordByIdAsync(id);
 
-                return View(
-                    record);
+                return View(record);
             }
             catch (Exception ex)
             {
@@ -74,70 +94,143 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         }
 
         // ==================================
-        // DOCTOR
+        // CREATE
         // ==================================
 
-        // GET: HealthRecord/Create
-        public ActionResult
-            Create(
-                int appointmentId,
-                int patientId)
+        public async Task<ActionResult>
+            Create()
         {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
+            // GET EXISTING HEALTH RECORDS
+
+            var records =
+                await _healthRecordService
+                    .GetAllHealthRecordsAsync();
+
+            // USED APPOINTMENT IDS
+
+            var usedAppointmentIds =
+                records.Select(r => r.AppointmentId)
+                       .ToList();
+
+            // ONLY COMPLETED APPOINTMENTS
+            // WITHOUT HEALTH RECORDS
+
+            var appointments =
+                (await _appointmentService
+                    .GetAllAppointmentsAsync())
+                .Where(a =>
+                    a.Status.ToString() == "Completed"
+                    &&
+                    !usedAppointmentIds.Contains(
+                        a.AppointmentId))
+                .ToList();
+
+            // APPOINTMENT DROPDOWN
+
+            ViewBag.Appointments =
+                new SelectList(
+                    appointments.Select(a => new
+                    {
+                        AppointmentId =
+                            a.AppointmentId,
+
+                        DisplayText =
+                            $"Appointment #{a.AppointmentId} - {a.PatientName} - Dr. {a.DoctorName}"
+                    }),
+                    "AppointmentId",
+                    "DisplayText");
+
+            // APPOINTMENT DATES
+
+            ViewBag.AppointmentDates =
+                appointments.ToDictionary(
+                    a => a.AppointmentId.ToString(),
+                    a => a.ScheduledDate
+                            .ToString("dd MMM yyyy"));
 
             return View(
-                new CreateHealthRecordDto
-                {
-                    AppointmentId =
-                        appointmentId,
-
-                    PatientId =
-                        patientId,
-
-                    DoctorId =
-                        Convert.ToInt32(
-                            Session["ReferenceId"]),
-
-                    VisitDate =
-                        DateTime.Today
-                });
+                new CreateHealthRecordDto());
         }
 
-        // POST: HealthRecord/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult>
             Create(
                 CreateHealthRecordDto dto)
         {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
+            // RELOAD DROPDOWN IF MODEL INVALID
 
             if (!ModelState.IsValid)
             {
-                return View(
-                    dto);
+                var records =
+                    await _healthRecordService
+                        .GetAllHealthRecordsAsync();
+
+                var usedAppointmentIds =
+                    records.Select(r => r.AppointmentId)
+                           .ToList();
+
+                var appointments =
+                    (await _appointmentService
+                        .GetAllAppointmentsAsync())
+                    .Where(a =>
+                        a.Status.ToString() == "Completed"
+                        &&
+                        !usedAppointmentIds.Contains(
+                            a.AppointmentId))
+                    .ToList();
+
+                ViewBag.Appointments =
+                    new SelectList(
+                        appointments.Select(a => new
+                        {
+                            AppointmentId =
+                                a.AppointmentId,
+
+                            DisplayText =
+                                $"Appointment #{a.AppointmentId} - {a.PatientName} - Dr. {a.DoctorName}"
+                        }),
+                        "AppointmentId",
+                        "DisplayText");
+
+                ViewBag.AppointmentDates =
+                    appointments.ToDictionary(
+                        a => a.AppointmentId.ToString(),
+                        a => a.ScheduledDate
+                                .ToString("dd MMM yyyy"));
+
+                return View(dto);
             }
 
             try
             {
+                // GET SELECTED APPOINTMENT
+
+                var appointment =
+                    await _appointmentService
+                        .GetAppointmentByIdAsync(
+                            dto.AppointmentId);
+
+                // AUTO MAP PATIENT
+
+                dto.PatientId =
+                    appointment.PatientId;
+
+                // AUTO MAP DOCTOR
+
                 dto.DoctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
+                    appointment.DoctorId;
+
+                // AUTO MAP VISIT DATE
+
+                dto.VisitDate =
+                    appointment.ScheduledDate;
+
+                // CREATE HEALTH RECORD
 
                 int recordId =
                     await _healthRecordService
-                        .CreateHealthRecordAsync(
-                            dto);
+                        .CreateHealthRecordAsync(dto);
 
                 TempData["Success"] =
                     "Health record created successfully.";
@@ -154,29 +247,59 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 TempData["Error"] =
                     ex.Message;
 
-                return View(
-                    dto);
+                var records =
+                    await _healthRecordService
+                        .GetAllHealthRecordsAsync();
+
+                var usedAppointmentIds =
+                    records.Select(r => r.AppointmentId)
+                           .ToList();
+
+                var appointments =
+                    (await _appointmentService
+                        .GetAllAppointmentsAsync())
+                    .Where(a =>
+                        a.Status.ToString() == "Completed"
+                        &&
+                        !usedAppointmentIds.Contains(
+                            a.AppointmentId))
+                    .ToList();
+
+                ViewBag.Appointments =
+                    new SelectList(
+                        appointments.Select(a => new
+                        {
+                            AppointmentId =
+                                a.AppointmentId,
+
+                            DisplayText =
+                                $"Appointment #{a.AppointmentId} - {a.PatientName} - Dr. {a.DoctorName}"
+                        }),
+                        "AppointmentId",
+                        "DisplayText");
+
+                ViewBag.AppointmentDates =
+                    appointments.ToDictionary(
+                        a => a.AppointmentId.ToString(),
+                        a => a.ScheduledDate
+                                .ToString("dd MMM yyyy"));
+
+                return View(dto);
             }
         }
 
-        // GET: HealthRecord/Edit/5
-        public async Task<ActionResult>
-            Edit(
-                int id)
-        {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
+        // ==================================
+        // EDIT
+        // ==================================
 
+        public async Task<ActionResult>
+            Edit(int id)
+        {
             try
             {
                 var record =
                     await _healthRecordService
-                        .GetHealthRecordByIdAsync(
-                            id);
+                        .GetHealthRecordByIdAsync(id);
 
                 ViewBag.RecordId =
                     record.RecordId;
@@ -200,11 +323,10 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     ex.Message;
 
                 return RedirectToAction(
-                    "DoctorRecords");
+                    "Index");
             }
         }
 
-        // POST: HealthRecord/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult>
@@ -212,20 +334,11 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 int id,
                 UpdateHealthRecordDto dto)
         {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
             if (!ModelState.IsValid)
             {
-                ViewBag.RecordId =
-                    id;
+                ViewBag.RecordId = id;
 
-                return View(
-                    dto);
+                return View(dto);
             }
 
             try
@@ -250,111 +363,26 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 TempData["Error"] =
                     ex.Message;
 
-                ViewBag.RecordId =
-                    id;
+                ViewBag.RecordId = id;
 
-                return View(
-                    dto);
-            }
-        }
-
-        // GET: HealthRecord/DoctorRecords
-        public async Task<ActionResult>
-            DoctorRecords()
-        {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
-            try
-            {
-                int doctorId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
-
-                var records =
-                    await _healthRecordService
-                        .GetRecordsByDoctorAsync(
-                            doctorId);
-
-                return View(
-                    records);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] =
-                    ex.Message;
-
-                return View();
+                return View(dto);
             }
         }
 
         // ==================================
-        // PATIENT
+        // DELETE
         // ==================================
 
-        // GET: HealthRecord/PatientHistory
         public async Task<ActionResult>
-            PatientHistory()
+            Delete(int id)
         {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
-            try
-            {
-                int patientId =
-                    Convert.ToInt32(
-                        Session["ReferenceId"]);
-
-                var records =
-                    await _healthRecordService
-                        .GetRecordsByPatientAsync(
-                            patientId);
-
-                return View(
-                    records);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] =
-                    ex.Message;
-
-                return View();
-            }
-        }
-
-        // ==================================
-        // ADMIN ONLY
-        // ==================================
-
-        // GET: HealthRecord/Delete/5
-        public async Task<ActionResult>
-            Delete(
-                int id)
-        {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
             try
             {
                 var record =
                     await _healthRecordService
-                        .GetHealthRecordByIdAsync(
-                            id);
+                        .GetHealthRecordByIdAsync(id);
 
-                return View(
-                    record);
+                return View(record);
             }
             catch (Exception ex)
             {
@@ -366,26 +394,16 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        // POST: HealthRecord/Delete/5
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult>
-            DeleteConfirmed(
-                int id)
+            DeleteConfirmed(int id)
         {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
             try
             {
                 await _healthRecordService
-                    .DeleteHealthRecordAsync(
-                        id);
+                    .DeleteHealthRecordAsync(id);
 
                 TempData["Success"] =
                     "Health record deleted successfully.";

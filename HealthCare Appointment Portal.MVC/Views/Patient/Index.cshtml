@@ -4,192 +4,201 @@
     ViewBag.Title = "Patients";
 }
 
+@Html.Partial("_Alerts")
+
 <div class="container-fluid">
+
+    <!-- HEADER -->
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
+        <h2 class="fw-bold">
             Patient Management
         </h2>
 
-        @if (Session["Role"]?.ToString() == "Admin")
-        {
-            <a href="@Url.Action("Create","Patient")"
-               class="btn btn-primary">
+        <a href="@Url.Action("Create", "Patient")"
+           class="btn btn-success">
 
-                Add Patient
+            <i class="fas fa-plus"></i>
 
-            </a>
-        }
+            Add Patient
+
+        </a>
 
     </div>
+
+    <!-- SEARCH -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            @using (Html.BeginForm(
+                "Index",
+                "Patient",
+                FormMethod.Get))
+            {
+                <div class="input-group">
+
+                    <input type="text"
+                           name="search"
+                           class="form-control"
+                           placeholder="Search Patient By Id or Name" />
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        <i class="fas fa-search"></i>
+
+                        Search
+
+                    </button>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+    <!-- TABLE -->
 
     <div class="card shadow-sm">
 
         <div class="card-body">
 
-            <div class="row mb-3">
+            <div class="table-responsive">
 
-                <div class="col-md-4">
+                <table class="table table-bordered table-hover align-middle">
 
-                    @using (Html.BeginForm(
-                        "Index",
-                        "Patient",
-                        FormMethod.Get))
-                    {
-                        <div class="input-group">
+                    <thead class="table-light">
 
-                            <select name="status"
-                                    class="form-select">
-
-                                <option value="">
-                                    All Insurance Status
-                                </option>
-
-                                @foreach (var status in Enum.GetValues(
-                                    typeof(HealthCare_Appointment_Portal.Enums.InsuranceStatus)))
-                                {
-                                    <option value="@status">
-                                        @status
-                                    </option>
-                                }
-
-                            </select>
-
-                            <button type="submit"
-                                    class="btn btn-outline-primary">
-
-                                Filter
-
-                            </button>
-
-                        </div>
-                    }
-
-                </div>
-
-            </div>
-
-            <table class="table table-bordered table-hover">
-
-                <thead class="table-light">
-
-                    <tr>
-
-                        <th>
-                            Patient Id
-                        </th>
-
-                        <th>
-                            Full Name
-                        </th>
-
-                        <th>
-                            Gender
-                        </th>
-
-                        <th>
-                            Email
-                        </th>
-
-                        <th>
-                            Phone Number
-                        </th>
-
-                        <th>
-                            Appointments
-                        </th>
-
-                        <th width="250">
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    @foreach (var patient in Model)
-                    {
                         <tr>
 
-                            <td>
-                                @patient.PatientId
-                            </td>
+                            <th>
+                                Patient Id
+                            </th>
 
-                            <td>
-                                @patient.FullName
-                            </td>
+                            <th>
+                                Full Name
+                            </th>
 
-                            <td>
-                                @patient.Gender
-                            </td>
+                            <th>
+                                Gender
+                            </th>
 
-                            <td>
-                                @patient.Email
-                            </td>
+                            <th>
+                                Email
+                            </th>
 
-                            <td>
-                                @patient.PhoneNumber
-                            </td>
+                            <th>
+                                Phone Number
+                            </th>
 
-                            <td>
-                                @patient.AppointmentCount
-                            </td>
+                            <th>
+                                Appointments
+                            </th>
 
-                            <td>
-
-                                <a href="@Url.Action(
-                                         "Details",
-                                         "Patient",
-                                         new
-                                         {
-                                             id = patient.PatientId
-                                         })"
-                                   class="btn btn-sm btn-info">
-
-                                    View
-
-                                </a>
-
-                                @if (Session["Role"]?.ToString() == "Admin")
-                                {
-                                    <a href="@Url.Action(
-                                             "Edit",
-                                             "Patient",
-                                             new
-                                             {
-                                                 id = patient.PatientId
-                                             })"
-                                       class="btn btn-sm btn-warning">
-
-                                        Edit
-
-                                    </a>
-
-                                    <a href="@Url.Action(
-                                             "Deactivate",
-                                             "Patient",
-                                             new
-                                             {
-                                                 id = patient.PatientId
-                                             })"
-                                       class="btn btn-sm btn-danger">
-
-                                        Deactivate
-
-                                    </a>
-                                }
-
-                            </td>
+                            <th width="220">
+                                Actions
+                            </th>
 
                         </tr>
-                    }
 
-                </tbody>
+                    </thead>
 
-            </table>
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var patient in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @patient.PatientId
+                                    </td>
+
+                                    <td>
+                                        @patient.FullName
+                                    </td>
+
+                                    <td>
+                                        @patient.Gender
+                                    </td>
+
+                                    <td>
+                                        @patient.Email
+                                    </td>
+
+                                    <td>
+                                        @patient.PhoneNumber
+                                    </td>
+
+                                    <td>
+                                        @patient.AppointmentCount
+                                    </td>
+
+                                    <td>
+
+                                        <!-- VIEW -->
+
+                                        <a href="@Url.Action(
+                                            "Details",
+                                            "Patient",
+                                            new
+                                            {
+                                                id = patient.PatientId
+                                            })"
+                                           class="btn btn-info btn-sm text-white">
+
+                                            <i class="fas fa-eye"></i>
+
+                                            View
+
+                                        </a>
+
+                                        <!-- EDIT -->
+
+                                        <a href="@Url.Action(
+                                            "Edit",
+                                            "Patient",
+                                            new
+                                            {
+                                                id = patient.PatientId
+                                            })"
+                                           class="btn btn-warning btn-sm text-dark">
+
+                                            <i class="fas fa-edit"></i>
+
+                                            Edit
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+
+                                <td colspan="7"
+                                    class="text-center text-muted py-4">
+
+                                    No patients found.
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </div>
 

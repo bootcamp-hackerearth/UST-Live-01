@@ -1,594 +1,236 @@
-﻿@{
-    ViewBag.Title = "HealthAxis Health";
+﻿@model HealthCare_Appointment_Portal_MVC.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewBag.Title = "Home";
 }
 
-<nav class="navbar navbar-expand-lg navbar-dark fixed-top custom-navbar">
+<div class="container py-5">
 
-    <div class="container">
+    <!-- HERO SECTION -->
 
-        <a class="navbar-brand fw-bold"
-           href="#">
+    <div class="text-center mb-5">
 
-            HealthAxis Health
+        <h1 class="display-4 fw-bold text-primary">
+            Healthcare Management System
+        </h1>
 
-        </a>
+        <p class="lead text-muted">
+            Manage Patients, Doctors, Appointments and Health Records
+        </p>
 
-        <button class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarContent">
+    </div>
 
-            <span class="navbar-toggler-icon"></span>
+    
+    <!-- DASHBOARD STATS -->
 
-        </button>
+    <div class="row text-center mb-5">
 
-        <div class="collapse navbar-collapse"
-             id="navbarContent">
+        <!-- TOTAL PATIENTS -->
 
-            <ul class="navbar-nav ms-auto me-4">
+        <div class="col-md-3 mb-4">
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="#home">
+            <div class="card shadow-sm border-0 h-100">
 
-                        Home
+                <div class="card-body">
 
-                    </a>
-                </li>
+                    <i class="fas fa-users fa-2x text-primary mb-3"></i>
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="#about">
+                    <h2 class="fw-bold">
+                        @Model.TotalPatients
+                    </h2>
 
-                        Who We Are
+                    <p class="text-muted mb-0">
+                        Total Patients
+                    </p>
 
-                    </a>
-                </li>
+                </div>
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="#services">
+            </div>
 
-                        Services
+        </div>
 
-                    </a>
-                </li>
+        <!-- TOTAL DOCTORS -->
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       href="#contact">
+        <div class="col-md-3 mb-4">
 
-                        Contact Us
+            <div class="card shadow-sm border-0 h-100">
 
-                    </a>
-                </li>
+                <div class="card-body">
 
-            </ul>
+                    <i class="fas fa-user-doctor fa-2x text-success mb-3"></i>
+
+                    <h2 class="fw-bold">
+                        @Model.TotalDoctors
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Total Doctors
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TOTAL APPOINTMENTS -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <i class="fas fa-calendar-check fa-2x text-warning mb-3"></i>
+
+                    <h2 class="fw-bold">
+                        @Model.TotalAppointments
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Total Appointments
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- TOTAL HEALTH RECORDS -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <i class="fas fa-file-medical fa-2x text-danger mb-3"></i>
+
+                    <h2 class="fw-bold">
+                        @Model.TotalHealthRecords
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Health Records
+                    </p>
+
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
-</nav>
+    <!-- MODULE CARDS -->
 
-<!-- HERO SECTION -->
+    <div class="row">
 
-<section id="home"
-         class="hero-section">
+        <!-- PATIENT CARD -->
 
-    <div class="container">
+        <div class="col-md-3 mb-4">
 
-        <div class="row align-items-center min-vh-100">
+            <div class="card p-4 text-center h-100 shadow border-0">
 
-            <div class="col-lg-6">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
 
-                <h1 class="display-3 fw-bold mb-4">
+                <h4>
+                    Patients
+                </h4>
 
-                    Better Healthcare
-                    <br />
-
-                    For A Better Tomorrow
-
-                </h1>
-
-                <p class="lead mb-4">
-
-                    HealthAxis Health connects
-                    patients, doctors and healthcare
-                    providers through one secure,
-                    intelligent and modern platform.
-
+                <p class="text-muted">
+                    Manage patient details
                 </p>
 
-                <a href="@Url.Action("Login","User")"
-                   class="btn btn-primary btn-lg me-3">
+                <a href="@Url.Action("Index", "Patient")"
+                   class="btn btn-primary">
 
-                    Login
-
-                </a>
-
-                <a href="@Url.Action("Register","User")"
-                   class="btn btn-outline-primary btn-lg">
-
-                    Register
+                    Open
 
                 </a>
 
             </div>
 
-            <div class="col-lg-6 text-center">
+        </div>
 
-                <img src="@Url.Content("~/Content/Images/login-bg.jpg")"
-                     class="img-fluid hero-image"
-                     alt="Healthcare" />
+        <!-- DOCTOR CARD -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card p-4 text-center h-100 shadow border-0">
+
+                <i class="fas fa-user-doctor fa-3x text-success mb-3"></i>
+
+                <h4>
+                    Doctors
+                </h4>
+
+                <p class="text-muted">
+                    View doctor information
+                </p>
+
+                <a href="@Url.Action("Index", "Doctor")"
+                   class="btn btn-success">
+
+                    Open
+
+                </a>
 
             </div>
 
         </div>
 
-    </div>
+        <!-- APPOINTMENT CARD -->
 
-</section>
+        <div class="col-md-3 mb-4">
 
-<!-- WHO WE ARE -->
+            <div class="card p-4 text-center h-100 shadow border-0">
 
-<section id="about"
-         class="py-5">
+                <i class="fas fa-calendar-check fa-3x text-warning mb-3"></i>
 
-    <div class="container">
+                <h4>
+                    Appointments
+                </h4>
 
-        <div class="text-center mb-5">
+                <p class="text-muted">
+                    Schedule appointments
+                </p>
 
-            <h2 class="section-title">
+                <a href="@Url.Action("Index", "Appointment")"
+                   class="btn btn-warning text-white">
 
-                Who We Are
+                    Open
 
-            </h2>
-
-            <p class="section-subtitle">
-
-                Transforming healthcare through
-                innovation and technology.
-
-            </p>
-
-        </div>
-
-        <div class="row justify-content-center">
-
-            <div class="col-lg-9">
-
-                <div class="card shadow-sm border-0 p-5">
-
-                    <p class="fs-5 text-center">
-
-                        HealthAxis Health is a digital
-                        healthcare management platform
-                        designed to simplify healthcare
-                        delivery and improve patient
-                        experiences.
-
-                    </p>
-
-                    <p class="text-center text-muted">
-
-                        We empower patients, doctors,
-                        and administrators with secure
-                        tools for appointment scheduling,
-                        health record management, and
-                        healthcare operations.
-
-                    </p>
-
-                </div>
+                </a>
 
             </div>
 
         </div>
 
-    </div>
+        <!-- HEALTH RECORD CARD -->
 
-</section>
+        <div class="col-md-3 mb-4">
 
-<!-- SERVICES -->
+            <div class="card p-4 text-center h-100 shadow border-0">
 
-<section id="services"
-         class="py-5 bg-light">
+                <i class="fas fa-file-medical fa-3x text-danger mb-3"></i>
 
-    <div class="container">
+                <h4>
+                    Health Records
+                </h4>
 
-        <div class="text-center mb-5">
+                <p class="text-muted">
+                    Access medical history
+                </p>
 
-            <h2 class="section-title">
+                <a href="@Url.Action("Index", "HealthRecord")"
+                   class="btn btn-danger">
 
-                What We Provide
+                    Open
 
-            </h2>
-
-        </div>
-
-        <div class="row">
-
-            <div class="col-md-3 mb-4">
-
-                <div class="card feature-card">
-
-                    <div class="card-body text-center">
-
-                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
-
-                        <h4>
-
-                            Patients
-
-                        </h4>
-
-                        <p>
-
-                            Manage patient profiles,
-                            appointments and records.
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-3 mb-4">
-
-                <div class="card feature-card">
-
-                    <div class="card-body text-center">
-
-                        <i class="fas fa-user-doctor fa-3x text-success mb-3"></i>
-
-                        <h4>
-
-                            Doctors
-
-                        </h4>
-
-                        <p>
-
-                            Manage availability,
-                            specialization and schedules.
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-3 mb-4">
-
-                <div class="card feature-card">
-
-                    <div class="card-body text-center">
-
-                        <i class="fas fa-calendar-check fa-3x text-warning mb-3"></i>
-
-                        <h4>
-
-                            Appointments
-
-                        </h4>
-
-                        <p>
-
-                            Book and manage appointments
-                            seamlessly.
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-3 mb-4">
-
-                <div class="card feature-card">
-
-                    <div class="card-body text-center">
-
-                        <i class="fas fa-file-medical fa-3x text-info mb-3"></i>
-
-                        <h4>
-
-                            Health Records
-
-                        </h4>
-
-                        <p>
-
-                            Secure and organized medical
-                            record management.
-
-                        </p>
-
-                    </div>
-
-                </div>
+                </a>
 
             </div>
 
         </div>
-
-    </div>
-
-</section>
-
-<!-- WHY US -->
-
-<section class="py-5">
-
-    <div class="container">
-
-        <div class="text-center mb-5">
-
-            <h2 class="section-title">
-
-                Why Choose HealthAxis
-
-            </h2>
-
-        </div>
-
-        <div class="row">
-
-            <div class="col-md-4">
-
-                <div class="card feature-card">
-
-                    <div class="card-body text-center">
-
-                        <h4>
-
-                            Secure
-
-                        </h4>
-
-                        <p>
-
-                            Advanced protection for
-                            sensitive healthcare data.
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="card feature-card">
-
-                    <div class="card-body text-center">
-
-                        <h4>
-
-                            Digital First
-
-                        </h4>
-
-                        <p>
-
-                            Modern healthcare powered
-                            by technology.
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-
-                <div class="card feature-card">
-
-                    <div class="card-body text-center">
-
-                        <h4>
-
-                            User Friendly
-
-                        </h4>
-
-                        <p>
-
-                            Easy experience for patients,
-                            doctors and admins.
-
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- STATS -->
-
-<section class="stats-section">
-
-    <div class="container">
-
-        <div class="row text-center">
-
-            <div class="col-md-3">
-
-                <h2>Few</h2>
-                <p>Patients</p>
-
-            </div>
-
-            <div class="col-md-3">
-
-                <h2>24/7</h2>
-                <p>Access</p>
-
-            </div>
-
-            <div class="col-md-3">
-
-                <h2>Secure</h2>
-                <p>Platform</p>
-
-            </div>
-
-            <div class="col-md-3">
-
-                <h2>100%</h2>
-                <p>Digital Records</p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-<!-- CTA -->
-
-<section class="py-5 text-center">
-
-    <div class="container">
-
-        <h2 class="mb-4">
-
-            Ready To Experience Smarter Healthcare?
-
-        </h2>
-
-        <a href="@Url.Action("Login","User")"
-           class="btn btn-primary btn-lg me-3">
-
-            Login
-
-        </a>
-
-        <a href="@Url.Action("Register","User")"
-           class="btn btn-outline-primary btn-lg">
-
-            Register
-
-        </a>
-
-    </div>
-
-</section>
-
-<!-- CONTACT -->
-
-<section id="contact"
-         class="contact-section">
-
-    <div class="container text-center">
-
-        <h2 class="mb-4">
-
-            Contact Us
-
-        </h2>
-
-        <p>
-
-            support@healthaxishealth.com
-
-        </p>
-
-        <p>
-
-            +91 98765 43210
-
-        </p>
-
-        <p>
-
-           Only online no Address available
-
-        </p>
-
-    </div>
-
-</section>
-
-<footer>
-
-    <div class="container">
-
-        © 2026 HealthAxis Health
-
-    </div>
-
-</footer>
-
-<style>
-
-    .custom-navbar {
-        background: #1E3A7A;
-    }
-
-    .hero-section {
-        background: linear-gradient(135deg,#F8FAFC,#E0F2FE);
-    }
-
-    .hero-image {
-        border-radius: 25px;
-        box-shadow: 0 15px 40px rgba(0,0,0,.15);
-    }
-
-    .section-title {
-        color: #1E3A7A;
-        font-weight: 700;
-    }
-
-    .section-subtitle {
-        color: gray;
-    }
-
-    .feature-card {
-        border: none;
-        border-radius: 20px;
-        transition: .3s;
-        height: 100%;
-    }
-
-        .feature-card:hover {
-            transform: translateY(-8px);
-        }
-
-    .stats-section {
-        background: #1E3A7A;
-        color: white;
-        padding: 70px 0;
-    }
-
-    .contact-section {
-        background: #F8FAFC;
-        padding: 70px 0;
-    }
-
-    footer {
-        background: #0F172A;
-        color: white;
-        text-align: center;
-        padding: 20px;
-    }
-</style>

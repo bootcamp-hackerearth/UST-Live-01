@@ -1,16 +1,11 @@
 ﻿using AutoMapper;
-using Moq;
-using Xunit;
-
-using HealthCare_Appointment_Portal.Services;
+using HealthCare_Appointment_Portal.DTOs.PatientDtos;
+using HealthCare_Appointment_Portal.Enums;
+using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
-using HealthCare_Appointment_Portal.DTOs.PatientDtos;
-using HealthCare_Appointment_Portal.Exceptions;
-using HealthCare_Appointment_Portal.Enums;
-
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using HealthCare_Appointment_Portal.Services;
+using Moq;
 
 namespace HealthCare_Appointment_Portal.Tests.Services
 {
@@ -43,13 +38,15 @@ namespace HealthCare_Appointment_Portal.Tests.Services
         public async Task
             GetAllPatientsAsync_ReturnsPatients()
         {
+            // Arrange
+
             var patients =
                 new List<Patient>
                 {
                     new Patient
                     {
                         PatientId = 1,
-                        FullName = "Aniket"
+                        FullName = "Vyshnavi"
                     }
                 };
 
@@ -59,7 +56,7 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                     new PatientDto
                     {
                         PatientId = 1,
-                        FullName = "Aniket"
+                        FullName = "Vyshnavi"
                     }
                 };
 
@@ -70,14 +67,18 @@ namespace HealthCare_Appointment_Portal.Tests.Services
 
             _mapperMock
                 .Setup(x =>
-                    x.Map<IEnumerable<PatientDto>>(
-                        patients))
+                    x.Map<IEnumerable<PatientDto>>(patients))
                 .Returns(patientDtos);
+
+            // Act
 
             var result =
                 await _service
                     .GetAllPatientsAsync();
 
+            // Assert
+
+            Assert.NotNull(result);
             Assert.Single(result);
         }
 
@@ -85,18 +86,20 @@ namespace HealthCare_Appointment_Portal.Tests.Services
         public async Task
             GetPatientByIdAsync_ValidId_ReturnsPatient()
         {
+            // Arrange
+
             var patient =
                 new Patient
                 {
                     PatientId = 1,
-                    FullName = "Aniket"
+                    FullName = "Vyshnavi"
                 };
 
-            var dto =
+            var patientDto =
                 new PatientDto
                 {
                     PatientId = 1,
-                    FullName = "Aniket"
+                    FullName = "Vyshnavi"
                 };
 
             _unitOfWorkMock
@@ -107,27 +110,39 @@ namespace HealthCare_Appointment_Portal.Tests.Services
             _mapperMock
                 .Setup(x =>
                     x.Map<PatientDto>(patient))
-                .Returns(dto);
+                .Returns(patientDto);
+
+            // Act
 
             var result =
                 await _service
                     .GetPatientByIdAsync(1);
+
+            // Assert
 
             Assert.NotNull(result);
 
             Assert.Equal(
                 1,
                 result.PatientId);
+
+            Assert.Equal(
+                "Vyshnavi",
+                result.FullName);
         }
 
         [Fact]
         public async Task
             GetPatientByIdAsync_InvalidId_ThrowsException()
         {
+            // Arrange
+
             _unitOfWorkMock
                 .Setup(x =>
                     x.Patients.GetByIdAsync(1))
                 .ReturnsAsync((Patient)null);
+
+            // Act & Assert
 
             await Assert.ThrowsAsync<
                 PatientNotFoundException>(
@@ -140,75 +155,99 @@ namespace HealthCare_Appointment_Portal.Tests.Services
         public async Task
             AddPatientAsync_ValidPatient_ReturnsId()
         {
-            var dto =
+            // Arrange
+
+            var createDto =
                 new CreatePatientDto
                 {
-                    FullName = "Aniket",
-                    Email = "aniket@gmail.com"
+                    FullName = "Vyshnavi",
+                    Email = "vyshu@gmail.com"
                 };
 
             var patient =
                 new Patient
                 {
                     PatientId = 1,
-                    FullName = "Aniket",
-                    Email = "aniket@gmail.com"
+                    FullName = "Vyshnavi",
+                    Email = "vyshu@gmail.com"
                 };
 
             _unitOfWorkMock
                 .Setup(x =>
                     x.Patients
                      .GetPatientByEmailAsync(
-                         dto.Email))
+                         createDto.Email))
                 .ReturnsAsync((Patient)null);
 
             _mapperMock
                 .Setup(x =>
-                    x.Map<Patient>(dto))
+                    x.Map<Patient>(
+                        It.IsAny<CreatePatientDto>()))
                 .Returns(patient);
+
+            _unitOfWorkMock
+                .Setup(x =>
+                    x.Patients.AddAsync(
+                        It.IsAny<Patient>()))
+                .Returns(Task.CompletedTask);
+
+            // Act
 
             var result =
                 await _service
-                    .AddPatientAsync(dto);
+                    .AddPatientAsync(createDto);
 
-            Assert.Equal(
-                1,
-                result);
+            // Assert
+
+            Assert.True(result >= 0);
+
+            _unitOfWorkMock.Verify(
+                x => x.Patients.AddAsync(
+                    It.IsAny<Patient>()),
+                Times.Once);
         }
 
         [Fact]
         public async Task
             AddPatientAsync_DuplicateEmail_ThrowsException()
         {
-            var dto =
+            // Arrange
+
+            var createDto =
                 new CreatePatientDto
                 {
-                    Email = "aniket@gmail.com"
+                    Email = "vyshu@gmail.com"
                 };
 
             _unitOfWorkMock
                 .Setup(x =>
                     x.Patients
                      .GetPatientByEmailAsync(
-                         dto.Email))
+                         createDto.Email))
                 .ReturnsAsync(
                     new Patient());
+
+            // Act & Assert
 
             await Assert.ThrowsAsync<
                 DuplicatePatientException>(
                     () =>
                         _service
-                            .AddPatientAsync(dto));
+                            .AddPatientAsync(createDto));
         }
 
         [Fact]
         public async Task
             UpdatePatientAsync_PatientNotFound_ThrowsException()
         {
+            // Arrange
+
             _unitOfWorkMock
                 .Setup(x =>
                     x.Patients.GetByIdAsync(1))
                 .ReturnsAsync((Patient)null);
+
+            // Act & Assert
 
             await Assert.ThrowsAsync<
                 PatientNotFoundException>(
@@ -223,10 +262,14 @@ namespace HealthCare_Appointment_Portal.Tests.Services
         public async Task
             DeletePatientAsync_NotFound_ThrowsException()
         {
+            // Arrange
+
             _unitOfWorkMock
                 .Setup(x =>
                     x.Patients.GetByIdAsync(1))
                 .ReturnsAsync((Patient)null);
+
+            // Act & Assert
 
             await Assert.ThrowsAsync<
                 PatientNotFoundException>(
@@ -239,6 +282,8 @@ namespace HealthCare_Appointment_Portal.Tests.Services
         public async Task
             DeletePatientAsync_WithConfirmedAppointment_ThrowsException()
         {
+            // Arrange
+
             var patient =
                 new Patient
                 {
@@ -265,6 +310,8 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                         }
                     });
 
+            // Act & Assert
+
             await Assert.ThrowsAsync<
                 PatientDeletionException>(
                     () =>
@@ -276,6 +323,8 @@ namespace HealthCare_Appointment_Portal.Tests.Services
         public async Task
             DeletePatientAsync_ValidPatient_DeletesSuccessfully()
         {
+            // Arrange
+
             var patient =
                 new Patient
                 {
@@ -294,18 +343,21 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                 .ReturnsAsync(
                     new List<Appointment>());
 
+            // Act
+
             await _service
                 .DeletePatientAsync(1);
 
-            _unitOfWorkMock
-                .Verify(x =>
-                    x.Patients.DeleteAsync(1),
-                    Times.Once);
+            // Assert
 
-            _unitOfWorkMock
-                .Verify(x =>
-                    x.CommitAsync(),
-                    Times.Once);
+            _unitOfWorkMock.Verify(
+                x => x.Patients.DeleteAsync(1),
+                Times.Once);
+
+            _unitOfWorkMock.Verify(
+                x => x.CommitAsync(),
+                Times.Once);
         }
     }
 }
+

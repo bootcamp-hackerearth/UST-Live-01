@@ -52,5 +52,11 @@ namespace HealthCare_Appointment_Portal.DTOs.PatientDtos
             get;
             set;
         }
+        public bool IsActive
+        {
+            get;
+            set;
+        }
+
     }
 }

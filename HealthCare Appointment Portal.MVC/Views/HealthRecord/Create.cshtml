@@ -4,13 +4,15 @@
     ViewBag.Title = "Add Health Record";
 }
 
+@Html.Partial("_Alerts")
+
 <div class="container-fluid">
 
     <div class="row mb-4">
 
         <div class="col">
 
-            <h2>
+            <h2 class="fw-bold">
                 Add Health Record
             </h2>
 
@@ -26,54 +28,43 @@
             {
                 @Html.AntiForgeryToken()
 
-                if (ViewData.ModelState[""]?.Errors.Count > 0)
-                {
-                    @Html.ValidationSummary(
-                        true,
+                @Html.ValidationSummary(
+                    true,
+                    "",
+                    new
+                    {
+                        @class = "alert alert-danger"
+                    })
+
+                <!-- APPOINTMENT DROPDOWN -->
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Appointment
+                    </label>
+
+                    @Html.DropDownListFor(
+                        m => m.AppointmentId,
+                        (SelectList)ViewBag.Appointments,
+                        "-- Select Appointment --",
+                        new
+                        {
+                            @class = "form-select",
+                            id = "AppointmentId"
+                        })
+
+                    @Html.ValidationMessageFor(
+                        m => m.AppointmentId,
                         "",
                         new
                         {
-                            @class = "alert alert-danger"
+                            @class = "text-danger"
                         })
-                }
-
-                @Html.HiddenFor(
-                    m => m.AppointmentId)
-
-                @Html.HiddenFor(
-                    m => m.PatientId)
-
-                @Html.HiddenFor(
-                    m => m.DoctorId)
-
-                @Html.HiddenFor(
-                    m => m.VisitDate)
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Appointment Id
-                    </label>
-
-                    <input type="text"
-                           class="form-control"
-                           value="@Model.AppointmentId"
-                           readonly />
 
                 </div>
 
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Patient Id
-                    </label>
-
-                    <input type="text"
-                           class="form-control"
-                           value="@Model.PatientId"
-                           readonly />
-
-                </div>
+                <!-- VISIT DATE -->
 
                 <div class="mb-3">
 
@@ -82,11 +73,13 @@
                     </label>
 
                     <input type="text"
+                           id="visitDate"
                            class="form-control"
-                           value="@Model.VisitDate.ToString("dd MMM yyyy")"
                            readonly />
 
                 </div>
+
+                <!-- DIAGNOSIS -->
 
                 <div class="mb-3">
 
@@ -108,10 +101,12 @@
                         "",
                         new
                         {
-                            @class = "text-danger d-block mt-1"
+                            @class = "text-danger"
                         })
 
                 </div>
+
+                <!-- PRESCRIPTION -->
 
                 <div class="mb-3">
 
@@ -133,10 +128,12 @@
                         "",
                         new
                         {
-                            @class = "text-danger d-block mt-1"
+                            @class = "text-danger"
                         })
 
                 </div>
+
+                <!-- NOTES -->
 
                 <div class="mb-4">
 
@@ -158,21 +155,25 @@
                         "",
                         new
                         {
-                            @class = "text-danger d-block mt-1"
+                            @class = "text-danger"
                         })
 
                 </div>
+
+                <!-- BUTTONS -->
 
                 <div class="mt-4">
 
                     <button type="submit"
                             class="btn btn-success">
 
+                        <i class="fas fa-save"></i>
+
                         Save Health Record
 
                     </button>
 
-                    <a href="javascript:history.back()"
+                    <a href="@Url.Action("Index", "HealthRecord")"
                        class="btn btn-secondary">
 
                         Cancel
@@ -191,4 +192,43 @@
 @section Scripts
 {
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+
+        const appointmentDates = {
+
+            @foreach (var item in (SelectList)ViewBag.Appointments)
+            {
+                <text>
+                    "@item.Value":
+                    "@ViewBag.AppointmentDates[item.Value.ToString()]",
+                </text>
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const appointmentDropdown =
+                document.getElementById("AppointmentId");
+
+            const visitDate =
+                document.getElementById("visitDate");
+
+            function updateDate() {
+
+                const selectedId =
+                    appointmentDropdown.value;
+
+                visitDate.value =
+                    appointmentDates[selectedId] || "";
+            }
+
+            appointmentDropdown.addEventListener(
+                "change",
+                updateDate);
+
+            updateDate();
+        });
+
+    </script>
 }

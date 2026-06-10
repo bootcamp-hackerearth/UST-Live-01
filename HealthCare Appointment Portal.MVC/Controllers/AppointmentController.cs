@@ -5,132 +5,116 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-public class AppointmentController
-: Controller
+namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
-    private readonly IAppointmentApiService
-     _appointmentService;
-
-    private readonly IDoctorApiService
-        _doctorService;
-
-    public AppointmentController(
-     IAppointmentApiService appointmentService,
-     IDoctorApiService doctorService)
+    public class AppointmentController : Controller
     {
-        _appointmentService =
-            appointmentService;
+        private readonly IAppointmentApiService
+            _appointmentService;
 
-        _doctorService =
-            doctorService;
-    }
+        private readonly IDoctorApiService
+            _doctorService;
 
-    // ==================================
-    // ADMIN
-    // ==================================
+        private readonly IPatientApiService
+            _patientService;
 
-    public async Task<ActionResult>
-        Index()
-    {
-        try
+        public AppointmentController(
+            IAppointmentApiService appointmentService,
+            IDoctorApiService doctorService,
+            IPatientApiService patientService)
         {
-            var appointments =
-                await _appointmentService
-                    .GetAllAppointmentsAsync();
+            _appointmentService =
+                appointmentService;
 
-            return View(
-                appointments);
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
+            _doctorService =
+                doctorService;
 
-            return View(
-                Enumerable.Empty<AppointmentDto>());
-        }
-    }
-
-    // ==================================
-    // COMMON
-    // ==================================
-
-    public async Task<ActionResult>
-        Details(
-            int id)
-    {
-        try
-        {
-            var appointment =
-                await _appointmentService
-                    .GetAppointmentByIdAsync(
-                        id);
-
-            return View(
-                appointment);
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
-
-            return RedirectToAction(
-                "Index");
-        }
-    }
-
-    // ==================================
-    // PATIENT
-    // ==================================
-
-    public async Task<ActionResult>
-        Create()
-    {
-        if (Session["ReferenceId"] == null)
-        {
-            return RedirectToAction(
-                "Login",
-                "User");
+            _patientService =
+                patientService;
         }
 
-        var doctors =
-            (await _doctorService
-                .GetAllDoctorsAsync())
-            .Where(d => d.IsActive);
+        // ==================================
+        // ALL APPOINTMENTS + SEARCH
+        // ==================================
 
-        ViewBag.Doctors =
-            new SelectList(
-                doctors,
-                "DoctorId",
-                "FullName");
-
-        return View(
-            new CreateAppointmentDto
+        public async Task<ActionResult>
+            Index(string search)
+        {
+            try
             {
-                ScheduledDate =
-                    DateTime.Today
-            });
-    }
+                var appointments =
+                    await _appointmentService
+                        .GetAllAppointmentsAsync();
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult>
-        Create(
-            CreateAppointmentDto dto)
-    {
-        if (Session["ReferenceId"] == null)
-        {
-            return RedirectToAction(
-                "Login",
-                "User");
+                // SEARCH
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    search =
+                        search.ToLower();
+
+                    appointments =
+                        appointments.Where(a =>
+                            a.PatientName.ToLower().Contains(search)
+                            ||
+                            a.DoctorName.ToLower().Contains(search)
+                            ||
+                            a.AppointmentId.ToString() == search);
+                }
+
+                return View(appointments);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return View(
+                    Enumerable.Empty<AppointmentDto>());
+            }
         }
 
-        if (!ModelState.IsValid)
+        // ==================================
+        // DETAILS
+        // ==================================
+
+        public async Task<ActionResult>
+            Details(int id)
+        {
+            try
+            {
+                var appointment =
+                    await _appointmentService
+                        .GetAppointmentByIdAsync(id);
+
+                return View(appointment);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    "Index");
+            }
+        }
+
+        // ==================================
+        // CREATE APPOINTMENT
+        // ==================================
+
+        public async Task<ActionResult>
+            Create()
         {
             var doctors =
                 (await _doctorService
                     .GetAllDoctorsAsync())
-                .Where(d => d.IsActive);
+                    .Where(d => d.IsActive)
+                    .ToList();
+
+            var patients =
+                await _patientService
+                    .GetAllPatientsAsync();
 
             ViewBag.Doctors =
                 new SelectList(
@@ -138,280 +122,310 @@ public class AppointmentController
                     "DoctorId",
                     "FullName");
 
-            return View(dto);
-        }
-
-        try
-        {
-            dto.PatientId =
-                Convert.ToInt32(
-                    Session["ReferenceId"]);
-
-            int appointmentId =
-                await _appointmentService
-                    .CreateAppointmentAsync(
-                        dto);
-
-            return RedirectToAction(
-                "Details",
-                new
-                {
-                    id = appointmentId
-                });
-        }
-        catch (Exception ex)
-        {
-            var doctors =
-                (await _doctorService
-                    .GetAllDoctorsAsync())
-                .Where(d => d.IsActive);
-
-            ViewBag.Doctors =
+            ViewBag.Patients =
                 new SelectList(
-                    doctors,
-                    "DoctorId",
+                    patients,
+                    "PatientId",
                     "FullName");
 
-            ModelState.AddModelError(
-                "",
-                ex.Message);
-
-            return View(dto);
-        }
-    }
-
-    public async Task<ActionResult>
-        MyAppointments()
-    {
-        try
-        {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
-            int patientId =
-                Convert.ToInt32(
-                    Session["ReferenceId"]);
-
-            var appointments =
-                await _appointmentService
-                    .GetAppointmentsByPatientAsync(
-                        patientId);
-
             return View(
-                appointments);
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
-
-            return RedirectToAction(
-                "Dashboard",
-                "Patient");
-        }
-    }
-
-    // ==================================
-    // DOCTOR
-    // ==================================
-
-    public async Task<ActionResult>
-        TodaySchedule()
-    {
-        try
-        {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
-            int doctorId =
-                Convert.ToInt32(
-                    Session["ReferenceId"]);
-
-            var appointments =
-                await _appointmentService
-                    .GetTodayScheduleAsync(
-                        doctorId);
-
-            return View(
-                appointments);
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
-
-            return RedirectToAction(
-                "Dashboard",
-                "Doctor");
-        }
-    }
-
-    public async Task<ActionResult>
-        WeeklySchedule()
-    {
-        try
-        {
-            if (Session["ReferenceId"] == null)
-            {
-                return RedirectToAction(
-                    "Login",
-                    "User");
-            }
-
-            int doctorId =
-                Convert.ToInt32(
-                    Session["ReferenceId"]);
-
-            var appointments =
-                await _appointmentService
-                    .GetWeeklyScheduleAsync(
-                        doctorId);
-
-            return View(
-                appointments);
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
-
-            return RedirectToAction(
-                "Dashboard",
-                "Doctor");
-        }
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult>
-        Confirm(
-            int id)
-    {
-        try
-        {
-            await _appointmentService
-                .ConfirmAppointmentAsync(
-                    id);
-
-            return RedirectToAction(
-                "Details",
-                new { id });
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
-
-            return RedirectToAction(
-                "Details",
-                new { id });
-        }
-    }
-
-    public async Task<ActionResult>
-        Cancel(
-            int id)
-    {
-        try
-        {
-            var appointment =
-                await _appointmentService
-                    .GetAppointmentByIdAsync(
-                        id);
-
-            return View(
-                appointment);
-        }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
-
-            return RedirectToAction(
-                "Index");
-        }
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult>
-        Cancel(
-            int id,
-            string reason)
-    {
-        try
-        {
-            await _appointmentService
-                .CancelAppointmentAsync(
-                    id,
-                    reason);
-
-            return RedirectToAction(
-                "Details",
-                new { id });
-        }
-        catch (Exception ex)
-        {
-            ModelState.AddModelError(
-                "",
-                ex.Message);
-
-            var appointment =
-                await _appointmentService
-                    .GetAppointmentByIdAsync(
-                        id);
-
-            return View(
-                appointment);
-        }
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<ActionResult>
-        Complete(
-            int id)
-    {
-        try
-        {
-            await _appointmentService
-                .CompleteAppointmentAsync(
-                    id);
-
-            var appointment =
-                await _appointmentService
-                    .GetAppointmentByIdAsync(
-                        id);
-
-            return RedirectToAction(
-                "Create",
-                "HealthRecord",
-                new
+                new CreateAppointmentDto
                 {
-                    appointmentId =
-                        appointment.AppointmentId,
-
-                    patientId =
-                        appointment.PatientId
+                    ScheduledDate =
+                        DateTime.Today
                 });
         }
-        catch (Exception ex)
-        {
-            TempData["Error"] =
-                ex.Message;
 
-            return RedirectToAction(
-                "Details",
-                new { id });
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult>
+            Create(CreateAppointmentDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var doctors =
+                    (await _doctorService
+                        .GetAllDoctorsAsync())
+                        .Where(d => d.IsActive)
+                        .ToList();
+
+                var patients =
+                    await _patientService
+                        .GetAllPatientsAsync();
+
+                ViewBag.Doctors =
+                    new SelectList(
+                        doctors,
+                        "DoctorId",
+                        "FullName");
+
+                ViewBag.Patients =
+                    new SelectList(
+                        patients,
+                        "PatientId",
+                        "FullName");
+
+                return View(dto);
+            }
+
+            try
+            {
+                int appointmentId =
+                    await _appointmentService
+                        .CreateAppointmentAsync(dto);
+
+                TempData["Success"] =
+                    "Appointment created successfully.";
+
+                return RedirectToAction(
+                    "Details",
+                    new
+                    {
+                        id = appointmentId
+                    });
+            }
+            catch (Exception ex)
+            {
+                var doctors =
+                    (await _doctorService
+                        .GetAllDoctorsAsync())
+                        .Where(d => d.IsActive)
+                        .ToList();
+
+                var patients =
+                    await _patientService
+                        .GetAllPatientsAsync();
+
+                ViewBag.Doctors =
+                    new SelectList(
+                        doctors,
+                        "DoctorId",
+                        "FullName");
+
+                ViewBag.Patients =
+                    new SelectList(
+                        patients,
+                        "PatientId",
+                        "FullName");
+
+                ModelState.AddModelError(
+                    "",
+                    ex.Message);
+
+                return View(dto);
+            }
+        }
+
+        // ==================================
+        // PATIENT APPOINTMENTS
+        // ==================================
+
+        public async Task<ActionResult>
+            MyAppointments()
+        {
+            try
+            {
+                int patientId = 1;
+
+                var appointments =
+                    await _appointmentService
+                        .GetAppointmentsByPatientAsync(
+                            patientId);
+
+                return View(appointments);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    "Index");
+            }
+        }
+
+        // ==================================
+        // TODAY SCHEDULE
+        // ==================================
+
+        public async Task<ActionResult>
+            TodaySchedule()
+        {
+            try
+            {
+                int doctorId = 1;
+
+                var appointments =
+                    await _appointmentService
+                        .GetTodayScheduleAsync(
+                            doctorId);
+
+                return View(appointments);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    "Index");
+            }
+        }
+
+        // ==================================
+        // WEEKLY SCHEDULE
+        // ==================================
+
+        public async Task<ActionResult>
+            WeeklySchedule()
+        {
+            try
+            {
+                int doctorId = 1;
+
+                var appointments =
+                    await _appointmentService
+                        .GetWeeklyScheduleAsync(
+                            doctorId);
+
+                return View(appointments);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    "Index");
+            }
+        }
+
+        // ==================================
+        // CONFIRM
+        // ==================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult>
+            Confirm(int id)
+        {
+            try
+            {
+                await _appointmentService
+                    .ConfirmAppointmentAsync(id);
+
+                TempData["Success"] =
+                    "Appointment confirmed successfully.";
+
+                return RedirectToAction(
+                    "Details",
+                    new { id });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    "Details",
+                    new { id });
+            }
+        }
+
+        // ==================================
+        // CANCEL GET
+        // ==================================
+
+        public async Task<ActionResult>
+            Cancel(int id)
+        {
+            try
+            {
+                var appointment =
+                    await _appointmentService
+                        .GetAppointmentByIdAsync(id);
+
+                return View(appointment);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    "Index");
+            }
+        }
+
+        // ==================================
+        // CANCEL POST
+        // ==================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult>
+            Cancel(
+                int id,
+                string reason)
+        {
+            try
+            {
+                await _appointmentService
+                    .CancelAppointmentAsync(
+                        id,
+                        reason);
+
+                TempData["Success"] =
+                    "Appointment cancelled successfully.";
+
+                return RedirectToAction(
+                    "Details",
+                    new { id });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(
+                    "",
+                    ex.Message);
+
+                var appointment =
+                    await _appointmentService
+                        .GetAppointmentByIdAsync(id);
+
+                return View(appointment);
+            }
+        }
+
+        // ==================================
+        // COMPLETE
+        // ==================================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult>
+            Complete(int id)
+        {
+            try
+            {
+                await _appointmentService
+                    .CompleteAppointmentAsync(id);
+
+                TempData["Success"] =
+                    "Appointment completed successfully.";
+
+                return RedirectToAction(
+                    "Details",
+                    new { id });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    "Details",
+                    new { id });
+            }
         }
     }
-
 }

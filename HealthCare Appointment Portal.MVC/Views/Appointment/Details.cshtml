@@ -4,16 +4,22 @@
     ViewBag.Title = "Appointment Details";
 }
 
+@Html.Partial("_Alerts")
+
 <div class="container-fluid">
+
+    <!-- HEADER -->
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
+        <h2 class="fw-bold">
             Appointment Details
         </h2>
 
         <a href="javascript:history.back()"
            class="btn btn-secondary">
+
+            <i class="fas fa-arrow-left"></i>
 
             Back
 
@@ -21,119 +27,98 @@
 
     </div>
 
+    <!-- DETAILS CARD -->
+
     <div class="card shadow-sm">
 
         <div class="card-body">
 
+            <!-- APPOINTMENT ID -->
+
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Appointment Id
-                    </strong>
-
+                    <strong>Appointment Id</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.AppointmentId
-
                 </div>
 
             </div>
 
             <hr />
 
+            <!-- PATIENT -->
+
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Patient
-                    </strong>
-
+                    <strong>Patient</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.PatientName
-
                 </div>
 
             </div>
 
             <hr />
 
+            <!-- DOCTOR -->
+
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Doctor
-                    </strong>
-
+                    <strong>Doctor</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.DoctorName
-
                 </div>
 
             </div>
 
             <hr />
 
+            <!-- DATE -->
+
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Appointment Date
-                    </strong>
-
+                    <strong>Appointment Date</strong>
                 </div>
 
                 <div class="col-md-9">
-
-                    @Model.ScheduledDate.ToString(
-                        "dd MMM yyyy")
-
+                    @Model.ScheduledDate.ToString("dd MMM yyyy")
                 </div>
 
             </div>
 
             <hr />
 
+            <!-- TIME SLOT -->
+
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Time Slot
-                    </strong>
-
+                    <strong>Time Slot</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.TimeSlot
-
                 </div>
 
             </div>
 
             <hr />
 
+            <!-- STATUS -->
+
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Status
-                    </strong>
-
+                    <strong>Status</strong>
                 </div>
 
                 <div class="col-md-9">
@@ -173,25 +158,20 @@
 
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(
-                Model.CancellationReason))
+            <!-- CANCELLATION REASON -->
+
+            @if (!string.IsNullOrWhiteSpace(Model.CancellationReason))
             {
                 <hr />
 
                 <div class="row mb-3">
 
                     <div class="col-md-3">
-
-                        <strong>
-                            Cancellation Reason
-                        </strong>
-
+                        <strong>Cancellation Reason</strong>
                     </div>
 
                     <div class="col-md-9 text-danger">
-
                         @Model.CancellationReason
-
                     </div>
 
                 </div>
@@ -201,67 +181,83 @@
 
     </div>
 
-    @if (Session["Role"]?.ToString() == "Doctor")
-    {
-        <div class="mt-4">
+    <!-- ACTION BUTTONS -->
 
-            @if (Model.Status.ToString() == "Pending")
-            {
-                using (Html.BeginForm(
-                    "Confirm",
-                    "Appointment",
-                    FormMethod.Post))
+    <div class="mt-4">
+
+        <!-- CONFIRM -->
+
+        @if (Model.Status.ToString() == "Pending")
+        {
+            using (Html.BeginForm(
+                "Confirm",
+                "Appointment",
+                new
                 {
-                    @Html.AntiForgeryToken()
-
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.AppointmentId" />
-
-                    <button type="submit"
-                            class="btn btn-success">
-
-                        Confirm Appointment
-
-                    </button>
-                }
-
-                <a href="@Url.Action(
-                            "Cancel",
-                            "Appointment",
-                            new
-                            {
-                                id = Model.AppointmentId
-                            })"
-                   class="btn btn-danger">
-
-                    Cancel Appointment
-
-                </a>
-            }
-
-            @if (Model.Status.ToString() == "Confirmed")
+                    id = Model.AppointmentId
+                },
+                FormMethod.Post))
             {
-                using (Html.BeginForm(
-                    "Complete",
-                    "Appointment",
-                    FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
+                @Html.AntiForgeryToken()
 
-                    <input type="hidden"
-                           name="id"
-                           value="@Model.AppointmentId" />
+                <button type="submit"
+                        class="btn btn-success me-2">
 
-                    <button type="submit"
-                            class="btn btn-primary">
+                    <i class="fas fa-check"></i>
 
-                        Mark As Completed
+                    Confirm Appointment
 
-                    </button>
-                }
+                </button>
             }
-        </div>
-    }
+        }
+
+        <!-- COMPLETE -->
+
+        @if (Model.Status.ToString() == "Confirmed")
+        {
+            using (Html.BeginForm(
+                "Complete",
+                "Appointment",
+                new
+                {
+                    id = Model.AppointmentId
+                },
+                FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="btn btn-primary me-2">
+
+                    <i class="fas fa-check-circle"></i>
+
+                    Mark As Completed
+
+                </button>
+            }
+        }
+
+        <!-- CANCEL -->
+
+        @if (Model.Status.ToString() != "Cancelled"
+            && Model.Status.ToString() != "Completed")
+        {
+            <a href="@Url.Action(
+                        "Cancel",
+                        "Appointment",
+                        new
+                        {
+                            id = Model.AppointmentId
+                        })"
+               class="btn btn-danger me-2">
+
+                <i class="fas fa-times"></i>
+
+                Cancel Appointment
+
+            </a>
+        }
+
+    </div>
 
 </div>

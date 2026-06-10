@@ -4,50 +4,30 @@
     ViewBag.Title = "Health Record Details";
 }
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show">
-
-        @TempData["Success"]
-
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-        </button>
-
-    </div>
-}
-
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show">
-
-        @TempData["Error"]
-
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert">
-        </button>
-
-    </div>
-}
+@Html.Partial("_Alerts")
 
 <div class="container-fluid">
 
+    <!-- HEADER -->
+
     <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <h2>
+        <h2 class="fw-bold">
             Health Record Details
         </h2>
 
         <a href="javascript:history.back()"
            class="btn btn-secondary">
 
+            <i class="fas fa-arrow-left"></i>
+
             Back
 
         </a>
 
     </div>
+
+    <!-- DETAILS CARD -->
 
     <div class="card shadow-sm">
 
@@ -56,17 +36,11 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Record Id
-                    </strong>
-
+                    <strong>Record Id</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.RecordId
-
                 </div>
 
             </div>
@@ -76,17 +50,11 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Appointment Id
-                    </strong>
-
+                    <strong>Appointment Id</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.AppointmentId
-
                 </div>
 
             </div>
@@ -96,17 +64,11 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Patient
-                    </strong>
-
+                    <strong>Patient</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.PatientName
-
                 </div>
 
             </div>
@@ -116,17 +78,11 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Doctor
-                    </strong>
-
+                    <strong>Doctor</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.DoctorName
-
                 </div>
 
             </div>
@@ -136,17 +92,11 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Specialisation
-                    </strong>
-
+                    <strong>Specialisation</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.Specialisation
-
                 </div>
 
             </div>
@@ -156,18 +106,11 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Visit Date
-                    </strong>
-
+                    <strong>Visit Date</strong>
                 </div>
 
                 <div class="col-md-9">
-
-                    @Model.VisitDate.ToString(
-                        "dd MMM yyyy")
-
+                    @Model.VisitDate.ToString("dd MMM yyyy")
                 </div>
 
             </div>
@@ -177,17 +120,11 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Diagnosis
-                    </strong>
-
+                    <strong>Diagnosis</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.Diagnosis
-
                 </div>
 
             </div>
@@ -197,40 +134,27 @@
             <div class="row mb-3">
 
                 <div class="col-md-3">
-
-                    <strong>
-                        Prescription
-                    </strong>
-
+                    <strong>Prescription</strong>
                 </div>
 
                 <div class="col-md-9">
-
                     @Model.Prescription
-
                 </div>
 
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(
-                Model.Notes))
+            @if (!string.IsNullOrWhiteSpace(Model.Notes))
             {
                 <hr />
 
                 <div class="row mb-3">
 
                     <div class="col-md-3">
-
-                        <strong>
-                            Notes
-                        </strong>
-
+                        <strong>Notes</strong>
                     </div>
 
                     <div class="col-md-9">
-
                         @Model.Notes
-
                     </div>
 
                 </div>
@@ -240,24 +164,34 @@
 
     </div>
 
-    @if (Session["Role"]?.ToString() == "Doctor")
-    {
-        <div class="mt-4">
+    <!-- ACTION BUTTONS -->
 
-            <a href="@Url.Action(
-                        "Edit",
-                        "HealthRecord",
-                        new
-                        {
-                            id = Model.RecordId
-                        })"
-               class="btn btn-warning">
+    <div class="mt-4">
 
-                Edit Record
+        <a href="@Url.Action(
+                    "Edit",
+                    "HealthRecord",
+                    new { id = Model.RecordId })"
+           class="btn btn-warning me-2">
 
-            </a>
+            <i class="fas fa-edit"></i>
 
-        </div>
-    }
+            Edit Record
+
+        </a>
+
+        <a href="@Url.Action(
+                    "Delete",
+                    "HealthRecord",
+                    new { id = Model.RecordId })"
+           class="btn btn-danger">
+
+            <i class="fas fa-trash"></i>
+
+            Delete Record
+
+        </a>
+
+    </div>
 
 </div>

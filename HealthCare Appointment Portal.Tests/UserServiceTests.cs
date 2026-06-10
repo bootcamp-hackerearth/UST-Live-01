@@ -28,7 +28,7 @@ namespace HealthCare_Appointment_Portal.Tests.Services
             var user = new User
             {
                 UserId = 1,
-                Email = "aniket@gmail.com"
+                Email = "vyshu@gmail.com"
             };
 
             _unitOfWorkMock
@@ -90,27 +90,27 @@ namespace HealthCare_Appointment_Portal.Tests.Services
             var user = new User
             {
                 UserId = 1,
-                Email = "aniket@gmail.com"
+                Email = "vyshu@gmail.com"
             };
 
             _unitOfWorkMock
-                .Setup(x => x.Users.GetByEmail("aniket@gmail.com"))
+                .Setup(x => x.Users.GetByEmail("vyshu@gmail.com"))
                 .Returns(user);
 
-            var result = await _service.GetByEmailAsync("aniket@gmail.com");
+            var result = await _service.GetByEmailAsync("vyshu@gmail.com");
 
             Assert.NotNull(result);
-            Assert.Equal("aniket@gmail.com", result.Email);
+            Assert.Equal("vyshu@gmail.com", result.Email);
         }
 
         [Fact]
         public async Task GetByEmailAsync_InvalidEmail_ReturnsNull()
         {
             _unitOfWorkMock
-                .Setup(x => x.Users.GetByEmail("aniket@gmail.com"))
+                .Setup(x => x.Users.GetByEmail("vyshu@gmail.com"))
                 .Returns((User)null);
 
-            var result = await _service.GetByEmailAsync("aniket@gmail.com");
+            var result = await _service.GetByEmailAsync("vyshu@gmail.com");
 
             Assert.Null(result);
         }

@@ -1,4 +1,6 @@
-﻿/* Existing MVC CSS */
+﻿/* ===================================
+   Existing MVC CSS
+=================================== */
 
 .body-content {
     margin-top: 15px;
@@ -13,7 +15,7 @@
 input,
 select,
 textarea {
-    max-width: 280px;
+    max-width: 100%;
 }
 
 
@@ -24,61 +26,170 @@ textarea {
 :root {
     --primary-color: #005EB8;
     --secondary-color: #00A3E0;
-    --background-color: #F8FAFC;
+    --background-color: #F4F7FB;
     --card-color: #FFFFFF;
 }
+
+
+/* ===================================
+   Body
+=================================== */
 
 body {
     background-color: var(--background-color);
     font-family: "Segoe UI", sans-serif;
+    color: #1f2937;
 }
 
 
-/* Navbar */
+/* ===================================
+   Navbar
+=================================== */
 
 .custom-navbar {
-    background-color: var(--primary-color);
+    background: linear-gradient(90deg, #005EB8, #0078D4);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .navbar-brand {
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: white !important;
 }
 
+.nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    transition: 0.3s ease;
+}
 
-/* Page Titles */
+    .nav-link:hover {
+        color: white !important;
+        transform: translateY(-1px);
+    }
+
+
+/* ===================================
+   Hero Section
+=================================== */
+
+.hero-section {
+    background: linear-gradient(135deg, #005EB8, #4F46E5);
+    padding: 70px 30px;
+    border-radius: 24px;
+    margin-bottom: 40px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+    .hero-section h1 {
+        font-weight: 800;
+        font-size: 4rem;
+        margin-bottom: 15px;
+    }
+
+    .hero-section p {
+        font-size: 1.3rem;
+        opacity: 0.95;
+    }
+
+
+/* ===================================
+   Page Titles
+=================================== */
 
 .page-title {
     color: var(--primary-color);
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 20px;
 }
 
 
-/* Cards */
+/* ===================================
+   Cards
+=================================== */
 
 .card {
     background-color: var(--card-color);
     border: none;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    border-radius: 20px;
+    box-shadow: 0 5px 18px rgba(0,0,0,.08);
+    transition: 0.3s ease;
 }
 
-
-/* Tables */
-
-.table {
-    background-color: white;
-    border-radius: 10px;
-}
-
-    .table thead {
-        background-color: var(--primary-color);
-        color: white;
+    .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0,0,0,.12);
     }
 
 
-/* Buttons */
+/* ===================================
+   Dashboard Cards
+=================================== */
+
+.dashboard-card {
+    border-radius: 22px;
+    overflow: hidden;
+    padding: 10px;
+}
+
+.dashboard-icon {
+    font-size: 55px;
+    margin-bottom: 18px;
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.stats-title {
+    color: #6b7280;
+    font-size: 1.05rem;
+}
+
+
+/* ===================================
+   Tables
+=================================== */
+
+.table {
+    background-color: white;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+    .table thead {
+        background: linear-gradient(90deg, #005EB8, #0078D4);
+        color: white;
+    }
+
+    .table th {
+        font-weight: 600;
+        border: none;
+        padding: 16px;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 16px;
+    }
+
+
+/* ===================================
+   Buttons
+=================================== */
+
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
 
 .btn-primary {
     background-color: var(--primary-color);
@@ -91,26 +202,59 @@ body {
     }
 
 .btn-success {
-    border-radius: 8px;
+    background-color: #198754;
+    border-color: #198754;
 }
 
 .btn-danger {
-    border-radius: 8px;
+    background-color: #dc3545;
+    border-color: #dc3545;
 }
 
 .btn-warning {
-    border-radius: 8px;
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+.dashboard-btn {
+    border-radius: 12px;
+    padding: 10px 18px;
 }
 
 
-/* Form Controls */
+/* ===================================
+   Badges
+=================================== */
 
-.form-control {
-    border-radius: 8px;
+.badge {
+    padding: 8px 14px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 
-/* Validation */
+/* ===================================
+   Forms
+=================================== */
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    padding: 10px 14px;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(0,163,224,.2);
+    }
+
+
+/* ===================================
+   Validation
+=================================== */
 
 .field-validation-error {
     color: #dc3545;
@@ -122,10 +266,37 @@ body {
 }
 
 
-/* Footer */
+/* ===================================
+   Footer
+=================================== */
 
 footer {
-    margin-top: 30px;
+    margin-top: 40px;
     text-align: center;
-    color: gray;
+    color: #6b7280;
+    padding: 20px 0;
+}
+
+
+/* ===================================
+   Responsive
+=================================== */
+
+@media (max-width: 768px) {
+
+    .hero-section h1 {
+        font-size: 2.4rem;
+    }
+
+    .hero-section p {
+        font-size: 1rem;
+    }
+
+    .dashboard-icon {
+        font-size: 42px;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+    }
 }
