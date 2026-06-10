@@ -4,94 +4,76 @@ using HealthCare.Web.Services;
 using HealthCare.Web.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-public class HealthRecordController : Controller
+namespace HealthCare.Web.Controllers
 {
-    private readonly IHealthRecordService _service;
-    private const int PageSize = 10;
-
-    public HealthRecordController()
+    public class HealthRecordController : Controller
     {
-        _service = new HealthRecordService();
-    }
+        private readonly IHealthRecordService _service;
+        private const int PageSize = 10;
 
-    // ✅ LIST / HISTORY
-    // → HealthRecord/List.cshtml
-    public async Task<ActionResult> List(int? patientId, int pageNumber = 1)
-    {
-        if (!patientId.HasValue)
+        public HealthRecordController()
         {
-            return View(new PagedResult<HealthRecordDto>
-            {
-                Items = new List<HealthRecordDto>(),
-                PageNumber = 1,
-                PageSize = PageSize
-            });
+            _service = new HealthRecordService();
         }
 
-        var result = await _service.GetPatientHealthHistoryAsync(
-            patientId.Value,
-            pageNumber,
-            PageSize);
-
-        return View("List", result);
-    }
-
-    // ✅ ADD (GET)
-    // → HealthRecord/Create.cshtml
-    public ActionResult Create(int patientId)
-    {
-        var model = new CreateHealthRecordDto
+        public async Task<ActionResult> List(int? patientId, int pageNumber = 1)
         {
-            PatientId = patientId
-        };
+            if (!patientId.HasValue)
+            {
+                return View(new PagedResult<HealthRecordDto>
+                {
+                    Items = new List<HealthRecordDto>(),
+                    PageNumber = 1,
+                    PageSize = PageSize
+                });
+            }
 
-        return View("Create", model);
-    }
+            var result = await _service.GetPatientHealthHistoryAsync(
+                patientId.Value, pageNumber, PageSize);
 
-    public async Task<ActionResult> Single(int id)
-    {
-        try
+            return View(result);
+        }
+
+        public ActionResult CreatePartial(int? patientId, int? doctorId, int? appointmentId)
+        {
+            var model = new CreateHealthRecordDto
+            {
+                PatientId = patientId ?? 0,
+                DoctorId = doctorId ?? 0,
+                AppointmentId = appointmentId ?? 0,
+                VisitDate = DateTime.Now
+            };
+
+            return PartialView("_CreatePartial", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(CreateHealthRecordDto dto)
+        {
+            if (!ModelState.IsValid)
+                return PartialView("_CreatePartial", dto);
+
+            var result = await _service.CreateAsync(dto);
+
+            if (result)
+                return Json(new { success = true, message = "Health record added successfully." });
+
+            ModelState.AddModelError("", "Failed to create record. Please try again.");
+            return PartialView("_CreatePartial", dto);
+        }
+
+        public async Task<ActionResult> ViewPartial(int id)
         {
             var record = await _service.GetByIdAsync(id);
 
             if (record == null)
-            {
-                ViewBag.Error = "Health record not found.";
-                return View();
-            }
+                return HttpNotFound();
 
-            return View(record);
+            return PartialView("_ViewPartial", record);
         }
-        catch (Exception ex)
-        {
-            ViewBag.Error = ex.Message;
-            return View();
-        }
-
-        
     }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<HealthRecordDto> CreateAsync(HealthRecordDto dto)
-    {
-        if (!ModelState.IsValid)
-            return View("Create", dto);
-
-        var result = await _service.CreateAsync(dto);
-
-        if (result != null)
-        {
-            TempData["Success"] = "Health record added successfully.";
-            return RedirectToAction("List", new { patientId = dto.PatientId });
-        }
-
-        ModelState.AddModelError("", "Failed to create record");
-        return View("Create", dto);
-    }
-
 }

@@ -1,157 +1,264 @@
-﻿﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Appointment.AppointmentDto>
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Doctor.DoctorDto>
 
 @{
-    ViewBag.Title = "Appointment List";
-
+    ViewBag.Title = "Doctor List";
     int currentPage = Model.PageNumber;
     int totalPages = Model.TotalPages;
 }
 
 <div class="container-fluid">
 
-    <!-- HEADER -->
-    <div class="mb-4">
-        <h2 class="fw-bold mb-1">Appointment List</h2>
-        <p class="text-muted mb-0">
-            View and manage appointments.
-        </p>
-    </div>
-
-    <!-- ✅ CONTEXT -->
-    @if (!string.IsNullOrEmpty(Request["patientId"]))
+    @if (TempData["Success"] != null)
     {
-        <div class="alert alert-secondary">
-            Showing appointments for Patient ID:
-            <strong>@Request["patientId"]</strong>
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <!-- ✅ SEARCH + FILTER -->
-    <div class="mb-4 d-flex flex-wrap gap-3">
-
-        <!-- ✅ Patient Search -->
-        @using (Html.BeginForm("List", "Appointment", FormMethod.Get))
-        {
-            <div class="d-flex gap-2">
-                <input type="number"
-                       name="patientId"
-                       value="@Request["patientId"]"
-                       class="form-control"
-                       placeholder="Enter Patient ID"
-                       style="width:180px;" />
-
-                <button type="submit" class="btn btn-primary">
-                    Search Patient
-                </button>
-            </div>
-        }
-
-        <!-- ✅ Doctor Search -->
-        @using (Html.BeginForm("Today", "Appointment", FormMethod.Get))
-        {
-            <div class="d-flex gap-2">
-                <input type="number"
-                       name="doctorId"
-                       value="@Request["doctorId"]"
-                       class="form-control"
-                       placeholder="Enter Doctor ID"
-                       style="width:180px;" />
-
-                <button type="submit" class="btn btn-success">
-                    Search Doctor
-                </button>
-            </div>
-        }
-
-        <!-- ✅ Status Filter -->
-        @if (!string.IsNullOrEmpty(Request["patientId"]))
-        {
-            using (Html.BeginForm("List", "Appointment", FormMethod.Get))
-            {
-                <div class="d-flex gap-2">
-
-                    <input type="hidden" name="patientId" value="@Request["patientId"]" />
-
-                    <select name="status" class="form-select" style="width:180px;">
-                        <option value="">All Status</option>
-                        <option value="Pending" @(Request["status"] == "Pending" ? "selected" : "")>Pending</option>
-                        <option value="Confirmed" @(Request["status"] == "Confirmed" ? "selected" : "")>Confirmed</option>
-                        <option value="Cancelled" @(Request["status"] == "Cancelled" ? "selected" : "")>Cancelled</option>
-                    </select>
-
-                    <button type="submit" class="btn btn-primary">
-                        Filter
-                    </button>
-
-                </div>
-            }
-        }
-        else
-        {
-            <div class="alert alert-info">
-                Please enter a Patient ID to view and filter appointments.
-            </div>
-        }
-
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">Doctor List</h2>
+            <p class="text-muted mb-0">Manage doctors and their details.</p>
+        </div>
+        <button class="btn btn-primary"
+                onclick="openModal('@Url.Action("RegisterPartial", "Doctor")', 'Add Doctor')">
+            <i class="bi bi-person-plus me-1"></i> Add Doctor
+        </button>
     </div>
 
-    <!-- ✅ TABLE -->
+    <div class="mb-4 d-flex flex-wrap gap-3">
+        @using (Html.BeginForm("List", "Doctor", FormMethod.Get))
+        {
+            <div class="d-flex gap-2 flex-wrap">
+                <input type="text" name="searchTerm" value="@Request["searchTerm"]"
+                       class="form-control" placeholder="Search doctor name" style="width:200px;" />
+                <input type="text" name="specialization" value="@Request["specialization"]"
+                       class="form-control" placeholder="Specialization" style="width:180px;" />
+                <div class="form-check form-switch d-flex align-items-center ms-2">
+                    <input class="form-check-input me-2" type="checkbox"
+                           name="orderByDescending" value="true"
+                           @(Request["orderByDescending"] == "true" ? "checked" : "") />
+                    <label class="form-check-label">Sort Z-A</label>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i> Search
+                </button>
+            </div>
+        }
+    </div>
+
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-0">
-
             <div class="table-responsive">
-                @Html.Partial("_AppointmentTable", Model.Items)
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">Doctor ID</th>
+                            <th class="px-4 py-3">Full Name</th>
+                            <th class="px-4 py-3">Specialisation</th>
+                            <th class="px-4 py-3">Email</th>
+                            <th class="px-4 py-3">Experience</th>
+                            <th class="px-4 py-3">Fee</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            foreach (var doctor in Model.Items)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3 fw-semibold">@doctor.DoctorId</td>
+                                    <td class="px-4 py-3 fw-semibold">@doctor.FullName</td>
+                                    <td class="px-4 py-3">@doctor.Specialisation</td>
+                                    <td class="px-4 py-3 text-muted">@doctor.Email</td>
+                                    <td class="px-4 py-3">@doctor.YearsOfExperience yrs</td>
+                                    <td class="px-4 py-3">₹@doctor.ConsultationFee</td>
+                                    <td class="px-4 py-3">
+                                        @if (doctor.IsActive)
+                                        {
+                                            <span class="badge bg-success px-3 py-2">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary px-3 py-2">Inactive</span>
+                                        }
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                    onclick="openModal('@Url.Action("ViewPartial", "Doctor", new { id = doctor.DoctorId })', 'Doctor Profile')"
+                                                    title="View">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                    onclick="openModal('@Url.Action("EditPartial", "Doctor", new { id = doctor.DoctorId })', 'Edit Doctor')"
+                                                    title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger"
+                                                    onclick="openDeleteModal(@doctor.DoctorId, '@Html.Raw(doctor.FullName.Replace("'", "\\'"))')"
+                                                    title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                    No doctors found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-
         </div>
     </div>
 
-    <!-- ✅ PAGINATION -->
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center">
-
-            <!-- PREVIOUS -->
-            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                <a class="page-link"
-                   href="@Url.Action("List", new {
-                       pageNumber = currentPage - 1,
-                       patientId = Request["patientId"],
-                       status = Request["status"]
-                   })">
-                    Previous
-                </a>
-            </li>
-
-            <!-- PAGE NUMBERS -->
-            @for (int i = 1; i <= totalPages; i++)
-            {
-                <li class="page-item @(i == currentPage ? "active" : "")">
-                    <a class="page-link"
-                       href="@Url.Action("List", new {
-                           pageNumber = i,
-                           patientId = Request["patientId"],
-                           status = Request["status"]
-                       })">
-                        @i
-                    </a>
+    @if (totalPages > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("List", "Doctor", new { pageNumber = currentPage - 1, searchTerm = Request["searchTerm"], specialization = Request["specialization"] })">Previous</a>
                 </li>
-            }
-
-            <!-- NEXT -->
-            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                <a class="page-link"
-                   href="@Url.Action("List", new {
-                       pageNumber = currentPage + 1,
-                       patientId = Request["patientId"],
-                       status = Request["status"]
-                   })">
-                    Next
-                </a>
-            </li>
-
-        </ul>
-    </nav>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("List", "Doctor", new { pageNumber = i, searchTerm = Request["searchTerm"], specialization = Request["specialization"] })">@i</a>
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("List", "Doctor", new { pageNumber = currentPage + 1, searchTerm = Request["searchTerm"], specialization = Request["specialization"] })">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
 
 </div>
 
-@Html.Partial("_CancelModal")
+<!-- MAIN MODAL -->
+<div class="modal fade" id="mainModal" tabindex="-1" aria-labelledby="mainModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="mainModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalContent">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-danger fw-bold">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong id="deleteDoctorName"></strong>?
+                This action cannot be undone.
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                @using (Html.BeginForm("Delete", "Doctor", FormMethod.Post, new { id = "deleteForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="deleteId" name="id" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i> Yes, Delete
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+    function openModal(url, title) {
+        document.getElementById('mainModalLabel').innerText = title || '';
+        document.getElementById('modalContent').innerHTML =
+            '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>';
+        new bootstrap.Modal(document.getElementById('mainModal')).show();
+        fetch(url)
+            .then(function (res) {
+                if (!res.ok) throw new Error('Failed to load content. Status: ' + res.status);
+                return res.text();
+            })
+            .then(function (html) {
+                document.getElementById('modalContent').innerHTML = html;
+            })
+            .catch(function (err) {
+                document.getElementById('modalContent').innerHTML =
+                    '<div class="alert alert-danger">' + err.message + '</div>';
+            });
+    }
+
+    function openDeleteModal(id, name) {
+        document.getElementById('deleteId').value = id;
+        document.getElementById('deleteDoctorName').innerText = name;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+
+    document.getElementById('mainModal').addEventListener('submit', function (e) {
+        var form = e.target.closest('form[data-modal-form]');
+        if (!form) return;
+        e.preventDefault();
+        fetch(form.action, { method: 'POST', body: new FormData(form) })
+            .then(function (res) {
+                var ct = res.headers.get('content-type') || '';
+                if (ct.includes('application/json')) {
+                    return res.json().then(function (data) {
+                        if (data.success) {
+                            bootstrap.Modal.getInstance(document.getElementById('mainModal')).hide();
+                            showBanner('success', data.message);
+                            setTimeout(function () { location.reload(); }, 1200);
+                        }
+                    });
+                }
+                return res.text().then(function (html) {
+                    document.getElementById('modalContent').innerHTML = html;
+                });
+            })
+            .catch(function (err) {
+                document.getElementById('modalContent').innerHTML =
+                    '<div class="alert alert-danger">Error: ' + err.message + '</div>';
+            });
+    });
+
+    function showBanner(type, message) {
+        var div = document.createElement('div');
+        div.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger') +
+            ' alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+        div.style.zIndex = 9999;
+        div.innerHTML = message + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(div);
+        setTimeout(function () { div.remove(); }, 3000);
+    }
+    </script>
+}

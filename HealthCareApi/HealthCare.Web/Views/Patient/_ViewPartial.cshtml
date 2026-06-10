@@ -1,0 +1,57 @@
+﻿@model HealthCare.Shared.DTOs.Patient.PatientDto
+
+<div class="row g-3">
+
+    <div class="col-12 text-center mb-2">
+        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+             style="width:64px;height:64px;font-size:1.6rem;">
+            <i class="bi bi-person-fill"></i>
+        </div>
+        <h5 class="mt-2 mb-0 fw-bold">@Model.FullName</h5>
+        <small class="text-muted">Patient ID: #@Model.PatientId</small>
+    </div>
+
+    <!-- Info rows -->
+    @helper InfoRow(string label, string icon, string value)
+    {
+        <div class="col-md-6">
+            <div class="p-3 bg-light rounded-3">
+                <div class="text-muted small mb-1">
+                    <i class="bi bi-@icon me-1"></i> @label
+                </div>
+                <div class="fw-semibold">@(string.IsNullOrEmpty(value) ? "—" : value)</div>
+            </div>
+        </div>
+    }
+
+    @InfoRow("Date of Birth", "calendar3", Model.DateOfBirth.ToString("dd MMM yyyy"))
+    @InfoRow("Gender", "gender-ambiguous", Model.Gender)
+    @InfoRow("Phone Number", "telephone", Model.PhoneNumber)
+    @InfoRow("Email Address", "envelope", Model.Email)
+
+    <div class="col-md-6">
+        <div class="p-3 bg-light rounded-3">
+            <div class="text-muted small mb-1">
+                <i class="bi bi-shield-check me-1"></i> Insurance Status
+            </div>
+            @if (!string.IsNullOrEmpty(Model.InsuranceId))
+            {
+                <span class="badge bg-success px-3 py-2">Insured</span>
+                <div class="fw-semibold mt-1 text-muted small">ID: @Model.InsuranceId</div>
+            }
+            else
+            {
+                <span class="badge bg-danger px-3 py-2">Not Insured</span>
+            }
+        </div>
+    </div>
+
+</div>
+
+<div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button class="btn btn-warning text-white"
+            onclick="openModal('@Url.Action("EditPartial", "Patient", new { id = Model.PatientId })', 'Edit Patient')">
+        <i class="bi bi-pencil-square me-1"></i> Edit
+    </button>
+</div>

@@ -142,7 +142,7 @@
     <Content Include="Views\Appointment\Status.cshtml" />
     <Content Include="Views\Home\index.cshtml" />
     <Content Include="Views\Patient\index.cshtml" />
-    <Content Include="Views\Patient\Profile.cshtml" />
+    <Content Include="Views\Patient\_ViewPartial.cshtml" />
     <Content Include="Views\Shared\site.css" />
     <Content Include="Views\Patient\List.cshtml" />
     <Content Include="Views\Shared\_CancelModal.cs.html" />
@@ -150,7 +150,7 @@
     <Content Include="Views\Doctor\index.cshtml" />
     <Content Include="Views\Doctor\List.cshtml" />
     <Content Include="Views\Appointment\List.cshtml" />
-    <Content Include="Views\Patient\Edit.cshtml" />
+    <Content Include="Views\Patient\_EditPartial.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_CreateAppointmentModal.cshtml" />
     <Content Include="Views\Shared\_DoctorForm.cshtml" />
@@ -162,15 +162,16 @@
     <Content Include="Views\Shared\_ConfirmModal.cshtml" />
     <Content Include="Views\Shared\_CreateDoctorModal.cshtml" />
     <Content Include="Views\Shared\_CreatePatientModal.cshtml" />
-    <Content Include="Views\Doctor\Add.cshtml" />
+    <Content Include="Views\Doctor\_RegisterPartial.cshtml" />
     <Content Include="Views\Doctor\Available.cshtml" />
-    <Content Include="Views\Doctor\edit.cshtml" />
+    <Content Include="Views\Doctor\_EditPartial.cshtml" />
     <Content Include="Views\Doctor\Profile.cshtml" />
-    <Content Include="Views\HealthRecord\Create.cshtml" />
+    <Content Include="Views\HealthRecord\_CreatePartial.cshtml" />
     <Content Include="Views\HealthRecord\List.cshtml" />
     <Content Include="Views\HealthRecord\PatientHistory.cshtml" />
-    <Content Include="Views\HealthRecord\Single.cshtml" />
+    <Content Include="Views\HealthRecord\_ViewPartial.cshtml" />
     <Content Include="Views\Shared\_AppointmentTable.cshtml" />
+    <Content Include="Views\Patient\_RegisterPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />

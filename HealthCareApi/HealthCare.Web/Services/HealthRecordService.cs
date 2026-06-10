@@ -33,18 +33,18 @@ namespace HealthCare.Web.Services
         }
 
         // ✅ CREATE RECORD
-        public async Task<bool> CreateAsync(CreateHealthRecordDto dto)
-        {
-            System.Diagnostics.Debug.WriteLine(dto.AppointmentId);
-            var json = JsonConvert.SerializeObject(dto);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
+        //public async Task<bool> CreateAsync(CreateHealthRecordDto dto)
+        //{
+        //    System.Diagnostics.Debug.WriteLine(dto.AppointmentId);
+        //    var json = JsonConvert.SerializeObject(dto);
+        //    var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            System.Diagnostics.Debug.WriteLine(content);
+        //    System.Diagnostics.Debug.WriteLine(content);
 
-            var response = await client.PostAsync(baseUrl, content);
+        //    var response = await client.PostAsync(baseUrl, content);
 
-            return response.IsSuccessStatusCode;
-        }
+        //    return response.IsSuccessStatusCode;
+        //}
 
         public async Task<HealthRecordDto> GetByIdAsync(int appointmentId)
         {
@@ -56,6 +56,16 @@ namespace HealthCare.Web.Services
             var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<HealthRecordDto>(json);
+        }
+
+        public async Task<bool> CreateAsync(CreateHealthRecordDto dto)
+        {
+            var json = JsonConvert.SerializeObject(dto);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync(baseUrl, content);
+
+            return response.IsSuccessStatusCode;
         }
     }
 }

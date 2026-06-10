@@ -1,17 +1,31 @@
-﻿﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Patient.PatientDto>
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Patient.PatientDto>
 
 @{
     ViewBag.Title = "Patient List";
-
     int currentPage = Model.PageNumber;
     int totalPages = Model.TotalPages;
 }
 
 <div class="container-fluid">
 
+    <!-- Success / Error Alerts -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
     <!-- Header -->
     <div class="mb-4">
-
         <nav aria-label="breadcrumb" class="mb-2">
             <ol class="breadcrumb mb-1">
                 <li class="breadcrumb-item">
@@ -19,28 +33,22 @@
                         Patient Management
                     </a>
                 </li>
-                <li class="breadcrumb-item active">
-                    Patient List
-                </li>
+                <li class="breadcrumb-item active">Patient List</li>
             </ol>
         </nav>
 
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h2 class="fw-bold mb-1">Patient List</h2>
-                <p class="text-muted mb-0">
-                    View registered patients and their insurance details.
-                </p>
+                <p class="text-muted mb-0">View registered patients and their insurance details.</p>
             </div>
-
-            <button class="btn btn-primary"
-                    onclick="openModal('@Url.Action("RegisterPartial", "Patient")')">
-                + Register Patient
+            <button class="btn btn-primary" onclick="openModal('@Url.Action("RegisterPartial", "Patient")', 'Register Patient')">
+                <i class="bi bi-person-plus me-1"></i> Register Patient
             </button>
         </div>
-
     </div>
 
+    <!-- Search Bar -->
     <div class="d-flex gap-3 flex-wrap align-items-end mb-4">
 
         <!-- Search by Name -->
@@ -53,252 +61,287 @@
                        class="form-control"
                        placeholder="Search patient name"
                        style="width:220px;" />
-
                 <button type="submit" class="btn btn-primary">
-                    Search
+                    <i class="bi bi-search me-1"></i> Search
                 </button>
             </div>
         }
 
-        <!-- Search by ID -->
-        @using (Html.BeginForm("Profile", "Patient", FormMethod.Get))
-        {
-            <div class="d-flex gap-2">
-                <input type="number"
-                       name="id"
-                       class="form-control"
-                       placeholder="Patient ID"
-                       style="width:160px;"
-                       required />
-
-                <button type="submit" class="btn btn-success">
-                    Find
-                </button>
-            </div>
-        }
-
-    </div>
-
-
-</div>
-    </div>
-
-
-<!-- Table -->
-<div class="card border-0 shadow-sm rounded-4">
-    <div class="card-body p-0">
-
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="px-4 py-3">Patient Id</th>
-                        <th class="px-4 py-3">Patient Name</th>
-                        <th class="px-4 py-3">Email</th>
-                        <th class="px-4 py-3">Insurance Status</th>
-                        <th class="px-4 py-3 text-center">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    @if (Model.Items != null && Model.Items.Any())
-                    {
-                        foreach (var patient in Model.Items)
-                        {
-                            <tr>
-                                <td class="px-4 py-3 fw-semibold">
-                                    @patient.PatientId
-                                </td>
-
-                                <!-- ✅ Name (NO hyperlink) -->
-                                <td class="px-4 py-3 fw-semibold">
-                                    @patient.FullName
-                                </td>
-
-                                <td class="px-4 py-3 text-muted">
-                                    @patient.Email
-                                </td>
-
-                                <td class="px-4 py-3">
-                                    @if (!string.IsNullOrEmpty(patient.InsuranceId))
-                                    {
-                                        <span class="badge bg-success px-3 py-2">Insured</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-danger px-3 py-2">Not Insured</span>
-                                    }
-                                </td>
-
-                                <!-- ACTIONS -->
-                                <td class="px-4 py-3 text-center">
-                                    <div class="d-flex justify-content-center gap-2">
-
-                                        <!-- View -->
-                                        <button class="btn btn-sm btn-outline-primary"
-                                                onclick="openModal('@Url.Action("ViewPartial", "Patient", new { id = patient.PatientId })')"
-                                                title="View">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-
-                                        <!-- Edit -->
-                                        <button class="btn btn-sm btn-outline-warning"
-                                                onclick="openModal('@Url.Action("EditPartial", "Patient", new { id = patient.PatientId })')"
-                                                title="Edit">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
-
-                                        <!-- Delete -->
-                                        <button type="button"
-                                                class="btn btn-sm btn-outline-danger"
-                                                onclick="openDeleteModal(@patient.PatientId, '@patient.FullName')"
-                                                title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">
-                                No patients found.
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+        <!-- Search by ID (opens profile in modal) -->
+        <div class="d-flex gap-2">
+            <input type="number"
+                   id="profileSearchId"
+                   class="form-control"
+                   placeholder="Patient ID"
+                   style="width:160px;" />
+            <button class="btn btn-success" onclick="searchById()">
+                <i class="bi bi-person-lines-fill me-1"></i> Find
+            </button>
         </div>
 
     </div>
-</div>
 
-<!-- PAGINATION -->
-<nav class="mt-4">
-    <ul class="pagination justify-content-center">
+    <!-- Table -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">Patient ID</th>
+                            <th class="px-4 py-3">Patient Name</th>
+                            <th class="px-4 py-3">Email</th>
+                            <th class="px-4 py-3">Insurance Status</th>
+                            <th class="px-4 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            foreach (var patient in Model.Items)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3 fw-semibold">@patient.PatientId</td>
+                                    <td class="px-4 py-3 fw-semibold">@patient.FullName</td>
+                                    <td class="px-4 py-3 text-muted">@patient.Email</td>
+                                    <td class="px-4 py-3">
+                                        @if (!string.IsNullOrEmpty(patient.InsuranceId))
+                                        {
+                                            <span class="badge bg-success px-3 py-2">Insured</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger px-3 py-2">Not Insured</span>
+                                        }
+                                    </td>
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+                                            <!-- View -->
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                    onclick="openModal('@Url.Action("ViewPartial", "Patient", new { id = patient.PatientId })', 'Patient Profile')"
+                                                    title="View Profile">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <!-- Edit -->
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                    onclick="openModal('@Url.Action("EditPartial", "Patient", new { id = patient.PatientId })', 'Edit Patient')"
+                                                    title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+                                            <!-- Delete -->
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="openDeleteModal(@patient.PatientId, '@Html.Raw(patient.FullName.Replace("'", "\\'"))')"
+                                                    title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                                    No patients found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-        <!-- Previous -->
-        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-            <a class="page-link"
-               href="@Url.Action("List", "Patient", new {
-    pageNumber = currentPage - 1,
-    searchTerm = Request["searchTerm"]
-})">
-                Previous
-            </a>
-        </li>
+    <!-- Pagination -->
+    @if (totalPages > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("List", "Patient", new { pageNumber = currentPage - 1, searchTerm = Request["searchTerm"] })">
+                        Previous
+                    </a>
+                </li>
 
-        <!-- Page Numbers -->
-        @for (int i = 1; i <= totalPages; i++)
-        {
-            <li class="page-item @(i == currentPage ? "active" : "")">
-                <a class="page-link"
-                   href="@Url.Action("List", "Patient", new {
-    pageNumber = i,
-    searchTerm = Request["searchTerm"]
-})">
-                    @i
-                </a>
-            </li>
-        }
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link"
+                           href="@Url.Action("List", "Patient", new { pageNumber = i, searchTerm = Request["searchTerm"] })">
+                            @i
+                        </a>
+                    </li>
+                }
 
-        <!-- Next -->
-        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-            <a class="page-link"
-               href="@Url.Action("List", "Patient", new {
-    pageNumber = currentPage + 1,
-    searchTerm = Request["searchTerm"]
-})">
-                Next
-            </a>
-        </li>
-
-    </ul>
-</nav>
-
-
-</div>
-
-<script>
-    function openDeleteModal(id, name) {
-
-        // Set hidden ID
-        document.getElementById("deleteId").value = id;
-
-        // Set patient name in modal
-        document.getElementById("patientName").innerText = name;
-
-        // Show modal
-        var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        modal.show();
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("List", "Patient", new { pageNumber = currentPage + 1, searchTerm = Request["searchTerm"] })">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
     }
-</script>
 
-<div class="modal fade" id="deleteModal" tabindex="-1">
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     MAIN MODAL  (Register / View / Edit all load here)
+═══════════════════════════════════════════════ -->
+<div class="modal fade" id="mainModal" tabindex="-1" aria-labelledby="mainModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4">
+
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="mainModalLabel">Modal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="modalContent">
+                <!-- Partial views load here -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     DELETE CONFIRMATION MODAL
+═══════════════════════════════════════════════ -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content rounded-4">
 
-            <div class="modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-danger fw-bold" id="deleteModalLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Confirm Delete
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
-                Are you sure you want to delete
-                <strong id="patientName"></strong>?
+                Are you sure you want to delete <strong id="deletePatientName"></strong>?
+                This action cannot be undone.
             </div>
 
-            <div class="modal-footer">
-
-                <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-                    Cancel
-                </button>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 
                 @using (Html.BeginForm("Delete", "Patient", FormMethod.Post, new { id = "deleteForm" }))
                 {
                     @Html.AntiForgeryToken()
-
                     <input type="hidden" id="deleteId" name="id" />
-
                     <button type="submit" class="btn btn-danger">
-                        Yes, Delete
+                        <i class="bi bi-trash me-1"></i> Yes, Delete
                     </button>
                 }
-
             </div>
 
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="mainModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content p-4">
+@section Scripts {
+    <script>
+    // ── Open any partial in the main modal ──────────────────────────────────
+    function openModal(url, title) {
+        document.getElementById('mainModalLabel').innerText = title || '';
+        document.getElementById('modalContent').innerHTML =
+            '<div class="text-center py-4"><div class="spinner-border text-primary" role="status"></div></div>';
 
-            <div id="modalContent">
-                <!-- dynamic content loads here -->
-            </div>
-
-        </div>
-    </div>
-</div>
-
-<script>
-    function openModal(url) {
+        var modal = new bootstrap.Modal(document.getElementById('mainModal'));
+        modal.show();
 
         fetch(url)
-            .then(response => response.text())
-            .then(html => {
-
-                document.getElementById("modalContent").innerHTML = html;
-
-                new bootstrap.Modal(document.getElementById('mainModal')).show();
+            .then(function (res) {
+                if (!res.ok) throw new Error('Failed to load content.');
+                return res.text();
+            })
+            .then(function (html) {
+                document.getElementById('modalContent').innerHTML = html;
+                // Re-init any Bootstrap tooltips inside modal
+                var tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                tooltips.forEach(function (el) { new bootstrap.Tooltip(el); });
+            })
+            .catch(function (err) {
+                document.getElementById('modalContent').innerHTML =
+                    '<div class="alert alert-danger">' + err.message + '</div>';
             });
     }
-</script>
+
+    // ── Open delete confirmation modal ──────────────────────────────────────
+    function openDeleteModal(id, name) {
+        document.getElementById('deleteId').value = id;
+        document.getElementById('deletePatientName').innerText = name;
+        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+    }
+
+    // ── Search by Patient ID (opens profile in modal) ───────────────────────
+    function searchById() {
+        var id = document.getElementById('profileSearchId').value;
+        if (!id || id <= 0) {
+            alert('Please enter a valid Patient ID.');
+            return;
+        }
+        openModal('@Url.Action("ViewPartial", "Patient")?id=' + id, 'Patient Profile');
+    }
+
+    // ── Handle form submits inside modal (Register / Edit) ──────────────────
+    // Uses event delegation so it works after dynamic HTML is injected
+    document.getElementById('mainModal').addEventListener('submit', function (e) {
+        var form = e.target.closest('form[data-modal-form]');
+        if (!form) return;
+
+        e.preventDefault();
+
+        var formData = new FormData(form);
+        var url = form.action;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(function (res) {
+            // Check if it's a JSON success response
+            var contentType = res.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                return res.json().then(function (data) {
+                    if (data.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('mainModal')).hide();
+                        // Show a temporary success banner then reload
+                        showBanner('success', data.message);
+                        setTimeout(function () { location.reload(); }, 1200);
+                    }
+                });
+            }
+            // Otherwise it's a partial with validation errors — reload modal body
+            return res.text().then(function (html) {
+                document.getElementById('modalContent').innerHTML = html;
+            });
+        })
+        .catch(function (err) {
+            document.getElementById('modalContent').innerHTML =
+                '<div class="alert alert-danger">An error occurred: ' + err.message + '</div>';
+        });
+    });
+
+    // ── Temporary top-of-page banner ────────────────────────────────────────
+    function showBanner(type, message) {
+        var div = document.createElement('div');
+        div.className = 'alert alert-' + (type === 'success' ? 'success' : 'danger') +
+                        ' alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+        div.style.zIndex = 9999;
+        div.innerHTML = message +
+            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+        document.body.appendChild(div);
+        setTimeout(function () { div.remove(); }, 3000);
+    }
+    </script>
+}

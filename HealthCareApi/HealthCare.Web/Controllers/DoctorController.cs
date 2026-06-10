@@ -16,13 +16,12 @@ namespace HealthCare.Web.Controllers
             _service = new DoctorService();
         }
 
-
         public ActionResult Index()
         {
-            return View();  
+            return RedirectToAction("List");
         }
 
-        //  LIST → Doctor/List.cshtml
+    
         public async Task<ActionResult> List(
             string specialization,
             string searchTerm,
@@ -30,99 +29,82 @@ namespace HealthCare.Web.Controllers
             int pageNumber = 1)
         {
             var result = await _service.GetDoctorsAsync(
-                specialization,
-                searchTerm,
-                orderByDescending,
-                pageNumber,
-                PageSize);
+                specialization, searchTerm, orderByDescending, pageNumber, PageSize);
 
             return View(result);
         }
 
-        //  PROFILE 
-        public async Task<ActionResult> Profile(int id)
+ 
+        public ActionResult RegisterPartial()
         {
-            var doctor = await _service.GetByIdAsync(id);
-
-            if (doctor == null)
-                return HttpNotFound();
-
-            return View("Profile", doctor);
+            return PartialView("_RegisterPartial", new CreateDoctorDto());
         }
-
-        //  CREATE 
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(CreateDoctorDto dto)
         {
             if (!ModelState.IsValid)
-            {
-                TempData["Error"] = "Invalid doctor data";
-                return RedirectToAction("List"); 
-            }
+                return PartialView("_RegisterPartial", dto);
 
             var result = await _service.CreateAsync(dto);
 
             if (result)
-            {
-                TempData["Success"] = "Doctor added successfully.";
-            }
-            else
-            {
-                TempData["Error"] = "Error adding doctor.";
-            }
+                return Json(new { success = true, message = "Doctor added successfully." });
 
-            return RedirectToAction("List"); 
+            ModelState.AddModelError("", "Error adding doctor. Please try again.");
+            return PartialView("_RegisterPartial", dto);
         }
 
-
-
-        //  EDIT (GET) 
-        public async Task<ActionResult> Edit(int id)
-          {
+     
+        public async Task<ActionResult> ViewPartial(int id)
+        {
             var doctor = await _service.GetByIdAsync(id);
 
             if (doctor == null)
                 return HttpNotFound();
 
-            return View("Edit", doctor);
+            return PartialView("_ViewPartial", doctor);
         }
 
-        //  EDIT (POST)
+       
+        public async Task<ActionResult> EditPartial(int id)
+        {
+            var doctor = await _service.GetByIdAsync(id);
+
+            if (doctor == null)
+                return HttpNotFound();
+
+            return PartialView("_EditPartial", doctor);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(DoctorDto dto)
         {
             if (!ModelState.IsValid)
-                return View("Edit", dto);
+                return PartialView("_EditPartial", dto);
 
             var result = await _service.UpdateAsync(dto);
 
             if (result)
-            {
-                TempData["Success"] = "Doctor updated successfully.";
-                return RedirectToAction("Profile", new { id = dto.DoctorId });
-            }
+                return Json(new { success = true, message = "Doctor updated successfully." });
 
-            ModelState.AddModelError("", "Error updating doctor");
-            return View("Edit", dto);
+            ModelState.AddModelError("", "Update failed. Please try again.");
+            return PartialView("_EditPartial", dto);
         }
 
-        //  DELETE
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
         {
             var result = await _service.DeleteAsync(id);
 
-            if (result)
-                TempData["Success"] = "Doctor deleted.";
-            else
-                TempData["Error"] = "Delete failed.";
+            TempData[result ? "Success" : "Error"] =
+                result ? "Doctor deleted successfully." : "Delete failed.";
 
-            return RedirectToAction("Index");
+            return RedirectToAction("List");
         }
     }
 }

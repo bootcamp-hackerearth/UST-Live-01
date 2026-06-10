@@ -16,99 +16,81 @@ namespace HealthCare.Web.Controllers
             _service = new PatientService();
         }
 
-        // ✅ Redirect default
+        // Redirect default
         public ActionResult Index()
         {
             return RedirectToAction("List");
         }
 
-        // ✅ LIST PAGE
         public async Task<ActionResult> List(string searchTerm, int pageNumber = 1)
         {
             var result = await _service.GetPatientsAsync(searchTerm, pageNumber, PageSize);
             return View(result);
         }
 
-        // ✅ PROFILE
-        public async Task<ActionResult> Profile(int id)
+
+        public ActionResult RegisterPartial()
         {
-            var patient = await _service.GetByIdAsync(id);
-
-            if (patient == null)
-                return HttpNotFound();
-
-            return View(patient);
+            return PartialView("_RegisterPartial", new CreatePatientDto());
         }
 
-        // ✅ REGISTER (GET) - Optional (not used for modal)
-        public ActionResult Register()
-        {
-            return View();
-        }
-
-        // ✅ ✅ ✅ REGISTER (POST) — FIXED FOR MODAL
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(CreatePatientDto dto)
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Invalid data";
-                return RedirectToAction("List");
+                // Return the partial with validation errors so the modal stays open
+                return PartialView("_RegisterPartial", dto);
             }
 
             var result = await _service.CreateAsync(dto);
 
             if (result)
-            {
-                TempData["Success"] = "Patient created successfully.";
-            }
-            else
-            {
-                TempData["Error"] = "Error creating patient";
-            }
+                return Json(new { success = true, message = "Patient registered successfully." });
 
-            return RedirectToAction("List");
+            ModelState.AddModelError("", "Error saving patient. Please try again.");
+            return PartialView("_RegisterPartial", dto);
         }
-        // ✅ EDIT (GET)
-        public async Task<ActionResult> Edit(int id)
+
+
+        public async Task<ActionResult> ViewPartial(int id)
         {
             var patient = await _service.GetByIdAsync(id);
-
             if (patient == null)
                 return HttpNotFound();
 
-            return View(patient);
+            return PartialView("_ViewPartial", patient);
         }
 
-        // ✅ EDIT (POST)
+
+        public async Task<ActionResult> EditPartial(int id)
+        {
+            var patient = await _service.GetByIdAsync(id);
+            if (patient == null)
+                return HttpNotFound();
+
+            return PartialView("_EditPartial", patient);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-      
         public async Task<ActionResult> Edit(PatientDto dto)
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Invalid data";
-                return RedirectToAction("Edit", new { id = dto.PatientId }); 
+                return PartialView("_EditPartial", dto);
             }
 
             var result = await _service.UpdateAsync(dto);
 
             if (result)
-            {
-                TempData["Success"] = "Patient updated successfully.";
-                return RedirectToAction("List");  
-            }
-            else
-            {
-                TempData["Error"] = "Update failed.";
-                return RedirectToAction("Edit", new { id = dto.PatientId });
-            }
+                return Json(new { success = true, message = "Patient updated successfully." });
+
+            ModelState.AddModelError("", "Update failed. Please try again.");
+            return PartialView("_EditPartial", dto);
         }
 
-
-        // ✅ DELETE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)
@@ -116,7 +98,7 @@ namespace HealthCare.Web.Controllers
             var result = await _service.DeleteAsync(id);
 
             TempData[result ? "Success" : "Error"] =
-                result ? "Patient deleted." : "Delete failed.";
+                result ? "Patient deleted successfully." : "Delete failed.";
 
             return RedirectToAction("List");
         }
