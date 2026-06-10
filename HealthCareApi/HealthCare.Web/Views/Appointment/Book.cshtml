@@ -1,0 +1,163 @@
+﻿﻿@model HealthCare.Shared.DTOs.Appointment.AppointmentDto
+
+@{
+    ViewBag.Title = "Book Appointment";
+}
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold">Book Appointment</h2>
+        <p class="text-muted">
+            Schedule an appointment with a doctor.
+        </p>
+    </div>
+
+    <!-- Card -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.Error
+                </div>
+            }
+
+            @using (Html.BeginForm("Book", "Appointment", FormMethod.Post))
+            {
+                <div class="row g-4">
+
+                    <!-- ✅ Patient -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Patient ID</label>
+                        @Html.TextBoxFor(m => m.PatientId, new
+                        {
+                            @class = "form-control rounded-3",
+                            placeholder = "Enter Patient ID"
+                        })
+                    </div>
+
+                    <!-- ✅ Date -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Select Date</label>
+                        @Html.TextBoxFor(m => m.ScheduledDate, new
+                        {
+                            type = "date",
+                            @class = "form-control rounded-3",
+                            id = "date",
+                            min = DateTime.Now.ToString("yyyy-MM-dd")   // ✅ THIS
+                        })
+                    </div>
+
+                    <!-- ✅ Specialization -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Specialization</label>
+
+                        <select id="specialization" class="form-select rounded-3">
+                            <option value="">-- Select Specialization --</option>
+                            <option value="Cardiologist">Cardiology</option>
+                            <option value="Dermatologist">Dermatology</option>
+                            <option value="Neurologist">Neurologist</option>
+                            <option value="Orthopedic">Orthopedic</option>
+                            <option value="Pediatrician">Pediatrician</option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ Doctor -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Doctor</label>
+
+                        <select id="doctor" name="DoctorId" class="form-select rounded-3" disabled>
+                            <option value="">-- Select Doctor --</option>
+                        </select>
+                    </div>
+
+                    <!-- ✅ Time Slot -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Time Slot</label>
+
+                        <select id="timeslot" name="TimeSlot" class="form-select rounded-3" disabled>
+                            <option value="">-- Select Time Slot --</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- ✅ Actions -->
+                <div class="mt-5 text-end">
+
+                    <a href="@Url.Action("Index", "Appointment")"
+                       class="btn btn-secondary rounded-3 px-4">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary rounded-3 px-4">
+                        Book Appointment
+                    </button>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("specialization").addEventListener("change", function () {
+        var specialization = this.value;
+        var doctor = document.getElementById("doctor");
+
+        // ✅ Show loading text
+        doctor.disabled = true;
+        doctor.innerHTML = '<option>Loading doctors...</option>';
+
+        fetch('https://localhost:44373/api/doctors?specialization=' + specialization)
+            .then(res => res.json())
+            .then(data => {
+                doctor.disabled = false;
+                doctor.innerHTML = '<option value="">-- Select Doctor --</option>';
+
+                data.Items.forEach(d => {
+                    doctor.innerHTML += `<option value="${d.DoctorId}">${d.FullName}</option>`;
+                });
+            })
+            .catch(err => {
+                doctor.innerHTML = '<option>Error loading doctors</option>';
+                console.error(err);
+            });
+    });
+
+    document.getElementById("doctor").addEventListener("change", loadSlots);
+    document.getElementById("date").addEventListener("change", loadSlots);
+
+    function loadSlots() {
+        var doctorId = document.getElementById("doctor").value;
+        var date = document.getElementById("date").value;
+        var slot = document.getElementById("timeslot");
+
+        if (!doctorId || !date) return;
+
+        // ✅ Show loading text
+        slot.disabled = true;
+        slot.innerHTML = '<option>Loading time slots...</option>';
+
+        fetch(`https://localhost:44373/api/appointments/slots?doctorId=${doctorId}&date=${date}`)
+            .then(res => res.json())
+            .then(data => {
+                slot.disabled = false;
+                slot.innerHTML = '<option value="">-- Select Time Slot --</option>';
+
+                data.forEach(s => {
+                    slot.innerHTML += `<option value="${s}">${s}</option>`;
+                });
+            })
+            .catch(err => {
+                slot.innerHTML = '<option>Error loading time slots</option>';
+                console.error(err);
+            });
+    }
+</script>

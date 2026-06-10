@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "Patient Management";
+}
+
+<div class="container-fluid">
+
+    <!-- ✅ HEADER -->
+    <div class="mb-4">
+        <h2 class="fw-bold">Patient Management</h2>
+        <p class="text-muted">Manage patients, register new patients and view details.</p>
+    </div>
+
+    <!-- ✅ MODULE CARDS -->
+    <div class="row g-4">
+
+        <!-- ✅ View Patients -->
+        <div class="col-md-6 col-lg-3">
+            <a href="@Url.Action("List", "Patient")" class="text-decoration-none">
+                <div class="card module-card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon bg-primary text-white">👥</div>
+                        <h5>Patients List</h5>
+                        <p class="text-muted">View and manage all patients</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- ✅ Register Patient -->
+        <div class="col-md-6 col-lg-3">
+
+            <button onclick="openModal()" class="btn btn-primary">
+                + Add Patient
+            </button>
+
+            <div class="card module-card h-100">
+                <div class="card-body text-center">
+                    <div class="icon bg-success text-white">➕</div>
+                    <h5>Register Patient</h5>
+                    <p class="text-muted">Add a new patient</p>
+                </div>
+            </div>
+            </a>
+        </div>
+
+        <!-- ✅ View Profile -->
+        <div class="col-md-6 col-lg-3">
+            <a href="@Url.Action("Profile", "Patient", new { id = 1 })" class="text-decoration-none">
+                <div class="card module-card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon bg-info text-white">📋</div>
+                        <h5>View Profile</h5>
+                        <p class="text-muted">See patient details</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- ✅ Book Appointment -->
+        <div class="col-md-6 col-lg-3">
+            <a href="@Url.Action("Create", "Appointment")" class="text-decoration-none">
+                <div class="card module-card h-100">
+                    <div class="card-body text-center">
+                        <div class="icon bg-warning text-dark">📅</div>
+                        <h5>Book Appointment</h5>
+                        <p class="text-muted">Schedule appointment</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ✅ STYLING -->
+<style>
+    .module-card {
+        border: none;
+        border-radius: 15px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        height: 200px;
+    }
+
+        .module-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+    .icon {
+        font-size: 35px;
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    h5 {
+        font-weight: 600;
+    }
+</style>

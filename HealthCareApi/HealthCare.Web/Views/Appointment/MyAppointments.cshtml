@@ -1,0 +1,94 @@
+﻿﻿@model IEnumerable<HealthAppWeb.Models.ViewModels.PatientAppointmentListViewModel>
+
+@{
+    ViewBag.Title = "My Appointments";
+}
+
+<div class="page-card">
+
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">My Appointments</h2>
+            <div class="page-subtitle">
+                View appointment details and status.
+            </div>
+        </div>
+
+        <!-- ✅ Book Appointment Button -->
+        <a href="@Url.Action("Book", "Appointment")"
+           class="btn btn-primary">
+            Book Appointment
+        </a>
+    </div>
+
+    <!-- Table -->
+    <table class="table table-hover">
+
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time Slot</th>
+                <th>Doctor</th>
+                <th>Specialisation</th>
+                <th>Status</th>
+                <th>Cancellation Reason</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <!-- ✅ Date -->
+                        <td>
+                            @item.ScheduledDate.ToString("dd-MMM-yyyy")
+                        </td>
+
+                        <!-- ✅ Time -->
+                        <td>
+                            @item.TimeSlot
+                        </td>
+
+                        <!-- ✅ Doctor -->
+                        <td>
+                            @item.DoctorName
+                        </td>
+
+                        <!-- ✅ Specialisation -->
+                        <td>
+                            @item.Specialisation
+                        </td>
+
+                        <!-- ✅ Status -->
+                        <td>
+                            @Html.Partial("_StatusBadge", item.Status)
+                        </td>
+
+                        <!-- ✅ Cancellation -->
+                        <td>
+                            @(string.IsNullOrWhiteSpace(item.CancellationReason)
+                                ? "-"
+                                : item.CancellationReason)
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <!-- ✅ Empty State -->
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        No appointments found.
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

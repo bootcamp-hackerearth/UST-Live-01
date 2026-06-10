@@ -1,0 +1,169 @@
+﻿﻿@{
+    ViewBag.Title = "Available Doctors";
+
+    var role = Convert.ToString(Session["Role"]);
+
+    if (string.IsNullOrEmpty(role))
+    {
+        role = "Admin";
+    }
+
+    var isAdmin = role == "Admin";
+    var isPatient = role == "Patient";
+    var isDoctor = role == "Doctor";
+
+    // ---------------- DUMMY DATA ----------------
+    var doctors = new List<dynamic>
+{
+        new { Id = 1, Name = "Dr. John Smith", Specialisation = "Cardiologist" },
+        new { Id = 2, Name = "Dr. Sarah Johnson", Specialisation = "Dermatologist" },
+        new { Id = 3, Name = "Dr. Amit Kumar", Specialisation = "Neurologist" },
+        new { Id = 4, Name = "Dr. Priya Nair", Specialisation = "Pediatrician" },
+        new { Id = 5, Name = "Dr. Michael Lee", Specialisation = "Orthopedic" }
+    };
+}
+
+<div class="container py-4">
+
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h2 class="text-primary">👨‍⚕️ Available Doctors</h2>
+    </div>
+
+    <!-- TABLE -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <table class="table table-hover">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Specialisation</th>
+
+                        @if (isAdmin)
+                        {
+                            <th>Admin Actions</th>
+                        }
+
+                        @if (isPatient)
+                        {
+                            <th>Book</th>
+                        }
+
+                        @if (isDoctor)
+                        {
+                            <th>Status</th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var doc in doctors)
+                    {
+                        <tr>
+                            <td>@doc.Id</td>
+                            <td>@doc.Name</td>
+                            <td>@doc.Specialisation</td>
+
+                            <!-- ADMIN -->
+                            @if (isAdmin)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-warning">Edit</button>
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </td>
+                            }
+
+                            <!-- PATIENT -->
+                            @if (isPatient)
+                            {
+                                <td>
+                                    <button class="btn btn-sm btn-success"
+                                            onclick="openBooking(@doc.Id)">
+                                        Book
+                                    </button>
+                                </td>
+                            }
+
+                            <!-- DOCTOR -->
+                            @if (isDoctor)
+                            {
+                                <td>
+                                    <span class="badge bg-info">View Only</span>
+                                </td>
+                            }
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- POPUP (PATIENT BOOKING UI MOCK) -->
+<div id="bookingModal" class="modal-custom">
+
+    <div class="modal-box">
+
+        <h4>📅 Book Appointment</h4>
+
+        <input type="date" class="form-control mb-2" />
+
+        <div class="mb-2">
+            <button class="btn btn-outline-primary btn-sm">10 AM</button>
+            <button class="btn btn-outline-primary btn-sm">2 PM</button>
+            <button class="btn btn-outline-primary btn-sm">5 PM</button>
+        </div>
+
+        <button class="btn btn-success btn-sm">Confirm</button>
+        <button class="btn btn-secondary btn-sm" onclick="closeBooking()">Close</button>
+
+    </div>
+
+</div>
+
+<!-- STYLE -->
+<style>
+
+    body {
+        background: #f5f7fa;
+    }
+
+    .modal-custom {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-box {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        width: 320px;
+        text-align: center;
+    }
+</style>
+
+<!-- SCRIPT -->
+<script>
+
+    function openBooking(id) {
+        document.getElementById("bookingModal").style.display = "flex";
+    }
+
+    function closeBooking() {
+        document.getElementById("bookingModal").style.display = "none";
+    }
+
+</script>

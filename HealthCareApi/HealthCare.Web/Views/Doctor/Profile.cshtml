@@ -1,0 +1,123 @@
+﻿﻿@model HealthCare.Shared.DTOs.Doctor.DoctorDto
+
+@{
+    ViewBag.Title = "Doctor Profile";
+
+    var role = Convert.ToString(Session["Role"]);
+    var referenceId = Session["ReferenceId"] == null ? 0 : Convert.ToInt32(Session["ReferenceId"]);
+
+    var isAdmin = role == "Admin";
+    var isOwnDoctorProfile = role == "Doctor" && referenceId == Model.DoctorId;
+
+    var canEdit = isAdmin || isOwnDoctorProfile;
+}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Doctor Profile</h2>
+        <p class="text-muted">
+            View doctor details.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-5">
+
+            <!-- ✅ Profile Header -->
+            <div class="text-center mb-4">
+
+                <div class="rounded-circle bg-primary text-white
+                            d-inline-flex align-items-center
+                            justify-content-center"
+                     style="width:120px;height:120px;font-size:50px;">
+                    👨‍⚕️
+                </div>
+
+                <h3 class="mt-3">
+                    @Model.FullName
+                </h3>
+
+                <p class="text-muted">
+                    Doctor ID : @Model.DoctorId
+                </p>
+
+                <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+                    @(Model.IsActive ? "Active" : "Inactive")
+                </span>
+
+            </div>
+
+            <!-- ✅ Details -->
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Specialisation</label>
+                    <p>@Model.Specialisation</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Experience</label>
+                    <p>@Model.YearsOfExperience years</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Consultation Fee</label>
+                    <p>₹@Model.ConsultationFee</p>
+                </div>
+
+                @*<div class="col-md-6">
+                        <label class="fw-bold">Upcoming Appointments</label>
+                        <p>@Model.UpcomingAppointmentCount</p>
+                    </div>*@
+
+            </div>
+
+            <hr />
+
+            <!-- ✅ Actions -->
+            <div class="text-end">
+
+                <!-- Back -->
+                @if (isAdmin)
+                {
+                    <a href="@Url.Action("List","Doctor")"
+                       class="btn btn-secondary">
+                        Back to List
+                    </a>
+                }
+
+                <!-- Edit -->
+                @if (canEdit)
+                {
+                    <a href="@Url.Action("Edit","Doctor", new { id = Model.DoctorId })"
+                       class="btn btn-warning">
+                        Edit Profile
+                    </a>
+                }
+
+                <!-- Toggle -->
+                <!-- ✅ Back -->
+                <a href="@Url.Action("List","Doctor")"
+                   class="btn btn-secondary">
+                    Back to List
+                </a>
+
+                <!-- Book -->
+                @*<a href="@Url.Action("Book", "Appointment", new { doctorId = Model.DoctorId })"
+                       class="btn btn-primary">
+                        Book Appointment
+                    </a>*@
+
+                <a href="@Url.Action("Edit","Doctor", new { id = Model.DoctorId })"
+                   class="btn btn-warning">
+                    Edit Doctor
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+``

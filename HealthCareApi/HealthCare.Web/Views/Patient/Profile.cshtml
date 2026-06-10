@@ -1,0 +1,107 @@
+﻿﻿@model HealthCare.Shared.DTOs.Patient.PatientDto
+
+@{
+    ViewBag.Title = "Patient Profile";
+}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Patient Profile</h2>
+        <p class="text-muted">
+            View patient details.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-5">
+
+            <!-- Profile Header -->
+            <div class="text-center mb-4">
+
+                <div class="rounded-circle bg-primary text-white
+                            d-inline-flex align-items-center
+                            justify-content-center"
+                     style="width:120px;height:120px;font-size:50px;">
+                    👤
+                </div>
+
+                <h3 class="mt-3">
+                    @Model.FullName
+                </h3>
+
+                <p class="text-muted">
+                    Patient ID : @Model.PatientId
+                </p>
+
+            </div>
+
+            <!-- Details -->
+            <div class="row g-4">
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Email</label>
+                    <p>@Model.Email</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Phone</label>
+                    <p>@Model.PhoneNumber</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Gender</label>
+                    <p>@Model.Gender</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Date of Birth</label>
+                    <p>
+                        @(Model.DateOfBirth != null
+                            ? Model.DateOfBirth.ToString("dd MMM yyyy")
+                            : "N/A")
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="fw-bold">Insurance</label>
+
+                    <p>
+                        @if (!string.IsNullOrEmpty(Model.InsuranceId))
+                        {
+                            <span class="badge bg-success">
+                                Insured
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Not Insured
+                            </span>
+                        }
+                    </p>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <!-- Actions -->
+            <div class="text-end">
+
+                <a href="@Url.Action("Index","Patient")"
+                   class="btn btn-secondary">
+                    Back to List
+                </a>
+
+                <a href="@Url.Action("Edit","Patient", new { id = Model.PatientId })"
+                   class="btn btn-warning">
+                    Edit Patient
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,162 @@
+﻿﻿@model IEnumerable<HealthCare.Shared.DTOs.Appointment.AppointmentDto>
+
+@{
+    ViewBag.Title = "Doctor Appointments";
+
+    var doctorId = Request["doctorId"];
+    var activeTab = ViewBag.ActiveTab as string ?? "Today";
+}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="mb-4">
+        <h2 class="fw-bold">Doctor Appointments</h2>
+        <p class="text-muted">
+            View appointments by today or week.
+        </p>
+    </div>
+
+    <!-- ✅ SEARCH SECTION -->
+    <div class="mb-4 d-flex flex-wrap gap-3">
+
+        <!-- Patient Search -->
+        @using (Html.BeginForm("List", "Appointment", FormMethod.Get))
+        {
+            <div class="d-flex gap-2">
+                <input type="number"
+                       name="patientId"
+                       class="form-control"
+                       placeholder="Enter Patient ID"
+                       style="width:180px;" />
+
+                <button type="submit" class="btn btn-primary">
+                    Search Patient
+                </button>
+            </div>
+        }
+
+        <!-- Doctor Search -->
+        @using (Html.BeginForm("Today", "Appointment", FormMethod.Get))
+        {
+            <div class="d-flex gap-2">
+                <input type="number"
+                       name="doctorId"
+                       class="form-control"
+                       placeholder="Enter Doctor ID"
+                       value="@doctorId"
+                       style="width:180px;" />
+
+                <button type="submit" class="btn btn-success">
+                    Search Doctor
+                </button>
+            </div>
+        }
+
+
+
+    </div>
+
+    @if (activeTab == "Upcoming")
+    {
+        <div class="mb-3">
+
+            @using (Html.BeginForm("Upcoming", "Appointment", FormMethod.Get))
+            {
+                <div class="d-flex gap-2">
+
+                    <!-- keep doctorId -->
+                    <input type="hidden" name="doctorId" value="@doctorId" />
+
+                    <!-- ✅ Status Filter -->
+                    <select name="status" class="form-select" style="width:180px;">
+                        <option value="">All Status</option>
+                        <option value="Pending" @(Request["status"] == "Pending" ? "selected" : "")>Pending</option>
+                        <option value="Confirmed" @(Request["status"] == "Confirmed" ? "selected" : "")>Confirmed</option>
+                    </select>
+
+                    <button class="btn btn-primary" type="submit">
+                        Filter
+                    </button>
+
+                </div>
+            }
+
+        </div>
+    }
+
+    <!-- ✅ TABS -->
+    <ul class="nav nav-tabs mb-3">
+
+        <!-- TODAY TAB -->
+        <li class="nav-item">
+            <a class="nav-link @(activeTab == "Today" ? "active" : "")"
+               href="@Url.Action("Today", "Appointment", new { doctorId = doctorId })">
+                Today
+            </a>
+        </li>
+
+        <!-- WEEK TAB -->
+        <li class="nav-item">
+            <a class="nav-link @(activeTab == "Week" ? "active" : "")"
+               href="@Url.Action("Week", "Appointment", new { doctorId = doctorId })">
+                Week
+            </a>
+        </li>
+
+
+        <li class="nav-item">
+            <a class="nav-link @(activeTab == "Upcoming" ? "active" : "")"
+               href="@Url.Action("Upcoming", "Appointment", new { doctorId = doctorId })">
+                Upcoming
+            </a>
+        </li>
+
+
+    </ul>
+
+    <!-- ✅ APPOINTMENT TABLE -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+                @Html.Partial("_AppointmentTable", Model)
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // ✅ Make it GLOBAL
+        window.openCancelModal = function (id) {
+            document.getElementById("cancelId").value = id;
+            document.getElementById("cancelReason").value = "";
+
+            var modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+            modal.show();
+        };
+
+        // ✅ Handle submit
+        document.getElementById("cancelForm").addEventListener("submit", function (e) {
+
+            var reason = document.getElementById("cancelReason").value;
+
+            if (!reason || reason.trim() === "") {
+                alert("Please enter a cancellation reason.");
+                e.preventDefault();
+                return;
+            }
+
+            document.getElementById("hiddenReason").value = reason;
+        });
+
+    });
+</script>
+
+@Html.Partial("_CancelModal")

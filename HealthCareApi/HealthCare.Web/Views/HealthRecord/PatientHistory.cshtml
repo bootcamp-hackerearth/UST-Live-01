@@ -1,0 +1,39 @@
+﻿﻿@model HospitalManagement.ViewModels.PatientHealthHistoryViewModel
+
+@{
+    ViewBag.Title = "Patient Health History";
+}
+
+<div class="page-card">
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">Health History</h2>
+            <div class="page-subtitle">@Model.PatientName</div>
+        </div>
+    </div>
+
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Visit Date</th>
+                <th>Doctor</th>
+                <th>Specialisation</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var record in Model.Records)
+            {
+                <tr>
+                    <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
+                    <td>@record.DoctorName</td>
+                    <td>@record.Specialisation</td>
+                    <td>@record.Diagnosis</td>
+                    <td>@record.Prescription</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

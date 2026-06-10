@@ -1,0 +1,38 @@
+﻿@model IEnumerable<HospitalManagement.ViewModels.DoctorScheduleItemViewModel>
+
+@{
+    ViewBag.Title = "Doctor Schedule";
+    var selectedDate = Request.QueryString["date"];
+}
+
+<div class="page-card">
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">Doctor Schedule</h2>
+            <div class="page-subtitle">View today's or weekly appointments.</div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("DoctorSchedule", "Appointments", FormMethod.Get))
+    {
+          <div class="row" style="margin-bottom:18px;">
+
+            <div class="col-md-4">
+                <input type="date"
+                       name="date"
+                       value="@selectedDate"
+                       class="form-control" />
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-default btn-block">
+                    View Date
+                </button>
+            </div>
+
+            <!-- ✅ FIXED WEEKLY BUTTON -->
+            <div class="col-md-2">
+                <a href="@Url.Action("DoctorSchedule", "Appointments", new { type = "week" })"
+                   class="btn btn-info btn-block">
+                    Weekly
+                </a>

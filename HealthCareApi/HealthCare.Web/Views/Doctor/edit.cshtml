@@ -1,0 +1,128 @@
+﻿﻿@model HealthCare.Shared.DTOs.Doctor.DoctorDto
+
+@{
+    ViewBag.Title = "Edit Doctor";
+}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Edit Doctor</h2>
+        <p class="text-muted">
+            Update doctor information.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            @using (Html.BeginForm("Edit", "Doctor", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.DoctorId)
+
+                <!-- ✅ Global Validation -->
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                <div class="row g-3">
+
+                    <!-- ✅ Full Name -->
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.FullName, new { @class = "form-label" })
+
+                        @Html.TextBoxFor(m => m.FullName, new
+                        {
+                            @class = "form-control"
+                        })
+
+                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- ✅ Email -->
+                    @*<div class="col-md-6">
+                            @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+
+                            @Html.TextBoxFor(m => m.Email, new
+                            {
+                                @class = "form-control",
+                                type = "email"
+                            })
+
+                            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                        </div>*@
+
+                    <!-- ✅ Specialisation -->
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.Specialisation, new { @class = "form-label" })
+
+                        @Html.TextBoxFor(m => m.Specialisation, new
+                        {
+                            @class = "form-control"
+                        })
+
+                        @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- ✅ Experience -->
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.YearsOfExperience, new { @class = "form-label" })
+
+                        @Html.TextBoxFor(m => m.YearsOfExperience, new
+                        {
+                            @class = "form-control",
+                            type = "number"
+                        })
+
+                        @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- ✅ Fee -->
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.ConsultationFee, new { @class = "form-label" })
+
+                        @Html.TextBoxFor(m => m.ConsultationFee, new
+                        {
+                            @class = "form-control",
+                            type = "number"
+                        })
+
+                        @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
+                    </div>
+
+                    <!-- ✅ Status -->
+                    <div class="col-md-6">
+                        @Html.LabelFor(m => m.IsActive, new { @class = "form-label" })
+
+                        @Html.DropDownListFor(m => m.IsActive,
+                            new List<SelectListItem>
+                            {
+                                new SelectListItem { Text = "Active", Value = "true" },
+                                new SelectListItem { Text = "Inactive", Value = "false" }
+                            },
+                            new { @class = "form-select" })
+
+                        @Html.ValidationMessageFor(m => m.IsActive, "", new { @class = "text-danger" })
+                    </div>
+
+                </div>
+
+                <!-- ✅ Actions -->
+                <div class="mt-4 text-end">
+
+                    <a href="@Url.Action("List", "Doctor")"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Update Doctor
+                    </button>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,49 @@
+﻿﻿@{
+    ViewBag.Title = "Doctor Management";
+}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Doctor Management</h2>
+        <p class="text-muted">
+            View and manage all doctors.
+        </p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-6 col-lg-4">
+            <a href="@Url.Action("List", "Doctor")"
+               class="text-decoration-none">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="mb-3 fs-1">
+                            👨‍⚕️
+                        </div>
+
+                        <h5 class="fw-bold text-dark">
+                            Doctors List
+                        </h5>
+
+                        <p class="text-muted">
+                            View, add, edit and manage doctors.
+                        </p>
+
+                        <span class="btn btn-outline-primary">
+                            Open Doctors List
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+        </div>
+
+    </div>
+
+</div>

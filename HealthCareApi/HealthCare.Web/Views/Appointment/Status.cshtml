@@ -1,0 +1,58 @@
+﻿@model HospitalManagement.ViewModels.AppointmentStatusUpdateViewModel
+
+@{
+    ViewBag.Title = "Update Appointment Status";
+}
+
+<div class="page-card">
+
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">Update Appointment Status</h2>
+            <div class="page-subtitle">Confirm, cancel or complete appointment.</div>
+        </div>
+    </div>
+
+    <div class="profile-grid">
+
+        <div class="profile-item">
+            <div class="profile-label">Patient</div>
+            <div class="profile-value">@Model.PatientName</div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Doctor</div>
+            <div class="profile-value">@Model.DoctorName</div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Date</div>
+            <div class="profile-value">@Model.ScheduledDate.ToString("dd-MMM-yyyy")</div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Time Slot</div>
+            <div class="profile-value">@Model.TimeSlot</div>
+        </div>
+
+        <div class="profile-item">
+            <div class="profile-label">Current Status</div>
+            <div class="profile-value">
+                @Html.Partial("_StatusBadge", Model.Status)
+            </div>
+        </div>
+
+    </div>
+
+    <hr />
+
+    @using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.AppointmentId)
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Status)
+            @Html.DropDownListFor(m => m.Status,
+                new SelectList(new[] { "Confirmed", "Cancelled", "Completed" }),
+                "Select Status",

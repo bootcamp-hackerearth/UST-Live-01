@@ -1,0 +1,9 @@
+﻿@Html.Partial("_CommonModal", new
+{
+    Id = "doctorModal",
+    Title = "Add Doctor",
+    Action = "Create",
+    Controller = "Doctor",
+    Body = "_DoctorForm",
+    Data = new HealthCare.Shared.DTOs.Doctor.DoctorDto()
+})

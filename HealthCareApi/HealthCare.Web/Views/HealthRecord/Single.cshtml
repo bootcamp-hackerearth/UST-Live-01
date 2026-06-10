@@ -1,0 +1,100 @@
+﻿﻿@model HealthCare.Shared.DTOs.HealthRecord.HealthRecordDto
+
+@{
+    ViewBag.Title = "Health Record";
+}
+
+<div class="container-fluid">
+
+    <!-- ✅ HEADER -->
+    <div class="mb-4">
+        <h2 class="fw-bold">Health Record</h2>
+        <p class="text-muted">
+            View details of the patient's consultation.
+        </p>
+    </div>
+
+    <!-- ✅ ERROR -->
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.Error
+        </div>
+    }
+
+    <!-- ✅ MAIN CARD -->
+    @if (Model != null)
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-5">
+
+                <!-- ✅ HEADER INFO -->
+                <div class="row mb-4">
+
+                    <div class="col-md-4">
+                        <label class="fw-bold">Record ID</label>
+                        <p>@Model.RecordId</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="fw-bold">Appointment ID</label>
+                        <p>@Model.AppointmentId</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="fw-bold">Visit Date</label>
+                        <p>@Model.VisitDate.ToString("dd MMM yyyy hh:mm tt")</p>
+                    </div>
+
+                </div>
+
+                <hr />
+
+                <!-- ✅ DIAGNOSIS -->
+                <div class="mb-4">
+                    <label class="fw-bold">Diagnosis</label>
+                    <div class="p-3 bg-light rounded-3">
+                        @Model.Diagnosis
+                    </div>
+                </div>
+
+                <!-- ✅ PRESCRIPTION -->
+                <div class="mb-4">
+                    <label class="fw-bold">Prescription</label>
+                    <div class="p-3 bg-light rounded-3">
+                        @Model.Prescription
+                    </div>
+                </div>
+
+                <!-- ✅ NOTES -->
+                <div class="mb-4">
+                    <label class="fw-bold">Doctor Notes</label>
+                    <div class="p-3 bg-light rounded-3">
+                        @(string.IsNullOrEmpty(Model.Notes) ? "-" : Model.Notes)
+                    </div>
+                </div>
+
+                <hr />
+
+                <!-- ✅ ACTIONS -->
+                <div class="text-end">
+
+                    <!-- Back to appointments -->
+                    <a href="@Url.Action("List", "Appointment")"
+                       class="btn btn-secondary">
+                        Back to Appointments
+                    </a>
+
+                    <!-- Optional Edit -->
+                    <a href="@Url.Action("Edit", "HealthRecord", new { id = Model.RecordId })"
+                       class="btn btn-warning">
+                        Edit
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>
