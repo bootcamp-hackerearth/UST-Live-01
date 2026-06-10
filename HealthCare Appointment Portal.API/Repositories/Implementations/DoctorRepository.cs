@@ -7,27 +7,81 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HealthCare_Appointment_Portal.Repositories
+public class DoctorRepository : IDoctorRepository
 {
-    public class DoctorRepository
-        : Repository<Doctor>,
-          IDoctorRepository
-    {
-        public DoctorRepository(
-            ApplicationDbContext context)
-            : base(context)
-        {
-        }
+    private readonly ApplicationDbContext _context;
 
-        public async Task<IEnumerable<Doctor>>
-            GetDoctorsBySpecialisationAsync(
-                Specialisation specialisation)
+    public DoctorRepository(
+        ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<Doctor>>
+        GetAllAsync()
+    {
+        return await _context.Doctors
+            .ToListAsync();
+    }
+
+    public async Task<Doctor>
+        GetByIdAsync(
+            int doctorId)
+    {
+        return await _context.Doctors
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == doctorId);
+    }
+
+    public async Task AddAsync(
+        Doctor doctor)
+    {
+        _context.Doctors.Add(doctor);
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(
+        Doctor doctor)
+    {
+        _context.Entry(doctor).State =
+            EntityState.Modified;
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(
+        int doctorId)
+    {
+        var doctor =
+            await GetByIdAsync(doctorId);
+
+        if (doctor != null)
         {
-            return await _dbSet
-                .Where(d =>
-                    d.Specialisation ==
-                    specialisation)
-                .ToListAsync();
+            _context.Doctors.Remove(doctor);
+
+            await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<IEnumerable<Doctor>>
+        GetDoctorsBySpecialisationAsync(
+            Specialisation specialisation)
+    {
+        return await _context.Doctors
+            .Where(d =>
+                d.Specialisation ==
+                specialisation)
+            .ToListAsync();
+    }
+
+    public async Task<IEnumerable<Doctor>>
+    GetDoctorsByNameAsync(
+        string searchTerm)
+    {
+        return await _context.Doctors
+            .Where(d =>
+                d.FullName.Contains(searchTerm))
+            .ToListAsync();
     }
 }

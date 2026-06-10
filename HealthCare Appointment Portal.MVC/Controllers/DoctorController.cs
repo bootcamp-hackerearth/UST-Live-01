@@ -2,6 +2,7 @@
 using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -9,9 +10,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
     public class DoctorController : Controller
     {
-        // ==================================
-        // CONSTANTS (Fixes Sonar S1192)
-        // ==================================
+
         private const string ErrorKey = "Error";
         private const string IndexAction = "Index";
         private const string DetailsAction = "Details";
@@ -23,25 +22,55 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             _doctorService = doctorService;
         }
 
-        public async Task<ActionResult> Index(Specialisation? specialisation)
+        public async Task<ActionResult> Index(
+    Specialisation? specialisation,
+    string searchQuery = null)
         {
             try
             {
-                if (specialisation.HasValue)
+                ViewBag.CurrentSearch =
+                    searchQuery;
+
+                ViewBag.CurrentSpecialisation =
+                    specialisation;
+
+                IEnumerable<DoctorDto> doctors;
+
+                if (!string.IsNullOrWhiteSpace(
+                    searchQuery))
                 {
-                    var doctors = await _doctorService.GetDoctorsBySpecialisationAsync(specialisation.Value);
-                    return View(IndexAction, doctors);
+                    doctors =
+                        await _doctorService
+                            .GetDoctorsByNameAsync(
+                                searchQuery);
+                }
+                else if (specialisation.HasValue)
+                {
+                    doctors =
+                        await _doctorService
+                            .GetDoctorsBySpecialisationAsync(
+                                specialisation.Value);
+                }
+                else
+                {
+                    doctors =
+                        await _doctorService
+                            .GetAllDoctorsAsync();
                 }
 
-                var allDoctors = await _doctorService.GetAllDoctorsAsync();
-                return View(IndexAction, allDoctors);
+                return View(
+                    IndexAction,
+                    doctors);
             }
             catch (Exception ex)
             {
-                TempData[ErrorKey] = ex.Message;
+                TempData[ErrorKey] =
+                    ex.Message;
+
                 return View(IndexAction);
             }
         }
+
 
         public async Task<ActionResult> Details(int id)
         {
@@ -49,7 +78,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             {
                 var doctor = await _doctorService.GetDoctorByIdAsync(id);
 
-                // Explicit view name prevents Sonar duplicate method implementation issue
                 return View(DetailsAction, doctor);
             }
             catch (Exception ex)
@@ -59,15 +87,12 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        // ==================================
-        // ADMIN ONLY
-        // ==================================
-
         public ActionResult Create()
         {
             return View("Create");
         }
 
+     
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CreateDoctorDto doctor)
@@ -79,12 +104,18 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             try
             {
-                int doctorId = await _doctorService.CreateDoctorAsync(doctor);
-                return RedirectToAction(DetailsAction, new { id = doctorId });
+                await _doctorService
+                    .CreateDoctorAsync(doctor);
+
+                TempData["SuccessMessage"] =
+                    "Doctor added successfully.";
+
+                return RedirectToAction(IndexAction);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
+
                 return View("Create", doctor);
             }
         }
@@ -122,8 +153,13 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             try
             {
+       
                 await _doctorService.UpdateDoctorAsync(id, doctor);
-                return RedirectToAction(DetailsAction, new { id });
+
+                TempData["SuccessMessage"] =
+                    "Doctor updated successfully.";
+
+                return RedirectToAction(IndexAction);
             }
             catch (Exception ex)
             {
@@ -132,9 +168,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        // ==================================
-        // UPDATED: Deactivate is now Delete
-        // ==================================
 
         public async Task<ActionResult> Delete(int id)
         {
@@ -142,7 +175,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             {
                 var doctor = await _doctorService.GetDoctorByIdAsync(id);
 
-                // Explicit view name prevents Sonar duplicate method implementation issue
                 return View("Delete", doctor);
             }
             catch (Exception ex)
@@ -152,6 +184,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
+    
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -159,14 +192,22 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         {
             try
             {
-                await _doctorService.DeleteDoctorAsync(id);
-                return RedirectToAction(IndexAction);
+                await _doctorService
+                    .DeleteDoctorAsync(id);
+
+                TempData["SuccessMessage"] =
+                    "Doctor deleted successfully.";
+
+                return RedirectToAction(
+                    IndexAction);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                var doctor = await _doctorService.GetDoctorByIdAsync(id);
-                return View("Delete", doctor);
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    IndexAction);
             }
         }
     }

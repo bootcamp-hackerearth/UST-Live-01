@@ -5,6 +5,7 @@ using HealthCare_Appointment_Portal_MVC.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -82,6 +83,7 @@ namespace HealthCare_Appointment_Portal_MVC.Services
                     IEnumerable<DoctorDto>>();
         }
 
+
         public async Task<int>
             CreateDoctorAsync(
                 CreateDoctorDto dto)
@@ -131,6 +133,25 @@ namespace HealthCare_Appointment_Portal_MVC.Services
             await ApiResponseHelper
                 .EnsureSuccessAsync(
                     response);
+        }
+
+        public async Task<
+            IEnumerable<DoctorDto>>
+            GetDoctorsByNameAsync(
+                string searchQuery)
+        {
+            HttpResponseMessage response =
+                await _client.GetAsync(
+                    $"api/doctors/search?searchTerm={Uri.EscapeDataString(searchQuery)}");
+
+            await ApiResponseHelper
+                .EnsureSuccessAsync(
+                    response);
+
+            return await response
+                .Content
+                .ReadAsAsync<
+                    IEnumerable<DoctorDto>>();
         }
     }
 }

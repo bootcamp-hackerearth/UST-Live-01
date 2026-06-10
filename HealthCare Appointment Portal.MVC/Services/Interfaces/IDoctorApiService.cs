@@ -18,6 +18,10 @@ namespace HealthCare_Appointment_Portal_MVC.Services.Interfaces
             GetDoctorsBySpecialisationAsync(
                 Specialisation specialisation);
 
+        Task<IEnumerable<DoctorDto>>
+            GetDoctorsByNameAsync(
+                string searchQuery);
+
         Task<int>
             CreateDoctorAsync(
                 CreateDoctorDto dto);

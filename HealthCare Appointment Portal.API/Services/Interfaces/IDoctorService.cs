@@ -28,5 +28,9 @@ namespace HealthCare_Appointment_Portal.Interfaces
         Task<IEnumerable<DoctorDto>>
             GetDoctorsBySpecialisationAsync(
                 Specialisation specialisation);
+
+        Task<IEnumerable<DoctorDto>>
+            GetDoctorsByNameAsync(
+                string searchTerm);
     }
 }

@@ -34,6 +34,21 @@ namespace HealthCare_Appointment_Portal.Controllers
         }
 
         [HttpGet]
+        [Route("search")]
+        public async Task<IHttpActionResult>
+            SearchDoctors(string searchTerm)
+        {
+            var doctors =
+                await _doctorService
+                    .GetDoctorsByNameAsync(
+                        searchTerm);
+
+            return Ok(
+                doctors);
+        }
+
+
+        [HttpGet]
         [Route("{id:int}",
             Name = "GetDoctorById")]
         public async Task<IHttpActionResult>
