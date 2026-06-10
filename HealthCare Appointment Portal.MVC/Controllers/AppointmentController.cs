@@ -88,7 +88,7 @@ public class AppointmentController : Controller
         }
     }
 
-    public async Task<ActionResult> Create()
+    public async Task<ActionResult> Create(int? doctorId)
     {
         if (Session["ReferenceId"] == null)
         {
@@ -104,6 +104,7 @@ public class AppointmentController : Controller
             new CreateAppointmentDto
             {
                 PatientId = patientId,
+                DoctorId = doctorId ?? 0,
                 ScheduledDate = DateTime.Today
             });
     }

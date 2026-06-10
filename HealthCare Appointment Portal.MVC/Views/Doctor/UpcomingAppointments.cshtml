@@ -7,16 +7,12 @@
 <div class="container mt-5">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>
-            Upcoming Appointments
-        </h2>
+        <h2>Upcoming Appointments</h2>
 
         <a href="@Url.Action("Dashboard", "Doctor")"
            class="btn btn-secondary">
             Back to Dashboard
         </a>
-
     </div>
 
     @if (TempData["Success"] != null)
@@ -47,18 +43,11 @@
             {
                 <div class="row mb-4">
 
-                    <div class="col-md-4 mb-2">
+                    <div class="col-md-8 mb-2">
                         <input type="text"
-                               id="appointmentIdSearch"
+                               id="commonSearch"
                                class="form-control"
-                               placeholder="Search by Appointment Id" />
-                    </div>
-
-                    <div class="col-md-4 mb-2">
-                        <input type="text"
-                               id="patientNameSearch"
-                               class="form-control"
-                               placeholder="Search by Patient Name" />
+                               placeholder="Search by Appointment Id, Patient Id, or Patient Name" />
                     </div>
 
                     <div class="col-md-4 mb-2">
@@ -88,18 +77,15 @@
 
                         @foreach (var appointment in Model)
                         {
-                            string status =
-                                appointment.Status.ToString();
-
-                            string dateForSearch =
-                                appointment.ScheduledDate.ToString("yyyy-MM-dd");
+                            string status = appointment.Status.ToString();
+                            string dateForSearch = appointment.ScheduledDate.ToString("yyyy-MM-dd");
 
                             <tr>
                                 <td class="appointment-id">
                                     @appointment.AppointmentId
                                 </td>
 
-                                <td>
+                                <td class="patient-id">
                                     @appointment.PatientId
                                 </td>
 
@@ -119,33 +105,23 @@
                                 <td>
                                     @if (status == "Pending")
                                     {
-                                        <span class="badge bg-warning text-dark">
-                                            Pending
-                                        </span>
+                                        <span class="badge bg-warning text-dark">Pending</span>
                                     }
                                     else if (status == "Confirmed")
                                     {
-                                        <span class="badge bg-info text-dark">
-                                            Confirmed
-                                        </span>
+                                        <span class="badge bg-info text-dark">Confirmed</span>
                                     }
                                     else if (status == "Completed")
                                     {
-                                        <span class="badge bg-primary">
-                                            Completed
-                                        </span>
+                                        <span class="badge bg-primary">Completed</span>
                                     }
                                     else if (status == "Cancelled")
                                     {
-                                        <span class="badge bg-danger">
-                                            Cancelled
-                                        </span>
+                                        <span class="badge bg-danger">Cancelled</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-secondary">
-                                            @status
-                                        </span>
+                                        <span class="badge bg-secondary">@status</span>
                                     }
                                 </td>
 
@@ -219,100 +195,66 @@
 </div>
 
 <script>
-
-    var appointmentIdSearch =
-        document.getElementById("appointmentIdSearch");
-
-    var patientNameSearch =
-        document.getElementById("patientNameSearch");
+    var commonSearch =
+        document.getElementById("commonSearch");
 
     var dateSearch =
         document.getElementById("dateSearch");
 
-    if (appointmentIdSearch) {
-        appointmentIdSearch.addEventListener(
-            "keyup",
-            filterAppointments);
-    }
-
-    if (patientNameSearch) {
-        patientNameSearch.addEventListener(
-            "keyup",
-            filterAppointments);
+    if (commonSearch) {
+        commonSearch.addEventListener("keyup", filterAppointments);
     }
 
     if (dateSearch) {
-        dateSearch.addEventListener(
-            "change",
-            filterAppointments);
+        dateSearch.addEventListener("change", filterAppointments);
     }
 
     function filterAppointments() {
 
-        var idSearch =
-            document.getElementById("appointmentIdSearch")
-                .value
-                .toLowerCase();
-
-        var nameSearch =
-            document.getElementById("patientNameSearch")
-                .value
-                .toLowerCase();
+        var search =
+            document.getElementById("commonSearch").value.toLowerCase();
 
         var selectedDate =
-            document.getElementById("dateSearch")
-                .value;
+            document.getElementById("dateSearch").value;
 
         var rows =
-            document.querySelectorAll(
-                "#appointmentsTable tbody tr:not(#noDataRow)");
+            document.querySelectorAll("#appointmentsTable tbody tr:not(#noDataRow)");
 
-        var visibleCount =
-            0;
+        var visibleCount = 0;
 
         rows.forEach(function (row) {
 
             var appointmentId =
-                row.querySelector(".appointment-id")
-                    .innerText
-                    .toLowerCase();
+                row.querySelector(".appointment-id").innerText.toLowerCase();
+
+            var patientId =
+                row.querySelector(".patient-id").innerText.toLowerCase();
 
             var patientName =
-                row.querySelector(".patient-name")
-                    .innerText
-                    .toLowerCase();
+                row.querySelector(".patient-name").innerText.toLowerCase();
 
             var appointmentDate =
-                row.querySelector(".appointment-date")
-                    .getAttribute("data-date");
+                row.querySelector(".appointment-date").getAttribute("data-date");
 
-            var idMatch =
-                appointmentId.includes(idSearch);
-
-            var nameMatch =
-                patientName.includes(nameSearch);
+            var textMatch =
+                appointmentId.includes(search) ||
+                patientId.includes(search) ||
+                patientName.includes(search);
 
             var dateMatch =
                 selectedDate === "" ||
                 appointmentDate === selectedDate;
 
-            if (idMatch && nameMatch && dateMatch) {
+            if (textMatch && dateMatch) {
                 row.style.display = "";
                 visibleCount++;
             }
             else {
                 row.style.display = "none";
             }
-
         });
 
-        var noDataRow =
-            document.getElementById("noDataRow");
-
-        if (noDataRow) {
-            noDataRow.style.display =
-                visibleCount === 0 ? "" : "none";
-        }
+        document.getElementById("noDataRow").style.display =
+            visibleCount === 0 ? "" : "none";
     }
-
 </script>

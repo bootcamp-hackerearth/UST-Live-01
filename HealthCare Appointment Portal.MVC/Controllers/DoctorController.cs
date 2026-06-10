@@ -487,5 +487,29 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 return View(doctor);
             }
         }
+
+        // ==================================
+        // SEARCH DOCTOR
+        // ==================================
+        public async Task<ActionResult> SearchDoctors()
+        {
+            try
+            {
+                var doctors =
+                    await _doctorService.GetAllDoctorsAsync();
+
+                doctors =
+                    doctors.Where(d => d.IsActive);
+
+                return View(doctors);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] =
+                    ex.Message;
+
+                return RedirectToAction("Dashboard", "Patient");
+            }
+        }
     }
 }

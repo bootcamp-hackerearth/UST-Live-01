@@ -1,104 +1,60 @@
 @model HealthCare_Appointment_Portal.DTOs.AppointmentDtos.CreateAppointmentDto
-
 @using HealthCare_Appointment_Portal.DTOs.DoctorDtos
 
 @{
     ViewBag.Title = "Book Appointment";
-
-    var doctors =
-        ViewBag.DoctorList as IEnumerable<DoctorDto>;
+    var doctors = ViewBag.DoctorList as IEnumerable<DoctorDto>;
 }
 
 <div class="container mt-5">
 
-    <h2 class="mb-4">
-        Book Appointment
-    </h2>
+    <h2 class="mb-4">Book Appointment</h2>
 
     <div class="card shadow border-0 rounded-4">
-
         <div class="card-body p-4">
 
             @if (ViewData.ModelState[""] != null &&
-     ViewData.ModelState[""].Errors.Count > 0)
+                 ViewData.ModelState[""].Errors.Count > 0)
             {
-                @Html.ValidationSummary(
-                    true,
-                    "",
-                    new
-                    {
-                        @class = "alert alert-danger"
-                    })
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
             }
 
             @using (Html.BeginForm("Create", "Appointment", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-
                 @Html.HiddenFor(m => m.PatientId)
 
                 <div class="mb-3">
-
-                    <label class="form-label">
-                        Patient Name
-                    </label>
-
+                    <label class="form-label">Patient Name</label>
                     <input type="text"
                            class="form-control"
                            value="@ViewBag.PatientName"
-                           />
-
-                    @Html.ValidationMessageFor(
-                        m => m.PatientId,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                           readonly />
                 </div>
 
                 <div class="mb-3">
+                    <label class="form-label">Select Doctor</label>
 
-                    <label class="form-label">
-                        Select Doctor
-                    </label>
-
-                    <select name="DoctorId"
-                            class="form-select"
-                            required>
-
-                        <option value="">
-                            -- Select Doctor --
-                        </option>
+                    <select name="DoctorId" class="form-select" required>
+                        <option value="">-- Select Doctor --</option>
 
                         @if (doctors != null)
                         {
                             foreach (var doctor in doctors)
                             {
-                                <option value="@doctor.DoctorId">
+                                <option value="@doctor.DoctorId"
+                                        @(Model.DoctorId == doctor.DoctorId ? "selected" : "")>
                                     @doctor.FullName - @doctor.Specialisation
                                 </option>
                             }
                         }
-
                     </select>
 
-                    @Html.ValidationMessageFor(
-                        m => m.DoctorId,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.DoctorId, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-3">
-
-                    <label class="form-label">
-                        Appointment Date
-                    </label>
+                    <label class="form-label">Appointment Date</label>
 
                     @Html.TextBoxFor(
                         m => m.ScheduledDate,
@@ -107,24 +63,15 @@
                         {
                             @class = "form-control",
                             type = "date",
+                            min = DateTime.Today.ToString("yyyy-MM-dd"),
                             required = "required"
                         })
 
-                    @Html.ValidationMessageFor(
-                        m => m.ScheduledDate,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.ScheduledDate, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
                 <div class="mb-3">
-
-                    <label class="form-label">
-                        Time Slot
-                    </label>
+                    <label class="form-label">Time Slot</label>
 
                     @Html.DropDownListFor(
                         m => m.TimeSlot,
@@ -152,18 +99,10 @@
                             required = "required"
                         })
 
-                    @Html.ValidationMessageFor(
-                        m => m.TimeSlot,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
+                    @Html.ValidationMessageFor(m => m.TimeSlot, "", new { @class = "text-danger d-block mt-1" })
                 </div>
 
-                <button type="submit"
-                        class="btn btn-success">
+                <button type="submit" class="btn btn-success">
                     Book Appointment
                 </button>
 
@@ -174,9 +113,7 @@
             }
 
         </div>
-
     </div>
-
 </div>
 
 @section Scripts

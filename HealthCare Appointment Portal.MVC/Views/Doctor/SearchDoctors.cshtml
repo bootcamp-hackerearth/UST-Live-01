@@ -1,0 +1,114 @@
+﻿@model IEnumerable<HealthCare_Appointment_Portal.DTOs.DoctorDtos.DoctorDto>
+
+@{
+    ViewBag.Title = "Search Doctors";
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between mb-4">
+        <h2>Search Doctors</h2>
+
+        <a href="@Url.Action("Dashboard", "Patient")"
+           class="btn btn-secondary">
+            Back
+        </a>
+    </div>
+
+    <div class="card shadow p-4">
+
+        <input type="text"
+               id="doctorSearch"
+               class="form-control mb-4"
+               placeholder="Search by Doctor Name, Specialisation, or Doctor Id" />
+
+        <table class="table table-bordered table-hover"
+               id="doctorTable">
+
+            <thead class="table-light">
+                <tr>
+                    <th>Doctor Id</th>
+                    <th>Doctor Name</th>
+                    <th>Specialisation</th>
+                    <th>Experience</th>
+                    <th>Consultation Fee</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var doctor in Model)
+                {
+                    <tr>
+                        <td class="doctor-id">@doctor.DoctorId</td>
+
+                        <td class="doctor-name">@doctor.FullName</td>
+
+                        <td class="doctor-specialisation">@doctor.Specialisation</td>
+
+                        <td>@doctor.YearsOfExperience years</td>
+
+                        <td>₹ @doctor.ConsultationFee</td>
+
+                        <td>
+                            <a href="@Url.Action("Create", "Appointment", new { doctorId = doctor.DoctorId })"
+                               class="btn btn-success btn-sm">
+                                Book Appointment
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+                <tr id="noDataRow" style="display:none;">
+                    <td colspan="6" class="text-center text-muted">
+                        No doctors found.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+    document.getElementById("doctorSearch").addEventListener("keyup", function () {
+
+        var search =
+            this.value.toLowerCase();
+
+        var rows =
+            document.querySelectorAll("#doctorTable tbody tr:not(#noDataRow)");
+
+        var visibleCount =
+            0;
+
+        rows.forEach(function (row) {
+
+            var id =
+                row.querySelector(".doctor-id").innerText.toLowerCase();
+
+            var name =
+                row.querySelector(".doctor-name").innerText.toLowerCase();
+
+            var spec =
+                row.querySelector(".doctor-specialisation").innerText.toLowerCase();
+
+            if (id.includes(search) ||
+                name.includes(search) ||
+                spec.includes(search)) {
+                row.style.display = "";
+                visibleCount++;
+            }
+            else {
+                row.style.display = "none";
+            }
+        });
+
+        document.getElementById("noDataRow").style.display =
+            visibleCount === 0 ? "" : "none";
+    });
+</script>

@@ -1,4 +1,6 @@
-﻿namespace HealthCare_Appointment_Portal.Enums
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HealthCare_Appointment_Portal.Enums
 {
 
     public enum Specialisation
@@ -20,9 +22,10 @@
         Urology,
         Endocrinology,
         Radiology,
-        GeneralSurgery,
         Anesthesiology,
-        EmergencyMedicine,
-        GeneralMedicine
+        [Display(Name = "General Surgery")]
+        GeneralSurgery,
+        [Display(Name = "Emergency Surgery")]
+        EmergencySurgery
     }
 }
