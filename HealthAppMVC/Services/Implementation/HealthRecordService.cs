@@ -58,6 +58,25 @@ namespace HealthAppMVC.Services.Implementation
                 throw new Exception(error);
             }
         }
+
+        public async Task<List<HealthRecordDto>>
+            GetPatientHistoryAsync(
+                int patientId)
+        {
+            HttpResponseMessage response =
+                await _httpClient.GetAsync(
+                    $"healthrecords/patient/{patientId}");
+
+            response.EnsureSuccessStatusCode();
+
+            string json =
+                await response.Content
+                    .ReadAsStringAsync();
+
+            return JsonConvert
+                .DeserializeObject
+                <List<HealthRecordDto>>(json);
+        }
     }
 
 }

@@ -44,5 +44,19 @@ namespace HealthAppWebAPI.Repositories.Impl
             _context.HealthRecords.Add(record);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<HealthRecord>>GetByPatientIdAsync(
+                        int patientId)
+        {
+            return await _context.HealthRecords
+                .Include(h => h.Appointment)
+                .Include(h => h.Appointment.Patient)
+                .Include(h => h.Appointment.Doctor)
+                .Where(h =>
+                    h.Appointment.PatientId
+                        == patientId)
+                .OrderByDescending(
+                    h => h.VisitDate)
+                .ToListAsync();
+        }
     }
 }

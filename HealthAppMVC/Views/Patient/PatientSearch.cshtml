@@ -4,6 +4,9 @@
     ViewBag.Title = "View Patient Details";
 }
 
+<link rel="stylesheet"
+      href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
 <div class="card shadow">
 
     <div class="card-header bg-info text-white">
@@ -15,17 +18,23 @@
         <div class="row mb-3">
 
             <div class="col-md-8">
+
                 <input type="text"
                        id="patientSearch"
                        class="form-control"
                        placeholder="Search patient by name..." />
+
             </div>
 
             <div class="col-md-4">
-                <a href="@Url.Action("PatientServices","Home")"
+
+                <a href="@Url.Action(
+                            "PatientServices",
+                            "Home")"
                    class="btn btn-secondary">
                     Back
                 </a>
+
             </div>
 
         </div>
@@ -53,7 +62,8 @@
 
                             <p>
                                 <strong>Date Of Birth:</strong>
-                                @patient.DateOfBirth.ToString("dd-MMM-yyyy")
+                                @patient.DateOfBirth
+                                .ToString("dd-MMM-yyyy")
                             </p>
 
                             <p>
@@ -75,7 +85,6 @@
                                 <strong>Insurance ID:</strong>
                                 @patient.InsuranceId
                             </p>
-
                         </div>
 
                     </div>
@@ -86,7 +95,9 @@
             <div id="noResults"
                  class="alert alert-warning"
                  style="display:none;">
+
                 No patients found.
+
             </div>
         }
         else
@@ -106,48 +117,63 @@
 
     <script>
 
-$(function () {
+        $(function () {
 
-    $("#patientSearch").autocomplete({
-        source: '@Url.Action("SearchPatientNames","Patient")'
-    });
+            $("#patientSearch").autocomplete({
 
-    $("#patientSearch").on("input", function () {
+                source:
+                    '@Url.Action(
+                        "SearchPatientNames",
+                        "Patient")'
 
-        var searchText =
-            $(this).val().toLowerCase();
+            });
 
-        var visibleCount = 0;
+            $("#patientSearch").on(
+                "input",
+                function () {
 
-        $(".patient-card-wrapper").each(function () {
+                    var searchText =
+                        $(this)
+                            .val()
+                            .toLowerCase();
 
-            var patientName =
-                $(this)
-                .find(".patient-name")
-                .text()
-                .toLowerCase();
+                    var visibleCount = 0;
 
-            if (patientName.indexOf(searchText) > -1) {
+                    $(".patient-card-wrapper")
+                        .each(function () {
 
-                $(this).show();
-                visibleCount++;
+                            var patientName =
+                                $(this)
+                                    .find(".patient-name")
+                                    .text()
+                                    .toLowerCase();
 
-            } else {
+                            if (patientName
+                                .indexOf(searchText) > -1)
+                            {
+                                $(this).show();
 
-                $(this).hide();
-            }
+                                visibleCount++;
+                            }
+                            else
+                            {
+                                $(this).hide();
+                            }
+
+                        });
+
+                    if (visibleCount === 0)
+                    {
+                        $("#noResults").show();
+                    }
+                    else
+                    {
+                        $("#noResults").hide();
+                    }
+
+                });
 
         });
-
-        if (visibleCount === 0) {
-            $("#noResults").show();
-        } else {
-            $("#noResults").hide();
-        }
-
-    });
-
-});
 
     </script>
 

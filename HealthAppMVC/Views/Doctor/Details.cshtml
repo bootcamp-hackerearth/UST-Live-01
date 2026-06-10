@@ -28,10 +28,10 @@
         <td>@Model.DoctorPhoneNo</td>
     </tr>
 
-    @*<tr>
+    <tr>
         <th>Email</th>
         <td>@Model.DoctorEmail</td>
-    </tr>*@
+    </tr>
 
     <tr>
         <th>Experience</th>
@@ -46,7 +46,9 @@
     <tr>
         <th>Status</th>
         <td>
-            @(Model.IsActive ? "Active" : "Inactive")
+            @(Model.IsActive
+                ? "Active"
+                : "Inactive")
         </td>
     </tr>
 

@@ -6,35 +6,40 @@ using System.Web.Mvc;
 
 namespace HealthAppMVC.Controllers
 {
-    public class HomeController : Controller
+    using System.Web.Mvc;
+
+    namespace HealthAppMVC.Controllers
     {
-        public ActionResult Index()
+        public class HomeController : Controller
         {
-            return View();
-        }
+            public ActionResult Index()
+            {
+                return View();
+            }
 
-        public ActionResult DoctorServices()
-        {
-            return View();
-        }
+            public ActionResult DoctorServices()
+            {
+                return View();
+            }
 
-        public ActionResult PatientServices()
-        {
-            return View();
-        }
+            public ActionResult PatientServices()
+            {
+                return View();
+            }
 
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
+            public ActionResult About()
+            {
+                ViewBag.Message = "Your application description page.";
 
-            return View();
-        }
+                return View();
+            }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
+            public ActionResult Contact()
+            {
+                ViewBag.Message = "Your contact page.";
 
-            return View();
+                return View();
+            }
         }
     }
 }

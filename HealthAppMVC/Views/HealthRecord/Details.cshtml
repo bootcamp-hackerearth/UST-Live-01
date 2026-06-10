@@ -8,38 +8,70 @@
 <h2>Health Record Details</h2>
 
 <div class="card">
+
     <div class="card-body">
 
         <dl class="row">
 
-            <dt class="col-md-3">Patient</dt>
-            <dd class="col-md-9">@Model.PatientName</dd>
+            <dt class="col-md-3">
+                Patient
+            </dt>
 
-            <dt class="col-md-3">Doctor</dt>
-            <dd class="col-md-9">@Model.DoctorName</dd>
-
-            <dt class="col-md-3">Visit Date</dt>
             <dd class="col-md-9">
-                @Model.VisitDate.ToString("dd-MMM-yyyy")
+                @Model.PatientName
             </dd>
 
-            <dt class="col-md-3">Diagnosis</dt>
-            <dd class="col-md-9">@Model.Diagnosis</dd>
+            <dt class="col-md-3">
+                Doctor
+            </dt>
 
-            <dt class="col-md-3">Prescription</dt>
-            <dd class="col-md-9">@Model.Prescription</dd>
+            <dd class="col-md-9">
+                @Model.DoctorName
+            </dd>
 
-            <dt class="col-md-3">Notes</dt>
-            <dd class="col-md-9">@Model.Notes</dd>
+            <dt class="col-md-3">
+                Visit Date
+            </dt>
+
+            <dd class="col-md-9">
+                @Model.VisitDate.ToString("dd-MM-yyyy")
+            </dd>
+
+            <dt class="col-md-3">
+                Diagnosis
+            </dt>
+
+            <dd class="col-md-9">
+                @Model.Diagnosis
+            </dd>
+
+            <dt class="col-md-3">
+                Prescription
+            </dt>
+
+            <dd class="col-md-9">
+                @Model.Prescription
+            </dd>
+
+            <dt class="col-md-3">
+                Notes
+            </dt>
+
+            <dd class="col-md-9">
+                @Model.Notes
+            </dd>
 
         </dl>
 
         @Html.ActionLink(
             "Back",
-            "GetHistoryByAppointment",
-            "HealthRecord",
-            new { appointmentId = Model.AppointmentId },
-            new { @class = "btn btn-secondary" })
+            "SearchPatientHistory",
+            null,
+            new
+            {
+                @class = "btn btn-secondary"
+            })
 
     </div>
+
 </div>

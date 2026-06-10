@@ -18,5 +18,6 @@ namespace HealthAppWebAPI.Repositories.Interfaces
         Task<HealthRecord> GetByAppointmentIdAsync(int appointmentId);
 
         Task AddAsync(HealthRecord record);
+        Task<List<HealthRecord>> GetByPatientIdAsync(int patientId);
     }
 }

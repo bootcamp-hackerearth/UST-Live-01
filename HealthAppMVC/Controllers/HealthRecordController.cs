@@ -10,32 +10,51 @@ using System.Web.Mvc;
 namespace HealthAppMVC.Controllers
 {
 
-    public class HealthRecordController : Controller
+    public class HealthRecordController
+        : Controller
     {
-        private readonly IHealthRecordService _healthRecordService;
-        private readonly IPatientService _patientService;
+        private readonly
+            IHealthRecordService
+            _healthRecordService;
+
+        private readonly
+            IPatientService
+            _patientService;
 
         public HealthRecordController(
             IHealthRecordService healthRecordService,
             IPatientService patientService)
         {
-            _healthRecordService = healthRecordService;
-            _patientService = patientService;
+            _healthRecordService =
+                healthRecordService;
+
+            _patientService =
+                patientService;
         }
 
-        public ActionResult Create(int appointmentId)
+        // GET:
+        // HealthRecord/Create?appointmentId=1
+        [HttpGet]
+        public ActionResult Create(
+            int appointmentId)
         {
-            var model = new CreateHealthRecordDto
-            {
-                AppointmentId = appointmentId
-            };
+            CreateHealthRecordDto dto =
+                new CreateHealthRecordDto
+                {
+                    AppointmentId =
+                        appointmentId
+                };
 
-            return View(model);
+            return View(dto);
         }
 
+        // POST:
+        // HealthRecord/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(CreateHealthRecordDto dto)
+        public async Task<ActionResult>
+            Create(
+                CreateHealthRecordDto dto)
         {
             try
             {
@@ -46,61 +65,81 @@ namespace HealthAppMVC.Controllers
 
                 await _healthRecordService.AddHealthRecordAsync(dto);
 
-                TempData["Success"] = "Health Record Added Successfully";
+                TempData["Success"] =
+                    "Health Record Added Successfully";
 
-                return RedirectToAction("SearchPatientHistory");
+                return RedirectToAction(
+                    "SearchPatientHistory");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError(
+                    "",
+                    ex.Message);
+
                 return View(dto);
             }
         }
 
-        public async Task<ActionResult> Details(int id)
+        // GET:
+        // HealthRecord/Details/1
+        public async Task<ActionResult>
+            Details(int id)
         {
-            try
-            {
-                var record =
-                    await _healthRecordService.GetByIdAsync(id);
+            var record =
+                await _healthRecordService
+                    .GetByIdAsync(id);
 
-                return View(record);
-            }
-            catch
+            if (record == null)
             {
                 return HttpNotFound();
             }
+
+            return View(record);
         }
 
-        public async Task<ActionResult> SearchPatientHistory(int? patientId)
+        // GET:
+        // HealthRecord/SearchPatientHistory
+        public async Task<ActionResult>
+            SearchPatientHistory(
+                int? patientId)
         {
-            IEnumerable<HealthRecordDto> records =
-                Enumerable.Empty<HealthRecordDto>();
+            IEnumerable<HealthRecordDto>
+                records =
+                    Enumerable.Empty
+                        <HealthRecordDto>();
 
             if (patientId.HasValue)
             {
-                var all = await _healthRecordService.GetAllAsync();
-
-                records = all
-                    .Where(r => r.PatientName != null); 
+                records =
+                    await _healthRecordService
+                        .GetPatientHistoryAsync(
+                            patientId.Value);
             }
 
             return View(records);
         }
 
-        public async Task<JsonResult> SearchPatientNames(string term)
+        public async Task<JsonResult>
+            SearchPatientNames(
+                string term)
         {
             var patients =
-                await _patientService.SearchByNameAsync(term);
+                await _patientService
+                    .SearchByNameAsync(term);
 
-            var result = patients.Select(p => new
-            {
-                label = p.FullName,
-                value = p.PatientId
-            });
+            var result =
+                patients
+                .Select(p => new
+                {
+                    label = p.FullName,
+                    value = p.PatientId
+                })
+                .ToList();
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(
+                result,
+                JsonRequestBehavior.AllowGet);
         }
     }
-
 }

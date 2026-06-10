@@ -33,7 +33,24 @@
     </dt>
 
     <dd class="col-sm-9">
-        @DateTime.Parse(Model.ScheduledDate).ToShortDateString()
+        @Model.ScheduledDate
+        .ToString("dd-MM-yyyy")
+    </dd>
+
+    <dt class="col-sm-3">
+        Time Slot
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.TimeSlot
+    </dd>
+
+    <dt class="col-sm-3">
+        Status
+    </dt>
+
+    <dd class="col-sm-9">
+        @Model.Status
     </dd>
 
 </dl>
@@ -51,5 +68,9 @@
         "Back",
         "Index",
         null,
-        new { @class = "btn btn-secondary" })
+        new
+        {
+            @class =
+            "btn btn-secondary"
+        })
 }

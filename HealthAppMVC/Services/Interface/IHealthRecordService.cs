@@ -11,5 +11,7 @@ namespace HealthAppMVC.Services.Interface
         Task<IEnumerable<HealthRecordDto>> GetAllAsync();
         Task<HealthRecordDto> GetByIdAsync(int id);
         Task AddHealthRecordAsync(CreateHealthRecordDto dto);
+
+        Task<List<HealthRecordDto>> GetPatientHistoryAsync(int patientId);
     }
 }

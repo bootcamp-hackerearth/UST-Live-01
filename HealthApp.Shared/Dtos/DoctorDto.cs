@@ -19,6 +19,7 @@ namespace HealthAppWebAPI.Models.Dtos
         public bool IsActive { get; set; }
 
         public string DoctorPhoneNo { get; set; }
+        public string DoctorEmail { get; set; }
 
     }
 }

@@ -81,5 +81,42 @@ namespace HealthAppWebAPI.Services.Impl
 
             await _appointmentRepo.UpdateAsync(appointment);
         }
+        public async Task<List<HealthRecordDto>>
+            GetPatientHistoryAsync(
+                int patientId)
+        {
+            var records =
+                await _recordRepo.GetByPatientIdAsync(patientId);
+
+            return records
+                .Select(h => new HealthRecordDto
+                {
+                    HealthRecordId =
+                        h.HealthRecordId,
+
+                    VisitDate =
+                        h.VisitDate,
+
+                    PatientName =
+                        h.Appointment
+                            .Patient
+                            .FullName,
+
+                    DoctorName =
+                        h.Appointment
+                            .Doctor
+                            .FullName,
+
+                    Diagnosis =
+                        h.Diagnosis,
+
+                    Prescription =
+                        h.Prescription,
+
+                    Notes =
+                        h.Notes
+                })
+                .ToList();
+        }
     }
 }

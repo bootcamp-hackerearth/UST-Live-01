@@ -7,6 +7,7 @@
 <h2>Cancel Appointment</h2>
 
 <div class="card">
+
     <div class="card-body">
 
         <p>
@@ -21,7 +22,18 @@
 
         <p>
             <strong>Date:</strong>
-            @DateTime.Parse(Model.ScheduledDate).ToShortDateString()
+            @Model.ScheduledDate
+            .ToString("dd-MM-yyyy")
+        </p>
+
+        <p>
+            <strong>Time Slot:</strong>
+            @Model.TimeSlot
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            @Model.Status
         </p>
 
         @using (Html.BeginForm())
@@ -29,25 +41,37 @@
             @Html.AntiForgeryToken()
 
             <div class="form-group">
-                <label>Cancellation Reason</label>
+
+                <label>
+                    Cancellation Reason
+                </label>
 
                 <textarea name="cancellationReason"
-                          class="form-control">
+                          class="form-control"
+                          rows="4">
                 </textarea>
+
             </div>
 
             <br />
 
             <button type="submit"
                     class="btn btn-warning">
+
                 Cancel Appointment
+
             </button>
 
             @Html.ActionLink(
                 "Back",
                 "Index",
                 null,
-                new { @class = "btn btn-secondary" })
+                new
+                {
+                    @class =
+                    "btn btn-secondary"
+                })
         }
+
     </div>
 </div>

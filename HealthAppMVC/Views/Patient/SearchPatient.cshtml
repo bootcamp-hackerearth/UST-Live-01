@@ -1,4 +1,5 @@
 ﻿<style>
+
     .patient-card {
         border: none;
         box-shadow: 0 .5rem 1rem rgba(0,0,0,.15) !important;
@@ -27,14 +28,20 @@
     <div class="card shadow">
 
         <div class="card-header bg-warning">
-            <h3>✏️ Edit Patient Details</h3>
+
+            <h3>
+                ✏️ Edit Patient Details
+            </h3>
+
         </div>
 
         <div class="card-body">
 
             <div class="mb-4">
 
-                <label class="form-label">Search Patient</label>
+                <label class="form-label">
+                    Search Patient
+                </label>
 
                 <input type="text"
                        id="patientSearch"
@@ -43,7 +50,8 @@
 
             </div>
 
-            <div class="row" id="patientContainer">
+            <div class="row"
+                 id="patientContainer">
 
                 @foreach (var patient in Model)
                 {
@@ -80,9 +88,15 @@
                                 <a href="@Url.Action(
                                             "Edit",
                                             "Patient",
-                                            new { id = patient.PatientId })"
+                                            new
+                                            {
+                                                id =
+                                                patient.PatientId
+                                            })"
                                    class="btn btn-primary">
+
                                     Edit Patient
+
                                 </a>
 
                             </div>
@@ -97,12 +111,18 @@
             <div id="noResults"
                  class="alert alert-info mt-3"
                  style="display:none;">
+
                 No patients found.
+
             </div>
 
-            <a href="@Url.Action("PatientServices","Home")"
+            <a href="@Url.Action(
+                        "PatientServices",
+                        "Home")"
                class="btn btn-secondary mt-3">
+
                 Back
+
             </a>
 
         </div>
@@ -117,39 +137,45 @@
 
         $(function () {
 
-            $("#patientSearch").on("keyup", function () {
+            $("#patientSearch")
+                .on("keyup", function () {
 
-                var searchText =
-                    $(this).val().toLowerCase();
-
-                var visibleCount = 0;
-
-                $(".patient-card").each(function () {
-
-                    var patientName =
+                    var searchText =
                         $(this)
-                            .find(".patient-name")
-                            .text()
+                            .val()
                             .toLowerCase();
 
-                    if (patientName.indexOf(searchText) > -1) {
-                        $(this).show();
-                        visibleCount++;
+                    var visibleCount = 0;
+
+                    $(".patient-card")
+                        .each(function () {
+
+                            var patientName =
+                                $(this)
+                                    .find(".patient-name")
+                                    .text()
+                                    .toLowerCase();
+
+                            if (patientName
+                                .indexOf(searchText) > -1) {
+                                $(this).show();
+
+                                visibleCount++;
+                            }
+                            else {
+                                $(this).hide();
+                            }
+
+                        });
+
+                    if (visibleCount === 0) {
+                        $("#noResults").show();
                     }
                     else {
-                        $(this).hide();
+                        $("#noResults").hide();
                     }
 
                 });
-
-                if (visibleCount === 0) {
-                    $("#noResults").show();
-                }
-                else {
-                    $("#noResults").hide();
-                }
-
-            });
 
         });
 

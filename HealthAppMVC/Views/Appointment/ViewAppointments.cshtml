@@ -22,24 +22,30 @@
                 <div class="row">
 
                     <div class="col-md-8">
+
                         <input type="text"
                                id="patientSearch"
                                name="patientName"
                                class="form-control"
                                placeholder="Search patient..."
                                value="@Request["patientName"]" />
+
                     </div>
 
                     <div class="col-md-4">
+
                         <button type="submit"
                                 class="btn btn-primary">
                             Search
                         </button>
 
-                        <a href="@Url.Action("PatientServices", "Home")"
+                        <a href="@Url.Action(
+                                    "PatientServices",
+                                    "Home")"
                            class="btn btn-secondary">
                             Back
                         </a>
+
                     </div>
 
                 </div>
@@ -67,8 +73,8 @@
 
                             <p>
                                 <strong>Date:</strong>
-                                @DateTime.Parse(item.ScheduledDate).ToString("dd-MMM-yyyy")
-
+                                @item.ScheduledDate
+                                .ToString("dd-MMM-yyyy")
                             </p>
 
                             <p>
@@ -77,6 +83,7 @@
                             </p>
 
                             <p>
+
                                 <strong>Status:</strong>
 
                                 @if (item.Status == "Pending")
@@ -103,9 +110,11 @@
                                         Cancelled
                                     </span>
                                 }
+
                             </p>
 
-                            @if (!string.IsNullOrEmpty(item.CancellationReason))
+                            @if (!string.IsNullOrEmpty(
+                                     item.CancellationReason))
                             {
                                 <p>
                                     <strong>Reason:</strong>
@@ -136,20 +145,30 @@
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
     <script>
-$(function () {
 
-    $("#patientSearch").autocomplete({
+        $(function () {
 
-        source: function (request, response) {
+            $("#patientSearch").autocomplete({
 
-            $.getJSON(
-                '@Url.Action("SearchPatientNames", "Appointment")',
-                { term: request.term },
-                response);
-        }
-    });
+                source: function (
+                    request,
+                    response) {
 
-});
+                    $.getJSON(
+                        '@Url.Action(
+                            "SearchPatientNames",
+                            "Appointment")',
+
+                        {
+                            term: request.term
+                        },
+
+                        response);
+                }
+            });
+
+        });
+
     </script>
 
 }
