@@ -4,153 +4,55 @@
     ViewBag.Title = "My Profile";
 }
 
-<div class="container-fluid">
+<div class="container mt-5">
 
-    <div class="row mb-4">
+    <div class="card shadow p-4">
 
-        <div class="col">
+        <div class="d-flex justify-content-between mb-3">
+            <h2>👤 My Profile</h2>
 
-            <h2>
-                My Profile
-            </h2>
-
+            <a href="@Url.Action("Dashboard", "Patient")"
+               class="btn btn-secondary">
+                Back
+            </a>
         </div>
 
-    </div>
+        <table class="table table-bordered">
+            <tr>
+                <th>Patient Id</th>
+                <td>@Model.PatientId</td>
+            </tr>
 
-    <div class="card shadow-sm">
+            <tr>
+                <th>Full Name</th>
+                <td>@Model.FullName</td>
+            </tr>
 
-        <div class="card-body">
+            <tr>
+                <th>Date Of Birth</th>
+                <td>@Model.DateOfBirth.ToString("dd-MMM-yyyy")</td>
+            </tr>
 
-            <div class="row mb-3">
+            <tr>
+                <th>Gender</th>
+                <td>@Model.Gender</td>
+            </tr>
 
-                <div class="col-md-3">
-                    <strong>
-                        Patient Id
-                    </strong>
-                </div>
+            <tr>
+                <th>Phone Number</th>
+                <td>@Model.PhoneNumber</td>
+            </tr>
 
-                <div class="col-md-9">
-                    @Model.PatientId
-                </div>
+            <tr>
+                <th>Email</th>
+                <td>@Model.Email</td>
+            </tr>
+        </table>
 
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Full Name
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.FullName
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Date Of Birth
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.DateOfBirth.ToString("dd-MMM-yyyy")
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Gender
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Gender
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Phone Number
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.PhoneNumber
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Email
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Email
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Appointment Count
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.AppointmentCount
-                </div>
-
-            </div>
-
-            <div class="mt-4">
-
-                <a href="@Url.Action("EditMyProfile","Patient")"
-                   class="btn btn-primary">
-
-                    Edit Profile
-
-                </a>
-
-                <a href="@Url.Action("Dashboard","Patient")"
-                   class="btn btn-secondary">
-
-                    Back
-
-                </a>
-
-            </div>
-
-        </div>
+        <a href="@Url.Action("EditMyProfile", "Patient")"
+           class="btn btn-warning">
+            Update Profile
+        </a>
 
     </div>
 

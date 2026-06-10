@@ -4,11 +4,77 @@
     ViewBag.Title = "Patient Dashboard";
 }
 
-<div class="container mt-5">
+<style>
+    .top-logout {
+        text-align: right;
+        margin-bottom: 15px;
+    }
 
-    <div class="card shadow p-5">
+    .dash-card {
+        background: linear-gradient(135deg, #0f172a, #1e3a8a);
+        color: white;
+        border-radius: 28px;
+        padding: 45px;
+    }
 
-        <h2>
+    .dash-box {
+        border-radius: 20px;
+        padding: 25px;
+        color: white;
+        text-align: center;
+        font-weight: 700;
+        text-decoration: none;
+        min-height: 130px;
+        display: block;
+        transition: .3s;
+    }
+
+        .dash-box:hover {
+            transform: translateY(-6px);
+            color: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,.25);
+        }
+
+    .box-blue {
+        background: linear-gradient(135deg, #2563eb, #06b6d4);
+    }
+
+    .box-green {
+        background: linear-gradient(135deg, #15803d, #22c55e);
+    }
+
+    .box-cyan {
+        background: linear-gradient(135deg, #0891b2, #0e7490);
+    }
+
+    .box-purple {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+    }
+
+    .box-yellow {
+        background: linear-gradient(135deg, #f59e0b, #facc15);
+        color: #111827 !important;
+    }
+
+    .dash-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+    }
+</style>
+
+<div class="container mt-4">
+
+    <div class="top-logout">
+        <a href="@Url.Action("Logout", "Home")"
+           class="btn btn-danger btn-sm px-4">
+            <i class="fas fa-right-from-bracket me-1"></i>
+            Logout
+        </a>
+    </div>
+
+    <div class="dash-card shadow">
+
+        <h2 class="fw-bold">
             Hello, @Model.FullName
         </h2>
 
@@ -16,47 +82,50 @@
             Welcome to your patient portal.
         </p>
 
-        <hr />
+        <hr class="border-light" />
 
-        <div class="row">
+        <div class="row g-4 mt-2">
 
-            <div class="col-md-6 mb-3">
-                <a href="@Url.Action("Create", "Appointment")"
-                   class="btn btn-primary btn-lg w-100">
+            <div class="col-md-6">
+                <a href="@Url.Action("Create", "Appointment")" class="dash-box box-blue">
+                    <div class="dash-icon"><i class="fas fa-calendar-plus"></i></div>
                     Book Appointment
+                    <div class="small mt-2">Schedule visit</div>
                 </a>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <a href="@Url.Action("MyAppointments", "Appointment")"
-                   class="btn btn-success btn-lg w-100">
-                    View My Appointments
+            <div class="col-md-6">
+                <a href="@Url.Action("MyAppointments", "Appointment")" class="dash-box box-green">
+                    <div class="dash-icon"><i class="fas fa-list-check"></i></div>
+                    My Appointments
+                    <div class="small mt-2">Track status</div>
                 </a>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <a href="@Url.Action("PatientHistory", "HealthRecord", new { patientId = Model.PatientId })"
-                   class="btn btn-info btn-lg w-100 text-white">
-                    View Health Record History
+            <div class="col-md-6">
+                <a href="@Url.Action("PatientHistory", "HealthRecord", new { patientId = Model.PatientId })" class="dash-box box-cyan">
+                    <div class="dash-icon"><i class="fas fa-notes-medical"></i></div>
+                    Health Records
+                    <div class="small mt-2">View history</div>
                 </a>
             </div>
 
-            <div class="col-md-6 mb-3">
-                <a href="@Url.Action("EditMyProfile", "Patient")"
-                   class="btn btn-warning btn-lg w-100">
-                    Update Details
+            <div class="col-md-6">
+                <a href="@Url.Action("MyProfile", "Patient")" class="dash-box box-purple">
+                    <div class="dash-icon"><i class="fas fa-user"></i></div>
+                    My Profile
+                    <div class="small mt-2">View details</div>
                 </a>
-
             </div>
 
-        </div>
-        <div class="row mt-3">
             <div class="col-md-6 mx-auto">
-                <a href="@Url.Action("Logout", "Home")"
-                   class="btn btn-danger btn-lg w-100">
-                    Logout
+                <a href="@Url.Action("EditMyProfile", "Patient")" class="dash-box box-yellow">
+                    <div class="dash-icon"><i class="fas fa-user-pen"></i></div>
+                    Update Details
+                    <div class="small mt-2">Edit profile</div>
                 </a>
             </div>
+
         </div>
 
     </div>

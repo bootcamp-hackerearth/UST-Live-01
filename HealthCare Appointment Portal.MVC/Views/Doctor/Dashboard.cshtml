@@ -4,75 +4,122 @@
     ViewBag.Title = "Doctor Dashboard";
 }
 
-<div class="container mt-5">
+<style>
+    .top-logout {
+        text-align: right;
+        margin-bottom: 15px;
+    }
 
-    <div class="card shadow border-0 rounded-4">
+    .dash-card {
+        background: linear-gradient(135deg, #0f172a, #064e3b);
+        color: white;
+        border-radius: 28px;
+        padding: 45px;
+    }
 
-        <div class="card-body p-5">
+    .dash-box {
+        border-radius: 20px;
+        padding: 25px;
+        color: white;
+        text-align: center;
+        font-weight: 700;
+        text-decoration: none;
+        min-height: 130px;
+        display: block;
+        transition: .3s;
+    }
 
-            <h1>
-                Hello, Dr. @Model.FullName
-            </h1>
+        .dash-box:hover {
+            transform: translateY(-6px);
+            color: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,.25);
+        }
 
-            <p class="lead">
-                Welcome to your doctor dashboard.
-            </p>
+    .box-blue {
+        background: linear-gradient(135deg, #2563eb, #06b6d4);
+    }
 
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success mt-3">
-                    @TempData["Success"]
-                </div>
-            }
+    .box-cyan {
+        background: linear-gradient(135deg, #0891b2, #0e7490);
+    }
 
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger mt-3">
-                    @TempData["Error"]
-                </div>
-            }
+    .box-purple {
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+    }
 
-            <div class="alert alert-info mt-3">
-                <strong>Your Doctor ID:</strong> @Model.DoctorId
-            </div>
+    .box-yellow {
+        background: linear-gradient(135deg, #f59e0b, #facc15);
+        color: #111827 !important;
+    }
 
-            <hr />
+    .dash-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+    }
+</style>
 
-            <div class="row mt-4">
+<div class="container mt-4">
 
-                <div class="col-md-4 mb-3">
-                    <a href="@Url.Action("UpcomingAppointments", "Doctor")"
-                       class="btn btn-primary btn-lg w-100">
-                        Upcoming Appointments
-                    </a>
-                </div>
+    <div class="top-logout">
+        <a href="@Url.Action("Logout", "Home")"
+           class="btn btn-danger btn-sm px-4">
+            <i class="fas fa-right-from-bracket me-1"></i>
+            Logout
+        </a>
+    </div>
 
-                <div class="col-md-4 mb-3">
-                    <a href="@Url.Action("DoctorRecords", "HealthRecord")"
-                       class="btn btn-info btn-lg w-100 text-white">
-                        View Patient Health Records
-                    </a>
-                </div>
+    <div class="dash-card shadow">
 
-                <div class="col-md-4 mb-3">
-                    <a href="@Url.Action("EditMyProfile", "Doctor")"
-                       class="btn btn-warning btn-lg w-100">
-                        Update My Profile
-                    </a>
+        <h2 class="fw-bold">
+            Hello, Dr. @Model.FullName
+        </h2>
 
-                </div>
+        <p>
+            Welcome to your doctor dashboard.
+        </p>
 
-            </div>
-
+        <div class="alert alert-info mt-3">
+            <strong>Your Doctor ID:</strong> @Model.DoctorId
         </div>
-        <div class="row mt-3">
-            <div class="col-md-6 mx-auto">
-                <a href="@Url.Action("Logout", "Home")"
-                   class="btn btn-danger btn-lg w-100">
-                    Logout
+
+        <hr class="border-light" />
+
+        <div class="row g-4 mt-2">
+
+            <div class="col-md-4">
+                <a href="@Url.Action("UpcomingAppointments", "Doctor")" class="dash-box box-blue">
+                    <div class="dash-icon"><i class="fas fa-calendar-check"></i></div>
+                    Appointments
+                    <div class="small mt-2">Manage visits</div>
                 </a>
             </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("DoctorRecords", "HealthRecord")" class="dash-box box-cyan">
+                    <div class="dash-icon"><i class="fas fa-file-medical"></i></div>
+                    Health Records
+                    <div class="small mt-2">Patient history</div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("MyProfile", "Doctor")" class="dash-box box-purple">
+                    <div class="dash-icon"><i class="fas fa-user-doctor"></i></div>
+                    My Profile
+                    <div class="small mt-2">View details</div>
+                </a>
+            </div>
+
+            <div class="col-md-6 mx-auto">
+                <a href="@Url.Action("EditMyProfile", "Doctor")" class="dash-box box-yellow">
+                    <div class="dash-icon"><i class="fas fa-user-pen"></i></div>
+                    Update Profile
+                    <div class="small mt-2">Edit details</div>
+                </a>
+            </div>
+
         </div>
+
     </div>
 
 </div>

@@ -4,183 +4,55 @@
     ViewBag.Title = "My Profile";
 }
 
-<div class="container-fluid">
+<div class="container mt-5">
 
-    <div class="row mb-4">
+    <div class="card shadow p-4">
 
-        <div class="col">
+        <div class="d-flex justify-content-between mb-3">
+            <h2>👨‍⚕️ My Profile</h2>
 
-            <h2>
-                My Profile
-            </h2>
-
+            <a href="@Url.Action("Dashboard", "Doctor")"
+               class="btn btn-secondary">
+                Back
+            </a>
         </div>
 
-    </div>
+        <table class="table table-bordered">
+            <tr>
+                <th>Doctor Id</th>
+                <td>@Model.DoctorId</td>
+            </tr>
 
-    <div class="card shadow-sm">
+            <tr>
+                <th>Full Name</th>
+                <td>@Model.FullName</td>
+            </tr>
 
-        <div class="card-body">
+            <tr>
+                <th>Specialisation</th>
+                <td>@Model.Specialisation</td>
+            </tr>
 
-            <div class="row mb-3">
+            <tr>
+                <th>Years Of Experience</th>
+                <td>@Model.YearsOfExperience</td>
+            </tr>
 
-                <div class="col-md-3">
-                    <strong>
-                        Doctor Id
-                    </strong>
-                </div>
+            <tr>
+                <th>Consultation Fee</th>
+                <td>@Model.ConsultationFee</td>
+            </tr>
 
-                <div class="col-md-9">
-                    @Model.DoctorId
-                </div>
+            <tr>
+                <th>Status</th>
+                <td>@(Model.IsActive ? "Active" : "Inactive")</td>
+            </tr>
+        </table>
 
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Full Name
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.FullName
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Specialisation
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.Specialisation
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Years Of Experience
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.YearsOfExperience Years
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Consultation Fee
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    Rs. @Model.ConsultationFee
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Status
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-
-                    @if (Model.IsActive)
-                    {
-                        <span class="badge bg-success">
-                            Active
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">
-                            Inactive
-                        </span>
-                    }
-
-                </div>
-
-            </div>
-
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-                    <strong>
-                        Upcoming Appointments
-                    </strong>
-                </div>
-
-                <div class="col-md-9">
-                    @Model.UpcomingAppointmentCount
-                </div>
-
-            </div>
-
-            <div class="mt-4">
-
-                <a href="@Url.Action(
-                            "EditMyProfile",
-                            "Doctor")"
-                   class="btn btn-primary">
-
-                    Edit Profile
-
-                </a>
-
-                <a href="@Url.Action(
-                            "ToggleStatus",
-                            "Doctor",
-                            new
-                            {
-                                id = Model.DoctorId
-                            })"
-                   class="btn btn-warning">
-
-                    Toggle Status
-
-                </a>
-
-                <a href="@Url.Action(
-                            "Dashboard",
-                            "Doctor")"
-                   class="btn btn-secondary">
-
-                    Back
-
-                </a>
-
-            </div>
-
-        </div>
+        <a href="@Url.Action("EditMyProfile", "Doctor")"
+           class="btn btn-warning">
+            Update Profile
+        </a>
 
     </div>
 
