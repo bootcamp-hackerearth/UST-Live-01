@@ -1,103 +1,434 @@
+
+
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto>
+
 @{
     ViewBag.Title = "Patient Registry";
 }
 
 <div class="container-fluid">
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="successAlert"
+             class="alert alert-success alert-dismissible fade show mb-3"
+             role="alert">
+
+            @TempData["SuccessMessage"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-users me-2"></i>Patient Registry</h2>
-        <a href="@Url.Action("Create", "Patient")" class="btn btn-success">
-            <i class="fas fa-plus"></i> Add Patient
+
+        <h2>
+            <i class="fas fa-users me-2"></i>
+            Patient Registry
+        </h2>
+
+        <a href="@Url.Action("Create", "Patient")"
+           class="btn btn-success">
+
+            <i class="fas fa-plus me-1"></i>
+            Add Patient
+
         </a>
+
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-6">
-            @using (Html.BeginForm("Index", "Patient", FormMethod.Get, new { @class = "d-flex gap-2" }))
-            {
-                <div class="pull-right">
+
+        <div class="col-md-12">
+
+            <div class="d-flex justify-content-end">
+
+                @using (Html.BeginForm(
+                    "Index",
+                    "Patient",
+                    FormMethod.Get,
+                    new { @class = "d-flex gap-2" }))
+                {
                     <input type="text"
                            name="searchQuery"
                            value="@ViewBag.CurrentSearch"
                            class="form-control"
+                           style="width:300px;"
                            placeholder="Search by name, email, or phone..." />
 
-                    <button type="submit" class="btn btn-primary" title="Search">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
+                    <button type="submit"
+                            class="btn btn-primary"
+                            title="Search">
 
-                if (!string.IsNullOrWhiteSpace(ViewBag.CurrentSearch as string))
-                {
-                    <a href="@Url.Action("Index", "Patient")" class="btn btn-outline-secondary" title="Clear Search">
-                        <i class="fas fa-times"></i>
-                    </a>
+                        <i class="fas fa-search"></i>
+
+                    </button>
+
+                    if (!string.IsNullOrWhiteSpace(
+                        ViewBag.CurrentSearch as string))
+                    {
+                        <a href="@Url.Action("Index", "Patient")"
+                           class="btn btn-outline-secondary"
+                           title="Clear Search">
+
+                            <i class="fas fa-times"></i>
+
+                        </a>
+                    }
                 }
-            }
+
+            </div>
+
         </div>
+
     </div>
 
     <div class="card shadow-sm">
+
         <div class="card-body">
+
             @if (!Model.Any())
             {
                 <div class="alert alert-info mb-0">
-                    <i class="fas fa-info-circle me-2"></i> No patients found matching your search criteria.
+
+                    <i class="fas fa-info-circle me-2"></i>
+
+                    No patients found matching your search criteria.
+
                 </div>
             }
             else
             {
                 <table class="table table-bordered table-hover align-middle">
+
                     <thead class="table-light">
+
                         <tr>
-                            <th scope="col">Patient Id</th>
-                            <th scope="col">Full Name</th>
-                            <th scope="col">Gender</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Phone Number</th>
-                            <th scope="col">Appointments</th>
-                            <th scope="col" class="text-center">Actions</th>
+
+                            <th>Patient Id</th>
+                            <th>Full Name</th>
+                            <th>Gender</th>
+                            <th>Email</th>
+                            <th>Phone Number</th>
+                            <th>Appointments</th>
+                            <th class="text-center">
+                                Actions
+                            </th>
+
                         </tr>
+
                     </thead>
+
                     <tbody>
+
                         @foreach (var patient in Model)
                         {
                             <tr>
-                                <td>@patient.PatientId</td>
-                                <td>@patient.FullName</td>
-                                <td>@patient.Gender</td>
-                                <td>@patient.Email</td>
-                                <td>@patient.PhoneNumber</td>
-                                <td>@patient.AppointmentCount</td>
+
+                                <td>
+                                    @patient.PatientId
+                                </td>
+
+                                <td>
+                                    @patient.FullName
+                                </td>
+
+                                <td>
+                                    @patient.Gender
+                                </td>
+
+                                <td>
+                                    @patient.Email
+                                </td>
+
+                                <td>
+                                    @patient.PhoneNumber
+                                </td>
+
+                                <td>
+                                    @patient.AppointmentCount
+                                </td>
+
                                 <td class="text-center">
+
                                     @{
-                                        var routeData = new { id = patient.PatientId };
+                                        var routeData =
+                                            new
+                                            {
+                                                id =
+                                                patient.PatientId
+                                            };
                                     }
+
                                     <div class="d-flex justify-content-center gap-2">
+                                        <button type="button"
+                                                class="btn btn-sm btn-info text-white view-patient-btn"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#patientDetailsModal"
+                                                data-id="@patient.PatientId"
+                                                data-name="@patient.FullName"
+                                                data-dob="@patient.DateOfBirth.ToString("dd-MMM-yyyy")"
+                                                data-age="@patient.Age"
+                                                data-gender="@patient.Gender"
+                                                data-email="@patient.Email"
+                                                data-phone="@patient.PhoneNumber"
+                                                data-appointments="@patient.AppointmentCount">
 
-                                        <a href="@Url.Action("Details", "Patient", routeData)"
-                                           class="btn btn-sm btn-info text-white" title="View" aria-label="View Patient Details">
-                                            <i class="fas fa-eye"></i> View
+                                            <i class="fas fa-eye"></i>
+                                            View
+
+                                        </button>
+
+                                        <a href="@Url.Action(
+                                                    "Edit",
+                                                    "Patient",
+                                                    routeData)"
+                                           class="btn btn-sm btn-warning"
+                                           title="Edit">
+
+                                            <i class="fas fa-edit"></i>
+                                            Edit
+
                                         </a>
 
-                                        <a href="@Url.Action("Edit", "Patient", routeData)"
-                                           class="btn btn-sm btn-warning" title="Edit" aria-label="Edit Patient">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
+                                        <a href="@Url.Action(
+                                                    "Deactivate",
+                                                    "Patient",
+                                                    routeData)"
+                                           class="btn btn-sm btn-danger"
+                                           title="Delete">
 
-                                        <a href="@Url.Action("Deactivate", "Patient", routeData)"
-                                           class="btn btn-sm btn-danger" title="Delete" aria-label="Deactivate Patient">
-                                            <i class="fas fa-trash-alt"></i> Delete
+                                            <i class="fas fa-trash-alt"></i>
+                                            Delete
+
                                         </a>
 
                                     </div>
+
                                 </td>
+
                             </tr>
                         }
+
                     </tbody>
+
                 </table>
+                <div class="modal fade"
+                     id="patientDetailsModal"
+                     tabindex="-1">
+
+                    <div class="modal-dialog modal-lg">
+
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+
+                                <h5 class="modal-title">
+
+                                    Patient Details
+
+                                </h5>
+
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal">
+                                </button>
+
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="row mb-2">
+
+                                    <div class="col-md-4">
+                                        <strong>Patient Id</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalPatientId">
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-md-4">
+                                        <strong>Full Name</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalFullName">
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-md-4">
+                                        <strong>Date Of Birth</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalDob">
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-md-4">
+                                        <strong>Age</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalAge">
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-md-4">
+                                        <strong>Gender</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalGender">
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-md-4">
+                                        <strong>Email</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalEmail">
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+
+                                    <div class="col-md-4">
+                                        <strong>Phone Number</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalPhone">
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-md-4">
+                                        <strong>Appointments</strong>
+                                    </div>
+
+                                    <div class="col-md-8"
+                                         id="modalAppointments">
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+
+                                    Close
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
             }
+
         </div>
+
     </div>
+
 </div>
+@section Scripts
+{
+    <script>
+
+        var patientModal =
+            document.getElementById(
+                'patientDetailsModal');
+
+        patientModal.addEventListener(
+            'show.bs.modal',
+            function (event) {
+                var button =
+                    event.relatedTarget;
+
+                document.getElementById(
+                    'modalPatientId').textContent =
+                    button.getAttribute('data-id');
+
+                document.getElementById(
+                    'modalFullName').textContent =
+                    button.getAttribute('data-name');
+
+                document.getElementById(
+                    'modalDob').textContent =
+                    button.getAttribute('data-dob');
+
+                document.getElementById(
+                    'modalAge').textContent =
+                    button.getAttribute('data-age');
+
+                document.getElementById(
+                    'modalGender').textContent =
+                    button.getAttribute('data-gender');
+
+                document.getElementById(
+                    'modalEmail').textContent =
+                    button.getAttribute('data-email');
+
+                document.getElementById(
+                    'modalPhone').textContent =
+                    button.getAttribute('data-phone');
+
+                document.getElementById(
+                    'modalAppointments').textContent =
+                    button.getAttribute('data-appointments');
+            });
+
+        setTimeout(function () {
+
+            var alertElement =
+                document.getElementById(
+                    "successAlert");
+
+            if (alertElement) {
+
+                var alert =
+                    bootstrap.Alert
+                        .getOrCreateInstance(
+                            alertElement);
+
+                alert.close();
+            }
+
+            }, 3000);
+
+    </script>
+
+}

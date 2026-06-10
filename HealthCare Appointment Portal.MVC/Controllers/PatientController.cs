@@ -9,8 +9,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
     public class PatientController : Controller
     {
 
-        private const string ReferenceIdKey = "ReferenceId";
-
         private readonly IPatientApiService _patientService;
 
         public PatientController(IPatientApiService patientService)
@@ -28,16 +26,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             return View(patientsList);
         }
-
-        // GET: Patient/Details/5
-        public async Task<ActionResult> Details(int id)
-        {
-            var patient = await _patientService.GetPatientByIdAsync(id);
-
-            // Explicit view name prevents Sonar duplicate method implementation issue
-            return View("Details", patient);
-        }
-
 
         // GET: Patient/Create
         public ActionResult Create()
@@ -57,8 +45,12 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             try
             {
-                int patientId = await _patientService.CreatePatientAsync(patient);
-                return RedirectToAction("Details", new { id = patientId });
+                await _patientService.CreatePatientAsync(patient);
+
+                TempData["SuccessMessage"] =
+                    "Patient added successfully.";
+
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
@@ -95,7 +87,11 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             try
             {
                 await _patientService.UpdatePatientAsync(id, patient);
-                return RedirectToAction("Details", new { id });
+
+                TempData["SuccessMessage"] =
+                    "Patient updated successfully.";
+
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
@@ -121,6 +117,10 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             try
             {
                 await _patientService.DeletePatientAsync(id);
+
+                TempData["SuccessMessage"] =
+                    "Patient deleted successfully.";
+
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
