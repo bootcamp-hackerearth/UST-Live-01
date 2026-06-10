@@ -1,51 +1,51 @@
-﻿using HealthAxis_Web.Models;
-using HealthAxis_Web.Database;
+﻿using HealthAxis.Api.Models;
 using System.Collections.Generic;
 using System.Linq;
+using HealthAxis.Api.Database;
 
-namespace HealthAxis_MVC.Repositories.Impl
+namespace HealthAxis.Api.Repositories
 {
-    public class DoctorRepository : IDoctorRepository
+    public class DoctorRepositoryImpl : IDoctorRepository
     {
         private readonly AppDBContext _context;
 
-        public DoctorRepository(AppDBContext context)
+        public DoctorRepositoryImpl(AppDBContext context)
         {
             _context = context;
         }
-        public Doctor AddDoctor(Doctor doctor)
-        {
-           _context.Doctors.Add(doctor);
-            _context.SaveChanges();
-            return doctor;
-        }
 
-        public List<Doctor> GetAllDoctors()
+        public List<Doctor> GetAll()
         {
             return _context.Doctors.ToList();
         }
 
         public Doctor GetById(int id)
         {
-            return _context.Doctors.FirstOrDefault(x => x.DoctorId == id);
+            return _context.Doctors.Find(id);
         }
 
-        public Doctor UpdateDoctor(int id, Doctor doctor)
+        // ✅ Filter by specialisation + active doctors only
+        public List<Doctor> GetBySpecialisation(string specialisation)
         {
-            var existingDoctor = _context.Doctors.FirstOrDefault(x => x.DoctorId == id);
-            if (existingDoctor == null)
-            {
-                return null;
-            }
-            existingDoctor.FullName = doctor.FullName;
-            existingDoctor.Specialisation = doctor.Specialisation;
-            existingDoctor.ConsultationFee = doctor.ConsultationFee;
-            existingDoctor.IsActive = doctor.IsActive;
-            existingDoctor.YearsOfExperience = doctor.YearsOfExperience;
+            return _context.Doctors
+                .Where(d => d.Specialisation == specialisation && d.IsActive)
+                .ToList();
+        }
+
+        public void Add(Doctor doctor)
+        {
+            _context.Doctors.Add(doctor);
+        }
+
+        public void Update(Doctor doctor)
+        {
+            _context.Entry(doctor).State =
+                System.Data.Entity.EntityState.Modified;
+        }
+
+        public void Save()
+        {
             _context.SaveChanges();
-            return existingDoctor;
         }
     }
 }
-
-      

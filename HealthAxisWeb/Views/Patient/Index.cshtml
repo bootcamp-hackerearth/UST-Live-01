@@ -1,4 +1,114 @@
-﻿<h2>Patient Module</h2>
+﻿@{
+    ViewBag.Title = "Patient Dashboard";
+}
 
-@Html.ActionLink("View Patients", "List", null, new { @class = "btn btn-success" })
-@Html.ActionLink("Add Patient", "Create", null, new { @class = "btn btn-primary" })
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">Patient Dashboard</h1>
+        <p class="text-muted">Manage your profile, registration, and doctor search</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+                <h5>Patient Profile</h5>
+                <p class="text-muted">View your details securely</p>
+                <button class="btn btn-primary rounded-pill px-4" onclick="openModal()">
+                    View Profile
+                </button>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+                <h5>Register</h5>
+                <p class="text-muted">Create a new patient account</p>
+                <a href="@Url.Action("Register", "Patient")"
+                   class="btn btn-success rounded-pill px-4">
+                    Register
+                </a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+                <h5>Search Doctors</h5>
+                <p class="text-muted">Find doctors by specialization</p>
+                <a href="@Url.Action("SearchBySpecialisation", "Patient")"
+                   class="btn btn-warning text-white rounded-pill px-4">
+                    Search
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" id="patientModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Enter Patient ID</h5>
+                <button type="button" class="btn-close" onclick="closeModal()"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <input type="number" id="patientIdInput"
+                       class="form-control" placeholder="Patient ID" />
+
+                <p id="errorMsg" class="text-danger mt-2"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="goToProfile()">Proceed</button>
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    function openModal() {
+        var modal = new bootstrap.Modal(document.getElementById('patientModal'));
+        modal.show();
+        document.getElementById("patientIdInput").value = "";
+        document.getElementById("errorMsg").innerText = "";
+    }
+
+    function closeModal() {
+        var modalEl = document.getElementById('patientModal');
+        var modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+    }
+
+    function goToProfile() {
+        var id = document.getElementById("patientIdInput").value;
+
+        if (!id || id <= 0) {
+            document.getElementById("errorMsg").innerText = "Enter valid Patient ID";
+            return;
+        }
+
+        fetch("https://localhost:44315/api/patient/" + id)
+            .then(response => {
+                if (!response.ok) {
+                    document.getElementById("errorMsg").innerText = "Invalid Patient ID";
+                    return null;
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data) {
+                    window.location.href = "/Patient/Profile?id=" + id;
+                }
+            })
+            .catch(() => {
+                document.getElementById("errorMsg").innerText = "Server error";
+            });
+    }
+</script>

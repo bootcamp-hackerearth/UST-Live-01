@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http.Headers;
 using System.Web.Http.Description;
-using HealthAxis_Web.Areas.HelpPage.ModelDescriptions;
+using HealthAxis.Api.Areas.HelpPage.ModelDescriptions;
 
-namespace HealthAxis_Web.Areas.HelpPage.Models
+namespace HealthAxis.Api.Areas.HelpPage.Models
 {
     /// <summary>
     /// The model that represents an API displayed on the help page.

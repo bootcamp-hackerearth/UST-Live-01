@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace HealthAxis_Web.Areas.HelpPage.ModelDescriptions
+namespace HealthAxis.Api.Areas.HelpPage.ModelDescriptions
 {
     internal static class ModelNameHelper
     {

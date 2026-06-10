@@ -4,49 +4,69 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Helpers;
+using HealthAxis;
 
-public class PatientApiService : IPatientApiService
+namespace HealthAxis.Web.Services
 {
-    private readonly HttpClient _httpClient;
-
-    public PatientApiService(HttpClient httpClient)
+    public class PatientApiService : IPatientApiService
     {
-        _httpClient = httpClient;
-    }
+        private readonly HttpClient _httpClient;
 
-    public async Task<List<PatientDto>> GetAllAsync()
-    {
-        var res = await _httpClient.GetAsync("api/patient");
-        res.EnsureSuccessStatusCode();
+        public PatientApiService(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
 
-        return JsonConvert.DeserializeObject<List<PatientDto>>(
-            await res.Content.ReadAsStringAsync());
-    }
+        public async Task<ApiResponseDto> Register(PatientDto dto)
+        {
+            var content = new StringContent(
+                JsonConvert.SerializeObject(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
 
-    public async Task<PatientDto> GetByIdAsync(int id)
-    {
-        var res = await _httpClient.GetAsync($"api/patient/{id}");
-        if (!res.IsSuccessStatusCode) return null;
+            var response = await _httpClient.PostAsync("patient", content);
 
-        return JsonConvert.DeserializeObject<PatientDto>(
-            await res.Content.ReadAsStringAsync());
-    }
+            var json = await response.Content.ReadAsStringAsync();
 
-    public async Task AddAsync(PatientDto dto)
-    {
-        var json = JsonConvert.SerializeObject(dto);
-        var res = await _httpClient.PostAsync("api/patient",
-            new StringContent(json, Encoding.UTF8, "application/json"));
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
+        }
 
-        res.EnsureSuccessStatusCode();
-    }
+        public async Task<PatientDto> GetById(int id)
+        {
+            var res = await _httpClient.GetAsync($"patient/{id}");
+            if (!res.IsSuccessStatusCode) return null;
 
-    public async Task UpdateAsync(int id, PatientDto dto)
-    {
-        var json = JsonConvert.SerializeObject(dto);
-        var res = await _httpClient.PutAsync($"api/patient/{id}",
-            new StringContent(json, Encoding.UTF8, "application/json"));
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<PatientDto>(json);
+        }
 
-        res.EnsureSuccessStatusCode();
+        public async Task<ApiResponseDto> Update(int id, PatientDto dto)
+        {
+            var content = new StringContent(
+                JsonConvert.SerializeObject(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _httpClient.PutAsync("patient/" + id, content);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
+        }
+
+
+        public async Task<List<HealthRecordDto>> GetHealthRecords(int patientId)
+        {
+            var res = await _httpClient.GetAsync($"healthrecord/patient/{patientId}");
+
+            if (!res.IsSuccessStatusCode)
+                return new List<HealthRecordDto>();
+
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
+        }
     }
 }

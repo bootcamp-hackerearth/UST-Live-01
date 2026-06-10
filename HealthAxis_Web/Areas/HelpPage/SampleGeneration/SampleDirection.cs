@@ -1,4 +1,4 @@
-namespace HealthAxis_Web.Areas.HelpPage
+namespace HealthAxis.Api.Areas.HelpPage
 {
     /// <summary>
     /// Indicates whether the sample is used for request or response

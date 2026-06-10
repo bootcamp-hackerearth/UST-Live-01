@@ -1,45 +1,88 @@
-﻿using System.Linq;
-using System.Web.Http;
+﻿using AutoMapper;
 using HealthAxis.Shared.Dtos;
+using HealthAxis.Api.Database;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
+using HealthAxis.Api.Models;
 
-[RoutePrefix("api/patient")]
-public class PatientController : ApiController
+namespace HealthAxis.Api.Controllers
 {
-    private readonly IPatientService _service;
-
-    public PatientController(IPatientService service)
+    [RoutePrefix("api/patient")]
+    public class PatientController : ApiController
     {
-        _service = service;
-    }
+        private readonly AppDBContext _context;
+        private readonly IMapper _mapper;
 
-    [HttpGet, Route("")]
-    public IHttpActionResult GetAll()
-    {
-        return Ok(_service.GetAllPatients());
-    }
+        public PatientController(AppDBContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-    [HttpGet, Route("{id}")]
-    public IHttpActionResult GetById(int id)
-    {
-        var patient = _service.GetById(id);
-        if (patient == null) return NotFound();
+        [HttpPost, Route("")]
+        public IHttpActionResult Add(PatientDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid data");
 
-        return Ok(patient);
-    }
+            if (_context.Patients.Any(p => p.Email == dto.Email))
+                return BadRequest("Email already exists");
 
-    [HttpPost, Route("")]
-    public IHttpActionResult Add(PatientDto dto)
-    {
-        var result = _service.AddPatient(dto);
-        return Ok(result);
-    }
+            var patient = _mapper.Map<Patient>(dto);
+            patient.CreatedDate = System.DateTime.Now;
+            patient.IsActive = true;
 
-    [HttpPut, Route("{id}")]
-    public IHttpActionResult Update(int id, PatientDto dto)
-    {
-        var result = _service.UpdatePatient(id, dto);
-        if (result == null) return NotFound();
+            _context.Patients.Add(patient);
+            _context.SaveChanges();
 
-        return Ok(result);
+            return Ok(new ApiResponseDto
+            {
+                Success = true,
+                Message = "Patient registered successfully"
+            });
+        }
+
+        [HttpGet, Route("{id}")]
+        public IHttpActionResult Get(int id)
+        {
+            var p = _context.Patients.Find(id);
+            if (p == null)
+                return NotFound();
+
+            return Ok(_mapper.Map<PatientDto>(p));
+        }
+
+        [HttpPut, Route("{id}")]
+        public IHttpActionResult Update(int id, PatientDto dto)
+        {
+            var patient = _context.Patients.Find(id);
+
+            if (patient == null)
+            {
+                return Ok(new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Patient not found"
+                });
+            }
+
+            _mapper.Map(dto, patient);
+            _context.SaveChanges();
+
+            return Ok(new ApiResponseDto
+            {
+                Success = true,
+                Message = "Patient updated successfully"
+            });
+        }
+
+
+        [HttpGet, Route("")]
+        public IHttpActionResult GetAll()
+        {
+            var patients = _context.Patients.ToList();
+            return Ok(_mapper.Map<List<PatientDto>>(patients));
+        }
     }
 }

@@ -1,47 +1,118 @@
-﻿@{
-    ViewBag.Title = "Doctor Module";
+﻿@model List<HealthAxis.Shared.Dtos.DoctorDto>
+
+@{
+    ViewData["Title"] = "Doctor Dashboard";
 }
 
-<div class="container mt-5 text-center">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-    <h2 class="text-primary fw-bold mb-4">Doctor Management</h2>
-    <p class="text-muted mb-5">Choose an action</p>
+<div class="container mt-5">
 
-    <div class="row justify-content-center g-4">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">Doctor Dashboard</h1>
+        <p class="text-muted">Manage doctors, appointments, and patients easily</p>
+    </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5>View All Doctors</h5>
-                @Html.ActionLink("Open", "List", "Doctor",
-                    null, new { @class = "btn btn-success w-100" })
+    <div class="row g-4 justify-content-center">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+                <h5 class="mb-3">Add Doctor</h5>
+                <p class="text-muted">Register a new doctor into the system</p>
+                <a href="@Url.Action("Create")" class="btn btn-primary rounded-pill px-4">Add</a>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5>Add Doctor</h5>
-                @Html.ActionLink("Open", "Create", "Doctor",
-                    null, new { @class = "btn btn-primary w-100" })
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+                <h5 class="mb-3">Appointments</h5>
+                <p class="text-muted">Check doctor-wise appointments</p>
+
+                <button onclick="openDoctorModal()" class="btn btn-success rounded-pill px-4">
+                    View
+                </button>
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5>Search by ID</h5>
-                @Html.ActionLink("Open", "SearchById", "Doctor",
-                    null, new { @class = "btn btn-info w-100 text-white" })
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5>Search by Specialisation</h5>
-                @Html.ActionLink("Open", "SearchBySpecialisation", "Doctor",
-                    null, new { @class = "btn btn-warning w-100 text-white" })
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
+                <h5 class="mb-3">Patients</h5>
+                <p class="text-muted">View and manage patient details</p>
+                <a href="@Url.Action("ViewPatients")" class="btn btn-warning rounded-pill px-4 text-white">
+                    View
+                </a>
             </div>
         </div>
 
     </div>
-
 </div>
-``
+
+
+<div class="modal fade" id="doctorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Enter Doctor ID</h5>
+                <button type="button" class="btn-close" onclick="closeDoctorModal()"></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <input type="number" id="doctorIdInput"
+                       class="form-control" placeholder="Doctor ID" />
+
+                <p id="doctorErrorMsg" class="text-danger mt-2"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="goToDoctorAppointments()">Proceed</button>
+                <button class="btn btn-secondary" onclick="closeDoctorModal()">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+    function openDoctorModal() {
+        var modal = new bootstrap.Modal(document.getElementById('doctorModal'));
+        modal.show();
+
+        document.getElementById("doctorIdInput").value = "";
+        document.getElementById("doctorErrorMsg").innerText = "";
+    }
+
+    function closeDoctorModal() {
+        var modalEl = document.getElementById('doctorModal');
+        var modal = bootstrap.Modal.getInstance(modalEl);
+        modal.hide();
+    }
+
+    function goToDoctorAppointments() {
+        var id = document.getElementById("doctorIdInput").value;
+
+        if (!id || id <= 0) {
+            document.getElementById("doctorErrorMsg").innerText = "Enter valid Doctor ID";
+            return;
+        }
+
+        fetch("/Doctor/ValidateDoctor?id=" + id)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    document.getElementById("doctorErrorMsg").innerText = "Invalid Doctor ID";
+                    return;
+                }
+
+                window.location.href = "/Appointment/ByDoctor?id=" + id;
+            })
+            .catch(() => {
+                document.getElementById("doctorErrorMsg").innerText = "Server error";
+            });
+    }
+
+</script>

@@ -1,38 +1,125 @@
 ﻿@model HealthAxis.Shared.Dtos.DoctorDto
 
-<h3>Search Doctor by ID</h3>
+<div class="container mt-5">
 
-@using (Html.BeginForm("SearchById", "Doctor", FormMethod.Get))
-{
-    <input type="number"
-           name="id"
-           value="@Request["id"]"
-           class="form-control mb-2"
-           placeholder="Enter Doctor ID"
-           min="1"
-           required />
+    <div class="search-card shadow-lg p-4">
 
-    <button class="btn btn-primary">Search</button>
-}
+        <h3 class="text-primary text-center mb-4">Search Doctor by ID</h3>
 
-<hr />
+        @using (Html.BeginForm("SearchById", "Doctor", FormMethod.Get))
+        {
+            <input type="number"
+                   name="id"
+                   value="@Request["id"]"
+                   class="form-control mb-3 search-input"
+                   placeholder="Enter Doctor ID"
+                   min="1"
+                   required />
 
-@if (Model != null)
-{
-    <div class="card p-3 mt-3">
-        <h5>Doctor Details</h5>
+            <button class="btn btn-primary w-100 fw-semibold">
+                Search
+            </button>
+        }
 
-        <p><b>Name:</b> @Model.FullName</p>
-        <p><b>Specialisation:</b> @Model.Specialisation</p>
-        <p><b>Experience:</b> @Model.YearsOfExperience years</p>
-        <p><b>Fee:</b> ₹@Model.ConsultationFee</p>
-        <p><b>Status:</b> @(Model.IsActive ? "Active" : "Inactive")</p>
     </div>
-}
 
-@if (ViewBag.Message != null)
-{
-    <div class="alert alert-danger mt-3">
-        @ViewBag.Message
-    </div>
-}
+    <hr class="my-4" />
+
+    @if (Model != null)
+    {
+        <div class="card doctor-card shadow-lg p-4 mt-4">
+
+            <h5 class="text-success fw-bold mb-3">Doctor Details</h5>
+
+            <p><b>Name:</b> @Model.FullName</p>
+
+            <p>
+                <b>Specialisation:</b>
+                <span class="badge bg-purple px-3 py-2">
+                    @Model.Specialisation
+                </span>
+            </p>
+
+            <p>
+                <b>Experience:</b>
+                <span class="text-success fw-semibold">
+                    @Model.YearsOfExperience years
+                </span>
+            </p>
+
+            <p>
+                <b>Fee:</b>
+                <span class="text-primary fw-semibold">
+                    ₹@Model.ConsultationFee
+                </span>
+            </p>
+
+            <p>
+                <b>Status:</b>
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success px-3 py-2">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger px-3 py-2">Inactive</span>
+                }
+            </p>
+
+        </div>
+    }
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-danger mt-4 text-center shadow-sm">
+            @ViewBag.Message
+        </div>
+    }
+
+</div>
+
+<style>
+    body {
+        background: linear-gradient(to right, #eef2f7, #dfe6f1);
+    }
+
+    .search-card {
+        max-width: 400px;
+        margin: auto;
+        border-radius: 15px;
+        background: white;
+    }
+
+    .search-input {
+        border-radius: 10px;
+        transition: all 0.2s ease;
+    }
+
+        .search-input:focus {
+            border-color: #4e54c8;
+            box-shadow: 0 0 6px rgba(78,84,200,0.3);
+        }
+
+    .doctor-card {
+        border-radius: 15px;
+        background: white;
+    }
+
+    .bg-purple {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4e54c8, #8f94fb);
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3b40a4, #7c82e8);
+        }
+
+    .card {
+        border-radius: 20px;
+    }
+</style>

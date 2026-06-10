@@ -1,0 +1,14 @@
+﻿<h2>Enter Patient ID</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+
+@using (Html.BeginForm("ByPatient", "Appointment"))
+{
+    <input type="number" name="id" required />
+    <button type="submit">View Appointments</button>
+}
+
+<a href="@Url.Action("Dashboard","Patient")">Back</a>

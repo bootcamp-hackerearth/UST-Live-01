@@ -1,0 +1,56 @@
+﻿@model HealthAxis.Shared.Dtos.HealthRecordDto
+
+<h2>Add Health Record</h2>
+
+<p style="color:red">@ViewBag.Error</p>
+<p style="color:green">@TempData["Success"]</p>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.AppointmentId)
+    @Html.HiddenFor(m => m.PatientId)
+    @Html.HiddenFor(m => m.DoctorId)
+
+    <div>
+        <label>Appointment ID:</label>
+        @Html.DisplayFor(m => m.AppointmentId)
+    </div>
+
+    <div>
+        <label>Patient ID:</label>
+        @Html.DisplayFor(m => m.PatientId)
+    </div>
+
+    <div>
+        <label>Doctor ID:</label>
+        @Html.DisplayFor(m => m.DoctorId)
+    </div>
+
+    <div>
+        <label>Visit Date:</label>
+        @Html.TextBoxFor(m => m.VisitDate, new { type = "datetime-local" })
+    </div>
+
+    <div>
+        <label>Diagnosis:</label><br />
+        @Html.TextAreaFor(m => m.Diagnosis, new { @class = "form-control", rows = 3 })
+        @Html.ValidationMessageFor(m => m.Diagnosis)
+    </div>
+
+    <div>
+        <label>Prescription:</label><br />
+        @Html.TextAreaFor(m => m.Prescription, new { @class = "form-control", rows = 3 })
+        @Html.ValidationMessageFor(m => m.Prescription)
+    </div>
+
+    <div>
+        <label>Notes (Optional):</label><br />
+        @Html.TextAreaFor(m => m.Notes, new { @class = "form-control", rows = 3 })
+    </div>
+
+    <br />
+    <button type="submit">Save Health Record</button>
+}
+
+<br />
+@Html.ActionLink("Back", "Index", "Doctor")

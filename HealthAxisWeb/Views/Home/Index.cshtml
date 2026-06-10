@@ -2,45 +2,112 @@
     ViewBag.Title = "Home";
 }
 
-<div class="container mt-5 text-center">
+@*<style>
+    html, body {
+        height: 100% !important;
+        margin: 0 !important;
+    }
 
-    <h1 class="text-primary fw-bold mb-3">HealthAxis Management System</h1>
-    <p class="text-muted mb-5">Manage Doctors, Patients, Appointments and Records efficiently</p>
+    body {
+        background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    }
+</style>*@
 
-    <div class="row justify-content-center g-4">
 
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5 class="mb-3">Doctors</h5>
-                @Html.ActionLink("Open", "Index", "Doctor",
-                    null, new { @class = "btn btn-success w-100" })
-            </div>
+<div class="full-layout">
+
+    <div class="top-banner d-flex align-items-center justify-content-center text-white">
+        <div class="text-center">
+            <h1 class="fw-bold display-4">HealthAxis Dashboard</h1>
+            <p class="lead">All your healthcare operations in one place</p>
         </div>
+    </div>
 
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5 class="mb-3">Patients</h5>
-                @Html.ActionLink("Open", "Index", "Patient",
-                    null, new { @class = "btn btn-info w-100 text-white" })
-            </div>
-        </div>
+    <div class="container mt-5">
 
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5 class="mb-3">Appointments</h5>
-                @Html.ActionLink("Open", "Index", "Appointment",
-                    null, new { @class = "btn btn-warning w-100 text-white" })
-            </div>
-        </div>
+        <div class="row g-4">
 
-        <div class="col-md-3">
-            <div class="card shadow-sm p-3">
-                <h5 class="mb-3">Health Records</h5>
-                @Html.ActionLink("Open", "Index", "HealthRecord",
-                    null, new { @class = "btn btn-primary w-100" })
+            <div class="col-md-6">
+                <div class="feature-card doctor-card">
+                    <div class="content">
+                        <h3>Doctors</h3>
+                        <p>Manage doctors, specialisations and availability</p>
+                        @Html.ActionLink("Go", "Index", "Doctor", null,
+                            new { @class = "btn btn-light" })
+                    </div>
+                </div>
             </div>
+
+            <div class="col-md-6">
+                <div class="feature-card patient-card">
+                    <div class="content">
+                        <h3>Patients</h3>
+                        <p>View, update and manage patient records</p>
+                        @Html.ActionLink("Go", "Index", "Patient", null,
+                            new { @class = "btn btn-light" })
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
 
 </div>
+
+<style>
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: #eef3f9;
+    }
+
+
+    .top-banner {
+        height: 250px;
+        background: linear-gradient(135deg, #7b2ff7, #4facfe);
+        border-radius: 0 0 30px 30px;
+    }
+
+
+    .feature-card {
+        height: 180px;
+        border-radius: 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 25px;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .feature-card:hover {
+            transform: scale(1.04);
+        }
+
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+    .content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .doctor-card {
+        background: linear-gradient(135deg, #28a745, #218838);
+    }
+
+    .patient-card {
+        background: linear-gradient(135deg, #17a2b8, #138496);
+    }
+</style>

@@ -1,14 +1,20 @@
-﻿using HealthAxis_Web.Models;
+﻿using HealthAxis.Api.Models;
 using System.Collections.Generic;
 
-namespace HealthAxis_MVC.Repositories
+namespace HealthAxis.Api.Repositories
 {
     public interface IDoctorRepository
     {
-        Doctor AddDoctor(Doctor doctor);
-        //List<Doctor> (Doctor.SpecialisationOption specialisation);
-        List<Doctor> GetAllDoctors();
-        Doctor UpdateDoctor(int id,Doctor doctor);
+        List<Doctor> GetAll();
+
         Doctor GetById(int id);
+
+        List<Doctor> GetBySpecialisation(string specialisation);
+
+        void Add(Doctor doctor);
+
+        void Update(Doctor doctor);
+
+        void Save();
     }
 }

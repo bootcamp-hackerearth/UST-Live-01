@@ -1,53 +1,48 @@
-﻿using HealthAxis_Web.Database;
-using HealthAxis_Web.Models;
+﻿using HealthAxis.Api.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System;
+using HealthAxis.Api.Database;
 
-public class PatientRepositoryImpl : IPatientRepository
+namespace HealthAxis.Api.Repositories
 {
-    private readonly AppDBContext _context;
-
-    public PatientRepositoryImpl(AppDBContext context)
+    public class PatientRepositoryImpl : IPatientRepository
     {
-        _context = context;
-    }
+        private readonly AppDBContext _context;
 
-    public List<Patient> GetAllPatients()
-    {
-        return _context.Patients.ToList();
-    }
+        public PatientRepositoryImpl(AppDBContext context)
+        {
+            _context = context;
+        }
 
-    public Patient GetById(int id)
-    {
-        return _context.Patients.FirstOrDefault(p => p.PatientId == id);
-    }
+        public List<Patient> GetAll()
+        {
+            return _context.Patients.ToList();
+        }
 
-    public Patient AddPatient(Patient patient)
-    {
-        _context.Patients.Add(patient);
-        _context.SaveChanges();
+        public Patient GetById(int id)
+        {
+            return _context.Patients.Find(id);
+        }
 
-        return patient;
-    }
+        public bool ExistsByEmail(string email)
+        {
+            return _context.Patients.Any(p => p.Email == email);
+        }
 
-    public Patient UpdatePatient(int id, Patient patient)
-    {
-        var existing = _context.Patients.FirstOrDefault(p => p.PatientId == id);
+        public void Add(Patient patient)
+        {
+            _context.Patients.Add(patient);
+        }
 
-        if (existing == null)
-            return null;
+        public void Update(Patient patient)
+        {
+            _context.Entry(patient).State =
+                System.Data.Entity.EntityState.Modified;
+        }
 
-        existing.FullName = patient.FullName;
-        existing.DateOfBirth = patient.DateOfBirth;
-        existing.Gender = patient.Gender;
-        existing.PhoneNumber = patient.PhoneNumber;
-        existing.Email = patient.Email;
-        existing.InsuranceID = patient.InsuranceID;
-        existing.CreatedDate = patient.CreatedDate;
-
-        _context.SaveChanges();
-
-        return existing;
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
     }
 }

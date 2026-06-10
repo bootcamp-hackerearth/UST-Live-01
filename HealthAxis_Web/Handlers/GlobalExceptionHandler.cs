@@ -9,7 +9,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.ExceptionHandling;
 
-namespace HealthAxis_Web.Handlers
+namespace HealthAxis.Api.Handlers
 {
     public class GlobalExceptionHandler : ExceptionHandler
     {

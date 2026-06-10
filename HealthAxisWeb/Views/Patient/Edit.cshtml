@@ -2,22 +2,52 @@
 
 <h2>Edit Patient</h2>
 
-@using (Html.BeginForm())
+@using (Html.BeginForm("Edit", "Patient", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.PatientId)
 
-    @Html.TextBoxFor(m => m.FullName)
+    <div>
+        Patient ID:
+        @Html.TextBoxFor(m => m.PatientId, new { @readonly = "readonly" })
+    </div>
 
-    @Html.TextBoxFor(m => m.DateOfBirth,
-        new { type = "date" })
+    <div>
+        Name: @Html.TextBoxFor(m => m.FullName)
+    </div>
 
-    @Html.TextBoxFor(m => m.Gender)
+    <div>
+        DOB: @Html.TextBoxFor(m => m.DateOfBirth, new { type = "date" })
+    </div>
 
-    @Html.TextBoxFor(m => m.PhoneNumber)
+    <div>
+        Gender:
+        @Html.RadioButtonFor(m => m.Gender, "Male") Male
+        @Html.RadioButtonFor(m => m.Gender, "Female") Female
+        @Html.RadioButtonFor(m => m.Gender, "Other") Other
+    </div>
 
-    @Html.TextBoxFor(m => m.Email)
+    <div>
+        Phone: @Html.TextBoxFor(m => m.PhoneNumber)
+    </div>
 
-    @Html.TextBoxFor(m => m.InsuranceID)
+    <div>
+        Email: @Html.TextBoxFor(m => m.Email)
+    </div>
 
-    <button>Update</button>
+    <div>
+        Insurance: @Html.TextBoxFor(m => m.InsuranceId)
+    </div>
+
+    <div>
+        Active: @Html.CheckBoxFor(m => m.IsActive)
+        <small>(Uncheck to deactivate patient)</small>
+    </div>
+
+    <br />
+
+    <button type="submit">Update</button>
 }
+
+<br />
+
+@Html.ActionLink("Back", "Profile", new { id = Model.PatientId })

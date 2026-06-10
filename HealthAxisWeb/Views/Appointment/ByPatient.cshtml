@@ -1,0 +1,41 @@
+﻿@model List<HealthAxis.Shared.Dtos.AppointmentDto>
+
+<h2>My Appointments</h2>
+
+<table class="table">
+    <tr>
+        <th>ID</th>
+        <th>DoctorId</th>
+        <th>Date</th>
+        <th>Slot</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.AppointmentId</td>
+            <td>@item.DoctorId</td>
+            <td>@item.ScheduledDate.ToShortDateString()</td>
+            <td>@item.TimeSlot</td>
+            <td>@item.Status</td>
+
+            <td>
+                @if (item.Status == HealthAxis.Shared.Dtos.AppointmentStatus.Pending ||
+                     item.Status == HealthAxis.Shared.Dtos.AppointmentStatus.Confirmed)
+                {
+                    <a href="@Url.Action("Cancel", "Appointment", new { id = item.AppointmentId })">
+                        Cancel
+                    </a>
+                }
+                else
+                {
+                    <span style="color:gray">Not Allowed</span>
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+<a href="@Url.Action("Dashboard", "Patient")">Back</a>

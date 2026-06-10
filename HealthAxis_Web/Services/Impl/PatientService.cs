@@ -1,59 +1,59 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
+using HealthAxis.Api.Models;
+using HealthAxis.Api.Repositories;
 using HealthAxis.Shared.Dtos;
-using HealthAxis_Web.Models;
+using System;
+using System.Collections.Generic;
 
-public class PatientServiceImpl : IPatientService
+namespace HealthAxis.Api.Services
 {
-    private readonly IPatientRepository _repository;
-    private readonly IMapper _mapper;
-
-    public PatientServiceImpl(IPatientRepository repository, IMapper mapper)
+    public class PatientServiceImpl : IPatientService
     {
-        _repository = repository;
-        _mapper = mapper;
-    }
+        private readonly IPatientRepository _repo;
+        private readonly IMapper _mapper;
 
-    public List<PatientDto> GetAllPatients()
-    {
-        var patients = _repository.GetAllPatients();
+        public PatientServiceImpl(IPatientRepository repo, IMapper mapper)
+        {
+            _repo = repo;
+            _mapper = mapper;
+        }
 
-        return _mapper.Map<List<PatientDto>>(patients);
-    }
+        public PatientDto Register(PatientDto dto)
+        {
+            if (_repo.ExistsByEmail(dto.Email))
+                return null;
 
-    public PatientDto GetById(int id)
-    {
-        var patient = _repository.GetById(id);
+            var patient = _mapper.Map<Patient>(dto);
+            patient.CreatedDate = DateTime.Now;
+            patient.IsActive = true;
 
-        if (patient == null)
-            return null;
+            _repo.Add(patient);
+            _repo.Save();
 
-        return _mapper.Map<PatientDto>(patient);
-    }
+            return _mapper.Map<PatientDto>(patient);
+        }
 
-    public PatientDto AddPatient(PatientDto patientDto)
-    {
-        var patient = _mapper.Map<Patient>(patientDto);
+        public List<PatientDto> GetAllPatients()
+        {
+            return _mapper.Map<List<PatientDto>>(_repo.GetAll());
+        }
 
-        patient.CreatedDate = System.DateTime.Now;
+        public PatientDto GetById(int id)
+        {
+            var patient = _repo.GetById(id);
+            return patient == null ? null : _mapper.Map<PatientDto>(patient);
+        }
 
-        var savedPatient = _repository.AddPatient(patient);
+        public PatientDto Update(int id, PatientDto dto)
+        {
+            var patient = _repo.GetById(id);
+            if (patient == null) return null;
 
-        return _mapper.Map<PatientDto>(savedPatient);
-    }
+            _mapper.Map(dto, patient);
+            _repo.Update(patient);
+            _repo.Save();
 
-    public PatientDto UpdatePatient(int id, PatientDto patientDto)
-    {
-        var existing = _repository.GetById(id);
-
-        if (existing == null)
-            return null;
-
-        var updated = _mapper.Map(patientDto, existing);
-
-        var saved = _repository.UpdatePatient(id, updated);
-
-        return _mapper.Map<PatientDto>(saved);
+            return _mapper.Map<PatientDto>(patient);
+        }
     }
 }

@@ -1,73 +1,80 @@
-﻿using HealthAxis_MVC.Services;
+﻿using AutoMapper;
+using HealthAxis.Api.Models;
 using HealthAxis.Shared.Dtos;
+using HealthAxis.Api.Database;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 
-namespace HealthAxis_Web.Controllers
+namespace HealthAxis.Api.Controllers
 {
-    [RoutePrefix("api/doctor")] 
+    [RoutePrefix("api/doctor")]
     public class DoctorController : ApiController
     {
-        private readonly IDoctorService _service;
+        private readonly AppDBContext _context;
+        private readonly IMapper _mapper;
 
-        public DoctorController(IDoctorService service)
+        public DoctorController(AppDBContext context, IMapper mapper)
         {
-            _service = service;
+            _context = context;
+            _mapper = mapper;
         }
 
-        [HttpGet]
-        [Route("")]
-        public IHttpActionResult GetAllDoctors()
+        [HttpGet, Route("")]
+        public IHttpActionResult GetAll()
         {
-            var doctors = _service.GetAllDoctors();
-            return Ok(doctors);
+            var doctors = _context.Doctors.ToList();
+            var result = _mapper.Map<List<DoctorDto>>(doctors);
+            return Ok(result);
         }
 
-        [HttpGet]
-        [Route("{id}")]
-        public IHttpActionResult GetDoctorById(int id)
+        [HttpGet, Route("{id}")]
+        public IHttpActionResult Get(int id)
         {
-            var doctor = _service.GetById(id);
+            var doctor = _context.Doctors.Find(id);
             if (doctor == null)
                 return NotFound();
 
-            return Ok(doctor);
+            return Ok(_mapper.Map<DoctorDto>(doctor));
         }
 
-        [HttpPost]
-        [Route("")]
-        public IHttpActionResult AddDoctor(DoctorDto doctorDto)
+        [HttpPost, Route("")]
+        public IHttpActionResult Add(DoctorDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest("Invalid data");
 
-            var result = _service.AddDoctor(doctorDto);
-            return Ok(result);
+            var doctor = _mapper.Map<Doctor>(dto);
+            doctor.IsActive = true;
+
+            _context.Doctors.Add(doctor);
+            _context.SaveChanges();
+
+            return Ok();
         }
 
-        [HttpPut]
-        [Route("{id}")]
-        public IHttpActionResult UpdateDoctor(int id, DoctorDto docDto)
+        [HttpPut, Route("{id}")]
+        public IHttpActionResult Update(int id, DoctorDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var result = _service.UpdateDoctor(id, docDto);
-            if (result == null)
+            var doctor = _context.Doctors.Find(id);
+            if (doctor == null)
                 return NotFound();
 
-            return Ok(result);
+            _mapper.Map(dto, doctor);
+            _context.SaveChanges();
+
+            return Ok();
         }
 
-        [HttpGet]
-        [Route("specialisation/{spec}")]
-        public IHttpActionResult GetBySpecialisation(DoctorDto.SpecialisationType spec)
+        [HttpGet, Route("specialisation/{spec}")]
+        public IHttpActionResult GetBySpec(string spec)
         {
-            var doctors = _service.GetAllDoctors()
-                                  .Where(d => d.Specialisation == spec)
-                                  .ToList();
+            var doctors = _context.Doctors
+                .Where(d => d.Specialisation == spec && d.IsActive)
+                .ToList();
 
-            return Ok(doctors);
+            var result = _mapper.Map<List<DoctorDto>>(doctors);
+            return Ok(result);
         }
     }
 }

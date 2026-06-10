@@ -1,0 +1,30 @@
+﻿@model HealthAxis.Shared.Dtos.PatientDto 
+    
+< h2 > Register Patient </ h2 >
+
+<p style="color:green">@TempData["Success"]</p>
+
+@using (Html.BeginForm())
+{
+    <div>Name: @Html.TextBoxFor(m => m.FullName)</div>
+
+    <div>DOB: @Html.TextBoxFor(m => m.DateOfBirth, new { type = "date" })</div>
+
+    <div>
+        Gender:
+        @Html.RadioButtonFor(m => m.Gender, "Male") Male
+        @Html.RadioButtonFor(m => m.Gender, "Female") Female
+        @Html.RadioButtonFor(m => m.Gender, "Other") Other
+    </div>
+
+    <div>Phone: @Html.TextBoxFor(m => m.PhoneNumber)</div>
+
+    <div>Email: @Html.TextBoxFor(m => m.Email)</div>
+
+    <div>Insurance (Optional): @Html.TextBoxFor(m => m.InsuranceId)</div>
+
+    <br />
+    <button type="submit">Register</button>
+}
+
+@Html.ActionLink("Back", "Index", "Home")

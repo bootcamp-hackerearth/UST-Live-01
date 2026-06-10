@@ -1,0 +1,81 @@
+﻿@model List<HealthAxis.Shared.Dtos.PatientDto>
+
+<h2>Patients</h2>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>No patients available</p>
+}
+else
+{
+    <input type="text" id="searchBox" placeholder="Search by Patient ID" />
+    <button onclick="sortInsurance()">Sort by Insurance</button>
+
+    <br />
+    <br />
+
+    <table class="table" id="patientTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Insurance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.PatientId</td>
+                    <td>@p.FullName</td>
+                    <td>@p.Email</td>
+                    <td>@p.InsuranceId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p id="noResult" style="color:red; display:none;">No matching patient found</p>
+}
+
+<br />
+<a href="@Url.Action("Index","Doctor")">Back</a>
+
+<script>
+    document.getElementById("searchBox").addEventListener("keyup", function () {
+        let value = this.value.trim();
+        let rows = document.querySelectorAll("#patientTable tbody tr");
+        let found = false;
+
+        rows.forEach(row => {
+            let patientId = row.cells[0].innerText;
+
+            if (patientId.includes(value)) {
+                row.style.display = "";
+                found = true;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        document.getElementById("noResult").style.display = found ? "none" : "block";
+    });
+
+
+    function sortInsurance() {
+        let table = document.getElementById("patientTable");
+        let tbody = table.querySelector("tbody");
+
+        let rows = Array.from(tbody.rows);
+
+        rows.sort((a, b) => {
+            let valA = a.cells[3].innerText || "";
+            let valB = b.cells[3].innerText || "";
+
+            return valA.localeCompare(valB);
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>

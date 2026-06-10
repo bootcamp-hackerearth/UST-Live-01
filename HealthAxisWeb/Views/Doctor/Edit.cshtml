@@ -1,42 +1,41 @@
 ﻿@model HealthAxis.Shared.Dtos.DoctorDto
-@using HealthAxis.Shared.Dtos
 
-<h2 class="text-success">Update Doctor</h2>
+<h2>Edit Doctor</h2>
 
-<div class="col-4">
-    @using (Html.BeginForm())
-    {
-        @Html.HiddenFor(m => m.DoctorId)
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.DoctorId)
 
-        <div class="mb-2">
-            @Html.LabelFor(m => m.FullName)
-            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
-        </div>
+    <div>
+        Name:
+        @Html.TextBoxFor(m => m.FullName)
+    </div>
 
-        <div class="mb-2">
-            @Html.LabelFor(m => m.Specialisation)
+    <div>
+        Specialisation:
+        @Html.EnumDropDownListFor(m => m.Specialisation)
+    </div>
 
-            @Html.DropDownListFor(m => m.Specialisation,
-                new SelectList(Enum.GetValues(typeof(DoctorDto.SpecialisationType))),
-                "-- Select Specialisation --",
-                new { @class = "form-control" })
-        </div>
+    <div>
+        Experience:
+        @Html.TextBoxFor(m => m.YearsOfExperience)
+    </div>
 
+    <div>
+        Fee:
+        @Html.TextBoxFor(m => m.ConsultationFee)
+    </div>
 
-        <div class="mb-2">
-            @Html.LabelFor(m => m.YearsOfExperience)
-            @Html.TextBoxFor(m => m.YearsOfExperience, new { @class = "form-control" })
-        </div>
+    <div>
+        Active:
+        @Html.CheckBoxFor(m => m.IsActive)
+    </div>
 
-        <div class="mb-2">
-            @Html.LabelFor(m => m.ConsultationFee)
-            @Html.TextBoxFor(m => m.ConsultationFee, new { @class = "form-control" })
-        </div>
+    <br />
 
-        <div class="mb-2">
-            @Html.CheckBoxFor(m => m.IsActive)
-        </div>
+    <button type="submit">Update</button>
+}
 
-        <button class="btn btn-primary">Update</button>
-    }
-</div>
+<br />
+
+@Html.ActionLink("Back", "Index", "Doctor")

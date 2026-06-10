@@ -116,7 +116,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="Dtos\ApiResponseDto.cs" />
+    <Compile Include="Dtos\AppointmentActionsDto.cs" />
+    <Compile Include="Dtos\AppointmentDto.cs" />
+    <Compile Include="Dtos\BookAppointment.cs" />
+    <Compile Include="Dtos\CancelAppointmentDto.cs" />
     <Compile Include="Dtos\DoctorDto.cs" />
+    <Compile Include="Dtos\Enum.cs" />
+    <Compile Include="Dtos\HealthRecordDto.cs" />
     <Compile Include="Dtos\PatientDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,39 +1,26 @@
 ﻿using HealthAxis.Shared.Dtos;
-using HealthAxisWeb.Services;
-using System.Collections.Generic;
-using System.Linq;  
+using HealthAxis.Web.Services;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace HealthAxisWeb.Controllers
+namespace HealthAxis.Web.Controllers
 {
     public class DoctorController : Controller
     {
-        private readonly IDoctorApiService _service;
+        private readonly IDoctorApiService _doctorService;
+        private readonly IAppointmentApiService _appointmentService;
 
-        public DoctorController(IDoctorApiService service)
+        public DoctorController(IDoctorApiService doctorService,
+                                IAppointmentApiService appointmentService)
         {
-            _service = service;
+            _doctorService = doctorService;
+            _appointmentService = appointmentService;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
-        }
-
-        public async Task<ActionResult> List()
-        {
-            var doctors = await _service.GetAllAsync();
+            var doctors = await _doctorService.GetAllDoctors();
             return View(doctors);
-        }
-
-        public async Task<ActionResult> Details(int id)
-        {
-            var doctor = await _service.GetByIdAsync(id);
-            if (doctor == null)
-                return HttpNotFound();
-
-            return View(doctor);
         }
 
         public ActionResult Create()
@@ -42,66 +29,112 @@ namespace HealthAxisWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(DoctorDto doctorDto)
+        public async Task<ActionResult> Create(DoctorDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(doctorDto);
+            if (!ModelState.IsValid) return View(dto);
 
-            await _service.AddAsync(doctorDto);
-            return RedirectToAction("List");
+            await _doctorService.AddDoctor(dto);
+            TempData["Success"] = "Doctor added successfully!";
+            return RedirectToAction("Index");
         }
 
-        public async Task<ActionResult> Edit(int id)
+        public ActionResult Edit(int? id)
         {
-            var doctor = await _service.GetByIdAsync(id);
-            if (doctor == null)
-                return HttpNotFound();
+            if (id == null)
+                return View("EnterDoctorId");
 
-            return View(doctor);
+            return RedirectToAction("EditDoctor", new { id });
+        }
+
+        public async Task<ActionResult> EditDoctor(int id)
+        {
+            var doctor = await _doctorService.GetDoctorById(id);
+
+            if (doctor == null)
+            {
+                ViewBag.Error = "Invalid Doctor ID";
+                return View("EnterDoctorId");
+            }
+
+            return View("Edit", doctor);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(int id, DoctorDto doctorDto)
+        public async Task<ActionResult> EditDoctor(int id, DoctorDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(doctorDto);
+            if (!ModelState.IsValid) return View("Edit", dto);
 
-            await _service.UpdateAsync(id, doctorDto);
-            return RedirectToAction("List");   
+            await _doctorService.UpdateDoctor(id, dto);
+            TempData["Success"] = "Doctor updated successfully!";
+            return RedirectToAction("Index");
         }
-
-        public async Task<ActionResult> SearchById(int? id)
+        [HttpGet]
+        public JsonResult ValidateDoctor(int id)
         {
-            DoctorDto doctor = null;
+            var doctor = _doctorService.GetDoctorById(id).Result;
 
-            if (id.HasValue)
+            if (doctor == null)
             {
-                doctor = await _service.GetByIdAsync(id.Value);
-
-                if (doctor == null)
-                    ViewBag.Message = "Doctor not found";
+                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
             }
 
-            return View(doctor);
+            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> SearchBySpecialisation(DoctorDto.SpecialisationType? specialisation)
+        public async Task<ActionResult> AppointmentList(int id)
         {
-            var doctors = new List<DoctorDto>();
+            var appointments = await _appointmentService.GetByDoctor(id);
 
-            if (specialisation.HasValue)
+            if (appointments == null)
             {
-                var allDoctors = await _service.GetAllAsync();
-
-                doctors = allDoctors
-                    .Where(d => d.Specialisation == specialisation.Value)
-                    .ToList();
-
-                if (!doctors.Any())
-                    ViewBag.Message = "No doctors found";
+                ViewBag.Error = "Invalid Doctor ID";
+                return View("EnterDoctorId");
             }
 
-            return View(doctors);
+            return View(appointments);
+        }
+        public async Task<ActionResult> ByDoctor(int id)
+        {
+            var appointments = await _appointmentService.GetByDoctor(id);
+
+            if (appointments == null)
+            {
+                ViewBag.Error = "Invalid Doctor ID";
+                return View();
+            }
+
+            return View(appointments);
+        }
+        public async Task<ActionResult> Confirm(int id)
+        {
+            await _appointmentService.UpdateStatus(id, AppointmentStatus.Confirmed);
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        public async Task<ActionResult> Complete(int id)
+        {
+            await _appointmentService.UpdateStatus(id, AppointmentStatus.Completed);
+            return Redirect(Request.UrlReferrer.ToString());
+        }
+
+        public ActionResult Cancel(int id)
+        {
+            return View(new CancelAppointmentDto());
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Cancel(int id, CancelAppointmentDto dto)
+        {
+            if (!ModelState.IsValid) return View(dto);
+
+            await _appointmentService.Cancel(id, dto);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<ActionResult> ViewPatients()
+        {
+            var patients = await _doctorService.GetAllPatients();
+            return View(patients);
         }
     }
 }

@@ -11,10 +11,10 @@ using System.Net.Http.Headers;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Description;
-using HealthAxis_Web.Areas.HelpPage.ModelDescriptions;
-using HealthAxis_Web.Areas.HelpPage.Models;
+using HealthAxis.Api.Areas.HelpPage.ModelDescriptions;
+using HealthAxis.Api.Areas.HelpPage.Models;
 
-namespace HealthAxis_Web.Areas.HelpPage
+namespace HealthAxis.Api.Areas.HelpPage
 {
     public static class HelpPageConfigurationExtensions
     {
@@ -220,14 +220,21 @@ namespace HealthAxis_Web.Areas.HelpPage
         {
             object model;
             string modelId = ApiModelPrefix + apiDescriptionId;
+
             if (!config.Properties.TryGetValue(modelId, out model))
             {
-                Collection<ApiDescription> apiDescriptions = config.Services.GetApiExplorer().ApiDescriptions;
-                ApiDescription apiDescription = apiDescriptions.FirstOrDefault(api => String.Equals(api.GetFriendlyId(), apiDescriptionId, StringComparison.OrdinalIgnoreCase));
+                Collection<ApiDescription> apiDescriptions = config.Services
+                    .GetApiExplorer()
+                    .ApiDescriptions;
+
+                ApiDescription apiDescription = apiDescriptions
+                    .FirstOrDefault(api =>
+                        String.Equals(api.ID, apiDescriptionId, StringComparison.OrdinalIgnoreCase));
+
                 if (apiDescription != null)
                 {
                     model = GenerateApiModel(apiDescription, config);
-                    config.Properties.TryAdd(modelId, model);
+                    config.Properties[modelId] = model;
                 }
             }
 

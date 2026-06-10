@@ -1,0 +1,26 @@
+﻿@model HealthAxis.Shared.Dtos.PatientDto
+
+
+<p><b>ID:</b> @Model.PatientId</p>
+<p><b>Name:</b> @Model.FullName</p>
+<p><b>DOB:</b> @Model.DateOfBirth.ToShortDateString()</p>
+<p><b>Gender:</b> @Model.Gender</p>
+<p><b>Phone:</b> @Model.PhoneNumber</p>
+<p><b>Email:</b> @Model.Email</p>
+<p><b>Insurance:</b> @Model.InsuranceId</p>
+<p><b>Status:</b> @(Model.IsActive ? "Active" : "Deactivated")</p>
+
+<br />
+
+@Html.ActionLink("Edit", "Edit", new { id = Model.PatientId }) |
+@Html.ActionLink("Book Appointment", "Book", new { id = Model.PatientId }) |
+@Html.ActionLink("My Appointments", "MyAppointments", new { id = Model.PatientId }) |
+@Html.ActionLink("Health Records", "HealthRecords", new { id = Model.PatientId })
+
+<br />
+@if (TempData["Success"] != null)
+{
+    <p style="color:green">@TempData["Success"]</p>
+}
+<br />
+@Html.ActionLink("Back", "Index", "Patient")

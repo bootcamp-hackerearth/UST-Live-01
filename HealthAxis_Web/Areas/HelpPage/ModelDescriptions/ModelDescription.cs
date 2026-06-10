@@ -1,6 +1,6 @@
 using System;
 
-namespace HealthAxis_Web.Areas.HelpPage.ModelDescriptions
+namespace HealthAxis.Api.Areas.HelpPage.ModelDescriptions
 {
     /// <summary>
     /// Describes a type model.

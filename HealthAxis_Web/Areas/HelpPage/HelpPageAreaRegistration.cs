@@ -1,7 +1,7 @@
 using System.Web.Http;
 using System.Web.Mvc;
 
-namespace HealthAxis_Web.Areas.HelpPage
+namespace HealthAxis.Api.Areas.HelpPage
 {
     public class HelpPageAreaRegistration : AreaRegistration
     {

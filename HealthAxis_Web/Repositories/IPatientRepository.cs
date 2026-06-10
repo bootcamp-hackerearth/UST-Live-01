@@ -1,13 +1,20 @@
-﻿using System.Collections.Generic;
-using HealthAxis_Web.Models;
+﻿using HealthAxis.Api.Models;
+using System.Collections.Generic;
 
-public interface IPatientRepository
+namespace HealthAxis.Api.Repositories
 {
-    List<Patient> GetAllPatients();
+    public interface IPatientRepository
+    {
+        List<Patient> GetAll();
 
-    Patient GetById(int id);
+        Patient GetById(int id);
 
-    Patient AddPatient(Patient patient);
+        bool ExistsByEmail(string email);
 
-    Patient UpdatePatient(int id, Patient patient);
+        void Add(Patient patient);
+
+        void Update(Patient patient);
+
+        void Save();
+    }
 }

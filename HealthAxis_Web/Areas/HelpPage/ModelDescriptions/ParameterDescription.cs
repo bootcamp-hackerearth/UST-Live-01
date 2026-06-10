@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace HealthAxis_Web.Areas.HelpPage.ModelDescriptions
+namespace HealthAxis.Api.Areas.HelpPage.ModelDescriptions
 {
     public class ParameterDescription
     {

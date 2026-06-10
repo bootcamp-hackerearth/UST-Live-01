@@ -1,51 +1,54 @@
-﻿using HealthAxis.Shared.Dtos;
-using HealthAxis_MVC.Repositories;
+﻿using AutoMapper;
+using HealthAxis.Api.Models;
+using HealthAxis.Api.Repositories;
+using HealthAxis.Shared.Dtos;
 using System.Collections.Generic;
-using System;
-using AutoMapper;
-using HealthAxis_Web.Models;
 
-namespace HealthAxis_MVC.Services.Impl
+namespace HealthAxis.Api.Services
 {
     public class DoctorServiceImpl : IDoctorService
     {
-        private readonly IDoctorRepository _repository;
+        private readonly IDoctorRepository _repo;
         private readonly IMapper _mapper;
 
-        public DoctorServiceImpl(IDoctorRepository repository,IMapper mapper)
+        public DoctorServiceImpl(IDoctorRepository repo, IMapper mapper)
         {
-            _repository = repository;
+            _repo = repo;
             _mapper = mapper;
         }
-        public DoctorDto AddDoctor(DoctorDto entity)
-        {
-            var doctor = _mapper.Map<Doctor>(entity);
-            var savedEntity = _repository.AddDoctor(doctor);
-            var savedDto = _mapper.Map<DoctorDto>(savedEntity);
-            return savedDto;
 
+        public DoctorDto AddDoctor(DoctorDto dto)
+        {
+            var doctor = _mapper.Map<Doctor>(dto);
+            doctor.IsActive = true;
+
+            _repo.Add(doctor);
+            _repo.Save();
+
+            return _mapper.Map<DoctorDto>(doctor);
         }
 
         public List<DoctorDto> GetAllDoctors()
         {
-            return _mapper.Map < List<DoctorDto>>(_repository.GetAllDoctors());
+            return _mapper.Map<List<DoctorDto>>(_repo.GetAll());
         }
 
         public DoctorDto GetById(int doctorId)
         {
-            return _mapper.Map<DoctorDto>(_repository.GetById(doctorId));
+            var doctor = _repo.GetById(doctorId);
+            return doctor == null ? null : _mapper.Map<DoctorDto>(doctor);
         }
 
-        DoctorDto IDoctorService.UpdateDoctor(int id,DoctorDto entity)
+        public DoctorDto UpdateDoctor(int id, DoctorDto dto)
         {
-            var doctor = _mapper.Map<Doctor>(entity);
-            var updatedDoctor = _repository.UpdateDoctor(id, doctor);
-            if (updatedDoctor == null)
-            {
-                return null;
-            }
-            return _mapper.Map<DoctorDto>(updatedDoctor);
+            var doctor = _repo.GetById(id);
+            if (doctor == null) return null;
 
+            _mapper.Map(dto, doctor);
+            _repo.Update(doctor);
+            _repo.Save();
+
+            return _mapper.Map<DoctorDto>(doctor);
         }
     }
 }

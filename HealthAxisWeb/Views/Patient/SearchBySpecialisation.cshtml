@@ -1,0 +1,46 @@
+﻿@using HealthAxis.Shared.Dtos
+
+<h2>Search Doctors</h2>
+
+@using (Html.BeginForm("SearchBySpecialisation", "Patient", FormMethod.Post))
+{
+    <div>
+        Specialisation:
+        @Html.DropDownList(
+            "spec",
+            new SelectList(Enum.GetValues(typeof(Specialisation)))
+        )
+    </div>
+
+    <br />
+
+    <button type="submit">Search</button>
+}
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <tr>
+            <th>Name</th>
+            <th>Specialisation</th>
+            <th>Fee</th>
+        </tr>
+
+        @foreach (var d in Model)
+        {
+            <tr>
+                <td>@d.FullName</td>
+                <td>@d.Specialisation</td>
+                <td>@d.ConsultationFee</td>
+            </tr>
+        }
+    </table>
+}
+else if (Model != null)
+{
+    <p style="color:red">No doctors found</p>
+}
+
+<br />
+
+@Html.ActionLink("Back", "Index", "Patient")

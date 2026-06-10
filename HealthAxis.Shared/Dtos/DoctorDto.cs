@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxis.Shared.Dtos
 {
@@ -10,35 +6,21 @@ namespace HealthAxis.Shared.Dtos
     {
         public int DoctorId { get; set; }
 
-        [Required(ErrorMessage = "Full Name is required")]
-        public string FullName { get; set; } = string.Empty;
+        [Required]
+        [StringLength(100)]
+        public string FullName { get; set; }
 
-        [Required(ErrorMessage = "Specialisation is required")]
-        //public string Specialisation { get; set; }
-        public SpecialisationType Specialisation { get; set; }
+        [Required]
+        public Specialisation Specialisation { get; set; }
 
-        [Required(ErrorMessage = "Years of Experience is required")]
-        [Range(0, 50, ErrorMessage = "Enter valid experience")]
+        [Required]
+        [Range(0, 50)]
         public int YearsOfExperience { get; set; }
 
-        [Required(ErrorMessage = "Consultation Fee is required")]
-        [Range(1, 10000, ErrorMessage = "Enter valid fee")]
-        public int ConsultationFee { get; set; }
+        [Required]
+        [Range(0, 100000)]
+        public decimal ConsultationFee { get; set; }
 
-        public bool IsActive { get; set; }
-
-        public enum SpecialisationType
-        {
-            Cardiology,
-            Dermatology,
-            Neurology,
-            Pediatrics,
-            Psychiatry,
-            Radiology,
-            GeneralParticioner,
-            Orthopedics,
-            Gynecology,
-            Oncology
-        }
+        public bool IsActive { get; set; } = true;
     }
 }

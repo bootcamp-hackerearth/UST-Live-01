@@ -1,10 +1,10 @@
 using System;
 using System.Web.Http;
 using System.Web.Mvc;
-using HealthAxis_Web.Areas.HelpPage.ModelDescriptions;
-using HealthAxis_Web.Areas.HelpPage.Models;
+using HealthAxis.Api.Areas.HelpPage.ModelDescriptions;
+using HealthAxis.Api.Areas.HelpPage.Models;
 
-namespace HealthAxis_Web.Areas.HelpPage.Controllers
+namespace HealthAxis.Api.Areas.HelpPage.Controllers
 {
     /// <summary>
     /// The controller that will handle requests for the help page.

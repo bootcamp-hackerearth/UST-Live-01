@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace HealthAxis_Web.Areas.HelpPage.ModelDescriptions
+namespace HealthAxis.Api.Areas.HelpPage.ModelDescriptions
 {
     public interface IModelDocumentationProvider
     {

@@ -1,40 +1,52 @@
 ﻿@model HealthAxis.Shared.Dtos.DoctorDto
-@using HealthAxis.Shared.Dtos
 
+@{
+    ViewBag.Title = "Add Doctor";
+}
 
-<h2 class="text-success">Add Doctor</h2>
+<div class="container mt-5">
 
-<div class="col-4">
-    @using (Html.BeginForm())
-    {
-        <div class="mb-2">
-            @Html.LabelFor(m => m.FullName)
-            @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
-            @Html.ValidationMessageFor(m => m.FullName)
-        </div>
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Add Doctor</h2>
+        <p class="text-muted">Enter doctor details below</p>
+    </div>
 
-        @Html.LabelFor(m => m.Specialisation)
+    <div class="card shadow-sm border-0 rounded-4 p-4 mx-auto" style="max-width: 500px;">
 
-        @Html.DropDownListFor(m => m.Specialisation,
-            new SelectList(Enum.GetValues(typeof(DoctorDto.SpecialisationType))),
-            "-- Select Specialisation --",
-            new { @class = "form-control" })
+        @using (Html.BeginForm())
+        {
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Full Name</label>
+                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeholder = "Enter doctor name" })
+                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+            </div>
 
-        <div class="mb-2">
-            @Html.LabelFor(m => m.YearsOfExperience)
-            @Html.TextBoxFor(m => m.YearsOfExperience, new { @class = "form-control" })
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Specialisation</label>
+                @Html.EnumDropDownListFor(m => m.Specialisation, new { @class = "form-select" })
+            </div>
 
-        <div class="mb-2">
-            @Html.LabelFor(m => m.ConsultationFee)
-            @Html.TextBoxFor(m => m.ConsultationFee, new { @class = "form-control" })
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Years of Experience</label>
+                @Html.TextBoxFor(m => m.YearsOfExperience, new { @class = "form-control", placeholder = "e.g. 5" })
+            </div>
 
-        <div class="mb-2">
-            @Html.CheckBoxFor(m => m.IsActive)
-            @Html.LabelFor(m => m.IsActive)
-        </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Consultation Fee</label>
+                @Html.TextBoxFor(m => m.ConsultationFee, new { @class = "form-control", placeholder = "e.g. 500" })
+            </div>
 
-        <button class="btn btn-primary">Add Doctor</button>
-    }
+            <div class="d-flex justify-content-between mt-4">
+                <a href="@Url.Action("Index")" class="btn btn-outline-secondary rounded-pill px-4">
+                    Back
+                </a>
+
+                <button type="submit" class="btn btn-primary rounded-pill px-4">
+                    Add Doctor
+                </button>
+            </div>
+        }
+    </div>
+
 </div>
+``

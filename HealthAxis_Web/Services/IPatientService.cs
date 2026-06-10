@@ -1,13 +1,16 @@
-﻿using System.Collections.Generic;
-using HealthAxis.Shared.Dtos;
+﻿using HealthAxis.Shared.Dtos;
+using System.Collections.Generic;
 
-public interface IPatientService
+namespace HealthAxis.Api.Services
 {
-    List<PatientDto> GetAllPatients();
+    public interface IPatientService
+    {
+        PatientDto Register(PatientDto dto);
 
-    PatientDto GetById(int id);
+        List<PatientDto> GetAllPatients();
 
-    PatientDto AddPatient(PatientDto patientDto);
+        PatientDto GetById(int id);
 
-    PatientDto UpdatePatient(int id, PatientDto patientDto);
+        PatientDto Update(int id, PatientDto dto);
+    }
 }

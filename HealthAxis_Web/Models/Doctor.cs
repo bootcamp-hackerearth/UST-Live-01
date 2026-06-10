@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace HealthAxis_Web.Models
+namespace HealthAxis.Api.Models
 {
     public class Doctor
     {
+        [Key]
         public int DoctorId { get; set; }
 
-        [Required(ErrorMessage = "Full Name is required")]
-        public string FullName { get; set; } = string.Empty;
+        [Required, StringLength(100)]
+        public string FullName { get; set; }
 
-        [Required(ErrorMessage = "Specialisation is required")]
+        [Required]
         public string Specialisation { get; set; }
 
-        [Required(ErrorMessage = "Years of Experience is required")]
-        [Range(0, 50, ErrorMessage = "Enter valid experience")]
+        [Required]
         public int YearsOfExperience { get; set; }
 
-        [Required(ErrorMessage = "Consultation Fee is required")]
-        [Range(1, 10000, ErrorMessage = "Enter valid fee")]
-        public int ConsultationFee { get; set; }
+        [Required]
+        public decimal ConsultationFee { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }
