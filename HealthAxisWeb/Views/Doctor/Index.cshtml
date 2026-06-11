@@ -1,118 +1,277 @@
 ﻿@model List<HealthAxis.Shared.Dtos.DoctorDto>
 
-@{
-    ViewData["Title"] = "Doctor Dashboard";
-}
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-<div class="container mt-5">
-
-    <div class="text-center mb-5">
-        <h1 class="fw-bold text-primary">Doctor Dashboard</h1>
-        <p class="text-muted">Manage doctors, appointments, and patients easily</p>
-    </div>
-
-    <div class="row g-4 justify-content-center">
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
-                <h5 class="mb-3">Add Doctor</h5>
-                <p class="text-muted">Register a new doctor into the system</p>
-                <a href="@Url.Action("Create")" class="btn btn-primary rounded-pill px-4">Add</a>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
-                <h5 class="mb-3">Appointments</h5>
-                <p class="text-muted">Check doctor-wise appointments</p>
-
-                <button onclick="openDoctorModal()" class="btn btn-success rounded-pill px-4">
-                    View
-                </button>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0 rounded-4 text-center p-4">
-                <h5 class="mb-3">Patients</h5>
-                <p class="text-muted">View and manage patient details</p>
-                <a href="@Url.Action("ViewPatients")" class="btn btn-warning rounded-pill px-4 text-white">
-                    View
-                </a>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-
-<div class="modal fade" id="doctorModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content rounded-4">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Enter Doctor ID</h5>
-                <button type="button" class="btn-close" onclick="closeDoctorModal()"></button>
-            </div>
-
-            <div class="modal-body text-center">
-                <input type="number" id="doctorIdInput"
-                       class="form-control" placeholder="Doctor ID" />
-
-                <p id="doctorErrorMsg" class="text-danger mt-2"></p>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-success" onclick="goToDoctorAppointments()">Proceed</button>
-                <button class="btn btn-secondary" onclick="closeDoctorModal()">Cancel</button>
-            </div>
-
-        </div>
-    </div>
-</div>
-
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-
-    function openDoctorModal() {
-        var modal = new bootstrap.Modal(document.getElementById('doctorModal'));
-        modal.show();
-
-        document.getElementById("doctorIdInput").value = "";
-        document.getElementById("doctorErrorMsg").innerText = "";
+<style>
+    body {
+        background: #111827;
+        color: #e5e7eb;
+        font-family: 'Segoe UI';
+        margin: 0;
     }
 
-    function closeDoctorModal() {
-        var modalEl = document.getElementById('doctorModal');
-        var modal = bootstrap.Modal.getInstance(modalEl);
-        modal.hide();
+    .container {
+        padding: 30px;
     }
 
-    function goToDoctorAppointments() {
-        var id = document.getElementById("doctorIdInput").value;
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        if (!id || id <= 0) {
-            document.getElementById("doctorErrorMsg").innerText = "Enter valid Doctor ID";
-            return;
+    .add-btn {
+        background: #1f2937;
+        padding: 10px 15px;
+        border-radius: 10px;
+        color: white;
+        text-decoration: none;
+    }
+
+    .card-box {
+        display: flex;
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .stat-card {
+        background: #1f2937;
+        padding: 20px;
+        border-radius: 12px;
+        flex: 1;
+    }
+
+        .stat-card h4 {
+            color: #9ca3af;
         }
 
-        fetch("/Doctor/ValidateDoctor?id=" + id)
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    document.getElementById("doctorErrorMsg").innerText = "Invalid Doctor ID";
-                    return;
-                }
-
-                window.location.href = "/Appointment/ByDoctor?id=" + id;
-            })
-            .catch(() => {
-                document.getElementById("doctorErrorMsg").innerText = "Server error";
-            });
+    .main-card {
+        background: #1f2937;
+        padding: 20px;
+        border-radius: 12px;
     }
 
+    table {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    th {
+        text-align: left;
+        color: #9ca3af;
+    }
+
+    td {
+        padding: 12px 0;
+        border-top: 1px solid #374151;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .active-badge {
+        background: #065f46;
+        color: #10b981;
+    }
+
+    .inactive-badge {
+        background: #7f1d1d;
+        color: #ef4444;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 45px;
+        height: 24px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        background-color: #6b7280;
+        border-radius: 24px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+    input:checked + .slider {
+        background-color: #10b981;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+    .filter-dropdown {
+        flex: 1;
+        height: 38px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: #374151;
+        color: white;
+        border: none;
+    }
+</style>
+
+<div class="container">
+
+    <div class="header">
+        <h2>Doctor Management</h2>
+
+        <a href="@Url.Action("Create", "Doctor")" class="add-btn">
+            + Add Doctor
+        </a>
+    </div>
+
+    <div class="card-box">
+        <div class="stat-card">
+            <h4>Total Doctors</h4>
+            <h2>@Model.Count</h2>
+        </div>
+
+        <div class="stat-card">
+            <h4>Active</h4>
+            <h2>@Model.Count(d => d.IsActive)</h2>
+        </div>
+
+        <div class="stat-card">
+            <h4>Inactive</h4>
+            <h2>@Model.Count(d => !d.IsActive)</h2>
+        </div>
+    </div>
+
+    <div class="main-card">
+
+        <form method="get"
+              style="display:flex; gap:15px; align-items:center; margin-bottom:15px;">
+
+            @Html.DropDownList(
+                "specialisation",
+                new SelectList(
+                    Enum.GetValues(typeof(HealthAxis.Shared.Dtos.Specialisation)),
+                    Request["specialisation"]
+                ),
+                "Select Specialisation",
+                new
+                     {
+                    onchange = "this.form.submit()",
+                    @class = "filter-dropdown"
+                }
+            )
+
+            <select name="isActive"
+                    onchange="this.form.submit()"
+                    class="filter-dropdown">
+
+                <option value="">Select Status</option>
+
+                <option value="true"
+                        @(Request["isActive"] == "true" ? "selected" : "")>
+                    Active
+                </option>
+
+                <option value="false"
+                        @(Request["isActive"] == "false" ? "selected" : "")>
+                    Inactive
+                </option>
+
+            </select>
+
+        </form>
+
+        @if (TempData["Success"] != null)
+        {
+            <div style="background:#065f46; color:#10b981; padding:10px; border-radius:8px; margin-bottom:15px;">
+                @TempData["Success"]
+            </div>
+        }
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Specialisation</th>
+                    <th>Experience</th>
+                    <th>Status</th>
+                    <th>Active</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var d in Model)
+                {
+                    <tr>
+
+                        <td>
+                            <strong>@d.FullName</strong><br />
+                            <small>ID: @d.DoctorId</small>
+                        </td>
+
+                        <td>@d.Specialisation</td>
+
+                        <td>@d.YearsOfExperience yrs</td>
+
+                        <td>
+                            <span class="badge @(d.IsActive ? "active-badge" : "inactive-badge")">
+                                @(d.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+
+                        <td>
+                            <label class="switch">
+                                <input type="checkbox"
+                                       @(d.IsActive ? "checked" : "")
+                                       onchange="toggleStatus(@d.DoctorId)">
+                                <span class="slider"></span>
+                            </label>
+                        </td>
+
+                        <td>
+                            <a href="@Url.Action("Details", new { id = d.DoctorId })">
+                                👁
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<script>
+    function toggleStatus(id) {
+        fetch('/Doctor/ToggleStatus/' + id, {
+            method: 'POST'
+        })
+            .then(res => {
+                if (!res.ok) {
+                    alert('Error updating status');
+                } else {
+                    location.reload();
+                }
+            });
+    }
 </script>

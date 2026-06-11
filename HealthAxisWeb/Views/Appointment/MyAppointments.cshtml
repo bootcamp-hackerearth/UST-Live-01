@@ -1,0 +1,113 @@
+﻿@model List<HealthAxis.Shared.Dtos.AppointmentDto>
+@using HealthAxis.Shared.Dtos
+
+<style>
+    body {
+        background-color: #0f172a;
+        color: white;
+    }
+
+    .badge-pending {
+        background: orange;
+    }
+
+    .badge-confirmed {
+        background: green;
+    }
+
+    .badge-cancelled {
+        background: red;
+    }
+
+    .btn-beige {
+        background: #f5f5dc;
+        color: black;
+    }
+</style>
+
+<h2>My Appointments</h2>
+
+<a href="@Url.Action("Book", "Appointment", new { patientId = Model.Any() ? Model.First().PatientId : 0 })"
+   class="btn btn-beige mb-3">+ Book Appointment</a>
+
+<table class="table table-dark table-striped">
+    <thead>
+        <tr>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td>@a.DoctorName</td>
+                <td>@a.ScheduledDate.ToShortDateString()</td>
+                <td>@a.TimeSlot</td>
+
+                <td>
+                    @if (a.Status == AppointmentStatus.Pending)
+                    {
+                        <span class="badge badge-pending">Pending</span>
+                    }
+                    else if (a.Status == AppointmentStatus.Confirmed)
+                    {
+                        <span class="badge badge-confirmed">Confirmed</span>
+                    }
+                    else if (a.Status == AppointmentStatus.Cancelled)
+                    {
+                        <span class="badge badge-cancelled">Cancelled</span>
+                    }
+                    else if (a.Status == AppointmentStatus.Completed)
+                    {
+                        <span class="badge badge-confirmed">Completed</span>
+                    }
+                </td>
+
+                <td>
+                    @if (a.Status == AppointmentStatus.Pending)
+                    {
+                        <button class="btn btn-danger btn-sm"
+                                onclick="cancelAppointment(@a.AppointmentId)">
+                            Cancel
+                        </button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function cancelAppointment(id) {
+
+        let reason = prompt("Enter cancellation reason:");
+
+        if (!reason) {
+            alert("Reason required");
+            return;
+        }
+
+        fetch(`/api/appointment/${id}/status`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                Status: "Cancelled",
+                CancellationReason: reason
+            })
+        })
+            .then(res => {
+                if (!res.ok) {
+                    alert("Error cancelling appointment");
+                    return;
+                }
+                location.reload();
+            });
+    }
+</script>

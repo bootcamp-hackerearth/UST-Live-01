@@ -1,16 +1,17 @@
-﻿using HealthAxis.Shared.Dtos;
+﻿using HealthAxis.Shared;
 using System.Collections.Generic;
+using HealthAxis.Shared.Dtos;
 
 namespace HealthAxis.Api.Services
 {
     public interface IDoctorService
     {
-        DoctorDto AddDoctor(DoctorDto dto);
+        List<DoctorDto> GetAll(string specialisation);
 
-        List<DoctorDto> GetAllDoctors();
+        DoctorDto GetById(int id);
 
-        DoctorDto GetById(int doctorId);
+        void Add(CreateDoctorDto dto);
 
-        DoctorDto UpdateDoctor(int id, DoctorDto dto);
+        void Update(int id, UpdateDoctorDto dto);
     }
 }

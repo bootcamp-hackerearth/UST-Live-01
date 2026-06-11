@@ -1,7 +1,8 @@
-﻿using HealthAxis.Api.Models;
+﻿using HealthAxis.Api.Database;
+using HealthAxis.Api.Models;
 using System.Collections.Generic;
 using System.Linq;
-using HealthAxis.Api.Database;
+using System.Data.Entity;
 
 namespace HealthAxis.Api.Repositories
 {
@@ -26,7 +27,7 @@ namespace HealthAxis.Api.Repositories
 
         public bool ExistsByEmail(string email)
         {
-            return _context.Patients.Any(p => p.Email == email);
+            return _context.Patients.Any(x => x.Email == email);
         }
 
         public void Add(Patient patient)
@@ -36,8 +37,18 @@ namespace HealthAxis.Api.Repositories
 
         public void Update(Patient patient)
         {
-            _context.Entry(patient).State =
-                System.Data.Entity.EntityState.Modified;
+            _context.Entry(patient).State = EntityState.Modified;
+        }
+
+        public void Deactivate(int id)
+        {
+            var patient = _context.Patients.Find(id);
+            if (patient != null)
+            {
+                patient.IsActive = false;
+
+                _context.Entry(patient).State = EntityState.Modified;
+            }
         }
 
         public void Save()

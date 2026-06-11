@@ -1,5 +1,8 @@
 ﻿using HealthAxis.Shared.Dtos;
 using HealthAxis.Web.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -8,21 +11,44 @@ namespace HealthAxis.Web.Controllers
     public class DoctorController : Controller
     {
         private readonly IDoctorApiService _doctorService;
-        private readonly IAppointmentApiService _appointmentService;
 
-        public DoctorController(IDoctorApiService doctorService,
-                                IAppointmentApiService appointmentService)
+        public DoctorController(IDoctorApiService doctorService)
         {
             _doctorService = doctorService;
-            _appointmentService = appointmentService;
         }
 
-        public async Task<ActionResult> Index()
+        [HttpPost]
+        public async Task<JsonResult> ToggleStatus(int id)
         {
-            var doctors = await _doctorService.GetAllDoctors();
+            await _doctorService.ToggleStatus(id);
+            return Json(true);
+        }
+
+        public async Task<ActionResult> Index(
+    Specialisation? specialisation,
+    bool? isActive)
+        {
+            var doctors = await _doctorService.GetAll(specialisation);
+
+            if (isActive.HasValue)
+            {
+                doctors = doctors
+                    .Where(d => d.IsActive == isActive.Value)
+                    .ToList();
+            }
+
             return View(doctors);
         }
 
+        public async Task<ActionResult> Details(int id)
+        {
+            var doctor = await _doctorService.GetById(id);
+
+            if (doctor == null)
+                return HttpNotFound();
+
+            return View(doctor);
+        }
         public ActionResult Create()
         {
             return View();
@@ -31,110 +57,72 @@ namespace HealthAxis.Web.Controllers
         [HttpPost]
         public async Task<ActionResult> Create(DoctorDto dto)
         {
-            if (!ModelState.IsValid) return View(dto);
-
-            await _doctorService.AddDoctor(dto);
-            TempData["Success"] = "Doctor added successfully!";
-            return RedirectToAction("Index");
-        }
-
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-                return View("EnterDoctorId");
-
-            return RedirectToAction("EditDoctor", new { id });
-        }
-
-        public async Task<ActionResult> EditDoctor(int id)
-        {
-            var doctor = await _doctorService.GetDoctorById(id);
-
-            if (doctor == null)
+            if (!ModelState.IsValid)
             {
-                ViewBag.Error = "Invalid Doctor ID";
-                return View("EnterDoctorId");
+                return View(dto);
             }
 
-            return View("Edit", doctor);
+            try
+            {
+                await _doctorService.Create(new CreateDoctorDto
+                {
+                    FullName = dto.FullName,
+                    Specialisation = dto.Specialisation,
+                    YearsOfExperience = dto.YearsOfExperience,
+                    ConsultationFee = dto.ConsultationFee
+                });
+
+                TempData["Success"] = "Doctor added successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(dto);
+            }
+        }
+        public async Task<ActionResult> Edit(int id)
+        {
+            var d = await _doctorService.GetById(id);
+
+            if (d == null)
+                return HttpNotFound();
+
+            return View(new UpdateDoctorDto
+            {
+                FullName = d.FullName,
+                Specialisation = d.Specialisation,
+                YearsOfExperience = d.YearsOfExperience,
+                ConsultationFee = d.ConsultationFee,
+                IsActive = d.IsActive
+            });
         }
 
         [HttpPost]
-        public async Task<ActionResult> EditDoctor(int id, DoctorDto dto)
+        public async Task<ActionResult> Edit(int id, UpdateDoctorDto dto)
         {
-            if (!ModelState.IsValid) return View("Edit", dto);
+            if (dto.ConsultationFee <= 0)
+                ModelState.AddModelError("", "Consultation fee must be positive");
 
-            await _doctorService.UpdateDoctor(id, dto);
-            TempData["Success"] = "Doctor updated successfully!";
+            if (!ModelState.IsValid)
+                return View(dto);
+
+            await _doctorService.Update(id, dto);
+
             return RedirectToAction("Index");
         }
+
         [HttpGet]
-        public JsonResult ValidateDoctor(int id)
+        public async Task<JsonResult> GetBySpecialisation(string spec)
         {
-            var doctor = _doctorService.GetDoctorById(id).Result;
-
-            if (doctor == null)
+            if (!Enum.TryParse(spec, out Specialisation parsedSpec))
             {
-                return Json(new { success = false }, JsonRequestBehavior.AllowGet);
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
             }
 
-            return Json(new { success = true }, JsonRequestBehavior.AllowGet);
-        }
+            var doctors = await _doctorService.GetAll(parsedSpec);
 
-        public async Task<ActionResult> AppointmentList(int id)
-        {
-            var appointments = await _appointmentService.GetByDoctor(id);
-
-            if (appointments == null)
-            {
-                ViewBag.Error = "Invalid Doctor ID";
-                return View("EnterDoctorId");
-            }
-
-            return View(appointments);
-        }
-        public async Task<ActionResult> ByDoctor(int id)
-        {
-            var appointments = await _appointmentService.GetByDoctor(id);
-
-            if (appointments == null)
-            {
-                ViewBag.Error = "Invalid Doctor ID";
-                return View();
-            }
-
-            return View(appointments);
-        }
-        public async Task<ActionResult> Confirm(int id)
-        {
-            await _appointmentService.UpdateStatus(id, AppointmentStatus.Confirmed);
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
-        public async Task<ActionResult> Complete(int id)
-        {
-            await _appointmentService.UpdateStatus(id, AppointmentStatus.Completed);
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
-        public ActionResult Cancel(int id)
-        {
-            return View(new CancelAppointmentDto());
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Cancel(int id, CancelAppointmentDto dto)
-        {
-            if (!ModelState.IsValid) return View(dto);
-
-            await _appointmentService.Cancel(id, dto);
-            return RedirectToAction("Index");
-        }
-
-        public async Task<ActionResult> ViewPatients()
-        {
-            var patients = await _doctorService.GetAllPatients();
-            return View(patients);
+            return Json(doctors, JsonRequestBehavior.AllowGet);
         }
     }
 }

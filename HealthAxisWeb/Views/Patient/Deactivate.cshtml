@@ -1,0 +1,10 @@
+﻿@model HealthAxis.Shared.Dtos.PatientDto
+
+<h2>Deactivate Patient</h2>
+
+<p>Are you sure you want to deactivate <strong>@Model.FullName</strong>?</p>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Yes, Deactivate</button>
+    <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+</form>

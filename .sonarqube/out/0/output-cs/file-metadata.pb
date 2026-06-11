@@ -1,0 +1,13 @@
+…
+zC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.csutf-8a
+XC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Properties\AssemblyInfo.csutf-8Y
+PC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\PatientDto.csutf-8^
+UC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\HealthRecordDto.csutf-8S
+JC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\Enum.csutf-8X
+OC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\DoctorDto.csutf-8c
+ZC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\CancelAppointmentDto.csutf-8^
+UC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\BookAppointment.csutf-8]
+TC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\AppointmentDto.csutf-8d
+[C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\AppointmentActionsDto.csutf-8]
+TC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\ApiResponseDto.csutf-8_
+VC:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\App_Start\UnityConfig.csutf-8

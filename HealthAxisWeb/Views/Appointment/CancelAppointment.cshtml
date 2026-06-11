@@ -1,0 +1,14 @@
+﻿@model HealthAxis.Shared.Dtos.UpdateStatusDto
+
+<h3>Cancel Appointment</h3>
+
+<form method="post">
+    <div class="form-group">
+        <label>Reason</label>
+        @Html.TextAreaFor(x => x.CancellationReason, new { @class = "form-control" })
+    </div>
+
+    <br />
+
+    <button class="btn btn-danger">Cancel Appointment</button>
+</form>

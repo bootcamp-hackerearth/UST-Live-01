@@ -1,0 +1,13 @@
+﻿C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\App_Start\UnityConfig.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\ApiResponseDto.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\AppointmentActionsDto.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\AppointmentDto.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\BookAppointment.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\CancelAppointmentDto.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\DoctorDto.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\Enum.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\HealthRecordDto.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Dtos\PatientDto.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\Properties\AssemblyInfo.cs
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\app.config
+C:\Users\310053\source\repos\HealthAxis_Web\HealthAxis.Shared\packages.config

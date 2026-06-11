@@ -2,18 +2,6 @@
     ViewBag.Title = "Home";
 }
 
-@*<style>
-    html, body {
-        height: 100% !important;
-        margin: 0 !important;
-    }
-
-    body {
-        background: linear-gradient(135deg, #667eea, #764ba2) !important;
-    }
-</style>*@
-
-
 <div class="full-layout">
 
     <div class="top-banner d-flex align-items-center justify-content-center text-white">
@@ -24,13 +12,12 @@
     </div>
 
     <div class="container mt-5">
-
         <div class="row g-4">
 
-            <div class="col-md-6">
-                <div class="feature-card doctor-card">
+            <div class="col-md-4">
+                <div class="feature-card">
                     <div class="content">
-                        <h3>Doctors</h3>
+                        <h3>Manage Doctors</h3>
                         <p>Manage doctors, specialisations and availability</p>
                         @Html.ActionLink("Go", "Index", "Doctor", null,
                             new { @class = "btn btn-light" })
@@ -38,10 +25,10 @@
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="feature-card patient-card">
+            <div class="col-md-4">
+                <div class="feature-card">
                     <div class="content">
-                        <h3>Patients</h3>
+                        <h3>Manage Patients</h3>
                         <p>View, update and manage patient records</p>
                         @Html.ActionLink("Go", "Index", "Patient", null,
                             new { @class = "btn btn-light" })
@@ -49,8 +36,18 @@
                 </div>
             </div>
 
-        </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="content">
+                        <h3>Manage Appointments</h3>
+                        <p>Schedule, track and manage appointments</p>
+                        @Html.ActionLink("Go", "Index", "Appointment", null,
+                            new { @class = "btn btn-light" })
+                    </div>
+                </div>
+            </div>
 
+        </div>
     </div>
 
 </div>
@@ -58,56 +55,51 @@
 <style>
 
     body {
+        background: #111827;
+        color: #e5e7eb;
+        font-family: 'Segoe UI';
         margin: 0;
-        font-family: 'Segoe UI', sans-serif;
-        background: #eef3f9;
     }
-
 
     .top-banner {
         height: 250px;
-        background: linear-gradient(135deg, #7b2ff7, #4facfe);
+        background: #1f2937;
         border-radius: 0 0 30px 30px;
     }
 
-
     .feature-card {
         height: 180px;
-        border-radius: 20px;
-        color: white;
+        background: #1f2937;
+        border-radius: 12px;
+        color: #e5e7eb;
         display: flex;
         align-items: center;
         padding: 25px;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
+        transition: 0.3s;
     }
 
         .feature-card:hover {
-            transform: scale(1.04);
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
 
-        .feature-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
+    .content h3 {
+        margin-bottom: 10px;
+    }
+
+    .content p {
+        color: #9ca3af;
+    }
+
+    .btn-light {
+        background: #374151;
+        color: white;
+        border-radius: 20px;
+        padding: 6px 16px;
+        border: none;
+    }
+
+        .btn-light:hover {
+            background: #4b5563;
         }
-
-    .content {
-        position: relative;
-        z-index: 2;
-    }
-
-    .doctor-card {
-        background: linear-gradient(135deg, #28a745, #218838);
-    }
-
-    .patient-card {
-        background: linear-gradient(135deg, #17a2b8, #138496);
-    }
 </style>

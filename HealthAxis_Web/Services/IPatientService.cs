@@ -12,5 +12,7 @@ namespace HealthAxis.Api.Services
         PatientDto GetById(int id);
 
         PatientDto Update(int id, PatientDto dto);
+
+        bool Deactivate(int id);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using HealthAxis.Shared.Dtos;
 using HealthAxis.Web.Services;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Collections.Generic;
@@ -9,198 +11,109 @@ namespace HealthAxis.Web.Controllers
     public class PatientController : Controller
     {
         private readonly IPatientApiService _patientService;
-        private readonly IDoctorApiService _doctorService;
-        private readonly IAppointmentApiService _appointmentService;
-        private readonly IHealthRecordApiService _healthService;
 
-        public PatientController(
-            IPatientApiService patientService,
-            IDoctorApiService doctorService,
-            IAppointmentApiService appointmentService,
-            IHealthRecordApiService healthService)
+        public PatientController(IPatientApiService patientService)
         {
             _patientService = patientService;
-            _doctorService = doctorService;
-            _appointmentService = appointmentService;
-            _healthService = healthService;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index(bool? isActive, bool? insured)
         {
-            return View();
-        }
+            var patients = await _patientService.GetAll();
 
-        [HttpPost]
-        public ActionResult GoToAction(string actionName, int patientId)
-        {
-            return RedirectToAction(actionName, new { id = patientId });
-        }
-
-        public ActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Register(PatientDto dto)
-        {
-            if (!ModelState.IsValid)
-                return View(dto);
-
-            var result = await _patientService.Register(dto);
-
-            if (!result.Success)
+            if (isActive.HasValue)
             {
-                ViewBag.Error = result.Message;
-                return View(dto);
+                patients = patients
+                    .Where(p => p.IsActive == isActive.Value)
+                    .ToList();
             }
 
-            TempData["Success"] = "Patient registered successfully!";
-            return RedirectToAction("Index");
+            if (insured.HasValue)
+            {
+                patients = patients
+                    .Where(p => insured.Value
+                        ? !string.IsNullOrEmpty(p.InsuranceId)
+                        : string.IsNullOrEmpty(p.InsuranceId))
+                    .ToList();
+            }
+
+            return View(patients);
         }
 
-        public async Task<ActionResult> Profile(int id)
+        public async Task<ActionResult> Details(int id)
         {
             var patient = await _patientService.GetById(id);
 
             if (patient == null)
-            {
-                ViewBag.Error = "Invalid Patient ID";
-                return View("EnterPatientId");
-            }
+                return HttpNotFound();
 
             return View(patient);
+        }
+
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Create(PatientDto dto)
+        {
+            if (!ModelState.IsValid)
+                return View(dto);
+
+            try
+            {
+                var result = await _patientService.Register(dto);
+
+                if (!result.Success)
+                {
+                    ModelState.AddModelError("", result.Message);
+                    return View(dto);
+                }
+
+                TempData["Success"] = "Patient added successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(dto);
+            }
         }
 
         public async Task<ActionResult> Edit(int id)
         {
-            var patient = await _patientService.GetById(id);
+            var p = await _patientService.GetById(id);
 
-            if (patient == null)
-            {
-                ViewBag.Error = "Invalid Patient ID";
-                return View("EnterPatientId");
-            }
+            if (p == null)
+                return HttpNotFound();
 
-            return View(patient);
+            return View(p);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(PatientDto dto)
+        public async Task<ActionResult> Edit(int id, PatientDto dto)
         {
             if (!ModelState.IsValid)
                 return View(dto);
 
-            var result = await _patientService.Update(dto.PatientId, dto);
+            var result = await _patientService.Update(id, dto);
 
             if (!result.Success)
             {
-                ViewBag.Error = result.Message;
+                ModelState.AddModelError("", result.Message);
                 return View(dto);
             }
-
-            var updatedPatient = await _patientService.GetById(dto.PatientId);
 
             TempData["Success"] = "Patient updated successfully!";
-
-            return View("Profile", updatedPatient);
-        }
-
-        [HttpGet]
-        public ActionResult SearchBySpecialisation()
-        {
-            return View();
-        }
-
-        public async Task<ActionResult> SearchBySpecialisation(Specialisation spec)
-        {
-            var doctors = await _doctorService.GetBySpecialisation(spec);
-            return View(doctors);
-        }
-
-        public ActionResult BookAppointment()
-        {
-            return View("EnterPatientId");
-        }
-
-        public async Task<ActionResult> Book(int id)
-        {
-            var patient = await _patientService.GetById(id);
-
-            if (patient == null || !patient.IsActive)
-            {
-                ViewBag.Error = "Invalid or inactive patient";
-                return View("EnterPatientId");
-            }
-
-            var dto = new BookAppointmentDto
-            {
-                PatientId = id
-            };
-
-            return View(dto);
+            return RedirectToAction("Details", new { id = id });
         }
 
         [HttpPost]
-        public async Task<ActionResult> Book(BookAppointmentDto dto)
+        public async Task<JsonResult> Deactivate(int id)
         {
-            if (!ModelState.IsValid)
-                return View(dto);
-
-            var result = await _appointmentService.Book(dto);
-
-            if (!result.Success)
-            {
-                ViewBag.Error = result.Message;
-                return View(dto);
-            }
-
-            TempData["Success"] = "Appointment booked successfully!";
-            return RedirectToAction("Profile", new { id = dto.PatientId });
-        }
-
-        public async Task<ActionResult> MyAppointments(int id)
-        {
-            var appointments = await _appointmentService.GetByPatient(id);
-
-            if (appointments == null)
-            {
-                ViewBag.Error = "Invalid Patient ID";
-                return View("EnterPatientId");
-            }
-
-            return View(appointments);
-        }
-
-        public ActionResult CancelAppointment(int id)
-        {
-            var dto = new CancelAppointmentDto
-            {
-                AppointmentId = id
-            };
-
-            return View(dto);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> CancelAppointment(CancelAppointmentDto dto)
-        {
-            await _appointmentService.Cancel(dto.AppointmentId, dto);
-
-            return RedirectToAction("MyAppointments", new { id = dto.PatientId });
-        }
-
-        public async Task<ActionResult> HealthRecords(int id)
-        {
-            var records = await _healthService.GetByPatient(id);
-
-            if (records == null || records.Count == 0)
-            {
-                ViewBag.Error = "No health records found";
-                return View(new List<HealthRecordDto>());
-            }
-
-            return View(records);
+            var result = await _patientService.Deactivate(id);
+            return Json(result.Success);
         }
     }
 }

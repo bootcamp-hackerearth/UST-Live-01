@@ -11,12 +11,19 @@ namespace HealthAxis.Api.Mapping
         {
 
             CreateMap<Doctor, DoctorDto>()
-                .ForMember(dest => dest.Specialisation,
-                    opt => opt.MapFrom(src =>
-                        (Specialisation)Enum.Parse(typeof(Specialisation), src.Specialisation)
-                    ));
+            .ForMember(dest => dest.Specialisation,
+        opt => opt.MapFrom(src =>
+            (Specialisation)Enum.Parse(typeof(Specialisation), src.Specialisation)
+        ));
 
             CreateMap<DoctorDto, Doctor>()
+                .ForMember(dest => dest.Specialisation,
+                    opt => opt.MapFrom(src =>
+                        src.Specialisation.ToString()
+                    ));
+
+            CreateMap<UpdateDoctorDto, Doctor>()
+                .ForMember(dest => dest.DoctorId, opt => opt.Ignore())
                 .ForMember(dest => dest.Specialisation,
                     opt => opt.MapFrom(src =>
                         src.Specialisation.ToString()

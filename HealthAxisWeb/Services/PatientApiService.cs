@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using HealthAxis;
 
 namespace HealthAxis.Web.Services
 {
@@ -33,10 +31,23 @@ namespace HealthAxis.Web.Services
             return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
 
+        public async Task<List<PatientDto>> GetAll()
+        {
+            var res = await _httpClient.GetAsync("patient");
+
+            if (!res.IsSuccessStatusCode)
+                return new List<PatientDto>();
+
+            var json = await res.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<PatientDto>>(json);
+        }
+
         public async Task<PatientDto> GetById(int id)
         {
             var res = await _httpClient.GetAsync($"patient/{id}");
-            if (!res.IsSuccessStatusCode) return null;
+
+            if (!res.IsSuccessStatusCode)
+                return null;
 
             var json = await res.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<PatientDto>(json);
@@ -50,13 +61,21 @@ namespace HealthAxis.Web.Services
                 "application/json"
             );
 
-            var response = await _httpClient.PutAsync("patient/" + id, content);
+            var response = await _httpClient.PutAsync($"patient/{id}", content);
 
             var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
 
+        public async Task<ApiResponseDto> Deactivate(int id)
+        {
+            var response = await _httpClient.PutAsync($"patient/{id}/deactivate", null);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
+        }
 
         public async Task<List<HealthRecordDto>> GetHealthRecords(int patientId)
         {

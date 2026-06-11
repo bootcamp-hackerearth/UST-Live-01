@@ -1,52 +1,130 @@
 ﻿@model HealthAxis.Shared.Dtos.DoctorDto
 
-@{
-    ViewBag.Title = "Add Doctor";
-}
+<style>
+    .page-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
 
-<div class="container mt-5">
+    .card {
+        background: #1f2937;
+        padding: 30px;
+        border-radius: 16px;
+        color: #e5e7eb;
+    }
 
-    <div class="text-center mb-4">
-        <h2 class="fw-bold text-primary">Add Doctor</h2>
-        <p class="text-muted">Enter doctor details below</p>
-    </div>
+    h2 {
+        margin-bottom: 20px;
+    }
 
-    <div class="card shadow-sm border-0 rounded-4 p-4 mx-auto" style="max-width: 500px;">
+    /* ✅ Proper form width control */
+    .form-wrapper {
+        max-width: 450px;
+    }
 
-        @using (Html.BeginForm())
-        {
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Full Name</label>
-                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control", placeholder = "Enter doctor name" })
-                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
-            </div>
+    .form-group {
+        margin-bottom: 15px;
+    }
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Specialisation</label>
-                @Html.EnumDropDownListFor(m => m.Specialisation, new { @class = "form-select" })
-            </div>
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: #374151;
+        color: white;
+        font-size: 14px;
+    }
 
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Years of Experience</label>
-                @Html.TextBoxFor(m => m.YearsOfExperience, new { @class = "form-control", placeholder = "e.g. 5" })
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Consultation Fee</label>
-                @Html.TextBoxFor(m => m.ConsultationFee, new { @class = "form-control", placeholder = "e.g. 500" })
-            </div>
-
-            <div class="d-flex justify-content-between mt-4">
-                <a href="@Url.Action("Index")" class="btn btn-outline-secondary rounded-pill px-4">
-                    Back
-                </a>
-
-                <button type="submit" class="btn btn-primary rounded-pill px-4">
-                    Add Doctor
-                </button>
-            </div>
+        input:focus, select:focus {
+            outline: none;
+            background: #4b5563;
         }
+
+    .validation {
+        color: #ef4444;
+        font-size: 13px;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+    }
+
+    .btn-save {
+        background: #10b981;
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+
+    .btn-back {
+        background: #374151;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+    }
+
+        .btn-back:hover {
+            background: #4b5563;
+        }
+</style>
+
+<div class="page-container">
+
+    <div class="card">
+
+        <h2>Add Doctor</h2>
+
+        <div class="form-wrapper">
+
+            @using (Html.BeginForm())
+            {
+                @Html.ValidationSummary(true, "", new { @class = "validation" })
+
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.FullName, new { placeholder = "Full Name" })
+                    @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "validation" })
+                </div>
+
+                <div class="form-group">
+                    @Html.DropDownListFor(
+                        m => m.Specialisation,
+                        new SelectList(Enum.GetValues(typeof(HealthAxis.Shared.Dtos.Specialisation))),
+                        "Select Specialisation"
+                    )
+                    @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "validation" })
+                </div>
+
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.YearsOfExperience,
+                        new { type = "number", placeholder = "Years of Experience" })
+                    @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "validation" })
+                </div>
+
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.ConsultationFee,
+                        new { type = "number", placeholder = "Consultation Fee" })
+                    @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "validation" })
+                </div>
+
+                <div class="btn-group">
+                    <a href="@Url.Action("Index", "Doctor")" class="btn-back">
+                        ← Back
+                    </a>
+
+                    <button type="submit" class="btn-save">
+                        Add Doctor
+                    </button>
+                </div>
+            }
+
+        </div>
+
     </div>
 
 </div>
-``

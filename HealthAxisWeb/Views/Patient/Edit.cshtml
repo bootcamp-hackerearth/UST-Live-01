@@ -2,52 +2,33 @@
 
 <h2>Edit Patient</h2>
 
-@using (Html.BeginForm("Edit", "Patient", FormMethod.Post))
-{
-    @Html.HiddenFor(m => m.PatientId)
+<form method="post">
+    @Html.HiddenFor(x => x.PatientId)
 
-    <div>
-        Patient ID:
-        @Html.TextBoxFor(m => m.PatientId, new { @readonly = "readonly" })
+    <div class="form-group">
+        <label>Name</label>
+        @Html.TextBoxFor(x => x.FullName, new { @class = "form-control" })
     </div>
 
-    <div>
-        Name: @Html.TextBoxFor(m => m.FullName)
+    <div class="form-group">
+        <label>DOB</label>
+        @Html.TextBoxFor(x => x.DateOfBirth, "{0:yyyy-MM-dd}", new { type = "date", @class = "form-control" })
     </div>
 
-    <div>
-        DOB: @Html.TextBoxFor(m => m.DateOfBirth, new { type = "date" })
+    <div class="form-group">
+        <label>Gender</label>
+        @Html.TextBoxFor(x => x.Gender, new { @class = "form-control" })
     </div>
 
-    <div>
-        Gender:
-        @Html.RadioButtonFor(m => m.Gender, "Male") Male
-        @Html.RadioButtonFor(m => m.Gender, "Female") Female
-        @Html.RadioButtonFor(m => m.Gender, "Other") Other
+    <div class="form-group">
+        <label>Phone</label>
+        @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "form-control" })
     </div>
 
-    <div>
-        Phone: @Html.TextBoxFor(m => m.PhoneNumber)
+    <div class="form-group">
+        <label>Email</label>
+        @Html.TextBoxFor(x => x.Email, new { @class = "form-control" })
     </div>
 
-    <div>
-        Email: @Html.TextBoxFor(m => m.Email)
-    </div>
-
-    <div>
-        Insurance: @Html.TextBoxFor(m => m.InsuranceId)
-    </div>
-
-    <div>
-        Active: @Html.CheckBoxFor(m => m.IsActive)
-        <small>(Uncheck to deactivate patient)</small>
-    </div>
-
-    <br />
-
-    <button type="submit">Update</button>
-}
-
-<br />
-
-@Html.ActionLink("Back", "Profile", new { id = Model.PatientId })
+    <button type="submit" class="btn btn-primary mt-3">Update</button>
+</form>

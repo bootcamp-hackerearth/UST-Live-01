@@ -1,0 +1,60 @@
+﻿@model List<HealthAxis.Shared.Dtos.AppointmentDto>
+@using HealthAxis.Shared.Dtos
+
+<style>
+    body {
+        background-color: #0f172a;
+        color: white;
+    }
+
+    .btn-beige {
+        background: #f5f5dc;
+        color: black;
+    }
+</style>
+
+<h2>Doctor Schedule</h2>
+
+<table class="table table-dark table-striped">
+    <thead>
+        <tr>
+            <th>Patient</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var a in Model)
+        {
+            var status = a.Status;
+
+            <tr>
+                <td>@a.PatientId</td>
+                <td>@a.ScheduledDate.ToShortDateString()</td>
+                <td>@a.TimeSlot</td>
+
+                <td>@status</td>
+
+                <td>
+                    @if (status == AppointmentStatus.Pending)
+                    {
+                        <a href="@Url.Action("UpdateStatus", new { id = a.AppointmentId, status = AppointmentStatus.Confirmed.ToString() })"
+                           class="btn btn-beige btn-sm">Confirm</a>
+                    }
+
+                    @if (status == AppointmentStatus.Confirmed)
+                    {
+                        <a href="@Url.Action("UpdateStatus", new { id = a.AppointmentId, status = AppointmentStatus.Completed.ToString() })"
+                           class="btn btn-beige btn-sm">Complete</a>
+                    }
+
+                    <a href="@Url.Action("CancelAppointment", new { id = a.AppointmentId })"
+                       class="btn btn-beige btn-sm">Cancel</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

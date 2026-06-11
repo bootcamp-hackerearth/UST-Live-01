@@ -1,9 +1,10 @@
-﻿using HealthAxis.Shared.Dtos;
+﻿using HealthAxis.Shared;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using HealthAxis.Shared.Dtos;
 
 namespace HealthAxis.Web.Services
 {
@@ -16,48 +17,55 @@ namespace HealthAxis.Web.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<DoctorDto>> GetAllDoctors()
+        public async Task<List<DoctorDto>> GetAll(Specialisation? specialisation)
         {
-            var res = await _httpClient.GetAsync("doctor");
+            string url = "doctor";
+
+            if (specialisation.HasValue)
+                url += $"?specialisation={specialisation.Value}";
+
+            var res = await _httpClient.GetAsync(url);
             var json = await res.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<DoctorDto>>(json);
         }
+        public async Task ToggleStatus(int id)
+        {
+            await _httpClient.PutAsync($"doctor/{id}/toggle", null);
+        }
 
-        public async Task<DoctorDto> GetDoctorById(int id)
+        public async Task<DoctorDto> GetById(int id)
         {
             var res = await _httpClient.GetAsync($"doctor/{id}");
-            if (!res.IsSuccessStatusCode) return null;
+
+            if (!res.IsSuccessStatusCode)
+                return null;
 
             var json = await res.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<DoctorDto>(json);
         }
 
-        public async Task<bool> AddDoctor(DoctorDto dto)
+        public async Task Create(CreateDoctorDto dto)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
-            var res = await _httpClient.PostAsync("doctor", content);
-            return res.IsSuccessStatusCode;
+            var content = new StringContent(
+                JsonConvert.SerializeObject(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            await _httpClient.PostAsync("doctor", content);
         }
 
-        public async Task<bool> UpdateDoctor(int id, DoctorDto dto)
+        public async Task Update(int id, UpdateDoctorDto dto)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(dto), Encoding.UTF8, "application/json");
-            var res = await _httpClient.PutAsync($"doctor/{id}", content);
-            return res.IsSuccessStatusCode;
-        }
+            var content = new StringContent(
+                JsonConvert.SerializeObject(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
 
-        public async Task<List<DoctorDto>> GetBySpecialisation(Specialisation spec)
-        {
-            var res = await _httpClient.GetAsync($"doctor/specialisation/{spec}");
-            var json = await res.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<DoctorDto>>(json);
-        }
-
-        public async Task<List<PatientDto>> GetAllPatients()
-        {
-            var res = await _httpClient.GetAsync("patient");
-            var json = await res.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<PatientDto>>(json);
+            await _httpClient.PutAsync($"doctor/{id}", content);
         }
     }
 }

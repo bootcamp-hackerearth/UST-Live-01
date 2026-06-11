@@ -28,18 +28,6 @@ namespace HealthAxis.Web.Controllers
                 return RedirectToAction("Index", "Doctor");
             }
 
-            if (appointment.Status != AppointmentStatus.Completed)
-            {
-                TempData["Error"] = "Health record can only be added after appointment is completed";
-                return RedirectToAction("Index", "Doctor");
-            }
-
-            if (!appointment.CanAddHealthRecord)
-            {
-                TempData["Error"] = "Health record already exists for this appointment";
-                return RedirectToAction("Index", "Doctor");
-            }
-
             var dto = new HealthRecordDto
             {
                 AppointmentId = appointment.AppointmentId,
@@ -66,9 +54,9 @@ namespace HealthAxis.Web.Controllers
             }
 
             TempData["Success"] = "Health record added successfully!";
-            return RedirectToAction("Index", "Doctor");
-        }
 
+            return RedirectToAction("ByDoctor", "Appointment", new { id = dto.DoctorId });
+        }
         public async Task<ActionResult> GetByPatient(int patientId)
         {
             var records = await _healthService.GetByPatient(patientId);

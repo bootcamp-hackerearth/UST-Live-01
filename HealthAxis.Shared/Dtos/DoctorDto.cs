@@ -1,26 +1,49 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxis.Shared.Dtos
+{ 
+public class DoctorDto
 {
-    public class DoctorDto
-    {
-        public int DoctorId { get; set; }
+    public int DoctorId { get; set; }
 
-        [Required]
-        [StringLength(100)]
+    [Required(ErrorMessage = "Name is required")]
+    [RegularExpression("^[A-Za-z ]+$", ErrorMessage = "Only alphabets allowed")]
+    public string FullName { get; set; }
+
+    [Required]
+    public string Specialisation { get; set; }
+
+    [Range(0, int.MaxValue, ErrorMessage = "Experience cannot be negative")]
+    public int YearsOfExperience { get; set; }
+
+    [Range(0, double.MaxValue, ErrorMessage = "Fee cannot be negative")]
+    public decimal ConsultationFee { get; set; }
+
+    public bool IsActive { get; set; }
+}
+
+public class CreateDoctorDto
+    {
         public string FullName { get; set; }
 
-        [Required]
-        public Specialisation Specialisation { get; set; }
+        public string Specialisation { get; set; }
 
-        [Required]
-        [Range(0, 50)]
         public int YearsOfExperience { get; set; }
 
-        [Required]
-        [Range(0, 100000)]
+        public decimal ConsultationFee { get; set; }
+    }
+
+    public class UpdateDoctorDto
+    {
+        public int DoctorId { get; set; }
+        public string FullName { get; set; }
+
+        public string Specialisation { get; set; }
+
+        public int YearsOfExperience { get; set; }
+
         public decimal ConsultationFee { get; set; }
 
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
     }
 }

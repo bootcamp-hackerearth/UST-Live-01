@@ -1,0 +1,24 @@
+﻿@model HealthAxis.Shared.Dtos.PatientDto
+
+<div class="card-dark">
+    <h2>@Model.FullName</h2>
+    <p><strong>Email:</strong> @Model.Email</p>
+    <p><strong>Phone:</strong> @Model.PhoneNumber</p>
+    <p><strong>Gender:</strong> @Model.Gender</p>
+    <p><strong>Insurance:</strong> @Model.InsuranceId</p>
+
+    <p>
+        <strong>Status:</strong>
+        @if (Model.IsActive)
+        {
+            <span class="badge badge-active">Active</span>
+        }
+        else
+        {
+            <span class="badge badge-inactive">Inactive</span>
+        }
+    </p>
+
+    <a href="@Url.Action("Edit", new { id = Model.PatientId })" class="btn btn-success">Edit</a>
+
+</div>

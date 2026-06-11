@@ -16,6 +16,6 @@ namespace HealthAxis.Web.Services
 
         Task UpdateStatus(int id, AppointmentStatus status);
 
-        Task Cancel(int id, CancelAppointmentDto dto);
+        Task Cancel(int id, UpdateAppointmentStatusDto dto);
     }
 }

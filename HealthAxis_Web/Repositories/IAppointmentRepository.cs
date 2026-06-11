@@ -1,20 +1,22 @@
-﻿using HealthAxis.Api.Models;
+﻿using System;
 using System.Collections.Generic;
+using HealthAxis.Api.Models;
 
-namespace HealthAxis.Api.Repositories
+public interface IAppointmentRepository
 {
-    public interface IAppointmentRepository
-    {
-        List<Appointment> GetByDoctor(int doctorId);
-        List<Appointment> GetByPatient(int patientId);
-        Appointment GetById(int id);
+    List<Appointment> GetAll();
+    List<Appointment> GetByPatient(int patientId);
+    List<Appointment> GetByDoctor(int doctorId);
 
-        void Add(Appointment appointment);
+    Appointment GetById(int id);
 
-        void Update(Appointment appointment);
+    bool IsSlotTaken(int doctorId, DateTime date, string slot);
+    bool ExistsSameDay(int patientId, int doctorId, DateTime date);
 
-        bool ExistsSameDay(int patientId, int doctorId, System.DateTime date);
+    List<string> GetBookedSlots(int doctorId, DateTime date);
 
-        void Save();
-    }
+    void Add(Appointment appointment);
+    void Update(Appointment appointment);
+
+    void Save();
 }

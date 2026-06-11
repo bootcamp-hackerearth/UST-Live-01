@@ -1,167 +1,149 @@
-﻿using AutoMapper;
-using HealthAxis.Api.Models;
+﻿using HealthAxis.Api.Models;
 using HealthAxis.Api.Repositories;
 using HealthAxis.Shared.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace HealthAxis.Api.Services
+public class AppointmentServiceImpl : IAppointmentService
 {
-    public class AppointmentServiceImpl : IAppointmentService
+    private readonly IAppointmentRepository _repo;
+
+    public AppointmentServiceImpl(IAppointmentRepository repo)
     {
-        private readonly IAppointmentRepository _repo;
-        private readonly IPatientRepository _patientRepo;
-        private readonly IHealthRecordRepository _healthRepo;
-        private readonly IMapper _mapper;
+        _repo = repo;
+    }
 
-        public AppointmentServiceImpl(
-            IAppointmentRepository repo,
-            IPatientRepository patientRepo,
-            IHealthRecordRepository healthRepo,
-            IMapper mapper)
-        {
-            _repo = repo;
-            _patientRepo = patientRepo;
-            _healthRepo = healthRepo;
-            _mapper = mapper;
-        }
-
-        public List<AppointmentDto> GetByDoctor(int doctorId)
-        {
-            var data = _repo.GetByDoctor(doctorId);
-            var result = _mapper.Map<List<AppointmentDto>>(data);
-
-            foreach (var a in result)
+    public List<AppointmentDto> GetByPatient(int patientId)
+    {
+        return _repo.GetByPatient(patientId)
+            .Select(a => new AppointmentDto
             {
-                a.CanConfirm = a.Status == AppointmentStatus.Pending;
-                a.CanComplete = a.Status == AppointmentStatus.Confirmed;
-                a.CanCancel = a.CanConfirm || a.CanComplete;
+                AppointmentId = a.AppointmentId,
+                PatientId = a.PatientId,
+                DoctorId = a.DoctorId,
+                ScheduledDate = a.ScheduledDate,
+                TimeSlot = a.TimeSlot,
 
-                a.CanAddHealthRecord =
-                    a.Status == AppointmentStatus.Completed &&
-                    !_healthRepo.ExistsByAppointment(a.AppointmentId);
-            }
+                Status = Enum.TryParse(a.Status, out AppointmentStatus s)
+                    ? s : AppointmentStatus.Pending,
 
-            return result;
-        }
+                DoctorName = a.Doctor.FullName
+            }).ToList();
+    }
 
-        public List<AppointmentDto> GetByPatient(int patientId)
+    public List<AppointmentDto> GetByDoctor(int doctorId)
+    {
+        return _repo.GetByDoctor(doctorId)
+            .Select(a => new AppointmentDto
+            {
+                AppointmentId = a.AppointmentId,
+                PatientId = a.PatientId,
+                ScheduledDate = a.ScheduledDate,
+                TimeSlot = a.TimeSlot,
+
+                Status = Enum.TryParse(a.Status, out AppointmentStatus s)
+                    ? s : AppointmentStatus.Pending
+            }).ToList();
+    }
+
+    public List<string> GetBookedSlots(int doctorId, DateTime date)
+    {
+        return _repo.GetBookedSlots(doctorId, date);
+    }
+
+    public ApiResponseDto Book(BookAppointmentDto dto)
+    {
+        if (dto.ScheduledDate < DateTime.Today)
         {
-            return _mapper.Map<List<AppointmentDto>>(_repo.GetByPatient(patientId));
-        }
-
-        public AppointmentDto GetById(int id)
-        {
-            var a = _repo.GetById(id);
-            return a == null ? null : _mapper.Map<AppointmentDto>(a);
-        }
-
-        public ApiResponseDto Book(BookAppointmentDto dto)
-        {
-            if (dto.ScheduledDate < DateTime.Today)
-            {
-                return new ApiResponseDto
-                {
-                    Success = false,
-                    Message = "Past date not allowed"
-                };
-            }
-
-            var patient = _patientRepo.GetById(dto.PatientId);
-            if (patient == null || !patient.IsActive)
-            {
-                return new ApiResponseDto
-                {
-                    Success = false,
-                    Message = "Invalid or inactive patient"
-                };
-            }
-
-            if (_repo.ExistsSameDay(dto.PatientId, dto.DoctorId, dto.ScheduledDate))
-            {
-                return new ApiResponseDto
-                {
-                    Success = false,
-                    Message = "Already booked with this doctor on same day"
-                };
-            }
-
-            var appointment = new Appointment
-            {
-                PatientId = dto.PatientId,
-                DoctorId = dto.DoctorId,
-                ScheduledDate = dto.ScheduledDate,
-                TimeSlot = dto.TimeSlot,
-                Status = AppointmentStatus.Pending.ToString()
-            };
-
-            _repo.Add(appointment);
-            _repo.Save();
-
             return new ApiResponseDto
             {
-                Success = true,
-                Message = "Appointment booked successfully"
+                Success = false,
+                Message = "Cannot book appointment in the past"
             };
         }
 
-        public ApiResponseDto UpdateStatus(int id, AppointmentStatus status)
+        if (_repo.ExistsSameDay(dto.PatientId, dto.DoctorId, dto.ScheduledDate))
         {
-            var a = _repo.GetById(id);
-            if (a == null)
-                return new ApiResponseDto { Success = false, Message = "Not found" };
-
-            AppointmentStatus current;
-            Enum.TryParse(a.Status, out current);
-
-            if (status == AppointmentStatus.Confirmed && current != AppointmentStatus.Pending)
-                return new ApiResponseDto { Success = false, Message = "Only pending → confirmed" };
-
-            if (status == AppointmentStatus.Completed && current != AppointmentStatus.Confirmed)
-                return new ApiResponseDto { Success = false, Message = "Only confirmed → completed" };
-
-            a.Status = status.ToString();
-
-            _repo.Update(a);
-            _repo.Save();
-
             return new ApiResponseDto
             {
-                Success = true,
-                Message = "Status updated successfully"
+                Success = false,
+                Message = "Already booked with this doctor for this day"
             };
         }
 
-        public ApiResponseDto Cancel(int id, CancelAppointmentDto dto)
+        if (_repo.IsSlotTaken(dto.DoctorId, dto.ScheduledDate, dto.TimeSlot))
         {
-            var a = _repo.GetById(id);
-            if (a == null)
-                return new ApiResponseDto { Success = false, Message = "Not found" };
+            return new ApiResponseDto
+            {
+                Success = false,
+                Message = "Slot already taken"
+            };
+        }
 
-            var current = (AppointmentStatus)
-                Enum.Parse(typeof(AppointmentStatus), a.Status);
+        var allSlots = new List<string> { "10:00 AM : 11:00AM", "11:00 AM : 12:00AM", "1:00 PM : 2:00 PM","2:00 PM : 3:00 PM" };
+        var booked = _repo.GetBookedSlots(dto.DoctorId, dto.ScheduledDate);
 
-            if (current != AppointmentStatus.Pending &&
-                current != AppointmentStatus.Confirmed)
+        if (booked.Count >= allSlots.Count)
+        {
+            return new ApiResponseDto
+            {
+                Success = false,
+                Message = "No slots available for this doctor"
+            };
+        }
+
+        var appointment = new Appointment
+        {
+            PatientId = dto.PatientId,
+            DoctorId = dto.DoctorId,
+            ScheduledDate = dto.ScheduledDate,
+            TimeSlot = dto.TimeSlot,
+            Status = AppointmentStatus.Pending.ToString()
+        };
+
+        _repo.Add(appointment);
+        _repo.Save();
+
+        return new ApiResponseDto
+        {
+            Success = true,
+            Message = "Appointment booked successfully"
+        };
+    }
+
+    public ApiResponseDto UpdateStatus(int id, UpdateAppointmentStatusDto dto)
+    {
+        var a = _repo.GetById(id);
+
+        if (a == null)
+        {
+            return new ApiResponseDto { Success = false, Message = "Not found" };
+        }
+
+        a.Status = dto.Status.ToString();
+
+        if (dto.Status == AppointmentStatus.Cancelled)
+        {
+            if (string.IsNullOrEmpty(dto.CancellationReason))
             {
                 return new ApiResponseDto
                 {
                     Success = false,
-                    Message = "Only pending or confirmed appointments can be cancelled"
+                    Message = "Cancellation reason required"
                 };
             }
 
-            a.Status = AppointmentStatus.Cancelled.ToString();
             a.CancellationReason = dto.CancellationReason;
-
-            _repo.Update(a);
-            _repo.Save();
-
-            return new ApiResponseDto
-            {
-                Success = true,
-                Message = "Appointment cancelled successfully"
-            };
         }
+
+        _repo.Update(a);
+        _repo.Save();
+
+        return new ApiResponseDto
+        {
+            Success = true,
+            Message = "Status updated"
+        };
     }
 }

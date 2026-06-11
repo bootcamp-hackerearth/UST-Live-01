@@ -1,41 +1,153 @@
-﻿@model HealthAxis.Shared.Dtos.DoctorDto
+﻿@model HealthAxis.Shared.Dtos.UpdateDoctorDto
+<style>
+    .page-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
 
-<h2>Edit Doctor</h2>
+    .card {
+        background: #1f2937;
+        padding: 30px;
+        border-radius: 16px;
+        color: #e5e7eb;
+    }
 
-@using (Html.BeginForm())
-{
-    @Html.HiddenFor(m => m.DoctorId)
+    h2 {
+        margin-bottom: 20px;
+    }
 
-    <div>
-        Name:
-        @Html.TextBoxFor(m => m.FullName)
+    .form-wrapper {
+        max-width: 450px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: #374151;
+        color: white;
+        font-size: 14px;
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        background: #4b5563;
+    }
+
+    .validation {
+        color: #ef4444;
+        font-size: 13px;
+    }
+
+    .status-group {
+        margin-top: 10px;
+    }
+
+    .status-label {
+        color: #9ca3af;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .checkbox {
+        transform: scale(1.2);
+        margin-right: 8px;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-save {
+        background: #10b981;
+    }
+
+    .btn-back {
+        background: #374151;
+    }
+
+    .btn-back:hover {
+        background: #4b5563;
+    }
+</style>
+
+<div class="page-container">
+
+    <div class="card">
+
+        <h2>Edit Doctor</h2>
+
+        <div class="form-wrapper">
+
+            @using (Html.BeginForm())
+            {
+                @Html.HiddenFor(m => m.DoctorId)
+
+                @Html.ValidationSummary(true, "", new { @class = "validation" })
+
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.FullName, new { placeholder = "Full Name" })
+                    @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "validation" })
+                </div>
+
+                <div class="form-group">
+                    @Html.DropDownListFor(
+                        m => m.Specialisation,
+                        new SelectList(Enum.GetValues(typeof(HealthAxis.Shared.Dtos.Specialisation))),
+                        "Select Specialisation"
+                    )
+                </div>
+
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.YearsOfExperience,
+                        new { type = "number", placeholder = "Years of Experience" })
+                </div>
+
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.ConsultationFee,
+                        new { type = "number", placeholder = "Consultation Fee" })
+                </div>
+
+                <div class="status-group">
+                    <label class="status-label">Active Status</label>
+
+                    <label>
+                        @Html.CheckBoxFor(m => m.IsActive, new { @class = "checkbox" })
+                        Active
+                    </label>
+                </div>
+
+                <div class="btn-group">
+
+                    <a href="@Url.Action("Index", "Doctor")" class="btn btn-back">
+                        ← Back
+                    </a>
+
+                    <button type="submit" class="btn btn-save">
+                        Update Doctor
+                    </button>
+
+                </div>
+            }
+
+        </div>
+
     </div>
 
-    <div>
-        Specialisation:
-        @Html.EnumDropDownListFor(m => m.Specialisation)
-    </div>
-
-    <div>
-        Experience:
-        @Html.TextBoxFor(m => m.YearsOfExperience)
-    </div>
-
-    <div>
-        Fee:
-        @Html.TextBoxFor(m => m.ConsultationFee)
-    </div>
-
-    <div>
-        Active:
-        @Html.CheckBoxFor(m => m.IsActive)
-    </div>
-
-    <br />
-
-    <button type="submit">Update</button>
-}
-
-<br />
-
-@Html.ActionLink("Back", "Index", "Doctor")
+</div>

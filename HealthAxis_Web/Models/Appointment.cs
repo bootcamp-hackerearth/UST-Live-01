@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HealthAxis.Shared.Dtos;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

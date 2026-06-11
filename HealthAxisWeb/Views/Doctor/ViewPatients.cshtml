@@ -1,46 +1,76 @@
 ﻿@model List<HealthAxis.Shared.Dtos.PatientDto>
 
-<h2>Patients</h2>
-
-@if (Model == null || Model.Count == 0)
-{
-    <p>No patients available</p>
-}
-else
-{
-    <input type="text" id="searchBox" placeholder="Search by Patient ID" />
-    <button onclick="sortInsurance()">Sort by Insurance</button>
-
-    <br />
-    <br />
-
-    <table class="table" id="patientTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Insurance</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var p in Model)
-            {
-                <tr>
-                    <td>@p.PatientId</td>
-                    <td>@p.FullName</td>
-                    <td>@p.Email</td>
-                    <td>@p.InsuranceId</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <p id="noResult" style="color:red; display:none;">No matching patient found</p>
+@{
+    ViewBag.Title = "Patients";
 }
 
-<br />
-<a href="@Url.Action("Index","Doctor")">Back</a>
+<div class="container mt-5">
+
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Patients</h2>
+        <p class="text-muted">View and manage patient details</p>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="alert alert-info text-center">
+            No patients available
+        </div>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between mb-3 flex-wrap gap-2">
+            <input type="text" id="searchBox" class="form-control w-50"
+                   placeholder="Search by Patient ID" />
+
+            <button class="btn btn-outline-primary rounded-pill px-4"
+                    onclick="sortInsurance()">
+                Sort by Insurance
+            </button>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body p-0">
+
+                <table class="table table-hover mb-0" id="patientTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Insurance</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var p in Model)
+                        {
+                            <tr>
+                                <td>@p.PatientId</td>
+                                <td>@p.FullName</td>
+                                <td>@p.Email</td>
+                                <td>@p.InsuranceId</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <p id="noResult" class="text-danger text-center mt-3" style="display:none;">
+            No matching patient found
+        </p>
+    }
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Index","Doctor")"
+           class="btn btn-secondary rounded-pill px-4">
+            Back
+        </a>
+    </div>
+
+</div>
 
 <script>
     document.getElementById("searchBox").addEventListener("keyup", function () {
@@ -62,17 +92,14 @@ else
         document.getElementById("noResult").style.display = found ? "none" : "block";
     });
 
-
     function sortInsurance() {
         let table = document.getElementById("patientTable");
         let tbody = table.querySelector("tbody");
-
         let rows = Array.from(tbody.rows);
 
         rows.sort((a, b) => {
             let valA = a.cells[3].innerText || "";
             let valB = b.cells[3].innerText || "";
-
             return valA.localeCompare(valB);
         });
 

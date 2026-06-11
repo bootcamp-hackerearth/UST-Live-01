@@ -1,0 +1,116 @@
+﻿@model HealthAxis.Shared.Dtos.BookAppointmentDto
+@using HealthAxis.Shared.Dtos
+
+<style>
+    body {
+        background-color: #0f172a;
+        color: white;
+    }
+
+    .card-dark {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .btn-beige {
+        background: #f5f5dc;
+        color: black;
+    }
+</style>
+
+<h2>Book Appointment</h2>
+
+<div class="card-dark">
+    <form method="post">
+
+        @Html.HiddenFor(x => x.PatientId)
+
+        <div class="form-group">
+            <label>Specialisation</label>
+            <select id="spec" name="Specialisation" class="form-control">
+                @foreach (var spec in Enum.GetValues(typeof(Specialisation)))
+                {
+                    <option value="@spec">@spec</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Doctor</label>
+            <select name="DoctorId" id="doctor" class="form-control">
+                <option>Loading...</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Date</label>
+            @Html.TextBoxFor(x => x.ScheduledDate, "{0:yyyy-MM-dd}",
+            new
+                 {
+                type = "date",
+                @class = "form-control",
+                min = DateTime.Today.ToString("yyyy-MM-dd")
+            })
+        </div>
+
+        <div class="form-group">
+            <label>Time Slot</label>
+            <select name="TimeSlot" id="slot" class="form-control">
+                <option>Select Doctor & Date</option>
+            </select>
+        </div>
+
+        <br />
+
+        <button type="submit" class="btn btn-beige">Book</button>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </form>
+</div>
+
+<script>
+
+    function loadDoctors() {
+        let spec = document.getElementById("spec").value;
+
+        fetch('/Doctor/GetBySpecialisation?spec=' + encodeURIComponent(spec))
+            .then(res => res.json())
+            .then(data => {
+
+                let dropdown = document.getElementById("doctor");
+                dropdown.innerHTML = "";
+
+                if (data.length === 0) {
+                    dropdown.innerHTML = "<option>No doctors available</option>";
+                    return;
+                }
+
+                data.forEach(d => {
+                    dropdown.innerHTML += `<option value="${d.DoctorId}">
+                    ${d.FullName}
+                </option>`;
+                });
+
+                loadSlots();
+            });
+    }
+
+    function loadSlots() {
+
+        let slotDropdown = document.getElementById("slot");
+        slotDropdown.innerHTML = "";
+
+        let allSlots = ["10:00 AM", "11:00 AM", "2:00 PM"];
+
+        allSlots.forEach(s => {
+            slotDropdown.innerHTML += `<option value="${s}">${s}</option>`;
+        });
+    }
+
+    document.getElementById("doctor").addEventListener("change", loadSlots);
+    document.querySelector("input[name='ScheduledDate']").addEventListener("change", loadSlots);
+
+    window.onload = loadDoctors;
+
+</script>

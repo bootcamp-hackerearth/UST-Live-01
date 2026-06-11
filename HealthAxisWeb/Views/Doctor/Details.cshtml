@@ -1,0 +1,114 @@
+﻿@model HealthAxis.Shared.Dtos.DoctorDto
+
+<style>
+    .page-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
+
+    .card {
+        background: #1f2937;
+        padding: 30px;
+        border-radius: 16px;
+        color: #e5e7eb;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    .info {
+        margin-bottom: 12px;
+        font-size: 15px;
+    }
+
+    .label {
+        color: #9ca3af;
+    }
+
+    .value {
+        font-weight: 500;
+        margin-left: 5px;
+    }
+
+    .status {
+        margin-top: 10px;
+        font-weight: 600;
+    }
+
+    .active {
+        color: #10b981;
+    }
+
+    .inactive {
+        color: #ef4444;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        border: none;
+    }
+
+    .btn-edit {
+        background: #10b981;
+    }
+
+    .btn-back {
+        background: #374151;
+    }
+
+        .btn-back:hover {
+            background: #4b5563;
+        }
+</style>
+
+<div class="page-container">
+
+    <div class="card">
+
+        <h2>@Model.FullName</h2>
+
+        <div class="info">
+            <span class="label">Specialisation:</span>
+            <span class="value">@Model.Specialisation</span>
+        </div>
+
+        <div class="info">
+            <span class="label">Experience:</span>
+            <span class="value">@Model.YearsOfExperience years</span>
+        </div>
+
+        <div class="info">
+            <span class="label">Consultation Fee:</span>
+            <span class="value">₹@Model.ConsultationFee</span>
+        </div>
+
+        <div class="status @(Model.IsActive ? "active" : "inactive")">
+            Status: @(Model.IsActive ? "Active" : "Inactive")
+        </div>
+
+        <div class="btn-group">
+
+            <a href="@Url.Action("Index", "Doctor")" class="btn btn-back">
+                ← Back
+            </a>
+
+            <a href="@Url.Action("Edit", "Doctor", new { id = Model.DoctorId })"
+               class="btn btn-edit">
+                Edit
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

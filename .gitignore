@@ -7,3 +7,14 @@ packages/
 *.log
 Debug/
 Release/
+# SonarQube / SonarScanner
+.sonarqube/
+.scannerwork/
+sonar-report.json
+sonar-project.properties.local
+
+# If using SonarScanner CLI outputs
+report-task.txt
+
+# Temporary analysis files
+*.sonar

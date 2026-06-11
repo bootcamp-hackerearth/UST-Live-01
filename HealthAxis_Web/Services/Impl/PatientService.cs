@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using HealthAxis.Api.Models;
 using HealthAxis.Api.Repositories;
 using HealthAxis.Shared.Dtos;
 using System;
@@ -50,10 +49,23 @@ namespace HealthAxis.Api.Services
             if (patient == null) return null;
 
             _mapper.Map(dto, patient);
+
             _repo.Update(patient);
             _repo.Save();
 
             return _mapper.Map<PatientDto>(patient);
+        }
+
+        public bool Deactivate(int id)
+        {
+            var patient = _repo.GetById(id);
+            if (patient == null)
+                return false;
+
+            _repo.Deactivate(id);
+            _repo.Save();
+
+            return true;
         }
     }
 }

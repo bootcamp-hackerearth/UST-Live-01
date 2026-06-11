@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
-using HealthAxis.Api.Models;
-using HealthAxis.Shared.Dtos;
 using HealthAxis.Api.Database;
+using HealthAxis.Api.Models;
+using HealthAxis.Shared;
+using HealthAxis.Shared.Dtos;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -21,9 +22,17 @@ namespace HealthAxis.Api.Controllers
         }
 
         [HttpGet, Route("")]
-        public IHttpActionResult GetAll()
+        public IHttpActionResult GetAll(string specialisation = null)
         {
-            var doctors = _context.Doctors.ToList();
+            var query = _context.Doctors.AsQueryable();
+
+            if (!string.IsNullOrEmpty(specialisation))
+            {
+                query = query.Where(d => d.Specialisation == specialisation);
+            }
+
+            var doctors = query.ToList();
+
             var result = _mapper.Map<List<DoctorDto>>(doctors);
             return Ok(result);
         }
@@ -32,6 +41,7 @@ namespace HealthAxis.Api.Controllers
         public IHttpActionResult Get(int id)
         {
             var doctor = _context.Doctors.Find(id);
+
             if (doctor == null)
                 return NotFound();
 
@@ -39,13 +49,19 @@ namespace HealthAxis.Api.Controllers
         }
 
         [HttpPost, Route("")]
-        public IHttpActionResult Add(DoctorDto dto)
+        public IHttpActionResult Add(CreateDoctorDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Invalid data");
 
-            var doctor = _mapper.Map<Doctor>(dto);
-            doctor.IsActive = true;
+            var doctor = new Doctor
+            {
+                FullName = dto.FullName,
+                Specialisation = dto.Specialisation,
+                YearsOfExperience = dto.YearsOfExperience,
+                ConsultationFee = dto.ConsultationFee,
+                IsActive = true
+            };
 
             _context.Doctors.Add(doctor);
             _context.SaveChanges();
@@ -53,19 +69,28 @@ namespace HealthAxis.Api.Controllers
             return Ok();
         }
 
-        [HttpPut, Route("{id}")]
-        public IHttpActionResult Update(int id, DoctorDto dto)
+        [HttpPut]
+        [Route("{id}")]
+        public IHttpActionResult Update(int id, UpdateDoctorDto dto)
         {
             var doctor = _context.Doctors.Find(id);
+
             if (doctor == null)
                 return NotFound();
 
-            _mapper.Map(dto, doctor);
+            if (dto.ConsultationFee <= 0)
+                return BadRequest("Invalid fee");
+
+            doctor.FullName = dto.FullName;
+            doctor.Specialisation = dto.Specialisation.ToString();
+            doctor.YearsOfExperience = dto.YearsOfExperience;
+            doctor.ConsultationFee = dto.ConsultationFee;
+            doctor.IsActive = dto.IsActive;
+
             _context.SaveChanges();
 
             return Ok();
         }
-
         [HttpGet, Route("specialisation/{spec}")]
         public IHttpActionResult GetBySpec(string spec)
         {
@@ -76,5 +101,20 @@ namespace HealthAxis.Api.Controllers
             var result = _mapper.Map<List<DoctorDto>>(doctors);
             return Ok(result);
         }
+        [HttpPut, Route("{id}/toggle")]
+        public IHttpActionResult Toggle(int id)
+        {
+            var doctor = _context.Doctors.Find(id);
+
+            if (doctor == null)
+                return NotFound();
+
+            doctor.IsActive = !doctor.IsActive;
+
+            _context.SaveChanges();
+
+            return Ok(new { doctor.IsActive });
+        }
+
     }
 }

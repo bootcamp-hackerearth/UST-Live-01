@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Appointments";
+}
+
+<style>
+    body {
+        background-color: #0f172a;
+        color: white;
+    }
+
+    .card-dark {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .btn-beige {
+        background-color: #f5f5dc;
+        color: black;
+    }
+</style>
+
+<h2>Appointments</h2>
+
+<div class="card-dark">
+    <form method="get" action="/Appointment/Redirect">
+        <div class="form-group">
+            <label>Select Role</label>
+            <select name="role" class="form-control">
+                <option value="patient">Patient</option>
+                <option value="doctor">Doctor</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Enter ID</label>
+            <input type="number" name="id" class="form-control" required />
+        </div>
+
+        <br />
+        <button class="btn btn-beige">Continue</button>
+    </form>
+</div>

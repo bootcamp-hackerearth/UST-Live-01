@@ -1,115 +1,67 @@
 ﻿using HealthAxis.Shared.Dtos;
 using HealthAxis.Web.Services;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
-namespace HealthAxis.Web.Controllers
+public class AppointmentController : Controller
 {
-    public class AppointmentController : Controller
+    private readonly IAppointmentApiService _service;
+
+    public AppointmentController(IAppointmentApiService service)
     {
-        private readonly IAppointmentApiService _service;
+        _service = service;
+    }
 
-        public AppointmentController(IAppointmentApiService service)
+    public ActionResult Index()
+    {
+        return View();
+    }
+    public async Task<ActionResult> MyAppointments(int id)
+    {
+        var data = await _service.GetByPatient(id);
+        return View(data);
+    }
+
+    public ActionResult Book(int patientId)
+    {
+        return View(new BookAppointmentDto { PatientId = patientId });
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> Book(BookAppointmentDto dto)
+    {
+        if (!ModelState.IsValid)
+            return View(dto);
+
+        var result = await _service.Book(dto);
+
+        if (!result.Success)
         {
-            _service = service;
+            ModelState.AddModelError("", result.Message);
+            return View(dto);
         }
 
-        public async Task<ActionResult> ByDoctor(int id)
+        return RedirectToAction("MyAppointments", new { id = dto.PatientId });
+    }
+
+    public async Task<ActionResult> DoctorSchedule(int id)
+    {
+        var data = await _service.GetByDoctor(id);
+        return View(data);
+    }
+    public ActionResult Redirect(string role, int id)
+    {
+        if (role == "patient")
         {
-            var data = await _service.GetByDoctor(id);
-
-            if (data == null)
-            {
-                ViewBag.Error = "Invalid Doctor ID";
-                return View("EnterDoctorId");
-            }
-
-            return View(data);
+            return RedirectToAction("MyAppointments", new { id = id });
+        }
+        else if (role == "doctor")
+        {
+            return RedirectToAction("DoctorSchedule", new { id = id });
         }
 
-        public async Task<ActionResult> ByPatient(int id)
-        {
-            var data = await _service.GetByPatient(id);
-
-            if (data == null)
-            {
-                ViewBag.Error = "Invalid Patient ID";
-                return View("EnterPatientId");
-            }
-
-            return View(data);
-        }
-
-        public async Task<ActionResult> Confirm(int id)
-        {
-            var appointment = await _service.GetById(id);
-
-            if (appointment == null)
-            {
-                TempData["Error"] = "Invalid appointment";
-                return RedirectToAction("Index", "Doctor");
-            }
-
-            if (appointment.Status != AppointmentStatus.Pending)
-            {
-                TempData["Error"] = "Only pending appointments can be confirmed";
-                return Redirect(Request.UrlReferrer.ToString());
-            }
-
-            await _service.UpdateStatus(id, AppointmentStatus.Confirmed);
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
-        public async Task<ActionResult> Complete(int id)
-        {
-            var appointment = await _service.GetById(id);
-
-            if (appointment == null)
-            {
-                TempData["Error"] = "Invalid appointment";
-                return RedirectToAction("Index", "Doctor");
-            }
-
-            if (appointment.Status != AppointmentStatus.Confirmed)
-            {
-                TempData["Error"] = "Only confirmed appointments can be completed";
-                return Redirect(Request.UrlReferrer.ToString());
-            }
-
-            await _service.UpdateStatus(id, AppointmentStatus.Completed);
-            return Redirect(Request.UrlReferrer.ToString());
-        }
-
-        public ActionResult Cancel(int id)
-        {
-            return View(new CancelAppointmentDto());
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Cancel(int id, CancelAppointmentDto dto)
-        {
-            if (!ModelState.IsValid)
-                return View(dto);
-
-            var appointment = await _service.GetById(id);
-
-            if (appointment == null)
-            {
-                TempData["Error"] = "Invalid appointment";
-                return RedirectToAction("Index", "Doctor");
-            }
-
-            if (appointment.Status != AppointmentStatus.Pending &&
-                appointment.Status != AppointmentStatus.Confirmed)
-            {
-                TempData["Error"] = "Only pending or confirmed appointments can be cancelled";
-                return Redirect(Request.UrlReferrer.ToString());
-            }
-
-            await _service.Cancel(id, dto);
-
-            TempData["Success"] = "Appointment cancelled successfully";
-            return RedirectToAction("Index", "Doctor");
-        }
+        return RedirectToAction("Index");
     }
 }

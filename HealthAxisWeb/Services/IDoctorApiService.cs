@@ -6,13 +6,13 @@ namespace HealthAxis.Web.Services
 {
     public interface IDoctorApiService
     {
-        Task<List<DoctorDto>> GetAllDoctors();
-        Task<DoctorDto> GetDoctorById(int id);
-        Task<bool> AddDoctor(DoctorDto dto);
-        Task<bool> UpdateDoctor(int id, DoctorDto dto);
+        Task<List<DoctorDto>> GetAll(Specialisation? specialisation);
 
-        Task<List<DoctorDto>> GetBySpecialisation(Specialisation spec);
+        Task<DoctorDto> GetById(int id);
 
-        Task<List<PatientDto>> GetAllPatients();
+        Task Create(CreateDoctorDto dto);
+
+        Task Update(int id, UpdateDoctorDto dto);
+        Task ToggleStatus(int id);
     }
 }

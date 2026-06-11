@@ -1,0 +1,42 @@
+﻿@model HealthAxis.Shared.Dtos.PatientDto
+
+<h2>Register Patient</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label>Full Name</label>
+        @Html.TextBoxFor(x => x.FullName, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Date of Birth</label>
+        @Html.TextBoxFor(x => x.DateOfBirth, "{0:yyyy-MM-dd}", new { type = "date", @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Gender</label>
+        @Html.TextBoxFor(x => x.Gender, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Phone</label>
+        @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        @Html.TextBoxFor(x => x.Email, new { @class = "form-control" })
+    </div>
+
+    <div class="form-group">
+        <label>Insurance Id</label>
+        @Html.TextBoxFor(x => x.InsuranceId, new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Register</button>
+
+    @if (ViewBag.Error != null)
+    {
+    <p class="text-danger">@ViewBag.Error</p>
+    }
+</form>

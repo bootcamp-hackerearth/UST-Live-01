@@ -26,6 +26,16 @@ namespace HealthAxis.Web.Services
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
         }
+        public async Task Cancel(int id, UpdateAppointmentStatusDto dto)
+        {
+            var content = new StringContent(
+                JsonConvert.SerializeObject(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            await _httpClient.PutAsync($"appointment/{id}/status", content);
+        }
 
         public async Task<List<AppointmentDto>> GetByPatient(int patientId)
         {
@@ -57,7 +67,7 @@ namespace HealthAxis.Web.Services
                 "application/json"
             );
 
-            var response = await _httpClient.PostAsync("appointment/book", content);
+            var response = await _httpClient.PostAsync("appointment", content);
             var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<ApiResponseDto>(json);
@@ -77,17 +87,6 @@ namespace HealthAxis.Web.Services
             );
 
             await _httpClient.PutAsync($"appointment/{id}/status", content);
-        }
-
-        public async Task Cancel(int id, CancelAppointmentDto dto)
-        {
-            var content = new StringContent(
-                JsonConvert.SerializeObject(dto),
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            await _httpClient.PutAsync($"appointment/{id}/cancel", content);
         }
     }
 }

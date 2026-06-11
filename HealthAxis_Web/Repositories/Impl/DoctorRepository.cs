@@ -1,7 +1,7 @@
-﻿using HealthAxis.Api.Models;
+﻿using HealthAxis.Api.Database;
+using HealthAxis.Api.Models;
 using System.Collections.Generic;
 using System.Linq;
-using HealthAxis.Api.Database;
 
 namespace HealthAxis.Api.Repositories
 {
@@ -21,14 +21,13 @@ namespace HealthAxis.Api.Repositories
 
         public Doctor GetById(int id)
         {
-            return _context.Doctors.Find(id);
+            return _context.Doctors.FirstOrDefault(d => d.DoctorId == id);
         }
 
-        // ✅ Filter by specialisation + active doctors only
         public List<Doctor> GetBySpecialisation(string specialisation)
         {
             return _context.Doctors
-                .Where(d => d.Specialisation == specialisation && d.IsActive)
+                .Where(d => d.Specialisation == specialisation)
                 .ToList();
         }
 
@@ -39,8 +38,7 @@ namespace HealthAxis.Api.Repositories
 
         public void Update(Doctor doctor)
         {
-            _context.Entry(doctor).State =
-                System.Data.Entity.EntityState.Modified;
+            _context.Entry(doctor).State = System.Data.Entity.EntityState.Modified;
         }
 
         public void Save()

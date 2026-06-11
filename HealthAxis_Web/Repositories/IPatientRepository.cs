@@ -15,6 +15,8 @@ namespace HealthAxis.Api.Repositories
 
         void Update(Patient patient);
 
+        void Deactivate(int id);
+
         void Save();
     }
 }
