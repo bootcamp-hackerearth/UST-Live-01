@@ -1,13 +1,13 @@
-﻿@model IEnumerable<HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto>
+﻿@model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
 
 @{
-    ViewBag.Title = "Patient Health Records";
+    ViewBag.Title = "Cancelled Appointments";
 }
 
 <div class="container mt-5">
 
     <div class="d-flex justify-content-between mb-4">
-        <h2>Patient Health Records</h2>
+        <h2>Cancelled Appointments</h2>
 
         <a href="@Url.Action("Dashboard", "Doctor")"
            class="btn btn-secondary">
@@ -21,54 +21,57 @@
         @if (Model == null || !Model.Any())
         {
             <div class="alert alert-info text-center">
-                No health records found.
+                No cancelled appointments found.
             </div>
         }
         else
         {
             <input type="text"
-                   id="recordSearch"
+                   id="cancelledSearch"
                    class="form-control mb-4"
-                   placeholder="Search by Record Id or Patient Name" />
+                   placeholder="Search by Appointment Id or Patient Name" />
 
             <table class="table table-bordered table-hover"
-                   id="recordsTable">
+                   id="cancelledTable">
 
                 <thead class="table-light">
                     <tr>
-                        <th>Record Id</th>
+                        <th>Appointment Id</th>
                         <th>Patient Name</th>
                         <th>Date</th>
-                        <th>Diagnosis</th>
-                        <th>Prescription</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach (var record in Model)
+
+                    @foreach (var appointment in Model)
                     {
-                        string modalId = "recordModal" + record.RecordId;
+                        string modalId = "cancelledModal" + appointment.AppointmentId;
 
                         <tr>
-                            <td class="record-id">
-                                @record.RecordId
+                            <td class="appointment-id">
+                                @appointment.AppointmentId
                             </td>
 
                             <td class="patient-name">
-                                @record.PatientName
+                                @appointment.PatientName
                             </td>
 
                             <td>
-                                @record.VisitDate.ToString("dd-MMM-yyyy")
+                                @appointment.ScheduledDate.ToString("dd-MMM-yyyy")
                             </td>
 
                             <td>
-                                @record.Diagnosis
+                                @appointment.TimeSlot
                             </td>
 
                             <td>
-                                @record.Prescription
+                                <span class="badge bg-danger">
+                                    Cancelled
+                                </span>
                             </td>
 
                             <td>
@@ -79,12 +82,6 @@
                                     <i class="fas fa-eye"></i>
                                     View
                                 </button>
-
-                                <a href="@Url.Action("Edit", "HealthRecord", new { id = record.RecordId, returnUrl = Url.Action("DoctorRecords", "HealthRecord") })"
-                                   class="btn btn-warning btn-sm">
-                                    <i class="fas fa-edit"></i>
-                                    Edit
-                                </a>
                             </td>
                         </tr>
                     }
@@ -92,9 +89,10 @@
                     <tr id="noDataRow" style="display:none;">
                         <td colspan="6"
                             class="text-center text-muted py-4">
-                            No health records found.
+                            No cancelled appointments found.
                         </td>
                     </tr>
+
                 </tbody>
 
             </table>
@@ -106,22 +104,22 @@
 
 @if (Model != null)
 {
-    foreach (var record in Model)
+    foreach (var appointment in Model)
     {
-        string modalId = "recordModal" + record.RecordId;
+        string modalId = "cancelledModal" + appointment.AppointmentId;
 
         <div class="modal fade"
              id="@modalId"
              tabindex="-1">
 
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-dialog modal-dialog-centered">
 
                 <div class="modal-content">
 
-                    <div class="modal-header bg-info text-white">
+                    <div class="modal-header bg-danger text-white">
                         <h5 class="modal-title">
-                            <i class="fas fa-file-medical"></i>
-                            Health Record Details
+                            <i class="fas fa-circle-xmark"></i>
+                            Cancelled Appointment Details
                         </h5>
 
                         <button type="button"
@@ -134,40 +132,48 @@
 
                         <table class="table table-bordered">
                             <tr>
-                                <th>Record Id</th>
-                                <td>@record.RecordId</td>
+                                <th>Appointment Id</th>
+                                <td>@appointment.AppointmentId</td>
                             </tr>
 
                             <tr>
                                 <th>Patient Name</th>
-                                <td>@record.PatientName</td>
+                                <td>@appointment.PatientName</td>
                             </tr>
 
                             <tr>
                                 <th>Date</th>
-                                <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
+                                <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
                             </tr>
 
                             <tr>
-                                <th>Diagnosis</th>
-                                <td>@record.Diagnosis</td>
+                                <th>Time Slot</th>
+                                <td>@appointment.TimeSlot</td>
                             </tr>
 
                             <tr>
-                                <th>Prescription</th>
-                                <td>@record.Prescription</td>
-                            </tr>
-
-                            <tr>
-                                <th>Notes</th>
+                                <th>Status</th>
                                 <td>
-                                    @if (string.IsNullOrWhiteSpace(record.Notes))
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Cancellation Reason</th>
+                                <td>
+                                    @{
+                                        var reason = appointment.CancellationReason;
+                                    }
+
+                                    @if (string.IsNullOrWhiteSpace(reason))
                                     {
-                                        <span class="text-muted">No notes</span>
+                                        <span class="text-muted">No reason provided</span>
                                     }
                                     else
                                     {
-                                        @record.Notes
+                                        @reason
                                     }
                                 </td>
                             </tr>
@@ -176,19 +182,11 @@
                     </div>
 
                     <div class="modal-footer">
-
-                        <a href="@Url.Action("Edit", "HealthRecord", new { id = record.RecordId, returnUrl = Url.Action("DoctorRecords", "HealthRecord") })"
-                           class="btn btn-warning">
-                            <i class="fas fa-edit"></i>
-                            Edit
-                        </a>
-
                         <button type="button"
                                 class="btn btn-secondary"
                                 data-bs-dismiss="modal">
                             Close
                         </button>
-
                     </div>
 
                 </div>
@@ -200,7 +198,7 @@
 }
 
 <script>
-    var searchBox = document.getElementById("recordSearch");
+    var searchBox = document.getElementById("cancelledSearch");
 
     if (searchBox) {
         searchBox.addEventListener("keyup", function () {
@@ -208,19 +206,19 @@
             var search = this.value.toLowerCase();
 
             var rows =
-                document.querySelectorAll("#recordsTable tbody tr:not(#noDataRow)");
+                document.querySelectorAll("#cancelledTable tbody tr:not(#noDataRow)");
 
             var visibleCount = 0;
 
             rows.forEach(function (row) {
 
-                var recordId =
-                    row.querySelector(".record-id").innerText.toLowerCase();
+                var appointmentId =
+                    row.querySelector(".appointment-id").innerText.toLowerCase();
 
                 var patientName =
                     row.querySelector(".patient-name").innerText.toLowerCase();
 
-                if (recordId.includes(search) ||
+                if (appointmentId.includes(search) ||
                     patientName.includes(search)) {
 
                     row.style.display = "";

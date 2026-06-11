@@ -198,83 +198,72 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         }
 
         // GET: HealthRecord/Edit/5
-        public async Task<ActionResult> Edit(int? id)
+        public async Task<ActionResult> Edit(int? id, string returnUrl = null)
         {
             if (id == null)
             {
                 TempData["Error"] = "Health Record Id is missing.";
-                return RedirectToAction("DoctorRecords");
+                return RedirectToAction("CompletedAppointments", "Doctor");
             }
 
             try
             {
-                var record =
-                    await _healthRecordService
-                        .GetHealthRecordByIdAsync(id.Value);
+                var record = await _healthRecordService.GetHealthRecordByIdAsync(id.Value);
 
-                var dto =
-                    new UpdateHealthRecordDto
-                    {
-                        Diagnosis = record.Diagnosis,
-                        Prescription = record.Prescription,
-                        Notes = record.Notes
-                    };
+                var dto = new UpdateHealthRecordDto
+                {
+                    Diagnosis = record.Diagnosis,
+                    Prescription = record.Prescription,
+                    Notes = record.Notes
+                };
 
                 ViewBag.RecordId = id.Value;
-                ViewBag.AppointmentId = record.AppointmentId;
-                ViewBag.PatientId = record.PatientId;
-                ViewBag.DoctorId = record.DoctorId;
-                ViewBag.VisitDateText = record.VisitDate.ToString("dd-MMM-yyyy");
+                ViewBag.ReturnUrl = returnUrl ?? Url.Action("CompletedAppointments", "Doctor");
 
                 return View(dto);
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction("DoctorRecords");
+                return RedirectToAction("CompletedAppointments", "Doctor");
             }
         }
 
-        // POST: HealthRecord/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(int id, UpdateHealthRecordDto dto)
+        public async Task<ActionResult> Edit(int id, UpdateHealthRecordDto dto, string returnUrl = null)
         {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.RecordId = id;
+                ViewBag.ReturnUrl = returnUrl ?? Url.Action("CompletedAppointments", "Doctor");
+                return View(dto);
+            }
+
             try
             {
-                if (string.IsNullOrWhiteSpace(dto.Diagnosis))
+                await _healthRecordService.UpdateHealthRecordAsync(id, dto);
+
+                TempData["Success"] = "Health record updated successfully.";
+
+                if (!string.IsNullOrWhiteSpace(returnUrl))
                 {
-                    ModelState.AddModelError("Diagnosis", "Diagnosis is required.");
+                    return Redirect(returnUrl);
                 }
 
-                if (string.IsNullOrWhiteSpace(dto.Prescription))
-                {
-                    ModelState.AddModelError("Prescription", "Prescription is required.");
-                }
-
-                ViewBag.RecordId = id;
-
-                if (!ModelState.IsValid)
-                {
-                    return View(dto);
-                }
-
-                await _healthRecordService
-                    .UpdateHealthRecordAsync(id, dto);
-
-                TempData["Success"] =
-                    "Health record updated successfully.";
-
-                return RedirectToAction("DoctorRecords");
+                return RedirectToAction("CompletedAppointments", "Doctor");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
 
                 ViewBag.RecordId = id;
+                ViewBag.ReturnUrl = returnUrl ?? Url.Action("CompletedAppointments", "Doctor");
 
                 return View(dto);
             }
         }
     }
 }
+
+

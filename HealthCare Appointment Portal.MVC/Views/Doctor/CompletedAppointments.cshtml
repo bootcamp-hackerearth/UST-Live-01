@@ -1,0 +1,291 @@
+﻿@model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
+@using HealthCare_Appointment_Portal.DTOs.HealthRecordDtos
+@using System.Collections.Generic
+
+@{
+    ViewBag.Title = "Completed Appointments";
+
+    var healthRecords =
+        ViewBag.HealthRecords as Dictionary<int, HealthRecordDto>;
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between mb-4">
+        <h2>Completed Appointments</h2>
+
+        <a href="@Url.Action("Dashboard", "Doctor")"
+           class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow p-4">
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                No completed appointments found.
+            </div>
+        }
+        else
+        {
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Appointment Id</th>
+                        <th>Patient Name</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var appointment in Model)
+                    {
+                        HealthRecordDto record = null;
+
+                        if (healthRecords != null &&
+                            healthRecords.ContainsKey(appointment.AppointmentId))
+                        {
+                            record = healthRecords[appointment.AppointmentId];
+                        }
+
+                        string appointmentModalId =
+                            "appointmentModal" + appointment.AppointmentId;
+
+                        string recordModalId =
+                            "recordModal" + appointment.AppointmentId;
+
+                        <tr>
+                            <td>@appointment.AppointmentId</td>
+
+                            <td>@appointment.PatientName</td>
+
+                            <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+
+                            <td>@appointment.TimeSlot</td>
+
+                            <td>
+                                <span class="badge bg-primary">
+                                    Completed
+                                </span>
+                            </td>
+
+                            <td>
+                                <button type="button"
+                                        class="btn btn-info btn-sm text-white"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#@appointmentModalId">
+                                    <i class="fas fa-eye"></i>
+                                    View
+                                </button>
+
+                                @if (record == null)
+                                {
+                                    <a href="@Url.Action("Create", "HealthRecord", new { appointmentId = appointment.AppointmentId })"
+                                       class="btn btn-warning btn-sm">
+                                        <i class="fas fa-notes-medical"></i>
+                                        Add Health Record
+                                    </a>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="btn btn-success btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#@recordModalId">
+                                        <i class="fas fa-file-medical"></i>
+                                        View Health Record
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        }
+
+    </div>
+
+</div>
+
+@if (Model != null)
+{
+    foreach (var appointment in Model)
+    {
+        HealthRecordDto record = null;
+
+        if (healthRecords != null &&
+            healthRecords.ContainsKey(appointment.AppointmentId))
+        {
+            record = healthRecords[appointment.AppointmentId];
+        }
+
+        string appointmentModalId =
+            "appointmentModal" + appointment.AppointmentId;
+
+        string recordModalId =
+            "recordModal" + appointment.AppointmentId;
+
+        <div class="modal fade"
+             id="@appointmentModalId"
+             tabindex="-1">
+
+            <div class="modal-dialog modal-dialog-centered">
+
+                <div class="modal-content">
+
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-calendar-check"></i>
+                            Appointment Details
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Appointment Id</th>
+                                <td>@appointment.AppointmentId</td>
+                            </tr>
+
+                            <tr>
+                                <th>Patient Name</th>
+                                <td>@appointment.PatientName</td>
+                            </tr>
+
+                            <tr>
+                                <th>Date</th>
+                                <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                            </tr>
+
+                            <tr>
+                                <th>Time Slot</th>
+                                <td>@appointment.TimeSlot</td>
+                            </tr>
+
+                            <tr>
+                                <th>Status</th>
+                                <td>Completed</td>
+                            </tr>
+                        </table>
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        if (record != null)
+        {
+            <div class="modal fade"
+                 id="@recordModalId"
+                 tabindex="-1">
+
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-file-medical"></i>
+                                Health Record Details
+                            </h5>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal">
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Record Id</th>
+                                    <td>@record.RecordId</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Appointment Id</th>
+                                    <td>@record.AppointmentId</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Patient Id</th>
+                                    <td>@record.PatientId</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Doctor Id</th>
+                                    <td>@record.DoctorId</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Visit Date</th>
+                                    <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Diagnosis</th>
+                                    <td>@record.Diagnosis</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Prescription</th>
+                                    <td>@record.Prescription</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Notes</th>
+                                    <td>@record.Notes</td>
+                                </tr>
+                            </table>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <a href="@Url.Action("Edit", "HealthRecord", new { id = record.RecordId, returnUrl = Url.Action("CompletedAppointments", "Doctor") })"
+                               class="btn btn-warning">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </a>
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal">
+                                Close
+                            </button>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        }
+    }
+}

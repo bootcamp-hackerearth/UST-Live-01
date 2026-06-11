@@ -1,0 +1,12 @@
+﻿C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\AppointmentServiceTests.cs
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\DoctorServiceTests.cs
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\HealthRecordServiceTests.cs
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\Properties\AssemblyInfo.cs
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\PatientServiceTests.cs
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\UserServiceTests.cs
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.TestPlatform.AdapterUtilities.dll
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\app.config
+C:\Users\310203\Downloads\Sprint2\MVC API Sprint2\HealthCare_Appointment_Portal.Tests\packages.config

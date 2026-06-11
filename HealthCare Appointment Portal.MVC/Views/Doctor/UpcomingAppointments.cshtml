@@ -6,219 +6,532 @@
 
 <div class="container mt-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between mb-4">
         <h2>Upcoming Appointments</h2>
 
         <a href="@Url.Action("Dashboard", "Doctor")"
            class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
             Back to Dashboard
         </a>
     </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">
-            @TempData["Success"]
+        <div class="modal fade" id="successModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-check-circle"></i>
+                            Success
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        @TempData["Success"]
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-success"
+                                data-bs-dismiss="modal">
+                            OK
+                        </button>
+                    </div>
+
+                </div>
+            </div>
         </div>
     }
 
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">
-            @TempData["Error"]
+        <div class="modal fade" id="errorModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-triangle-exclamation"></i>
+                            Error
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        @TempData["Error"]
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-danger"
+                                data-bs-dismiss="modal">
+                            OK
+                        </button>
+                    </div>
+
+                </div>
+            </div>
         </div>
     }
 
-    <div class="card shadow border-0 rounded-4">
+    <div class="card shadow p-4">
 
-        <div class="card-body p-4">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                No upcoming appointments found.
+            </div>
+        }
+        else
+        {
+            <div class="row mb-4">
 
-            @if (Model == null || !Model.Any())
-            {
-                <div class="alert alert-info text-center">
-                    No appointments found.
-                </div>
-            }
-            else
-            {
-                <div class="row mb-4">
-
-                    <div class="col-md-8 mb-2">
-                        <input type="text"
-                               id="commonSearch"
-                               class="form-control"
-                               placeholder="Search by Appointment Id, Patient Id, or Patient Name" />
-                    </div>
-
-                    <div class="col-md-4 mb-2">
-                        <input type="date"
-                               id="dateSearch"
-                               class="form-control" />
-                    </div>
-
+                <div class="col-md-8">
+                    <input type="text"
+                           id="upcomingSearch"
+                           class="form-control"
+                           placeholder="Search by Appointment Id, Patient Id, Patient Name" />
                 </div>
 
-                <table class="table table-bordered table-hover"
-                       id="appointmentsTable">
+                <div class="col-md-4">
+                    <input type="date"
+                           id="dateSearch"
+                           class="form-control" />
+                </div>
 
-                    <thead class="table-light">
+            </div>
+
+            <table class="table table-bordered table-hover" id="upcomingTable">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Appointment Id</th>
+                        <th>Patient Id</th>
+                        <th>Patient Name</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var appointment in Model)
+                    {
+                        string status = appointment.Status.ToString();
+                        string dateValue = appointment.ScheduledDate.ToString("yyyy-MM-dd");
+
+                        string viewModalId = "viewModal" + appointment.AppointmentId;
+                        string confirmModalId = "confirmModal" + appointment.AppointmentId;
+                        string cancelModalId = "cancelModal" + appointment.AppointmentId;
+                        string completeModalId = "completeModal" + appointment.AppointmentId;
+
                         <tr>
-                            <th>Appointment Id</th>
-                            <th>Patient Id</th>
-                            <th>Patient Name</th>
-                            <th>Date</th>
-                            <th>Time Slot</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                            <td class="appointment-id">@appointment.AppointmentId</td>
+                            <td class="patient-id">@appointment.PatientId</td>
+                            <td class="patient-name">@appointment.PatientName</td>
 
-                    <tbody>
+                            <td class="appointment-date" data-date="@dateValue">
+                                @appointment.ScheduledDate.ToString("dd-MMM-yyyy")
+                            </td>
 
-                        @foreach (var appointment in Model)
-                        {
-                            string status = appointment.Status.ToString();
-                            string dateForSearch = appointment.ScheduledDate.ToString("yyyy-MM-dd");
+                            <td>@appointment.TimeSlot</td>
 
-                            <tr>
-                                <td class="appointment-id">
-                                    @appointment.AppointmentId
-                                </td>
+                            <td>
+                                @if (status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                }
+                                else if (status == "Confirmed")
+                                {
+                                    <span class="badge bg-info text-dark">Confirmed</span>
+                                }
+                            </td>
 
-                                <td class="patient-id">
-                                    @appointment.PatientId
-                                </td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-info btn-sm text-white"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#@viewModalId">
+                                    <i class="fas fa-eye"></i>
+                                    View
+                                </button>
 
-                                <td class="patient-name">
-                                    @appointment.PatientName
-                                </td>
+                                @if (status == "Pending")
+                                {
+                                    <button type="button"
+                                            class="btn btn-success btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#@confirmModalId">
+                                        <i class="fas fa-check"></i>
+                                        Confirm
+                                    </button>
 
-                                <td class="appointment-date"
-                                    data-date="@dateForSearch">
-                                    @appointment.ScheduledDate.ToString("dd-MMM-yyyy")
-                                </td>
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#@cancelModalId">
+                                        <i class="fas fa-xmark"></i>
+                                        Cancel
+                                    </button>
+                                }
+                                else if (status == "Confirmed")
+                                {
+                                    <button type="button"
+                                            class="btn btn-primary btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#@completeModalId">
+                                        <i class="fas fa-circle-check"></i>
+                                        Complete
+                                    </button>
 
-                                <td>
-                                    @appointment.TimeSlot
-                                </td>
-
-                                <td>
-                                    @if (status == "Pending")
-                                    {
-                                        <span class="badge bg-warning text-dark">Pending</span>
-                                    }
-                                    else if (status == "Confirmed")
-                                    {
-                                        <span class="badge bg-info text-dark">Confirmed</span>
-                                    }
-                                    else if (status == "Completed")
-                                    {
-                                        <span class="badge bg-primary">Completed</span>
-                                    }
-                                    else if (status == "Cancelled")
-                                    {
-                                        <span class="badge bg-danger">Cancelled</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">@status</span>
-                                    }
-                                </td>
-
-                                <td>
-                                    <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId, returnUrl = Url.Action("UpcomingAppointments", "Doctor"), backText = "Back to Upcoming Appointments" })"
-                                       class="btn btn-info btn-sm text-white">
-                                        View
-                                    </a>
-
-                                    @if (status == "Pending")
-                                    {
-                                        using (Html.BeginForm("Confirm", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;" }))
-                                        {
-                                            @Html.AntiForgeryToken()
-
-                                            <button type="submit"
-                                                    class="btn btn-success btn-sm">
-                                                Confirm
-                                            </button>
-                                        }
-
-                                        <a href="@Url.Action("Cancel", "Appointment", new { id = appointment.AppointmentId })"
-                                           class="btn btn-danger btn-sm">
-                                            Cancel
-                                        </a>
-                                    }
-                                    else if (status == "Confirmed")
-                                    {
-                                        using (Html.BeginForm("Complete", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;" }))
-                                        {
-                                            @Html.AntiForgeryToken()
-
-                                            <button type="submit"
-                                                    class="btn btn-primary btn-sm">
-                                                Complete
-                                            </button>
-                                        }
-
-                                        <a href="@Url.Action("Cancel", "Appointment", new { id = appointment.AppointmentId })"
-                                           class="btn btn-danger btn-sm">
-                                            Cancel
-                                        </a>
-                                    }
-                                    else if (status == "Completed")
-                                    {
-                                        <a href="@Url.Action("Create", "HealthRecord", new { appointmentId = appointment.AppointmentId })"
-                                           class="btn btn-warning btn-sm">
-                                            Add Health Record
-                                        </a>
-                                    }
-                                </td>
-                            </tr>
-                        }
-
-                        <tr id="noDataRow" style="display:none;">
-                            <td colspan="7"
-                                class="text-center text-muted py-4">
-                                No appointments found.
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#@cancelModalId">
+                                        <i class="fas fa-xmark"></i>
+                                        Cancel
+                                    </button>
+                                }
                             </td>
                         </tr>
+                    }
 
-                    </tbody>
+                    <tr id="noDataRow" style="display:none;">
+                        <td colspan="7"
+                            class="text-center text-muted py-4">
+                            No upcoming appointments found.
+                        </td>
+                    </tr>
 
-                </table>
-            }
+                </tbody>
 
-        </div>
+            </table>
+        }
 
     </div>
 
 </div>
 
+@if (Model != null)
+{
+    foreach (var appointment in Model)
+    {
+        string status = appointment.Status.ToString();
+
+        string viewModalId = "viewModal" + appointment.AppointmentId;
+        string confirmModalId = "confirmModal" + appointment.AppointmentId;
+        string cancelModalId = "cancelModal" + appointment.AppointmentId;
+        string completeModalId = "completeModal" + appointment.AppointmentId;
+
+        <div class="modal fade" id="@viewModalId" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-calendar-check"></i>
+                            Appointment Details
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Appointment Id</th>
+                                <td>@appointment.AppointmentId</td>
+                            </tr>
+
+                            <tr>
+                                <th>Patient Id</th>
+                                <td>@appointment.PatientId</td>
+                            </tr>
+
+                            <tr>
+                                <th>Patient Name</th>
+                                <td>@appointment.PatientName</td>
+                            </tr>
+
+                            <tr>
+                                <th>Date</th>
+                                <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                            </tr>
+
+                            <tr>
+                                <th>Time Slot</th>
+                                <td>@appointment.TimeSlot</td>
+                            </tr>
+
+                            <tr>
+                                <th>Status</th>
+                                <td>@appointment.Status</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Close
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        if (status == "Pending")
+        {
+            <div class="modal fade" id="@confirmModalId" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header bg-success text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-check"></i>
+                                Confirm Appointment
+                            </h5>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal">
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>Are you sure you want to confirm this appointment?</p>
+
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Patient</th>
+                                    <td>@appointment.PatientName</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Date</th>
+                                    <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Time Slot</th>
+                                    <td>@appointment.TimeSlot</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer">
+                            @using (Html.BeginForm("Confirm", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-success">
+                                    <i class="fas fa-check"></i>
+                                    Yes, Confirm
+                                </button>
+                            }
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal">
+                                No
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="modal fade" id="@cancelModalId" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-xmark"></i>
+                            Cancel Appointment
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    @using (Html.BeginForm("Cancel", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="modal-body">
+
+                            <p>Are you sure you want to cancel this appointment?</p>
+
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Patient</th>
+                                    <td>@appointment.PatientName</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Date</th>
+                                    <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Time Slot</th>
+                                    <td>@appointment.TimeSlot</td>
+                                </tr>
+                            </table>
+
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    Cancellation Reason
+                                </label>
+
+                                <textarea name="reason"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Enter reason. This is optional."></textarea>
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="submit"
+                                    class="btn btn-danger">
+                                <i class="fas fa-xmark"></i>
+                                Yes, Cancel
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal">
+                                No
+                            </button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+        if (status == "Confirmed")
+        {
+            <div class="modal fade" id="@completeModalId" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">
+                                <i class="fas fa-circle-check"></i>
+                                Complete Appointment
+                            </h5>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal">
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>Are you sure you want to mark this appointment as completed?</p>
+
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Patient</th>
+                                    <td>@appointment.PatientName</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Date</th>
+                                    <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                                </tr>
+
+                                <tr>
+                                    <th>Time Slot</th>
+                                    <td>@appointment.TimeSlot</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div class="modal-footer">
+                            @using (Html.BeginForm("Complete", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <button type="submit"
+                                        class="btn btn-primary">
+                                    <i class="fas fa-circle-check"></i>
+                                    Yes, Complete
+                                </button>
+                            }
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal">
+                                No
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+
 <script>
-    var commonSearch =
-        document.getElementById("commonSearch");
+    document.addEventListener("DOMContentLoaded", function () {
 
-    var dateSearch =
-        document.getElementById("dateSearch");
+        var successElement = document.getElementById("successModal");
+        if (successElement) {
+            new bootstrap.Modal(successElement).show();
+        }
 
-    if (commonSearch) {
-        commonSearch.addEventListener("keyup", filterAppointments);
+        var errorElement = document.getElementById("errorModal");
+        if (errorElement) {
+            new bootstrap.Modal(errorElement).show();
+        }
+
+    });
+
+    var searchBox = document.getElementById("upcomingSearch");
+    var dateBox = document.getElementById("dateSearch");
+
+    if (searchBox) {
+        searchBox.addEventListener("keyup", filterUpcoming);
     }
 
-    if (dateSearch) {
-        dateSearch.addEventListener("change", filterAppointments);
+    if (dateBox) {
+        dateBox.addEventListener("change", filterUpcoming);
     }
 
-    function filterAppointments() {
-
-        var search =
-            document.getElementById("commonSearch").value.toLowerCase();
-
-        var selectedDate =
-            document.getElementById("dateSearch").value;
+    function filterUpcoming() {
+        var search = searchBox.value.toLowerCase();
+        var selectedDate = dateBox.value;
 
         var rows =
-            document.querySelectorAll("#appointmentsTable tbody tr:not(#noDataRow)");
+            document.querySelectorAll("#upcomingTable tbody tr:not(#noDataRow)");
 
         var visibleCount = 0;
 

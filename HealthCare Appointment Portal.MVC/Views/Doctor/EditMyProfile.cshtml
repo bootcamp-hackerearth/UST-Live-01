@@ -6,153 +6,92 @@
 
 <div class="container mt-5">
 
-    <h2 class="mb-4">
-        Edit My Profile
-    </h2>
+    <h2 class="mb-4">Edit My Profile</h2>
 
-    <div class="card shadow border-0 rounded-4">
+    <div class="card shadow p-4">
 
-        <div class="card-body p-4">
+        @if (ViewBag.Success != null)
+        {
+            <div class="alert alert-success">
+                @ViewBag.Success
+            </div>
+        }
 
-            @if (ViewBag.Success != null)
-            {
-                <div class="alert alert-success">
-                    @ViewBag.Success
-                </div>
-            }
+        @using (Html.BeginForm("EditMyProfile", "Doctor", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
 
-            @using (Html.BeginForm("EditMyProfile", "Doctor", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-                if (ViewData.ModelState[""] != null &&
-                    ViewData.ModelState[""].Errors.Count > 0)
-                {
-                    @Html.ValidationSummary(
-                        true,
-                        "",
-                        new
-                        {
-                            @class = "alert alert-danger"
-                        })
-                }
+            <div class="mb-3">
+                <label class="form-label">Full Name</label>
+                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+            </div>
 
-                <div class="mb-3">
+            <div class="mb-3">
+                <label class="form-label">Specialisation</label>
+                @Html.EnumDropDownListFor(
+                    m => m.Specialisation,
+                    "-- Select Specialisation --",
+                    new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+            </div>
 
-                    <label class="form-label">
-                        Full Name
+            <div class="mb-3">
+                <label class="form-label">Years Of Experience</label>
+                @Html.TextBoxFor(
+                    m => m.YearsOfExperience,
+                    new { @class = "form-control", type = "number", min = "0" })
+                @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Consultation Fee</label>
+                @Html.TextBoxFor(
+                    m => m.ConsultationFee,
+                    new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+                @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label d-block">Doctor Status</label>
+
+                <div class="form-check form-switch fs-5">
+                    @Html.CheckBoxFor(
+                        m => m.IsActive,
+                        new { @class = "form-check-input", id = "statusToggle" })
+
+                    <label class="form-check-label" for="statusToggle" id="statusText">
+                        @(Model.IsActive ? "Active" : "Inactive")
                     </label>
-
-                    @Html.TextBoxFor(
-                        m => m.FullName,
-                        new
-                        {
-                            @class = "form-control"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.FullName,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
                 </div>
+            </div>
 
-                <div class="mb-3">
+            <button type="submit" class="btn btn-primary">
+                Save Changes
+            </button>
 
-                    <label class="form-label">
-                        Specialisation
-                    </label>
-
-                    @Html.EnumDropDownListFor(
-                        m => m.Specialisation,
-                        "-- Select Specialisation --",
-                        new
-                        {
-                            @class = "form-select"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.Specialisation,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Years Of Experience
-                    </label>
-
-                    @Html.TextBoxFor(
-                        m => m.YearsOfExperience,
-                        new
-                        {
-                            @class = "form-control",
-                            type = "number",
-                            min = "0"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.YearsOfExperience,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Consultation Fee
-                    </label>
-
-                    @Html.TextBoxFor(
-                        m => m.ConsultationFee,
-                        new
-                        {
-                            @class = "form-control",
-                            type = "number",
-                            step = "0.01",
-                            min = "0"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.ConsultationFee,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                @Html.HiddenFor(m => m.IsActive)
-
-                <button type="submit"
-                        class="btn btn-primary">
-                    Save Changes
-                </button>
-
-                <a href="@Url.Action("Dashboard", "Doctor")"
-                   class="btn btn-secondary">
-                    Back to Dashboard
-                </a>
-            }
-
-        </div>
+            <a href="@Url.Action("MyProfile", "Doctor")"
+               class="btn btn-secondary">
+                Back to Profile
+            </a>
+        }
 
     </div>
 
 </div>
+
+<script>
+    var toggle = document.getElementById("statusToggle");
+    var text = document.getElementById("statusText");
+
+    if (toggle) {
+        toggle.addEventListener("change", function () {
+            text.innerText = toggle.checked ? "Active" : "Inactive";
+        });
+    }
+</script>
 
 @section Scripts
 {

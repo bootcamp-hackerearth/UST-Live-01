@@ -1,22 +1,18 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.HealthRecordDtos.HealthRecordDto>
 
 @{
-    ViewBag.Title = "My Health Records";
+    ViewBag.Title = "My Health Record History";
 }
 
 <div class="container mt-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <h2>
-            My Health Record History
-        </h2>
+    <div class="d-flex justify-content-between mb-4">
+        <h2>My Health Record History</h2>
 
         <a href="@Url.Action("Dashboard", "Patient")"
            class="btn btn-secondary">
             Back to Dashboard
         </a>
-
     </div>
 
     @if (TempData["Success"] != null)
@@ -26,61 +22,107 @@
         </div>
     }
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["Error"]
-        </div>
-    }
+    <div class="card shadow p-4">
 
-    <div class="card shadow border-0 rounded-4">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                No health records found.
+            </div>
+        }
+        else
+        {
+            <input type="text"
+                   id="healthSearch"
+                   class="form-control mb-4"
+                   placeholder="Search by Appointment Id, Patient Id, Doctor Id, Diagnosis" />
 
-        <div class="card-body p-4">
+            <table class="table table-bordered table-hover"
+                   id="healthTable">
 
-            @if (Model == null || !Model.Any())
-            {
-                <div class="alert alert-info text-center">
-                    No health records found for this patient.
-                </div>
-            }
-            else
-            {
-                <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Appointment Id</th>
+                        <th>Patient Id</th>
+                        <th>Doctor Id</th>
+                        <th>Visit Date</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
 
-                    <thead class="table-light">
+                <tbody>
+                    @foreach (var record in Model)
+                    {
                         <tr>
-                            <th>Appointment Id</th>
-                            <th>Patient Id</th>
-                            <th>Doctor Id</th>
-                            <th>Visit Date</th>
-                            <th>Diagnosis</th>
-                            <th>Prescription</th>
-                            <th>Notes</th>
+                            <td class="appointment-id">@record.AppointmentId</td>
+                            <td class="patient-id">@record.PatientId</td>
+                            <td class="doctor-id">@record.DoctorId</td>
+                            <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
+                            <td class="diagnosis">@record.Diagnosis</td>
+                            <td>@record.Prescription</td>
+                            <td>@record.Notes</td>
                         </tr>
-                    </thead>
+                    }
 
-                    <tbody>
+                    <tr id="noDataRow" style="display:none;">
+                        <td colspan="7"
+                            class="text-center text-muted py-4">
+                            No health records found.
+                        </td>
+                    </tr>
+                </tbody>
 
-                        @foreach (var record in Model)
-                        {
-                            <tr>
-                                <td>@record.AppointmentId</td>
-                                <td>@record.PatientId</td>
-                                <td>@record.DoctorId</td>
-                                <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
-                                <td>@record.Diagnosis</td>
-                                <td>@record.Prescription</td>
-                                <td>@record.Notes</td>
-                            </tr>
-                        }
-
-                    </tbody>
-
-                </table>
-            }
-
-        </div>
+            </table>
+        }
 
     </div>
 
 </div>
+
+<script>
+    var searchBox = document.getElementById("healthSearch");
+
+    if (searchBox) {
+        searchBox.addEventListener("keyup", function () {
+
+            var search = this.value.toLowerCase();
+
+            var rows =
+                document.querySelectorAll("#healthTable tbody tr:not(#noDataRow)");
+
+            var visibleCount = 0;
+
+            rows.forEach(function (row) {
+
+                var appointmentId =
+                    row.querySelector(".appointment-id").innerText.toLowerCase();
+
+                var patientId =
+                    row.querySelector(".patient-id").innerText.toLowerCase();
+
+                var doctorId =
+                    row.querySelector(".doctor-id").innerText.toLowerCase();
+
+                var diagnosis =
+                    row.querySelector(".diagnosis").innerText.toLowerCase();
+
+                if (appointmentId.includes(search) ||
+                    patientId.includes(search) ||
+                    doctorId.includes(search) ||
+                    diagnosis.includes(search)) {
+
+                    row.style.display = "";
+                    visibleCount++;
+                }
+                else {
+                    row.style.display = "none";
+                }
+            });
+
+            document.getElementById("noDataRow").style.display =
+                visibleCount === 0 ? "" : "none";
+        });
+    }
+</script>

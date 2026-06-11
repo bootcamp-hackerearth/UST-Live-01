@@ -262,6 +262,8 @@
     <Content Include="Views\HealthRecord\healthrecord\PatientHistory.cshtml" />
     <Content Include="Views\HealthRecord\healthrecord\SelectAppointment.cshtml" />
     <Content Include="Views\Doctor\SearchDoctors.cshtml" />
+    <Content Include="Views\Doctor\CompletedAppointments.cshtml" />
+    <Content Include="Views\Doctor\CancelledAppointments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

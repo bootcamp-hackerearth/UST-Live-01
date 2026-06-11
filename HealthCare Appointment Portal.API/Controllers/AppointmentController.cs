@@ -52,6 +52,7 @@ namespace HealthCare_Appointment_Portal.Controllers
             return Ok(appointment);
         }
 
+
         [HttpGet]
         [Route("patient/{patientId:int}")]
         public async Task<IHttpActionResult>

@@ -39,6 +39,10 @@
         background: linear-gradient(135deg, #2563eb, #06b6d4);
     }
 
+    .box-green {
+        background: linear-gradient(135deg, #15803d, #22c55e);
+    }
+
     .box-cyan {
         background: linear-gradient(135deg, #0891b2, #0e7490);
     }
@@ -50,6 +54,10 @@
     .box-yellow {
         background: linear-gradient(135deg, #f59e0b, #facc15);
         color: #111827 !important;
+    }
+
+    .box-red {
+        background: linear-gradient(135deg, #dc2626, #ef4444);
     }
 
     .dash-icon {
@@ -87,32 +95,66 @@
         <div class="row g-4 mt-2">
 
             <div class="col-md-4">
-                <a href="@Url.Action("UpcomingAppointments", "Doctor")" class="dash-box box-blue">
-                    <div class="dash-icon"><i class="fas fa-calendar-check"></i></div>
-                    Appointments
-                    <div class="small mt-2">Manage visits</div>
+                <a href="@Url.Action("UpcomingAppointments", "Doctor")"
+                   class="dash-box box-blue">
+                    <div class="dash-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    Upcoming Appointments
+                    <div class="small mt-2">Pending visits</div>
                 </a>
             </div>
 
             <div class="col-md-4">
-                <a href="@Url.Action("DoctorRecords", "HealthRecord")" class="dash-box box-cyan">
-                    <div class="dash-icon"><i class="fas fa-file-medical"></i></div>
-                    Health Records
+                <a href="@Url.Action("CompletedAppointments", "Doctor")"
+                   class="dash-box box-green">
+                    <div class="dash-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    Completed Appointments
+                    <div class="small mt-2">Finished visits</div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("CancelledAppointments", "Doctor")"
+                   class="dash-box box-red">
+                    <div class="dash-icon">
+                        <i class="fas fa-circle-xmark"></i>
+                    </div>
+                    Cancelled Appointments
+                    <div class="small mt-2">Cancelled visits</div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="@Url.Action("DoctorRecords", "HealthRecord")"
+                   class="dash-box box-cyan">
+                    <div class="dash-icon">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    Patient Health Records
                     <div class="small mt-2">Patient history</div>
                 </a>
             </div>
 
             <div class="col-md-4">
-                <a href="@Url.Action("MyProfile", "Doctor")" class="dash-box box-purple">
-                    <div class="dash-icon"><i class="fas fa-user-doctor"></i></div>
+                <a href="@Url.Action("MyProfile", "Doctor")"
+                   class="dash-box box-purple">
+                    <div class="dash-icon">
+                        <i class="fas fa-user-doctor"></i>
+                    </div>
                     My Profile
                     <div class="small mt-2">View details</div>
                 </a>
             </div>
 
-            <div class="col-md-6 mx-auto">
-                <a href="@Url.Action("EditMyProfile", "Doctor")" class="dash-box box-yellow">
-                    <div class="dash-icon"><i class="fas fa-user-pen"></i></div>
+            <div class="col-md-4">
+                <a href="@Url.Action("EditMyProfile", "Doctor")"
+                   class="dash-box box-yellow">
+                    <div class="dash-icon">
+                        <i class="fas fa-user-pen"></i>
+                    </div>
                     Update Profile
                     <div class="small mt-2">Edit details</div>
                 </a>
