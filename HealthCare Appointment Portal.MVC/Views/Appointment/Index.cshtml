@@ -1,115 +1,338 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
-    @{
-        ViewBag.Title = "Appointment Management";
-    }
 
-    <div class="container-fluid">
+@{
+    ViewBag.Title = "Appointment Management";
+}
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="fas fa-calendar-alt me-2"></i>Appointment Management</h2>
-            <a href="@Url.Action("Create", "Appointment")" class="btn btn-success">
-                <i class="fas fa-plus"></i> Add Appointment
-            </a>
+<div class="container-fluid">
+    @if (TempData["Success"] != null)
+    {
+        <div id="successAlert"
+             class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
         </div>
+    }
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-calendar-alt me-2"></i>
+            Appointment Management
+        </h2>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
+        <a href="@Url.Action("Create", "Appointment")"
+           class="btn btn-success">
 
-                <table class="table table-bordered table-hover align-middle">
-                    <thead class="table-light">
-                        <tr>
-                            <th scope="col">Appointment Id</th>
-                            <th scope="col">Patient</th>
-                            <th scope="col">Doctor</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Time Slot</th>
-                            <th scope="col">Status</th>
-                            <th scope="col" class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (!Model.Any())
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
-                                    <em>No appointments found.</em>
-                                </td>
-                            </tr>
-                        }
-                        else
-                        {
-                            foreach (var appointment in Model)
+            <i class="fas fa-plus"></i>
+            Add Appointment
+
+        </a>
+    </div>
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-6">
+
+                    @using (Html.BeginForm(
+                        "Index",
+                        "Appointment",
+                        FormMethod.Get))
+                    {
+                        <div class="input-group">
+
+                            <input type="number"
+                                   name="patientId"
+                                   value="@ViewBag.CurrentPatientId"
+                                   class="form-control"
+                                   placeholder="Search by Patient ID..." />
+
+                            <button type="submit"
+                                    class="btn btn-primary"
+                                    title="Search">
+
+                                <i class="fas fa-search"></i>
+
+                            </button>
+
+                            @if (ViewBag.CurrentPatientId != null)
                             {
-                                <tr>
-                                    <td>@appointment.AppointmentId</td>
-                                    <td>@appointment.PatientName</td>
-                                    <td>@appointment.DoctorName</td>
-                                    <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
-                                    <td>@appointment.TimeSlot</td>
-                                    <td>
-                                        @if (appointment.Status.ToString() == "Pending")
-                                        {
-                                            <span class="badge bg-warning text-dark">Pending</span>
-                                        }
-                                        else if (appointment.Status.ToString() == "Confirmed")
-                                        {
-                                            <span class="badge bg-success">Confirmed</span>
-                                        }
-                                        else if (appointment.Status.ToString() == "Cancelled")
-                                        {
-                                            <span class="badge bg-danger">Cancelled</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-primary">Completed</span>
-                                        }
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center gap-2">
+                                <a href="@Url.Action(
+                                            "Index",
+                                            "Appointment")"
+                                   class="btn btn-outline-secondary"
+                                   title="Clear Search">
 
-                                            <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId })"
-                                               class="btn btn-info btn-sm text-white" title="View">
-                                                <i class="fas fa-eye"></i> View
-                                            </a>
+                                    <i class="fas fa-times"></i>
 
-                                            @if (appointment.Status.ToString() == "Pending")
-                                            {
-                                                using (Html.BeginForm("Confirm", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;" }))
-                                                {
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-success btn-sm" title="Confirm">
-                                                        <i class="fas fa-check"></i> Confirm
-                                                    </button>
-                                                }
-
-                                                using (Html.BeginForm("Cancel", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;", onsubmit = "return confirm('Are you sure you want to cancel this appointment?');" }))
-                                                {
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Cancel">
-                                                        <i class="fas fa-times"></i> Cancel
-                                                    </button>
-                                                }
-                                            }
-
-                                            @if (appointment.Status.ToString() == "Confirmed")
-                                            {
-                                                using (Html.BeginForm("Complete", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post, new { style = "display:inline;" }))
-                                                {
-                                                    @Html.AntiForgeryToken()
-                                                    <button type="submit" class="btn btn-primary btn-sm" title="Complete">
-                                                        <i class="fas fa-clipboard-check"></i> Complete
-                                                    </button>
-                                                }
-                                            }
-
-                                        </div>
-                                    </td>
-                                </tr>
+                                </a>
                             }
-                        }
-                    </tbody>
-                </table>
+
+                        </div>
+                    }
+
+                </div>
 
             </div>
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-light">
+
+                    <tr>
+
+                        <th scope="col">
+                            Appointment Id
+                        </th>
+
+                        <th scope="col">
+                            Patient Id
+                        </th>
+
+                        <th scope="col">
+                            Patient
+                        </th>
+
+                        <th scope="col">
+                            Doctor
+                        </th>
+
+                        <th scope="col">
+                            Date
+                        </th>
+
+                        <th scope="col">
+                            Time Slot
+                        </th>
+
+                        <th scope="col">
+                            Status
+                        </th>
+
+                        <th scope="col"
+                            class="text-center">
+
+                            Actions
+
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @if (!Model.Any())
+                    {
+                        <tr>
+
+                            <td colspan="8"
+                                class="text-center text-muted py-4">
+
+                                <em>
+                                    No appointments found.
+                                </em>
+
+                            </td>
+
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var appointment in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @appointment.AppointmentId
+                                </td>
+
+                                <td>
+                                    @appointment.PatientId
+                                </td>
+
+                                <td>
+                                    @appointment.PatientName
+                                </td>
+
+                                <td>
+                                    @appointment.DoctorName
+                                </td>
+
+                                <td>
+                                    @appointment.ScheduledDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    @appointment.TimeSlot
+                                </td>
+
+                                <td>
+
+                                    @if (appointment.Status
+                                        .ToString() == "Pending")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+
+                                            Pending
+
+                                        </span>
+                                    }
+                                    else if (appointment.Status
+                                        .ToString() == "Confirmed")
+                                    {
+                                        <span class="badge bg-success">
+
+                                            Confirmed
+
+                                        </span>
+                                    }
+                                    else if (appointment.Status
+                                        .ToString() == "Cancelled")
+                                    {
+                                        <span class="badge bg-danger">
+
+                                            Cancelled
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-primary">
+
+                                            Completed
+
+                                        </span>
+                                    }
+
+                                </td>
+
+                                <td class="text-center">
+
+                                    <div class="d-flex justify-content-center gap-2">
+
+
+                                        @if (appointment.Status
+                                            .ToString() == "Pending")
+                                        {
+                                            using (Html.BeginForm(
+                                                "Confirm",
+                                                "Appointment",
+                                                new
+                                                {
+                                                    id =
+                                                    appointment.AppointmentId
+                                                },
+                                                FormMethod.Post,
+                                                new
+                                                {
+                                                    style =
+                                                    "display:inline;"
+                                                }))
+                                            {
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm"
+                                                        title="Confirm">
+
+                                                    <i class="fas fa-check"></i>
+                                                    Confirm
+
+                                                </button>
+                                            }
+
+                                            <a href="@Url.Action(
+                                                        "Cancel",
+                                                        "Appointment",
+                                                        new { id = appointment.AppointmentId })"
+                                               class="btn btn-danger btn-sm"
+                                               title="Cancel">
+
+                                                <i class="fas fa-times"></i>
+                                                Cancel
+
+                                            </a>
+                                        }
+
+                                        @if (appointment.Status
+                                            .ToString() == "Confirmed")
+                                        {
+                                            using (Html.BeginForm(
+                                                "Complete",
+                                                "Appointment",
+                                                new
+                                                {
+                                                    id =
+                                                    appointment.AppointmentId
+                                                },
+                                                FormMethod.Post,
+                                                new
+                                                {
+                                                    style =
+                                                    "display:inline;"
+                                                }))
+                                            {
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="btn btn-primary btn-sm"
+                                                        title="Complete">
+
+                                                    <i class="fas fa-clipboard-check"></i>
+                                                    Complete
+
+                                                </button>
+                                            }
+                                        }
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
         </div>
+
     </div>
+
+</div>
+@section Scripts
+{
+    <script>
+
+        setTimeout(function () {
+
+            var alertElement =
+                document.getElementById(
+                    "successAlert");
+
+            if (alertElement) {
+
+                var alert =
+                    bootstrap.Alert
+                        .getOrCreateInstance(
+                            alertElement);
+
+                alert.close();
+            }
+
+        }, 3000);
+
+    </script>
+}

@@ -74,17 +74,85 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ADMIN / COMMON
         // ==================================
 
-        public async Task<ActionResult> Index()
+        //public async Task<ActionResult> Index(
+        //    int? patientId)
+        //{
+        //    try
+        //    {
+        //        ViewBag.CurrentPatientId =
+        //            patientId;
+
+        //        IEnumerable<AppointmentDto>
+        //            appointments;
+
+        //        if (patientId.HasValue)
+        //        {
+        //            appointments =
+        //                await _appointmentService
+        //                    .GetAppointmentsByPatientAsync(
+        //                        patientId.Value);
+        //        }
+        //        else
+        //        {
+        //            appointments =
+        //                await _appointmentService
+        //                    .GetAllAppointmentsAsync();
+        //        }
+
+        //        return View(
+        //            IndexAction,
+        //            appointments);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData[ErrorKey] =
+        //            ex.Message;
+
+        //        return View(
+        //            IndexAction,
+        //            Enumerable.Empty<
+        //                AppointmentDto>());
+        //    }
+        //}
+
+        public async Task<ActionResult> Index(
+    int? patientId)
         {
             try
             {
-                var appointments = await _appointmentService.GetAllAppointmentsAsync();
-                return View(IndexAction, appointments);
+                ViewBag.CurrentPatientId =
+                    patientId;
+
+                IEnumerable<AppointmentDto>
+                    appointments;
+
+                if (patientId.HasValue)
+                {
+                    appointments =
+                        await _appointmentService
+                            .GetAppointmentsByPatientAsync(
+                                patientId.Value);
+                }
+                else
+                {
+                    appointments =
+                        await _appointmentService
+                            .GetAllAppointmentsAsync();
+                }
+
+                return View(
+                    IndexAction,
+                    appointments);
             }
             catch (Exception ex)
             {
-                TempData[ErrorKey] = ex.Message;
-                return View(IndexAction, Enumerable.Empty<AppointmentDto>());
+                TempData[ErrorKey] =
+                    ex.Message;
+
+                return View(
+                    IndexAction,
+                    Enumerable.Empty<
+                        AppointmentDto>());
             }
         }
 
@@ -116,27 +184,67 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             });
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Create(CreateAppointmentDto dto)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        await PopulateDropdownsAsync();
+        //        return View("Create", dto);
+        //    }
+
+        //    try
+        //    {
+        //        int appointmentId = await _appointmentService.CreateAppointmentAsync(dto);
+        //        TempData[SuccessKey] = "Appointment created successfully.";
+        //        return RedirectToAction(DetailsAction, new { id = appointmentId });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        await PopulateDropdownsAsync();
+        //        ModelState.AddModelError("", ex.Message);
+        //        return View("Create", dto);
+        //    }
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(CreateAppointmentDto dto)
+        public async Task<ActionResult> Create(
+    CreateAppointmentDto dto)
         {
             if (!ModelState.IsValid)
             {
                 await PopulateDropdownsAsync();
-                return View("Create", dto);
+
+                return View(
+                    "Create",
+                    dto);
             }
 
             try
             {
-                int appointmentId = await _appointmentService.CreateAppointmentAsync(dto);
-                TempData[SuccessKey] = "Appointment created successfully.";
-                return RedirectToAction(DetailsAction, new { id = appointmentId });
+                await _appointmentService
+                    .CreateAppointmentAsync(
+                        dto);
+
+                TempData[SuccessKey] =
+                    "Appointment created successfully.";
+
+                return RedirectToAction(
+                    IndexAction);
             }
             catch (Exception ex)
             {
                 await PopulateDropdownsAsync();
-                ModelState.AddModelError("", ex.Message);
-                return View("Create", dto);
+
+                ModelState.AddModelError(
+                    "",
+                    ex.Message);
+
+                return View(
+                    "Create",
+                    dto);
             }
         }
 
@@ -244,18 +352,28 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Confirm(int id)
+        public async Task<ActionResult> Confirm(
+            int id)
         {
             try
             {
-                await _appointmentService.ConfirmAppointmentAsync(id);
-                TempData[SuccessKey] = "Appointment confirmed.";
-                return RedirectToAction(DetailsAction, new { id });
+                await _appointmentService
+                    .ConfirmAppointmentAsync(
+                        id);
+
+                TempData[SuccessKey] =
+                    "Appointment confirmed.";
+
+                return RedirectToAction(
+                    IndexAction);
             }
             catch (Exception ex)
             {
-                TempData[ErrorKey] = ex.Message;
-                return RedirectToAction(DetailsAction, new { id });
+                TempData[ErrorKey] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    IndexAction);
             }
         }
 
@@ -273,21 +391,50 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<ActionResult> Cancel(int id, string reason)
+        //{
+        //    try
+        //    {
+        //        await _appointmentService.CancelAppointmentAsync(id, reason);
+        //        TempData[SuccessKey] = "Appointment cancelled.";
+        //        return RedirectToAction(DetailsAction, new { id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ModelState.AddModelError("", ex.Message);
+        //        var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+        //        return View("Cancel", appointment);
+        //    }
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Cancel(int id, string reason)
+        public async Task<ActionResult> Cancel(
+            int id,
+            string reason)
         {
             try
             {
-                await _appointmentService.CancelAppointmentAsync(id, reason);
-                TempData[SuccessKey] = "Appointment cancelled.";
-                return RedirectToAction(DetailsAction, new { id });
+                await _appointmentService
+                    .CancelAppointmentAsync(
+                        id,
+                        reason);
+
+                TempData[SuccessKey] =
+                    "Appointment cancelled successfully.";
+
+                return RedirectToAction(
+                    IndexAction);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
-                var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
-                return View("Cancel", appointment);
+                TempData[ErrorKey] =
+                    ex.Message;
+
+                return RedirectToAction(
+                    IndexAction);
             }
         }
 

@@ -112,24 +112,24 @@ namespace HealthCare_Appointment_Portal_MVC.Services
                     response);
         }
 
-        public async Task<
-            IEnumerable<AppointmentDto>>
-            GetAppointmentsByPatientAsync(
-                int patientId)
-        {
-            HttpResponseMessage response =
-                await _client.GetAsync(
-                    $"api/appointments/patient/{patientId}");
+        //public async Task<
+        //    IEnumerable<AppointmentDto>>
+        //    GetAppointmentsByPatientAsync(
+        //        int patientId)
+        //{
+        //    HttpResponseMessage response =
+        //        await _client.GetAsync(
+        //            $"api/appointments/patient/{patientId}");
 
-            await ApiResponseHelper
-                .EnsureSuccessAsync(
-                    response);
+        //    await ApiResponseHelper
+        //        .EnsureSuccessAsync(
+        //            response);
 
-            return await response
-                .Content
-                .ReadAsAsync<
-                    IEnumerable<AppointmentDto>>();
-        }
+        //    return await response
+        //        .Content
+        //        .ReadAsAsync<
+        //            IEnumerable<AppointmentDto>>();
+        //}
 
         public async Task<AppointmentDto>
             GetNextAppointmentByPatientAsync(
@@ -247,6 +247,24 @@ namespace HealthCare_Appointment_Portal_MVC.Services
             await ApiResponseHelper
                 .EnsureSuccessAsync(
                     response);
+        }
+
+        public async Task<IEnumerable<AppointmentDto>>
+                GetAppointmentsByPatientAsync(
+                    int patientId)
+        {
+            HttpResponseMessage response =
+                await _client.GetAsync(
+                    $"api/appointments/patient/{patientId}");
+
+            await ApiResponseHelper
+                .EnsureSuccessAsync(
+                    response);
+
+            return await response
+                .Content
+                .ReadAsAsync<
+                    IEnumerable<AppointmentDto>>();
         }
     }
 }

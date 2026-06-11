@@ -9,9 +9,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
     public class HealthRecordController : Controller
     {
-        // ==================================
-        // CONSTANTS (Fixes Sonar S1192)
-        // ==================================
+
         private const string ErrorKey = "Error";
         private const string SuccessKey = "Success";
         private const string ReferenceIdKey = "ReferenceId";
@@ -29,9 +27,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             _appointmentService = appointmentService;
         }
 
-        // ==================================
-        // ADMIN
-        // ==================================
 
         // GET: HealthRecord
         public async Task<ActionResult> Index()
@@ -48,9 +43,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        // ==================================
-        // COMMON
-        // ==================================
 
         // GET: HealthRecord/Details/5
         public async Task<ActionResult> Details(int id)
@@ -96,7 +88,8 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             {
                 int recordId = await _healthRecordService.CreateHealthRecordAsync(dto);
                 TempData[SuccessKey] = "Health record created successfully.";
-                return RedirectToAction("Details", new { id = recordId });
+                //return RedirectToAction("Details", new { id = recordId });
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
@@ -183,9 +176,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             }
         }
 
-        // ==================================
-        // PATIENT
-        // ==================================
 
         // GET: HealthRecord/PatientHistory
         public async Task<ActionResult> PatientHistory()

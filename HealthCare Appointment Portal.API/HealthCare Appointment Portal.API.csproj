@@ -339,6 +339,7 @@
     <Compile Include="Exceptions\DoctorDeletionException.cs" />
     <Compile Include="Exceptions\DoctorNotFoundException .cs" />
     <Compile Include="Exceptions\DoctorUnavailableException.cs" />
+    <Compile Include="Exceptions\DuplicatePatientAppointmentException.cs" />
     <Compile Include="Exceptions\DuplicateHealthRecordException.cs" />
     <Compile Include="Exceptions\DuplicatePatientException .cs" />
     <Compile Include="Exceptions\DuplicatePolicyNumberException.cs" />

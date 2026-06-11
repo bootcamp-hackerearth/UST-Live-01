@@ -1,5 +1,3 @@
-
-
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.PatientDtos.PatientDto>
 
 @{
@@ -114,7 +112,7 @@
                             <th>Gender</th>
                             <th>Email</th>
                             <th>Phone Number</th>
-                            <th>Appointments</th>
+                            @*<th>Appointments</th>*@
                             <th class="text-center">
                                 Actions
                             </th>
@@ -149,9 +147,9 @@
                                     @patient.PhoneNumber
                                 </td>
 
-                                <td>
+                                @*<td>
                                     @patient.AppointmentCount
-                                </td>
+                                </td>*@
 
                                 <td class="text-center">
 
@@ -326,7 +324,7 @@
 
                                 </div>
 
-                                <div class="row">
+                                @*<div class="row">
 
                                     <div class="col-md-4">
                                         <strong>Appointments</strong>
@@ -336,7 +334,7 @@
                                          id="modalAppointments">
                                     </div>
 
-                                </div>
+                                </div>*@
 
                             </div>
 

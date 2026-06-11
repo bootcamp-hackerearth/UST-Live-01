@@ -184,5 +184,36 @@ namespace HealthCare_Appointment_Portal.Repositories
                     a.ScheduledDate)
                 .FirstOrDefaultAsync();
         }
+
+        public async Task<bool>
+            HasAppointmentOnDateAsync(
+                int patientId,
+                DateTime scheduledDate)
+        {
+            return await _context.Appointments
+                .AnyAsync(a =>
+                    a.PatientId == patientId &&
+                    DbFunctions.TruncateTime(
+                        a.ScheduledDate) ==
+                    scheduledDate.Date &&
+                    a.Status !=
+                    AppointmentStatus.Cancelled);
+        }
+
+        public async Task<bool>
+            HasAppointmentForPatientOnDateAsync(
+                int patientId,
+                DateTime scheduledDate)
+        {
+            return await _context.Appointments
+                .AnyAsync(a =>
+                    a.PatientId == patientId &&
+                    DbFunctions.TruncateTime(
+                        a.ScheduledDate) ==
+                    DbFunctions.TruncateTime(
+                        scheduledDate) &&
+                    a.Status !=
+                    AppointmentStatus.Cancelled);
+        }
     }
 }

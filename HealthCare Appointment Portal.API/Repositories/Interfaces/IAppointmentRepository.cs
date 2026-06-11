@@ -45,5 +45,15 @@ namespace HealthCare_Appointment_Portal.Interfaces
                 int doctorId,
                 DateTime date,
                 string timeSlot);
+
+        Task<bool>
+            HasAppointmentOnDateAsync(
+                int patientId,
+                DateTime scheduledDate);
+
+        Task<bool>
+            HasAppointmentForPatientOnDateAsync(
+                int patientId,
+                DateTime scheduledDate);
     }
 }

@@ -141,22 +141,129 @@
 
                                 <td>
 
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "HealthRecord",
-                                                new
-                                                {
-                                                    id = record.RecordId
-                                                })"
-                                       class="btn btn-info btn-sm">
+                                    <button type="button"
+                                            class="btn btn-info btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#recordModal_@record.RecordId">
 
                                         View
 
-                                    </a>
+                                    </button>
 
                                 </td>
 
                             </tr>
+                            <div class="modal fade"
+                                 id="recordModal_@record.RecordId"
+                                 tabindex="-1">
+
+                                <div class="modal-dialog modal-lg">
+
+                                    <div class="modal-content">
+
+                                        <div class="modal-header">
+
+                                            <h5 class="modal-title">
+
+                                                Health Record Details
+
+                                            </h5>
+
+                                            <button type="button"
+                                                    class="btn-close"
+                                                    data-bs-dismiss="modal">
+                                            </button>
+
+                                        </div>
+
+                                        <div class="modal-body">
+
+                                            <div class="row mb-2">
+
+                                                <div class="col-md-6">
+
+                                                    <strong>Record Id:</strong>
+                                                    @record.RecordId
+
+                                                </div>
+
+                                                <div class="col-md-6">
+
+                                                    <strong>Visit Date:</strong>
+                                                    @record.VisitDate.ToString("dd MMM yyyy")
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row mb-2">
+
+                                                <div class="col-md-6">
+
+                                                    <strong>Patient:</strong>
+                                                    @record.PatientName
+
+                                                </div>
+
+                                                <div class="col-md-6">
+
+                                                    <strong>Doctor:</strong>
+                                                    @record.DoctorName
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="mb-2">
+
+                                                <strong>Specialisation:</strong>
+                                                @record.Specialisation
+
+                                            </div>
+
+                                            <div class="mb-2">
+
+                                                <strong>Diagnosis:</strong>
+
+                                                <div class="border rounded p-2">
+
+                                                    @record.Diagnosis
+
+                                                </div>
+
+                                            </div>
+
+                                            <div class="mb-2">
+
+                                                <strong>Prescription:</strong>
+
+                                                <div class="border rounded p-2">
+
+                                                    @record.Prescription
+
+                                                </div>
+
+                                            </div>
+
+                                            <div>
+
+                                                <strong>Notes:</strong>
+
+                                                <div class="border rounded p-2">
+
+                                                    @record.Notes
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
                         }
                     }
 

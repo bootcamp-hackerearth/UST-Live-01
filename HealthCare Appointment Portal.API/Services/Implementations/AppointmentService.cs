@@ -103,6 +103,18 @@ namespace HealthCare_Appointment_Portal.Services
                 throw new AdvanceBookingLimitException();
             }
 
+            bool patientAlreadyBooked =
+                await _unitOfWork
+                    .Appointments
+                    .HasAppointmentForPatientOnDateAsync(
+                        appointmentDto.PatientId,
+                        appointmentDto.ScheduledDate);
+
+            if (patientAlreadyBooked)
+            {
+                throw new DuplicatePatientAppointmentException();
+            }
+
             if (!doctor.IsActive)
             {
                 throw new DoctorUnavailableException();
@@ -419,5 +431,7 @@ namespace HealthCare_Appointment_Portal.Services
                 AppointmentDto>(
                     appointment);
         }
+
+
     }
 }

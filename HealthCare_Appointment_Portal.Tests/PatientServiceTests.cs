@@ -16,305 +16,285 @@ namespace HealthCare_Appointment_Portal.Tests.Services
     [TestClass]
     public class PatientServiceTests
     {
-        private Mock<IUnitOfWork> _unitOfWorkMock;
-
-        private Mock<IMapper> _mapperMock;
-
-        private Mock<IPatientRepository> _patientRepositoryMock;
-
-        private PatientService _service;
+        private Mock<IPatientRepository> _mockPatientRepo;
+        private Mock<IAppointmentRepository> _mockAppointmentRepo;
+        private Mock<IMapper> _mockMapper;
+        private Mock<IUserRepository> _mockUserRepo;
+        private PatientService _sut; // System Under Test
 
         [TestInitialize]
         public void Setup()
         {
-            _unitOfWorkMock =
-                new Mock<IUnitOfWork>();
+            // Arrange - Common setup runs before EVERY test in MSTest
+            _mockPatientRepo = new Mock<IPatientRepository>();
+            _mockAppointmentRepo = new Mock<IAppointmentRepository>();
+            _mockMapper = new Mock<IMapper>();
+            _mockUserRepo = new Mock<IUserRepository>();
 
-            _mapperMock =
-                new Mock<IMapper>();
-
-            _patientRepositoryMock =
-                new Mock<IPatientRepository>();
-
-            _unitOfWorkMock
-                .Setup(x => x.Patients)
-                .Returns(_patientRepositoryMock.Object);
-
-            _service =
-                new PatientService(
-                    _unitOfWorkMock.Object,
-                    _mapperMock.Object);
+            _sut = new PatientService(
+                _mockPatientRepo.Object,
+                _mockUserRepo.Object,
+                _mockAppointmentRepo.Object,
+                _mockMapper.Object);
         }
 
+        #region GetAllPatientsAsync Tests
+
         [TestMethod]
-        public async Task GetPatientByIdAsync_ExistingId_ShouldReturnPatient()
+        public async Task GetAllPatientsAsync_NoSearchTerm_ReturnsAllPatients()
         {
             // Arrange
+            var patients = new List<Patient> { new Patient(), new Patient() };
+            var patientDtos = new List<PatientDto> { new PatientDto(), new PatientDto() };
 
-            Patient patient = new Patient
-            {
-                PatientId = 1,
-                FullName = "Anand"
-            };
-
-            PatientDto patientDto = new PatientDto
-            {
-                PatientId = 1,
-                FullName = "Anand"
-            };
-
-            _patientRepositoryMock
-                .Setup(x =>
-                    x.GetByIdAsync(1))
-                .ReturnsAsync(patient);
-
-            _mapperMock
-                .Setup(x =>
-                    x.Map<PatientDto>(patient))
-                .Returns(patientDto);
+            _mockPatientRepo.Setup(repo => repo.GetAllAsync()).ReturnsAsync(patients);
+            _mockMapper.Setup(m => m.Map<IEnumerable<PatientDto>>(patients)).Returns(patientDtos);
 
             // Act
-
-            PatientDto result =
-                await _service
-                    .GetPatientByIdAsync(1);
+            var result = await _sut.GetAllPatientsAsync();
 
             // Assert
-
             Assert.IsNotNull(result);
-
-            Assert.AreEqual(
-                1,
-                result.PatientId);
-
-            Assert.AreEqual(
-                "Anand",
-                result.FullName);
+            Assert.AreEqual(2, result.Count());
+            _mockPatientRepo.Verify(repo => repo.GetAllAsync(), Times.Once);
+            _mockPatientRepo.Verify(repo => repo.SearchPatientsAsync(It.IsAny<string>()), Times.Never);
         }
 
         [TestMethod]
-        public async Task GetPatientByIdAsync_InvalidId_ShouldThrowPatientNotFoundException()
+        public async Task GetAllPatientsAsync_WithSearchTerm_ReturnsFilteredPatients()
         {
             // Arrange
+            string searchTerm = "John";
+            var patients = new List<Patient> { new Patient() };
+            var patientDtos = new List<PatientDto> { new PatientDto() };
 
-            _patientRepositoryMock
-                .Setup(x => x.GetByIdAsync(100))
-                .ReturnsAsync((Patient)null);
-
-            // Act + Assert
-
-            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(
-                async () =>
-                {
-                    await _service
-                        .GetPatientByIdAsync(100);
-                });
-        }
-
-        [TestMethod]
-        public async Task GetPatientByEmailAsync_InvalidEmail_ShouldThrowPatientNotFoundException()
-        {
-            // Arrange
-
-            _patientRepositoryMock
-                .Setup(x => x.GetPatientByEmailAsync("test@test.com"))
-                .ReturnsAsync((Patient)null);
-
-            // Act + Assert
-
-            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(
-                async () =>
-                {
-                    await _service
-                        .GetPatientByEmailAsync("test@test.com");
-                });
-        }
-
-        [TestMethod]
-        public async Task AddPatientAsync_DuplicateEmail_ShouldThrowDuplicatePatientException()
-        {
-            // Arrange
-
-            CreatePatientDto dto = new CreatePatientDto
-            {
-                Email = "anand@gmail.com"
-            };
-
-            _patientRepositoryMock
-                .Setup(x => x.GetPatientByEmailAsync(dto.Email))
-                .ReturnsAsync(new Patient());
-
-            // Act + Assert
-
-            await Assert.ThrowsExceptionAsync<DuplicatePatientException>(
-                async () =>
-                {
-                    await _service.AddPatientAsync(dto);
-                });
-        }
-
-        [TestMethod]
-        public async Task GetAllPatientsAsync_ShouldReturnPatients()
-        {
-            // Arrange
-
-            var patients = new List<Patient>
-    {
-        new Patient { PatientId = 1, FullName = "Anand" }
-    };
-
-            var patientDtos = new List<PatientDto>
-    {
-        new PatientDto { PatientId = 1, FullName = "Anand" }
-    };
-
-            _patientRepositoryMock
-                .Setup(x => x.GetAllAsync())
-                .ReturnsAsync(patients);
-
-            _mapperMock
-                .Setup(x => x.Map<IEnumerable<PatientDto>>(patients))
-                .Returns(patientDtos);
+            _mockPatientRepo.Setup(repo => repo.SearchPatientsAsync(searchTerm)).ReturnsAsync(patients);
+            _mockMapper.Setup(m => m.Map<IEnumerable<PatientDto>>(patients)).Returns(patientDtos);
 
             // Act
-
-            var result =
-                await _service.GetAllPatientsAsync();
+            var result = await _sut.GetAllPatientsAsync(searchTerm);
 
             // Assert
-
+            Assert.IsNotNull(result);
             Assert.AreEqual(1, result.Count());
+            _mockPatientRepo.Verify(repo => repo.SearchPatientsAsync(searchTerm), Times.Once);
+            _mockPatientRepo.Verify(repo => repo.GetAllAsync(), Times.Never);
         }
 
+        #endregion
+
+        #region GetPatientByIdAsync Tests
+
         [TestMethod]
-        public async Task GetPatientByEmailAsync_ExistingEmail_ShouldReturnPatient()
+        public async Task GetPatientByIdAsync_PatientExists_ReturnsPatientDto()
         {
             // Arrange
+            int patientId = 1;
+            var patient = new Patient { PatientId = patientId };
+            var patientDto = new PatientDto { PatientId = patientId };
 
-            Patient patient = new Patient
-            {
-                PatientId = 1,
-                Email = "anand@gmail.com"
-            };
-
-            PatientDto dto = new PatientDto
-            {
-                PatientId = 1
-            };
-
-            _patientRepositoryMock
-                .Setup(x => x.GetPatientByEmailAsync(patient.Email))
-                .ReturnsAsync(patient);
-
-            _mapperMock
-                .Setup(x => x.Map<PatientDto>(patient))
-                .Returns(dto);
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync(patient);
+            _mockMapper.Setup(m => m.Map<PatientDto>(patient)).Returns(patientDto);
 
             // Act
-
-            var result =
-                await _service.GetPatientByEmailAsync(patient.Email);
+            var result = await _sut.GetPatientByIdAsync(patientId);
 
             // Assert
-
-            Assert.AreEqual(1, result.PatientId);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(patientId, result.PatientId);
         }
 
-
-
         [TestMethod]
-        public async Task UpdatePatientAsync_ValidPatient_ShouldUpdatePatient()
+        public async Task GetPatientByIdAsync_PatientDoesNotExist_ThrowsPatientNotFoundException()
         {
             // Arrange
+            int patientId = 1;
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync((Patient)null);
 
-            var patient = new Patient
-            {
-                PatientId = 1,
-                Email = "old@gmail.com"
-            };
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(() => _sut.GetPatientByIdAsync(patientId));
+        }
 
-            var dto = new UpdatePatientDto
-            {
-                Email = "new@gmail.com"
-            };
+        #endregion
 
-            _patientRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync(patient);
+        #region GetPatientByEmailAsync Tests
 
-            _patientRepositoryMock
-                .Setup(x => x.GetPatientByEmailAsync(dto.Email))
-                .ReturnsAsync((Patient)null);
+        [TestMethod]
+        public async Task GetPatientByEmailAsync_PatientExists_ReturnsPatientDto()
+        {
+            // Arrange
+            string email = "test@test.com";
+            var patient = new Patient { Email = email };
+            var patientDto = new PatientDto { Email = email };
+
+            _mockPatientRepo.Setup(repo => repo.GetPatientByEmailAsync(email)).ReturnsAsync(patient);
+            _mockMapper.Setup(m => m.Map<PatientDto>(patient)).Returns(patientDto);
 
             // Act
-
-            await _service.UpdatePatientAsync(1, dto);
+            var result = await _sut.GetPatientByEmailAsync(email);
 
             // Assert
-
-            _patientRepositoryMock.Verify(
-                x => x.UpdateAsync(patient),
-                Times.Once);
-
-            _unitOfWorkMock.Verify(
-                x => x.CommitAsync(),
-                Times.Once);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(email, result.Email);
         }
 
         [TestMethod]
-        public async Task UpdatePatientAsync_InvalidPatient_ShouldThrowPatientNotFoundException()
+        public async Task GetPatientByEmailAsync_PatientDoesNotExist_ThrowsPatientNotFoundException()
         {
-            _patientRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync((Patient)null);
+            // Arrange
+            string email = "test@test.com";
+            _mockPatientRepo.Setup(repo => repo.GetPatientByEmailAsync(email)).ReturnsAsync((Patient)null);
 
-            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(
-                () => _service.UpdatePatientAsync(
-                    1,
-                    new UpdatePatientDto()));
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(() => _sut.GetPatientByEmailAsync(email));
+        }
+
+        #endregion
+
+        #region AddPatientAsync Tests
+
+        [TestMethod]
+        public async Task AddPatientAsync_ValidPatient_AddsAndReturnsId()
+        {
+            // Arrange
+            var createDto = new CreatePatientDto { Email = "new@test.com" };
+            var mappedPatient = new Patient { PatientId = 1, Email = "new@test.com" };
+
+            _mockPatientRepo.Setup(repo => repo.GetPatientByEmailAsync(createDto.Email)).ReturnsAsync((Patient)null);
+            _mockMapper.Setup(m => m.Map<Patient>(createDto)).Returns(mappedPatient);
+            _mockPatientRepo.Setup(repo => repo.AddAsync(mappedPatient)).Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _sut.AddPatientAsync(createDto);
+
+            // Assert
+            Assert.AreEqual(1, result);
+            _mockPatientRepo.Verify(repo => repo.AddAsync(mappedPatient), Times.Once);
         }
 
         [TestMethod]
-        public async Task UpdatePatientAsync_DuplicateEmail_ShouldThrowDuplicatePatientException()
+        public async Task AddPatientAsync_DuplicateEmail_ThrowsDuplicatePatientException()
         {
-            var patient = new Patient
-            {
-                PatientId = 1
-            };
+            // Arrange
+            var createDto = new CreatePatientDto { Email = "existing@test.com" };
+            var existingPatient = new Patient { Email = "existing@test.com" };
 
-            var existing = new Patient
-            {
-                PatientId = 2
-            };
+            _mockPatientRepo.Setup(repo => repo.GetPatientByEmailAsync(createDto.Email)).ReturnsAsync(existingPatient);
 
-            var dto = new UpdatePatientDto
-            {
-                Email = "duplicate@gmail.com"
-            };
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<DuplicatePatientException>(() => _sut.AddPatientAsync(createDto));
+            _mockPatientRepo.Verify(repo => repo.AddAsync(It.IsAny<Patient>()), Times.Never);
+        }
 
-            _patientRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync(patient);
+        #endregion
 
-            _patientRepositoryMock
-                .Setup(x => x.GetPatientByEmailAsync(dto.Email))
-                .ReturnsAsync(existing);
+        #region UpdatePatientAsync Tests
 
-            await Assert.ThrowsExceptionAsync<DuplicatePatientException>(
-                () => _service.UpdatePatientAsync(1, dto));
+        [TestMethod]
+        public async Task UpdatePatientAsync_ValidData_UpdatesSuccessfully()
+        {
+            // Arrange
+            int patientId = 1;
+            var updateDto = new UpdatePatientDto { Email = "update@test.com" };
+            var existingPatient = new Patient { PatientId = patientId, Email = "old@test.com" };
+
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync(existingPatient);
+            _mockPatientRepo.Setup(repo => repo.GetPatientByEmailAsync(updateDto.Email)).ReturnsAsync((Patient)null);
+
+            // Act
+            await _sut.UpdatePatientAsync(patientId, updateDto);
+
+            // Assert
+            _mockMapper.Verify(m => m.Map(updateDto, existingPatient), Times.Once);
+            _mockPatientRepo.Verify(repo => repo.UpdateAsync(existingPatient), Times.Once);
         }
 
         [TestMethod]
-        public async Task DeletePatientAsync_InvalidPatient_ShouldThrowPatientNotFoundException()
+        public async Task UpdatePatientAsync_PatientNotFound_ThrowsPatientNotFoundException()
         {
-            _patientRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync((Patient)null);
+            // Arrange
+            int patientId = 1;
+            var updateDto = new UpdatePatientDto { Email = "update@test.com" };
 
-            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(
-                () => _service.DeletePatientAsync(1));
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync((Patient)null);
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(() => _sut.UpdatePatientAsync(patientId, updateDto));
         }
-       
 
+        [TestMethod]
+        public async Task UpdatePatientAsync_EmailBelongsToAnotherPatient_ThrowsDuplicatePatientException()
+        {
+            // Arrange
+            int patientId = 1;
+            var updateDto = new UpdatePatientDto { Email = "taken@test.com" };
+            var currentPatient = new Patient { PatientId = patientId, Email = "old@test.com" };
+            var otherPatient = new Patient { PatientId = 2, Email = "taken@test.com" };
+
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync(currentPatient);
+            _mockPatientRepo.Setup(repo => repo.GetPatientByEmailAsync(updateDto.Email)).ReturnsAsync(otherPatient);
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<DuplicatePatientException>(() => _sut.UpdatePatientAsync(patientId, updateDto));
+            _mockPatientRepo.Verify(repo => repo.UpdateAsync(It.IsAny<Patient>()), Times.Never);
+        }
+
+        #endregion
+
+        #region DeletePatientAsync Tests
+
+        [TestMethod]
+        public async Task DeletePatientAsync_NoConfirmedAppointments_DeletesSuccessfully()
+        {
+            // Arrange
+            int patientId = 1;
+            var patient = new Patient { PatientId = patientId };
+            var appointments = new List<Appointment>
+            {
+                new Appointment { Status = AppointmentStatus.Cancelled },
+                new Appointment { Status = AppointmentStatus.Completed }
+            };
+
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync(patient);
+            _mockAppointmentRepo.Setup(repo => repo.GetAppointmentsByPatientAsync(patientId)).ReturnsAsync(appointments);
+
+            // Act
+            await _sut.DeletePatientAsync(patientId);
+
+            // Assert
+            _mockPatientRepo.Verify(repo => repo.DeleteAsync(patientId), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task DeletePatientAsync_PatientNotFound_ThrowsPatientNotFoundException()
+        {
+            // Arrange
+            int patientId = 1;
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync((Patient)null);
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<PatientNotFoundException>(() => _sut.DeletePatientAsync(patientId));
+        }
+
+        [TestMethod]
+        public async Task DeletePatientAsync_HasConfirmedAppointments_ThrowsPatientDeletionException()
+        {
+            // Arrange
+            int patientId = 1;
+            var patient = new Patient { PatientId = patientId };
+            var appointments = new List<Appointment>
+            {
+                new Appointment { Status = AppointmentStatus.Confirmed }
+            };
+
+            _mockPatientRepo.Setup(repo => repo.GetByIdAsync(patientId)).ReturnsAsync(patient);
+            _mockAppointmentRepo.Setup(repo => repo.GetAppointmentsByPatientAsync(patientId)).ReturnsAsync(appointments);
+
+            // Act & Assert
+            await Assert.ThrowsExceptionAsync<PatientDeletionException>(() => _sut.DeletePatientAsync(patientId));
+            _mockPatientRepo.Verify(repo => repo.DeleteAsync(It.IsAny<int>()), Times.Never);
+        }
+
+        #endregion
     }
 }

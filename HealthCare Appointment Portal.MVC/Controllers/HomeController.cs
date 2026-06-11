@@ -8,9 +8,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         public ActionResult
             Index()
         {
-            //return RedirectToAction(
-            //    "Login",
-            //    "User");
+
             return View();
         }
     }

@@ -26,9 +26,9 @@ namespace HealthCare_Appointment_Portal_MVC.Services.Interfaces
             DeleteAppointmentAsync(
                 int id);
 
-        Task<IEnumerable<AppointmentDto>>
-            GetAppointmentsByPatientAsync(
-                int patientId);
+        //Task<IEnumerable<AppointmentDto>>
+        //    GetAppointmentsByPatientAsync(
+        //        int patientId);
 
         Task<AppointmentDto>
             GetNextAppointmentByPatientAsync(
@@ -58,5 +58,9 @@ namespace HealthCare_Appointment_Portal_MVC.Services.Interfaces
             CancelAppointmentAsync(
                 int appointmentId,
                 string reason);
+
+        Task<IEnumerable<AppointmentDto>>
+            GetAppointmentsByPatientAsync(
+                int patientId);
     }
 }
