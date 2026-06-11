@@ -1,0 +1,6 @@
+C:\Users\310055\source\repos\HealthCare.Shared\bin\Debug\HealthCare.Shared.dll
+C:\Users\310055\source\repos\HealthCare.Shared\bin\Debug\HealthCare.Shared.pdb
+C:\Users\310055\source\repos\HealthCare.Shared\obj\Debug\HealthCare.Shared.csproj.AssemblyReference.cache
+C:\Users\310055\source\repos\HealthCare.Shared\obj\Debug\HealthCare.Shared.csproj.CoreCompileInputs.cache
+C:\Users\310055\source\repos\HealthCare.Shared\obj\Debug\HealthCare.Shared.dll
+C:\Users\310055\source\repos\HealthCare.Shared\obj\Debug\HealthCare.Shared.pdb

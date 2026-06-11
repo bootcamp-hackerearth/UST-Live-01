@@ -1,0 +1,139 @@
+﻿@model IEnumerable<HealthCare.Shared.DTOs.Appointment.AppointmentDto>
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-0">
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th class="px-4 py-3">Patient ID</th>
+                        <th class="px-4 py-3">Doctor ID</th>
+                        <th class="px-4 py-3">Date</th>
+                        <th class="px-4 py-3">Time</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Reason</th>
+                        <th class="px-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var appt in Model)
+                        {
+                            <tr>
+                                <td class="px-4 py-3">@appt.PatientId</td>
+
+                                <td class="px-4 py-3">@appt.DoctorId</td>
+
+                                <td class="px-4 py-3">
+                                    @appt.ScheduledDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    @appt.TimeSlot
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    <span class="badge
+                                        @(appt.Status == "Confirmed" ? "bg-success" :
+                                          appt.Status == "Cancelled" ? "bg-danger" :
+                                          "bg-warning")">
+                                        @appt.Status
+                                    </span>
+                                </td>
+
+                                <td class="px-4 py-3">
+                                    @(string.IsNullOrEmpty(appt.CancellationReason) ? "-" : appt.CancellationReason)
+                                </td>
+
+                                <td class="px-4 py-3">
+
+                                    <div class="d-flex gap-2">
+
+                                        @if (appt.Status == "Pending")
+                                        {
+                                            
+                                            using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post, new { @class = "d-inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                @Html.Hidden("id", appt.AppointmentId)
+                                                @Html.Hidden("patientId", appt.PatientId)
+
+                                                <button class="btn btn-sm btn-outline-success"
+                                                        title="Confirm">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </button>
+                                            }
+
+                                            
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="openCancelModal(@appt.AppointmentId, @appt.PatientId)"
+                                                    title="Cancel">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        }
+                                        else if (appt.Status == "Confirmed")
+                                        {
+                                            
+                                            <a href="@Url.Action("Create", "HealthRecord", new {
+                    patientId = appt.PatientId,
+                    doctorId = appt.DoctorId,
+                    appointmentId = appt.AppointmentId
+                })"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="Add Health Record">
+                                                <i class="bi bi-file-plus"></i>
+                                            </a>
+                                        }
+                                        else if (appt.Status == "Completed")
+                                        {
+                                            
+                                            <a href="@Url.Action("Single", "HealthRecord", new { id = appt.AppointmentId })"
+                                               class="btn btn-sm btn-outline-primary"
+                                               title="View Health Record">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        }
+
+                                    </div>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                No appointments found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function openCancelModal(appointmentId) {
+
+        console.log("Opening modal for:", appointmentId);
+
+        
+        document.getElementById("cancelId").value = appointmentId;
+
+       
+        var modal = new bootstrap.Modal(
+            document.getElementById('cancelModal')
+        );
+
+        modal.show();
+    }
+</script>
