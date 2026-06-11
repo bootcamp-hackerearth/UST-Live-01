@@ -1,157 +1,121 @@
-﻿﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Appointment.AppointmentDto>
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Appointment.AppointmentDto>
 
 @{
-    ViewBag.Title = "Appointment List";
-
+    ViewBag.Title = "Appointments";
     int currentPage = Model.PageNumber;
     int totalPages = Model.TotalPages;
+    var doctors = ViewBag.Doctors as List<HealthCare.Shared.DTOs.Doctor.DoctorDto>;
+    int patientId = ViewBag.PatientId;
 }
 
 <div class="container-fluid">
 
-    <!-- HEADER -->
-    <div class="mb-4">
-        <h2 class="fw-bold mb-1">Appointment List</h2>
-        <p class="text-muted mb-0">
-            View and manage appointments.
-        </p>
-    </div>
-
-    <!-- ✅ CONTEXT -->
-    @if (!string.IsNullOrEmpty(Request["patientId"]))
+    <!-- Alerts -->
+    @if (TempData["Success"] != null)
     {
-        <div class="alert alert-secondary">
-            Showing appointments for Patient ID:
-            <strong>@Request["patientId"]</strong>
-        </div>
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
     }
 
-    <!-- ✅ SEARCH + FILTER -->
-    <div class="mb-4 d-flex flex-wrap gap-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Appointments</h2>
+        </div>
 
-        <!-- ✅ Patient Search -->
-        @using (Html.BeginForm("List", "Appointment", FormMethod.Get))
-        {
-            <div class="d-flex gap-2">
-                <input type="number"
-                       name="patientId"
-                       value="@Request["patientId"]"
-                       class="form-control"
-                       placeholder="Enter Patient ID"
-                       style="width:180px;" />
-
-                <button type="submit" class="btn btn-primary">
-                    Search Patient
-                </button>
-            </div>
-        }
-
-        <!-- ✅ Doctor Search -->
-        @using (Html.BeginForm("Today", "Appointment", FormMethod.Get))
-        {
-            <div class="d-flex gap-2">
-                <input type="number"
-                       name="doctorId"
-                       value="@Request["doctorId"]"
-                       class="form-control"
-                       placeholder="Enter Doctor ID"
-                       style="width:180px;" />
-
-                <button type="submit" class="btn btn-success">
-                    Search Doctor
-                </button>
-            </div>
-        }
-
-        <!-- ✅ Status Filter -->
-        @if (!string.IsNullOrEmpty(Request["patientId"]))
-        {
-            using (Html.BeginForm("List", "Appointment", FormMethod.Get))
-            {
-                <div class="d-flex gap-2">
-
-                    <input type="hidden" name="patientId" value="@Request["patientId"]" />
-
-                    <select name="status" class="form-select" style="width:180px;">
-                        <option value="">All Status</option>
-                        <option value="Pending" @(Request["status"] == "Pending" ? "selected" : "")>Pending</option>
-                        <option value="Confirmed" @(Request["status"] == "Confirmed" ? "selected" : "")>Confirmed</option>
-                        <option value="Cancelled" @(Request["status"] == "Cancelled" ? "selected" : "")>Cancelled</option>
-                    </select>
-
-                    <button type="submit" class="btn btn-primary">
-                        Filter
-                    </button>
-
-                </div>
-            }
-        }
-        else
-        {
-            <div class="alert alert-info">
-                Please enter a Patient ID to view and filter appointments.
-            </div>
-        }
-
+        <button class="btn btn-primary"
+                onclick="openModal('@Url.Action("BookPartial","Appointment")','Book Appointment')">
+            <i class="bi bi-calendar-plus"></i> Book Appointment
+        </button>
     </div>
 
-    <!-- ✅ TABLE -->
-    <div class="card border-0 shadow-sm rounded-4">
+    <!-- Table -->
+    <div class="card shadow-sm rounded-4">
         <div class="card-body p-0">
+            <table class="table table-hover mb-0">
 
-            <div class="table-responsive">
-                @Html.Partial("_AppointmentTable", Model.Items)
-            </div>
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
 
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var a in Model.Items)
+                        {
+                            var doctor = doctors?.FirstOrDefault(d => d.DoctorId == a.DoctorId);
+
+                            <tr>
+                                <td>@a.AppointmentId</td>
+                                <td>@doctor?.FullName</td>
+                                <td>@a.ScheduledDate.ToString("dd MMM yyyy")</td>
+                                <td>@a.TimeSlot</td>
+                                <td>
+                                    <span class="badge bg-info">@a.Status</span>
+                                </td>
+                                <td class="text-center">
+
+                                    <!-- Confirm -->
+                                    <form method="post" action="@Url.Action("Confirm")" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@a.AppointmentId" />
+                                        <input type="hidden" name="patientId" value="@patientId" />
+
+                                        <button class="btn btn-success btn-sm">✔</button>
+                                    </form>
+
+                                    <!-- Cancel -->
+                                    <form method="post" action="@Url.Action("Cancel")" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@a.AppointmentId" />
+                                        <input type="hidden" name="patientId" value="@patientId" />
+                                        <input type="hidden" name="reason" value="Cancelled by user" />
+
+                                        <button class="btn btn-danger btn-sm">✖</button>
+                                    </form>
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No appointments found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
         </div>
     </div>
 
-    <!-- ✅ PAGINATION -->
-    <nav class="mt-4">
-        <ul class="pagination justify-content-center">
-
-            <!-- PREVIOUS -->
-            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                <a class="page-link"
-                   href="@Url.Action("List", new {
-                       pageNumber = currentPage - 1,
-                       patientId = Request["patientId"],
-                       status = Request["status"]
-                   })">
-                    Previous
-                </a>
-            </li>
-
-            <!-- PAGE NUMBERS -->
+    <!-- Pagination -->
+    @if (totalPages > 1)
+    {
+        <ul class="pagination justify-content-center mt-3">
             @for (int i = 1; i <= totalPages; i++)
             {
                 <li class="page-item @(i == currentPage ? "active" : "")">
                     <a class="page-link"
-                       href="@Url.Action("List", new {
-                           pageNumber = i,
-                           patientId = Request["patientId"],
-                           status = Request["status"]
-                       })">
+                       href="@Url.Action("List", new { pageNumber = i, patientId = patientId })">
                         @i
                     </a>
                 </li>
             }
-
-            <!-- NEXT -->
-            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                <a class="page-link"
-                   href="@Url.Action("List", new {
-                       pageNumber = currentPage + 1,
-                       patientId = Request["patientId"],
-                       status = Request["status"]
-                   })">
-                    Next
-                </a>
-            </li>
-
         </ul>
-    </nav>
+    }
 
 </div>
-
-@Html.Partial("_CancelModal")

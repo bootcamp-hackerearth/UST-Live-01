@@ -1,0 +1,37 @@
+﻿using Newtonsoft.Json.Linq;
+using System.Web.Mvc;
+using System.Web.UI.WebControls;
+using System.Xml.Linq;
+
+@model HealthCare.Shared.DTOs.Appointment.CreateAppointmentDto
+
+<form method = "post" action="@Url.Action("Book")" data-modal-form>
+
+    <div class= "mb-3" >
+        < label > Doctor </ label >
+        < select id = "doctorSelect" name = "DoctorId" class= "form-control" required >
+            < option value = "" > Select Doctor </ option >
+            @foreach(var d in ViewBag.Doctors)
+            {
+                < option value = "@d.DoctorId" > @d.FullName(@d.Specialisation) </ option >
+            }
+        </ select >
+    </ div >
+
+    < div class= "mb-3" >
+        < label > Date </ label >
+        < input type = "date" id = "dateSelect" name = "ScheduledDate" class= "form-control" required />
+    </ div >
+
+    < div class= "mb-3" >
+        < label > Available Slots </ label >
+        < select id = "slotSelect" name = "TimeSlot" class= "form-control" required >
+            < option > Select slot </ option >
+        </ select >
+    </ div >
+
+    < button type = "submit" class= "btn btn-primary w-100" >
+        Book Appointment
+    </ button >
+
+</ form >
