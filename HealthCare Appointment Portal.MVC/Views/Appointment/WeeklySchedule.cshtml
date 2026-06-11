@@ -1,5 +1,4 @@
 @model IEnumerable<HealthCare_Appointment_Portal.DTOs.AppointmentDtos.AppointmentDto>
-@using System.Web.Routing
 
 @{
     ViewBag.Title = "Weekly Schedule";
@@ -15,43 +14,56 @@
 
         <a href="@Url.Action("Dashboard", "Doctor")"
            class="btn btn-secondary">
+
             Back
+
         </a>
 
     </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+
+            @TempData["Success"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            @TempData["Error"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert">
+            </button>
+
+        </div>
+    }
 
     <div class="card shadow-sm">
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover">
+            <table class="table table-bordered table-hover align-middle">
 
                 <thead class="table-light">
 
                     <tr>
-                        <th>
-                            Appointment Id
-                        </th>
-
-                        <th>
-                            Patient
-                        </th>
-
-                        <th>
-                            Date
-                        </th>
-
-                        <th>
-                            Time Slot
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th width="250">
-                            Actions
-                        </th>
+                        <th>Appointment Id</th>
+                        <th>Patient</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Status</th>
+                        <th width="330">Actions</th>
                     </tr>
 
                 </thead>
@@ -63,7 +75,9 @@
                         <tr>
                             <td colspan="6"
                                 class="text-center">
+
                                 No appointments scheduled this week.
+
                             </td>
                         </tr>
                     }
@@ -71,13 +85,12 @@
                     {
                         foreach (var appointment in Model)
                         {
-                            var appointmentId = appointment.AppointmentId;
-                            var appointmentStatus = appointment.Status.ToString();
+                            var status = appointment.Status.ToString();
 
                             <tr>
 
                                 <td>
-                                    @appointmentId
+                                    @appointment.AppointmentId
                                 </td>
 
                                 <td>
@@ -94,28 +107,34 @@
 
                                 <td>
 
-                                    @if (appointmentStatus == "Pending")
+                                    @if (status == "Pending")
                                     {
                                         <span class="badge bg-warning text-dark">
                                             Pending
                                         </span>
                                     }
-                                    else if (appointmentStatus == "Confirmed")
+                                    else if (status == "Confirmed")
                                     {
                                         <span class="badge bg-success">
                                             Confirmed
                                         </span>
                                     }
-                                    else if (appointmentStatus == "Cancelled")
+                                    else if (status == "Cancelled")
                                     {
                                         <span class="badge bg-danger">
                                             Cancelled
                                         </span>
                                     }
-                                    else if (appointmentStatus == "Completed")
+                                    else if (status == "Completed")
                                     {
                                         <span class="badge bg-primary">
                                             Completed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            @appointment.Status
                                         </span>
                                     }
 
@@ -123,18 +142,17 @@
 
                                 <td>
 
-                                    <a href="@Url.Action(
-                                                "Details",
-                                                "Appointment",
-                                                new RouteValueDictionary
-                                                {
-                                                    { "id", appointmentId }
-                                                })"
-                                       class="btn btn-info btn-sm">
-                                        View
-                                    </a>
+                                    <!-- View opens popup -->
+                                    <button type="button"
+                                            class="btn btn-info btn-sm text-white"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#appointmentModal_@appointment.AppointmentId">
 
-                                    @if (appointmentStatus == "Pending")
+                                        View
+
+                                    </button>
+
+                                    @if (status == "Pending")
                                     {
                                         using (Html.BeginForm(
                                             "Confirm",
@@ -142,37 +160,62 @@
                                             FormMethod.Post,
                                             new
                                             {
-                                                id = $"confirm-form-{appointmentId}",
-                                                style = "display:inline;"
+                                                style = "display:inline;",
+                                                onsubmit = "return confirm('Are you sure you want to confirm this appointment?');"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
 
                                             <input type="hidden"
-                                                   id="confirm-appointment-id-@appointmentId"
                                                    name="id"
-                                                   value="@appointmentId" />
+                                                   value="@appointment.AppointmentId" />
+
+                                            <input type="hidden"
+                                                   name="returnUrl"
+                                                   value="@Request.RawUrl" />
 
                                             <button type="submit"
-                                                    id="confirm-button-@appointmentId"
                                                     class="btn btn-success btn-sm">
+
                                                 Confirm
+
                                             </button>
                                         }
 
-                                        <a href="@Url.Action(
-                                                    "Cancel",
-                                                    "Appointment",
-                                                    new RouteValueDictionary
-                                                    {
-                                                        { "id", appointmentId }
-                                                    })"
-                                           class="btn btn-danger btn-sm">
-                                            Cancel
-                                        </a>
+                                        using (Html.BeginForm(
+                                            "Cancel",
+                                            "Appointment",
+                                            FormMethod.Post,
+                                            new
+                                            {
+                                                style = "display:inline;",
+                                                onsubmit = "return confirm('Are you sure you want to cancel this appointment?');"
+                                            }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@appointment.AppointmentId" />
+
+                                            <input type="hidden"
+                                                   name="reason"
+                                                   value="Cancelled by doctor" />
+
+                                            <input type="hidden"
+                                                   name="returnUrl"
+                                                   value="@Request.RawUrl" />
+
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm">
+
+                                                Cancel
+
+                                            </button>
+                                        }
                                     }
 
-                                    @if (appointmentStatus == "Confirmed")
+                                    @if (status == "Confirmed")
                                     {
                                         using (Html.BeginForm(
                                             "Complete",
@@ -180,43 +223,188 @@
                                             FormMethod.Post,
                                             new
                                             {
-                                                id = $"complete-form-{appointmentId}",
-                                                style = "display:inline;"
+                                                style = "display:inline;",
+                                                onsubmit = "return confirm('Are you sure you want to complete this appointment?');"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
 
                                             <input type="hidden"
-                                                   id="complete-appointment-id-@appointmentId"
                                                    name="id"
-                                                   value="@appointmentId" />
+                                                   value="@appointment.AppointmentId" />
+
+                                            <input type="hidden"
+                                                   name="returnUrl"
+                                                   value="@Request.RawUrl" />
 
                                             <button type="submit"
-                                                    id="complete-button-@appointmentId"
                                                     class="btn btn-primary btn-sm">
+
                                                 Complete
+
                                             </button>
                                         }
                                     }
 
-                                    @if (appointmentStatus == "Completed")
+                                    @if (status == "Completed")
                                     {
-                                        <a href="@Url.Action(
-                                                    "Create",
-                                                    "HealthRecord",
-                                                    new RouteValueDictionary
-                                                    {
-                                                        { "appointmentId", appointmentId },
-                                                        { "patientId", appointment.PatientId }
-                                                    })"
-                                           class="btn btn-dark btn-sm">
-                                            Add Health Record
-                                        </a>
+                                        if (appointment.HasHealthRecord)
+                                        {
+                                            <span class="badge bg-success health-record-added-badge">
+                                                <i class="fas fa-check-circle me-1"></i>
+                                                Health Record Added
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <a href="@Url.Action(
+                                                        "Create",
+                                                        "HealthRecord",
+                                                        new
+                                                        {
+                                                            appointmentId = appointment.AppointmentId,
+                                                            patientId = appointment.PatientId
+                                                        })"
+                                               class="btn btn-dark btn-sm">
+
+                                                Add Health Record
+
+                                            </a>
+                                        }
                                     }
 
                                 </td>
 
                             </tr>
+
+                            <!-- Appointment Details Modal -->
+                            <div class="modal fade"
+                                 id="appointmentModal_@appointment.AppointmentId"
+                                 tabindex="-1"
+                                 aria-labelledby="appointmentModalLabel_@appointment.AppointmentId"
+                                 aria-hidden="true">
+
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                                    <div class="modal-content appointment-modal">
+
+                                        <div class="modal-header">
+
+                                            <h5 class="modal-title fw-bold"
+                                                id="appointmentModalLabel_@appointment.AppointmentId">
+
+                                                Appointment Details
+
+                                            </h5>
+
+                                            <button type="button"
+                                                    class="btn-close"
+                                                    data-bs-dismiss="modal"
+                                                    aria-label="Close">
+                                            </button>
+
+                                        </div>
+
+                                        <div class="modal-body">
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Appointment Id:</strong>
+                                                <span>@appointment.AppointmentId</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Patient:</strong>
+                                                <span>@appointment.PatientName</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Date:</strong>
+                                                <span>@appointment.ScheduledDate.ToString("dd MMM yyyy")</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Time Slot:</strong>
+                                                <span>@appointment.TimeSlot</span>
+                                            </div>
+
+                                            <div class="appointment-detail-row">
+                                                <strong>Status:</strong>
+
+                                                <span>
+                                                    @if (status == "Pending")
+                                                    {
+                                                        <span class="badge bg-warning text-dark">
+                                                            Pending
+                                                        </span>
+                                                    }
+                                                    else if (status == "Confirmed")
+                                                    {
+                                                        <span class="badge bg-success">
+                                                            Confirmed
+                                                        </span>
+                                                    }
+                                                    else if (status == "Cancelled")
+                                                    {
+                                                        <span class="badge bg-danger">
+                                                            Cancelled
+                                                        </span>
+                                                    }
+                                                    else if (status == "Completed")
+                                                    {
+                                                        <span class="badge bg-primary">
+                                                            Completed
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">
+                                                            @appointment.Status
+                                                        </span>
+                                                    }
+                                                </span>
+                                            </div>
+
+                                            @if (status == "Completed")
+                                            {
+                                                <div class="appointment-detail-row">
+                                                    <strong>Health Record:</strong>
+
+                                                    <span>
+                                                        @if (appointment.HasHealthRecord)
+                                                        {
+                                                            <span class="badge bg-success">
+                                                                Health Record Added
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-secondary">
+                                                                Not Added
+                                                            </span>
+                                                        }
+                                                    </span>
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                        <div class="modal-footer">
+
+                                            <button type="button"
+                                                    class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">
+
+                                                Close
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
                         }
                     }
 
@@ -229,3 +417,87 @@
     </div>
 
 </div>
+
+<style>
+    .badge {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+        border-radius: 10px;
+    }
+
+    .btn-sm {
+        border-radius: 8px;
+        margin-right: 4px;
+        font-weight: 500;
+    }
+
+    .card {
+        border-radius: 18px;
+    }
+
+    table th {
+        font-weight: 700;
+    }
+
+    .health-record-added-badge {
+        display: inline-block;
+        font-weight: 600;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.55;
+        backdrop-filter: blur(4px);
+    }
+
+    .appointment-modal {
+        border-radius: 20px;
+        border: none;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #1E3A7A, #2563EB, #4AA3D9);
+        color: white;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+    .appointment-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .appointment-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .appointment-detail-row strong {
+            color: #1f2937;
+            min-width: 180px;
+        }
+
+        .appointment-detail-row span {
+            color: #374151;
+            text-align: right;
+        }
+
+    @@media(max-width: 767px) {
+        .appointment-detail-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .appointment-detail-row span {
+                text-align: left;
+            }
+    }
+</style>

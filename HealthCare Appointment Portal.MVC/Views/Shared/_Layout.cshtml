@@ -8,7 +8,7 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
 
 <head>
 
@@ -49,7 +49,7 @@
         }
 
         .navbar {
-            background: linear-gradient(90deg, var(--primary-dark), var(--primary-blue), var(--primary-light)) !important;
+            background: linear-gradient( 90deg, var(--primary-dark), var(--primary-blue), var(--primary-light) ) !important;
             box-shadow: 0 2px 12px rgba(0,0,0,.15);
         }
 
@@ -84,7 +84,7 @@
         }
 
         .card-header {
-            background: linear-gradient(90deg, var(--primary-dark), var(--primary-blue));
+            background: linear-gradient( 90deg, var(--primary-dark), var(--primary-blue) );
             color: white;
             font-weight: 600;
             border: none;
@@ -128,19 +128,6 @@
             justify-content: center;
             box-shadow: 0 2px 8px rgba(0,0,0,.15);
         }
-
-        .profile-dropdown-button {
-            border: none;
-            background: transparent;
-            padding: 0;
-            margin: 0;
-        }
-
-            .profile-dropdown-button:focus {
-                outline: 2px solid #ffffff;
-                outline-offset: 4px;
-                border-radius: 50%;
-            }
 
         .navbar .dropdown-toggle::after {
             display: none;
@@ -187,8 +174,9 @@
         <div class="container-fluid">
 
             <!-- Logo -->
+
             <a class="navbar-brand d-flex align-items-center"
-               href="@Url.Action("Index", "Home")">
+               href="@Url.Action("Login","User")">
 
                 <img src="@Url.Content("~/Content/Images/healthaxis-logo.png")"
                      alt="HealthAxis Health"
@@ -199,10 +187,7 @@
             <button class="navbar-toggler"
                     type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#navbarContent"
-                    aria-controls="navbarContent"
-                    aria-expanded="false"
-                    aria-label="Toggle navigation">
+                    data-bs-target="#navbarContent">
 
                 <span class="navbar-toggler-icon"></span>
 
@@ -217,35 +202,35 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Dashboard", "Admin")">
+                               href="@Url.Action("Dashboard","Admin")">
                                 Dashboard
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Index", "Patient")">
+                               href="@Url.Action("Index","Patient")">
                                 Patients
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Index", "Doctor")">
+                               href="@Url.Action("Index","Doctor")">
                                 Doctors
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Index", "Appointment")">
+                               href="@Url.Action("Index","Appointment")">
                                 Appointments
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Index", "HealthRecord")">
+                               href="@Url.Action("Index","HealthRecord")">
                                 Health Records
                             </a>
                         </li>
@@ -255,35 +240,35 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Dashboard", "Doctor")">
+                               href="@Url.Action("Dashboard","Doctor")">
                                 Dashboard
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("TodaySchedule", "Appointment")">
+                               href="@Url.Action("TodaySchedule","Appointment")">
                                 Today's Schedule
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("WeeklySchedule", "Appointment")">
+                               href="@Url.Action("WeeklySchedule","Appointment")">
                                 Weekly Schedule
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("DoctorRecords", "HealthRecord")">
+                               href="@Url.Action("DoctorRecords","HealthRecord")">
                                 Health Records
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Index", "Patient")">
+                               href="@Url.Action("Index","Patient")">
                                 Patients
                             </a>
                         </li>
@@ -293,35 +278,35 @@
                     {
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Dashboard", "Patient")">
+                               href="@Url.Action("Dashboard","Patient")">
                                 Dashboard
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Create", "Appointment")">
+                               href="@Url.Action("Create","Appointment")">
                                 Book Appointment
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("MyAppointments", "Appointment")">
+                               href="@Url.Action("MyAppointments","Appointment")">
                                 My Appointments
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("PatientHistory", "HealthRecord")">
+                               href="@Url.Action("PatientHistory","HealthRecord")">
                                 Health History
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a class="nav-link"
-                               href="@Url.Action("Index", "Doctor")">
+                               href="@Url.Action("Index","Doctor")">
                                 Doctors
                             </a>
                         </li>
@@ -335,12 +320,12 @@
 
                         <li class="nav-item dropdown">
 
-                            <button class="nav-link dropdown-toggle profile-dropdown-button"
-                                    type="button"
-                                    id="profileDropdown"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    aria-label="Open profile menu">
+                            <a class="nav-link"
+                               href="#"
+                               id="profileDropdown"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
 
                                 <div class="profile-avatar">
 
@@ -350,15 +335,16 @@
 
                                 </div>
 
-                            </button>
+                            </a>
 
-                            <ul class="dropdown-menu dropdown-menu-end"
-                                aria-labelledby="profileDropdown">
+                            <ul class="dropdown-menu dropdown-menu-end">
 
                                 <li>
 
                                     <h6 class="dropdown-header">
+
                                         @userCode
+
                                     </h6>
 
                                 </li>
@@ -371,7 +357,7 @@
                                 {
                                     <li>
                                         <a class="dropdown-item"
-                                           href="@Url.Action("MyProfile", "Patient")">
+                                           href="@Url.Action("MyProfile","Patient")">
 
                                             <i class="fas fa-user me-2"></i>
 
@@ -385,7 +371,7 @@
                                 {
                                     <li>
                                         <a class="dropdown-item"
-                                           href="@Url.Action("MyProfile", "Doctor")">
+                                           href="@Url.Action("MyProfile","Doctor")">
 
                                             <i class="fas fa-user me-2"></i>
 
@@ -402,7 +388,7 @@
                                 <li>
 
                                     <a class="dropdown-item text-danger"
-                                       href="@Url.Action("Logout", "User")">
+                                       href="@Url.Action("Logout","User")">
 
                                         <i class="fas fa-sign-out-alt me-2"></i>
 

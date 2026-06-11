@@ -47,6 +47,13 @@ namespace HealthCare_Appointment_Portal.DTOs.AppointmentDtos
             set;
         }
 
+        public bool HasHealthRecord 
+
+        { 
+            get;
+            set;
+        
+        }
         public AppointmentStatus Status
         {
             get;
@@ -59,4 +66,5 @@ namespace HealthCare_Appointment_Portal.DTOs.AppointmentDtos
             set;
         }
     }
+
 }

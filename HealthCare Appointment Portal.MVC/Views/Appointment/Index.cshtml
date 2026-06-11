@@ -6,27 +6,29 @@
 
 <div class="container-fluid">
 
-    <!-- ✅ HEADER -->
+    <!-- HEADER -->
     <div class="d-flex align-items-center justify-content-between mb-4 position-relative">
 
-        <!-- LEFT: BACK -->
+        <!-- LEFT: BOOK APPOINTMENT -->
         <div>
-            <a href="@Url.Action("Index","Home")"
-               class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back
+            <a href="@Url.Action("Create", "Appointment")"
+               class="btn btn-success">
+                <i class="fas fa-plus"></i> Book Appointment
             </a>
         </div>
 
         <!-- CENTER TITLE -->
         <div class="position-absolute start-50 translate-middle-x">
-            <h2 class="mb-0 fw-bold">Appointment Management</h2>
+            <h2 class="mb-0 fw-bold">
+                Appointment Management
+            </h2>
         </div>
 
-        <!-- RIGHT: BOOK APPOINTMENT -->
+        <!-- RIGHT: BACK TO ADMIN DASHBOARD -->
         <div>
-            <a href="@Url.Action("Create","Appointment")"
-               class="btn btn-success">
-                <i class="fas fa-plus"></i> Book Appointment
+            <a href="@Url.Action("Dashboard", "Admin")"
+               class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back
             </a>
         </div>
 
@@ -35,10 +37,11 @@
     <div class="card shadow-sm">
         <div class="card-body">
 
-            <!-- ✅ SEARCH -->
+            <!-- SEARCH -->
             <div class="row mb-3">
                 <div class="col-md-4">
                     <div class="input-group">
+
                         <input type="text"
                                id="searchAppointment"
                                class="form-control"
@@ -46,15 +49,17 @@
                                onkeyup="searchAppointment()" />
 
                         <button class="btn btn-primary"
+                                type="button"
                                 onclick="searchAppointment()">
                             Search
                         </button>
+
                     </div>
                 </div>
             </div>
 
-            <!-- ✅ TABLE -->
-            <table class="table table-bordered table-hover"
+            <!-- TABLE -->
+            <table class="table table-bordered table-hover align-middle"
                    id="appointmentTable">
 
                 <thead class="table-light">
@@ -71,10 +76,11 @@
 
                 <tbody>
 
-                    @if (!Model.Any())
+                    @if (Model == null || !Model.Any())
                     {
                         <tr>
-                            <td colspan="7" class="text-center">
+                            <td colspan="7"
+                                class="text-center">
                                 No appointments found.
                             </td>
                         </tr>
@@ -83,38 +89,69 @@
                     {
                         foreach (var appointment in Model)
                         {
+                            var status = appointment.Status.ToString();
+
                             <tr>
-                                <td>@appointment.AppointmentId</td>
-                                <td>@appointment.PatientName</td>
-                                <td>@appointment.DoctorName</td>
-                                <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
-                                <td>@appointment.TimeSlot</td>
+                                <td>
+                                    @appointment.AppointmentId
+                                </td>
 
                                 <td>
-                                    @if (appointment.Status.ToString() == "Pending")
+                                    @appointment.PatientName
+                                </td>
+
+                                <td>
+                                    @appointment.DoctorName
+                                </td>
+
+                                <td>
+                                    @appointment.ScheduledDate.ToString("dd MMM yyyy")
+                                </td>
+
+                                <td>
+                                    @appointment.TimeSlot
+                                </td>
+
+                                <td>
+                                    @if (status == "Pending")
                                     {
-                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
                                     }
-                                    else if (appointment.Status.ToString() == "Confirmed")
+                                    else if (status == "Confirmed")
                                     {
-                                        <span class="badge bg-success">Confirmed</span>
+                                        <span class="badge bg-success">
+                                            Confirmed
+                                        </span>
                                     }
-                                    else if (appointment.Status.ToString() == "Cancelled")
+                                    else if (status == "Cancelled")
                                     {
-                                        <span class="badge bg-danger">Cancelled</span>
+                                        <span class="badge bg-danger">
+                                            Cancelled
+                                        </span>
                                     }
-                                    else if (appointment.Status.ToString() == "Completed")
+                                    else if (status == "Completed")
                                     {
-                                        <span class="badge bg-primary">Completed</span>
+                                        <span class="badge bg-primary">
+                                            Completed
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            @appointment.Status
+                                        </span>
                                     }
                                 </td>
 
                                 <td>
-                                    <a href="@Url.Action("Details","Appointment",
-                                                new { id = appointment.AppointmentId })"
-                                       class="btn btn-info btn-sm">
+                                    <button type="button"
+                                            class="btn btn-info btn-sm text-white"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#appointmentModal_@appointment.AppointmentId">
                                         View
-                                    </a>
+                                    </button>
                                 </td>
                             </tr>
                         }
@@ -129,7 +166,123 @@
 
 </div>
 
-<!-- ✅ SEARCH SCRIPT -->
+@if (Model != null && Model.Any())
+{
+    foreach (var appointment in Model)
+    {
+        var status = appointment.Status.ToString();
+
+        <!-- Appointment Details Modal -->
+        <div class="modal fade"
+             id="appointmentModal_@appointment.AppointmentId"
+             tabindex="-1"
+             aria-labelledby="appointmentModalLabel_@appointment.AppointmentId"
+             aria-hidden="true">
+
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+
+                <div class="modal-content appointment-modal">
+
+                    <div class="modal-header">
+
+                        <h5 class="modal-title fw-bold"
+                            id="appointmentModalLabel_@appointment.AppointmentId">
+                            Appointment Details
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                        </button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="appointment-detail-row">
+                            <strong>Appointment Id:</strong>
+                            <span>@appointment.AppointmentId</span>
+                        </div>
+
+                        <div class="appointment-detail-row">
+                            <strong>Patient:</strong>
+                            <span>@appointment.PatientName</span>
+                        </div>
+
+                        <div class="appointment-detail-row">
+                            <strong>Doctor:</strong>
+                            <span>@appointment.DoctorName</span>
+                        </div>
+
+                        <div class="appointment-detail-row">
+                            <strong>Date:</strong>
+                            <span>@appointment.ScheduledDate.ToString("dd MMM yyyy")</span>
+                        </div>
+
+                        <div class="appointment-detail-row">
+                            <strong>Time Slot:</strong>
+                            <span>@appointment.TimeSlot</span>
+                        </div>
+
+                        <div class="appointment-detail-row">
+                            <strong>Status:</strong>
+
+                            <span>
+                                @if (status == "Pending")
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
+                                }
+                                else if (status == "Confirmed")
+                                {
+                                    <span class="badge bg-success">
+                                        Confirmed
+                                    </span>
+                                }
+                                else if (status == "Cancelled")
+                                {
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
+                                }
+                                else if (status == "Completed")
+                                {
+                                    <span class="badge bg-primary">
+                                        Completed
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">
+                                        @appointment.Status
+                                    </span>
+                                }
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
+                            Close
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+}
+
+<!-- SEARCH SCRIPT -->
 <script>
     function searchAppointment() {
 
@@ -137,6 +290,10 @@
         let rows = document.querySelectorAll("#appointmentTable tbody tr");
 
         rows.forEach(row => {
+
+            if (row.cells.length < 3) {
+                return;
+            }
 
             let patient = row.cells[1].innerText.toLowerCase();
             let doctor = row.cells[2].innerText.toLowerCase();
@@ -150,3 +307,86 @@
         });
     }
 </script>
+
+<style>
+    .card {
+        border-radius: 18px;
+    }
+
+    .btn {
+        border-radius: 8px;
+        font-weight: 600;
+    }
+
+    .btn-sm {
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+        border-radius: 10px;
+    }
+
+    table th {
+        font-weight: 700;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.55;
+        backdrop-filter: blur(4px);
+    }
+
+    .appointment-modal {
+        border-radius: 20px;
+        border: none;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #1E3A7A, #2563EB, #4AA3D9);
+        color: white;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+    }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+        }
+
+    .appointment-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 13px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .appointment-detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .appointment-detail-row strong {
+            color: #1f2937;
+            min-width: 180px;
+        }
+
+        .appointment-detail-row span {
+            color: #374151;
+            text-align: right;
+        }
+
+    @@media(max-width: 767px) {
+        .appointment-detail-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+            .appointment-detail-row span {
+                text-align: left;
+            }
+    }
+</style>

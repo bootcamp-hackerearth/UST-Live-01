@@ -9,13 +9,16 @@ public class AppointmentController : Controller
 {
     private readonly IAppointmentApiService _appointmentService;
     private readonly IDoctorApiService _doctorService;
+    private readonly IHealthRecordApiService _healthRecordService;
 
     public AppointmentController(
         IAppointmentApiService appointmentService,
-        IDoctorApiService doctorService)
+        IDoctorApiService doctorService,
+        IHealthRecordApiService healthRecordService)
     {
         _appointmentService = appointmentService;
         _doctorService = doctorService;
+        _healthRecordService = healthRecordService;
     }
 
     // ==================================
@@ -201,6 +204,20 @@ public class AppointmentController : Controller
             var appointments =
                 await _appointmentService.GetTodayScheduleAsync(doctorId);
 
+            var healthRecords =
+                await _healthRecordService.GetRecordsByDoctorAsync(doctorId);
+
+            if (appointments != null)
+            {
+                foreach (var appointment in appointments)
+                {
+                    appointment.HasHealthRecord =
+                        healthRecords != null &&
+                        healthRecords.Any(hr =>
+                            hr.AppointmentId == appointment.AppointmentId);
+                }
+            }
+
             return View(appointments);
         }
         catch (Exception ex)
@@ -226,6 +243,20 @@ public class AppointmentController : Controller
             var appointments =
                 await _appointmentService.GetWeeklyScheduleAsync(doctorId);
 
+            var healthRecords =
+                await _healthRecordService.GetRecordsByDoctorAsync(doctorId);
+
+            if (appointments != null)
+            {
+                foreach (var appointment in appointments)
+                {
+                    appointment.HasHealthRecord =
+                        healthRecords != null &&
+                        healthRecords.Any(hr =>
+                            hr.AppointmentId == appointment.AppointmentId);
+                }
+            }
+
             return View(appointments);
         }
         catch (Exception ex)
@@ -242,7 +273,7 @@ public class AppointmentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> Confirm(int id)
+    public async Task<ActionResult> Confirm(int id, string returnUrl = null)
     {
         try
         {
@@ -252,7 +283,8 @@ public class AppointmentController : Controller
             if (appointment == null)
             {
                 TempData["Error"] = "Appointment not found.";
-                return RedirectToAction("TodaySchedule");
+
+                return RedirectBackToSchedule(returnUrl);
             }
 
             var startTime =
@@ -266,7 +298,7 @@ public class AppointmentController : Controller
                 TempData["Error"] =
                     "Cannot confirm past appointment.";
 
-                return RedirectToAction("TodaySchedule");
+                return RedirectBackToSchedule(returnUrl);
             }
 
             await _appointmentService.ConfirmAppointmentAsync(id);
@@ -274,13 +306,13 @@ public class AppointmentController : Controller
             TempData["Success"] =
                 "Appointment confirmed successfully.";
 
-            return RedirectToAction("TodaySchedule");
+            return RedirectBackToSchedule(returnUrl);
         }
         catch (Exception ex)
         {
             TempData["Error"] = ex.Message;
 
-            return RedirectToAction("TodaySchedule");
+            return RedirectBackToSchedule(returnUrl);
         }
     }
 
@@ -301,13 +333,16 @@ public class AppointmentController : Controller
         {
             TempData["Error"] = ex.Message;
 
-            return RedirectToAction("TodaySchedule");
+            return RedirectBackToSchedule(null);
         }
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> Cancel(int id, string reason)
+    public async Task<ActionResult> Cancel(
+        int id,
+        string reason,
+        string returnUrl = null)
     {
         try
         {
@@ -321,13 +356,13 @@ public class AppointmentController : Controller
             TempData["Success"] =
                 "Appointment cancelled successfully.";
 
-            return RedirectToAction("TodaySchedule");
+            return RedirectBackToSchedule(returnUrl);
         }
         catch (Exception ex)
         {
             TempData["Error"] = ex.Message;
 
-            return RedirectToAction("TodaySchedule");
+            return RedirectBackToSchedule(returnUrl);
         }
     }
 
@@ -337,7 +372,7 @@ public class AppointmentController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<ActionResult> Complete(int id)
+    public async Task<ActionResult> Complete(int id, string returnUrl = null)
     {
         try
         {
@@ -346,23 +381,44 @@ public class AppointmentController : Controller
             TempData["Success"] =
                 "Appointment completed successfully.";
 
-            var appointment =
-                await _appointmentService.GetAppointmentByIdAsync(id);
-
-            return RedirectToAction(
-                "Create",
-                "HealthRecord",
-                new
-                {
-                    appointmentId = appointment.AppointmentId,
-                    patientId = appointment.PatientId
-                });
+            return RedirectBackToSchedule(returnUrl);
         }
         catch (Exception ex)
         {
             TempData["Error"] = ex.Message;
 
-            return RedirectToAction("TodaySchedule");
+            return RedirectBackToSchedule(returnUrl);
         }
+    }
+
+    // ==================================
+    // HELPER
+    // ==================================
+
+    private ActionResult RedirectBackToSchedule(string returnUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(returnUrl) &&
+            Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+
+        if (Request.UrlReferrer != null)
+        {
+            string referrerPath =
+                Request.UrlReferrer.AbsolutePath;
+
+            if (referrerPath.Contains("WeeklySchedule"))
+            {
+                return RedirectToAction("WeeklySchedule");
+            }
+
+            if (referrerPath.Contains("TodaySchedule"))
+            {
+                return RedirectToAction("TodaySchedule");
+            }
+        }
+
+        return RedirectToAction("TodaySchedule");
     }
 }

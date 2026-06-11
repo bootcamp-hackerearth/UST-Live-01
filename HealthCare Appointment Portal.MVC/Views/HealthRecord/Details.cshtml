@@ -49,190 +49,100 @@
 
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm health-details-card">
 
         <div class="card-body">
 
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Record Id
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Record Id
                 </div>
 
-                <div class="col-md-9">
-
+                <div class="detail-value">
                     @Model.RecordId
-
                 </div>
-
             </div>
 
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Appointment Id
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Appointment Id
                 </div>
 
-                <div class="col-md-9">
-
+                <div class="detail-value">
                     @Model.AppointmentId
-
                 </div>
-
             </div>
 
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Patient
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Patient
                 </div>
 
-                <div class="col-md-9">
-
+                <div class="detail-value">
                     @Model.PatientName
-
                 </div>
-
             </div>
 
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Doctor
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Doctor
                 </div>
 
-                <div class="col-md-9">
-
+                <div class="detail-value">
                     @Model.DoctorName
-
                 </div>
-
             </div>
 
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Specialisation
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Specialisation
                 </div>
 
-                <div class="col-md-9">
-
+                <div class="detail-value">
                     @Model.Specialisation
-
                 </div>
-
             </div>
 
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Visit Date
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Visit Date
                 </div>
 
-                <div class="col-md-9">
-
-                    @Model.VisitDate.ToString(
-                        "dd MMM yyyy")
-
+                <div class="detail-value">
+                    @Model.VisitDate.ToString("dd MMM yyyy")
                 </div>
-
             </div>
 
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Diagnosis
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Diagnosis
                 </div>
 
-                <div class="col-md-9">
-
+                <div class="detail-value">
                     @Model.Diagnosis
-
                 </div>
-
             </div>
 
-            <hr />
-
-            <div class="row mb-3">
-
-                <div class="col-md-3">
-
-                    <strong>
-                        Prescription
-                    </strong>
-
+            <div class="detail-row">
+                <div class="detail-label">
+                    Prescription
                 </div>
 
-                <div class="col-md-9">
-
+                <div class="detail-value">
                     @Model.Prescription
-
                 </div>
-
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(
-                Model.Notes))
+            @if (!string.IsNullOrWhiteSpace(Model.Notes))
             {
-                <hr />
-
-                <div class="row mb-3">
-
-                    <div class="col-md-3">
-
-                        <strong>
-                            Notes
-                        </strong>
-
+                <div class="detail-row">
+                    <div class="detail-label">
+                        Notes
                     </div>
 
-                    <div class="col-md-9">
-
+                    <div class="detail-value">
                         @Model.Notes
-
                     </div>
-
                 </div>
             }
 
@@ -261,3 +171,62 @@
     }
 
 </div>
+
+<style>
+    .health-details-card {
+        border-radius: 18px;
+        border: none;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: flex-start;
+        padding: 14px 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+    .detail-label {
+        width: 260px;
+        min-width: 260px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .detail-value {
+        flex: 1;
+        color: #374151;
+        font-weight: 500;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .btn {
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .alert {
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    @@media(max-width: 767px) {
+        .detail-row {
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-label {
+            width: 100%;
+            min-width: 100%;
+        }
+
+        .detail-value {
+            width: 100%;
+        }
+    }
+</style>

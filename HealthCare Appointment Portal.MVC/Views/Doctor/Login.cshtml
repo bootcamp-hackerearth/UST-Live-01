@@ -32,6 +32,13 @@
                         {
                             @Html.AntiForgeryToken()
 
+                            if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger mb-3 text-start">
+                                    @ViewBag.Error
+                                </div>
+                            }
+
                             <div class="mb-3 text-start">
 
                                 <label for="userId"
@@ -47,13 +54,6 @@
                                        required />
 
                             </div>
-
-                            if (ViewBag.Error != null)
-                            {
-                                <div class="alert alert-danger mt-3">
-                                    @ViewBag.Error
-                                </div>
-                            }
 
                             <button type="submit"
                                     class="btn btn-success btn-lg w-100 mt-3">
@@ -101,12 +101,12 @@
         overflow: hidden;
     }
 
-    .doctor-login-card::before {
-        content: "";
-        display: block;
-        height: 7px;
-        background: linear-gradient(90deg, #166534, #16A34A, #22C55E);
-    }
+        .doctor-login-card::before {
+            content: "";
+            display: block;
+            height: 7px;
+            background: linear-gradient(90deg, #166534, #16A34A, #22C55E);
+        }
 
     .doctor-icon-circle {
         width: 95px;
@@ -127,10 +127,10 @@
         border: 1px solid #D1D5DB;
     }
 
-    .form-control:focus {
-        border-color: #16A34A;
-        box-shadow: 0 0 0 .2rem rgba(22,163,74,.18);
-    }
+        .form-control:focus {
+            border-color: #16A34A;
+            box-shadow: 0 0 0 .2rem rgba(22,163,74,.18);
+        }
 
     .btn {
         border-radius: 12px;
@@ -142,10 +142,10 @@
         border-color: #16A34A;
     }
 
-    .btn-success:hover {
-        background-color: #15803D;
-        border-color: #15803D;
-    }
+        .btn-success:hover {
+            background-color: #15803D;
+            border-color: #15803D;
+        }
 
     .alert {
         border-radius: 12px;

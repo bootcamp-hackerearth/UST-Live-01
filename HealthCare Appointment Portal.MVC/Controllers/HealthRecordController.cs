@@ -6,25 +6,22 @@ using System.Web.Mvc;
 
 namespace HealthCare_Appointment_Portal_MVC.Controllers
 {
-    public class HealthRecordController
-        : Controller
+    public class HealthRecordController : Controller
     {
-        private readonly IHealthRecordApiService
-             _healthRecordService;
+        private readonly IHealthRecordApiService _healthRecordService;
 
         public HealthRecordController(
             IHealthRecordApiService healthRecordService)
         {
-            _healthRecordService =
-                healthRecordService;
+            _healthRecordService = healthRecordService;
         }
+
         // ==================================
         // ADMIN
         // ==================================
 
         // GET: HealthRecord
-        public async Task<ActionResult>
-            Index()
+        public async Task<ActionResult> Index()
         {
             try
             {
@@ -32,13 +29,11 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     await _healthRecordService
                         .GetAllHealthRecordsAsync();
 
-                return View(
-                    records);
+                return View(records);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
                 return View();
             }
@@ -49,27 +44,21 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: HealthRecord/Details/5
-        public async Task<ActionResult>
-            Details(
-                int id)
+        public async Task<ActionResult> Details(int id)
         {
             try
             {
                 var record =
                     await _healthRecordService
-                        .GetHealthRecordByIdAsync(
-                            id);
+                        .GetHealthRecordByIdAsync(id);
 
-                return View(
-                    record);
+                return View(record);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Index");
             }
         }
 
@@ -78,10 +67,9 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: HealthRecord/Create
-        public ActionResult
-            Create(
-                int appointmentId,
-                int patientId)
+        public ActionResult Create(
+            int appointmentId,
+            int patientId)
         {
             if (Session["ReferenceId"] == null)
             {
@@ -93,27 +81,22 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             return View(
                 new CreateHealthRecordDto
                 {
-                    AppointmentId =
-                        appointmentId,
+                    AppointmentId = appointmentId,
 
-                    PatientId =
-                        patientId,
+                    PatientId = patientId,
 
-                    DoctorId =
-                        Convert.ToInt32(
-                            Session["ReferenceId"]),
+                    DoctorId = Convert.ToInt32(
+                        Session["ReferenceId"]),
 
-                    VisitDate =
-                        DateTime.Today
+                    VisitDate = DateTime.Today
                 });
         }
 
         // POST: HealthRecord/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Create(
-                CreateHealthRecordDto dto)
+        public async Task<ActionResult> Create(
+            CreateHealthRecordDto dto)
         {
             if (Session["ReferenceId"] == null)
             {
@@ -124,8 +107,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(
-                    dto);
+                return View(dto);
             }
 
             try
@@ -134,35 +116,26 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     Convert.ToInt32(
                         Session["ReferenceId"]);
 
-                int recordId =
-                    await _healthRecordService
-                        .CreateHealthRecordAsync(
-                            dto);
+                await _healthRecordService
+                    .CreateHealthRecordAsync(dto);
 
                 TempData["Success"] =
-                    "Health record created successfully.";
+                    "Health record added successfully.";
 
                 return RedirectToAction(
-                    "Details",
-                    new
-                    {
-                        id = recordId
-                    });
+                    "DoctorRecords",
+                    "HealthRecord");
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return View(
-                    dto);
+                return View(dto);
             }
         }
 
         // GET: HealthRecord/Edit/5
-        public async Task<ActionResult>
-            Edit(
-                int id)
+        public async Task<ActionResult> Edit(int id)
         {
             if (Session["ReferenceId"] == null)
             {
@@ -175,42 +148,36 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             {
                 var record =
                     await _healthRecordService
-                        .GetHealthRecordByIdAsync(
-                            id);
+                        .GetHealthRecordByIdAsync(id);
 
-                ViewBag.RecordId =
-                    record.RecordId;
+                ViewBag.RecordId = record.RecordId;
 
                 return View(
                     new UpdateHealthRecordDto
                     {
-                        Diagnosis =
-                            record.Diagnosis,
+                        Diagnosis = record.Diagnosis,
 
-                        Prescription =
-                            record.Prescription,
+                        Prescription = record.Prescription,
 
-                        Notes =
-                            record.Notes
+                        Notes = record.Notes
                     });
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
                 return RedirectToAction(
-                    "DoctorRecords");
+                    "DoctorRecords",
+                    "HealthRecord");
             }
         }
 
         // POST: HealthRecord/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                UpdateHealthRecordDto dto)
+        public async Task<ActionResult> Edit(
+            int id,
+            UpdateHealthRecordDto dto)
         {
             if (Session["ReferenceId"] == null)
             {
@@ -221,11 +188,9 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewBag.RecordId =
-                    id;
+                ViewBag.RecordId = id;
 
-                return View(
-                    dto);
+                return View(dto);
             }
 
             try
@@ -239,28 +204,21 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     "Health record updated successfully.";
 
                 return RedirectToAction(
-                    "Details",
-                    new
-                    {
-                        id
-                    });
+                    "DoctorRecords",
+                    "HealthRecord");
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                ViewBag.RecordId =
-                    id;
+                ViewBag.RecordId = id;
 
-                return View(
-                    dto);
+                return View(dto);
             }
         }
 
         // GET: HealthRecord/DoctorRecords
-        public async Task<ActionResult>
-            DoctorRecords()
+        public async Task<ActionResult> DoctorRecords()
         {
             if (Session["ReferenceId"] == null)
             {
@@ -277,16 +235,13 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
                 var records =
                     await _healthRecordService
-                        .GetRecordsByDoctorAsync(
-                            doctorId);
+                        .GetRecordsByDoctorAsync(doctorId);
 
-                return View(
-                    records);
+                return View(records);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
                 return View();
             }
@@ -297,8 +252,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: HealthRecord/PatientHistory
-        public async Task<ActionResult>
-            PatientHistory()
+        public async Task<ActionResult> PatientHistory()
         {
             if (Session["ReferenceId"] == null)
             {
@@ -315,16 +269,13 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
                 var records =
                     await _healthRecordService
-                        .GetRecordsByPatientAsync(
-                            patientId);
+                        .GetRecordsByPatientAsync(patientId);
 
-                return View(
-                    records);
+                return View(records);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
                 return View();
             }
@@ -335,9 +286,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         // ==================================
 
         // GET: HealthRecord/Delete/5
-        public async Task<ActionResult>
-            Delete(
-                int id)
+        public async Task<ActionResult> Delete(int id)
         {
             if (Session["ReferenceId"] == null)
             {
@@ -350,19 +299,15 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             {
                 var record =
                     await _healthRecordService
-                        .GetHealthRecordByIdAsync(
-                            id);
+                        .GetHealthRecordByIdAsync(id);
 
-                return View(
-                    record);
+                return View(record);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Index");
             }
         }
 
@@ -370,9 +315,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            DeleteConfirmed(
-                int id)
+        public async Task<ActionResult> DeleteConfirmed(int id)
         {
             if (Session["ReferenceId"] == null)
             {
@@ -384,19 +327,16 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             try
             {
                 await _healthRecordService
-                    .DeleteHealthRecordAsync(
-                        id);
+                    .DeleteHealthRecordAsync(id);
 
                 TempData["Success"] =
                     "Health record deleted successfully.";
 
-                return RedirectToAction(
-                    "Index");
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
+                TempData["Error"] = ex.Message;
 
                 return RedirectToAction(
                     "Delete",
