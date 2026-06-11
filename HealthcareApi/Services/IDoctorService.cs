@@ -12,8 +12,13 @@ namespace HealthcareApi.Services
 
         DoctorDto GetDoctorById(int doctorId);
 
+        List<DoctorDto> SearchDoctors(string query);
+
         List<DoctorDto> SearchDoctorsBySpecialisation(Specialisation specialisation);
 
+        List<DoctorDto> SearchActiveDoctors(
+            string query,
+            Specialisation? specialisation);
         DoctorDto AddDoctor(CreateDoctorDto dto);
 
         DoctorDto UpdateDoctor(int doctorId, UpdateDoctorDto dto);

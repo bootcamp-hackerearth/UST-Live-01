@@ -5,6 +5,7 @@ using HealthcareApi.Models;
 using HealthcareApi.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace HealthcareApi.Services.Implementations
 {
@@ -12,6 +13,10 @@ namespace HealthcareApi.Services.Implementations
     {
         private readonly IPatientRepository _patientRepository;
         private readonly IMapper _mapper;
+
+        private const string FullNamePattern = @"^[A-Za-z ]+$";
+        private const string PhoneNumberPattern = @"^\d{10}$";
+        private const string InsuranceIdPattern = @"^INS\d+$";
 
         public PatientService(IPatientRepository patientRepository, IMapper mapper)
         {
@@ -39,13 +44,20 @@ namespace HealthcareApi.Services.Implementations
 
             return _mapper.Map<PatientDto>(patient);
         }
+        public List<PatientDto> SearchPatients(string query)
+        {
+            List<Patient> patients = _patientRepository.SearchPatients(query);
 
+            return _mapper.Map<List<PatientDto>>(patients);
+        }
         public PatientDto RegisterPatient(CreatePatientDto dto)
         {
             if (dto == null)
             {
                 throw new BusinessRuleException("Patient details are required.");
             }
+
+            NormalizeCreatePatientDto(dto);
 
             Patient patient = _mapper.Map<Patient>(dto);
 
@@ -66,6 +78,8 @@ namespace HealthcareApi.Services.Implementations
             {
                 throw new BusinessRuleException("Patient details are required.");
             }
+
+            NormalizeUpdatePatientDto(dto);
 
             Patient existingPatient = _patientRepository.GetById(patientId);
 
@@ -107,6 +121,22 @@ namespace HealthcareApi.Services.Implementations
             return _mapper.Map<PatientDto>(deletedPatient);
         }
 
+        private void NormalizeCreatePatientDto(CreatePatientDto dto)
+        {
+            dto.FullName = dto.FullName?.Trim();
+            dto.Email = dto.Email?.Trim();
+            dto.PhoneNumber = dto.PhoneNumber?.Trim();
+            dto.InsuranceId = dto.InsuranceId?.Trim().ToUpper();
+        }
+
+        private void NormalizeUpdatePatientDto(UpdatePatientDto dto)
+        {
+            dto.FullName = dto.FullName?.Trim();
+            dto.Email = dto.Email?.Trim();
+            dto.PhoneNumber = dto.PhoneNumber?.Trim();
+            dto.InsuranceId = dto.InsuranceId?.Trim().ToUpper();
+        }
+
         private void ValidatePatientId(int patientId)
         {
             if (patientId <= 0)
@@ -126,11 +156,17 @@ namespace HealthcareApi.Services.Implementations
             {
                 throw new BusinessRuleException("Patient full name is required.");
             }
+
+            if (!Regex.IsMatch(patient.FullName, FullNamePattern))
+            {
+                throw new BusinessRuleException("Full name can contain only letters and spaces.");
+            }
+
             if (patient.DateOfBirth.Date < new DateTime(1900, 1, 1))
             {
-                throw new BusinessRuleException(
-                    "Date of birth cannot be before 01 Jan 1900.");
+                throw new BusinessRuleException("Date of birth cannot be before 01 Jan 1900.");
             }
+
             if (patient.DateOfBirth.Date > DateTime.Today)
             {
                 throw new BusinessRuleException("Date of birth cannot be in the future.");
@@ -141,6 +177,11 @@ namespace HealthcareApi.Services.Implementations
                 throw new BusinessRuleException("Phone number is required.");
             }
 
+            if (!Regex.IsMatch(patient.PhoneNumber, PhoneNumberPattern))
+            {
+                throw new BusinessRuleException("Phone number must be exactly 10 digits.");
+            }
+
             if (string.IsNullOrWhiteSpace(patient.Email))
             {
                 throw new BusinessRuleException("Email is required.");
@@ -149,6 +190,12 @@ namespace HealthcareApi.Services.Implementations
             if (string.IsNullOrWhiteSpace(patient.InsuranceId))
             {
                 throw new BusinessRuleException("Insurance ID is required.");
+            }
+
+            if (!Regex.IsMatch(patient.InsuranceId, InsuranceIdPattern))
+            {
+                throw new BusinessRuleException(
+                    "Insurance ID must start with INS followed by digits only. Example: INS12345");
             }
         }
     }

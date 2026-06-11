@@ -19,5 +19,9 @@ namespace HealthcareApi.Repositories
         Doctor Add(Doctor doctor);
 
         Doctor Update(int doctorId, Doctor doctor);
+
+        List<Doctor> SearchDoctors(string query);
+
+        List<Doctor> SearchActiveDoctors(string query, Specialisation? specialisation);
     }
 }

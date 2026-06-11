@@ -12,9 +12,9 @@ namespace HealthcareWeb.Services
         Task<List<DoctorDto>> GetAllActiveAsync();
 
         Task<DoctorDto> GetByIdAsync(int id);
-
+        Task<List<DoctorDto>> SearchAsync(string query);
         Task<List<DoctorDto>> SearchBySpecialisationAsync(Specialisation specialisation);
-
+        Task<List<DoctorDto>> SearchActiveAsync(string query, Specialisation? specialisation);
         Task<DoctorDto> AddAsync(CreateDoctorDto dto);
 
         Task<DoctorDto> UpdateAsync(int id, UpdateDoctorDto dto);

@@ -8,13 +8,6 @@
 
 <h2 class="text-success">Upcoming Appointments</h2>
 
-@if (ViewBag.Doctor != null)
-{
-    <p>
-        <strong>Doctor:</strong> Dr. @ViewBag.Doctor.FullName
-    </p>
-}
-
 <div class="data-section">
     <div class="data-section-header">
         <div class="data-section-title">
@@ -32,7 +25,35 @@
             )
         </div>
     </div>
+    @using (Html.BeginForm("UpcomingAppointments", "Doctor", FormMethod.Get))
+    {
+        <input type="hidden" name="doctorId" value="@doctorId" />
+        <div class="form-panel" style="margin-bottom: 1rem;">
+            <div class="form-row-grid">
+                <div class="mb-2 form-row-full">
+                    <label class="fw-bold">Search Upcoming Appointments</label>
+                    <input type="text"
+                           name="query"
+                           value="@ViewBag.SearchQuery"
+                           class="form-control border-dark"
+                           placeholder="Search by patient name" />
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
 
+                @Html.ActionLink(
+                    "Clear",
+                    "UpcomingAppointments",
+                    "Doctor",
+                    new { doctorId = doctorId },
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+    }
     @if (Model == null || Model.Count == 0)
     {
         <div class="empty-state-card">
@@ -48,7 +69,7 @@
                     <thead>
                         <tr>
                             <th>Appointment ID</th>
-                            <th>Patient ID</th>
+                            <th>Patient</th>
                             <th>Scheduled Date</th>
                             <th>Slot</th>
                             <th>Status</th>
@@ -63,9 +84,13 @@
                             bool isConfirmed = appointment.Status == AppointmentStatus.Confirmed;
                             bool isToday = appointment.ScheduledDate.Date == DateTime.Today;
 
+                            string patientDisplay = string.IsNullOrWhiteSpace(appointment.PatientName)
+                                ? "Patient #" + appointment.PatientId
+                                : appointment.PatientName + " (#" + appointment.PatientId + ")";
+
                             <tr>
                                 <td>@appointment.AppointmentId</td>
-                                <td>@appointment.PatientId</td>
+                                <td>@patientDisplay</td>
                                 <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
                                 <td>@appointment.SlotNumber</td>
 
@@ -103,7 +128,9 @@
                                                 <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
                                                 <input type="hidden" name="doctorId" value="@doctorId" />
 
-                                                <button type="submit" class="btn btn-success btn-sm">
+                                                <button type="submit"
+                                                        class="btn btn-success btn-sm"
+                                                        onclick="return confirm('Are you sure you want to confirm this appointment?');">
                                                     Confirm
                                                 </button>
                                             }
@@ -116,7 +143,9 @@
                                                 <input type="hidden" name="appointmentId" value="@appointment.AppointmentId" />
                                                 <input type="hidden" name="doctorId" value="@doctorId" />
 
-                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                <button type="submit"
+                                                        class="btn btn-primary btn-sm"
+                                                        onclick="return confirm('Are you sure the appointment is completed? You will be entering health record details next');">
                                                     Complete
                                                 </button>
                                             }
@@ -136,7 +165,9 @@
                                                            placeholder="Cancellation reason"
                                                            required="required" />
 
-                                                    <button type="submit" class="btn btn-danger btn-sm">
+                                                    <button type="submit"
+                                                            class="btn btn-danger btn-sm"
+                                                            onclick="return confirm">
                                                         Cancel
                                                     </button>
                                                 </div>

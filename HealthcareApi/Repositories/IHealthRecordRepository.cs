@@ -22,5 +22,11 @@ namespace HealthcareApi.Repositories
         HealthRecord Update(int healthRecordId, HealthRecord record);
 
         HealthRecord Delete(int healthRecordId);
+
+        List<HealthRecord> SearchHealthRecords(string query);
+
+        List<HealthRecord> SearchHealthRecordsByPatientId(int patientId, string query);
+
+        List<HealthRecord> SearchHealthRecordsByDoctorId(int doctorId, string query);
     }
 }

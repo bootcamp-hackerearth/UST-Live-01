@@ -35,66 +35,79 @@ namespace HealthcareApi.Services.Implementations
 
         public List<AppointmentDto> GetAllAppointments()
         {
+            AutoCancelExpiredPendingAppointments();
+
             List<Appointment> appointments = _appointmentRepository.GetAll();
 
-            return _mapper.Map<List<AppointmentDto>>(appointments);
+            return MapAppointmentsToDtos(appointments);
         }
 
         public AppointmentDto GetAppointmentById(int appointmentId)
         {
+
             Appointment appointment = GetAppointmentEntityById(appointmentId);
 
-            return _mapper.Map<AppointmentDto>(appointment);
+            return MapAppointmentToDto(appointment);
         }
 
         public List<AppointmentDto> GetAppointmentsByPatient(int patientId)
         {
             ValidatePatientExists(patientId);
 
-            List<Appointment> appointments =
-                _appointmentRepository.GetAppointmentsByPatientId(patientId);
+            AutoCancelExpiredPendingAppointments();
 
-            return _mapper.Map<List<AppointmentDto>>(appointments);
+            List<Appointment> appointments =
+                _appointmentRepository.GetByPatientId(patientId);
+
+            return MapAppointmentsToDtos(appointments);
         }
 
         public List<AppointmentDto> GetAppointmentsByDoctor(int doctorId)
         {
             ValidateDoctorExists(doctorId);
 
-            List<Appointment> appointments =
-                _appointmentRepository.GetAppointmentsByDoctorId(doctorId);
+            AutoCancelExpiredPendingAppointments();
 
-            return _mapper.Map<List<AppointmentDto>>(appointments);
+            List<Appointment> appointments =
+                _appointmentRepository.GetByDoctorId(doctorId);
+
+            return MapAppointmentsToDtos(appointments);
         }
 
         public List<AppointmentDto> GetUpcomingAppointmentsByPatient(int patientId)
         {
             ValidatePatientExists(patientId);
 
+            AutoCancelExpiredPendingAppointments();
+
             List<Appointment> appointments =
                 _appointmentRepository.GetUpcomingAppointmentsByPatientId(patientId);
 
-            return _mapper.Map<List<AppointmentDto>>(appointments);
+            return MapAppointmentsToDtos(appointments);
         }
 
         public List<AppointmentDto> GetUpcomingAppointmentsByDoctor(int doctorId)
         {
             ValidateDoctorExists(doctorId);
 
+            AutoCancelExpiredPendingAppointments();
+
             List<Appointment> appointments =
                 _appointmentRepository.GetUpcomingAppointmentsByDoctorId(doctorId);
 
-            return _mapper.Map<List<AppointmentDto>>(appointments);
+            return MapAppointmentsToDtos(appointments);
         }
 
         public List<AppointmentDto> GetCancelledAppointmentsByPatient(int patientId)
         {
             ValidatePatientExists(patientId);
 
+            AutoCancelExpiredPendingAppointments();
+
             List<Appointment> appointments =
                 _appointmentRepository.GetCancelledAppointmentsByPatientId(patientId);
 
-            return _mapper.Map<List<AppointmentDto>>(appointments);
+            return MapAppointmentsToDtos(appointments);
         }
 
         public AppointmentDto BookAppointment(BookAppointmentDto dto)
@@ -126,7 +139,7 @@ namespace HealthcareApi.Services.Implementations
 
             Appointment savedAppointment = _appointmentRepository.Add(appointment);
 
-            return _mapper.Map<AppointmentDto>(savedAppointment);
+            return MapAppointmentToDto(savedAppointment);
         }
 
         public AppointmentDto UpdateAppointment(int appointmentId, UpdateAppointmentDto dto)
@@ -176,7 +189,7 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Appointment", appointmentId);
             }
 
-            return _mapper.Map<AppointmentDto>(updatedAppointment);
+            return MapAppointmentToDto(updatedAppointment);
         }
 
         public AppointmentDto DeleteAppointment(int appointmentId)
@@ -201,7 +214,7 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Appointment", appointmentId);
             }
 
-            return _mapper.Map<AppointmentDto>(deletedAppointment);
+            return MapAppointmentToDto(deletedAppointment);
         }
 
         public AppointmentDto ConfirmAppointment(int appointmentId, ConfirmAppointmentDto dto)
@@ -237,7 +250,7 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Appointment", appointmentId);
             }
 
-            return _mapper.Map<AppointmentDto>(updatedAppointment);
+            return MapAppointmentToDto(updatedAppointment);
         }
 
         public AppointmentDto CancelAppointmentByPatient(int appointmentId, CancelByPatientDto dto)
@@ -283,9 +296,19 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Appointment", appointmentId);
             }
 
-            return _mapper.Map<AppointmentDto>(updatedAppointment);
+            return MapAppointmentToDto(updatedAppointment);
         }
+        public List<AppointmentDto> GetCancelledAppointmentsByDoctor(int doctorId)
+        {
+            ValidateDoctorExists(doctorId);
 
+
+
+            List<Appointment> appointments =
+                _appointmentRepository.GetCancelledAppointmentsByDoctorId(doctorId);
+
+            return MapAppointmentsToDtos(appointments);
+        }
         public AppointmentDto CancelAppointmentByDoctor(int appointmentId, CancelByDoctorDto dto)
         {
             if (dto == null)
@@ -295,6 +318,8 @@ namespace HealthcareApi.Services.Implementations
 
             ValidateDoctorExists(dto.DoctorId);
 
+            AutoCancelExpiredPendingAppointments();
+
             Appointment appointment = GetAppointmentEntityById(appointmentId);
 
             if (appointment.DoctorId != dto.DoctorId)
@@ -302,7 +327,14 @@ namespace HealthcareApi.Services.Implementations
                 throw new AppointmentRuleException(
                     "This appointment does not belong to the selected doctor.");
             }
-
+            
+            if (appointment.Status == AppointmentStatus.Confirmed &&
+                appointment.ScheduledDate.Date == DateTime.Today)
+            {
+                throw new AppointmentRuleException(
+                    "Doctors cannot cancel confirmed appointments on the appointment date.");
+            }
+            
             ValidateCancellationReason(dto.Reason);
 
             if (!appointment.CanCancel())
@@ -323,7 +355,7 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Appointment", appointmentId);
             }
 
-            return _mapper.Map<AppointmentDto>(updatedAppointment);
+            return MapAppointmentToDto(updatedAppointment);
         }
 
         public AppointmentDto CompleteAppointment(int appointmentId, CompleteAppointmentDto dto)
@@ -365,12 +397,68 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Appointment", appointmentId);
             }
 
-            return _mapper.Map<AppointmentDto>(updatedAppointment);
+            return MapAppointmentToDto(updatedAppointment);
         }
 
+        
+        public List<AppointmentDto> SearchAppointments(string query)
+        {
+            AutoCancelExpiredPendingAppointments();
+            List<Appointment> appointments =
+                _appointmentRepository.SearchAppointments(query);
+
+            return MapAppointmentsToDtos(appointments);
+        }
+        public List<AppointmentDto> SearchCancelledAppointmentsByPatient(
+            int patientId,
+            string query)
+        {
+            ValidatePatientExists(patientId);
+
+            AutoCancelExpiredPendingAppointments();
+
+            List<Appointment> appointments =
+                _appointmentRepository.SearchCancelledAppointmentsByPatientId(
+                    patientId,
+                    query);
+
+            return MapAppointmentsToDtos(appointments);
+        }
+        public List<AppointmentDto> SearchCancelledAppointmentsByDoctor(
+            int doctorId,
+            string query)
+        {
+            ValidateDoctorExists(doctorId);
+
+            AutoCancelExpiredPendingAppointments();
+
+            List<Appointment> appointments =
+                _appointmentRepository.SearchCancelledAppointmentsByDoctorId(
+                    doctorId,
+                    query);
+
+            return MapAppointmentsToDtos(appointments);
+        }
+        public List<AppointmentDto> SearchUpcomingAppointmentsByDoctor(
+            int doctorId,
+            string query)
+        {
+            ValidateDoctorExists(doctorId);
+
+            AutoCancelExpiredPendingAppointments();
+
+            List<Appointment> appointments =
+                _appointmentRepository.SearchUpcomingAppointmentsByDoctorId(
+                    doctorId,
+                    query);
+
+            return MapAppointmentsToDtos(appointments);
+        }
         private Appointment GetAppointmentEntityById(int appointmentId)
         {
             ValidateAppointmentId(appointmentId);
+
+            AutoCancelExpiredPendingAppointments();
 
             Appointment appointment = _appointmentRepository.GetById(appointmentId);
 
@@ -380,15 +468,6 @@ namespace HealthcareApi.Services.Implementations
             }
 
             return appointment;
-        }
-        public List<AppointmentDto> GetCancelledAppointmentsByDoctor(int doctorId)
-        {
-            ValidateDoctorExists(doctorId);
-
-            List<Appointment> appointments =
-                _appointmentRepository.GetCancelledAppointmentsByDoctorId(doctorId);
-
-            return _mapper.Map<List<AppointmentDto>>(appointments);
         }
 
         private void ValidateAppointmentId(int appointmentId)
@@ -464,31 +543,6 @@ namespace HealthcareApi.Services.Implementations
             }
         }
 
-        private void ValidateSlotAvailability(
-            int doctorId,
-            DateTime scheduledDate,
-            int slotNumber)
-        {
-            if (_appointmentRepository.IsSlotBooked(
-                doctorId,
-                scheduledDate.Date,
-                slotNumber))
-            {
-                throw new AppointmentRuleException(
-                    "Selected appointment slot is already booked.");
-            }
-
-            int activeAppointments =
-                _appointmentRepository.CountActiveAppointmentsByDoctorAndDate(
-                    doctorId,
-                    scheduledDate.Date);
-
-            if (activeAppointments >= MaximumSlotsPerDoctorPerDay)
-            {
-                throw new AppointmentRuleException(
-                    "Doctor has reached the maximum number of appointments for this date.");
-            }
-        }
 
         private void ValidatePatientDuplicateAppointment(
             int patientId,
@@ -541,5 +595,71 @@ namespace HealthcareApi.Services.Implementations
             throw new AppointmentRuleException(
                 "Doctor has reached the maximum number of appointments for this date.");
         }
+        private AppointmentDto MapAppointmentToDto(Appointment appointment)
+        {
+            AppointmentDto dto = _mapper.Map<AppointmentDto>(appointment);
+            PopulateAppointmentNames(dto);
+
+            return dto;
+        }
+
+        private List<AppointmentDto> MapAppointmentsToDtos(List<Appointment> appointments)
+        {
+            List<AppointmentDto> dtos = _mapper.Map<List<AppointmentDto>>(appointments); 
+
+            PopulateAppointmentNames(dtos);
+
+            return dtos;
+        }
+
+        private void PopulateAppointmentNames(List<AppointmentDto> appointments)
+        {
+            if (appointments == null)
+            {
+                return;
+            }
+
+            foreach (AppointmentDto appointment in appointments)
+            {
+                PopulateAppointmentNames(appointment);
+            }
+        }
+
+        private void PopulateAppointmentNames(AppointmentDto appointment)
+        {
+            if (appointment == null)
+            {
+                return;
+            }
+
+            Patient patient = _patientRepository.GetById(appointment.PatientId);
+            Doctor doctor = _doctorRepository.GetById(appointment.DoctorId);
+
+            appointment.PatientName = patient == null
+                ? "Unknown Patient"
+                : patient.FullName;
+
+            appointment.DoctorName = doctor == null
+                ? "Unknown Doctor"
+                : doctor.FullName;
+        }
+
+        private void AutoCancelExpiredPendingAppointments()
+        {
+            DateTime today = DateTime.Today;
+
+            List<Appointment> appointments =
+                _appointmentRepository.GetExpiredPendingAppointments(today);
+
+            foreach (Appointment appointment in appointments)
+            {
+                appointment.Status = AppointmentStatus.Cancelled;
+                appointment.CancellationReason =
+                    "Automatically cancelled because the appointment was still pending on the scheduled date.";
+
+                _appointmentRepository.Update(appointment.AppointmentId, appointment);
+            }
+        }
     }
+
 }

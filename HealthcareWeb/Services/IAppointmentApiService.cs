@@ -35,5 +35,20 @@ namespace HealthcareWeb.Services
         Task<AppointmentDto> CompleteAsync(int id, CompleteAppointmentDto dto);
 
         Task<List<AppointmentDto>> GetCancelledByDoctorAsync(int doctorId);
+
+        Task<List<AppointmentDto>> SearchAsync(string query);
+
+        Task<List<AppointmentDto>> SearchCancelledByPatientAsync(
+            int patientId,
+            string query);
+
+        Task<List<AppointmentDto>> SearchCancelledByDoctorAsync(
+            int doctorId,
+            string query);
+
+        Task<List<AppointmentDto>> SearchUpcomingByDoctorAsync(
+            int doctorId,
+            string query);
+
     }
 }

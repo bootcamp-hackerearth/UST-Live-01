@@ -58,6 +58,39 @@ namespace HealthcareApi.Controllers
 
             return Ok(records);
         }
+        
+        [HttpGet]
+        [Route("search")]
+        public IHttpActionResult Search([FromUri] string query = "")
+        {
+            var records = _service.SearchHealthRecords(query);
+
+            return Ok(records);
+        }
+       
+        [HttpGet]
+        [Route("patient/{patientId:int}/search")]
+        public IHttpActionResult SearchByPatient(
+            int patientId,
+            [FromUri] string query = "")
+        {
+            var records =
+                _service.SearchHealthRecordsByPatient(patientId, query);
+
+            return Ok(records);
+        }
+        
+        [HttpGet]
+        [Route("doctor/{doctorId:int}/search")]
+        public IHttpActionResult SearchByDoctor(
+            int doctorId,
+            [FromUri] string query = "")
+        {
+            var records =
+                _service.SearchHealthRecordsByDoctor(doctorId, query);
+
+            return Ok(records);
+        }
 
         [HttpPost]
         [Route("")]

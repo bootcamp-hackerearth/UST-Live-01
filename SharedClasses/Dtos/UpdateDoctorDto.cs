@@ -1,25 +1,32 @@
-﻿
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using SharedClasses.Enums;
+
 namespace SharedClasses.Dtos
 {
     public class UpdateDoctorDto
     {
-        [Required]
-        [StringLength(100)]
+        [Required(ErrorMessage = "Full name is required.")]
+        [StringLength(100, ErrorMessage = "Full name cannot exceed 100 characters.")]
+        [RegularExpression(@"^[A-Za-z .]+$", ErrorMessage = "Full name can contain only letters, spaces, and dots.")]
+        [Display(Name = "Full Name")]
         public string FullName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Specialisation is required.")]
+        [Display(Name = "Specialisation")]
         public Specialisation Specialisation { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Practice start date is required.")]
+        [DataType(DataType.Date)]
+        [Display(Name = "Practice Start Date")]
         public DateTime PracticeStartDate { get; set; }
 
-        [Required]
-        [Range(0, 100000)]
+        [Required(ErrorMessage = "Consultation fee is required.")]
+        [Range(0, 100000, ErrorMessage = "Consultation fee must be between 0 and 100000.")]
+        [Display(Name = "Consultation Fee")]
         public decimal ConsultationFee { get; set; }
 
+        [Display(Name = "Active")]
         public bool IsActive { get; set; }
     }
 }

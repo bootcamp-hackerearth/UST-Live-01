@@ -82,6 +82,31 @@ body {
     gap: 6px;
 }
 
+.appointment-search-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    align-items: end;
+}
+
+.appointment-search-field {
+    display: flex;
+    flex-direction: column;
+}
+
+    .appointment-search-field label {
+        margin-bottom: 6px;
+    }
+
+    .appointment-search-field .form-control {
+        width: 100%;
+    }
+
+@media (max-width: 768px) {
+    .appointment-search-grid {
+        grid-template-columns: 1fr;
+    }
+}
     .app-nav-links .nav-link {
         color: #cbd5e1 !important;
         border-radius: 10px;
@@ -1500,5 +1525,30 @@ hr {
     .form-panel-header h4,
     .danger-panel-header h4 {
         font-size: 1.1rem;
+    }
+}
+.appointment-search-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    align-items: end;
+}
+
+.appointment-search-field {
+    display: flex;
+    flex-direction: column;
+}
+
+    .appointment-search-field label {
+        margin-bottom: 6px;
+    }
+
+    .appointment-search-field .form-control {
+        width: 100%;
+    }
+
+@media (max-width: 768px) {
+    .appointment-search-grid {
+        grid-template-columns: 1fr;
     }
 }

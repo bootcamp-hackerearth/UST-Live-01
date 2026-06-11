@@ -49,6 +49,37 @@ namespace HealthcareWeb.Services
             return JsonConvert.DeserializeObject<DoctorDto>(json);
         }
 
+        public async Task<List<DoctorDto>> SearchAsync(string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            var response = await _httpClient.GetAsync("doctors/search?query=" + encodedQuery);
+            await ThrowIfErrorAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<DoctorDto>>(json);
+        }
+        public async Task<List<DoctorDto>> SearchActiveAsync(
+            string query,
+            Specialisation? specialisation)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            string url = "doctors/active/search?query=" + encodedQuery;
+
+            if (specialisation.HasValue)
+            {
+                url += "&specialisation=" + (int)specialisation.Value;
+            }
+
+            var response = await _httpClient.GetAsync(url);
+            await ThrowIfErrorAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<DoctorDto>>(json);
+        }
         public async Task<List<DoctorDto>> SearchBySpecialisationAsync(Specialisation specialisation)
         {
             var response = await _httpClient.GetAsync("doctors/specialisation/" + (int)specialisation);

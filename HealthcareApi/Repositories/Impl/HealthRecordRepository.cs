@@ -1,6 +1,7 @@
 ﻿using HealthcareApi.Data;
 using HealthcareApi.Models;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 
 namespace HealthcareApi.Repositories.Implementations
@@ -17,6 +18,8 @@ namespace HealthcareApi.Repositories.Implementations
         public List<HealthRecord> GetAll()
         {
             return _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
                 .OrderByDescending(r => r.VisitDate)
                 .ToList();
         }
@@ -24,12 +27,16 @@ namespace HealthcareApi.Repositories.Implementations
         public HealthRecord GetById(int healthRecordId)
         {
             return _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
                 .FirstOrDefault(r => r.HealthRecordId == healthRecordId);
         }
 
         public List<HealthRecord> GetByPatientId(int patientId)
         {
             return _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
                 .Where(r => r.PatientId == patientId)
                 .OrderByDescending(r => r.VisitDate)
                 .ToList();
@@ -38,6 +45,8 @@ namespace HealthcareApi.Repositories.Implementations
         public List<HealthRecord> GetByDoctorId(int doctorId)
         {
             return _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
                 .Where(r => r.DoctorId == doctorId)
                 .OrderByDescending(r => r.VisitDate)
                 .ToList();
@@ -46,6 +55,8 @@ namespace HealthcareApi.Repositories.Implementations
         public List<HealthRecord> GetByAppointmentId(int appointmentId)
         {
             return _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
                 .Where(r => r.AppointmentId == appointmentId)
                 .OrderByDescending(r => r.VisitDate)
                 .ToList();
@@ -54,15 +65,63 @@ namespace HealthcareApi.Repositories.Implementations
         public bool ExistsByAppointmentId(int appointmentId)
         {
             return _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
                 .Any(r => r.AppointmentId == appointmentId);
         }
+
+        public List<HealthRecord> SearchHealthRecords(string query)
+        {
+            IQueryable<HealthRecord> records = _context.HealthRecords
+                .Include(r => r.Doctor)
+                .Include(r => r.Patient);
+            
+            records = ApplyHealthRecordSearch(records, query);
+
+            return records
+                .OrderBy(r => r.HealthRecordId)
+                .ToList();
+        }
+
+        public List<HealthRecord> SearchHealthRecordsByPatientId(
+            int patientId,
+            string query)
+        {
+            IQueryable<HealthRecord> records = _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
+                .Where(r => r.PatientId == patientId);
+
+            records = ApplyHealthRecordSearch(records, query);
+
+            return records
+                .OrderBy(r => r.HealthRecordId)
+                .ToList();
+        }
+
+        public List<HealthRecord> SearchHealthRecordsByDoctorId(
+            int doctorId,
+            string query)
+        {
+            IQueryable<HealthRecord> records = _context.HealthRecords
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
+                .Where(r => r.DoctorId == doctorId);
+
+            records = ApplyHealthRecordSearch(records, query);
+
+            return records
+                .OrderBy(r => r.HealthRecordId)
+                .ToList();
+        }
+
 
         public HealthRecord Add(HealthRecord record)
         {
             _context.HealthRecords.Add(record);
             _context.SaveChanges();
 
-            return record;
+            return GetById(record.HealthRecordId);
         }
 
         public HealthRecord Update(int healthRecordId, HealthRecord record)
@@ -84,7 +143,7 @@ namespace HealthcareApi.Repositories.Implementations
 
             _context.SaveChanges();
 
-            return existingRecord;
+            return GetById(healthRecordId);
         }
 
         public HealthRecord Delete(int healthRecordId)
@@ -100,6 +159,21 @@ namespace HealthcareApi.Repositories.Implementations
             _context.SaveChanges();
 
             return existingRecord;
+        }
+        private IQueryable<HealthRecord> ApplyHealthRecordSearch(IQueryable<HealthRecord> records, string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return records;
+            }
+
+            string searchTerm = query.Trim().ToLower();
+
+            return records.Where(r =>
+                (r.Patient != null &&
+                    r.Patient.FullName.ToLower().Contains(searchTerm)) ||
+                (r.Doctor != null &&
+                    r.Doctor.FullName.ToLower().Contains(searchTerm)));
         }
     }
 }

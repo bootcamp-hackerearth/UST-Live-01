@@ -64,6 +64,45 @@ namespace HealthcareWeb.Services
             return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
         }
 
+        public async Task<List<HealthRecordDto>> SearchAsync(string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            var response = await _httpClient.GetAsync(
+                "healthrecords/search?query=" + encodedQuery);
+
+            await EnsureSuccessWithMessageAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
+        }
+
+        public async Task<List<HealthRecordDto>> SearchByPatientAsync(int patientId, string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            string url = "healthrecords/patient/" + patientId + "/search?query=" + encodedQuery;
+
+            var response = await _httpClient.GetAsync(url);
+
+            await EnsureSuccessWithMessageAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
+        }
+
+        public async Task<List<HealthRecordDto>> SearchByDoctorAsync(int doctorId, string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+            string url = "healthrecords/doctor/" + doctorId + "/search?query=" + encodedQuery;
+            var response = await _httpClient.GetAsync(url);
+            await EnsureSuccessWithMessageAsync(response);
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
+        }
+
         public async Task<HealthRecordDto> AddAsync(AddHealthRecordDto dto)
         {
             var json = JsonConvert.SerializeObject(dto);
@@ -104,14 +143,54 @@ namespace HealthcareWeb.Services
                 return;
             }
 
-            string errorMessage = await response.Content.ReadAsStringAsync();
+            string content = await response.Content.ReadAsStringAsync();
+            string message = ExtractErrorMessage(content);
 
-            if (string.IsNullOrWhiteSpace(errorMessage))
+            if (string.IsNullOrWhiteSpace(message))
             {
-                errorMessage = "API request failed.";
+                message = "API request failed.";
             }
 
-            throw new Exception(errorMessage);
+            throw new Exception(message);
+        }
+
+        private string ExtractErrorMessage(string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return "API request failed.";
+            }
+
+            try
+            {
+                var json = Newtonsoft.Json.Linq.JObject.Parse(content);
+
+                if (json["message"] != null)
+                {
+                    return json["message"].ToString();
+                }
+
+                if (json["Message"] != null)
+                {
+                    return json["Message"].ToString();
+                }
+
+                if (json["modelState"] != null)
+                {
+                    return json["modelState"].ToString();
+                }
+
+                if (json["ModelState"] != null)
+                {
+                    return json["ModelState"].ToString();
+                }
+            }
+            catch
+            {
+                // Response was not JSON. Return raw content.
+            }
+
+            return content;
         }
     }
 }

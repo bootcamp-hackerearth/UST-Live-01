@@ -7,13 +7,6 @@
 
 <h2 class="text-success">Upcoming Appointments</h2>
 
-@if (ViewBag.Patient != null)
-{
-    <p>
-        <strong>Patient:</strong> @ViewBag.Patient.FullName
-    </p>
-}
-
 <div class="data-section">
     <div class="data-section-header">
         <div class="data-section-title">
@@ -55,7 +48,7 @@
                     <thead>
                         <tr>
                             <th>Appointment ID</th>
-                            <th>Doctor ID</th>
+                            <th>Doctor</th>
                             <th>Scheduled Date</th>
                             <th>Slot</th>
                             <th>Status</th>
@@ -66,9 +59,13 @@
                     <tbody>
                         @foreach (var appointment in Model)
                         {
+                            string doctorDisplay = string.IsNullOrWhiteSpace(appointment.DoctorName)
+                                ? "Doctor #" + appointment.DoctorId
+                                : appointment.DoctorName + " (#" + appointment.DoctorId + ")";
+
                             <tr>
                                 <td>@appointment.AppointmentId</td>
-                                <td>@appointment.DoctorId</td>
+                                <td>@doctorDisplay</td>
                                 <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
                                 <td>@appointment.SlotNumber</td>
                                 <td>
@@ -90,16 +87,20 @@
                                 <td>
                                     <div class="data-table-actions">
                                         @Html.ActionLink(
-                                            "Cancel",
-                                            "CancelAppointment",
-                                            "Patient",
-                                            new
-                                            {
-                                                appointmentId = appointment.AppointmentId,
-                                                patientId = patientId
-                                            },
-                                            new { @class = "btn btn-danger btn-sm" }
-                                        )
+                                             "Cancel",
+                                             "CancelAppointment",
+                                             "Patient",
+                                             new
+                                             {
+                                                 appointmentId = appointment.AppointmentId,
+                                                 patientId = patientId
+                                             },
+                                             new
+                                             {
+                                                 @class = "btn btn-danger btn-sm",
+                                                 onclick = "return confirm('Are you sure you want to cancel this appointment?');"
+                                             }
+                                         )
                                     </div>
                                 </td>
                             </tr>

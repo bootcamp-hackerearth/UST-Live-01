@@ -1,5 +1,6 @@
-﻿using SharedClasses.Dtos;
+﻿using HealthcareApi.Models;
 using HealthcareApi.Services;
+using SharedClasses.Dtos;
 using System.Web.Http;
 
 namespace HealthcareApi.Controllers
@@ -85,6 +86,50 @@ namespace HealthcareApi.Controllers
 
             return Ok(appointments);
         }
+
+        [HttpGet]
+        [Route("search")]
+        public IHttpActionResult Search([FromUri] string query = "")
+        {
+            var appointments = _service.SearchAppointments(query);
+
+            return Ok(appointments);
+        }
+        [HttpGet]
+        [Route("patient/{patientId:int}/cancelled/search")]
+        public IHttpActionResult SearchCancelledByPatient(
+            int patientId,
+            [FromUri] string query = "")
+        {
+            var appointments =
+                _service.SearchCancelledAppointmentsByPatient(patientId, query);
+
+            return Ok(appointments);
+        }
+
+        [HttpGet]
+        [Route("doctor/{doctorId:int}/cancelled/search")]
+        public IHttpActionResult SearchCancelledByDoctor(
+            int doctorId,
+            [FromUri] string query = "")
+        {
+            var appointments =
+                _service.SearchCancelledAppointmentsByDoctor(doctorId, query);
+
+            return Ok(appointments);
+        }
+        [HttpGet]
+        [Route("doctor/{doctorId:int}/upcoming/search")]
+        public IHttpActionResult SearchUpcomingByDoctor(int doctorId,
+            [FromUri] string query = "")
+        {
+            var appointments =
+                _service.SearchUpcomingAppointmentsByDoctor(doctorId, query);
+
+            return Ok(appointments);
+        }
+
+
 
         [HttpPost]
         [Route("book")]

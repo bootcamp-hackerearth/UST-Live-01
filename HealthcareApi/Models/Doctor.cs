@@ -21,6 +21,7 @@ namespace HealthcareApi.Models
 
         [Required(ErrorMessage = "Doctor full name is required.")]
         [StringLength(100, ErrorMessage = "Full name cannot exceed 100 characters.")]
+        [RegularExpression(@"^[A-Za-z ]+$", ErrorMessage = "Full name can contain only letters and spaces.")]
         [Display(Name = "Full Name")]
         public string FullName { get; set; }
 

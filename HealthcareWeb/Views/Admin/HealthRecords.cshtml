@@ -10,7 +10,7 @@
     <div class="data-section-header">
         <div class="data-section-title">
             <h4>Health Record Register</h4>
-            <p>Review diagnoses, prescriptions, notes, and appointment-linked medical history.</p>
+            <p>Review appointment-linked health record summaries and open individual records for full details.</p>
         </div>
 
         <div class="data-section-actions">
@@ -31,7 +31,35 @@
             )
         </div>
     </div>
+    @using (Html.BeginForm("HealthRecords", "Admin", FormMethod.Get))
+    {
+        <div class="form-panel" style="margin-bottom: 1rem;">
+            <div class="form-row-grid">
+                <div class="mb-2 form-row-full">
+                    <label class="fw-bold">Search Health Records</label>
+                    <input type="text"
+                           name="query"
+                           value="@ViewBag.SearchQuery"
+                           class="form-control border-dark"
+                           placeholder="Search by patient name, doctor name"/>
+                </div>
+            </div>
 
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
+
+                @Html.ActionLink(
+                    "Clear",
+                    "HealthRecords",
+                    "Admin",
+                    null,
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+    }
     @if (Model == null || Model.Count == 0)
     {
         <div class="empty-state-card">
@@ -47,13 +75,10 @@
                     <thead>
                         <tr>
                             <th>Record ID</th>
-                            <th>Patient ID</th>
-                            <th>Doctor ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
                             <th>Appointment ID</th>
                             <th>Visit Date</th>
-                            <th>Diagnosis</th>
-                            <th>Prescription</th>
-                            <th>Notes</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -61,26 +86,30 @@
                     <tbody>
                         @foreach (var record in Model)
                         {
+                            string patientDisplay = string.IsNullOrWhiteSpace(record.PatientName)
+                                ? "Patient #" + record.PatientId
+                                : record.PatientName + " (#" + record.PatientId + ")";
+
+                            string doctorDisplay = string.IsNullOrWhiteSpace(record.DoctorName)
+                                ? "Doctor #" + record.DoctorId
+                                : record.DoctorName + " (#" + record.DoctorId + ")";
+
                             <tr>
                                 <td>@record.HealthRecordId</td>
-                                <td>@record.PatientId</td>
-                                <td>@record.DoctorId</td>
+                                <td>@patientDisplay</td>
+                                <td>@doctorDisplay</td>
                                 <td>@record.AppointmentId</td>
                                 <td>@record.VisitDate.ToString("dd-MM-yyyy")</td>
-                                <td class="text-left">@record.Diagnosis</td>
-                                <td class="text-left">@record.Prescription</td>
-                                <td class="text-left">
-                                    @if (string.IsNullOrWhiteSpace(record.Notes))
-                                    {
-                                        <span>-</span>
-                                    }
-                                    else
-                                    {
-                                        @record.Notes
-                                    }
-                                </td>
                                 <td>
                                     <div class="data-table-actions">
+                                        @Html.ActionLink(
+                                            "View",
+                                            "HealthRecordDetails",
+                                            "Admin",
+                                            new { id = record.HealthRecordId },
+                                            new { @class = "btn btn-info btn-sm" }
+                                        )
+
                                         @Html.ActionLink(
                                             "Edit",
                                             "EditHealthRecord",
@@ -90,11 +119,16 @@
                                         )
 
                                         @Html.ActionLink(
-                                            "Delete",
-                                            "DeleteHealthRecord",
-                                            "Admin",
-                                            new { id = record.HealthRecordId },
-                                            new { @class = "btn btn-danger btn-sm" }
+                                                "Delete",
+                                                "DeleteHealthRecord",
+                                                "Admin",
+                                                new { id = record.HealthRecordId },
+                                                new
+                                                {
+                                                    @class = "btn btn-danger btn-sm",
+                                                    onclick = "return confirm('Are you sure you want to delete this health record?');"
+                                                }
+                                            )
                                         )
                                     </div>
                                 </td>

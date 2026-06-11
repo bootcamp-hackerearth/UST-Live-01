@@ -263,6 +263,10 @@
     <Compile Include="Migrations\202606042020561_InitialCreate.Designer.cs">
       <DependentUpon>202606042020561_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202606101107308_New Changes.cs" />
+    <Compile Include="Migrations\202606101107308_New Changes.Designer.cs">
+      <DependentUpon>202606101107308_New Changes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Appointment.cs" />
     <Compile Include="Models\Doctor.cs" />
@@ -346,11 +350,6 @@
     </Content>
     <Content Include="Areas\HelpPage\Views\_ViewStart.cshtml" />
     <Content Include="Content\Site.css" />
-    <Content Include="Views\Web.config" />
-    <Content Include="Views\_ViewStart.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -435,6 +434,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202606042020561_InitialCreate.resx">
       <DependentUpon>202606042020561_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606101107308_New Changes.resx">
+      <DependentUpon>202606101107308_New Changes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -14,5 +14,7 @@ namespace HealthcareApi.Repositories
         Patient Update(int patientId, Patient patient);
 
         Patient Delete(int patientId);
+
+        List<Patient> SearchPatients(string query);
     }
 }

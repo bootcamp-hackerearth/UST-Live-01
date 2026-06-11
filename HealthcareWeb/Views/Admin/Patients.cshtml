@@ -31,7 +31,28 @@
             )
         </div>
     </div>
+    @using (Html.BeginForm("Patients", "Admin", FormMethod.Get))
+    {
+        <div class="search-panel">
+            <input type="text"
+                   name="query"
+                   value="@ViewBag.SearchQuery"
+                   class="form-control"
+                   placeholder="Search by patient name" />
 
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+
+            @Html.ActionLink(
+                "Clear",
+                "Patients",
+                "Admin",
+                null,
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
     @if (Model == null || Model.Count == 0)
     {
         <div class="empty-state-card">
@@ -87,7 +108,11 @@
                                             "DeletePatient",
                                             "Admin",
                                             new { id = patient.PatientId },
-                                            new { @class = "btn btn-danger btn-sm" }
+                                            new
+                                            {
+                                                @class = "btn btn-danger btn-sm",
+                                                onclick = "return confirm('Are you sure you want to delete this patient?');"
+                                            }
                                         )
 
                                         @Html.ActionLink(

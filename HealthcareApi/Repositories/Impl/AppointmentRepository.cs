@@ -1,8 +1,9 @@
 ﻿using HealthcareApi.Data;
-using SharedClasses.Enums;
 using HealthcareApi.Models;
+using SharedClasses.Enums;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 
 namespace HealthcareApi.Repositories.Implementations
@@ -19,41 +20,45 @@ namespace HealthcareApi.Repositories.Implementations
         public List<Appointment> GetAll()
         {
             return _context.Appointments
-                .OrderBy(a => a.ScheduledDate)
-                .ThenBy(a => a.SlotNumber)
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .OrderBy(a => a.AppointmentId)
                 .ToList();
         }
 
         public Appointment GetById(int appointmentId)
         {
             return _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
                 .FirstOrDefault(a => a.AppointmentId == appointmentId);
         }
 
         public List<Appointment> GetByPatientId(int patientId)
         {
             return _context.Appointments
+                .Include(a => a.Doctor)
                 .Where(a => a.PatientId == patientId)
-                .OrderBy(a => a.ScheduledDate)
-                .ThenBy(a => a.SlotNumber)
+                .OrderBy(a => a.AppointmentId)
                 .ToList();
         }
 
         public List<Appointment> GetByDoctorId(int doctorId)
         {
             return _context.Appointments
+                .Include(a => a.Patient)
                 .Where(a => a.DoctorId == doctorId)
-                .OrderBy(a => a.ScheduledDate)
-                .ThenBy(a => a.SlotNumber)
+                .OrderBy(a => a.AppointmentId)
                 .ToList();
         }
 
         public List<Appointment> GetByStatus(AppointmentStatus status)
         {
             return _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
                 .Where(a => a.Status == status)
-                .OrderBy(a => a.ScheduledDate)
-                .ThenBy(a => a.SlotNumber)
+                .OrderBy(a => a.AppointmentId)
                 .ToList();
         }
 
@@ -62,6 +67,8 @@ namespace HealthcareApi.Repositories.Implementations
             DateTime today = DateTime.Today;
 
             return _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
                 .Where(a =>
                     a.ScheduledDate >= today &&
                     a.Status != AppointmentStatus.Cancelled &&
@@ -76,6 +83,7 @@ namespace HealthcareApi.Repositories.Implementations
             DateTime today = DateTime.Today;
 
             return _context.Appointments
+                .Include(a => a.Doctor)
                 .Where(a =>
                     a.PatientId == patientId &&
                     a.ScheduledDate >= today &&
@@ -91,6 +99,7 @@ namespace HealthcareApi.Repositories.Implementations
             DateTime today = DateTime.Today;
 
             return _context.Appointments
+                .Include(a => a.Doctor)
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.ScheduledDate >= today &&
@@ -104,6 +113,7 @@ namespace HealthcareApi.Repositories.Implementations
         public List<Appointment> GetPendingAppointmentsByPatientId(int patientId)
         {
             return _context.Appointments
+                .Include(a=> a.Doctor)
                 .Where(a =>
                     a.PatientId == patientId &&
                     a.Status == AppointmentStatus.Pending)
@@ -115,6 +125,7 @@ namespace HealthcareApi.Repositories.Implementations
         public List<Appointment> GetPendingAppointmentsByDoctorId(int doctorId)
         {
             return _context.Appointments
+                .Include(a => a.Patient)
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.Status == AppointmentStatus.Pending)
@@ -128,6 +139,7 @@ namespace HealthcareApi.Repositories.Implementations
             DateTime today = DateTime.Today;
 
             return _context.Appointments
+                .Include(a => a.Patient)
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.ScheduledDate == today &&
@@ -136,19 +148,10 @@ namespace HealthcareApi.Repositories.Implementations
                 .ToList();
         }
 
-        public List<Appointment> GetAppointmentsByPatientId(int patientId)
-        {
-            return GetByPatientId(patientId);
-        }
-
-        public List<Appointment> GetAppointmentsByDoctorId(int doctorId)
-        {
-            return GetByDoctorId(doctorId);
-        }
-
         public List<Appointment> GetCancelledAppointmentsByPatientId(int patientId)
         {
             return _context.Appointments
+                .Include(a => a.Doctor)
                 .Where(a =>
                     a.PatientId == patientId &&
                     a.Status == AppointmentStatus.Cancelled)
@@ -160,6 +163,7 @@ namespace HealthcareApi.Repositories.Implementations
         public List<Appointment> GetCancelledAppointmentsByDoctorId(int doctorId)
         {
             return _context.Appointments
+                .Include(a => a.Patient)
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.Status == AppointmentStatus.Cancelled)
@@ -167,17 +171,107 @@ namespace HealthcareApi.Repositories.Implementations
                 .ThenBy(a => a.SlotNumber)
                 .ToList();
         }
-
-        public int CountActiveAppointmentsByDoctorAndDate(int doctorId, DateTime date)
+        public List<Appointment> SearchAppointments(string query)
         {
-            DateTime selectedDate = date.Date;
+            IQueryable<Appointment> appointments = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor);
 
-            return _context.Appointments.Count(a =>
-                a.DoctorId == doctorId &&
-                a.ScheduledDate == selectedDate &&
-                a.Status != AppointmentStatus.Cancelled);
+            appointments = ApplyAppointmentSearch(appointments, query);
+
+            return appointments
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.SlotNumber)
+                .ToList();
         }
 
+
+        public List<Appointment> SearchAppointmentsByPatientId(int patientId, string query)
+        {
+            IQueryable<Appointment> appointments = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Where(a => a.PatientId == patientId);
+
+            appointments = ApplyAppointmentSearch(appointments, query);
+
+            return appointments
+                .OrderBy(a => a.AppointmentId)
+                .ToList();
+        }
+
+        public List<Appointment> SearchAppointmentsByDoctorId(int doctorId, string query)
+        {
+            IQueryable<Appointment> appointments = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Where(a => a.DoctorId == doctorId);
+
+            appointments = ApplyAppointmentSearch(appointments, query);
+
+            return appointments
+                .OrderBy(a => a.AppointmentId)
+                .ToList();
+        }
+
+        public List<Appointment> SearchCancelledAppointmentsByPatientId(
+            int patientId,
+            string query)
+        {
+            IQueryable<Appointment> appointments = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Where(a =>
+                    a.PatientId == patientId &&
+                    a.Status == AppointmentStatus.Cancelled);
+
+            appointments = ApplyAppointmentSearch(appointments, query);
+
+            return appointments
+                .OrderBy(a => a.AppointmentId)
+                .ToList();
+        }
+
+        public List<Appointment> SearchCancelledAppointmentsByDoctorId(
+            int doctorId,
+            string query)
+        {
+            IQueryable<Appointment> appointments = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.Status == AppointmentStatus.Cancelled);
+
+            appointments = ApplyAppointmentSearch(appointments, query);
+
+            return appointments
+                .OrderBy(a => a.AppointmentId)
+                .ToList();
+        }
+
+        public List<Appointment> SearchUpcomingAppointmentsByDoctorId(
+            int doctorId,
+            string query)
+        {
+            DateTime today = DateTime.Today;
+
+            IQueryable<Appointment> appointments = _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate >= today &&
+                    a.Status != AppointmentStatus.Cancelled &&
+                    a.Status != AppointmentStatus.Completed);
+
+            appointments = ApplyAppointmentSearch(appointments, query);
+
+            return appointments
+                .OrderBy(a => a.ScheduledDate)
+                .ThenBy(a => a.SlotNumber)
+                .ToList();
+        }
         public bool IsSlotBooked(int doctorId, DateTime date, int slotNumber)
         {
             DateTime selectedDate = date.Date;
@@ -203,12 +297,20 @@ namespace HealthcareApi.Repositories.Implementations
                 a.Status != AppointmentStatus.Cancelled);
         }
 
+        public bool HasConfirmedAppointmentForDoctorOnDate(int doctorId, DateTime date)
+        {
+            return _context.Appointments.Any(a =>
+                a.DoctorId == doctorId &&
+                a.ScheduledDate == date &&
+                a.Status == AppointmentStatus.Confirmed);
+        }
+
         public Appointment Add(Appointment appointment)
         {
             _context.Appointments.Add(appointment);
             _context.SaveChanges();
 
-            return appointment;
+            return GetById(appointment.AppointmentId);
         }
 
         public Appointment Update(int appointmentId, Appointment appointment)
@@ -229,7 +331,7 @@ namespace HealthcareApi.Repositories.Implementations
 
             _context.SaveChanges();
 
-            return existingAppointment;
+            return GetById(appointmentId);
         }
 
         public Appointment Delete(int appointmentId)
@@ -246,5 +348,31 @@ namespace HealthcareApi.Repositories.Implementations
 
             return existingAppointment;
         }
+        private IQueryable<Appointment> ApplyAppointmentSearch(
+             IQueryable<Appointment> appointments,
+             string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return appointments;
+            }
+
+            string searchTerm = query.Trim().ToLower();
+
+            return appointments.Where(a =>
+                (a.Patient != null &&
+                    a.Patient.FullName.ToLower().Contains(searchTerm)) ||
+                (a.Doctor != null &&
+                    a.Doctor.FullName.ToLower().Contains(searchTerm)));
+        }
+        public List<Appointment> GetExpiredPendingAppointments(DateTime today)
+        {
+            return _context.Appointments
+                .Where(a =>
+                    a.Status == AppointmentStatus.Pending &&
+                    a.ScheduledDate <= today)
+                .ToList();
+        }
     }
 }
+

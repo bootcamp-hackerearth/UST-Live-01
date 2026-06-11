@@ -52,7 +52,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to register patient. " + ex.Message);
                 return View(dto);
             }
         }
@@ -248,13 +248,15 @@ namespace HealthcareWeb.Controllers
                 "UpcomingAppointments",
                 new { patientId = patientId.Value });
         }
+
         [RequirePositiveIntParameters(
-                    "patientId",
-                    ErrorMessage = "Please login before booking an appointment.")]
+             "patientId",
+             ErrorMessage = "Please login before booking an appointment.")]
         public async Task<ActionResult> BookAppointment(
-    int? patientId,
-    Specialisation? specialisation,
-    DateTime? scheduledDate)
+             int? patientId,
+             Specialisation? specialisation,
+             DateTime? scheduledDate,
+             string doctorName)
         {
             try
             {
@@ -270,13 +272,16 @@ namespace HealthcareWeb.Controllers
 
                 ViewBag.PatientId = patientId.Value;
                 ViewBag.SelectedSpecialisation = specialisation;
-                ViewBag.Doctors = null;
+                ViewBag.DoctorNameQuery = doctorName;
+                ViewBag.Doctors = await _doctorApiService.SearchActiveAsync(
+                    doctorName,
+                    specialisation); 
 
-                if (specialisation.HasValue)
+                if (specialisation.HasValue || !string.IsNullOrWhiteSpace(doctorName))
                 {
-                    ViewBag.Doctors =
-                        await _doctorApiService.SearchBySpecialisationAsync(
-                            specialisation.Value);
+                    ViewBag.Doctors = await _doctorApiService.SearchActiveAsync(
+                        doctorName,
+                        specialisation);
                 }
 
                 return View(dto);
@@ -327,18 +332,37 @@ namespace HealthcareWeb.Controllers
         [RequirePositiveIntParameters(
             "patientId",
             ErrorMessage = "Please login before viewing health records.")]
-        public async Task<ActionResult> HealthRecords(int? patientId)
+        public async Task<ActionResult> HealthRecords(
+            int? patientId,
+            string recordQuery,
+            string appointmentQuery)
         {
             try
             {
                 ViewBag.PatientId = patientId.Value;
                 ViewBag.Patient = await _patientApiService.GetByIdAsync(patientId.Value);
 
-                ViewBag.CancelledAppointments =
-                    await _appointmentApiService.GetCancelledByPatientAsync(patientId.Value);
+                if (string.IsNullOrWhiteSpace(appointmentQuery))
+                {
+                    ViewBag.CancelledAppointments =
+                        await _appointmentApiService.GetCancelledByPatientAsync(patientId.Value);
+                }
+                else
+                {
+                    ViewBag.CancelledAppointments =
+                        await _appointmentApiService.SearchCancelledByPatientAsync(
+                            patientId.Value,
+                            appointmentQuery);
+                }
 
-                var records =
-                    await _healthRecordApiService.GetByPatientAsync(patientId.Value);
+                var records = string.IsNullOrWhiteSpace(recordQuery)
+                    ? await _healthRecordApiService.GetByPatientAsync(patientId.Value)
+                    : await _healthRecordApiService.SearchByPatientAsync(
+                        patientId.Value,
+                        recordQuery);
+
+                ViewBag.RecordSearchQuery = recordQuery;
+                ViewBag.AppointmentSearchQuery = appointmentQuery;
 
                 return View(records);
             }
@@ -348,39 +372,29 @@ namespace HealthcareWeb.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-        [RequirePositiveIntParameters(
-                    "patientId",
-                    ErrorMessage = "Please login before searching doctors.")]
-        public ActionResult SearchDoctors(int? patientId)
+     
+        public async Task<ActionResult> HealthRecordDetails(int id, int patientId)
         {
-            ViewBag.PatientId = patientId.Value;
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> SearchDoctors(int? patientId, Specialisation specialisation)
-        {
-            if (!patientId.HasValue || patientId.Value <= 0)
-            {
-                TempData["ErrorMessage"] = "Please login before searching doctors.";
-                return RedirectToAction("Index", "Home");
-            }
-
             try
             {
-                ViewBag.PatientId = patientId.Value;
+                HealthRecordDto record = await _healthRecordApiService.GetByIdAsync(id);
 
-                var doctors =
-                    await _doctorApiService.SearchBySpecialisationAsync(specialisation);
+                if (record.PatientId != patientId)
+                {
+                    TempData["ErrorMessage"] = "You are not allowed to view this health record.";
 
-                return View(doctors);
+                    return RedirectToAction("HealthRecords", new { patientId = patientId });
+                }
+
+                ViewBag.PatientId = patientId;
+
+                return View(record);
             }
             catch (Exception ex)
             {
-                ViewBag.PatientId = patientId.Value;
+                TempData["ErrorMessage"] = ex.Message;
 
-                ModelState.AddModelError("", ex.Message);
-                return View();
+                return RedirectToAction("HealthRecords", new { patientId = patientId });
             }
         }
     }

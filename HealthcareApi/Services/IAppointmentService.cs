@@ -34,5 +34,18 @@ namespace HealthcareApi.Services
         AppointmentDto CompleteAppointment(int appointmentId, CompleteAppointmentDto dto);
 
         List<AppointmentDto> GetCancelledAppointmentsByDoctor(int doctorId);
+
+        List<AppointmentDto> SearchAppointments(string query);
+        List<AppointmentDto> SearchCancelledAppointmentsByPatient(
+            int patientId,
+            string query);
+
+        List<AppointmentDto> SearchCancelledAppointmentsByDoctor(
+            int doctorId,
+            string query);
+
+        List<AppointmentDto> SearchUpcomingAppointmentsByDoctor(
+            int doctorId,
+            string query);
     }
 }

@@ -10,6 +10,10 @@ namespace SharedClasses.Dtos
 
         public int DoctorId { get; set; }
 
+        public string PatientName { get; set; }
+
+        public string DoctorName { get; set; }
+       
         public int AppointmentId { get; set; }
 
         public DateTime VisitDate { get; set; }

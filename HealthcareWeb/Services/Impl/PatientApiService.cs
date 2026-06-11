@@ -40,6 +40,18 @@ namespace HealthcareWeb.Services
             return JsonConvert.DeserializeObject<PatientDto>(json);
         }
 
+        public async Task<List<PatientDto>> SearchAsync(string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            var response = await _httpClient.GetAsync("patients/search?query=" + encodedQuery);
+
+            await EnsureSuccessWithMessageAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<PatientDto>>(json);
+        }
         public async Task<PatientDto> AddAsync(CreatePatientDto dto)
         {
             var json = JsonConvert.SerializeObject(dto);

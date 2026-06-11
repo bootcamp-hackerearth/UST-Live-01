@@ -29,15 +29,9 @@ namespace HealthcareApi.Repositories
 
         List<Appointment> GetTodayConfirmedAppointmentsByDoctorId(int doctorId);
 
-        List<Appointment> GetAppointmentsByPatientId(int patientId);
-
-        List<Appointment> GetAppointmentsByDoctorId(int doctorId);
-
         List<Appointment> GetCancelledAppointmentsByPatientId(int patientId);
 
         List<Appointment> GetCancelledAppointmentsByDoctorId(int doctorId);
-
-        int CountActiveAppointmentsByDoctorAndDate(int doctorId, DateTime date);
 
         bool IsSlotBooked(int doctorId, DateTime date, int slotNumber);
 
@@ -46,10 +40,25 @@ namespace HealthcareApi.Repositories
             int doctorId,
             DateTime date);
 
+        bool HasConfirmedAppointmentForDoctorOnDate(int doctorId, DateTime date);
+
         Appointment Add(Appointment appointment);
 
         Appointment Update(int appointmentId, Appointment appointment);
 
         Appointment Delete(int appointmentId);
+
+        List<Appointment> SearchAppointments(string query);
+
+        List<Appointment> SearchAppointmentsByPatientId(int patientId, string query);
+
+        List<Appointment> SearchAppointmentsByDoctorId(int doctorId, string query);
+
+        List<Appointment> SearchCancelledAppointmentsByPatientId(int patientId, string query);
+
+        List<Appointment> SearchCancelledAppointmentsByDoctorId(int doctorId, string query);
+
+        List<Appointment> SearchUpcomingAppointmentsByDoctorId(int doctorId, string query);
+        List<Appointment> GetExpiredPendingAppointments(DateTime today);
     }
 }

@@ -81,5 +81,46 @@ namespace HealthcareApi.Repositories.Implementations
 
             return existingDoctor;
         }
+        public List<Doctor> SearchDoctors(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return GetAll();
+            }
+            string searchTerm = query.Trim().ToLower();
+            return _context.Doctors
+                    .Where(d =>
+                        d.FullName != null &&
+                        d.FullName.ToLower().Contains(searchTerm))
+                    .OrderBy(d => d.Specialisation)
+                    .ThenBy(d => d.FullName)
+                    .ToList();
+            
+        }
+
+        public List<Doctor> SearchActiveDoctors(string query, Specialisation? specialisation)
+        {
+            IQueryable<Doctor> doctors = _context.Doctors
+                .Where(d => d.IsActive);
+
+            if (specialisation.HasValue)
+            {
+                doctors = doctors.Where(d => d.Specialisation == specialisation.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                string searchTerm = query.Trim().ToLower();
+
+                doctors = doctors.Where(d =>
+                    d.FullName != null &&
+                    d.FullName.ToLower().Contains(searchTerm));
+            }
+
+            return doctors
+                .OrderBy(d => d.Specialisation)
+                .ThenBy(d => d.FullName)
+                .ToList();
+        }
     }
 }

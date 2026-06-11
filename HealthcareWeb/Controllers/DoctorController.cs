@@ -72,17 +72,20 @@ namespace HealthcareWeb.Controllers
         }
 
         [RequirePositiveIntParameters(
-            "doctorId",
-            ErrorMessage = "Please login before viewing doctor appointments.")]
-        public async Task<ActionResult> UpcomingAppointments(int? doctorId)
+             "doctorId",
+             ErrorMessage = "Please login before viewing doctor appointments.")]
+        public async Task<ActionResult> UpcomingAppointments(int? doctorId, string query)
         {
             try
             {
                 ViewBag.DoctorId = doctorId.Value;
                 ViewBag.Doctor = await _doctorApiService.GetByIdAsync(doctorId.Value);
 
-                var appointments =
-                    await _appointmentApiService.GetUpcomingByDoctorAsync(doctorId.Value);
+                var appointments = string.IsNullOrWhiteSpace(query)
+                    ? await _appointmentApiService.GetUpcomingByDoctorAsync(doctorId.Value)
+                    : await _appointmentApiService.SearchUpcomingByDoctorAsync(doctorId.Value, query);
+
+                ViewBag.SearchQuery = query;
 
                 return View(appointments);
             }
@@ -284,26 +287,45 @@ namespace HealthcareWeb.Controllers
             {
                 ViewBag.DoctorId = doctorId.Value;
 
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to add health record. " + ex.Message);
 
                 return View(dto);
             }
         }
         [RequirePositiveIntParameters(
-    "doctorId",
-    ErrorMessage = "Please login before viewing doctor health records.")]
-        public async Task<ActionResult> HealthRecords(int? doctorId)
+             "doctorId",
+             ErrorMessage = "Please login before viewing doctor health records.")]
+        public async Task<ActionResult> HealthRecords(
+             int? doctorId,
+             string recordQuery,
+             string appointmentQuery)
         {
             try
             {
                 ViewBag.DoctorId = doctorId.Value;
                 ViewBag.Doctor = await _doctorApiService.GetByIdAsync(doctorId.Value);
 
-                var records =
-                    await _healthRecordApiService.GetByDoctorAsync(doctorId.Value);
+                var records = string.IsNullOrWhiteSpace(recordQuery)
+                    ? await _healthRecordApiService.GetByDoctorAsync(doctorId.Value)
+                    : await _healthRecordApiService.SearchByDoctorAsync(
+                        doctorId.Value,
+                        recordQuery);
 
-                ViewBag.CancelledAppointments =
-                    await _appointmentApiService.GetCancelledByDoctorAsync(doctorId.Value);
+                if (string.IsNullOrWhiteSpace(appointmentQuery))
+                {
+                    ViewBag.CancelledAppointments =
+                        await _appointmentApiService.GetCancelledByDoctorAsync(doctorId.Value);
+                }
+                else
+                {
+                    ViewBag.CancelledAppointments =
+                        await _appointmentApiService.SearchCancelledByDoctorAsync(
+                            doctorId.Value,
+                            appointmentQuery);
+                }
+
+                ViewBag.RecordSearchQuery = recordQuery;
+                ViewBag.AppointmentSearchQuery = appointmentQuery;
 
                 return View(records);
             }
@@ -459,6 +481,30 @@ namespace HealthcareWeb.Controllers
                 return RedirectToAction(
                     "Dashboard",
                     new { doctorId = doctorId.Value });
+            }
+        }
+        public async Task<ActionResult> HealthRecordDetails(int id, int doctorId)
+        {
+            try
+            {
+                HealthRecordDto record = await _healthRecordApiService.GetByIdAsync(id);
+
+                if (record.DoctorId != doctorId)
+                {
+                    TempData["ErrorMessage"] = "You are not allowed to view this health record.";
+
+                    return RedirectToAction("HealthRecords", new { doctorId = doctorId });
+                }
+
+                ViewBag.DoctorId = doctorId;
+
+                return View(record);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+
+                return RedirectToAction("HealthRecords", new { doctorId = doctorId });
             }
         }
     }

@@ -20,5 +20,14 @@ namespace HealthcareApi.Services
         HealthRecordDto UpdateRecord(int healthRecordId, UpdateHealthRecordDto dto);
 
         HealthRecordDto DeleteRecord(int healthRecordId);
+
+        List<HealthRecordDto> SearchHealthRecords(string query);
+        List<HealthRecordDto> SearchHealthRecordsByPatient(
+            int patientId,
+            string query);
+
+        List<HealthRecordDto> SearchHealthRecordsByDoctor(
+            int doctorId,
+            string query);
     }
 }

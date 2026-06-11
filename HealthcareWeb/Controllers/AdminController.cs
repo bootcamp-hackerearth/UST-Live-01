@@ -2,6 +2,7 @@
 using HealthcareWeb.Services;
 using SharedClasses.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -31,9 +32,21 @@ namespace HealthcareWeb.Controllers
             return View();
         }
 
-        public async Task<ActionResult> Patients()
+        public async Task<ActionResult> Patients(string query)
         {
-            var patients = await _patientApiService.GetAllAsync();
+            List<PatientDto> patients;
+
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                patients = await _patientApiService.GetAllAsync();
+            }
+            else
+            {
+                patients = await _patientApiService.SearchAsync(query);
+            }
+
+            ViewBag.SearchQuery = query;
+
             return View(patients);
         }
 
@@ -59,7 +72,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to create patient. " + ex.Message);
                 return View(dto);
             }
         }
@@ -161,11 +174,24 @@ namespace HealthcareWeb.Controllers
 
             return RedirectToAction("Patients");
         }
-        public async Task<ActionResult> Doctors()
+        public async Task<ActionResult> Doctors(string query)
         {
-            var doctors = await _doctorApiService.GetAllAsync();
+            List<DoctorDto> doctors;
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                doctors = await _doctorApiService.GetAllAsync();
+            }
+            else
+            {
+                doctors = await _doctorApiService.SearchAsync(query);
+            }
+
+            ViewBag.SearchQuery = query;
+
             return View(doctors);
         }
+
+
 
         public ActionResult CreateDoctor()
         {
@@ -192,7 +218,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to add doctor. " + ex.Message);
                 return View(dto);
             }
         }
@@ -336,10 +362,31 @@ namespace HealthcareWeb.Controllers
 
             return RedirectToAction("Doctors");
         }
-        public async Task<ActionResult> Appointments()
+        public async Task<ActionResult> Appointments(string query)
         {
-            var appointments = await _appointmentApiService.GetAllAsync();
-            return View(appointments);
+            try
+            {
+                List<AppointmentDto> appointments;
+
+                if (string.IsNullOrWhiteSpace(query))
+                {
+                    appointments = await _appointmentApiService.GetAllAsync();
+                }
+                else
+                {
+                    appointments = await _appointmentApiService.SearchAsync(query);
+                }
+
+                ViewBag.SearchQuery = query;
+
+                return View(appointments);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+
+                return View(new List<AppointmentDto>());
+            }
         }
 
         public async Task<ActionResult> CreateAppointment()
@@ -376,7 +423,7 @@ namespace HealthcareWeb.Controllers
                 ViewBag.Patients = await _patientApiService.GetAllAsync();
                 ViewBag.Doctors = await _doctorApiService.GetAllActiveAsync();
 
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to create appointment. " + ex.Message);
                 return View(dto);
             }
         }
@@ -529,17 +576,36 @@ namespace HealthcareWeb.Controllers
                 return RedirectToAction("Appointments");
             }
         }
-        public async Task<ActionResult> HealthRecords()
+        public async Task<ActionResult> HealthRecords(string query)
         {
-            var records = await _healthRecordApiService.GetAllAsync();
-            return View(records);
-        }
+            try
+            {
+                List<HealthRecordDto> records;
 
+                if (string.IsNullOrWhiteSpace(query))
+                {
+                    records = await _healthRecordApiService.GetAllAsync();
+                }
+                else
+                {
+                    records = await _healthRecordApiService.SearchAsync(query);
+                }
+
+                ViewBag.SearchQuery = query;
+
+                return View(records);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+
+                return View(new List<HealthRecordDto>());
+            }
+        }
         public ActionResult CreateHealthRecord()
         {
             return View(new AddHealthRecordDto());
         }
-
         [HttpPost]
         public async Task<ActionResult> CreateHealthRecord(AddHealthRecordDto dto)
         {
@@ -557,7 +623,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("", "Failed to create health record. " + ex.Message);
                 return View(dto);
             }
         }
@@ -655,6 +721,26 @@ namespace HealthcareWeb.Controllers
             }
 
             return RedirectToAction("HealthRecords");
+        }
+        [RequirePositiveIntParameters(
+             "id",
+             RedirectController = "Admin",
+             RedirectAction = "HealthRecords",
+             ErrorMessage = "Please select a valid health record.")]
+        public async Task<ActionResult> HealthRecordDetails(int? id)
+        {
+            try
+            {
+                HealthRecordDto record = await _healthRecordApiService.GetByIdAsync(id.Value);
+
+                return View(record);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+
+                return RedirectToAction("HealthRecords");
+            }
         }
     }
 }

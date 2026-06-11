@@ -45,7 +45,6 @@
     <Compile Include="Dtos\AddHealthRecordDto.cs" />
     <Compile Include="Dtos\AppointmentDto.cs" />
     <Compile Include="Dtos\BookAppointmentDto.cs" />
-    <Compile Include="Dtos\CancelAppointmentDto.cs" />
     <Compile Include="Dtos\CancelByDoctorDto.cs" />
     <Compile Include="Dtos\CancelByPatientDto.cs" />
     <Compile Include="Dtos\CompleteAppointmentDto.cs" />

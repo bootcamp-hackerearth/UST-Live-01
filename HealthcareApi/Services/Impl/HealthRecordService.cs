@@ -34,14 +34,14 @@ namespace HealthcareApi.Services.Implementations
         {
             List<HealthRecord> records = _healthRecordRepository.GetAll();
 
-            return _mapper.Map<List<HealthRecordDto>>(records);
+            return MapHealthRecordsToDtos(records);
         }
 
         public HealthRecordDto GetRecordById(int healthRecordId)
         {
             HealthRecord record = GetHealthRecordEntityById(healthRecordId);
 
-            return _mapper.Map<HealthRecordDto>(record);
+            return MapHealthRecordToDto(record);
         }
 
         public List<HealthRecordDto> GetRecordsByPatient(int patientId)
@@ -51,7 +51,7 @@ namespace HealthcareApi.Services.Implementations
             List<HealthRecord> records =
                 _healthRecordRepository.GetByPatientId(patientId);
 
-            return _mapper.Map<List<HealthRecordDto>>(records);
+            return MapHealthRecordsToDtos(records);
         }
 
         public List<HealthRecordDto> GetRecordsByDoctor(int doctorId)
@@ -61,7 +61,7 @@ namespace HealthcareApi.Services.Implementations
             List<HealthRecord> records =
                 _healthRecordRepository.GetByDoctorId(doctorId);
 
-            return _mapper.Map<List<HealthRecordDto>>(records);
+            return MapHealthRecordsToDtos(records);
         }
 
         public List<HealthRecordDto> GetRecordsByAppointment(int appointmentId)
@@ -71,7 +71,7 @@ namespace HealthcareApi.Services.Implementations
             List<HealthRecord> records =
                 _healthRecordRepository.GetByAppointmentId(appointmentId);
 
-            return _mapper.Map<List<HealthRecordDto>>(records);
+            return MapHealthRecordsToDtos(records);
         }
 
         public HealthRecordDto AddRecord(AddHealthRecordDto dto)
@@ -111,7 +111,7 @@ namespace HealthcareApi.Services.Implementations
 
             HealthRecord savedRecord = _healthRecordRepository.Add(record);
 
-            return _mapper.Map<HealthRecordDto>(savedRecord);
+            return MapHealthRecordToDto(savedRecord);
         }
 
         public HealthRecordDto UpdateRecord(int healthRecordId, UpdateHealthRecordDto dto)
@@ -138,7 +138,7 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Health record", healthRecordId);
             }
 
-            return _mapper.Map<HealthRecordDto>(updatedRecord);
+            return MapHealthRecordToDto(updatedRecord);
         }
 
         public HealthRecordDto DeleteRecord(int healthRecordId)
@@ -153,9 +153,42 @@ namespace HealthcareApi.Services.Implementations
                 throw new EntityNotFoundException("Health record", healthRecordId);
             }
 
-            return _mapper.Map<HealthRecordDto>(deletedRecord);
+            return MapHealthRecordToDto(deletedRecord);
         }
 
+        public List<HealthRecordDto> SearchHealthRecords(string query)
+        {
+            List<HealthRecord> records =
+                _healthRecordRepository.SearchHealthRecords(query);
+
+            return MapHealthRecordsToDtos(records);
+        }
+        public List<HealthRecordDto> SearchHealthRecordsByPatient(
+            int patientId,
+            string query)
+                {
+            ValidatePatientExists(patientId);
+
+            List<HealthRecord> records =
+                _healthRecordRepository.SearchHealthRecordsByPatientId(
+                    patientId,
+                    query);
+
+            return MapHealthRecordsToDtos(records);
+        }
+        public List<HealthRecordDto> SearchHealthRecordsByDoctor(
+            int doctorId,
+            string query)
+        {
+            ValidateDoctorExists(doctorId);
+
+            List<HealthRecord> records =
+                _healthRecordRepository.SearchHealthRecordsByDoctorId(
+                    doctorId,
+                    query);
+
+            return MapHealthRecordsToDtos(records);
+        }
         private HealthRecord GetHealthRecordEntityById(int healthRecordId)
         {
             ValidateHealthRecordId(healthRecordId);
@@ -261,6 +294,53 @@ namespace HealthcareApi.Services.Implementations
                 throw new HealthRecordRuleException(
                     "Notes cannot exceed 1000 characters.");
             }
+        }
+        private HealthRecordDto MapHealthRecordToDto(HealthRecord record)
+        {
+            HealthRecordDto dto = _mapper.Map<HealthRecordDto>(record);
+            PopulateHealthRecordNames(dto);
+
+            return dto;
+        }
+
+        private List<HealthRecordDto> MapHealthRecordsToDtos(List<HealthRecord> records)
+        {
+            List<HealthRecordDto> dtos = _mapper.Map<List<HealthRecordDto>>(records);
+            PopulateHealthRecordNames(dtos);
+
+            return dtos;
+        }
+
+        private void PopulateHealthRecordNames(List<HealthRecordDto> records)
+        {
+            if (records == null)
+            {
+                return;
+            }
+
+            foreach (HealthRecordDto record in records)
+            {
+                PopulateHealthRecordNames(record);
+            }
+        }
+
+        private void PopulateHealthRecordNames(HealthRecordDto record)
+        {
+            if (record == null)
+            {
+                return;
+            }
+
+            Patient patient = _patientRepository.GetById(record.PatientId);
+            Doctor doctor = _doctorRepository.GetById(record.DoctorId);
+
+            record.PatientName = patient == null
+                ? "Unknown Patient"
+                : patient.FullName;
+
+            record.DoctorName = doctor == null
+                ? "Unknown Doctor"
+                : doctor.FullName;
         }
     }
 }

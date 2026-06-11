@@ -32,6 +32,26 @@ namespace HealthcareApi.Controllers
 
             return Ok(doctors);
         }
+        
+        [HttpGet]
+        [Route("search")]
+        public IHttpActionResult Search([FromUri] string query = "")
+        {
+            var doctors = _service.SearchDoctors(query);
+
+            return Ok(doctors);
+        }
+        
+        [HttpGet]
+        [Route("active/search")]
+        public IHttpActionResult SearchActive(
+            [FromUri] string query = "",
+            [FromUri] Specialisation? specialisation = null)
+        {
+            var doctors = _service.SearchActiveDoctors(query, specialisation);
+
+            return Ok(doctors);
+        }
 
         [HttpGet]
         [Route("{id:int}")]

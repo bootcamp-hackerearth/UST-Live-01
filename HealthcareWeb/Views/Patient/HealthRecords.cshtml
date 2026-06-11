@@ -8,127 +8,258 @@
 
 <h2 class="text-success">Health Records</h2>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["SuccessMessage"]
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Medical Record History</h4>
+            <p>Review your completed appointment records and open individual records for full clinical details.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
     </div>
-}
+    @using (Html.BeginForm("HealthRecords", "Patient", FormMethod.Get))
+    {
+        <input type="hidden" name="patientId" value="@patientId" />
 
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["ErrorMessage"]
-    </div>
-}
+        <div class="form-panel" style="margin-bottom: 1rem;">
+            <div class="form-row-grid">
+                <div class="mb-2 form-row-full">
+                    <label class="fw-bold">Search Health Records</label>
+                    <input type="text"
+                           name="recordQuery"
+                           value="@ViewBag.RecordSearchQuery"
+                           class="form-control border-dark"
+                           placeholder="Search by doctor name"/>
+                </div>
+            </div>
 
-@if (ViewBag.Patient != null)
-{
-    <p>
-        <strong>Patient:</strong> @ViewBag.Patient.FullName
-    </p>
-}
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
 
-<div class="button-group">
-    @Html.ActionLink(
-        "Back to Dashboard",
-        "Dashboard",
-        "Patient",
-        new { patientId = patientId },
-        new { @class = "btn btn-secondary" }
-    )
+                @Html.ActionLink(
+                    "Clear",
+                    "HealthRecords",
+                    "Patient",
+                    new { patientId = patientId },
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+    }
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No health records found</h4>
+            <p>No medical records have been added for your completed appointments yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Record ID</th>
+                            <th>Appointment ID</th>
+                            <th>Doctor</th>
+                            <th>Visit Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var record in Model)
+                        {
+                            string doctorDisplay = string.IsNullOrWhiteSpace(record.DoctorName)
+                                ? "Doctor #" + record.DoctorId
+                                : record.DoctorName + " (#" + record.DoctorId + ")";
+
+                            <tr>
+                                <td>@record.HealthRecordId</td>
+                                <td>@record.AppointmentId</td>
+                                <td>@doctorDisplay</td>
+                                <td>@record.VisitDate.ToString("dd-MM-yyyy")</td>
+                                <td>
+                                    <div class="data-table-actions">
+                                        @Html.ActionLink(
+                                            "View",
+                                            "HealthRecordDetails",
+                                            "Patient",
+                                            new
+                                            {
+                                                id = record.HealthRecordId,
+                                                patientId = patientId
+                                            },
+                                            new { @class = "btn btn-info btn-sm" }
+                                        )
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 </div>
 
-@if (Model == null || Model.Count == 0)
-{
-    <p>No health records found.</p>
-}
-else
-{
-    <h4>Medical Records</h4>
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Cancelled Appointments</h4>
+            <p>Review appointments that were cancelled before completion.</p>
+        </div>
+    </div>
+    @using (Html.BeginForm("HealthRecords", "Patient", FormMethod.Get))
+    {
+        <input type="hidden" name="patientId" value="@patientId" />
 
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Record ID</th>
-                <th>Appointment ID</th>
-                <th>Doctor ID</th>
-                <th>Visit Date</th>
-                <th>Diagnosis</th>
-                <th>Prescription</th>
-                <th>Notes</th>
-            </tr>
-        </thead>
+        <div class="form-panel" style="margin-bottom: 1rem;">
+            <div class="form-row-grid">
+                <div class="mb-2 form-row-full">
+                    <label class="fw-bold">Search Cancelled Appointments</label>
+                    <input type="text"
+                           name="appointmentQuery"
+                           value="@ViewBag.AppointmentSearchQuery"
+                           class="form-control border-dark"
+                           placeholder="Search by doctor name" />
+                </div>
+            </div>
 
-        <tbody>
-            @foreach (var record in Model)
-            {
-                <tr>
-                    <td>@record.HealthRecordId</td>
-                    <td>@record.AppointmentId</td>
-                    <td>@record.DoctorId</td>
-                    <td>@record.VisitDate.ToString("dd-MM-yyyy")</td>
-                    <td>@record.Diagnosis</td>
-                    <td>@record.Prescription</td>
-                    <td>
-                        @if (string.IsNullOrWhiteSpace(record.Notes))
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
+
+                @Html.ActionLink(
+                    "Clear",
+                    "HealthRecords",
+                    "Patient",
+                    new { patientId = patientId },
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+    }
+    @if (cancelledAppointments == null || cancelledAppointments.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No cancelled appointments found</h4>
+            <p>You do not have any cancelled appointment records.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Doctor</th>
+                            <th>Scheduled Date</th>
+                            <th>Slot</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in cancelledAppointments)
                         {
-                            <span>-</span>
-                        }
-                        else
-                        {
-                            @record.Notes
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                            string doctorDisplay = string.IsNullOrWhiteSpace(appointment.DoctorName)
+                                ? "Doctor #" + appointment.DoctorId
+                                : appointment.DoctorName + " (#" + appointment.DoctorId + ")";
 
-<hr />
-
-<h4>Cancelled Appointments</h4>
-
-@if (cancelledAppointments == null || cancelledAppointments.Count == 0)
-{
-    <p>No cancelled appointments found.</p>
-}
-else
-{
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Appointment ID</th>
-                <th>Doctor ID</th>
-                <th>Scheduled Date</th>
-                <th>Slot Number</th>
-                <th>Status</th>
-                <th>Cancellation Reason</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var appointment in cancelledAppointments)
-            {
-                <tr>
-                    <td>@appointment.AppointmentId</td>
-                    <td>@appointment.DoctorId</td>
-                    <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
-                    <td>@appointment.SlotNumber</td>
-                    <td>@appointment.Status</td>
-                    <td>
-                        @if (string.IsNullOrWhiteSpace(appointment.CancellationReason))
-                        {
-                            <span>-</span>
+                            <tr>
+                                <td>@appointment.AppointmentId</td>
+                                <td>@doctorDisplay</td>
+                                <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                                <td>@appointment.SlotNumber</td>
+                                <td>
+                                    <span class="status-badge status-badge-danger">
+                                        @appointment.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-info btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#cancelledAppointmentModal_@appointment.AppointmentId">
+                                        View
+                                    </button>
+                                </td>
+                            </tr>
                         }
-                        else
-                        {
-                            @appointment.CancellationReason
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+                    </tbody>
+                </table>
+                @foreach (var appointment in cancelledAppointments)
+                {
+                    string doctorDisplay = string.IsNullOrWhiteSpace(appointment.DoctorName)
+                        ? "Doctor #" + appointment.DoctorId
+                        : appointment.DoctorName + " (#" + appointment.DoctorId + ")";
+
+                    <div class="modal fade"
+                         id="cancelledAppointmentModal_@appointment.AppointmentId"
+                         tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        Cancelled Appointment Details
+                                    </h5>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p><strong>Appointment ID:</strong> @appointment.AppointmentId</p>
+                                    <p><strong>Doctor:</strong> @doctorDisplay</p>
+                                    <p><strong>Scheduled Date:</strong> @appointment.ScheduledDate.ToString("dd-MM-yyyy")</p>
+                                    <p><strong>Slot:</strong> @appointment.SlotNumber</p>
+                                    <p><strong>Status:</strong> @appointment.Status</p>
+
+                                    <p>
+                                        <strong>Cancellation Reason:</strong>
+                                        @if (string.IsNullOrWhiteSpace(appointment.CancellationReason))
+                                        {
+                                            <span>-</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@appointment.CancellationReason</span>
+                                        }
+                                    </p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

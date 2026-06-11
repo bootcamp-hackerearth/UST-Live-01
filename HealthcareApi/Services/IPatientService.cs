@@ -14,5 +14,7 @@ namespace HealthcareApi.Services
         PatientDto UpdatePatient(int patientId, UpdatePatientDto dto);
 
         PatientDto DeletePatient(int patientId);
+
+        List<PatientDto> SearchPatients(string query);
     }
 }

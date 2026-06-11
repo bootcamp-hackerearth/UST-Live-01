@@ -58,15 +58,15 @@
         </div>
     </div>
 </div>
-
 <div class="dashboard-card-grid dashboard-card-grid-three">
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">A</div>
+        <div class="dashboard-card-icon">📅</div>
+        
 
         <h4>Appointments</h4>
 
         <p>
-            Review upcoming appointments and cancel appointments when required.
+            Review your upcoming appointments and cancel eligible appointments when required.
         </p>
 
         @Html.ActionLink(
@@ -79,12 +79,12 @@
     </div>
 
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">B</div>
+        <div class="dashboard-card-icon">🩺</div>
 
         <h4>Book Consultation</h4>
 
         <p>
-            Search doctors by specialisation and book your next consultation.
+            Search active doctors by name or specialisation and book your next consultation.
         </p>
 
         @Html.ActionLink(
@@ -97,12 +97,12 @@
     </div>
 
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">H</div>
+        <div class="dashboard-card-icon">📋</div>
 
         <h4>Health Records</h4>
 
         <p>
-            View medical history, diagnoses, prescriptions, and cancelled appointments.
+            View your medical history, diagnoses, prescriptions, and cancelled appointments.
         </p>
 
         @Html.ActionLink(
@@ -115,25 +115,7 @@
     </div>
 
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">D</div>
-
-        <h4>Search Doctors</h4>
-
-        <p>
-            Find doctors by specialisation and review their experience and consultation fee.
-        </p>
-
-        @Html.ActionLink(
-            "Search Doctors",
-            "SearchDoctors",
-            "Patient",
-            new { patientId = Model.PatientId },
-            new { @class = "btn btn-secondary" }
-        )
-    </div>
-
-    <div class="dashboard-card">
-        <div class="dashboard-card-icon">P</div>
+        <div class="dashboard-card-icon">👤</div>
 
         <h4>Profile</h4>
 
@@ -151,7 +133,7 @@
     </div>
 
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">L</div>
+        <div class="dashboard-card-icon">🚪</div>
 
         <h4>Session</h4>
 

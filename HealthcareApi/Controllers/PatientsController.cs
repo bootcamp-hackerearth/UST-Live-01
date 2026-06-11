@@ -31,7 +31,14 @@ namespace HealthcareApi.Controllers
 
             return Ok(patient);
         }
+        [HttpGet]
+        [Route("search")]
+        public IHttpActionResult Search([FromUri] string query = "")
+        {
+            var patients = _service.SearchPatients(query);
 
+            return Ok(patients);
+        }
         [HttpPost]
         [Route("")]
         public IHttpActionResult AddPatient([FromBody] CreatePatientDto dto)

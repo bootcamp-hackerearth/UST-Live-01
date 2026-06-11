@@ -1,0 +1,105 @@
+﻿@model SharedClasses.Dtos.HealthRecordDto
+
+@{
+    ViewBag.Title = "Health Record Details";
+    int patientId = ViewBag.PatientId != null ? Convert.ToInt32(ViewBag.PatientId) : 0;
+
+    string doctorDisplay = string.Empty;
+
+    if (Model != null)
+    {
+        doctorDisplay = string.IsNullOrWhiteSpace(Model.DoctorName)
+            ? "Doctor #" + Model.DoctorId
+            : Model.DoctorName + " (#" + Model.DoctorId + ")";
+    }
+}
+
+<h2 class="text-success">Health Record Details</h2>
+
+@if (Model == null)
+{
+    <div class="empty-state-card">
+        <h4>Health record not found</h4>
+        <p>The selected health record could not be loaded.</p>
+    </div>
+}
+else
+{
+    <div class="data-section">
+        <div class="data-section-header">
+            <div class="data-section-title">
+                <h4>Record #@Model.HealthRecordId</h4>
+                <p>Detailed diagnosis, prescription, and notes for this completed appointment.</p>
+            </div>
+
+            <div class="data-section-actions">
+                @Html.ActionLink(
+                    "Back to Health Records",
+                    "HealthRecords",
+                    "Patient",
+                    new { patientId = patientId },
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+
+        <div class="profile-summary-card">
+            <div class="form-meta-grid">
+                <div class="form-meta-item">
+                    <span>Health Record ID</span>
+                    <strong>@Model.HealthRecordId</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Appointment ID</span>
+                    <strong>@Model.AppointmentId</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Doctor</span>
+                    <strong>@doctorDisplay</strong>
+                </div>
+
+                <div class="form-meta-item">
+                    <span>Visit Date</span>
+                    <strong>@Model.VisitDate.ToString("dd-MM-yyyy")</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-panel">
+            <div class="form-panel-header">
+                <h4>Clinical Details</h4>
+                <p>Medical information recorded by the doctor for this visit.</p>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold">Diagnosis</label>
+                <div class="form-control border-dark text-left" style="min-height: 80px;">
+                    @Model.Diagnosis
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold">Prescription</label>
+                <div class="form-control border-dark text-left" style="min-height: 80px;">
+                    @Model.Prescription
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold">Notes</label>
+                <div class="form-control border-dark text-left" style="min-height: 80px;">
+                    @if (string.IsNullOrWhiteSpace(Model.Notes))
+                    {
+                        <span>-</span>
+                    }
+                    else
+                    {
+                        @Model.Notes
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

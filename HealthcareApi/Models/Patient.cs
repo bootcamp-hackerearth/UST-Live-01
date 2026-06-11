@@ -15,6 +15,7 @@ namespace HealthcareApi.Models
 
         [Required(ErrorMessage = "Patient full name is required.")]
         [StringLength(100, ErrorMessage = "Full name cannot exceed 100 characters.")]
+        [RegularExpression(@"^[A-Za-z ]+$", ErrorMessage = "Full name can contain only letters and spaces.")]
         [Display(Name = "Full Name")]
         public string FullName { get; set; }
 
@@ -27,7 +28,7 @@ namespace HealthcareApi.Models
         public Gender Gender { get; set; }
 
         [Required(ErrorMessage = "Phone number is required.")]
-        [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 characters.")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits.")]
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
 
@@ -37,6 +38,7 @@ namespace HealthcareApi.Models
 
         [Required(ErrorMessage = "Insurance ID is required.")]
         [StringLength(30, ErrorMessage = "Insurance ID cannot exceed 30 characters.")]
+        [RegularExpression(@"^[Ii][Nn][Ss]\d+$", ErrorMessage = "Insurance ID must start with INS followed by digits only. Example: INS12345")]
         [Display(Name = "Insurance ID")]
         public string InsuranceId { get; set; }
 

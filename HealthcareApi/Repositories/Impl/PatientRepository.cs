@@ -70,5 +70,21 @@ namespace HealthcareApi.Repositories.Implementations
 
             return existingPatient;
         }
+        public List<Patient> SearchPatients(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return GetAll();
+            }
+
+            string searchTerm = query.Trim().ToLower();
+
+            return _context.Patients
+                .Where(p =>
+                    p.FullName != null &&
+                    p.FullName.ToLower().Contains(searchTerm))
+                .OrderBy(p => p.FullName)
+                .ToList();
+        }
     }
 }

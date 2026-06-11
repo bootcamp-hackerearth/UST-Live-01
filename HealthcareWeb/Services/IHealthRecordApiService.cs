@@ -14,5 +14,15 @@ namespace HealthcareWeb.Services
         Task<HealthRecordDto> AddAsync(AddHealthRecordDto dto);
         Task<HealthRecordDto> UpdateAsync(int id, UpdateHealthRecordDto dto);
         Task<HealthRecordDto> DeleteAsync(int id);
+        Task<List<HealthRecordDto>> SearchAsync(string query);
+
+        Task<List<HealthRecordDto>> SearchByPatientAsync(
+            int patientId,
+            string query);
+
+        Task<List<HealthRecordDto>> SearchByDoctorAsync(
+            int doctorId,
+            string query);
+
     }
 }

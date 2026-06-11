@@ -68,7 +68,7 @@
 
 <div class="dashboard-card-grid dashboard-card-grid-three">
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">A</div>
+        <div class="dashboard-card-icon"></div>
 
         <h4>Appointments</h4>
 
@@ -86,7 +86,7 @@
     </div>
 
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">H</div>
+        <div class="dashboard-card-icon"></div>
 
         <h4>Health Records</h4>
 
@@ -104,7 +104,7 @@
     </div>
 
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">S</div>
+        <div class="dashboard-card-icon"></div>
 
         <h4>Availability</h4>
 
@@ -116,7 +116,9 @@
         {
             using (Html.BeginForm("DeactivateSelf", "Doctor", new { doctorId = Model.DoctorId }, FormMethod.Post))
             {
-                <button type="submit" class="btn btn-danger">
+                <button type="submit"
+                        class="btn btn-danger"
+                        onclick="return confirm('Are you sure you want to deactivate your account? Patients will not be able to book new appointments with you while inactive.');">
                     Deactivate Account
                 </button>
             }
@@ -125,7 +127,9 @@
         {
             using (Html.BeginForm("ReactivateSelf", "Doctor", new { doctorId = Model.DoctorId }, FormMethod.Post))
             {
-                <button type="submit" class="btn btn-success">
+                <button type="submit"
+                        class="btn btn-success"
+                        onclick="return confirm('Are you sure you want to reactivate your account? Patients will be able to book appointments with you again.');">
                     Reactivate Account
                 </button>
             }
@@ -133,7 +137,7 @@
     </div>
 
     <div class="dashboard-card">
-        <div class="dashboard-card-icon">L</div>
+        <div class="dashboard-card-icon"></div>
 
         <h4>Session</h4>
 

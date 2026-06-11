@@ -98,15 +98,77 @@ namespace HealthcareWeb.Services
             return JsonConvert.DeserializeObject<AppointmentDto>(responseJson);
         }
 
+        public async Task<List<AppointmentDto>> SearchAsync(string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            var response = await _httpClient.GetAsync(
+                "appointments/search?query=" + encodedQuery);
+
+            await EnsureSuccessWithMessageAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
+        }
+
+        public async Task<List<AppointmentDto>> SearchCancelledByPatientAsync(int patientId, string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            string url =
+                "appointments/patient/" + patientId + "/cancelled/search?query=" + encodedQuery;
+
+            var response = await _httpClient.GetAsync(url);
+
+            await EnsureSuccessWithMessageAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
+        }
+
+        public async Task<List<AppointmentDto>> SearchCancelledByDoctorAsync(int doctorId, string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            string url = "appointments/doctor/" + doctorId + "/cancelled/search?query=" + encodedQuery;
+
+            var response = await _httpClient.GetAsync(url);
+
+            await EnsureSuccessWithMessageAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
+        }
+
+        public async Task<List<AppointmentDto>> SearchUpcomingByDoctorAsync(int doctorId, string query)
+        {
+            string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
+
+            string url = "appointments/doctor/" + doctorId + "/upcoming/search?query=" + encodedQuery;
+
+            var response = await _httpClient.GetAsync(url);
+
+            await EnsureSuccessWithMessageAsync(response);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
+        }
         public async Task<AppointmentDto> UpdateAsync(int id, UpdateAppointmentDto dto)
         {
             var json = JsonConvert.SerializeObject(dto);
+
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PutAsync("appointments/" + id, content);
+
             await EnsureSuccessWithMessageAsync(response);
 
             var responseJson = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<AppointmentDto>(responseJson);
         }
 

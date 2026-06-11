@@ -8,6 +8,7 @@ namespace HealthcareWeb.Services
     {
         Task<List<PatientDto>> GetAllAsync();
         Task<PatientDto> GetByIdAsync(int id);
+        Task<List<PatientDto>> SearchAsync(string query);
         Task<PatientDto> AddAsync(CreatePatientDto dto);
         Task<PatientDto> UpdateAsync(int id, UpdatePatientDto dto);
         Task<PatientDto> DeleteAsync(int id);
