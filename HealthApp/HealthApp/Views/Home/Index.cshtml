@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div class="container mt-5">
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">Welcome to HealthCare App</h1>
+        <p class="text-muted mb-2">
+            Manage Patients, Doctors, Records & Appointments
+        </p>
+        <hr style="width:80px; margin:auto; border:1px solid #0d6efd;" />
+    </div>
+
+    <!-- Cards -->
+    <div class="row g-4 justify-content-center">
+
+        <!-- Patient -->
+        <div class="col-md-3">
+            <a href="/Patient/PatientIndex" class="text-decoration-none">
+                <div class="card dashboard-card text-center p-4 h-100">
+                    <div class="icon mb-3">👤</div>
+                    <h5 class="mb-1">Patients</h5>
+                    <small class="text-muted">Add, view and manage</small>
+                </div>
+            </a>
+        </div>
+
+        <!-- Doctor -->
+        <div class="col-md-3">
+            <a href="/Doctor/DoctorIndex" class="text-decoration-none">
+                <div class="card dashboard-card text-center p-4 h-100">
+                    <div class="icon mb-3">🩺</div>
+                    <h5 class="mb-1">Doctors</h5>
+                    <small class="text-muted">Track availability</small>
+                </div>
+            </a>
+        </div>
+
+        <!-- Health Records -->
+        <div class="col-md-3">
+            <a href="/HealthRecord/HealthRecordsIndex" class="text-decoration-none">
+                <div class="card dashboard-card text-center p-4 h-100">
+                    <div class="icon mb-3">📋</div>
+                    <h5 class="mb-1">Health Records</h5>
+                    <small class="text-muted">Patient history</small>
+                </div>
+            </a>
+        </div>
+
+        <!-- Appointments -->
+        <div class="col-md-3">
+            <a href="/Appointment/AppointmentIndex" class="text-decoration-none">
+                <div class="card dashboard-card text-center p-4 h-100">
+                    <div class="icon mb-3">📅</div>
+                    <h5 class="mb-1">Appointments</h5>
+                    <small class="text-muted">Schedule & manage</small>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+    body {
+        background-color: #f4f7fb;
+    }
+
+    .dashboard-card {
+        border-radius: 12px;
+        border: none;
+        background: #ffffff;
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
+
+        .dashboard-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.12);
+        }
+
+        .dashboard-card h5 {
+            font-weight: 600;
+            color: #333;
+        }
+
+    .icon {
+        font-size: 40px;
+    }
+
+    small {
+        font-size: 13px;
+    }
+</style>

@@ -1,0 +1,176 @@
+﻿@model List<HealthApp.Shared.DTOs.AppointmentDto>
+@using HealthApp.Shared.Constant
+
+@{
+    ViewBag.Title = "Appointment Details";
+}
+
+<!-- ✅ BACK BUTTON -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <a href="/Home/Index" class="btn btn-outline-secondary">
+        ← Back
+    </a>
+
+    <div>
+        <a href="/Appointment/Create" class="btn btn-success">
+            + Book Appointment
+        </a>
+
+        <!-- ✅ SEARCH ICON -->
+        <button class="btn btn-outline-primary ms-2"
+                data-bs-toggle="modal"
+                data-bs-target="#searchModal">
+            🔍
+        </button>
+    </div>
+
+</div>
+
+<!-- ✅ ALERTS -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"]
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<h2 class="text-primary mb-3">Appointment Details</h2>
+
+<!-- ✅ TABLE -->
+<table class="table table-bordered table-hover shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.AppointmentId</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.DoctorName</td>
+                    <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.TimeSlot</td>
+
+                    <td>
+                        <span class="badge
+                        @(item.Status == AppointmentStatus.Confirmed ? "bg-success" :
+                          item.Status == AppointmentStatus.Cancelled ? "bg-danger" :
+                          item.Status == AppointmentStatus.Completed ? "bg-info" :
+                          "bg-warning")">
+                            @item.Status
+                        </span>
+                    </td>
+
+                    <td>
+                        @if (item.Status == AppointmentStatus.Pending)
+                        {
+                            using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.AppointmentId" />
+
+                                <!-- ✅ TICK BUTTON -->
+                                <button type="submit"
+                                        class="btn btn-success btn-sm me-1"
+                                        onclick="return confirm('Confirm appointment?')">
+                                    ✔
+                                </button>
+                            }
+
+                            using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.AppointmentId" />
+
+                                <!-- ✅ CROSS BUTTON -->
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Cancel appointment?')">
+                                    ✖
+                                </button>
+                            }
+                        }
+                        else if (item.Status == AppointmentStatus.Confirmed)
+                        {
+                            <a href="@Url.Action("CreateFromAppointment", "HealthRecord", new { appointmentId = item.AppointmentId })"
+                               class="btn btn-info btn-sm me-1">
+                                +
+                            </a>
+
+                            using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@item.AppointmentId" />
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Cancel appointment?')">
+                                    ✖
+                                </button>
+                            }
+                        }
+                        else if (item.Status == AppointmentStatus.Cancelled)
+                        {
+                            <span class="text-danger">Cancelled</span>
+                        }
+                        else if (item.Status == AppointmentStatus.Completed)
+                        {
+                            <span class="text-success">Completed</span>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-danger text-center">
+                    No appointments found
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- ✅ SEARCH MODAL POPUP -->
+<div class="modal fade" id="searchModal">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+
+            <h5 class="mb-3">Search Appointment</h5>
+
+            <form method="get" action="/Appointment/GetById">
+                <input type="number"
+                       name="id"
+                       class="form-control mb-2"
+                       placeholder="Enter Appointment Id" />
+
+                <button class="btn btn-primary w-100">
+                    Search
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>

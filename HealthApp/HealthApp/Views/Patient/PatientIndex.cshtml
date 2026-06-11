@@ -1,0 +1,85 @@
+﻿@model List<HealthApp.Shared.DTOs.PatientDto>
+
+@{
+    ViewBag.Title = "Patient Details";
+}
+
+<h2 class="text-primary mb-3">Patient Details</h2>
+
+<div class="mb-3">
+    <a href="/Patient/Create" class="btn btn-success">
+        Add New Patient
+    </a>
+</div>
+
+<div class="card p-3 mb-3 shadow">
+    @using (Html.BeginForm("Search", "Patient", FormMethod.Get))
+    {
+        <div style="display:flex; align-items:center; gap:10px;">
+            <label style="margin-bottom:0;"><b>Search:</b></label>
+
+            <input type="text"
+                   name="query"
+                   class="form-control"
+                   style="max-width:250px;"
+                   placeholder="Enter ID or Name" />
+
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+        </div>
+    }
+</div>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>DOB</th>
+            <th>Gender</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Insurance</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.PatientId</td>
+                    <td>@item.FullName</td>
+                    <td>@item.DateOfBirth.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Gender</td>
+                    <td>@item.PhoneNumber</td>
+                    <td>@item.Email</td>
+                    <td>@item.InsuranceId</td>
+
+                    <td>
+                        <a href="/Patient/GetById/@item.PatientId"
+                           class="btn btn-info btn-sm">
+                            View
+                        </a>
+
+                        <a href="/Patient/Edit/@item.PatientId"
+                           class="btn btn-warning btn-sm">
+                            Edit
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="8" class="text-center text-danger">
+                    No patients found
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

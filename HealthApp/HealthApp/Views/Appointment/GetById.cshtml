@@ -1,0 +1,31 @@
+﻿﻿@model HealthApp.Shared.DTOs.AppointmentDto
+
+@{
+    ViewBag.Title = "Appointment Details";
+}
+
+<h2 class="mb-3">Appointment Details</h2>
+
+<div class="card shadow p-4">
+
+    @if (Model != null)
+    {
+        <p><b>Id:</b> @Model.AppointmentId</p>
+        <p><b>Patient:</b> @Model.PatientName</p>
+        <p><b>Doctor:</b> @Model.DoctorName</p>
+        <p><b>Date:</b> @Model.ScheduledDate.ToString("yyyy-MM-dd")</p>
+        <p><b>Time Slot:</b> @Model.TimeSlot</p>
+
+        <p>
+            <b>Status:</b>
+            <span class="badge bg-info">@Model.Status</span>
+        </p>
+    }
+    else
+    {
+        <div class="alert alert-danger">No appointment found</div>
+    }
+
+    <a href="/Appointment/AppointmentIndex" class="btn btn-secondary mt-2">Back</a>
+
+</div>

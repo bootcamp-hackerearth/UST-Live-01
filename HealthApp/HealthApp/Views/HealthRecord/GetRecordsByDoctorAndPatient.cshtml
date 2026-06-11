@@ -1,0 +1,43 @@
+﻿﻿@model List<HealthApp.Shared.DTOs.HealthRecordDto>
+
+<h2 class="text-primary mb-3">Health Records</h2>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Record Id</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Diagnosis</th>
+            <th>Prescription</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.RecordId</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.DoctorName</td>
+                    <td>@item.VisitDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Diagnosis</td>
+                    <td>@item.Prescription</td>
+                    <td>@item.Notes</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center text-danger">No records found</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/HealthRecord/HealthRecordsIndex" class="btn btn-secondary">Back</a>

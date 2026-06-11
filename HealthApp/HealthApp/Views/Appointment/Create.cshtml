@@ -1,0 +1,92 @@
+﻿@model HealthApp.Shared.DTOs.AppointmentDto
+
+@{
+    ViewBag.Title = "Book Appointment";
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-2">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- ✅ BACK BUTTON -->
+<div class="mb-3">
+    <a href="/Appointment/AppointmentIndex" class="btn btn-outline-secondary">
+        ← Back
+    </a>
+</div>
+
+<div class="row justify-content-center mt-3">
+    <div class="col-md-6">
+        <div class="card shadow p-4">
+
+            <h2 class="text-center mb-4 text-primary">Book Appointment</h2>
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                <!-- ✅ Patient Id -->
+                <div class="form-group">
+                    <label class="fw-semibold">Patient Id</label>
+                    @Html.TextBoxFor(m => m.PatientId, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.PatientId, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Doctor Id -->
+                <div class="form-group mt-3">
+                    <label class="fw-semibold">Doctor Id</label>
+                    @Html.TextBoxFor(m => m.DoctorId, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.DoctorId, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Date -->
+                <div class="form-group mt-3">
+                    <label class="fw-semibold">Date</label>
+                    @Html.TextBoxFor(m => m.ScheduledDate,
+                        "{0:yyyy-MM-dd}",
+                        new
+                        {
+                            @class = "form-control",
+                            type = "date",
+                            min = DateTime.Today.ToString("yyyy-MM-dd")
+                        })
+                    @Html.ValidationMessageFor(m => m.ScheduledDate, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ TIME SLOT DROPDOWN -->
+                <div class="form-group mt-3">
+                    <label class="fw-semibold">Time Slot</label>
+                    @Html.DropDownListFor(m => m.TimeSlot,
+                        new SelectList(new List<string>
+                        {
+                            "09:00 AM",
+                            "10:00 AM",
+                            "11:00 AM",
+                            "12:00 PM",
+                            "02:00 PM",
+                            "03:00 PM",
+                            "04:00 PM",
+                            "05:00 PM"
+                        }),
+                        "-- Select Slot --",
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.TimeSlot, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ BUTTON -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary w-50">
+                        Book Appointment
+                    </button>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,89 @@
+﻿@model HealthApp.Shared.DTOs.DoctorDto
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<!-- ✅ BACK BUTTON -->
+<div class="mb-3">
+    <a href="/Doctor/DoctorIndex" class="btn btn-outline-secondary">
+        ← Back
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <h2 class="mb-3 text-primary">Add Doctor</h2>
+
+        <div class="card shadow p-4">
+
+            @using (Html.BeginForm())
+            {
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                <!-- ✅ Name -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Name</label>
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Specialisation -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Specialisation</label>
+
+                    <select name="Specialisation" class="form-control">
+                        <option value="">-- Select --</option>
+                        <option>GeneralPhysician</option>
+                        <option>Cardiologist</option>
+                        <option>Dermatologist</option>
+                        <option>Neurologist</option>
+                        <option>Orthopedic</option>
+                        <option>Pediatrician</option>
+                        <option>Psychiatrist</option>
+                        <option>ENT</option>
+                        <option>Gynecologist</option>
+                    </select>
+
+                    @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Experience -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Experience (Years)</label>
+                    @Html.TextBoxFor(m => m.YearsOfExperience,
+                        new { @class = "form-control", type = "number", min = "0", max = "50" })
+                    @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Fee -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Consultation Fee</label>
+                    @Html.TextBoxFor(m => m.ConsultationFee,
+                        new { @class = "form-control", type = "number", step = "0.01", min = "1" })
+                    @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ BUTTONS -->
+
+                <div class="mt-4 text-center">
+
+                    <button type="submit"
+                            class="btn btn-primary me-2"
+                            onclick="return confirm('Save doctor details?')">
+                        Save
+                    </button>
+
+                    <a href="/Doctor/DoctorIndex"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            }
+
+        </div>
+    </div>
+</div>

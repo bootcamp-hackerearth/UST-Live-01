@@ -1,0 +1,22 @@
+﻿﻿@model HealthApp.Shared.DTOs.DoctorDto
+
+<h2 class="mb-3">Doctor Details</h2>
+
+<div class="card p-4">
+
+    @if (Model != null)
+    {
+        <p><strong>Name:</strong> @Model.FullName</p>
+        <p><strong>Specialisation:</strong> @Model.Specialisation</p>
+        <p><strong>Experience:</strong> @Model.YearsOfExperience</p>
+        <p><strong>Fee:</strong> @Model.ConsultationFee</p>
+        <p><strong>Status:</strong> @(Model.IsActive ? "Active" : "Inactive")</p>
+    }
+    else
+    {
+        <div class="alert alert-danger">Doctor not found</div>
+    }
+
+    <a href="/Doctor/DoctorIndex" class="btn btn-secondary">Back</a>
+
+</div>

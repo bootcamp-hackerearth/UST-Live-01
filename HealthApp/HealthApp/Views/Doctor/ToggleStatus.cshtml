@@ -1,0 +1,35 @@
+﻿﻿@model List<HealthApp.Shared.DTOs.DoctorDto>
+
+<h2 class="mb-3">Toggle Status</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.FullName</td>
+
+                <td>
+                    <span class="badge @(item.IsActive ? "badge-success" : "badge-danger")">
+                        @(item.IsActive ? "Active" : "Inactive")
+                    </span>
+                </td>
+
+                <td>
+                    <a href="@Url.Action("ToggleStatus", "Doctor", new { id = item.DoctorId })"
+                       class="btn btn-primary btn-sm">
+                        Toggle Status
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,148 @@
+﻿@model List<HealthApp.Shared.DTOs.DoctorDto>
+
+@{
+    ViewBag.Title = "Doctor Details";
+}
+
+<!-- ✅ TOP BAR -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <!-- ✅ BACK -->
+    <a href="/Home/Index" class="btn btn-outline-secondary">
+        ← Back
+    </a>
+
+    <div>
+        <!-- ✅ ADD -->
+        <a href="/Doctor/Create" class="btn btn-success">
+            + Doctor
+        </a>
+
+        <!-- ✅ SEARCH ICON -->
+        <button class="btn btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#searchModal">
+            🔍
+        </button>
+
+        <!-- ✅ FILTER ICON -->
+        <button class="btn btn-outline-dark ms-1"
+                data-bs-toggle="modal"
+                data-bs-target="#filterModal">
+            🔽
+        </button>
+        
+    </div>
+
+</div>
+
+<!-- ✅ ALERTS -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"]
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<h2 class="text-primary mb-3">Doctor Details</h2>
+
+<!-- ✅ TABLE -->
+<table class="table table-bordered table-hover shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Specialisation</th>
+            <th>Experience</th>
+            <th>Fee</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.DoctorId</td>
+                    <td>@item.FullName</td>
+                    <td>@item.Specialisation</td>
+                    <td>@item.YearsOfExperience</td>
+                    <td>@item.ConsultationFee</td>
+
+                    <!-- ✅ STATUS -->
+                    <td>
+                        <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
+                            @(item.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+
+                    <!-- ✅ SIMPLE TOGGLE (NO ERROR) -->
+                    <td>
+                        <a href="/Doctor/ToggleStatus/@item.DoctorId"
+                           class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")">
+                            @(item.IsActive ? "Deactivate" : "Activate")
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center text-danger">
+                    No doctors found
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- ✅ SEARCH MODAL -->
+<div class="modal fade" id="searchModal">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <h5>Search Doctor</h5>
+
+            @using (Html.BeginForm("Search", "Doctor", FormMethod.Get))
+            {
+                <input type="text" name="query" class="form-control mb-2" placeholder="Enter name or ID" />
+                <button class="btn btn-primary w-100">Search</button>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ✅ FILTER MODAL -->
+<div class="modal fade" id="filterModal">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <h5>Filter by Specialisation</h5>
+
+            @using (Html.BeginForm("SearchBySpecialisation", "Doctor", FormMethod.Get))
+            {
+                <select name="specialisation" class="form-control mb-2">
+                    <option value="">-- Select --</option>
+                    <option>Cardiologist</option>
+                    <option>Dermatologist</option>
+                    <option>Neurologist</option>
+                    <option>Pediatrician</option>
+                    <option>Orthopedic</option>
+                    <option>ENT</option>
+                    <option>Gynecologist</option>
+                </select>
+
+                <button class="btn btn-primary w-100">Apply Filter</button>
+            }
+        </div>
+    </div>
+</div>

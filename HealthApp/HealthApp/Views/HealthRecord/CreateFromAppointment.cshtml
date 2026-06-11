@@ -1,0 +1,39 @@
+﻿﻿@model HealthApp.Shared.DTOs.HealthRecordDto
+
+<h2 class="text-primary mb-4">Add Health Record</h2>
+
+<div class="card p-4">
+
+    @using (Html.BeginForm("CreateFromAppointment", "HealthRecord", FormMethod.Post))
+    {
+        @Html.HiddenFor(m => m.PatientId)
+        @Html.HiddenFor(m => m.DoctorId)
+        @Html.HiddenFor(m => m.VisitDate)
+        @Html.HiddenFor(m => m.AppointmentId)
+
+        <p><b>Patient:</b> @Model.PatientName</p>
+        <p><b>Doctor:</b> @Model.DoctorName</p>
+        <p><b>Date:</b> @Model.VisitDate.ToString("yyyy-MM-dd")</p>
+
+        <div class="mb-2">
+            Diagnosis:
+            @Html.TextBoxFor(m => m.Diagnosis, new { @class = "form-control" })
+        </div>
+
+        <div class="mb-2">
+            Prescription:
+            @Html.TextBoxFor(m => m.Prescription, new { @class = "form-control" })
+        </div>
+
+        <div class="mb-2">
+            Notes:
+            @Html.TextBoxFor(m => m.Notes, new { @class = "form-control" })
+        </div>
+
+        <br />
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/Appointment/AppointmentIndex" class="btn btn-secondary">Back</a>
+    }
+
+</div>

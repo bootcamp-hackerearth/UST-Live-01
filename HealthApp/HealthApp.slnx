@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="HealthApp.API/HealthApp.API.csproj" Id="f877abf0-7a2e-4a7a-b91c-15fd25b4a182" />
+  <Project Path="HealthApp.APIServiceTesting/HealthApp.APIServiceTesting.csproj" Id="7e36dfab-e4fa-4de7-b1dd-e0bbf0194b91" />
+  <Project Path="HealthApp.Shared/HealthApp.Shared.csproj" Id="ae2c1b23-a5d3-4633-ae96-60d785f0108c" />
+  <Project Path="HealthApp/HealthApp.csproj" Id="600f6cc1-e239-4577-9f52-27b319b37f94" />
+</Solution>

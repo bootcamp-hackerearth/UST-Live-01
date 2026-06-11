@@ -1,0 +1,80 @@
+﻿@model HealthApp.Shared.DTOs.HealthRecordDto
+
+@{
+    ViewBag.Title = "Add Health Record";
+}
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger mb-2" })
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow p-4">
+
+            <h2 class="mb-3">Add New Health Record</h2>
+
+            @using (Html.BeginForm())
+            {
+                <!-- ✅ Patient Id -->
+                <div class="form-group">
+                    <label>Patient Id</label>
+                    @Html.TextBoxFor(m => m.PatientId,
+                        new { @class = "form-control", type = "number" })
+                    @Html.ValidationMessageFor(m => m.PatientId, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Doctor Id -->
+                <div class="form-group mt-3">
+                    <label>Doctor Id</label>
+                    @Html.TextBoxFor(m => m.DoctorId,
+                        new { @class = "form-control", type = "number" })
+                    @Html.ValidationMessageFor(m => m.DoctorId, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Visit Date -->
+                <div class="form-group mt-3">
+                    <label>Visit Date</label>
+                    @Html.TextBoxFor(m => m.VisitDate,
+                        "{0:yyyy-MM-dd}",
+                        new
+                        {
+                            @class = "form-control",
+                            type = "date",
+                            max = DateTime.Today.ToString("yyyy-MM-dd")   // ✅ NO FUTURE DATE
+                        })
+                    @Html.ValidationMessageFor(m => m.VisitDate, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Diagnosis -->
+                <div class="form-group mt-3">
+                    <label>Diagnosis</label>
+                    @Html.TextBoxFor(m => m.Diagnosis,
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Prescription -->
+                <div class="form-group mt-3">
+                    <label>Prescription</label>
+                    @Html.TextBoxFor(m => m.Prescription,
+                        new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Notes -->
+                <div class="form-group mt-3">
+                    <label>Notes</label>
+                    @Html.TextAreaFor(m => m.Notes,
+                        new { @class = "form-control", rows = 3 })
+                </div>
+
+                <!-- ✅ Buttons -->
+                <div class="mt-3">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <a href="/HealthRecord/HealthRecordsIndex" class="btn btn-secondary">Back</a>
+                </div>
+            }
+
+        </div>
+    </div>
+</div>
+

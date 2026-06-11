@@ -1,0 +1,47 @@
+﻿﻿@model List<HealthApp.Shared.DTOs.AppointmentDto>
+
+@{
+    ViewBag.Title = "Appointments by Patient";
+}
+
+<h2 class="mb-3">Appointments by Patient</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (Model != null && Model.Count > 0)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.AppointmentId</td>
+                    <td>@item.DoctorName</td>
+                    <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                    <td>@item.TimeSlot</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-danger text-center">
+                    No appointments found
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/Appointment/AppointmentIndex" class="btn btn-secondary mt-2">
+    Back
+</a>
