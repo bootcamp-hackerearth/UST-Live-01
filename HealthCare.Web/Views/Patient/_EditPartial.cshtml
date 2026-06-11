@@ -1,0 +1,100 @@
+﻿@model HealthCare.Shared.DTOs.Patient.PatientDto
+
+@using (Html.BeginForm("Edit", "Patient", FormMethod.Post, new { id = "editForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.PatientId)
+
+   
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    <div class="row g-3">
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.FullName, new { @class = "form-label" })
+
+            @Html.TextBoxFor(m => m.FullName, new
+            {
+                @class = "form-control"
+            })
+
+            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.Email, new { @class = "form-label" })
+
+            @Html.TextBoxFor(m => m.Email, new
+            {
+                @class = "form-control",
+                type = "email"
+            })
+
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.PhoneNumber, new { @class = "form-label" })
+
+            @Html.TextBoxFor(m => m.PhoneNumber, new
+            {
+                @class = "form-control"
+            })
+
+            @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.Gender, new { @class = "form-label" })
+
+            @Html.DropDownListFor(m => m.Gender,
+                new List<SelectListItem>
+                {
+                    new SelectListItem { Text = "Male", Value = "Male" },
+                    new SelectListItem { Text = "Female", Value = "Female" },
+                    new SelectListItem { Text = "Other", Value = "Other" }
+                },
+                "Select Gender",
+                new { @class = "form-select" })
+
+            @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.DateOfBirth, new { @class = "form-label" })
+
+            @Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new
+            {
+                @class = "form-control",
+                type = "date"
+            })
+
+            @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.InsuranceId, new { @class = "form-label" })
+
+            @Html.TextBoxFor(m => m.InsuranceId, new
+            {
+                @class = "form-control"
+            })
+
+            @Html.ValidationMessageFor(m => m.InsuranceId, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    
+    <div class="mt-4 text-end">
+        <button type="submit" class="btn btn-primary">
+            Update
+        </button>
+    </div>
+}

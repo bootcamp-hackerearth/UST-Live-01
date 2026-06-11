@@ -1,0 +1,68 @@
+﻿@model HealthCare.Shared.DTOs.Doctor.DoctorDto
+
+@{
+    var role = Convert.ToString(Session["Role"]);
+    var referenceId = Session["ReferenceId"] == null ? 0 : Convert.ToInt32(Session["ReferenceId"]);
+
+    var isAdmin = role == "Admin";
+    var isOwnDoctorProfile = role == "Doctor" && referenceId == Model.DoctorId;
+    var canEdit = isAdmin || isOwnDoctorProfile;
+}
+
+
+<div class="text-center mb-3">
+
+    <div class="rounded-circle bg-primary text-white
+                d-inline-flex align-items-center
+                justify-content-center"
+         style="width:80px;height:80px;font-size:30px;">
+        👨‍⚕️
+    </div>
+
+    <h5 class="mt-2 mb-0">
+        @Model.FullName
+    </h5>
+
+    <small class="text-muted">
+        ID: @Model.DoctorId
+    </small>
+
+    <div class="mt-2">
+        <span class="badge @(Model.IsActive ? "bg-success" : "bg-danger")">
+            @(Model.IsActive ? "Active" : "Inactive")
+        </span>
+    </div>
+</div>
+
+<hr />
+
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <label class="fw-bold">Specialisation</label>
+        <input class="form-control" value="@Model.Specialisation" readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Experience</label>
+        <input class="form-control" value="@Model.YearsOfExperience years" readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Consultation Fee</label>
+        <input class="form-control" value="₹@Model.ConsultationFee" readonly />
+    </div>
+
+</div>
+
+
+@if (canEdit)
+{
+    <div class="text-end mt-3">
+        <button class="btn btn-warning"
+                onclick="openModal('@Url.Action("EditPartial", "Doctor", new { id = Model.DoctorId })')">
+            Edit
+        </button>
+    </div>
+}

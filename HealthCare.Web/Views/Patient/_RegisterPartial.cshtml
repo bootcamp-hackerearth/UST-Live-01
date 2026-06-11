@@ -1,0 +1,108 @@
+﻿@model HealthCare.Shared.DTOs.Patient.PatientDto
+
+@{
+    var maxDateOfBirth = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+}
+
+@using (Html.BeginForm("Register", "Patient", FormMethod.Post, new { id = "registerForm" }))
+{
+    @Html.AntiForgeryToken()
+
+    
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    <div class="row g-3">
+
+       
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.FullName, new { @class = "form-label fw-semibold" })
+
+            @Html.TextBoxFor(m => m.FullName, new
+            {
+                @class = "form-control"
+            })
+
+            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.DateOfBirth, new { @class = "form-label fw-semibold" })
+
+            @Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new
+            {
+                @class = "form-control",
+                type = "date",
+                max = maxDateOfBirth
+            })
+
+            @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.Gender, new { @class = "form-label fw-semibold d-block" })
+
+            <div class="d-flex gap-3">
+                @foreach (var g in new[] { "Male", "Female", "Other" })
+                {
+                    <div class="form-check">
+                        @Html.RadioButtonFor(m => m.Gender, g, new { @class = "form-check-input" })
+                        <label class="form-check-label">@g</label>
+                    </div>
+                }
+            </div>
+
+            @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.PhoneNumber, new { @class = "form-label fw-semibold" })
+
+            @Html.TextBoxFor(m => m.PhoneNumber, new
+            {
+                @class = "form-control"
+            })
+
+            @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+        </div>
+
+        
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.Email, new { @class = "form-label fw-semibold" })
+
+            @Html.TextBoxFor(m => m.Email, new
+            {
+                @class = "form-control",
+                type = "email"
+            })
+
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+        </div>
+
+       
+        <div class="col-md-6">
+            @Html.LabelFor(m => m.InsuranceId, new { @class = "form-label fw-semibold" })
+
+            @Html.TextBoxFor(m => m.InsuranceId, new
+            {
+                @class = "form-control"
+            })
+
+            @Html.ValidationMessageFor(m => m.InsuranceId, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    
+    <div class="mt-4 text-end">
+        <button type="reset" class="btn btn-outline-danger me-2">
+            Clear
+        </button>
+
+        <button type="submit" class="btn btn-primary">
+            Register
+        </button>
+    </div>
+}

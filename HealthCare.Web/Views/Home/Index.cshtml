@@ -1,0 +1,88 @@
+﻿@{
+    ViewBag.Title = "Home - HealthCare Management System";
+}
+
+<div class="container py-5">
+
+    
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">🏥 HealthCare Portal</h1>
+        <p class="text-muted">Access your healthcare services quickly and easily</p>
+    </div>
+
+    
+    <div class="row justify-content-center g-4">
+
+        
+        <div class="col-md-4">
+            <a href="@Url.Action("List", "Doctor")"
+               class="text-decoration-none">
+
+                <div class="card option-card text-center p-4">
+                    <h1>👨‍⚕️</h1>
+                    <h4 class="mt-2">Doctors list</h4>
+                    <p class="text-muted">Browse doctors and specializations</p>
+                </div>
+
+            </a>
+        </div>
+
+        
+        <div class="col-md-4">
+            <a href="@Url.Action("List", "Appointment")"
+               class="text-decoration-none">
+                <div class="card option-card text-center p-4">
+                    <h1>📅</h1>
+                    <h4 class="mt-2">View Appointments</h4>
+                    <p class="text-muted">Check your scheduled appointments</p>
+                </div>
+            </a>
+        </div>
+
+        
+        <div class="col-md-4">
+            <a href="@Url.Action("List", "HealthRecord")"
+               class="text-decoration-none">
+                <div class="card option-card text-center p-4">
+                    <h1>📋</h1>
+                    <h4 class="mt-2">View Health History</h4>
+                    <p class="text-muted">View medical records & reports</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+
+<style>
+
+    body {
+        background: #f5f7fa;
+    }
+
+    .option-card {
+        border: none;
+        border-radius: 18px;
+        transition: 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        height: 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #333;
+    }
+
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            background-color: #0d6efd;
+            color: white;
+        }
+
+    h1 {
+        font-size: 40px;
+    }
+</style>

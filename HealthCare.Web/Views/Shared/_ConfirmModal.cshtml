@@ -1,0 +1,31 @@
+﻿<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalTitle">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" style="border-radius:14px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span>&times;</span>
+                </button>
+                <h4 class="modal-title" id="confirmModalTitle">Confirm Action</h4>
+            </div>
+
+            <div class="modal-body">
+                <p id="confirmModalMessage">Are you sure?</p>
+            </div>
+
+            <div class="modal-footer">
+                @using (Html.BeginForm("", "", FormMethod.Post, new { id = "confirmModalForm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        No, Go Back
+                    </button>
+
+                    <button type="submit" class="btn btn-danger">
+                        Yes, Confirm
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>

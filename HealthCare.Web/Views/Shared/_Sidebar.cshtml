@@ -1,0 +1,53 @@
+﻿<aside class="d-flex flex-column p-3 text-white bg-dark shadow"
+       style="width: 260px; height: 100vh; position: fixed; left: 0; top: 0;">
+
+    
+    <div class="mb-3 ps-2">
+        <h4 class="fw-bold mb-0">HealthCare</h4>
+    </div>
+
+    
+    <div class="ps-2 mb-2">
+        <a href="@Url.Action("Index","Home")"
+           class="nav-link text-white sidebar-link">
+            🏠 Home
+        </a>
+    </div>
+
+   
+    <hr style="border-color: rgba(255,255,255,0.2); margin: 10px 0;" />
+
+    
+    <ul class="nav nav-pills flex-column">
+
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("List","Patient")"
+               class="nav-link text-white sidebar-link">
+                🧑 Patient
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("List","Doctor")"
+               class="nav-link text-white sidebar-link">
+                👨 Doctor
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("List","Appointment")"
+               class="nav-link text-white sidebar-link">
+                📅 Appointment
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("List","HealthRecord")"
+               class="sidebar-link">
+                📋 HealthRecord
+            </a>
+        </li>
+
+    </ul>
+
+</aside>

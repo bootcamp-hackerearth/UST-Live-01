@@ -1,0 +1,297 @@
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Doctor.DoctorDto>
+
+@{
+    ViewBag.Title = "Doctor List";
+
+    int currentPage = Model.PageNumber;
+    int totalPages = Model.TotalPages;
+}
+
+<div class="container-fluid">
+
+    
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold mb-1">Doctor List</h2>
+                <p class="text-muted mb-0">
+                    View registered doctors and their details.
+                </p>
+            </div>
+
+            <button class="btn btn-primary rounded-3"
+                    onclick="openModal('@Url.Action("AddPartial", "Doctor")')">
+                + Add Doctor
+            </button>
+        </div>
+    </div>
+
+
+    <div class="mb-4">
+        @using (Html.BeginForm("List", "Doctor", FormMethod.Get))
+        {
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                
+                <input type="text"
+                       name="searchTerm"
+                       value="@Request["searchTerm"]"
+                       class="form-control"
+                       placeholder="Doctor ID or Name"
+                       style="width:250px;" />
+
+                
+                <input type="number"
+                       name="experience"
+                       value="@Request["experience"]"
+                       class="form-control"
+                       placeholder="Experience (Years)"
+                       min="0"
+                       style="width:180px;" />
+
+                
+                <select name="specialization"
+                        class="form-select"
+                        style="width:220px;">
+                    <option value="">All Specializations</option>
+                    <option value="Cardiology" @(Request["specialization"] == "Cardiology" ? "selected" : "")>
+                        Cardiology
+                    </option>
+                    <option value="Dermatology" @(Request["specialization"] == "Dermatology" ? "selected" : "")>
+                        Dermatology
+                    </option>
+                    <option value="Orthopedics" @(Request["specialization"] == "Orthopedics" ? "selected" : "")>
+                        Orthopedics
+                    </option>
+                    <option value="Pediatrics" @(Request["specialization"] == "Pediatrics" ? "selected" : "")>
+                        Pediatrics
+                    </option>
+                </select>
+
+                
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
+
+                
+                <a href="@Url.Action("List", "Doctor")"
+                   class="btn btn-outline-secondary">
+                    Clear
+                </a>
+
+            </div>
+        }
+    </div>
+
+   
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">Doctor Id</th>
+                            <th class="px-4 py-3">Doctor Name</th>
+                            <th class="px-4 py-3">Specialisation</th>
+                            <th class="px-4 py-3">Experience</th>
+                            <th class="px-4 py-3">Fee</th>
+                            <th class="px-4 py-3 text-center">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            foreach (var doctor in Model.Items)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3 fw-semibold">
+                                        @doctor.DoctorId
+                                    </td>
+
+                                    
+                                    <td class="px-4 py-3 fw-semibold">
+                                        @doctor.FullName
+                                    </td>
+
+                                    <td class="px-4 py-3 text-muted">
+                                        @doctor.Specialisation
+                                    </td>
+
+                                    <td class="px-4 py-3">
+                                        @doctor.YearsOfExperience Years
+                                    </td>
+
+                                    <td class="px-4 py-3">
+                                        ₹@doctor.ConsultationFee
+                                    </td>
+
+                                   
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            
+                                            <button class="btn btn-sm btn-outline-primary"
+                                                    onclick="openModal('@Url.Action("ViewPartial", "Doctor", new { id = doctor.DoctorId })')"
+                                                    title="View">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+
+                                            
+                                            <button class="btn btn-sm btn-outline-warning"
+                                                    onclick="openModal('@Url.Action("EditPartial", "Doctor", new { id = doctor.DoctorId })')"
+                                                    title="Edit">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </button>
+
+                                            
+                                            <button type="button"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="openDeleteModal(@doctor.DoctorId)"
+                                                    title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    No doctors found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ✅ PAGINATION -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <!-- Previous -->
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("List", "Doctor", new {
+                       pageNumber = currentPage - 1,
+                       specialization = Request["specialization"],
+                       searchTerm = Request["searchTerm"],
+                       orderByDescending = Request["orderByDescending"]
+                   })">
+                    Previous
+                </a>
+            </li>
+
+            <!-- Pages -->
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("List", "Doctor", new {
+                           pageNumber = i,
+                           specialization = Request["specialization"],
+                           searchTerm = Request["searchTerm"],
+                           orderByDescending = Request["orderByDescending"]
+                       })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- Next -->
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("List", "Doctor", new {
+                       pageNumber = currentPage + 1,
+                       specialization = Request["specialization"],
+                       searchTerm = Request["searchTerm"],
+                       orderByDescending = Request["orderByDescending"]
+                   })">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>
+
+<script>
+    function openDeleteModal(id) {
+        document.getElementById("deleteId").value = id;
+
+        var modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+</script>
+
+<!-- ✅ DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete this doctor?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <!-- ✅ Delete form -->
+                @using (Html.BeginForm("Delete", "Doctor", FormMethod.Post, new { id = "deleteForm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" id="deleteId" name="id" />
+
+                    <button type="submit" class="btn btn-danger">
+                        Yes, Delete
+                    </button>
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="mainModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content p-4">
+
+            <div id="modalContent">
+                <!-- dynamic content -->
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(url) {
+        fetch(url)
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById("modalContent").innerHTML = html;
+                new bootstrap.Modal(document.getElementById('mainModal')).show();
+            });
+    }
+</script>

@@ -1,0 +1,198 @@
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Appointment.AppointmentDto>
+
+@{
+    ViewBag.Title = "Appointment List";
+
+    int currentPage = Model.PageNumber;
+    int totalPages = Model.TotalPages;
+}
+
+<div class="container-fluid">
+
+    <!-- HEADER -->
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+                <h2 class="fw-bold mb-1">Appointment List</h2>
+                <p class="text-muted mb-0">
+                    View and manage appointments.
+                </p>
+            </div>
+
+
+            <a href="@Url.Action("Book", "Appointment")"
+            class="btn btn-success fw-semibold">
+            + Book Appointment
+            </a>
+
+
+        </div>
+    </div>
+
+
+    <
+    @if (Model.Items != null && Model.Items.Any())
+
+    {
+        <div class="alert alert-secondary">
+            Showing appointments for Patient ID:
+            <strong>@Request["patientId"]</strong>
+        </div>
+    }
+
+  
+    <div class="mb-4 d-flex flex-wrap gap-3 align-items-end">
+
+        @using (Html.BeginForm("List", "Appointment", FormMethod.Get))
+        {
+            <div class="d-flex gap-2">
+                <input type="number"
+                       name="patientId"
+                       value="@Request["patientId"]"
+                       class="form-control"
+                       placeholder="Patient ID"
+                       style="width:160px;" />
+
+                <button class="btn btn-primary" title="Search Patient">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        }
+
+        @using (Html.BeginForm("Upcoming", "Appointment", FormMethod.Get))
+        {
+            <div class="d-flex gap-2">
+                <input type="number"
+                       name="doctorId"
+                       value="@Request["doctorId"]"
+                       class="form-control"
+                       placeholder="Doctor ID"
+                       style="width:160px;" />
+
+                <button class="btn btn-primary" title="Search Doctor">
+                    <i class="bi bi-search"></i>
+                </button>
+
+
+            </div>
+        }
+
+        <!-- ✅ Status Filter (only when data present) -->
+        @if (Model.Items != null && Model.Items.Any())
+        {
+            using (Html.BeginForm("List", "Appointment", FormMethod.Get))
+            {
+                <div class="d-flex gap-2">
+
+                    
+                    <input type="hidden" name="patientId" value="@Request["patientId"]" />
+                    <input type="hidden" name="doctorId" value="@Request["doctorId"]" />
+
+                    <select name="status" class="form-select" style="width:160px;">
+                        <option value="">All Status</option>
+                        <option value="Pending" @(Request["status"] == "Pending" ? "selected" : "")>Pending</option>
+                        <option value="Confirmed" @(Request["status"] == "Confirmed" ? "selected" : "")>Confirmed</option>
+                        <option value="Cancelled" @(Request["status"] == "Cancelled" ? "selected" : "")>Cancelled</option>
+                    </select>
+
+                    <button class="btn btn-secondary" title="Apply Filter">
+                        <i class="bi bi-funnel"></i>
+                    </button>
+
+
+                </div>
+            }
+        }
+
+    </div>
+
+    <!-- ✅ TABLE -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+                @Html.Partial("_AppointmentTable", Model.Items)
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ✅ PAGINATION -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <!-- PREVIOUS -->
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("List", new {
+                       pageNumber = currentPage - 1,
+                       patientId = Request["patientId"],
+                       status = Request["status"]
+                   })">
+                    Previous
+                </a>
+            </li>
+
+            <!-- PAGE NUMBERS -->
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("List", new {
+                           pageNumber = i,
+                           patientId = Request["patientId"],
+                           status = Request["status"]
+                       })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- NEXT -->
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("List", new {
+                       pageNumber = currentPage + 1,
+                       patientId = Request["patientId"],
+                       status = Request["status"]
+                   })">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>
+
+@Html.Partial("_CancelModal")
+
+<div class="modal fade" id="mainModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content p-4">
+
+            <div id="modalContent">
+                <!-- partial loads here -->
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(url) {
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+
+                // ✅ inject partial into modal
+                document.getElementById("modalContent").innerHTML = html;
+
+                // ✅ show modal
+                new bootstrap.Modal(document.getElementById('mainModal')).show();
+            })
+            .catch(err => console.error(err));
+    }
+</script>
