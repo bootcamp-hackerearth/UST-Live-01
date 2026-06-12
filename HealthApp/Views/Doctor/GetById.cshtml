@@ -1,0 +1,25 @@
+﻿@model HealthApp.Shared.DTOs.DoctorDto
+
+<div class="container mt-5" style="max-width:500px">
+
+    <div class="card p-3 shadow">
+
+        <h5>Doctor Details</h5>
+
+        <p><b>Name:</b> @Model.FullName</p>
+        <p><b>Specialisation:</b> @Model.Specialisation</p>
+        <p>
+            <b>Status:</b>
+            @(Model.IsActive ? "Active" : "Inactive")
+        </p>
+
+        <div class="mt-3 d-flex">
+            <a href="@Url.Action("DoctorIndex","Doctor")"
+               class="btn btn-sm btn-secondary">
+                Back
+            </a>
+        </div>
+
+    </div>
+
+</div>

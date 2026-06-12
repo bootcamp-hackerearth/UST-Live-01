@@ -1,0 +1,36 @@
+﻿@model List<string>
+
+@{
+    ViewBag.Title = "Available Slots";
+}
+
+<div class="container mt-5">
+
+    <h4 class="mb-3">Available Time Slots</h4>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-danger">
+            No slots available for selected date.
+        </div>
+    }
+    else
+    {
+        <ul class="list-group">
+            @foreach (var slot in Model)
+            {
+                <li class="list-group-item">
+                    @slot
+                </li>
+            }
+        </ul>
+    }
+
+    <div class="mt-3">
+        <a href="@Url.Action("AppointmentIndex","Appointment")"
+           class="btn btn-secondary">
+            Back
+        </a>
+    </div>
+
+</div>

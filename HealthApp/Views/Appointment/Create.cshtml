@@ -1,0 +1,30 @@
+﻿@model HealthApp.Shared.DTOs.AppointmentDto
+
+<div class="container mt-5">
+
+    <div class="card p-4 shadow">
+
+        <h4>Book Appointment</h4>
+
+        @using (Html.BeginForm())
+        {
+            <div class="mb-2">
+                <label>Patient ID</label>
+                @Html.TextBoxFor(m => m.PatientId, new { @class = "form-control" })
+            </div>
+
+            <div class="mb-2">
+                <label>Doctor ID</label>
+                @Html.TextBoxFor(m => m.DoctorId, new { @class = "form-control" })
+            </div>
+
+            <div class="mb-2">
+                <label>Date</label>
+                @Html.TextBoxFor(m => m.ScheduledDate, new { @class = "form-control", type = "date" })
+            </div>
+
+            <button class="btn btn-success">Book</button>
+        }
+
+    </div>
+</div>

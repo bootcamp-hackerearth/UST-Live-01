@@ -1,0 +1,16 @@
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\bin\Debug\HealthApp.Shared.dll
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\bin\Debug\HealthApp.Shared.pdb
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\bin\Debug\System.ComponentModel.Annotations.dll
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\obj\Debug\HealthApp.Shared.csproj.AssemblyReference.cache
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\obj\Debug\HealthApp.Shared.csproj.CoreCompileInputs.cache
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\obj\Debug\HealthAp.05D709B7.Up2Date
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\obj\Debug\HealthApp.Shared.dll
+C:\Users\310208\source\repos\New\HealthApp\HealthApp.Shared\obj\Debug\HealthApp.Shared.pdb
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\bin\Debug\HealthApp.Shared.dll
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\bin\Debug\HealthApp.Shared.pdb
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\bin\Debug\System.ComponentModel.Annotations.dll
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Debug\HealthApp.Shared.csproj.AssemblyReference.cache
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Debug\HealthApp.Shared.csproj.CoreCompileInputs.cache
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Debug\HealthAp.05D709B7.Up2Date
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Debug\HealthApp.Shared.dll
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Debug\HealthApp.Shared.pdb

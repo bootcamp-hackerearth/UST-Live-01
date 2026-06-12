@@ -1,0 +1,76 @@
+﻿@model List<HealthApp.Shared.DTOs.PatientDto>
+
+@{
+    ViewBag.Title = "Patients";
+}
+
+<div class="container mt-5">
+
+    <h4 class="mb-3">Patients</h4>
+
+    <div class="d-flex justify-content-between mb-3">
+        <form method="get" action="/Patient/Search" class="d-flex">
+            <input type="text"
+                   name="query"
+                   class="form-control me-2"
+                   placeholder="Search by ID or Name"
+                   value="@Request.QueryString["query"]" />
+            <button class="btn btn-outline-primary">Search</button>
+        </form>
+
+        <a href="@Url.Action("Create", "Patient")" class="btn btn-primary">
+            + Add Patient
+        </a>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Gender</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Insurance</th>
+                <th>Actions</th>
+                <th>Health Records</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var p in Model)
+            {
+                <tr>
+                    <td>@p.PatientId</td>
+                    <td>@p.FullName</td>
+                    <td>@p.DateOfBirth.ToString("dd-MM-yyyy")</td>
+                    <td>@p.Gender</td>
+                    <td>@p.PhoneNumber</td>
+                    <td>@p.Email</td>
+                    <td>@p.InsuranceId</td>
+
+                    <td>
+                        <a href="@Url.Action("GetById", "Patient", new { id = p.PatientId })"
+                           class="btn btn-sm btn-info">
+                            View
+                        </a>
+
+                        <a href="@Url.Action("Edit", "Patient", new { id = p.PatientId })"
+                           class="btn btn-sm btn-warning">
+                            Edit
+                        </a>
+                    </td>
+
+                    <td>
+                        <a href="@Url.Action("ByPatient", "HealthRecord", new { patientId = p.PatientId })"
+                           class="btn btn-sm btn-success">
+                            Records
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

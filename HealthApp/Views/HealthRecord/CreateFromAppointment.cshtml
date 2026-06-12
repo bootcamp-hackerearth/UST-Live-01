@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "CreateFromAppointment";
+}
+
+<h2>CreateFromAppointment</h2>
+
+
+@model HealthApp.Shared.DTOs.HealthRecordDto
+
+@{
+    ViewBag.Title = "Create Health Record";
+}
+
+<div class="container mt-4" style="max-width:700px">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Create Health Record (From Appointment)</h5>
+        </div>
+
+        <div class="card-body">
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <!-- Hidden Appointment -->
+                @Html.HiddenFor(m => m.AppointmentId)
+                @Html.HiddenFor(m => m.PatientId)
+                @Html.HiddenFor(m => m.DoctorId)
+
+                <div class="mb-3">
+                    <label>Patient</label>
+                    @Html.TextBoxFor(m => m.PatientName, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Doctor</label>
+                    @Html.TextBoxFor(m => m.DoctorName, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Visit Date</label>
+                    @Html.TextBoxFor(m => m.VisitDate, "{0:yyyy-MM-dd}",
+                        new { @class = "form-control", type = "date", @readonly = "readonly" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Diagnosis</label>
+                    @Html.TextBoxFor(m => m.Diagnosis, new { @class = "form-control" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Prescription</label>
+                    @Html.TextBoxFor(m => m.Prescription, new { @class = "form-control" })
+                </div>
+
+                <button class="btn btn-primary">
+                    Save & Complete Appointment
+                </button>
+
+                <a href="@Url.Action("AppointmentIndex","Appointment")"
+                   class="btn btn-secondary ms-2">
+                    Back
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+</div>

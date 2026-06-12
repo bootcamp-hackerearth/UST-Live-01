@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+@model HealthApp.Shared.DTOs.PatientDto
+
+<div class="container mt-5" style="max-width:600px;">
+
+    <div class="card p-4 shadow">
+
+        <h5>Register Patient</h5>
+
+        @using (Html.BeginForm())
+        {
+            <div class="mb-2">
+                <label>Name</label>
+                @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+            </div>
+
+            <div class="mb-2">
+                <label>DOB</label>
+                @Html.TextBoxFor(m => m.DateOfBirth,
+                    "{0:yyyy-MM-dd}",
+                    new { @class = "form-control", type = "date" })
+            </div>
+
+            <div class="mb-2">
+                <label>Gender</label>
+                @Html.EnumDropDownListFor(m => m.Gender,
+                    new { @class = "form-control" })
+            </div>
+
+            <div class="mb-2">
+                <label>Phone</label>
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+            </div>
+
+            <div class="mb-2">
+                <label>Email</label>
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+            </div>
+
+            <div class="mb-2">
+                <label>Insurance</label>
+                @Html.TextBoxFor(m => m.InsuranceId, new { @class = "form-control" })
+            </div>
+
+            <button class="btn btn-success mt-2">Save</button>
+            <a href="@Url.Action("PatientIndex", "Patient")"
+               class="btn btn-secondary mt-2 ms-2">
+                Back
+            </a>
+        }
+
+
+
+    </div>
+
+</div>

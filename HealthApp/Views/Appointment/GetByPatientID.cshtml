@@ -1,0 +1,40 @@
+﻿@model List<HealthApp.Shared.DTOs.AppointmentDto>
+
+@{
+    ViewBag.Title = "Patient Appointments";
+}
+
+<div class="container mt-5">
+
+    <h4 class="mb-3">Appointments for Patient</h4>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Doctor</th>
+                <th>Date</th>
+                <th>Slot</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.AppointmentId</td>
+                    <td>@item.DoctorName</td>
+                    <td>@item.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                    <td>@item.TimeSlot</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <a href="@Url.Action("AppointmentIndex","Appointment")"
+       class="btn btn-secondary">
+        Back
+    </a>
+
+</div>

@@ -1,0 +1,32 @@
+﻿@model List<HealthApp.Shared.DTOs.HealthRecordDto>
+
+<div class="container mt-5">
+
+    <h4>Health Records</h4>
+
+    <table class="table table-striped">
+
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Visit Date</th>
+                <th>Diagnosis</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var r in Model)
+            {
+                <tr>
+                    <td>@r.PatientName</td>
+                    <td>@r.DoctorName</td>
+                    <td>@r.VisitDate</td>
+                    <td>@r.Diagnosis</td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>

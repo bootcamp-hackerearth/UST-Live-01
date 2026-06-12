@@ -1,0 +1,8 @@
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\bin\Release\HealthApp.Shared.dll
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\bin\Release\HealthApp.Shared.pdb
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\bin\Release\System.ComponentModel.Annotations.dll
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Release\HealthApp.Shared.csproj.AssemblyReference.cache
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Release\HealthApp.Shared.csproj.CoreCompileInputs.cache
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Release\HealthAp.05D709B7.Up2Date
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Release\HealthApp.Shared.dll
+C:\Users\310208\source\repos\New\HealthAxis\HealthApp.Shared\obj\Release\HealthApp.Shared.pdb

@@ -1,0 +1,212 @@
+﻿@model List<HealthApp.Shared.DTOs.AppointmentDto>
+
+@{
+    ViewBag.Title = "Appointments";
+}
+
+<div class="container mt-5">
+
+    <!-- HEADER -->
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Appointment Management</h5>
+
+            <a href="@Url.Action("Create","Appointment")"
+               class="btn btn-primary btn-sm">
+                + Book Appointment
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            <!-- SEARCH FORM -->
+            <form method="get" action="@Url.Action("Search","Appointment")" class="row g-2 mb-3">
+
+                <!-- SEARCH TEXT -->
+                <div class="col-md-5">
+                    <input type="text"
+                           name="query"
+                           class="form-control"
+                           placeholder="Search by Patient or Id"
+                           value="@Request.QueryString["query"]" />
+                </div>
+
+                <!-- STATUS FILTER -->
+                <div class="col-md-3">
+                    <select name="status" class="form-control">
+
+                        <option value="">All Status</option>
+
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+
+                    </select>
+                </div>
+
+                <!-- SEARCH BUTTON -->
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-dark w-100">
+                        Search
+                    </button>
+                </div>
+
+                <!-- RESET BUTTON -->
+                <div class="col-md-2">
+                    <a href="@Url.Action("AppointmentIndex","Appointment")"
+                       class="btn btn-outline-secondary w-100">
+                        Reset
+                    </a>
+                </div>
+
+            </form>
+
+            <!-- ALERTS -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
+
+            <!-- TABLE -->
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Slot</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model == null || !Model.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    No appointments found
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                var status = (item.Status ?? "").Trim().ToLower();
+
+                                <tr>
+                                    <td>@item.AppointmentId</td>
+                                    <td>@item.PatientName</td>
+                                    <td>@item.DoctorName</td>
+                                    <td>@item.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                                    <td>@item.TimeSlot</td>
+
+                                    <!-- STATUS -->
+                                    <td>
+                                        @if (status == "pending")
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                        else if (status == "confirmed")
+                                        {
+                                            <span class="badge bg-primary">Confirmed</span>
+                                        }
+                                        else if (status == "completed")
+                                        {
+                                            <span class="badge bg-success">Completed</span>
+                                        }
+                                        else if (status == "cancelled")
+                                        {
+                                            <span class="badge bg-danger">Cancelled</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @item.Status
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <!-- ACTIONS -->
+                                    <td>
+                                        <div class="d-flex gap-1">
+
+                                            @if (status == "pending")
+                                            {
+                                                using (Html.BeginForm("Confirm", "Appointment",
+                                                    new { id = item.AppointmentId },
+                                                    FormMethod.Post))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <button class="btn btn-sm btn-success">Confirm</button>
+                                                }
+
+                                                using (Html.BeginForm("Cancel", "Appointment",
+                                                    new { id = item.AppointmentId },
+                                                    FormMethod.Post))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <button class="btn btn-sm btn-danger">Cancel</button>
+                                                }
+                                            }
+
+                                            else if (status == "confirmed")
+                                            {
+                                                <a href="@Url.Action("CreateFromAppointment", "HealthRecord", new { appointmentId = item.AppointmentId })"
+                                                   class="btn btn-sm btn-primary">
+                                                    Add Health Record
+                                                </a>
+
+                                                using (Html.BeginForm("Cancel", "Appointment",
+                                                    new { id = item.AppointmentId },
+                                                    FormMethod.Post))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <button class="btn btn-sm btn-danger">Cancel</button>
+                                                }
+                                            }
+
+                                            else if (status == "completed")
+                                            {
+                                                <span class="text-success fw-bold">Completed</span>
+                                            }
+
+                                            else if (status == "cancelled")
+                                            {
+                                                <span class="text-danger fw-bold">Cancelled</span>
+                                            }
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,58 @@
+﻿@model HealthApp.Shared.DTOs.HealthRecordDto
+
+@{
+    ViewBag.Title = "Add Health Record";
+}
+
+<div class="container mt-4" style="max-width:700px">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Add Health Record</h5>
+        </div>
+
+        <div class="card-body">
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label>Appointment Id</label>
+                    @Html.TextBoxFor(m => m.AppointmentId, new { @class = "form-control" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Patient Id</label>
+                    @Html.TextBoxFor(m => m.PatientId, new { @class = "form-control" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Doctor Id</label>
+                    @Html.TextBoxFor(m => m.DoctorId, new { @class = "form-control" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Diagnosis</label>
+                    @Html.TextBoxFor(m => m.Diagnosis, new { @class = "form-control" })
+                </div>
+
+                <div class="mb-3">
+                    <label>Prescription</label>
+                    @Html.TextBoxFor(m => m.Prescription, new { @class = "form-control" })
+                </div>
+
+                <button class="btn btn-success">Save Record</button>
+
+                <a href="@Url.Action("HealthRecordsIndex","HealthRecord")"
+                   class="btn btn-secondary ms-2">
+                    Back
+                </a>
+            }
+
+        </div>
+
+    </div>
+
+</div>

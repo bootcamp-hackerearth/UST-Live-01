@@ -1,0 +1,129 @@
+﻿@model List<HealthApp.Shared.DTOs.DoctorDto>
+
+@{
+    ViewBag.Title = "Doctors";
+}
+
+<div class="container mt-5">
+
+    <h4 class="mb-3">Doctors</h4>
+
+    <!-- ✅ SEARCH -->
+    <form method="get" action="/Doctor/Search" class="d-flex mb-3">
+
+        <!-- Search Input -->
+        <input type="text"
+               name="query"
+               class="form-control me-2"
+               placeholder="Search by name or ID"
+               value="@Request.QueryString["query"]" />
+
+        <!-- Specialisation Dropdown -->
+        <select name="specialisation" class="form-control me-2">
+            <option value="">All Specialisations</option>
+
+            <option value="GeneralPhysician"
+                    @(Request.QueryString["specialisation"] == "GeneralPhysician" ? "selected" : "")>
+                General Physician
+            </option>
+
+            <option value="Cardiologist"
+                    @(Request.QueryString["specialisation"] == "Cardiologist" ? "selected" : "")>
+                Cardiologist
+            </option>
+
+            <option value="Dermatologist"
+                    @(Request.QueryString["specialisation"] == "Dermatologist" ? "selected" : "")>
+                Dermatologist
+            </option>
+
+            <option value="Neurologist"
+                    @(Request.QueryString["specialisation"] == "Neurologist" ? "selected" : "")>
+                Neurologist
+            </option>
+
+            <option value="Orthopedic"
+                    @(Request.QueryString["specialisation"] == "Orthopedic" ? "selected" : "")>
+                Orthopedic
+            </option>
+
+            <option value="Pediatrician"
+                    @(Request.QueryString["specialisation"] == "Pediatrician" ? "selected" : "")>
+                Pediatrician
+            </option>
+
+            <option value="Psychiatrist"
+                    @(Request.QueryString["specialisation"] == "Psychiatrist" ? "selected" : "")>
+                Psychiatrist
+            </option>
+
+            <option value="ENT"
+                    @(Request.QueryString["specialisation"] == "ENT" ? "selected" : "")>
+                ENT
+            </option>
+
+            <option value="Gynecologist"
+                    @(Request.QueryString["specialisation"] == "Gynecologist" ? "selected" : "")>
+                Gynecologist
+            </option>
+        </select>
+
+        <button class="btn btn-outline-primary">Search</button>
+
+    </form>
+
+
+    <!-- ✅ SUCCESS MESSAGE -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <!-- ✅ ERROR MESSAGE -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- ✅ TABLE -->
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Specialisation</th>
+                <th>Status</th>
+                <th style="width:180px;">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var d in Model)
+            {
+                <tr>
+                    <td>@d.DoctorId</td>
+                    <td>@d.FullName</td>
+                    <td>@d.Specialisation</td>
+                    <td>
+                        @(d.IsActive ? "Active" : "Inactive")
+                    </td>
+                    <td>
+                        <!-- ✅ VIEW -->
+                        <a href="@Url.Action("GetById", "Doctor", new { id = d.DoctorId })"
+                           class="btn btn-sm btn-info">
+                            View
+                        </a>
+
+                        <!-- ✅ TOGGLE -->
+                        <a href="@Url.Action("ToggleStatus", "Doctor", new { id = d.DoctorId })"
+                           class="btn btn-sm btn-warning">
+                            Toggle
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+
+</div>

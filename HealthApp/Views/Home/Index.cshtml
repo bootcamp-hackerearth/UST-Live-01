@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div class="hero-panel">
+
+    <!-- Header -->
+    <div class="hero-header">
+        <div class="hero-badge">
+            Healthcare Management System
+        </div>
+
+        <h2 class="hero-title">
+            Healthcare Administration Platform
+        </h2>
+
+        <p class="hero-subtitle">
+            Centralize patient data, clinical operations, and administrative workflows to enhance efficiency and care delivery.
+        </p>
+    </div>
+
+    <!-- Cards -->
+    <div class="portal-card-grid">
+
+        <!-- PATIENT -->
+        <div class="portal-card">
+            <div class="portal-card-icon">
+                <i class="bi bi-person-lines-fill"></i>
+            </div>
+
+            <h5>Patient Management</h5>
+
+            <p>
+                Manage patient records, registrations, and maintain accurate healthcare data securely.
+            </p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink("Register", "Create", "Patient", null,
+                    new { @class = "btn btn-primary btn-sm" })
+
+                @Html.ActionLink("View", "PatientIndex", "Patient", null,
+                    new { @class = "btn btn-outline-secondary btn-sm" })
+            </div>
+        </div>
+
+        <!-- CLINICAL -->
+        <div class="portal-card">
+            <div class="portal-card-icon">
+                <i class="bi bi-heart-pulse-fill"></i>
+            </div>
+
+            <h5>Clinical Team</h5>
+
+            <p>
+                Manage doctor profiles, availability, and clinical service coordination.
+            </p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink("Add Doctor", "Create", "Doctor", null,
+                    new { @class = "btn btn-primary btn-sm" })
+
+                @Html.ActionLink("Directory", "DoctorIndex", "Doctor", null,
+                    new { @class = "btn btn-outline-secondary btn-sm" })
+            </div>
+        </div>
+
+        <!-- OPERATIONS -->
+        <div class="portal-card">
+            <div class="portal-card-icon">
+                <i class="bi bi-clipboard-data-fill"></i>
+            </div>
+
+            <h5>Operations</h5>
+
+            <p>
+                Oversee appointments, workflows, and operational activities in one place.
+            </p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink("Dashboard", "AppointmentIndex", "Appointment", null,
+                    new { @class = "btn btn-info btn-sm text-white" })
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fc;
+    }
+
+    .hero-panel {
+        padding: 40px 60px;
+    }
+
+    .hero-header {
+        margin-bottom: 30px;
+    }
+
+    .hero-badge {
+        font-size: 13px;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+
+    .hero-title {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    .hero-subtitle {
+        color: #6c757d;
+        max-width: 600px;
+    }
+
+    /* GRID ALIGNMENT */
+    .portal-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 20px;
+    }
+
+    .portal-card {
+        background: #fff;
+        padding: 22px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        transition: 0.2s;
+    }
+
+        .portal-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+
+    .portal-card-icon {
+        font-size: 26px;
+        color: #0d6efd;
+        margin-bottom: 10px;
+    }
+
+    .portal-card h5 {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .portal-card p {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .portal-card-actions {
+        display: flex;
+        gap: 8px;
+    }
+</style>

@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+@model HealthApp.Shared.DTOs.HealthRecordDto
+
+@{
+    ViewBag.Title = "Health Record Details";
+}
+
+<div class="container mt-4" style="max-width:600px">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-white">
+            <h5>Health Record Details</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p><strong>Patient:</strong> @Model.PatientName</p>
+            <p><strong>Doctor:</strong> @Model.DoctorName</p>
+            <p><strong>Visit Date:</strong> @Model.VisitDate.ToString("dd-MM-yyyy")</p>
+            <p><strong>Diagnosis:</strong> @Model.Diagnosis</p>
+            <p><strong>Prescription:</strong> @Model.Prescription</p>
+
+            <a href="@Url.Action("HealthRecordsIndex","HealthRecord")"
+               class="btn btn-secondary">
+                Back
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
