@@ -72,6 +72,7 @@ namespace HealthAxis.Api.Repositories
             existingPatient.PhoneNumber = patient.PhoneNumber;
             existingPatient.Email = patient.Email;
             existingPatient.InsuranceID = patient.InsuranceID;
+            existingPatient.IsActive = patient.IsActive;
 
             _context.SaveChanges();
 
@@ -116,6 +117,21 @@ namespace HealthAxis.Api.Repositories
                 .OrderBy(p => p.FullName)
                 .Take(10)
                 .ToList();
+        }
+        public bool ToggleStatus(int id)
+        {
+            var patient = _context.Patients.Find(id);
+
+            if (patient == null)
+            {
+                return false;
+            }
+
+            patient.IsActive = !patient.IsActive;
+
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }

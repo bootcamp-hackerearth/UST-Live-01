@@ -53,6 +53,7 @@
           <Property Name="Email" Type="nvarchar" MaxLength="50" />
           <Property Name="InsuranceID" Type="nvarchar" MaxLength="10" />
           <Property Name="CreatedDate" Type="date" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <Association Name="FK__Appointme__Docto__59063A47">
           <End Role="Doctor" Type="Self.Doctor" Multiplicity="1" />
@@ -202,6 +203,7 @@
           <Property Name="CreatedDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="Appointments" Relationship="Self.FK__Appointme__Patie__5812160E" FromRole="Patient" ToRole="Appointment" />
           <NavigationProperty Name="HealthRecords" Relationship="Self.FK__HealthRec__Patie__5DCAEF64" FromRole="Patient" ToRole="HealthRecord" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK__Appointme__Docto__59063A47">
           <End Role="Doctor" Type="Self.Doctor" Multiplicity="1" />
@@ -337,6 +339,7 @@
           <EntitySetMapping Name="Patients">
             <EntityTypeMapping TypeName="HealthAxisModel.Patient">
               <MappingFragment StoreEntitySet="Patient">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
                 <ScalarProperty Name="PatientId" ColumnName="PatientId" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="DateOfBirth" ColumnName="DateOfBirth" />

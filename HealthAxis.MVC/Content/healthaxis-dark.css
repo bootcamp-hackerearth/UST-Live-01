@@ -432,7 +432,8 @@ textarea.form-control {
 }
 
 .doctor-search-wrapper,
-.patient-search-wrapper {
+.patient-search-wrapper,
+.weekly-date-wrapper {
     position: relative;
     width: 70%;
     max-width: 320px;
@@ -481,4 +482,33 @@ textarea.form-control {
     color: #94a3b8 !important;
 }
 
+input[type="date"].form-control {
+    background-color: #020617 !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+}
+
+    input[type="date"].form-control::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        opacity: 1;
+        cursor: pointer;
+    }
+
+    input[type="date"].form-control::-webkit-datetime-edit {
+        color: #f8fafc !important;
+    }
+
+    input[type="date"].form-control::-webkit-datetime-edit-fields-wrapper {
+        color: #f8fafc !important;
+    }
+
+    input[type="date"].form-control::-webkit-datetime-edit-text {
+        color: #f8fafc !important;
+    }
+
+    input[type="date"].form-control::-webkit-datetime-edit-month-field,
+    input[type="date"].form-control::-webkit-datetime-edit-day-field,
+    input[type="date"].form-control::-webkit-datetime-edit-year-field {
+        color: #f8fafc !important;
+    }
 

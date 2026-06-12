@@ -4,15 +4,35 @@
     <div class="container">
 
         <div class="ha-card" style="max-width:600px;margin:auto;padding:40px;text-align:center">
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Success"]
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger">
+                    @TempData["Error"]
+                </div>
+            }
+
             <div class="ha-action-icon"
                  style="width:70px;height:70px;margin:0 auto 20px;
-            background:linear-gradient(135deg,#0f766e,#2dd4bf)">
+                        background:linear-gradient(135deg,#0f766e,#2dd4bf)">
                 <svg viewBox="0 0 24 24">
                     <circle cx="12" cy="8" r="4"></circle>
                     <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path>
                 </svg>
             </div>
+
             <h2 class="ha-title">@Model.FullName</h2>
+
+            <p class="ha-muted">
+                Patient Profile
+            </p>
 
             <div style="margin-top:25px;text-align:left">
 
@@ -21,13 +41,70 @@
                 <p><b>Gender:</b> @Model.Gender</p>
                 <p><b>Phone:</b> @Model.PhoneNumber</p>
                 <p><b>Email:</b> @Model.Email</p>
-                <p><b>Insurance ID:</b> @Model.InsuranceID</p>
+
+                <p>
+                    <b>Insurance ID:</b>
+                    @if (!string.IsNullOrWhiteSpace(Model.InsuranceID))
+                    {
+                        @Model.InsuranceID
+                    }
+                    else
+                    {
+                        <span>No Insurance</span>
+                    }
+                </p>
+
                 <p><b>Total Appointments:</b> @Model.AppointmentCount</p>
+
+                <p>
+                    <b>Status:</b>
+                    @if (Model.IsActive)
+                    {
+                        <span style="color:#22c55e;font-weight:800;">Active</span>
+                    }
+                    else
+                    {
+                        <span style="color:#ef4444;font-weight:800;">Inactive</span>
+                    }
+                </p>
 
             </div>
 
             <div class="ha-actions">
-                @Html.ActionLink("Back", "Index", "Patients", null, new { @class = "btn btn-dark-back" })
+
+                @Html.ActionLink(
+                    "Edit Patient",
+                    "Edit",
+                    "Patients",
+                    new { id = Model.PatientId },
+                    new { @class = "btn btn-primary pill-btn" })
+
+                @using (Html.BeginForm("ToggleStatus", "Patients", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @Html.Hidden("id", Model.PatientId)
+
+                    if (Model.IsActive)
+                    {
+                        <button type="submit" class="btn btn-danger pill-btn">
+                            Deactivate
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-success pill-btn">
+                            Activate
+                        </button>
+                    }
+                }
+
+                @Html.ActionLink(
+                    "Back",
+                    "Index",
+                    "Patients",
+                    null,
+                    new { @class = "btn btn-dark-back" })
             </div>
 
         </div>

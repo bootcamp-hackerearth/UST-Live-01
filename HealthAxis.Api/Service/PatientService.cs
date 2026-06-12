@@ -65,7 +65,8 @@ namespace HealthAxis.Api.Services
                 PhoneNumber = dto.PhoneNumber,
                 Email = dto.Email,
                 InsuranceID = dto.InsuranceID,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                IsActive = true
             };
 
             var createdPatient = _patientRepository.Add(patient);
@@ -76,9 +77,9 @@ namespace HealthAxis.Api.Services
         }
 
         public bool Update(
-            int id,
-            PatientDto dto,
-            out string errorMessage)
+     int id,
+     PatientDto dto,
+     out string errorMessage)
         {
             errorMessage = string.Empty;
 
@@ -99,7 +100,8 @@ namespace HealthAxis.Api.Services
                 Gender = dto.Gender.ToString(),
                 PhoneNumber = dto.PhoneNumber,
                 Email = dto.Email,
-                InsuranceID = dto.InsuranceID
+                InsuranceID = dto.InsuranceID,
+                IsActive = dto.IsActive
             };
 
             bool updated = _patientRepository.Update(patient);
@@ -138,7 +140,12 @@ namespace HealthAxis.Api.Services
                 Email = patient.Email,
                 InsuranceID = patient.InsuranceID,
                 CreatedDate = patient.CreatedDate ?? DateTime.Now,
+                IsActive = patient.IsActive
             };
+        }
+        public bool ToggleStatus(int id)
+        {
+            return _patientRepository.ToggleStatus(id);
         }
     }
 }

@@ -43,5 +43,7 @@ namespace HealthAxis.Shared.DTOs
         public DateTime CreatedDate { get; set; }
 
         public int AppointmentCount { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

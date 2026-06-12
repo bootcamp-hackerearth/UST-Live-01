@@ -70,28 +70,35 @@ namespace HealthAxis.Api.Services
         {
             errorMessage = string.Empty;
 
-            // ✅ VALIDATE PATIENT
-            if (_patientRepository.GetById(dto.PatientId) == null)
+
+            var patient = _patientRepository.GetById(dto.PatientId);
+
+            if (patient == null)
             {
                 errorMessage = "Invalid patient.";
                 return false;
             }
 
-            // ✅ VALIDATE DOCTOR
+            if (!patient.IsActive)
+            {
+                errorMessage = "Inactive patients cannot book appointments.";
+                return false;
+            }
+
             if (_doctorRepository.GetById(dto.DoctorId) == null)
             {
                 errorMessage = "Invalid doctor.";
                 return false;
             }
 
-            // ✅ DATE VALIDATION
+          
             if (dto.ScheduledDate.Date < DateTime.Today)
             {
                 errorMessage = "Appointment date cannot be in the past.";
                 return false;
             }
 
-            // ✅ RULE 1: SAME DOCTOR SAME DAY
+            
             bool alreadyBookedSameDoctor = _appointmentRepository.Exists(a =>
                 a.PatientId == dto.PatientId &&
                 a.DoctorId == dto.DoctorId &&

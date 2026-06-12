@@ -1,4 +1,4 @@
-﻿using HealthAxis.Mvc.Services.Interfaces;
+﻿    using HealthAxis.Mvc.Services.Interfaces;
 using HealthAxis.Shared.DTOs;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -31,6 +31,26 @@ namespace HealthAxis.Mvc.Services
             }
         }
 
+        public bool ToggleStatus(int id, out string error)
+        {
+            error = string.Empty;
+
+            using (var client = CreateClient())
+            {
+                var response = client.PutAsync(
+                    "patients/" + id + "/toggle-status",
+                    null).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+
+                error = response.Content.ReadAsStringAsync().Result;
+
+                return false;
+            }
+        }
         public PatientDto GetById(int id)
         {
             using (var client = CreateClient())

@@ -109,5 +109,19 @@ namespace HealthAxis.Api.Controllers
 
             return Ok(patients);
         }
+
+        [HttpPut]
+        [Route("{id:int}/toggle-status")]
+        public IHttpActionResult ToggleStatus(int id)
+        {
+            bool result = _service.ToggleStatus(id);
+
+            if (!result)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
     }
 }

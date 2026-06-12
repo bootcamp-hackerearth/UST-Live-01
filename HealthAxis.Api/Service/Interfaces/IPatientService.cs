@@ -22,5 +22,6 @@ namespace HealthAxis.Api.Services.Interfaces
         bool Delete(int id);
 
         IEnumerable<PatientDto> Search(string searchValue);
+        bool ToggleStatus(int id);
     }
 }

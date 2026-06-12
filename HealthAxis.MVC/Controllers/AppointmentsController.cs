@@ -108,18 +108,17 @@ namespace HealthAxis.Mvc.Controllers
             return View(appointments);
         }
 
-        public ActionResult DoctorAppointments(int? doctorId, string searchValue)
+        public ActionResult DoctorAppointments(int? doctorId, int? selectedDoctorId)
         {
-            DoctorDto doctor = null;
+            int? finalDoctorId = selectedDoctorId ?? doctorId;
 
-            if (doctorId.HasValue)
+            if (!finalDoctorId.HasValue)
             {
-                doctor = _doctors.GetById(doctorId.Value);
+                TempData["Error"] = "Please select a doctor.";
+                return RedirectToAction("Index", "Doctors");
             }
-            else if (!string.IsNullOrWhiteSpace(searchValue))
-            {
-                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
-            }
+
+            var doctor = _doctors.GetById(finalDoctorId.Value);
 
             if (doctor == null)
             {
@@ -127,23 +126,28 @@ namespace HealthAxis.Mvc.Controllers
                 return RedirectToAction("Index", "Doctors");
             }
 
-            var appointments = _appointments.GetByDoctor(doctor.DoctorId);
+            var appointments = _appointments.GetByDoctor(finalDoctorId.Value);
+
+            if (appointments == null || !appointments.Any())
+            {
+                TempData["Error"] = "No appointments found for " + doctor.FullName + ".";
+                return RedirectToAction("Index", "Doctors");
+            }
 
             return View(appointments);
         }
 
-        public ActionResult TodaySchedule(int? doctorId, string searchValue)
+        public ActionResult TodaySchedule(int? doctorId, int? selectedDoctorId)
         {
-            DoctorDto doctor = null;
+            int? finalDoctorId = selectedDoctorId ?? doctorId;
 
-            if (doctorId.HasValue)
+            if (!finalDoctorId.HasValue)
             {
-                doctor = _doctors.GetById(doctorId.Value);
+                TempData["Error"] = "Please select a doctor.";
+                return RedirectToAction("Index", "Doctors");
             }
-            else if (!string.IsNullOrWhiteSpace(searchValue))
-            {
-                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
-            }
+
+            var doctor = _doctors.GetById(finalDoctorId.Value);
 
             if (doctor == null)
             {
@@ -151,23 +155,31 @@ namespace HealthAxis.Mvc.Controllers
                 return RedirectToAction("Index", "Doctors");
             }
 
-            var appointments = _appointments.Today(doctor.DoctorId);
+            var appointments = _appointments.Today(finalDoctorId.Value);
+
+            if (appointments == null || !appointments.Any())
+            {
+                TempData["Error"] = "No appointments scheduled today for " + doctor.FullName + ".";
+                return RedirectToAction("Index", "Doctors");
+            }
 
             return View("DoctorAppointments", appointments);
         }
 
-        public ActionResult WeeklySchedule(int? doctorId, string searchValue, DateTime? startDate)
+        public ActionResult WeeklySchedule(
+    int? doctorId,
+    int? selectedDoctorId,
+    DateTime? startDate)
         {
-            DoctorDto doctor = null;
+            int? finalDoctorId = selectedDoctorId ?? doctorId;
 
-            if (doctorId.HasValue)
+            if (!finalDoctorId.HasValue)
             {
-                doctor = _doctors.GetById(doctorId.Value);
+                TempData["Error"] = "Please select a doctor.";
+                return RedirectToAction("Index", "Doctors");
             }
-            else if (!string.IsNullOrWhiteSpace(searchValue))
-            {
-                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
-            }
+
+            var doctor = _doctors.GetById(finalDoctorId.Value);
 
             if (doctor == null)
             {
@@ -178,8 +190,14 @@ namespace HealthAxis.Mvc.Controllers
             var weekStartDate = startDate ?? DateTime.Today;
 
             var appointments = _appointments.Weekly(
-                doctor.DoctorId,
+                finalDoctorId.Value,
                 weekStartDate);
+
+            if (appointments == null || !appointments.Any())
+            {
+                TempData["Error"] = "No weekly appointments found for " + doctor.FullName + ".";
+                return RedirectToAction("Index", "Doctors");
+            }
 
             return View("DoctorAppointments", appointments);
         }

@@ -24,6 +24,7 @@
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.IsActive)
 
                 @Html.ValidationSummary(false, "", new { @class = "text-danger" })
 
@@ -39,7 +40,7 @@
                             @Html.TextBoxFor(m => m.FullName, new
                             {
                                 @class = "form-control",
-                                placeholder = "Enter full name"
+                                placeholder = "Enter Full Name"
                             })
 
                             @Html.ValidationMessageFor(
@@ -82,7 +83,7 @@
                                 "Other"
                             },
                             Model == null ? null : Model.Gender.ToString()),
-                        "Select gender",
+                        "Select Gender",
                         new { @class = "form-control" })
 
                     @Html.ValidationMessageFor(
@@ -103,7 +104,7 @@
                             @Html.TextBoxFor(m => m.PhoneNumber, new
                             {
                                 @class = "form-control",
-                                placeholder = "Enter phone",
+                                placeholder = "Enter Phone",
                                 maxlength = "10"
                             })
 
@@ -122,7 +123,7 @@
                             {
                                 @class = "form-control",
                                 type = "email",
-                                placeholder = "Enter email"
+                                placeholder = "Enter Email"
                             })
 
                             @Html.ValidationMessageFor(

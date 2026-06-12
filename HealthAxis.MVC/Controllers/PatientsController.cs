@@ -86,6 +86,7 @@ namespace HealthAxis.Mvc.Controllers
             ModelState.Remove("PatientId");
             ModelState.Remove("CreatedDate");
             ModelState.Remove("AppointmentCount");
+            ModelState.Remove("IsActive");
 
             if (!ModelState.IsValid)
             {
@@ -122,22 +123,26 @@ namespace HealthAxis.Mvc.Controllers
 
             if (patient == null)
             {
-                return HttpNotFound();
+                TempData["Error"] = "Patient not found.";
+                return RedirectToAction("Index");
             }
 
-            LoadGender();
-
-            return View(patient);
+            return View("Create", patient);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(PatientDto dto)
+        public ActionResult Edit(int id, PatientDto dto)
         {
+            dto.PatientId = id;
+
+            ModelState.Remove("PatientId");
+            ModelState.Remove("CreatedDate");
+            ModelState.Remove("AppointmentCount");
+
             if (!ModelState.IsValid)
             {
-                LoadGender();
-                return View(dto);
+                return View("Create", dto);
             }
 
             string errorMessage;
@@ -147,12 +152,12 @@ namespace HealthAxis.Mvc.Controllers
             if (!result)
             {
                 ModelState.AddModelError("", errorMessage);
-
-                LoadGender();
-                return View(dto);
+                return View("Create", dto);
             }
 
-            return RedirectToAction("Index");
+            TempData["Success"] = "Patient updated successfully.";
+
+            return RedirectToAction("Profile", new { id = dto.PatientId });
         }
 
         public ActionResult Delete(int id)
@@ -184,6 +189,24 @@ namespace HealthAxis.Mvc.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ToggleStatus(int id)
+        {
+            string errorMessage;
+
+            bool result = _patients.ToggleStatus(id, out errorMessage);
+
+            if (!result)
+            {
+                TempData["Error"] = "Unable to update patient status.";
+                return RedirectToAction("Profile", new { id = id });
+            }
+
+            TempData["Success"] = "Patient status updated successfully.";
+
+            return RedirectToAction("Profile", new { id = id });
+        }
         public ActionResult SearchDoctors(SpecialisationEnum? specialisation)
         {
             LoadSpecialisation();

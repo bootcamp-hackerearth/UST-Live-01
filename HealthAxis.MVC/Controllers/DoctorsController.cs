@@ -32,18 +32,17 @@ namespace HealthAxis.Mvc.Controllers
             return View(doctors);
         }
 
-        public new ActionResult Profile(int? id, string searchValue)
+        public new ActionResult Profile(int? id, int? selectedDoctorId)
         {
-            DoctorDto doctor = null;
+            int? finalDoctorId = selectedDoctorId ?? id;
 
-            if (id.HasValue)
+            if (!finalDoctorId.HasValue)
             {
-                doctor = _doctors.GetById(id.Value);
+                TempData["Error"] = "Please select a doctor.";
+                return RedirectToAction("Index");
             }
-            else if (!string.IsNullOrWhiteSpace(searchValue))
-            {
-                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
-            }
+
+            var doctor = _doctors.GetById(finalDoctorId.Value);
 
             if (doctor == null)
             {

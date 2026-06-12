@@ -19,5 +19,7 @@ namespace HealthAxis.Api.Repositories.Interfaces
 
         int GetAppointmentCount(int patientId);
         IEnumerable<Patient> Search(string searchValue);
+
+        bool ToggleStatus(int id);
     }
 }
