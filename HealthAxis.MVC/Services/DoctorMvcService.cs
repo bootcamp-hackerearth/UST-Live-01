@@ -35,7 +35,24 @@ namespace HealthAxis.Mvc.Services
                 return JsonConvert.DeserializeObject<IEnumerable<DoctorDto>>(json);
             }
         }
+        public IEnumerable<DoctorDto> Search(string searchValue)
+        {
+            using (var client = CreateClient())
+            {
+                var response = client
+                    .GetAsync("doctors/search?searchValue=" + searchValue)
+                    .Result;
 
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<DoctorDto>();
+                }
+
+                var json = response.Content.ReadAsStringAsync().Result;
+
+                return JsonConvert.DeserializeObject<IEnumerable<DoctorDto>>(json);
+            }
+        }
         public DoctorDto GetById(int id)
         {
             using (var client = CreateClient())
@@ -115,6 +132,7 @@ namespace HealthAxis.Mvc.Services
                 return false;
             }
         }
+
         private string ExtractApiErrorMessage(string apiResponse)
         {
             if (string.IsNullOrWhiteSpace(apiResponse))

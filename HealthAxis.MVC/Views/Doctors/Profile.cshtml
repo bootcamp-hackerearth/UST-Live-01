@@ -62,6 +62,8 @@
                     "Doctors",
                     null,
                     new { @class = "btn btn-dark-back" })
+
+                @Html.ActionLink("Edit", "Edit", "Doctors", new {id = Model.DoctorId}, new {@class = "btn btn-info"})
             </div>
 
         </div>

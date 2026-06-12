@@ -431,3 +431,54 @@ textarea.form-control {
     margin-bottom: 20px;
 }
 
+.doctor-search-wrapper,
+.patient-search-wrapper {
+    position: relative;
+    width: 70%;
+    max-width: 320px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+}
+
+
+
+.doctor-suggestions,
+.patient-suggestions {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    z-index: 99999;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.45);
+    text-align: center;
+}
+
+.doctor-suggestion-item,
+.doctor-suggestion-empty,
+.patient-suggestion-item,
+.patient-suggestion-empty {
+    background: #020617 !important;
+    color: #f8fafc !important;
+    border: 1px solid #334155 !important;
+    cursor: pointer;
+    text-align: center !important;
+    padding: 10px 12px;
+}
+    .doctor-suggestion-item strong,
+    .patient-suggestion-item strong {
+        display: block;
+        text-align: center;
+    }
+    .doctor-suggestion-item:hover,
+    .patient-suggestion-item:hover {
+        background: #1e293b !important;
+    }
+.doctor-suggestion-empty,
+.patient-suggestion-empty {
+    cursor: default;
+    color: #94a3b8 !important;
+}
+
+

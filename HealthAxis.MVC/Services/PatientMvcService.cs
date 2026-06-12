@@ -207,5 +207,23 @@ namespace HealthAxis.Mvc.Services
                 return false;
             }
         }
+        public IEnumerable<PatientDto> Search(string searchValue)
+        {
+            using (var client = CreateClient())
+            {
+                var response = client
+                    .GetAsync("patients/search?searchValue=" + searchValue)
+                    .Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new List<PatientDto>();
+                }
+
+                var json = response.Content.ReadAsStringAsync().Result;
+
+                return JsonConvert.DeserializeObject<IEnumerable<PatientDto>>(json);
+            }
+        }
     }
 }

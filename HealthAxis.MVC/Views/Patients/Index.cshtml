@@ -6,12 +6,14 @@
 
 <div class="ha-page">
     <div class="container">
+
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-danger">
                 @TempData["Error"]
             </div>
         }
+
         <div class="ha-card"
              style="padding:30px;margin-bottom:30px;background:linear-gradient(135deg,#1769ff,#51b4ff)">
             <h2 style="color:white;font-weight:800">
@@ -65,14 +67,12 @@
                     <p>View profile details, appointment count, and update patient information.</p>
                 </div>
 
-
                 <button class="btn"
                         style="background:#0f766e;color:white"
                         data-toggle="modal"
                         data-target="#profileModal">
                     View Profile
                 </button>
-
             </div>
 
             <div class="ha-action-card">
@@ -115,7 +115,7 @@
                     </div>
 
                     <h4>My Appointments</h4>
-                    <p>View appointments for a patient using the Patient ID.</p>
+                    <p>View appointments for a patient using ID, phone, or name.</p>
                 </div>
 
                 <button class="btn btn-info"
@@ -177,12 +177,56 @@
 
     </div>
 </div>
+
+<div class="modal fade" id="profileModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Search Patient</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                @using (Html.BeginForm("Profile", "Patients", FormMethod.Get))
+                {
+                    <div class="patient-search-wrapper">
+                        <input type="text"
+                               class="form-control modal-input text-center patient-search"
+                               placeholder="Enter ID / Phone / Name"
+                               autocomplete="off"
+                               required />
+
+                        <input type="hidden"
+                               name="selectedPatientId"
+                               class="selected-patient-id" />
+
+                        <ul class="list-group patient-suggestions"></ul>
+                    </div>
+
+                    <button type="submit"
+                            class="btn modal-btn"
+                            style="background:#0f766e;color:white;">
+                        View Profile
+                    </button>
+
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="appointmentModal">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Enter Patient ID</h5>
+                <h5 class="modal-title">Search Patient</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
@@ -192,12 +236,18 @@
 
                 @using (Html.BeginForm("MyAppointments", "Appointments", FormMethod.Get))
                 {
-                    <div class="form-group d-flex justify-content-center">
-                        <input type="number"
-                               name="patientId"
-                               class="form-control modal-input text-center"
-                               placeholder="Enter Patient ID"
+                    <div class="patient-search-wrapper">
+                        <input type="text"
+                               class="form-control modal-input text-center patient-search"
+                               placeholder="Enter ID / Phone / Name"
+                               autocomplete="off"
                                required />
+
+                        <input type="hidden"
+                               name="selectedPatientId"
+                               class="selected-patient-id" />
+
+                        <ul class="list-group patient-suggestions"></ul>
                     </div>
 
                     <button type="submit"
@@ -212,46 +262,12 @@
     </div>
 </div>
 
-<div class="modal fade" id="appointmentModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 class="modal-title">Enter Patient ID</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-
-            <div class="modal-body text-center">
-
-                @using (Html.BeginForm("MyAppointments", "Appointments", FormMethod.Get))
-                {
-                    <div class="form-group d-flex justify-content-center">
-                        <input type="number"
-                               name="patientId"
-                               class="form-control modal-input text-center"
-                               placeholder="Enter Patient ID"
-                               required />
-                    </div>
-
-                    <button type="submit"
-                            class="btn modal-btn btn-info">
-                        View Appointments
-                    </button>
-                }
-
-            </div>
-
-        </div>
-    </div>
-</div>
 <div class="modal fade" id="recordModal">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Enter Patient ID</h5>
+                <h5 class="modal-title">Search Patient</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
@@ -261,12 +277,18 @@
 
                 @using (Html.BeginForm("PatientHistory", "HealthRecords", FormMethod.Get))
                 {
-                    <div class="form-group d-flex justify-content-center">
-                        <input type="number"
-                               name="patientId"
-                               class="form-control modal-input text-center"
-                               placeholder="Enter Patient ID"
+                    <div class="patient-search-wrapper">
+                        <input type="text"
+                               class="form-control modal-input text-center patient-search"
+                               placeholder="Enter ID / Phone / Name"
+                               autocomplete="off"
                                required />
+
+                        <input type="hidden"
+                               name="selectedPatientId"
+                               class="selected-patient-id" />
+
+                        <ul class="list-group patient-suggestions"></ul>
                     </div>
 
                     <button type="submit"
@@ -280,38 +302,87 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="profileModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
 
-            <div class="modal-header">
-                <h5 class="modal-title">Enter Patient ID</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".patient-search").forEach(function (input) {
+                const wrapper = input.closest(".patient-search-wrapper");
+                const box = wrapper.querySelector(".patient-suggestions");
+                const hiddenPatientId = wrapper.querySelector(".selected-patient-id");
 
-            <div class="modal-body text-center">
+                input.addEventListener("input", function () {
+                    hiddenPatientId.value = "";
 
-                @using (Html.BeginForm("Profile", "Patients", FormMethod.Get))
-                {
-                    <div class="form-group d-flex justify-content-center">
-                        <input type="number"
-                               name="id"
-                               class="form-control modal-input text-center"
-                               placeholder="Enter Patient ID"
-                               required />
-                    </div>
+                    const query = input.value.trim();
 
-                    <button type="submit"
-                            class="btn modal-btn"
-                            style="background:#0f766e;color:white;">
-                        View Profile
-                    </button>
-                }
+                    if (query.length < 2) {
+                        box.innerHTML = "";
+                        return;
+                    }
 
-            </div>
+                    fetch("/Patients/Search?searchValue=" + encodeURIComponent(query))
+                        .then(function (response) {
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            box.innerHTML = "";
 
-        </div>
-    </div>
-</div>
+                            if (!data || data.length === 0) {
+                                const emptyItem = document.createElement("li");
+                                emptyItem.className = "list-group-item patient-suggestion-empty";
+                                emptyItem.innerText = "No patients found";
+                                box.appendChild(emptyItem);
+                                return;
+                            }
+
+                            data.forEach(function (patient) {
+                                const item = document.createElement("li");
+                                item.className = "list-group-item patient-suggestion-item";
+
+                                item.innerHTML =
+                                    "<strong>" + patient.FullName + "</strong>" +
+                                    "<br />ID: " + patient.PatientId +
+                                    " | Phone: " + patient.PhoneNumber;
+
+                                item.addEventListener("click", function () {
+                                    input.value =
+                                        patient.FullName +
+                                        " (ID: " +
+                                        patient.PatientId +
+                                        ")";
+
+                                    hiddenPatientId.value = patient.PatientId;
+
+                                    box.innerHTML = "";
+                                });
+
+                                box.appendChild(item);
+                            });
+                        })
+                        .catch(function () {
+                            box.innerHTML = "";
+
+                            const errorItem = document.createElement("li");
+                            errorItem.className = "list-group-item patient-suggestion-empty";
+                            errorItem.innerText = "Unable to load suggestions";
+                            box.appendChild(errorItem);
+                        });
+                });
+
+                input.closest("form").addEventListener("submit", function (event) {
+                    if (!hiddenPatientId.value) {
+                        event.preventDefault();
+                        alert("Please select a patient from the suggestions.");
+                    }
+                });
+
+                document.addEventListener("click", function (event) {
+                    if (!wrapper.contains(event.target)) {
+                        box.innerHTML = "";
+                    }
+                });
+            });
+        });
+    </script>
+}

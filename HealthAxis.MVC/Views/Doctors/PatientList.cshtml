@@ -2,6 +2,10 @@
 
 @{
     ViewBag.Title = "Patient List";
+
+    int currentPage = ViewBag.CurrentPage == null ? 1 : (int)ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages == null ? 0 : (int)ViewBag.TotalPages;
+    int totalPatients = ViewBag.TotalPatients == null ? 0 : (int)ViewBag.TotalPatients;
 }
 
 <div class="ha-page">
@@ -12,8 +16,9 @@
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;border-bottom:1px solid #334155;padding-bottom:18px">
                 <div>
                     <h2 class="ha-title" style="margin:0">Patient List</h2>
+
                     <p class="ha-muted" style="margin:6px 0 0 0">
-                        Patients sorted by name with insurance status filter.
+                        Patients sorted by name with insurance status filter and patient search.
                     </p>
                 </div>
 
@@ -28,17 +33,23 @@
             @using (Html.BeginForm("PatientList", "Doctors", FormMethod.Get))
             {
                 <div style="margin-bottom:20px">
-                    <label style="color:#f8fafc;font-weight:700;margin-right:8px">
-                        Insurance Status
-                    </label>
+
+                    <input type="text"
+                           name="searchValue"
+                           value="@ViewBag.SearchValue"
+                           class="form-control"
+                           placeholder="Search by Patient ID / Name / Phone / Email"
+                           style="display:inline-block;width:340px;margin-right:8px;margin-bottom:10px" />
 
                     <select name="insuranceStatus"
                             class="form-control"
                             style="display:inline-block;width:240px;margin-right:8px">
                         <option value="">All Patients</option>
+
                         <option value="Insured" @(ViewBag.InsuranceStatus == "Insured" ? "selected" : "")>
                             Insured
                         </option>
+
                         <option value="NotInsured" @(ViewBag.InsuranceStatus == "NotInsured" ? "selected" : "")>
                             No Insurance
                         </option>
@@ -48,6 +59,7 @@
                             class="form-control"
                             style="display:inline-block;width:220px;margin-right:8px">
                         <option value="">Name A-Z</option>
+
                         <option value="name_desc" @(ViewBag.SortOrder == "name_desc" ? "selected" : "")>
                             Name Z-A
                         </option>
@@ -56,6 +68,13 @@
                     <button type="submit" class="btn btn-primary pill-btn">
                         Apply
                     </button>
+
+                    @Html.ActionLink(
+                        "Clear",
+                        "PatientList",
+                        "Doctors",
+                        null,
+                        new { @class = "btn btn-dark-back pill-btn", style = "margin-left:8px" })
                 </div>
             }
 
@@ -67,6 +86,17 @@
             }
             else
             {
+                if (totalPatients > 0)
+                {
+                    <div style="margin-bottom:14px;color:#cbd5e1;font-weight:600;">
+                        Showing page @currentPage of @totalPages
+
+                        <span style="margin-left:8px;">
+                            Total Patients: @totalPatients
+                        </span>
+                    </div>
+                }
+
                 <table class="table table-bordered">
                     <thead>
                         <tr>
@@ -102,7 +132,7 @@
                                 <td>
                                     @Html.ActionLink(
                                         "View",
-                                        "Details",
+                                        "Profile",
                                         "Patients",
                                         new { id = patient.PatientId },
                                         new { @class = "btn btn-info btn-sm" })
@@ -111,6 +141,70 @@
                         }
                     </tbody>
                 </table>
+
+                if (totalPages > 1)
+                {
+                    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:24px;">
+
+                        @if (currentPage > 1)
+                        {
+                            @Html.ActionLink(
+                                "Previous",
+                                "PatientList",
+                                "Doctors",
+                                new
+                                {
+                                    page = currentPage - 1,
+                                    insuranceStatus = ViewBag.InsuranceStatus,
+                                    sortOrder = ViewBag.SortOrder,
+                                    searchValue = ViewBag.SearchValue
+                                },
+                                new { @class = "btn btn-dark-back btn-sm" })
+                        }
+
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            if (i == currentPage)
+                            {
+                                <span class="btn btn-primary btn-sm" style="pointer-events:none;">
+                                    @i
+                                </span>
+                            }
+                            else
+                            {
+                                @Html.ActionLink(
+                                    i.ToString(),
+                                    "PatientList",
+                                    "Doctors",
+                                    new
+                                    {
+                                        page = i,
+                                        insuranceStatus = ViewBag.InsuranceStatus,
+                                        sortOrder = ViewBag.SortOrder,
+                                        searchValue = ViewBag.SearchValue
+                                    },
+                                    new { @class = "btn btn-dark-back btn-sm" })
+                            }
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            @Html.ActionLink(
+                                "Next",
+                                "PatientList",
+                                "Doctors",
+                                new
+                                {
+                                    page = currentPage + 1,
+                                    insuranceStatus = ViewBag.InsuranceStatus,
+                                    sortOrder = ViewBag.SortOrder,
+                                    searchValue = ViewBag.SearchValue
+                                },
+                                new { @class = "btn btn-dark-back btn-sm" })
+                        }
+
+                    </div>
+                }
             }
 
         </div>

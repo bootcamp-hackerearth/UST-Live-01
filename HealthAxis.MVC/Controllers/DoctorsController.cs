@@ -2,6 +2,7 @@
 using HealthAxis.Shared.DTOs;
 using HealthAxis.Shared.Enums;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -31,15 +32,18 @@ namespace HealthAxis.Mvc.Controllers
             return View(doctors);
         }
 
-        public new ActionResult Profile(int? id)
+        public new ActionResult Profile(int? id, string searchValue)
         {
-            if (!id.HasValue)
-            {
-                TempData["Error"] = "Doctor ID is required.";
-                return RedirectToAction("Index");
-            }
+            DoctorDto doctor = null;
 
-            var doctor = _doctors.GetById(id.Value);
+            if (id.HasValue)
+            {
+                doctor = _doctors.GetById(id.Value);
+            }
+            else if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
+            }
 
             if (doctor == null)
             {
@@ -50,24 +54,94 @@ namespace HealthAxis.Mvc.Controllers
             return View(doctor);
         }
 
-
-        public ActionResult PatientList(string insuranceStatus, string sortOrder)
+        public JsonResult Search(string searchValue)
         {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+            }
+
+            var doctors = _doctors.Search(searchValue);
+
+            var result = doctors.Select(d => new
+            {
+                DoctorId = d.DoctorId,
+                FullName = d.FullName,
+                Specialisation = d.Specialisation.ToString()
+            });
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult PatientList(
+    string insuranceStatus,
+    string sortOrder,
+    string searchValue,
+    int page = 1)
+        {
+            int pageSize = 10;
+
             ViewBag.InsuranceStatus = insuranceStatus;
             ViewBag.SortOrder = sortOrder;
+            ViewBag.SearchValue = searchValue;
 
             var patients = _patients.GetAll(insuranceStatus);
 
+            if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                string searchText = searchValue.Trim().ToLower();
+
+                patients = patients.Where(p =>
+                    p.PatientId.ToString().Contains(searchText) ||
+                    (!string.IsNullOrWhiteSpace(p.FullName) &&
+                        p.FullName.ToLower().Contains(searchText)) ||
+                    (!string.IsNullOrWhiteSpace(p.PhoneNumber) &&
+                        p.PhoneNumber.Contains(searchText)) ||
+                    (!string.IsNullOrWhiteSpace(p.Email) &&
+                        p.Email.ToLower().Contains(searchText)));
+            }
+
             if (sortOrder == "name_desc")
             {
-                patients = patients.OrderByDescending(p => p.FullName).ToList();
+                patients = patients.OrderByDescending(p => p.FullName);
             }
             else
             {
-                patients = patients.OrderBy(p => p.FullName).ToList();
+                patients = patients.OrderBy(p => p.FullName);
             }
 
-            return View(patients);
+            int totalPatients = patients.Count();
+
+            if (totalPatients == 0)
+            {
+                ViewBag.CurrentPage = 0;
+                ViewBag.TotalPages = 0;
+                ViewBag.TotalPatients = 0;
+
+                return View(new List<HealthAxis.Shared.DTOs.PatientDto>());
+            }
+
+            int totalPages = (int)Math.Ceiling((double)totalPatients / pageSize);
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (page > totalPages)
+            {
+                page = totalPages;
+            }
+
+            var pagedPatients = patients
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalPatients = totalPatients;
+
+            return View(pagedPatients);
         }
 
         public ActionResult Details(int? id)
@@ -100,6 +174,7 @@ namespace HealthAxis.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(DoctorDto dto)
         {
+            ModelState.Remove("DoctorId");
             if (!ModelState.IsValid)
             {
                 LoadSpecialisation();

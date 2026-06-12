@@ -23,5 +23,8 @@ namespace HealthAxis.Mvc.Services.Interfaces
         bool ToggleStatus(
             int id,
             out string error);
+
+        IEnumerable<DoctorDto> Search(string searchValue);
     }
+
 }

@@ -22,27 +22,29 @@ namespace HealthAxis.Mvc.Controllers
             return View();
         }
 
-        public ActionResult PatientHistory(int? patientId)
+        public ActionResult PatientHistory(int? patientId, int? selectedPatientId)
         {
-            if (patientId == null)
+            int? finalPatientId = selectedPatientId ?? patientId;
+
+            if (!finalPatientId.HasValue)
             {
-                TempData["Error"] = "Please enter a Patient ID.";
-                return RedirectToAction("Index","Patients");
+                TempData["Error"] = "Please select a patient.";
+                return RedirectToAction("Index", "Patients");
             }
 
-            var patient = _patients.GetById(patientId.Value);
+            var patient = _patients.GetById(finalPatientId.Value);
 
             if (patient == null)
             {
-                TempData["Error"] = "Patient ID " + patientId.Value + " does not exist.";
-                return RedirectToAction("Index","Patients");
+                TempData["Error"] = "Patient not found.";
+                return RedirectToAction("Index", "Patients");
             }
 
-            var records = _records.GetByPatient(patientId.Value);
+            var records = _records.GetByPatient(finalPatientId.Value);
 
             if (records == null || !records.Any())
             {
-                TempData["Error"] = "No health records found for Patient ID " + patientId.Value + ".";
+                TempData["Error"] = "No health records found for " + patient.FullName + ".";
                 return RedirectToAction("Index", "Patients");
             }
 
@@ -100,6 +102,17 @@ namespace HealthAxis.Mvc.Controllers
             return RedirectToAction(
                 "PatientHistory",
                 new { patientId = dto.PatientId });
+        }
+        private PatientDto ResolvePatient(string searchValue)
+        {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return null;
+            }
+
+            var patients = _patients.Search(searchValue.Trim());
+
+            return patients.FirstOrDefault();
         }
     }
 }

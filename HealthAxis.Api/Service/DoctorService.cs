@@ -112,6 +112,12 @@ namespace HealthAxis.Api.Services
         {
             return _doctorRepository.ToggleStatus(id);
         }
+        public IEnumerable<DoctorDto> Search(string searchValue)
+        {
+            return _doctorRepository
+                .Search(searchValue)
+                .Select(Map);
+        }
 
         private DoctorDto Map(Doctor doctor)
         {

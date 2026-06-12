@@ -79,70 +79,106 @@ namespace HealthAxis.Mvc.Controllers
             return RedirectToAction("MyAppointments", new { patientId = dto.PatientId });
         }
 
-        public ActionResult MyAppointments(int? patientId)
+        public ActionResult MyAppointments(int? patientId, int? selectedPatientId)
         {
-            if (patientId == null)
+            int? finalPatientId = selectedPatientId ?? patientId;
+
+            if (!finalPatientId.HasValue)
             {
-                TempData["Error"] = "Please enter a Patient ID.";
-                return RedirectToAction("Index","Patients");
+                TempData["Error"] = "Please select a patient.";
+                return RedirectToAction("Index", "Patients");
             }
 
-            var patient = _patients.GetById(patientId.Value);
+            var patient = _patients.GetById(finalPatientId.Value);
 
             if (patient == null)
             {
-                TempData["Error"] = "Patient ID " + patientId.Value + " does not exist.";
-                return RedirectToAction("Index","Patients");
+                TempData["Error"] = "Patient not found.";
+                return RedirectToAction("Index", "Patients");
             }
 
-            var appointments = _appointments.GetByPatient(patientId.Value);
+            var appointments = _appointments.GetByPatient(finalPatientId.Value);
 
             if (appointments == null || !appointments.Any())
             {
-                TempData["Error"] = "No appointments found for Patient ID " + patientId.Value + ".";
-                return RedirectToAction("Index","Patients");
+                TempData["Error"] = "No appointments found for " + patient.FullName + ".";
+                return RedirectToAction("Index", "Patients");
             }
 
             return View(appointments);
         }
 
-        public ActionResult DoctorAppointments(int? doctorId, int? cancelId = null)
+        public ActionResult DoctorAppointments(int? doctorId, string searchValue)
         {
-            ViewBag.CancelId = cancelId;
+            DoctorDto doctor = null;
 
-            if (doctorId == null)
+            if (doctorId.HasValue)
             {
-                return View("DoctorIdRequired");
+                doctor = _doctors.GetById(doctorId.Value);
+            }
+            else if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
             }
 
-            var appointments = _appointments.GetByDoctor(doctorId.Value);
+            if (doctor == null)
+            {
+                TempData["Error"] = "Doctor not found.";
+                return RedirectToAction("Index", "Doctors");
+            }
+
+            var appointments = _appointments.GetByDoctor(doctor.DoctorId);
 
             return View(appointments);
         }
 
-        public ActionResult TodaySchedule(int? doctorId)
+        public ActionResult TodaySchedule(int? doctorId, string searchValue)
         {
-            if (doctorId == null)
+            DoctorDto doctor = null;
+
+            if (doctorId.HasValue)
             {
-                return View("DoctorIdRequired");
+                doctor = _doctors.GetById(doctorId.Value);
+            }
+            else if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
             }
 
-            var appointments = _appointments.Today(doctorId.Value);
+            if (doctor == null)
+            {
+                TempData["Error"] = "Doctor not found.";
+                return RedirectToAction("Index", "Doctors");
+            }
+
+            var appointments = _appointments.Today(doctor.DoctorId);
 
             return View("DoctorAppointments", appointments);
         }
 
-        public ActionResult WeeklySchedule(int? doctorId, DateTime? startDate)
+        public ActionResult WeeklySchedule(int? doctorId, string searchValue, DateTime? startDate)
         {
-            if (doctorId == null)
+            DoctorDto doctor = null;
+
+            if (doctorId.HasValue)
             {
-                return View("DoctorIdRequired");
+                doctor = _doctors.GetById(doctorId.Value);
+            }
+            else if (!string.IsNullOrWhiteSpace(searchValue))
+            {
+                doctor = _doctors.Search(searchValue.Trim()).FirstOrDefault();
+            }
+
+            if (doctor == null)
+            {
+                TempData["Error"] = "Doctor not found.";
+                return RedirectToAction("Index", "Doctors");
             }
 
             var weekStartDate = startDate ?? DateTime.Today;
 
             var appointments = _appointments.Weekly(
-                doctorId.Value,
+                doctor.DoctorId,
                 weekStartDate);
 
             return View("DoctorAppointments", appointments);
@@ -186,6 +222,17 @@ namespace HealthAxis.Mvc.Controllers
             return RedirectToAction(
                 "DoctorAppointments",
                 new { doctorId = doctorId });
+        }
+        private PatientDto ResolvePatient(string searchValue)
+        {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return null;
+            }
+
+            var patients = _patients.Search(searchValue.Trim());
+
+            return patients.FirstOrDefault();
         }
     }
 }

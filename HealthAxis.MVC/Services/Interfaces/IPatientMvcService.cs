@@ -21,5 +21,7 @@ namespace HealthAxis.Mvc.Services.Interfaces
         bool Delete(
             int id,
             out string error);
+
+        IEnumerable<PatientDto> Search(string searchValue);
     }
 }

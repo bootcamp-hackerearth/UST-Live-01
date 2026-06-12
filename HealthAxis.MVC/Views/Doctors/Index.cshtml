@@ -1,17 +1,19 @@
 ﻿@model IEnumerable<HealthAxis.Shared.DTOs.DoctorDto>
 
 @{
-    ViewBag.Title = "Doctor Management";
+        ViewBag.Title = "Doctor Management";
 }
 
 <div class="ha-page">
     <div class="container">
+
         @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger">
-                @TempData["Error"]
-            </div>
-        }
+                {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+                }
+
         <div class="ha-card"
              style="padding:30px;margin-bottom:30px;background:linear-gradient(135deg,#16a34a,#4ade80)">
             <h2 style="color:white;font-weight:800">
@@ -64,14 +66,13 @@
                     <p>View doctor profile, full details, and upcoming appointment count.</p>
                 </div>
 
-
-                <button class="btn"
+                <button type="button"
+                        class="btn"
                         style="background:#0f766e;color:white"
                         data-toggle="modal"
                         data-target="#doctorProfileModal">
                     View Profile
                 </button>
-
             </div>
 
             <div class="ha-action-card">
@@ -92,7 +93,8 @@
                     <p>View doctor appointments and update appointment status.</p>
                 </div>
 
-                <button class="btn btn-primary"
+                <button type="button"
+                        class="btn btn-primary"
                         data-toggle="modal"
                         data-target="#doctorAppointmentModal">
                     Open
@@ -116,12 +118,12 @@
                     <p>View all appointments scheduled for today using Doctor ID.</p>
                 </div>
 
-                @Html.ActionLink(
-                    "Today",
-                    "TodaySchedule",
-                    "Appointments",
-                    null,
-                    new { @class = "btn btn-info" })
+                <button type="button"
+                        class="btn btn-info"
+                        data-toggle="modal"
+                        data-target="#todayScheduleModal">
+                    Today
+                </button>
             </div>
 
             <div class="ha-action-card">
@@ -143,12 +145,12 @@
                     <p>View doctor appointments for the selected week.</p>
                 </div>
 
-                @Html.ActionLink(
-                    "Weekly",
-                    "WeeklySchedule",
-                    "Appointments",
-                    null,
-                    new { @class = "btn btn-warning" })
+                <button type="button"
+                        class="btn btn-warning"
+                        data-toggle="modal"
+                        data-target="#weeklyScheduleModal">
+                    Weekly
+                </button>
             </div>
 
             <div class="ha-action-card">
@@ -191,7 +193,9 @@
                     <h4>View Health Records</h4>
                     <p>View diagnosis, prescription, notes, and visit history for a patient.</p>
                 </div>
-                <button class="btn"
+
+                <button type="button"
+                        class="btn"
                         style="background:#db2777;color:white"
                         data-toggle="modal"
                         data-target="#doctorRecordModal">
@@ -203,12 +207,13 @@
 
     </div>
 </div>
+
 <div class="modal fade" id="doctorProfileModal">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Enter Doctor ID</h5>
+                <h5 class="modal-title">Search Doctor</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
@@ -217,33 +222,37 @@
             <div class="modal-body text-center">
 
                 @using (Html.BeginForm("Profile", "Doctors", FormMethod.Get))
-                {
-                    <div class="form-group d-flex justify-content-center">
-                        <input type="number"
-                               name="id"
-                               class="form-control modal-input text-center"
-                               placeholder="Enter Doctor ID"
-                               required />
-                    </div>
+                                {
+                <div class="doctor-search-wrapper">
+                    <input type="text"
+                           name="searchValue"
+                           class="form-control modal-input text-center doctor-search"
+                           placeholder="Enter Doctor ID / Name / Specialisation"
+                           autocomplete="off"
+                           required />
 
-                    <button type="submit"
-                            class="btn modal-btn"
-                            style="background:#0f766e;color:white;">
-                        View Profile
-                    </button>
-                }
+                    <ul class="list-group doctor-suggestions"></ul>
+                </div>
+
+                <button type="submit"
+                        class="btn modal-btn"
+                        style="background:#0f766e;color:white;">
+                    View Profile
+                </button>
+                                }
 
             </div>
 
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="doctorAppointmentModal">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Enter Doctor ID</h5>
+                <h5 class="modal-title">Search Doctor</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
@@ -252,20 +261,105 @@
             <div class="modal-body text-center">
 
                 @using (Html.BeginForm("DoctorAppointments", "Appointments", FormMethod.Get))
-                {
-                    <div class="form-group d-flex justify-content-center">
-                        <input type="number"
-                               name="doctorId"
-                               class="form-control modal-input text-center"
-                               placeholder="Enter Doctor ID"
-                               required />
-                    </div>
+                                {
+                <div class="doctor-search-wrapper">
+                    <input type="text"
+                           name="searchValue"
+                           class="form-control modal-input text-center doctor-search"
+                           placeholder="Enter Doctor ID / Name / Specialisation"
+                           autocomplete="off"
+                           required />
 
-                    <button type="submit"
-                            class="btn modal-btn btn-primary">
-                        Open Appointments
-                    </button>
-                }
+                    <ul class="list-group doctor-suggestions"></ul>
+                </div>
+
+                <button type="submit"
+                        class="btn modal-btn btn-primary">
+                    Open Appointments
+                </button>
+                                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="todayScheduleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Search Doctor</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                @using (Html.BeginForm("TodaySchedule", "Appointments", FormMethod.Get))
+                                {
+                <div class="doctor-search-wrapper">
+                    <input type="text"
+                           name="searchValue"
+                           class="form-control modal-input text-center doctor-search"
+                           placeholder="Enter Doctor ID / Name / Specialisation"
+                           autocomplete="off"
+                           required />
+
+                    <ul class="list-group doctor-suggestions"></ul>
+                </div>
+
+                <button type="submit"
+                        class="btn modal-btn btn-info">
+                    View Today
+                </button>
+                                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="weeklyScheduleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Search Doctor</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center">
+
+                @using (Html.BeginForm("WeeklySchedule", "Appointments", FormMethod.Get))
+                                {
+                <div class="doctor-search-wrapper">
+                    <input type="text"
+                           name="searchValue"
+                           class="form-control modal-input text-center doctor-search"
+                           placeholder="Enter Doctor ID / Name / Specialisation"
+                           autocomplete="off"
+                           required />
+
+                    <ul class="list-group doctor-suggestions"></ul>
+                </div>
+
+                <div style="margin-top:15px;">
+                    <input type="date"
+                           name="startDate"
+                           class="form-control modal-input text-center" />
+                </div>
+
+                <button type="submit"
+                        class="btn modal-btn btn-warning">
+                    View Weekly
+                </button>
+                                }
 
             </div>
 
@@ -278,7 +372,7 @@
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Enter Doctor ID</h5>
+                <h5 class="modal-title">Search Patient</h5>
                 <button type="button" class="close" data-dismiss="modal">
                     <span>&times;</span>
                 </button>
@@ -287,24 +381,157 @@
             <div class="modal-body text-center">
 
                 @using (Html.BeginForm("PatientHistory", "HealthRecords", FormMethod.Get))
-                {
-                    <div class="form-group d-flex justify-content-center">
-                        <input type="number"
-                               name="doctorId"
-                               class="form-control modal-input text-center"
-                               placeholder="Enter Doctor ID"
-                               required />
-                    </div>
+                                {
+                <div class="patient-search-wrapper">
+                    <input type="text"
+                           name="searchValue"
+                           class="form-control modal-input text-center patient-search"
+                           placeholder="Enter Patient ID / Phone / Name"
+                           autocomplete="off"
+                           required />
 
-                    <button type="submit"
-                            class="btn modal-btn"
-                            style="background:#db2777;color:white;">
-                        View Records
-                    </button>
-                }
+                    <ul class="list-group patient-suggestions"></ul>
+                </div>
+
+                <button type="submit"
+                        class="btn modal-btn"
+                        style="background:#db2777;color:white;">
+                    View Records
+                </button>
+                                }
 
             </div>
 
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            document.querySelectorAll(".doctor-search").forEach(function (input) {
+                const wrapper = input.closest(".doctor-search-wrapper");
+                const box = wrapper.querySelector(".doctor-suggestions");
+
+                input.addEventListener("keyup", function () {
+                    const query = input.value.trim();
+
+                    if (query.length < 2) {
+                        box.innerHTML = "";
+                        return;
+                    }
+
+                    fetch("/Doctors/Search?searchValue=" + encodeURIComponent(query))
+                        .then(function (response) {
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            box.innerHTML = "";
+
+                            if (!data || data.length === 0) {
+                                const emptyItem = document.createElement("li");
+                                emptyItem.className = "list-group-item doctor-suggestion-empty";
+                                emptyItem.innerText = "No doctors found";
+                                box.appendChild(emptyItem);
+                                return;
+                            }
+
+                            data.forEach(function (doctor) {
+                                const item = document.createElement("li");
+                                item.className = "list-group-item doctor-suggestion-item";
+
+                                item.innerHTML =
+                                    "<strong>" + doctor.FullName + "</strong>" +
+                                    "<br />ID: " + doctor.DoctorId +
+                                    " | " + doctor.Specialisation;
+
+                                item.addEventListener("click", function () {
+                                    input.value = doctor.DoctorId;
+                                    box.innerHTML = "";
+                                });
+
+                                box.appendChild(item);
+                            });
+                        })
+                        .catch(function () {
+                            box.innerHTML = "";
+
+                            const errorItem = document.createElement("li");
+                            errorItem.className = "list-group-item doctor-suggestion-empty";
+                            errorItem.innerText = "Unable to load suggestions";
+                            box.appendChild(errorItem);
+                        });
+                });
+
+                document.addEventListener("click", function (event) {
+                    if (!wrapper.contains(event.target)) {
+                        box.innerHTML = "";
+                    }
+                });
+            });
+
+            document.querySelectorAll(".patient-search").forEach(function (input) {
+                const wrapper = input.closest(".patient-search-wrapper");
+                const box = wrapper.querySelector(".patient-suggestions");
+
+                input.addEventListener("keyup", function () {
+                    const query = input.value.trim();
+
+                    if (query.length < 2) {
+                        box.innerHTML = "";
+                        return;
+                    }
+
+                    fetch("/Patients/Search?searchValue=" + encodeURIComponent(query))
+                        .then(function (response) {
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            box.innerHTML = "";
+
+                            if (!data || data.length === 0) {
+                                const emptyItem = document.createElement("li");
+                                emptyItem.className = "list-group-item patient-suggestion-empty";
+                                emptyItem.innerText = "No patients found";
+                                box.appendChild(emptyItem);
+                                return;
+                            }
+
+                            data.forEach(function (patient) {
+                                const item = document.createElement("li");
+                                item.className = "list-group-item patient-suggestion-item";
+
+                                item.innerHTML =
+                                    "<strong>" + patient.FullName + "</strong>" +
+                                    "<br />ID: " + patient.PatientId +
+                                    " | Phone: " + patient.PhoneNumber;
+
+                                item.addEventListener("click", function () {
+                                    input.value = patient.PatientId;
+                                    box.innerHTML = "";
+                                });
+
+                                box.appendChild(item);
+                            });
+                        })
+                        .catch(function () {
+                            box.innerHTML = "";
+
+                            const errorItem = document.createElement("li");
+                            errorItem.className = "list-group-item patient-suggestion-empty";
+                            errorItem.innerText = "Unable to load suggestions";
+                            box.appendChild(errorItem);
+                        });
+                });
+
+                document.addEventListener("click", function (event) {
+                    if (!wrapper.contains(event.target)) {
+                        box.innerHTML = "";
+                    }
+                });
+            });
+
+        });
+    </script>
+}

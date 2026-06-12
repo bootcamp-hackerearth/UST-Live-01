@@ -98,5 +98,24 @@ namespace HealthAxis.Api.Repositories
             return _context.Appointments
                 .Count(a => a.PatientId == patientId);
         }
+
+        public IEnumerable<Patient> Search(string searchValue)
+        {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return new List<Patient>();
+            }
+
+            searchValue = searchValue.Trim();
+
+            return _context.Patients
+                .Where(p =>
+                    p.PatientId.ToString().Contains(searchValue) ||
+                    p.PhoneNumber.Contains(searchValue) ||
+                    p.FullName.Contains(searchValue))
+                .OrderBy(p => p.FullName)
+                .Take(10)
+                .ToList();
+        }
     }
 }

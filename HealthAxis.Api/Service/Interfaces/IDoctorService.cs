@@ -22,5 +22,6 @@ namespace HealthAxis.Api.Services.Interfaces
             out string errorMessage);
 
         bool ToggleStatus(int id);
+        IEnumerable<DoctorDto> Search(string searchValue);
     }
 }

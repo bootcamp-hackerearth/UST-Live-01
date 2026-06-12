@@ -18,5 +18,6 @@ namespace HealthAxis.Api.Repositories.Interfaces
         bool Delete(int id);
 
         int GetAppointmentCount(int patientId);
+        IEnumerable<Patient> Search(string searchValue);
     }
 }

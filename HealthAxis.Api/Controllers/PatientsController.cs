@@ -100,5 +100,14 @@ namespace HealthAxis.Api.Controllers
 
             return Ok("Patient deleted.");
         }
+
+        [HttpGet]
+        [Route("search")]
+        public IHttpActionResult Search(string searchValue)
+        {
+            var patients = _service.Search(searchValue);
+
+            return Ok(patients);
+        }
     }
 }

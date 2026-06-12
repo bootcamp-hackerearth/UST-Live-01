@@ -16,8 +16,8 @@ namespace HealthAxis.Shared.DTOs
         public int DoctorId { get; set; }
         [Display(Name = "Doctor Name")]
         public string DoctorName { get; set; }
-        public SpecialisationEnum? DoctorSpecialisation { get; set; }
         [Display(Name = "Doctor Specialisation")]
+        public SpecialisationEnum? DoctorSpecialisation { get; set; }
         [Required, DataType(DataType.Date)] public DateTime ScheduledDate { get; set; }
         [Display(Name ="Time Slot")]
         [Required, StringLength(20)] public string TimeSlot { get; set; }

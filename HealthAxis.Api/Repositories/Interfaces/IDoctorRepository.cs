@@ -18,5 +18,6 @@ namespace HealthAxis.Api.Repositories.Interfaces
         bool ToggleStatus(int id);
 
         int GetUpcomingAppointmentCount(int doctorId);
+        IEnumerable<Doctor> Search(string searchValue);
     }
 }

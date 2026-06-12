@@ -117,7 +117,12 @@ namespace HealthAxis.Api.Services
         {
             return _patientRepository.Delete(id);
         }
-
+        public IEnumerable<PatientDto> Search(string searchValue)
+        {
+            return _patientRepository
+                .Search(searchValue)
+                .Select(Map);
+        }
         private PatientDto Map(Patient patient)
         {
             return new PatientDto

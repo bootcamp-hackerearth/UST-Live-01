@@ -24,6 +24,14 @@ namespace HealthAxis.Api.Controllers
         }
 
         [HttpGet]
+        [Route("search")]
+        public IHttpActionResult Search(string searchValue)
+        {
+            var doctors = _service.Search(searchValue);
+
+            return Ok(doctors);
+        }
+        [HttpGet]
         [Route("{id:int}")]
         public IHttpActionResult GetById(int id)
         {

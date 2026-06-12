@@ -2,6 +2,8 @@
 using HealthAxis.Shared.DTOs;
 using HealthAxis.Shared.Enums;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 
 namespace HealthAxis.Mvc.Controllers
@@ -29,15 +31,17 @@ namespace HealthAxis.Mvc.Controllers
         }
 
 
-        public new ActionResult Profile(int? id)
+        public new ActionResult Profile(int? id, int? selectedPatientId)
         {
-            if (!id.HasValue)
+            int? finalPatientId = selectedPatientId ?? id;
+
+            if (!finalPatientId.HasValue)
             {
-                TempData["Error"] = "Patient ID is required.";
+                TempData["Error"] = "Please select a patient.";
                 return RedirectToAction("Index");
             }
 
-            var patient = _patients.GetById(id.Value);
+            var patient = _patients.GetById(finalPatientId.Value);
 
             if (patient == null)
             {
@@ -205,6 +209,37 @@ namespace HealthAxis.Mvc.Controllers
         {
             ViewBag.SpecialisationList = new SelectList(
                 Enum.GetValues(typeof(SpecialisationEnum)));
+        }
+        public JsonResult Search(string searchValue)
+        {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+            }
+
+            var patients = _patients.Search(searchValue);
+
+            var result = patients.Select(p => new
+            {
+                PatientId = p.PatientId,
+                FullName = p.FullName,
+                PhoneNumber = p.PhoneNumber,
+                Email = p.Email
+            });
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        private PatientDto ResolvePatient(string searchValue)
+        {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return null;
+            }
+
+            var patients = _patients.Search(searchValue.Trim());
+
+            return patients.FirstOrDefault();
         }
     }
 }

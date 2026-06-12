@@ -84,7 +84,24 @@ namespace HealthAxis.Api.Repositories
 
             return true;
         }
+        public IEnumerable<Doctor> Search(string searchValue)
+        {
+            if (string.IsNullOrWhiteSpace(searchValue))
+            {
+                return new List<Doctor>();
+            }
 
+            searchValue = searchValue.Trim();
+
+            return _context.Doctors
+                .Where(d =>
+                    d.DoctorId.ToString().Contains(searchValue) ||
+                    d.FullName.Contains(searchValue) ||
+                    d.Specialisation.Contains(searchValue))
+                .OrderBy(d => d.FullName)
+                .Take(10)
+                .ToList();
+        }
         public int GetUpcomingAppointmentCount(int doctorId)
         {
             return _context.Appointments.Count(a =>
