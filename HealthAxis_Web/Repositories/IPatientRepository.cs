@@ -16,6 +16,7 @@ namespace HealthAxis.Api.Repositories
         void Update(Patient patient);
 
         void Deactivate(int id);
+        List<Appointment> GetAppointmentsByPatientId(int patientId);
 
         void Save();
     }

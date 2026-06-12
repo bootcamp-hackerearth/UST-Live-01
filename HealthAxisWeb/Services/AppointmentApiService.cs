@@ -16,17 +16,7 @@ namespace HealthAxis.Web.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<AppointmentDto>> GetByDoctor(int doctorId)
-        {
-            var response = await _httpClient.GetAsync($"appointment/doctor/{doctorId}");
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            var json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
-        }
-        public async Task Cancel(int id, UpdateAppointmentStatusDto dto)
+        public async Task<ApiResponseDto> Book(BookAppointmentDto dto)
         {
             var content = new StringContent(
                 JsonConvert.SerializeObject(dto),
@@ -34,7 +24,11 @@ namespace HealthAxis.Web.Services
                 "application/json"
             );
 
-            await _httpClient.PutAsync($"appointment/{id}/status", content);
+            var response = await _httpClient.PostAsync("appointment", content);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
 
         public async Task<List<AppointmentDto>> GetByPatient(int patientId)
@@ -42,9 +36,22 @@ namespace HealthAxis.Web.Services
             var response = await _httpClient.GetAsync($"appointment/patient/{patientId}");
 
             if (!response.IsSuccessStatusCode)
-                return null;
+                return new List<AppointmentDto>();
 
             var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
+        }
+
+        public async Task<List<AppointmentDto>> GetByDoctor(int doctorId)
+        {
+            var response = await _httpClient.GetAsync($"appointment/doctor/{doctorId}");
+
+            if (!response.IsSuccessStatusCode)
+                return new List<AppointmentDto>();
+
+            var json = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
         }
 
@@ -56,10 +63,11 @@ namespace HealthAxis.Web.Services
                 return null;
 
             var json = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<AppointmentDto>(json);
         }
 
-        public async Task<ApiResponseDto> Book(BookAppointmentDto dto)
+        public async Task<ApiResponseDto> UpdateStatus(int id, UpdateAppointmentStatusDto dto)
         {
             var content = new StringContent(
                 JsonConvert.SerializeObject(dto),
@@ -67,18 +75,16 @@ namespace HealthAxis.Web.Services
                 "application/json"
             );
 
-            var response = await _httpClient.PostAsync("appointment", content);
+            var response = await _httpClient.PutAsync($"appointment/{id}/status", content);
+
             var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
 
-        public async Task UpdateStatus(int id, AppointmentStatus status)
+        public async Task<ApiResponseDto> Cancel(int id, UpdateAppointmentStatusDto dto)
         {
-            var dto = new UpdateAppointmentStatusDto
-            {
-                Status = status
-            };
+            dto.Status = AppointmentStatus.Cancelled;
 
             var content = new StringContent(
                 JsonConvert.SerializeObject(dto),
@@ -86,7 +92,11 @@ namespace HealthAxis.Web.Services
                 "application/json"
             );
 
-            await _httpClient.PutAsync($"appointment/{id}/status", content);
+            var response = await _httpClient.PutAsync($"appointment/{id}/status", content);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
     }
 }

@@ -17,7 +17,6 @@
         margin-bottom: 20px;
     }
 
-    /* ✅ Proper form width control */
     .form-wrapper {
         max-width: 450px;
     }
@@ -79,6 +78,13 @@
     <div class="card">
 
         <h2>Add Doctor</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="validation">
+                @ViewBag.Error
+            </div>
+        }
 
         <div class="form-wrapper">
 

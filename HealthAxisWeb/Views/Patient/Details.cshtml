@@ -1,24 +1,140 @@
 ﻿@model HealthAxis.Shared.Dtos.PatientDto
 
-<div class="card-dark">
-    <h2>@Model.FullName</h2>
-    <p><strong>Email:</strong> @Model.Email</p>
-    <p><strong>Phone:</strong> @Model.PhoneNumber</p>
-    <p><strong>Gender:</strong> @Model.Gender</p>
-    <p><strong>Insurance:</strong> @Model.InsuranceId</p>
+<style>
+    .page-container {
+        max-width: 600px;
+        margin: 40px auto;
+    }
 
-    <p>
-        <strong>Status:</strong>
-        @if (Model.IsActive)
-        {
-            <span class="badge badge-active">Active</span>
-        }
-        else
-        {
-            <span class="badge badge-inactive">Inactive</span>
-        }
-    </p>
+    .card {
+        background: #1f2937;
+        padding: 30px;
+        border-radius: 16px;
+        color: #e5e7eb;
+    }
 
-    <a href="@Url.Action("Edit", new { id = Model.PatientId })" class="btn btn-success">Edit</a>
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    .info {
+        margin-bottom: 12px;
+        font-size: 15px;
+    }
+
+    .label {
+        color: #9ca3af;
+    }
+
+    .value {
+        font-weight: 500;
+        margin-left: 5px;
+    }
+
+    .status {
+        margin-top: 10px;
+        font-weight: 600;
+    }
+
+    .active {
+        color: #10b981;
+    }
+
+    .inactive {
+        color: #ef4444;
+    }
+
+    .btn-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 10px 18px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        border: none;
+    }
+
+    .btn-edit {
+        background: #10b981;
+    }
+
+    .btn-back {
+        background: #374151;
+    }
+
+        .btn-back:hover {
+            background: #4b5563;
+        }
+</style>
+
+<div class="page-container">
+
+    <div class="card">
+
+        <h2>@Model.FullName</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="info" style="color:#ef4444;">
+                @ViewBag.Error
+            </div>
+        }
+
+        <div class="info">
+            <span class="label">Email:</span>
+            <span class="value">@Model.Email</span>
+        </div>
+
+        <div class="info">
+            <span class="label">Phone:</span>
+            <span class="value">@Model.PhoneNumber</span>
+        </div>
+
+        <div class="info">
+            <span class="label">Gender:</span>
+            <span class="value">@Model.Gender</span>
+        </div>
+
+        <div class="info">
+            <span class="label">Date of Birth:</span>
+            <span class="value">@Model.DateOfBirth.ToString("dd MMM yyyy")</span>
+        </div>
+
+        <div class="info">
+            <span class="label">Insurance:</span>
+            <span class="value">
+                @(string.IsNullOrEmpty(Model.InsuranceId) ? "Not Insured" : Model.InsuranceId)
+            </span>
+        </div>
+
+        <div class="info">
+            <span class="label">Upcoming Appointments:</span>
+            <span class="value">
+                @Model.UpcomingAppointments
+            </span>
+        </div>
+
+        <div class="status @(Model.IsActive ? "active" : "inactive")">
+            Status: @(Model.IsActive ? "Active" : "Inactive")
+        </div>
+
+        <div class="btn-group">
+
+            <a href="@Url.Action("Index", "Patient")" class="btn btn-back">
+                ← Back
+            </a>
+
+            <a href="@Url.Action("Edit", "Patient", new { id = Model.PatientId })"
+               class="btn btn-edit">
+                Edit
+            </a>
+
+        </div>
+
+    </div>
 
 </div>

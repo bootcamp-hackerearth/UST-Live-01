@@ -1,60 +1,281 @@
-﻿@model List<HealthAxis.Shared.Dtos.AppointmentDto>
+﻿@model List<HealthAxis.Shared.Dtos.AppointmentDto> 
 @using HealthAxis.Shared.Dtos
 
 <style>
     body {
-        background-color: #0f172a;
-        color: white;
+        background: #111827;
+        color: #e5e7eb;
+        font-family: 'Segoe UI';
+        margin: 0;
     }
 
-    .btn-beige {
-        background: #f5f5dc;
-        color: black;
+    .container {
+        padding: 30px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .main-card {
+        background: #1f2937;
+        padding: 25px;
+        border-radius: 14px;
+        margin-top: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th {
+        text-align: left;
+        color: #9ca3af;
+        font-size: 13px;
+        padding-bottom: 10px;
+    }
+
+    td {
+        padding: 14px;
+        border-top: 1px solid #374151;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+    }
+
+    .pending {
+        background: rgba(245,158,11,0.15);
+        color: #f59e0b;
+    }
+
+    .confirmed {
+        background: rgba(16,185,129,0.15);
+        color: #10b981;
+    }
+
+    .completed {
+        background: rgba(59,130,246,0.15);
+        color: #3b82f6;
+    }
+
+    .cancelled {
+        background: rgba(239,68,68,0.15);
+        color: #ef4444;
+    }
+
+    .action-link {
+        margin-right: 10px;
+        cursor: pointer;
+        font-size: 13px;
+    }
+
+    .error-text {
+        color: #ef4444;
+        margin-top: 10px;
     }
 </style>
 
-<h2>Doctor Schedule</h2>
+<div class="container">
 
-<table class="table table-dark table-striped">
-    <thead>
-        <tr>
-            <th>Patient</th>
-            <th>Date</th>
-            <th>Slot</th>
-            <th>Status</th>
-            <th>Action</th>
-        </tr>
-    </thead>
+    <div class="header">
+        <h2 style="color:#1f2937">Doctor Schedule</h2>
+    </div>
 
-    <tbody>
-        @foreach (var a in Model)
-        {
-            var status = a.Status;
+    <!-- ✅ GLOBAL ERROR -->
+    <div id="globalError" class="error-text"></div>
 
-            <tr>
-                <td>@a.PatientId</td>
-                <td>@a.ScheduledDate.ToShortDateString()</td>
-                <td>@a.TimeSlot</td>
+    <div class="main-card">
 
-                <td>@status</td>
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
 
-                <td>
-                    @if (status == AppointmentStatus.Pending)
+            <tbody>
+
+                @if (Model != null && Model.Count > 0)
+                {
+                    foreach (var a in Model)
                     {
-                        <a href="@Url.Action("UpdateStatus", new { id = a.AppointmentId, status = AppointmentStatus.Confirmed.ToString() })"
-                           class="btn btn-beige btn-sm">Confirm</a>
-                    }
+                        <tr>
 
-                    @if (status == AppointmentStatus.Confirmed)
-                    {
-                        <a href="@Url.Action("UpdateStatus", new { id = a.AppointmentId, status = AppointmentStatus.Completed.ToString() })"
-                           class="btn btn-beige btn-sm">Complete</a>
-                    }
+                            <td>@a.PatientName</td>
 
-                    <a href="@Url.Action("CancelAppointment", new { id = a.AppointmentId })"
-                       class="btn btn-beige btn-sm">Cancel</a>
-                </td>
-            </tr>
+                            <td>@a.ScheduledDate.ToString("dd MMM yyyy")</td>
+
+                            <td>@a.TimeSlot</td>
+
+                            <td>
+                                @if (a.Status == AppointmentStatus.Pending)
+                                {
+                                    <span class="badge pending">Pending</span>
+                                }
+                                else if (a.Status == AppointmentStatus.Confirmed)
+                                {
+                                    <span class="badge confirmed">Confirmed</span>
+                                }
+                                else if (a.Status == AppointmentStatus.Completed)
+                                {
+                                    <span class="badge completed">Completed</span>
+                                }
+                                else if (a.Status == AppointmentStatus.Cancelled)
+                                {
+                                    <div>
+                                        <span class="badge cancelled">
+                                            @(a.CancelledBy == "Doctor"
+                                            ? "Cancelled by Doctor"
+                                            : "Cancelled by Patient")
+                                        </span>
+
+                                        @if (!string.IsNullOrEmpty(a.CancellationReason))
+                                        {
+                                            <div style="font-size:12px; color:#9ca3af; margin-top:5px;">
+                                                Reason: @a.CancellationReason
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </td>
+
+                            <td>
+
+                                @if (a.Status == AppointmentStatus.Pending)
+                                {
+                                    <span class="action-link"
+                                          onclick="updateStatus(@a.AppointmentId, 'Confirmed')">
+                                        Confirm
+                                    </span>
+                                }
+
+                                @if (a.Status == AppointmentStatus.Confirmed)
+                                {
+                                    <span class="action-link"
+                                          onclick="updateStatus(@a.AppointmentId, 'Completed')">
+                                        Complete
+                                    </span>
+                                }
+
+                                @if (a.Status == AppointmentStatus.Pending ||
+                                     a.Status == AppointmentStatus.Confirmed)
+                                {
+                                    <span class="action-link"
+                                          onclick="openModal(@a.AppointmentId, 'Doctor')">
+                                        Cancel
+                                    </span>
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5">No appointments found</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<div id="cancelModal"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+
+    <div style="background:#1f2937; padding:20px; border-radius:10px; width:320px;">
+        <h3>Cancel Appointment</h3>
+
+        <div id="modalError" class="error-text"></div>
+
+        <textarea id="cancelReason"
+                  placeholder="Enter cancellation reason"
+                  style="width:100%; margin-top:10px; padding:8px;"></textarea>
+
+        <div style="margin-top:15px; display:flex; justify-content:space-between;">
+            <button onclick="submitCancel()">Submit</button>
+            <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentId = 0;
+    let currentRole = "";
+
+    function updateStatus(id, status) {
+
+        document.getElementById("globalError").innerText = "";
+
+        fetch('/Appointment/UpdateStatus?id=' + id, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `Status=${status}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.Success) {
+                    document.getElementById("globalError").innerText = data.Message;
+                    return;
+                }
+                location.reload();
+            });
+    }
+
+    function openModal(id, role) {
+        currentId = id;
+        currentRole = role;
+
+        document.getElementById("cancelReason").value = "";
+        document.getElementById("modalError").innerText = "";
+        document.getElementById("cancelModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("cancelModal").style.display = "none";
+    }
+
+    function submitCancel() {
+
+        let reason = document.getElementById("cancelReason").value;
+
+        if (!reason) {
+            document.getElementById("modalError").innerText = "Cancellation reason required";
+            return;
         }
-    </tbody>
-</table>
+
+        fetch('/Appointment/UpdateStatus?id=' + currentId, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `Status=Cancelled&CancellationReason=${encodeURIComponent(reason)}&CancelledBy=${currentRole}`
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.Success) {
+                    document.getElementById("modalError").innerText = data.Message;
+                    return;
+                }
+                location.reload();
+            });
+    }
+</script>

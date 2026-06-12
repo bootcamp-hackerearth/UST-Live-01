@@ -266,7 +266,6 @@
     <Content Include="Views\Patient\Edit.cshtml" />
     <Content Include="Views\Appointment\MyAppointments.cshtml" />
     <Content Include="Views\Appointment\Book.cshtml" />
-    <Content Include="Views\Doctor\ViewPatients.cshtml" />
     <Content Include="Views\Patient\Deactivate.cshtml" />
     <Content Include="Views\HealthRecord\Create.cshtml" />
     <Content Include="Views\Appointment\CancelAppointment.cshtml" />

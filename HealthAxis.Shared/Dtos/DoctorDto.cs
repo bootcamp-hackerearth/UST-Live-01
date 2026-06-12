@@ -20,7 +20,8 @@ public class DoctorDto
     public decimal ConsultationFee { get; set; }
 
     public bool IsActive { get; set; }
-}
+    public int UpcomingAppointments { get; set; }
+    }
 
 public class CreateDoctorDto
     {

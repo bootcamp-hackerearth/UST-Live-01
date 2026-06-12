@@ -6,16 +6,16 @@ namespace HealthAxis.Web.Services
 {
     public interface IAppointmentApiService
     {
-        Task<List<AppointmentDto>> GetByDoctor(int doctorId);
+        Task<ApiResponseDto> Book(BookAppointmentDto dto);
 
         Task<List<AppointmentDto>> GetByPatient(int patientId);
 
+        Task<List<AppointmentDto>> GetByDoctor(int doctorId);
+
         Task<AppointmentDto> GetById(int appointmentId);
 
-        Task<ApiResponseDto> Book(BookAppointmentDto dto);
+        Task<ApiResponseDto> UpdateStatus(int id, UpdateAppointmentStatusDto dto);
 
-        Task UpdateStatus(int id, AppointmentStatus status);
-
-        Task Cancel(int id, UpdateAppointmentStatusDto dto);
+        Task<ApiResponseDto> Cancel(int id, UpdateAppointmentStatusDto dto);
     }
 }

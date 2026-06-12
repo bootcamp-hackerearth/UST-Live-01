@@ -1,7 +1,5 @@
 ﻿using HealthAxis.Shared.Dtos;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web.Http;
 
 [RoutePrefix("api/appointment")]
@@ -40,63 +38,35 @@ public class AppointmentController : ApiController
         var result = _service.Book(dto);
 
         if (!result.Success)
-            return BadRequest(result.Message);
+            return Content(System.Net.HttpStatusCode.BadRequest, result);
 
         return Ok(result);
     }
 
-    [HttpPut]
-    [Route("{id}/status")]
-    public IHttpActionResult UpdateStatus(int id, UpdateAppointmentStatusDto dto)
+    [HttpPost]
+    [Route("UpdateStatus")]
+    public IHttpActionResult UpdateStatus([FromUri] int id, [FromBody] UpdateAppointmentStatusDto dto)
     {
         if (dto == null)
-            return BadRequest("Invalid request");
-
-        if (dto.Status == AppointmentStatus.Cancelled &&
-            string.IsNullOrEmpty(dto.CancellationReason))
-        {
-            return BadRequest("Cancellation reason required");
-        }
+            return BadRequest("DTO null");
 
         var result = _service.UpdateStatus(id, dto);
 
         if (!result.Success)
-            return BadRequest(result.Message);
+            return Content(System.Net.HttpStatusCode.BadRequest, result);
 
         return Ok(result);
     }
 
     [HttpGet]
-    [Route("available-slots")]
-    public IHttpActionResult GetAvailableSlots(int doctorId, DateTime date)
+    [Route("GetSlots")]
+    public IHttpActionResult GetSlots(int doctorId, DateTime date)
     {
         if (doctorId <= 0)
             return BadRequest("Invalid doctorId");
 
-        var allSlots = new List<string>
-        {
-            "10:00 AM",
-            "11:00 AM",
-            "2:00 PM"
-        };
+        var slots = _service.GetSlots(doctorId, date);
 
-        var bookedSlots = _service.GetBookedSlots(doctorId, date);
-
-        var availableSlots = allSlots.Except(bookedSlots).ToList();
-
-        if (!availableSlots.Any())
-        {
-            return Ok(new
-            {
-                Full = true,
-                Message = "No slots available"
-            });
-        }
-
-        return Ok(new
-        {
-            Full = false,
-            Slots = availableSlots
-        });
+        return Ok(slots);
     }
 }

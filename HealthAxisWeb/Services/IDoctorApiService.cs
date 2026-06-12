@@ -10,9 +10,10 @@ namespace HealthAxis.Web.Services
 
         Task<DoctorDto> GetById(int id);
 
-        Task Create(CreateDoctorDto dto);
+        Task<ApiResponseDto> Create(CreateDoctorDto dto);
 
-        Task Update(int id, UpdateDoctorDto dto);
+        Task<ApiResponseDto> Update(int id, UpdateDoctorDto dto);
+
         Task ToggleStatus(int id);
     }
 }

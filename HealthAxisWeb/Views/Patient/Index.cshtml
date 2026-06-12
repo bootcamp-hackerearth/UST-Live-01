@@ -1,177 +1,199 @@
-﻿@model IEnumerable<HealthAxis.Shared.Dtos.PatientDto>
-
-@{
-    ViewBag.Title = "Patients";
-    var sort = Request["sort"];
-    var insurance = Request["insurance"];
-}
+﻿@model List<HealthAxis.Shared.Dtos.PatientDto>
 
 <style>
     body {
-        background-color: #0f172a;
-        color: white;
+        background: #111827;
+        color: #e5e7eb;
+        font-family: 'Segoe UI';
+        margin: 0;
     }
 
-    .card-dark {
-        background-color: #1e293b;
+    .container {
+        padding: 30px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .add-btn {
+        background: #1f2937;
+        padding: 10px 15px;
         border-radius: 10px;
+        color: white;
+        text-decoration: none;
+    }
+
+    .card-box {
+        display: flex;
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .stat-card {
+        background: #1f2937;
         padding: 20px;
-        margin-bottom: 20px;
+        border-radius: 12px;
+        flex: 1;
     }
 
-    .badge-active {
-        background-color: #22c55e;
+        .stat-card h4 {
+            color: #9ca3af;
+        }
+
+    .main-card {
+        background: #1f2937;
+        padding: 20px;
+        border-radius: 12px;
     }
 
-    .badge-inactive {
-        background-color: #ef4444;
+    table {
+        width: 100%;
+        margin-top: 20px;
     }
 
-    .badge-insured {
-        background-color: #3b82f6;
+    th {
+        text-align: left;
+        color: #9ca3af;
     }
 
-    .btn-beige {
-        background-color: #f5f5dc;
-        color: #000;
+    td {
+        padding: 12px 0;
+        border-top: 1px solid #374151;
+    }
+
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .active-badge {
+        background: #065f46;
+        color: #10b981;
+    }
+
+    .inactive-badge {
+        background: #7f1d1d;
+        color: #ef4444;
+    }
+
+    .insured-badge {
+        background: #1e40af;
+        color: #60a5fa;
+    }
+
+    .filter-dropdown {
+        height: 38px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: #374151;
+        color: white;
         border: none;
     }
-
-        .btn-beige:hover {
-            background-color: #e6e0c5;
-        }
 </style>
 
-<h2>Patients</h2>
+<div class="container">
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="card-dark">
-            <h4>@Model.Count()</h4>
-            <p>Total Patients</p>
+    <div class="header">
+        <h2 style="color:#1f2937;">Patient Management</h2>
+
+        @Url.Action("Create", "Patient")" class="add-btn">
+        + Add Patient
+        </a>
+    </div>
+
+    <div class="card-box">
+        <div class="stat-card">
+            <h4>Total Patients</h4>
+            <h2>@ViewBag.Total</h2>
+        </div>
+
+        <div class="stat-card">
+            <h4>Active</h4>
+            <h2>@ViewBag.Active</h2>
+        </div>
+
+        <div class="stat-card">
+            <h4>Insured</h4>
+            <h2>@ViewBag.Insured</h2>
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card-dark">
-            <h4>@Model.Count(x => x.IsActive)</h4>
-            <p>Active Patients</p>
-        </div>
-    </div>
+    <div class="main-card">
 
-    <div class="col-md-3">
-        <div class="card-dark">
-            <h4>@Model.Count(x => !string.IsNullOrEmpty(x.InsuranceId))</h4>
-            <p>Insured</p>
-        </div>
+        <form method="get" style="display:flex; gap:15px; margin-bottom:15px;">
+
+            <select name="sort" onchange="this.form.submit()" class="filter-dropdown">
+                <option value="">Sort by Name</option>
+                <option value="asc">A-Z</option>
+                <option value="desc">Z-A</option>
+            </select>
+
+            <select name="insured" onchange="this.form.submit()" class="filter-dropdown">
+                <option value="">All</option>
+                <option value="true">Insured</option>
+                <option value="false">Not Insured</option>
+            </select>
+
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Insurance</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>
+                            <strong>@p.FullName</strong><br />
+                            <small>ID: @p.PatientId</small>
+                        </td>
+
+                        <td>@p.Age</td>
+
+                        <td>@p.Gender</td>
+                        <td>@p.PhoneNumber</td>
+
+                        <td>
+                            @if (!string.IsNullOrEmpty(p.InsuranceId))
+                            {
+                                <span class="badge insured-badge">Insured</span>
+                            }
+                            else
+                            {
+                                <span>Not Insured</span>
+                            }
+                        </td>
+
+                        <td>
+                            <span class="badge @(p.IsActive ? "active-badge" : "inactive-badge")">
+                                @(p.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+
+                        <td>
+                            <a href="@Url.Action("Details", "Patient", new { id = p.PatientId })">
+                            👁
+                            </a>
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
     </div>
 </div>
-
-<a href="@Url.Action("Create")" class="btn btn-primary mb-3">+ Add Patient</a>
-
-<form method="get" id="filterForm" class="mb-3">
-    <div class="row">
-
-        <div class="col-md-3">
-            <select name="sort" class="form-control"
-                    onchange="document.getElementById('filterForm').submit();">
-                <option value="">Sort by Name</option>
-                <option value="asc" @(sort == "asc" ? "selected" : "")>A-Z</option>
-                <option value="desc" @(sort == "desc" ? "selected" : "")>Z-A</option>
-            </select>
-        </div>
-
-        <div class="col-md-3">
-            <select name="insurance" class="form-control"
-                    onchange="document.getElementById('filterForm').submit();">
-                <option value="">All</option>
-                <option value="insured" @(insurance == "insured" ? "selected" : "")>Insured</option>
-                <option value="not" @(insurance == "not" ? "selected" : "")>Not Insured</option>
-            </select>
-        </div>
-
-    </div>
-</form>
-
-@{
-    var patients = Model;
-
-    if (sort == "asc")
-    {
-        patients = patients.OrderBy(p => p.FullName).ToList();
-    }
-    else if (sort == "desc")
-    {
-        patients = patients.OrderByDescending(p => p.FullName).ToList();
-    }
-
-    if (insurance == "insured")
-    {
-        patients = patients.Where(p => !string.IsNullOrEmpty(p.InsuranceId)).ToList();
-    }
-    else if (insurance == "not")
-    {
-        patients = patients.Where(p => string.IsNullOrEmpty(p.InsuranceId)).ToList();
-    }
-}
-
-<table class="table table-dark table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Gender</th>
-            <th>Phone</th>
-            <th>Insurance</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        @foreach (var p in patients)
-        {
-            var age = DateTime.Now.Year - p.DateOfBirth.Year;
-
-            <tr>
-                <td>@p.FullName</td>
-                <td>@age</td>
-                <td>@p.Gender</td>
-                <td>@p.PhoneNumber</td>
-
-                <td>
-                    @if (!string.IsNullOrEmpty(p.InsuranceId))
-                    {
-                        <span class="badge badge-insured">Yes</span>
-                    }
-                    else
-                    {
-                        <span>No</span>
-                    }
-                </td>
-
-                <td>
-                    @if (p.IsActive)
-                    {
-                        <span class="badge badge-active">Active</span>
-                    }
-                    else
-                    {
-                        <span class="badge badge-inactive">Inactive</span>
-                    }
-                </td>
-
-                <td>
-                    <a href="@Url.Action("Details", "Patient", new { id = p.PatientId })"
-                       class="btn btn-sm btn-beige">View</a>
-
-                    @if (p.IsActive)
-                    {
-                        <a href="@Url.Action("Deactivate", "Patient", new { id = p.PatientId })"
-                           class="btn btn-sm btn-beige">Deactivate</a>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

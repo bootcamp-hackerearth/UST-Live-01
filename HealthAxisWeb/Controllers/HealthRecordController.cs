@@ -30,7 +30,6 @@ namespace HealthAxis.Web.Controllers
 
             var dto = new HealthRecordDto
             {
-                AppointmentId = appointment.AppointmentId,
                 PatientId = appointment.PatientId,
                 DoctorId = appointment.DoctorId,
                 VisitDate = System.DateTime.Now

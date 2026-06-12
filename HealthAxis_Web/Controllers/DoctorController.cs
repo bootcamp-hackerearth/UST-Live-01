@@ -45,7 +45,16 @@ namespace HealthAxis.Api.Controllers
             if (doctor == null)
                 return NotFound();
 
-            return Ok(_mapper.Map<DoctorDto>(doctor));
+            var doctorDto = _mapper.Map<DoctorDto>(doctor);
+
+            var upcomingCount = _context.Appointments
+                .Count(a => a.DoctorId == id &&
+                            a.ScheduledDate >= System.DateTime.Today &&
+                            a.Status != "Cancelled");
+
+            doctorDto.UpcomingAppointments = upcomingCount;
+
+            return Ok(doctorDto);
         }
 
         [HttpPost, Route("")]

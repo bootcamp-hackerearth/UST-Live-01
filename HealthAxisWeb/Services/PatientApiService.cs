@@ -33,23 +33,25 @@ namespace HealthAxis.Web.Services
 
         public async Task<List<PatientDto>> GetAll()
         {
-            var res = await _httpClient.GetAsync("patient");
+            var response = await _httpClient.GetAsync("patient");
 
-            if (!res.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
                 return new List<PatientDto>();
 
-            var json = await res.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<PatientDto>>(json);
         }
 
         public async Task<PatientDto> GetById(int id)
         {
-            var res = await _httpClient.GetAsync($"patient/{id}");
+            var response = await _httpClient.GetAsync($"patient/{id}");
 
-            if (!res.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
                 return null;
 
-            var json = await res.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<PatientDto>(json);
         }
 
@@ -79,12 +81,13 @@ namespace HealthAxis.Web.Services
 
         public async Task<List<HealthRecordDto>> GetHealthRecords(int patientId)
         {
-            var res = await _httpClient.GetAsync($"healthrecord/patient/{patientId}");
+            var response = await _httpClient.GetAsync($"healthrecord/patient/{patientId}");
 
-            if (!res.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
                 return new List<HealthRecordDto>();
 
-            var json = await res.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
         }
     }

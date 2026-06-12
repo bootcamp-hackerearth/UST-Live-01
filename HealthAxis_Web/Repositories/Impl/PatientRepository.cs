@@ -24,7 +24,12 @@ namespace HealthAxis.Api.Repositories
         {
             return _context.Patients.Find(id);
         }
-
+        public List<Appointment> GetAppointmentsByPatientId(int patientId)
+        {
+            return _context.Appointments
+                .Where(a => a.PatientId == patientId)
+                .ToList();
+        }
         public bool ExistsByEmail(string email)
         {
             return _context.Patients.Any(x => x.Email == email);

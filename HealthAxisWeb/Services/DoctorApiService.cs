@@ -1,10 +1,9 @@
-﻿using HealthAxis.Shared;
+﻿using HealthAxis.Shared.Dtos;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using HealthAxis.Shared.Dtos;
 
 namespace HealthAxis.Web.Services
 {
@@ -24,29 +23,29 @@ namespace HealthAxis.Web.Services
             if (specialisation.HasValue)
                 url += $"?specialisation={specialisation.Value}";
 
-            var res = await _httpClient.GetAsync(url);
-            var json = await res.Content.ReadAsStringAsync();
+            var response = await _httpClient.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+                return new List<DoctorDto>();
+
+            var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<List<DoctorDto>>(json);
-        }
-        public async Task ToggleStatus(int id)
-        {
-            await _httpClient.PutAsync($"doctor/{id}/toggle", null);
         }
 
         public async Task<DoctorDto> GetById(int id)
         {
-            var res = await _httpClient.GetAsync($"doctor/{id}");
+            var response = await _httpClient.GetAsync($"doctor/{id}");
 
-            if (!res.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
                 return null;
 
-            var json = await res.Content.ReadAsStringAsync();
+            var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<DoctorDto>(json);
         }
 
-        public async Task Create(CreateDoctorDto dto)
+        public async Task<ApiResponseDto> Create(CreateDoctorDto dto)
         {
             var content = new StringContent(
                 JsonConvert.SerializeObject(dto),
@@ -54,10 +53,14 @@ namespace HealthAxis.Web.Services
                 "application/json"
             );
 
-            await _httpClient.PostAsync("doctor", content);
+            var response = await _httpClient.PostAsync("doctor", content);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
 
-        public async Task Update(int id, UpdateDoctorDto dto)
+        public async Task<ApiResponseDto> Update(int id, UpdateDoctorDto dto)
         {
             var content = new StringContent(
                 JsonConvert.SerializeObject(dto),
@@ -65,7 +68,16 @@ namespace HealthAxis.Web.Services
                 "application/json"
             );
 
-            await _httpClient.PutAsync($"doctor/{id}", content);
+            var response = await _httpClient.PutAsync($"doctor/{id}", content);
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
+        }
+
+        public async Task ToggleStatus(int id)
+        {
+            await _httpClient.PutAsync($"doctor/{id}/toggle", null);
         }
     }
 }

@@ -4,41 +4,104 @@
 
 <style>
     body {
-        background-color: #0f172a;
+        background-color: #111827;
         color: white;
+        font-family: 'Segoe UI';
     }
 
     .card-dark {
-        background: #1e293b;
-        padding: 20px;
-        border-radius: 10px;
-        margin-top: 20px;
+        background: #1f2937;
+        padding: 30px;
+        border-radius: 12px;
+        margin-top: 40px;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
     }
 
-    .btn-beige {
-        background-color: #f5f5dc;
+    .toggle-group {
+        display: flex;
+        background: #374151;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .toggle-btn {
+        flex: 1;
+        padding: 10px;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        color: #d1d5db;
+        font-weight: 500;
+    }
+
+        .toggle-btn.active {
+            background: #10b981;
+            color: white;
+        }
+
+    input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: #374151;
+        color: white;
+        margin-top: 10px;
+    }
+
+    input:focus {
+        outline: none;
+        background: #4b5563;
+    }
+
+    .btn-submit {
+        margin-top: 20px;
+        background: #f5f5dc;
         color: black;
+        padding: 10px;
+        border-radius: 10px;
+        border: none;
+        width: 100%;
+        cursor: pointer;
     }
 </style>
 
-<h2>Appointments</h2>
+<h2 style="text-align:center; color:#1f2937">Appointments</h2>
 
 <div class="card-dark">
+
     <form method="get" action="/Appointment/Redirect">
-        <div class="form-group">
-            <label>Select Role</label>
-            <select name="role" class="form-control">
-                <option value="patient">Patient</option>
-                <option value="doctor">Doctor</option>
-            </select>
+
+        <input type="hidden" name="role" id="roleInput" value="patient" />
+
+        <div class="toggle-group">
+            <button type="button" class="toggle-btn active" onclick="setRole('patient', this)">
+                Patient
+            </button>
+            <button type="button" class="toggle-btn" onclick="setRole('doctor', this)">
+                Doctor
+            </button>
         </div>
 
-        <div class="form-group">
-            <label>Enter ID</label>
-            <input type="number" name="id" class="form-control" required />
-        </div>
+        <input type="number" name="id" placeholder="Enter ID" required />
 
-        <br />
-        <button class="btn btn-beige">Continue</button>
+        <button type="submit" class="btn-submit">Continue</button>
     </form>
+
 </div>
+
+<script>
+    function setRole(role, element) {
+        document.getElementById("roleInput").value = role;
+
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        element.classList.add('active');
+    }
+</script>

@@ -1,4 +1,5 @@
 ﻿@model HealthAxis.Shared.Dtos.UpdateDoctorDto
+
 <style>
     .page-container {
         max-width: 600px;
@@ -34,10 +35,10 @@
         font-size: 14px;
     }
 
-    input:focus, select:focus {
-        outline: none;
-        background: #4b5563;
-    }
+        input:focus, select:focus {
+            outline: none;
+            background: #4b5563;
+        }
 
     .validation {
         color: #ef4444;
@@ -82,9 +83,9 @@
         background: #374151;
     }
 
-    .btn-back:hover {
-        background: #4b5563;
-    }
+        .btn-back:hover {
+            background: #4b5563;
+        }
 </style>
 
 <div class="page-container">
@@ -92,6 +93,13 @@
     <div class="card">
 
         <h2>Edit Doctor</h2>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="validation">
+                @ViewBag.Error
+            </div>
+        }
 
         <div class="form-wrapper">
 

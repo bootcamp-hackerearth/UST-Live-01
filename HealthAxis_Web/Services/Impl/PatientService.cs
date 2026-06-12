@@ -3,6 +3,7 @@ using HealthAxis.Api.Repositories;
 using HealthAxis.Shared.Dtos;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HealthAxis.Api.Services
 {
@@ -40,7 +41,19 @@ namespace HealthAxis.Api.Services
         public PatientDto GetById(int id)
         {
             var patient = _repo.GetById(id);
-            return patient == null ? null : _mapper.Map<PatientDto>(patient);
+
+            if (patient == null)
+                return null;
+
+            var patientDto = _mapper.Map<PatientDto>(patient);
+
+            var count = _repo.GetAppointmentsByPatientId(id)
+                .Count(a => a.ScheduledDate >= DateTime.Today
+                            && a.Status != "Cancelled");
+
+            patientDto.UpcomingAppointments = count;
+
+            return patientDto;
         }
 
         public PatientDto Update(int id, PatientDto dto)

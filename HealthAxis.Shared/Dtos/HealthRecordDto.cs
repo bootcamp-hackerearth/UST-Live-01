@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxis.Shared.Dtos
 {
@@ -7,25 +6,20 @@ namespace HealthAxis.Shared.Dtos
     {
         public int RecordId { get; set; }
 
-        [Required]
         public int PatientId { get; set; }
 
-        [Required]
         public int DoctorId { get; set; }
-
-        public int AppointmentId { get; set; }
 
         public DateTime VisitDate { get; set; }
 
-        [Required]
-        [StringLength(500)]
         public string Diagnosis { get; set; }
 
-        [Required]
-        [StringLength(500)]
         public string Prescription { get; set; }
 
-        [StringLength(1000)]
         public string Notes { get; set; }
+
+        public string DoctorName { get; set; }
+
+        public string Specialisation { get; set; }
     }
 }

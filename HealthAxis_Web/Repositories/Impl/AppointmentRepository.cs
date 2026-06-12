@@ -1,5 +1,6 @@
 ﻿using HealthAxis.Api.Database;
 using HealthAxis.Api.Models;
+using HealthAxis.Shared.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -30,6 +31,7 @@ public class AppointmentRepositoryImpl : IAppointmentRepository
     public List<Appointment> GetByDoctor(int doctorId)
     {
         return _context.Appointments
+            .Include("Patient")
             .Where(a => a.DoctorId == doctorId)
             .OrderBy(a => a.ScheduledDate)
             .ToList();

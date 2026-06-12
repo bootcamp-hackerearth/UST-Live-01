@@ -136,7 +136,7 @@
 <div class="container">
 
     <div class="header">
-        <h2>Doctor Management</h2>
+        <h2 style="color:#1f2937">Doctor Management</h2>
 
         <a href="@Url.Action("Create", "Doctor")" class="add-btn">
             + Add Doctor
@@ -146,17 +146,17 @@
     <div class="card-box">
         <div class="stat-card">
             <h4>Total Doctors</h4>
-            <h2>@Model.Count</h2>
+            <h2>@ViewBag.Total</h2>
         </div>
 
         <div class="stat-card">
             <h4>Active</h4>
-            <h2>@Model.Count(d => d.IsActive)</h2>
+            <h2>@ViewBag.Active</h2>
         </div>
 
         <div class="stat-card">
             <h4>Inactive</h4>
-            <h2>@Model.Count(d => !d.IsActive)</h2>
+            <h2>@ViewBag.Inactive</h2>
         </div>
     </div>
 
@@ -167,16 +167,9 @@
 
             @Html.DropDownList(
                 "specialisation",
-                new SelectList(
-                    Enum.GetValues(typeof(HealthAxis.Shared.Dtos.Specialisation)),
-                    Request["specialisation"]
-                ),
+                new SelectList(Enum.GetValues(typeof(HealthAxis.Shared.Dtos.Specialisation))),
                 "Select Specialisation",
-                new
-                     {
-                    onchange = "this.form.submit()",
-                    @class = "filter-dropdown"
-                }
+                new { onchange = "this.form.submit()", @class = "filter-dropdown" }
             )
 
             <select name="isActive"
@@ -184,27 +177,11 @@
                     class="filter-dropdown">
 
                 <option value="">Select Status</option>
-
-                <option value="true"
-                        @(Request["isActive"] == "true" ? "selected" : "")>
-                    Active
-                </option>
-
-                <option value="false"
-                        @(Request["isActive"] == "false" ? "selected" : "")>
-                    Inactive
-                </option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
 
             </select>
-
         </form>
-
-        @if (TempData["Success"] != null)
-        {
-            <div style="background:#065f46; color:#10b981; padding:10px; border-radius:8px; margin-bottom:15px;">
-                @TempData["Success"]
-            </div>
-        }
 
         <table>
             <thead>
@@ -242,7 +219,7 @@
                             <label class="switch">
                                 <input type="checkbox"
                                        @(d.IsActive ? "checked" : "")
-                                       onchange="toggleStatus(@d.DoctorId)">
+                                       onclick="toggleStatus(@d.DoctorId)">
                                 <span class="slider"></span>
                             </label>
                         </td>
@@ -263,8 +240,10 @@
 
 <script>
     function toggleStatus(id) {
-        fetch('/Doctor/ToggleStatus/' + id, {
-            method: 'POST'
+        fetch('/Doctor/ToggleStatus', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: id })
         })
             .then(res => {
                 if (!res.ok) {

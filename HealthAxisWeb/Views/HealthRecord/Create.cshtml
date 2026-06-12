@@ -22,7 +22,6 @@
 
     @using (Html.BeginForm("Create", "HealthRecord", FormMethod.Post))
     {
-        @Html.HiddenFor(m => m.AppointmentId)
         @Html.HiddenFor(m => m.PatientId)
         @Html.HiddenFor(m => m.DoctorId)
 

@@ -77,6 +77,13 @@
 
         <h2>@Model.FullName</h2>
 
+        @if (ViewBag.Error != null)
+        {
+            <div class="info" style="color:#ef4444;">
+                @ViewBag.Error
+            </div>
+        }
+
         <div class="info">
             <span class="label">Specialisation:</span>
             <span class="value">@Model.Specialisation</span>
@@ -90,6 +97,11 @@
         <div class="info">
             <span class="label">Consultation Fee:</span>
             <span class="value">₹@Model.ConsultationFee</span>
+        </div>
+
+        <div class="info">
+            <span class="label">Upcoming Appointments:</span>
+            <span class="value">@Model.UpcomingAppointments</span>
         </div>
 
         <div class="status @(Model.IsActive ? "active" : "inactive")">

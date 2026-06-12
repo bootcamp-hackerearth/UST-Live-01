@@ -22,13 +22,22 @@
 <h2>Book Appointment</h2>
 
 <div class="card-dark">
-    <form method="post">
 
+    @if (ViewBag.Error != null)
+    {
+        <div class="text-danger">
+            @ViewBag.Error
+        </div>
+    }
+
+    @using (Html.BeginForm("Book", "Appointment", FormMethod.Post))
+    {
         @Html.HiddenFor(x => x.PatientId)
 
         <div class="form-group">
             <label>Specialisation</label>
             <select id="spec" name="Specialisation" class="form-control">
+                <option value="">Select Specialisation</option>
                 @foreach (var spec in Enum.GetValues(typeof(Specialisation)))
                 {
                     <option value="@spec">@spec</option>
@@ -39,25 +48,23 @@
         <div class="form-group">
             <label>Doctor</label>
             <select name="DoctorId" id="doctor" class="form-control">
-                <option>Loading...</option>
+                <option value="">Select Doctor</option>
             </select>
         </div>
 
         <div class="form-group">
             <label>Date</label>
-            @Html.TextBoxFor(x => x.ScheduledDate, "{0:yyyy-MM-dd}",
-            new
-                 {
-                type = "date",
-                @class = "form-control",
-                min = DateTime.Today.ToString("yyyy-MM-dd")
-            })
+            <input type="date"
+                   id="date"
+                   name="ScheduledDate"
+                   class="form-control"
+                   min="@DateTime.Today.ToString("yyyy-MM-dd")" />
         </div>
 
         <div class="form-group">
             <label>Time Slot</label>
-            <select name="TimeSlot" id="slot" class="form-control">
-                <option>Select Doctor & Date</option>
+            <select name="TimeSlot" id="slot" class="form-control" disabled>
+                <option value="">Select Doctor & Date</option>
             </select>
         </div>
 
@@ -66,20 +73,22 @@
         <button type="submit" class="btn btn-beige">Book</button>
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-    </form>
+    }
 </div>
 
 <script>
 
     function loadDoctors() {
         let spec = document.getElementById("spec").value;
+        let dropdown = document.getElementById("doctor");
 
-        fetch('/Doctor/GetBySpecialisation?spec=' + encodeURIComponent(spec))
+        dropdown.innerHTML = "<option value=''>Select Doctor</option>";
+
+        if (!spec) return;
+
+        fetch('/Doctor/GetBySpecialisation?spec=' + spec)
             .then(res => res.json())
             .then(data => {
-
-                let dropdown = document.getElementById("doctor");
-                dropdown.innerHTML = "";
 
                 if (data.length === 0) {
                     dropdown.innerHTML = "<option>No doctors available</option>";
@@ -88,29 +97,79 @@
 
                 data.forEach(d => {
                     dropdown.innerHTML += `<option value="${d.DoctorId}">
-                    ${d.FullName}
-                </option>`;
+                        ${d.FullName}
+                    </option>`;
                 });
-
-                loadSlots();
             });
+    }
+
+    function checkEnableSlot() {
+
+        let doctor = document.getElementById("doctor").value;
+        let date = document.getElementById("date").value;
+        let slot = document.getElementById("slot");
+
+        if (doctor && date) {
+            slot.disabled = false;
+            loadSlots();
+        } else {
+            slot.disabled = true;
+            slot.innerHTML = "<option value=''>Select Doctor & Date</option>";
+        }
     }
 
     function loadSlots() {
 
-        let slotDropdown = document.getElementById("slot");
-        slotDropdown.innerHTML = "";
+        let doctor = document.getElementById("doctor").value;
+        let date = document.getElementById("date").value;
 
-        let allSlots = ["10:00 AM", "11:00 AM", "2:00 PM"];
+        if (!doctor || !date) return;
 
-        allSlots.forEach(s => {
-            slotDropdown.innerHTML += `<option value="${s}">${s}</option>`;
-        });
+        fetch(`/Appointment/GetSlots?doctorId=${doctor}&date=${date}`)
+            .then(res => res.json())
+            .then(data => {
+
+                let slotDropdown = document.getElementById("slot");
+                slotDropdown.innerHTML = "<option value=''>Select Slot</option>";
+
+                data.forEach(s => {
+                    slotDropdown.innerHTML += `<option value="${s}">${s}</option>`;
+                });
+            });
     }
 
-    document.getElementById("doctor").addEventListener("change", loadSlots);
-    document.querySelector("input[name='ScheduledDate']").addEventListener("change", loadSlots);
+    function validateForm() {
 
-    window.onload = loadDoctors;
+        let spec = document.getElementById("spec").value;
+        let doctor = document.getElementById("doctor").value;
+        let date = document.getElementById("date").value;
+        let slot = document.getElementById("slot").value;
+
+        if (!spec) {
+            alert("Select Specialisation");
+            return false;
+        }
+
+        if (!doctor) {
+            alert("Select Doctor");
+            return false;
+        }
+
+        if (!date) {
+            alert("Select Date");
+            return false;
+        }
+
+        if (!slot) {
+            alert("Select Time Slot");
+            return false;
+        }
+
+        return true;
+    }
+
+    document.getElementById("spec").addEventListener("change", loadDoctors);
+    document.getElementById("doctor").addEventListener("change", checkEnableSlot);
+    document.getElementById("date").addEventListener("change", checkEnableSlot);
 
 </script>

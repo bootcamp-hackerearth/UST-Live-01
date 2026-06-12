@@ -10,4 +10,5 @@ public interface IAppointmentService
     ApiResponseDto Book(BookAppointmentDto dto);
     ApiResponseDto UpdateStatus(int id, UpdateAppointmentStatusDto dto);
     List<string> GetBookedSlots(int doctorId, DateTime date);
+    List<string> GetSlots(int doctorId, DateTime date);
 }

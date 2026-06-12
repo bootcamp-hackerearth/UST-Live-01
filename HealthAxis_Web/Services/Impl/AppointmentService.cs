@@ -24,6 +24,8 @@ public class AppointmentServiceImpl : IAppointmentService
                 DoctorId = a.DoctorId,
                 ScheduledDate = a.ScheduledDate,
                 TimeSlot = a.TimeSlot,
+                CancellationReason = a.CancellationReason,
+                CancelledBy = a.CancelledBy,
 
                 Status = Enum.TryParse(a.Status, out AppointmentStatus s)
                     ? s : AppointmentStatus.Pending,
@@ -39,11 +41,16 @@ public class AppointmentServiceImpl : IAppointmentService
             {
                 AppointmentId = a.AppointmentId,
                 PatientId = a.PatientId,
+                DoctorId = a.DoctorId,
                 ScheduledDate = a.ScheduledDate,
                 TimeSlot = a.TimeSlot,
+                CancellationReason = a.CancellationReason,
+                CancelledBy = a.CancelledBy,
 
                 Status = Enum.TryParse(a.Status, out AppointmentStatus s)
-                    ? s : AppointmentStatus.Pending
+                    ? s : AppointmentStatus.Pending,
+
+                PatientName = a.Patient.FullName
             }).ToList();
     }
 
@@ -52,8 +59,41 @@ public class AppointmentServiceImpl : IAppointmentService
         return _repo.GetBookedSlots(doctorId, date);
     }
 
+    public List<string> GetSlots(int doctorId, DateTime date)
+    {
+        var allSlots = new List<string>
+        {
+            "10:00 AM : 11:00 AM",
+            "11:00 AM : 12:00 PM",
+            "1:00 PM : 2:00 PM",
+            "2:00 PM : 3:00 PM"
+        };
+
+        var booked = _repo.GetBookedSlots(doctorId, date);
+
+        return allSlots.Except(booked).ToList();
+    }
+
     public ApiResponseDto Book(BookAppointmentDto dto)
     {
+        if (string.IsNullOrEmpty(dto.TimeSlot))
+        {
+            return new ApiResponseDto
+            {
+                Success = false,
+                Message = "Time slot required"
+            };
+        }
+
+        if (dto.TimeSlot == "Select Doctor & Date")
+        {
+            return new ApiResponseDto
+            {
+                Success = false,
+                Message = "Invalid time slot"
+            };
+        }
+
         if (dto.ScheduledDate < DateTime.Today)
         {
             return new ApiResponseDto
@@ -81,7 +121,14 @@ public class AppointmentServiceImpl : IAppointmentService
             };
         }
 
-        var allSlots = new List<string> { "10:00 AM : 11:00AM", "11:00 AM : 12:00AM", "1:00 PM : 2:00 PM","2:00 PM : 3:00 PM" };
+        var allSlots = new List<string>
+        {
+            "10:00 AM : 11:00 AM",
+            "11:00 AM : 12:00 PM",
+            "1:00 PM : 2:00 PM",
+            "2:00 PM : 3:00 PM"
+        };
+
         var booked = _repo.GetBookedSlots(dto.DoctorId, dto.ScheduledDate);
 
         if (booked.Count >= allSlots.Count)
@@ -118,7 +165,11 @@ public class AppointmentServiceImpl : IAppointmentService
 
         if (a == null)
         {
-            return new ApiResponseDto { Success = false, Message = "Not found" };
+            return new ApiResponseDto
+            {
+                Success = false,
+                Message = "Not found"
+            };
         }
 
         a.Status = dto.Status.ToString();
@@ -135,6 +186,7 @@ public class AppointmentServiceImpl : IAppointmentService
             }
 
             a.CancellationReason = dto.CancellationReason;
+            a.CancelledBy = dto.CancelledBy;
         }
 
         _repo.Update(a);
@@ -147,3 +199,4 @@ public class AppointmentServiceImpl : IAppointmentService
         };
     }
 }
+
