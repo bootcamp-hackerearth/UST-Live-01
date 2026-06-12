@@ -16,6 +16,8 @@ namespace HealthCare_Appointment_Portal.Utilities
 
         public const string DateOfBirthCannotBeFuture = "Date Of Birth cannot be in the future.";
 
+        public const string DateOfBirthYearMustBe1900OrLater = "Date of birth year must be 1900 or later.";
+
         public const string GenderRequired = "Gender is required.";
 
         public const string PhoneNumberRequired = "Phone Number is required.";

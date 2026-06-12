@@ -63,11 +63,14 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 .Where(
                     d => d.IsActive);
 
-            ViewBag.Doctors =
-                new SelectList(
-                    doctors,
-                    "DoctorId",
-                    "FullName");
+            ViewBag.Doctors = new SelectList(
+                doctors.Select(d => new
+                {
+                     DoctorId = d.DoctorId,
+                     DisplayText = d.FullName + " (" + d.Specialisation + ")"
+                }),
+                "DoctorId",
+                "DisplayText");
         }
 
         #endregion

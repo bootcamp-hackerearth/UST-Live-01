@@ -223,26 +223,19 @@ namespace HealthCare_Appointment_Portal.Controllers
 
         [HttpPut]
         [Route("{id:int}/cancel")]
-        public async Task<IHttpActionResult>
-            CancelAppointment(
-                int id,
-                [FromBody]
-                string reason)
+        public async Task<IHttpActionResult> CancelAppointment(
+            int id,
+            [FromUri] string reason)
         {
             try
             {
-                await _appointmentService
-                    .CancelAppointmentAsync(
-                        id,
-                        reason);
+                await _appointmentService.CancelAppointmentAsync(id, reason);
 
-                return Ok(
-                    "Appointment cancelled successfully.");
+                return Ok("Appointment cancelled successfully.");
             }
             catch (Exception ex)
             {
-                return BadRequest(
-                    ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 

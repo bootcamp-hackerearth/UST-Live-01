@@ -83,6 +83,8 @@
                             {
                                 @class = "form-control",
                                 type = "date"
+                                min = "1900-01-01",
+                                max = DateTime.Today.ToString("yyyy-MM-dd")
                             })
 
                         @Html.ValidationMessageFor(

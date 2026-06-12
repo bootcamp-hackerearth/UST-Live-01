@@ -218,20 +218,29 @@ else
 
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(
-                Model.CancellationReason))
+            @* Show Cancellation Reason only for Cancelled appointments *@
+            @if (Model.Status.ToString() == "Cancelled")
             {
-                <div class="col-12">
+                <div class="col-md-12">
 
-                    <div class="alert alert-danger mb-0">
+                    <div class="detail-card">
 
-                        <strong>
-                            Cancellation Reason:
-                        </strong>
+                        <div class="detail-label">
+                            Cancellation Reason
+                        </div>
 
-                        <br />
+                        <div class="detail-value text-danger">
 
-                        @Model.CancellationReason
+                            @if (string.IsNullOrWhiteSpace(Model.CancellationReason))
+                            {
+                                <span>No cancellation reason provided.</span>
+                            }
+                            else
+                            {
+                                @Model.CancellationReason
+                            }
+
+                        </div>
 
                     </div>
 

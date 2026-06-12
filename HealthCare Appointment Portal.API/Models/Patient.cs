@@ -72,6 +72,11 @@ namespace HealthCare_Appointment_Portal.Models
             DateTime date,
             ValidationContext context)
         {
+            if (date.Year < 1900)
+            {
+                return new ValidationResult(
+                    Constants.DateOfBirthYearMustBe1900OrLater);
+            }
 
             if (date > DateTime.Today)
             {

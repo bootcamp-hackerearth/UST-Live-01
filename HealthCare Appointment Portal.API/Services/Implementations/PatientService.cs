@@ -191,14 +191,9 @@ namespace HealthCare_Appointment_Portal.Services
                 .SaveChangesAsync();
         }
 
-        public async Task
-            DeletePatientAsync(
-                int patientId)
+        public async Task DeletePatientAsync(int patientId)
         {
-            var patient =
-                await _patientRepository
-                    .GetByIdAsync(
-                        patientId);
+            var patient = await _patientRepository.GetByIdAsync(patientId);
 
             if (patient == null)
             {
@@ -206,26 +201,19 @@ namespace HealthCare_Appointment_Portal.Services
             }
 
             var appointments =
-                await _appointmentRepository
-                    .GetAppointmentsByPatientAsync(
-                        patientId);
+                await _appointmentRepository.GetAppointmentsByPatientAsync(patientId);
 
             bool hasConfirmedAppointments =
-                appointments.Any(a =>
-                    a.Status ==
-                    AppointmentStatus.Confirmed);
+                appointments.Any(a => a.Status == AppointmentStatus.Confirmed);
 
             if (hasConfirmedAppointments)
             {
                 throw new PatientDeletionException();
             }
 
-            await _patientRepository
-                .DeleteAsync(
-                    patientId);
+            await _patientRepository.DeleteAsync(patientId);
 
-            await _context
-                .SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<PatientDto>>

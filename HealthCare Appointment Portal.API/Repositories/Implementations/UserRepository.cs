@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using HealthCare_Appointment_Portal.Enums;
 using HealthCare_Appointment_Portal.Data;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
@@ -85,6 +86,14 @@ namespace HealthCare_Appointment_Portal.Repositories
             return _context.Users
                 .FirstOrDefault(u =>
                     u.UserCode == userCode);
+        }
+        public async Task<User> GetByReferenceIdAsync(
+             int referenceId,
+             Role role)
+        {
+            return await _context.Users.FirstOrDefaultAsync(
+                u => u.ReferenceId == referenceId
+                  && u.Role == role);
         }
     }
 }

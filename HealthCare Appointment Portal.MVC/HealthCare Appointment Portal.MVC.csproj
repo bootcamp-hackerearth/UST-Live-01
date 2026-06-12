@@ -260,6 +260,7 @@
     <Content Include="Views\DashboardSelection\Index.cshtml" />
     <Content Include="Views\DashboardSelection\Patient.cshtml" />
     <Content Include="Views\DashboardSelection\Doctor.cshtml" />
+    <Content Include="Views\Doctor\_DoctorForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

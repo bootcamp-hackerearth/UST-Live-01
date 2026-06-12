@@ -1,6 +1,7 @@
 ﻿using HealthCare_Appointment_Portal.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HealthCare_Appointment_Portal.Enums;
 
 namespace HealthCare_Appointment_Portal.Interfaces
 {
@@ -26,5 +27,8 @@ namespace HealthCare_Appointment_Portal.Interfaces
 
         User GetByUserCode(
             string userCode);
+        Task<User> GetByReferenceIdAsync(
+            int referenceId,
+            Role role);
     }
 }

@@ -5,7 +5,6 @@
 }
 
 <style>
-
     .container {
         max-width: 1450px;
     }
@@ -27,7 +26,8 @@
         border: none;
         border-radius: 28px;
         overflow: hidden;
-        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+        box-shadow: 0 20px 40px rgba(15,23,42,.08),
+                    0 8px 16px rgba(15,23,42,.05);
     }
 
     .search-header {
@@ -36,9 +36,6 @@
         padding: 18px 28px;
         font-size: 1.1rem;
         font-weight: 700;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
     }
 
     .search-card .card-body {
@@ -50,145 +47,19 @@
         height: 50px;
         border-radius: 14px;
         border: 1px solid #dbe2ea;
-        font-size: 14px;
     }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 .2rem rgba(37,99,235,.12);
-        }
 
     .table-card {
         border: none;
         border-radius: 28px;
         overflow: hidden;
-        box-shadow: 0 20px 40px rgba(15,23,42,.08), 0 8px 16px rgba(15,23,42,.05);
+        box-shadow: 0 20px 40px rgba(15,23,42,.08),
+                    0 8px 16px rgba(15,23,42,.05);
     }
-
-    .appointment-table {
-        margin-bottom: 0;
-    }
-
-        .appointment-table thead th {
-            background: #0f172a;
-            color: white;
-            border: none;
-            padding: 16px;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: .3px;
-        }
-
-        .appointment-table tbody td {
-            padding: 16px;
-            vertical-align: middle;
-            border-color: #eef2f7;
-        }
-
-        .appointment-table tbody tr {
-            transition: all .2s ease;
-        }
-
-            .appointment-table tbody tr:hover {
-                background: #f8fbff;
-            }
-
-    .doctor-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg,#2563eb,#1d4ed8);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        margin-right: 12px;
-        box-shadow: 0 4px 12px rgba(37,99,235,.25);
-    }
-
-    .status-pill {
-        padding: 8px 14px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-        min-width: 95px;
-    }
-
-    .view-btn {
-        border-radius: 999px;
-        padding: 8px 18px;
-        font-weight: 600;
-    }
-
-    .pagination {
-        margin-top: 25px;
-    }
-
-        .pagination .page-item {
-            margin: 0 4px;
-        }
-
-        .pagination .page-link {
-            background: transparent;
-            border: 1px solid #dbe2ea;
-            color: #2563eb;
-            box-shadow: none;
-        }
-
-
-    .pagination-pill {
-        border-radius: 999px !important;
-        padding: 10px 20px;
-        font-weight: 600;
-        min-width: 100px;
-        text-align: center;
-        background: transparent !important;
-    }
-
-    .page-number {
-        border-radius: 999px !important;
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: transparent !important;
-    }
-
-    .pagination .active .page-link {
-        background: #2563eb !important;
-        border-color: #2563eb;
-        color: white !important;
-    }
-
-    .pagination .page-link:hover {
-        background: #2563eb !important;
-        border-color: #2563eb;
-        color: white !important;
-    }
-
-    .modal-content {
-        border: none;
-        border-radius: 24px;
-        overflow: hidden;
-    }
-
-    .modal-header {
-        background: #0f172a;
-        color: white;
-    }
-
-        .modal-header .btn-close {
-            filter: invert(1);
-        }
 
     .book-btn {
         border-radius: 999px;
         padding: 12px 28px;
-        font-weight: 600;
-        box-shadow: 0 8px 20px rgba(37,99,235,.25);
     }
 
     .search-btn,
@@ -202,15 +73,66 @@
         justify-content: center;
     }
 
-    .search-btn {
-        background: #2563eb;
-        border-color: #2563eb;
-    }
+    .appointment-table {
+    margin-bottom: 0;
+}
 
-    .reset-btn {
-        min-width: 100px;
-    }
+.appointment-table thead th {
+    background: #0f172a;
+    color: white;
+    border: none;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: .3px;
+}
 
+.appointment-table tbody td {
+    padding: 16px;
+    vertical-align: middle;
+    border-color: #eef2f7;
+}
+
+.appointment-table tbody tr {
+    transition: all .2s ease;
+}
+
+.appointment-table tbody tr:hover {
+    background: #f8fbff;
+}
+
+.doctor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 12px;
+    box-shadow: 0 4px 12px rgba(37,99,235,.25);
+}
+
+.status-pill {
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    min-width: 95px;
+}
+
+.view-btn {
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-weight: 600;
+}
+.cancel-btn {
+    border-radius: 999px !important;
+    padding: 8px 18px;
+    font-weight: 600;
+}
 </style>
 
 <div class="container py-4">
@@ -231,24 +153,18 @@
 
         <div class="d-flex gap-2">
 
-            <a href="@Url.Action(
-                "Dashboard",
-                "Patient")"
+            <a href="@Url.Action("Dashboard", "Patient")"
                class="btn btn-outline-secondary book-btn">
 
                 <i class="bi bi-arrow-left me-2"></i>
-
                 Back
 
             </a>
 
-            <a href="@Url.Action(
-                "Create",
-                "Appointment")"
+            <a href="@Url.Action("Create", "Appointment")"
                class="btn btn-primary book-btn">
 
                 <i class="bi bi-plus-circle me-2"></i>
-
                 Book Appointment
 
             </a>
@@ -289,13 +205,9 @@
 
         <div class="search-header">
 
-            <div>
+            <i class="bi bi-search me-2"></i>
 
-                <i class="bi bi-search me-2"></i>
-
-                Search Appointments
-
-            </div>
+            Search Appointments
 
         </div>
 
@@ -305,7 +217,7 @@
 
                 <div class="row g-3">
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-2">
 
                         <input type="text"
                                name="appointmentId"
@@ -315,7 +227,7 @@
 
                     </div>
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-2">
 
                         <input type="text"
                                name="doctor"
@@ -325,14 +237,12 @@
 
                     </div>
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-2">
 
                         <select name="date"
                                 class="form-select">
 
-                            <option value="">
-                                Date
-                            </option>
+                            <option value="">Date</option>
 
                             @foreach (DateTime appointmentDate in ViewBag.Dates)
                             {
@@ -351,14 +261,12 @@
 
                     </div>
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-2">
 
                         <select name="timeSlot"
                                 class="form-select">
 
-                            <option value="">
-                                Time Slot
-                            </option>
+                            <option value="">Time Slot</option>
 
                             @foreach (SelectListItem slot in ViewBag.TimeSlots)
                             {
@@ -374,32 +282,30 @@
 
                     </div>
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-2">
 
                         <select name="status"
                                 class="form-select">
 
-                            <option value="">
-                                Status
-                            </option>
+                            <option value="">Status</option>
 
                             <option value="Pending"
-                                    @(ViewBag.Status == "Pending" ? "selected" : "")>
+                                @(ViewBag.Status == "Pending" ? "selected" : "")>
                                 Pending
                             </option>
 
                             <option value="Confirmed"
-                                    @(ViewBag.Status == "Confirmed" ? "selected" : "")>
+                                @(ViewBag.Status == "Confirmed" ? "selected" : "")>
                                 Confirmed
                             </option>
 
                             <option value="Completed"
-                                    @(ViewBag.Status == "Completed" ? "selected" : "")>
+                                @(ViewBag.Status == "Completed" ? "selected" : "")>
                                 Completed
                             </option>
 
                             <option value="Cancelled"
-                                    @(ViewBag.Status == "Cancelled" ? "selected" : "")>
+                                @(ViewBag.Status == "Cancelled" ? "selected" : "")>
                                 Cancelled
                             </option>
 
@@ -407,9 +313,9 @@
 
                     </div>
 
-                    <div class="col-lg-2 col-md-4">
+                    <div class="col-lg-2">
 
-                        <div class="d-flex align-items-center gap-2 h-100">
+                        <div class="d-flex gap-2">
 
                             <button type="submit"
                                     class="btn btn-primary search-btn">
@@ -418,7 +324,7 @@
 
                             </button>
 
-                            <a href="@Url.Action("MyAppointments","Appointment")"
+                            <a href="@Url.Action("MyAppointments", "Appointment")"
                                class="btn btn-outline-secondary reset-btn">
 
                                 Reset
@@ -436,8 +342,7 @@
         </div>
 
     </div>
-
-    <div class="card table-card">
+        <div class="card table-card">
 
         <div class="card-body">
 
@@ -462,15 +367,10 @@
                         <tr>
 
                             <th>Appointment Id</th>
-
                             <th>Doctor</th>
-
                             <th>Date</th>
-
                             <th>Time Slot</th>
-
                             <th>Status</th>
-
                             <th>Actions</th>
 
                         </tr>
@@ -499,9 +399,13 @@
                                 <tr>
 
                                     <td>
+
                                         <strong>
+
                                             #@appointment.AppointmentId
+
                                         </strong>
+
                                     </td>
 
                                     <td>
@@ -510,9 +414,12 @@
 
                                             <div class="doctor-avatar">
 
-                                                @(string.IsNullOrWhiteSpace(appointment.DoctorName)
+                                                @(string.IsNullOrWhiteSpace(
+                                                    appointment.DoctorName)
                                                     ? "?"
-                                                    : appointment.DoctorName.Substring(0, 1).ToUpper())
+                                                    : appointment.DoctorName
+                                                        .Substring(0, 1)
+                                                        .ToUpper())
 
                                             </div>
 
@@ -526,11 +433,15 @@
                                     </td>
 
                                     <td>
+
                                         @appointment.ScheduledDate.ToString("dd MMM yyyy")
+
                                     </td>
 
                                     <td>
+
                                         @appointment.TimeSlot
+
                                     </td>
 
                                     <td>
@@ -538,23 +449,33 @@
                                         @switch (appointment.Status.ToString())
                                         {
                                             case "Pending":
-                                                <span class="badge bg-warning text-dark status-pill">Pending</span>
+                                                <span class="badge bg-warning text-dark status-pill">
+                                                    Pending
+                                                </span>
                                                 break;
 
                                             case "Confirmed":
-                                                <span class="badge bg-success status-pill">Confirmed</span>
-                                                break;
-
-                                            case "Cancelled":
-                                                <span class="badge bg-danger status-pill">Cancelled</span>
+                                                <span class="badge bg-success status-pill">
+                                                    Confirmed
+                                                </span>
                                                 break;
 
                                             case "Completed":
-                                                <span class="badge bg-primary status-pill">Completed</span>
+                                                <span class="badge bg-primary status-pill">
+                                                    Completed
+                                                </span>
+                                                break;
+
+                                            case "Cancelled":
+                                                <span class="badge bg-danger status-pill">
+                                                    Cancelled
+                                                </span>
                                                 break;
 
                                             default:
-                                                <span class="badge bg-secondary status-pill">@appointment.Status</span>
+                                                <span class="badge bg-secondary status-pill">
+                                                    @appointment.Status
+                                                </span>
                                                 break;
                                         }
 
@@ -562,15 +483,33 @@
 
                                     <td>
 
-                                        <button type="button"
-                                                class="btn btn-outline-primary btn-sm view-btn"
-                                                data-id="@appointment.AppointmentId">
+                                        <div class="d-flex gap-2">
 
-                                            <i class="bi bi-eye me-1"></i>
+                                            <button type="button"
+                                                    class="btn btn-outline-primary btn-sm view-btn"
+                                                    data-id="@appointment.AppointmentId">
 
-                                            View
+                                                <i class="bi bi-eye me-1"></i>
 
-                                        </button>
+                                                View
+
+                                            </button>
+
+                                            @if (appointment.Status.ToString() == "Pending"
+                                                || appointment.Status.ToString() == "Confirmed")
+                                            {
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-sm cancel-btn"
+                                                        data-id="@appointment.AppointmentId">
+
+                                                    <i class="bi bi-x-circle me-1"></i>
+
+                                                    Cancel
+
+                                                </button>
+                                            }
+
+                                        </div>
 
                                     </td>
 
@@ -583,8 +522,7 @@
                 </table>
 
             </div>
-
-            @if (ViewBag.TotalPages > 1)
+                        @if (ViewBag.TotalPages > 1)
             {
                 <nav class="mt-4">
 
@@ -597,16 +535,16 @@
 
                                 <a class="page-link pagination-pill"
                                    href="@Url.Action(
-                            "MyAppointments",
-                            new
-                            {
-                                page = ViewBag.CurrentPage - 1,
-                                appointmentId = ViewBag.AppointmentId,
-                                doctor = ViewBag.Doctor,
-                                date = ViewBag.Date,
-                                timeSlot = ViewBag.TimeSlot,
-                                status = ViewBag.Status
-                            })">
+                                        "MyAppointments",
+                                        new
+                                        {
+                                            page = ViewBag.CurrentPage - 1,
+                                            appointmentId = ViewBag.AppointmentId,
+                                            doctor = ViewBag.Doctor,
+                                            date = ViewBag.Date,
+                                            timeSlot = ViewBag.TimeSlot,
+                                            status = ViewBag.Status
+                                        })">
 
                                     <i class="bi bi-chevron-left me-1"></i>
 
@@ -624,16 +562,16 @@
 
                                 <a class="page-link page-number"
                                    href="@Url.Action(
-                            "MyAppointments",
-                            new
-                            {
-                                page = i,
-                                appointmentId = ViewBag.AppointmentId,
-                                doctor = ViewBag.Doctor,
-                                date = ViewBag.Date,
-                                timeSlot = ViewBag.TimeSlot,
-                                status = ViewBag.Status
-                            })">
+                                        "MyAppointments",
+                                        new
+                                        {
+                                            page = i,
+                                            appointmentId = ViewBag.AppointmentId,
+                                            doctor = ViewBag.Doctor,
+                                            date = ViewBag.Date,
+                                            timeSlot = ViewBag.TimeSlot,
+                                            status = ViewBag.Status
+                                        })">
 
                                     @i
 
@@ -649,16 +587,16 @@
 
                                 <a class="page-link pagination-pill"
                                    href="@Url.Action(
-                            "MyAppointments",
-                            new
-                            {
-                                page = ViewBag.CurrentPage + 1,
-                                appointmentId = ViewBag.AppointmentId,
-                                doctor = ViewBag.Doctor,
-                                date = ViewBag.Date,
-                                timeSlot = ViewBag.TimeSlot,
-                                status = ViewBag.Status
-                            })">
+                                        "MyAppointments",
+                                        new
+                                        {
+                                            page = ViewBag.CurrentPage + 1,
+                                            appointmentId = ViewBag.AppointmentId,
+                                            doctor = ViewBag.Doctor,
+                                            date = ViewBag.Date,
+                                            timeSlot = ViewBag.TimeSlot,
+                                            status = ViewBag.Status
+                                        })">
 
                                     Next
 
@@ -714,59 +652,98 @@
 
 </div>
 
+@Html.AntiForgeryToken()
 @section Scripts
 {
     <script>
 
         $(document).ready(function () {
 
-            $(document).on(
-                "click",
-                ".view-btn",
-                function () {
+            // ============================
+            // View Appointment Details
+            // ============================
+            $(document).on("click", ".view-btn", function () {
 
-                    var id =
-                        $(this).data("id");
+                let id = $(this).data("id");
 
-                    $.ajax({
+                $.get(
+                    '@Url.Action("GetDetailsModal", "Appointment")',
+                    { id: id },
+                    function (response) {
 
-                        url:
-                            '@Url.Action("GetDetailsModal", "Appointment")',
+                        $("#appointmentContent").html(response);
 
-                        type:
-                            "GET",
-
-                        data:
-                        {
-                            id: id
-                        },
-
-                        success:
-                            function (response) {
-
-                                $("#appointmentContent")
-                                    .html(response);
-
-                                var modal =
-                                    new bootstrap.Modal(
-                                        document.getElementById(
-                                            "appointmentModal"));
-
-                                modal.show();
-                            },
-
-                        error:
-                            function (xhr) {
-
-                                console.log(xhr);
-
-                                alert(
-                                    "Failed to load appointment details.");
-                            }
+                        new bootstrap.Modal(
+                            document.getElementById("appointmentModal")
+                        ).show();
 
                     });
 
-                });
+            });
+
+            // ============================
+            // Open Cancel Modal
+            // ============================
+            $(document).on("click", ".cancel-btn", function () {
+
+                let id = $(this).data("id");
+
+                $.get(
+                    '@Url.Action("CancelModal", "Appointment")',
+                    { id: id },
+                    function (response) {
+
+                        $("#appointmentContent").html(response);
+
+                        new bootstrap.Modal(
+                            document.getElementById("appointmentModal")
+                        ).show();
+
+                    });
+
+            });
+
+            // ============================
+            // Cancel Appointment
+            // ============================
+            $(document).on("click", "#cancelAppointmentBtn", function () {
+
+                let id = $(this).data("id");
+                let reason = $("#cancelReason").val();
+
+                if (!reason || reason.trim() === "") {
+
+                    $("#reasonValidation").removeClass("d-none");
+                    return;
+
+                }
+
+                $("#reasonValidation").addClass("d-none");
+
+                $.post(
+                    '@Url.Action("CancelAppointment", "Appointment")',
+                    {
+                        __RequestVerificationToken:
+                            $('input[name="__RequestVerificationToken"]').val(),
+
+                        id: id,
+                        reason: reason
+                    },
+                    function (response) {
+
+                        if (response.success) {
+
+                            location.reload();
+
+                        } else {
+
+                            alert(response.message);
+
+                        }
+
+                    });
+
+            });
 
         });
 
