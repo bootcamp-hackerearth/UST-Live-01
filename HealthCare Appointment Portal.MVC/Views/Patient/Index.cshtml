@@ -8,17 +8,31 @@
 
 <div class="container-fluid">
 
-    <!-- HEADER -->
+    <!-- ✅ HEADER -->
     <div class="d-flex justify-content-between align-items-center mb-4">
+
         <h2 class="fw-bold">Patient Management</h2>
 
-        <a href="@Url.Action("Create", "Patient")"
-           class="btn btn-success">
-            <i class="fas fa-plus"></i> Add Patient
-        </a>
+        <div class="d-flex align-items-center gap-2">
+
+            <!-- ✅ Search Box -->
+            <input type="text"
+                   id="searchInput"
+                   class="form-control"
+                   placeholder="Search ID, Name, Email"
+                   style="width: 230px;"
+                   onkeyup="filterTable()" />
+
+            <!-- ✅ Add Patient Button (UNCHANGED) -->
+            <a href="@Url.Action("Create", "Patient")"
+               class="btn btn-success">
+                <i class="fas fa-plus"></i> Add Patient
+            </a>
+
+        </div>
     </div>
 
-    <!-- TABLE -->
+    <!-- ✅ TABLE -->
     <div class="card shadow-sm">
         <div class="card-body">
 
@@ -36,7 +50,8 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <!-- ✅ IMPORTANT: Added ID -->
+                <tbody id="patientTable">
 
                     @if (Model != null && Model.Any())
                     {
@@ -51,7 +66,6 @@
                                 <td>@patient.AppointmentCount</td>
 
                                 <td>
-
                                     <button class="btn btn-info btn-sm"
                                             onclick="loadPatientDetails(@patient.PatientId)">
                                         View
@@ -61,7 +75,6 @@
                                        class="btn btn-warning btn-sm">
                                         Edit
                                     </a>
-
                                 </td>
                             </tr>
                         }
@@ -105,9 +118,7 @@
     <script>
 
         function loadPatientDetails(id) {
-
             $.get('/Patient/Details/' + id, function (data) {
-
                 $('#patientModalContent').html(data);
 
                 var modal = new bootstrap.Modal(
@@ -116,15 +127,12 @@
 
                 modal.show();
             });
-
         }
 
         function loadPatientEdit(id) {
-
             alert("Patient Id = " + id);
 
             $.get('/Patient/Edit/' + id)
-
                 .done(function (data) {
 
                     alert("Data received from controller");
@@ -137,13 +145,28 @@
 
                     modal.show();
                 })
-
                 .fail(function (xhr) {
-
                     alert("ERROR: " + xhr.status);
-
                     console.log(xhr.responseText);
                 });
+        }
+
+        // ✅ ✅ SEARCH FUNCTION (SAFE ADDITION)
+        function filterTable() {
+            let input = document.getElementById("searchInput").value.toLowerCase();
+            let rows = document.querySelectorAll("#patientTable tr");
+
+            rows.forEach(row => {
+                let id = row.cells[0].innerText.toLowerCase();
+                let name = row.cells[1].innerText.toLowerCase();
+                let email = row.cells[3].innerText.toLowerCase();
+
+                if (id.includes(input) || name.includes(input) || email.includes(input)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
         }
 
     </script>

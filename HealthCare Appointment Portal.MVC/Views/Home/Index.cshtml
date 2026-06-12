@@ -4,233 +4,216 @@
     ViewBag.Title = "Home";
 }
 
+<style>
+    /* ✅ UPDATED PROFESSIONAL BACKGROUND */
+    body {
+        background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+        background-attachment: fixed;
+    }
+
+    .card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+    .main-title {
+        font-size: 42px;
+    }
+
+    .sub-title {
+        font-size: 18px;
+    }
+
+    /* ✅ STAT CARD STYLE */
+    .stat-card {
+        border-top: 5px solid;
+        background-color: #ffffff;
+        padding-top: 10px;
+    }
+
+    .stat-patient {
+        border-color: #2563EB;
+    }
+
+    .stat-doctor {
+        border-color: #16A34A;
+    }
+
+    .stat-appointment {
+        border-color: #F59E0B;
+    }
+
+    .stat-record {
+        border-color: #DC2626;
+    }
+
+    /* ✅ ICON CIRCLE */
+    .icon-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        margin: 0 auto 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bg-patient {
+        background-color: rgba(37, 99, 235, 0.1);
+    }
+
+    .bg-doctor {
+        background-color: rgba(22, 163, 74, 0.1);
+    }
+
+    .bg-appointment {
+        background-color: rgba(245, 158, 11, 0.1);
+    }
+
+    .bg-record {
+        background-color: rgba(220, 38, 38, 0.1);
+    }
+
+    /* ✅ NUMBER STYLE */
+    .stat-card h2 {
+        font-size: 32px;
+        margin-bottom: 0;
+    }
+</style>
+
 <div class="container py-5">
 
-    <!-- HERO SECTION -->
-
+    <!-- ✅ HERO -->
     <div class="text-center mb-5">
 
-        <h1 class="display-4 fw-bold text-primary">
+        <h1 class="fw-bold text-primary main-title">
             Healthcare Management System
         </h1>
 
-        <p class="lead text-muted">
-            Manage Patients, Doctors, Appointments and Health Records
+        <p class="text-muted sub-title mt-2">
+            Manage Patients, Doctors, Appointments and Health Records efficiently
         </p>
 
     </div>
 
-    
-    <!-- DASHBOARD STATS -->
-
+    <!-- ✅ TOP STATS -->
     <div class="row text-center mb-5">
 
-        <!-- TOTAL PATIENTS -->
-
+        <!-- PATIENT -->
         <div class="col-md-3 mb-4">
+            <div class="card stat-card stat-patient h-100">
+                <div class="card-body pt-3">
 
-            <div class="card shadow-sm border-0 h-100">
+                    <div class="icon-circle bg-patient">
+                        <i class="fas fa-users text-primary"></i>
+                    </div>
 
-                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Patients</p>
 
-                    <i class="fas fa-users fa-2x text-primary mb-3"></i>
-
-                    <h2 class="fw-bold">
-                        @Model.TotalPatients
-                    </h2>
-
-                    <p class="text-muted mb-0">
-                        Total Patients
-                    </p>
+                    <h2 class="fw-bold">@Model.TotalPatients</h2>
 
                 </div>
-
             </div>
-
         </div>
 
-        <!-- TOTAL DOCTORS -->
-
+        <!-- DOCTOR -->
         <div class="col-md-3 mb-4">
+            <div class="card stat-card stat-doctor h-100">
+                <div class="card-body pt-3">
 
-            <div class="card shadow-sm border-0 h-100">
+                    <div class="icon-circle bg-doctor">
+                        <i class="fas fa-user-doctor text-success"></i>
+                    </div>
 
-                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Doctors</p>
 
-                    <i class="fas fa-user-doctor fa-2x text-success mb-3"></i>
-
-                    <h2 class="fw-bold">
-                        @Model.TotalDoctors
-                    </h2>
-
-                    <p class="text-muted mb-0">
-                        Total Doctors
-                    </p>
+                    <h2 class="fw-bold">@Model.TotalDoctors</h2>
 
                 </div>
-
             </div>
-
         </div>
 
-        <!-- TOTAL APPOINTMENTS -->
-
+        <!-- APPOINTMENT -->
         <div class="col-md-3 mb-4">
+            <div class="card stat-card stat-appointment h-100">
+                <div class="card-body pt-3">
 
-            <div class="card shadow-sm border-0 h-100">
+                    <div class="icon-circle bg-appointment">
+                        <i class="fas fa-calendar-check text-warning"></i>
+                    </div>
 
-                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Appointments</p>
 
-                    <i class="fas fa-calendar-check fa-2x text-warning mb-3"></i>
-
-                    <h2 class="fw-bold">
-                        @Model.TotalAppointments
-                    </h2>
-
-                    <p class="text-muted mb-0">
-                        Total Appointments
-                    </p>
+                    <h2 class="fw-bold">@Model.TotalAppointments</h2>
 
                 </div>
-
             </div>
-
         </div>
 
-        <!-- TOTAL HEALTH RECORDS -->
-
+        <!-- RECORD -->
         <div class="col-md-3 mb-4">
+            <div class="card stat-card stat-record h-100">
+                <div class="card-body pt-3">
 
-            <div class="card shadow-sm border-0 h-100">
+                    <div class="icon-circle bg-record">
+                        <i class="fas fa-file-medical text-danger"></i>
+                    </div>
 
-                <div class="card-body">
+                    <p class="text-muted small text-uppercase mb-1">Records</p>
 
-                    <i class="fas fa-file-medical fa-2x text-danger mb-3"></i>
-
-                    <h2 class="fw-bold">
-                        @Model.TotalHealthRecords
-                    </h2>
-
-                    <p class="text-muted mb-0">
-                        Health Records
-                    </p>
+                    <h2 class="fw-bold">@Model.TotalHealthRecords</h2>
 
                 </div>
-
             </div>
-
         </div>
 
     </div>
 
-    <!-- MODULE CARDS -->
-
+    <!-- ✅ MODULE CARDS -->
     <div class="row">
 
-        <!-- PATIENT CARD -->
-
         <div class="col-md-3 mb-4">
-
-            <div class="card p-4 text-center h-100 shadow border-0">
-
+            <div class="card p-4 text-center h-100 shadow-sm border-0">
                 <i class="fas fa-users fa-3x text-primary mb-3"></i>
-
-                <h4>
-                    Patients
-                </h4>
-
-                <p class="text-muted">
-                    Manage patient details
-                </p>
-
-                <a href="@Url.Action("Index", "Patient")"
-                   class="btn btn-primary">
-
-                    Open
-
-                </a>
-
+                <h4 class="fw-semibold">Patients</h4>
+                <p class="text-muted">Manage patient details</p>
+                <a href="@Url.Action("Index", "Patient")" class="btn btn-primary">Open</a>
             </div>
-
         </div>
 
-        <!-- DOCTOR CARD -->
-
         <div class="col-md-3 mb-4">
-
-            <div class="card p-4 text-center h-100 shadow border-0">
-
+            <div class="card p-4 text-center h-100 shadow-sm border-0">
                 <i class="fas fa-user-doctor fa-3x text-success mb-3"></i>
-
-                <h4>
-                    Doctors
-                </h4>
-
-                <p class="text-muted">
-                    View doctor information
-                </p>
-
-                <a href="@Url.Action("Index", "Doctor")"
-                   class="btn btn-success">
-
-                    Open
-
-                </a>
-
+                <h4 class="fw-semibold">Doctors</h4>
+                <p class="text-muted">View doctor information</p>
+                <a href="@Url.Action("Index", "Doctor")" class="btn btn-success">Open</a>
             </div>
-
         </div>
 
-        <!-- APPOINTMENT CARD -->
-
         <div class="col-md-3 mb-4">
-
-            <div class="card p-4 text-center h-100 shadow border-0">
-
+            <div class="card p-4 text-center h-100 shadow-sm border-0">
                 <i class="fas fa-calendar-check fa-3x text-warning mb-3"></i>
-
-                <h4>
-                    Appointments
-                </h4>
-
-                <p class="text-muted">
-                    Schedule appointments
-                </p>
-
-                <a href="@Url.Action("Index", "Appointment")"
-                   class="btn btn-warning text-white">
-
-                    Open
-
-                </a>
-
+                <h4 class="fw-semibold">Appointments</h4>
+                <p class="text-muted">Schedule appointments</p>
+                <a href="@Url.Action("Index", "Appointment")" class="btn btn-warning text-white">Open</a>
             </div>
-
         </div>
-
-        <!-- HEALTH RECORD CARD -->
 
         <div class="col-md-3 mb-4">
-
-            <div class="card p-4 text-center h-100 shadow border-0">
-
+            <div class="card p-4 text-center h-100 shadow-sm border-0">
                 <i class="fas fa-file-medical fa-3x text-danger mb-3"></i>
-
-                <h4>
-                    Health Records
-                </h4>
-
-                <p class="text-muted">
-                    Access medical history
-                </p>
-
-                <a href="@Url.Action("Index", "HealthRecord")"
-                   class="btn btn-danger">
-
-                    Open
-
-                </a>
-
+                <h4 class="fw-semibold">Health Records</h4>
+                <p class="text-muted">Access medical history</p>
+                <a href="@Url.Action("Index", "HealthRecord")" class="btn btn-danger">Open</a>
             </div>
-
         </div>
+
+    </div>
+
+</div>
+``

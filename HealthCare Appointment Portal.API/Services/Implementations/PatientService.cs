@@ -84,11 +84,15 @@ namespace HealthCare_Appointment_Portal.Services
 
         public async Task<int>
             AddPatientAsync(
+
+
                 CreatePatientDto patientDto)
         {
             // ✅ FIX: Date Validation (VERY IMPORTANT)
-            if (patientDto.DateOfBirth.Year < 1900 ||
-                patientDto.DateOfBirth > DateTime.Today)
+
+            if (!patientDto.DateOfBirth.HasValue ||
+                patientDto.DateOfBirth.Value.Year < 1900 ||
+                patientDto.DateOfBirth.Value > DateTime.Today)
             {
                 throw new Exception(
                     "Invalid Date of Birth");
@@ -139,8 +143,9 @@ namespace HealthCare_Appointment_Portal.Services
                 UpdatePatientDto patientDto)
         {
             // ✅ FIX: Date Validation here also
-            if (patientDto.DateOfBirth.Year < 1900 ||
-                patientDto.DateOfBirth > DateTime.Today)
+            if (!patientDto.DateOfBirth.HasValue ||
+                patientDto.DateOfBirth.Value.Year < 1900 ||
+                patientDto.DateOfBirth.Value > DateTime.Today)
             {
                 throw new Exception(
                     "Invalid Date of Birth");
