@@ -11,13 +11,13 @@ namespace HealthAppWebAPI
     {
         public static void Register(HttpConfiguration config)
         {
-            
+            config.Services.Replace(
+                    typeof(IExceptionHandler),
+                    new GlobalExceptionHandler());
+
             config.MapHttpAttributeRoutes();
 
-            config.Services.Replace(
-                typeof(IExceptionHandler),
-                new GlobalExceptionHandler());
-
+            
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",

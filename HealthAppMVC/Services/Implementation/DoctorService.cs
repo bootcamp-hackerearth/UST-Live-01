@@ -61,8 +61,11 @@ public class DoctorService : IDoctorService
 
     public async Task ChangeDoctorStatusAsync(int doctorId, bool isActive)
     {
-        var response = await _httpClient.PostAsync(
-            $"doctors/{doctorId}/status?isActive={isActive}", null);
+        var request = new HttpRequestMessage(
+            new HttpMethod("PATCH"),
+            $"doctors/{doctorId}/status?isActive={isActive.ToString().ToLower()}");
+
+        var response = await _httpClient.SendAsync(request);
 
         if (!response.IsSuccessStatusCode)
         {

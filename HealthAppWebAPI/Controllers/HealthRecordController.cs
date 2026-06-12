@@ -46,21 +46,28 @@ namespace HealthAppWebAPI.Controllers
 
         [HttpPost]
         [Route("")]
-        public async Task<IHttpActionResult> Add(
-            CreateHealthRecordDto dto)
+        public async Task<IHttpActionResult> Add(CreateHealthRecordDto dto)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                await _service.AddAsync(dto);
+                return BadRequest(ModelState);
+            }
 
-                return Ok(
-                    "Health Record added successfully. Appointment completed.");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _service.AddAsync(dto);
+
+            return Ok("Health record added successfully.");
         }
+
+        [HttpGet]
+        [Route("healthrecords/patient/{patientId:int}")]
+        public async Task<IHttpActionResult> GetByPatient(int patientId)
+        {
+            var result = await _service.GetByPatientIdAsync(patientId);
+
+            return Ok(result);
+        }
+
+        
     }
 
 }

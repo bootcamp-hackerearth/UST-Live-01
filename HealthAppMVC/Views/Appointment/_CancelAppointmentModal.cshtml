@@ -1,0 +1,72 @@
+﻿@model HealthAppWebAPI.Models.Dtos.CancelAppointmentDto
+
+@using (Html.BeginForm(
+    "Cancel",
+    "Appointment",
+    new { id = ViewBag.AppointmentId },
+    FormMethod.Post,
+    new { onsubmit = "return submitAppointmentForm(this);" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="modal-header appointment-modal-header">
+        <h5 class="modal-title" id="appointmentModalLabel">
+            <i class="bi bi-x-circle"></i>
+            Cancel Appointment
+        </h5>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new { @class = "text-danger" })
+
+        <div class="form-group mb-3">
+
+            <label for="CancellationReason"
+                   class="form-label">
+                Cancellation Reason
+            </label>
+
+            @Html.TextAreaFor(
+                m => m.CancellationReason,
+                new
+                {
+                    @class = "form-control",
+                    rows = 4,
+                    placeholder = "Enter reason for cancellation"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.CancellationReason,
+                "",
+                new { @class = "text-danger" })
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button type="submit"
+                class="btn btn-danger btn-rounded">
+            <i class="bi bi-x-circle"></i>
+            Cancel Appointment
+        </button>
+
+        <button type="button"
+                class="btn btn-secondary btn-rounded"
+                data-bs-dismiss="modal">
+            Close
+        </button>
+
+    </div>
+}

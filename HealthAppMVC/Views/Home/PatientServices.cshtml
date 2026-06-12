@@ -2,195 +2,317 @@
     ViewBag.Title = "Patient Services";
 }
 
-<div class="container py-5">
+<div class="patient-services-page">
 
-    <div class="text-center mb-5">
-        <h2 class="fw-bold">
-            🧑 Patient Services
-        </h2>
+    <div class="container py-5">
 
+        <!-- Page Header -->
+        <div class="text-center page-header">
+            <h2 class="page-title">Patient Services</h2>
+            <p class="page-subtitle">
+                Manage patients, appointments, and health records from one place.
+            </p>
+        </div>
+
+        <!-- Success Message -->
         @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success">
+            <div class="alert alert-success text-center shadow-sm border-0 mb-4">
                 @TempData["Success"]
             </div>
         }
 
-        <p class="text-muted">
-            Manage patients, appointments and health records
-        </p>
-    </div>
+        <!-- Services Section -->
+        <div class="row g-4">
 
-    <div class="row g-4">
+            <!-- Add Patient -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
 
-        <!-- Add Patient -->
+                    <div class="service-icon icon-primary">
+                        <span>➕</span>
+                    </div>
 
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
+                    <h4>Add Patient</h4>
 
-                <div class="card-body text-center">
-
-                    <h1>Add Patient</h1>
-
-
-
-                    <p class="text-muted">
-                        Register a new patient.
+                    <p>
+                        Register a new patient and save their basic healthcare information.
                     </p>
 
-                    <a href="@Url.Action("Create","Patient")"
-                       class="btn btn-primary">
+                    <a href="@Url.Action("Create", "Patient")"
+                       class="btn btn-primary service-btn">
                         Open
                     </a>
 
                 </div>
             </div>
+
+            <!-- Edit Patient -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+
+                    <div class="service-icon icon-warning">
+                        <span>✎</span>
+                    </div>
+
+                    <h4>Edit Patient Details</h4>
+
+                    <p>
+                        Search and update existing patient personal or medical information.
+                    </p>
+
+                    <a href="@Url.Action("SearchPatient", "Patient")"
+                       class="btn btn-warning service-btn text-white">
+                        Open
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- View Patient -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+
+                    <div class="service-icon icon-info">
+                        <span>🔎</span>
+                    </div>
+
+                    <h4>View Patient Details</h4>
+
+                    <p>
+                        Search and view complete patient records and profile details.
+                    </p>
+
+                    <a href="@Url.Action("PatientSearch", "Patient")"
+                       class="btn btn-info service-btn text-white">
+                        Open
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- Book Appointment -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+
+                    <div class="service-icon icon-success">
+                        <span>📅</span>
+                    </div>
+
+                    <h4>Book Appointment</h4>
+
+                    <p>
+                        Schedule a patient appointment with an available doctor.
+                    </p>
+
+                    <a href="@Url.Action("BookAppointment", "Appointment")"
+                       class="btn btn-success service-btn">
+                        Open
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- Patient Health History -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+
+                    <div class="service-icon icon-secondary">
+                        <span>📋</span>
+                    </div>
+
+                    <h4>Patient Health History</h4>
+
+                    <p>
+                        View previous visits, medical history, and health record details.
+                    </p>
+
+                    <a href="@Url.Action("SearchPatientHistory", "HealthRecord")"
+                       class="btn btn-secondary service-btn">
+                        Open
+                    </a>
+
+                </div>
+            </div>
+
+            <!-- View Appointments -->
+            <div class="col-lg-4 col-md-6">
+                <div class="service-card">
+
+                    <div class="service-icon icon-dark">
+                        <span>🗓</span>
+                    </div>
+
+                    <h4>View Appointments</h4>
+
+                    <p>
+                        Search and view patient appointment details and schedules.
+                    </p>
+
+                    <a href="@Url.Action("ViewAppointments", "Appointment")"
+                       class="btn btn-dark service-btn">
+                        Open
+                    </a>
+
+                </div>
+            </div>
+
         </div>
 
-        <!-- Edit Patient -->
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h1>Edit Patient Details</h1>
-
-
-
-                    <p class="text-muted">
-                        Search and update patient information.
-                    </p>
-
-                    <a href="@Url.Action("SearchPatient","Patient")"
-                       class="btn btn-warning">
-                        Open
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- View Patient -->
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h1>🔍🧑</h1>
-
-                    <h5>View Patient Details</h5>
-
-                    <p class="text-muted">
-                        Search and view patient records.
-                    </p>
-
-                    <a href="@Url.Action("PatientSearch","Patient")"
-                       class="btn btn-info">
-                        Open
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- Book Appointment -->
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h1>📅</h1>
-
-                    <h5>Book Appointment</h5>
-
-                    <p class="text-muted">
-                        Schedule an appointment with a doctor.
-                    </p>
-
-                    <a href="@Url.Action("BookAppointment","Appointment")"
-                       class="btn btn-success">
-                        Open
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- Health History -->
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h1>📋</h1>
-
-                    <h5>Patient Health History</h5>
-
-                    <p class="text-muted">
-                        View previous visits and health records.
-                    </p>
-
-                    <a href="@Url.Action("SearchPatientHistory","HealthRecord")"
-                       class="btn btn-secondary">
-                        Open
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- View Appointments -->
-
-        <div class="col-md-4">
-            <div class="card h-100 shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h1>📆</h1>
-
-                    <h5>View Appointments</h5>
-
-                    <p class="text-muted">
-                        Search and view patient appointments.
-                    </p>
-
-                    <a href="@Url.Action("ViewAppointments","Appointment")"
-                       class="btn btn-dark">
-                        Open
-                    </a>
-
-                </div>
-            </div>
-        </div>
-
-        <!-- Home -->
-
-        <div class="col-md-4 mx-auto">
-            <div class="card h-100 shadow-sm">
-
-                <div class="card-body text-center">
-
-                    <h1>🏠</h1>
-
-                    <h5>Home</h5>
-
-                    <p class="text-muted">
-                        Return to main dashboard.
-                    </p>
-
-                    <a href="@Url.Action("Index","Home")"
-                       class="btn btn-outline-primary">
-                        Open
-                    </a>
-
-                </div>
-            </div>
+        <!-- Back Button -->
+        <div class="text-center mt-5">
+            <a href="@Url.Action("Index", "Home")"
+               class="btn btn-outline-primary back-btn">
+                Back to Home
+            </a>
         </div>
 
     </div>
 
 </div>
+
+<style>
+    body {
+        background-color: #f4f8fb;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .patient-services-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #eef7ff 0%, #f8fbff 100%);
+        padding: 20px 0;
+    }
+
+    .page-header {
+        margin-bottom: 45px;
+    }
+
+    .page-title {
+        font-size: 38px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+        font-size: 17px;
+        color: #6b7280;
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .service-card {
+        background-color: #ffffff;
+        border-radius: 22px;
+        padding: 35px 28px;
+        text-align: center;
+        height: 100%;
+        border: 1px solid #eef2f7;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease;
+    }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 42px rgba(0, 0, 0, 0.12);
+        }
+
+    .service-icon {
+        width: 78px;
+        height: 78px;
+        margin: 0 auto 22px;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 34px;
+        line-height: 1;
+    }
+
+        .service-icon span {
+            display: inline-block;
+            transform: translateY(-1px);
+        }
+
+    .icon-primary {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1d4ed8;
+    }
+
+    .icon-warning {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #b45309;
+    }
+
+    .icon-info {
+        background: linear-gradient(135deg, #cffafe, #a5f3fc);
+        color: #0e7490;
+    }
+
+    .icon-success {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #047857;
+    }
+
+    .icon-secondary {
+        background: linear-gradient(135deg, #e5e7eb, #cbd5e1);
+        color: #475569;
+    }
+
+    .icon-dark {
+        background: linear-gradient(135deg, #e5e7eb, #9ca3af);
+        color: #111827;
+    }
+
+    .service-card h4 {
+        font-size: 22px;
+        font-weight: 650;
+        color: #111827;
+        margin-bottom: 14px;
+    }
+
+    .service-card p {
+        font-size: 15px;
+        color: #6b7280;
+        line-height: 1.6;
+        min-height: 72px;
+        margin-bottom: 24px;
+    }
+
+    .service-btn {
+        border-radius: 30px;
+        padding: 10px 28px;
+        font-weight: 600;
+        border: none;
+        min-width: 120px;
+    }
+
+    .back-btn {
+        border-radius: 30px;
+        padding: 11px 32px;
+        font-weight: 600;
+    }
+
+    .alert {
+        border-radius: 14px;
+        font-weight: 500;
+    }
+
+    @@media (max-width: 768px) {
+        .page-title {
+            font-size: 30px;
+        }
+
+        .page-subtitle {
+            font-size: 15px;
+        }
+
+        .service-card {
+            padding: 30px 22px;
+        }
+
+            .service-card p {
+                min-height: auto;
+            }
+    }
+</style>

@@ -49,7 +49,9 @@ namespace HealthAppWebAPI.Services.Impl
             var appointment = await _appointmentRepo.GetByIdAsync(dto.AppointmentId);
 
             if (appointment == null)
+            {
                 throw new Exception("Appointment not found.");
+            }
 
             if (appointment.Status != AppointmentStatus.Confirmed.ToString())
             {
@@ -69,6 +71,10 @@ namespace HealthAppWebAPI.Services.Impl
             var record = new HealthRecord
             {
                 AppointmentId = dto.AppointmentId,
+
+                // Important fix
+                PatientId = appointment.PatientId,
+
                 VisitDate = DateTime.Now,
                 Diagnosis = dto.Diagnosis,
                 Prescription = dto.Prescription,
@@ -118,5 +124,19 @@ namespace HealthAppWebAPI.Services.Impl
                 })
                 .ToList();
         }
+        public async Task<List<HealthRecordDto>> GetByPatientIdAsync(int patientId)
+        {
+            var records = await _recordRepo.GetByPatientIdAsync(patientId);
+
+            return _mapper.Map<List<HealthRecordDto>>(records);
+        }
+
+        public async Task<bool> ExistsByAppointmentIdAsync(int appointmentId)
+        {
+            var record = await _recordRepo.GetByAppointmentIdAsync(appointmentId);
+
+            return record != null;
+        }
+
     }
 }

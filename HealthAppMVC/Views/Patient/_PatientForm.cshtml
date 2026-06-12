@@ -1,0 +1,114 @@
+﻿@model HealthAppWebAPI.Models.Dtos.CreatePatientDto
+@using HealthAppMVC.Models
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label for="FullName" class="form-label">Full Name</label>
+
+            @Html.TextBoxFor(
+                m => m.FullName,
+                new
+                {
+                    @class = "form-control",
+                    placeholder = "Enter patient full name"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.FullName,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label for="DateOfBirth" class="form-label">Date of Birth</label>
+
+            @Html.TextBox(
+                "DateOfBirth",
+                Model != null && Model.DateOfBirth != default(DateTime)
+                    ? Model.DateOfBirth.ToString("yyyy-MM-dd")
+                    : "",
+                new
+                {
+                    @class = "form-control",
+                    type = "date"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.DateOfBirth,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label for="Gender" class="form-label">Gender</label>
+
+            @Html.DropDownListFor(
+                m => m.Gender,
+                new SelectList(
+                    Enum.GetNames(typeof(GenderType)),
+                    Model != null ? Model.Gender : null
+                ),
+                "Select Gender",
+                new { @class = "form-control" })
+
+            @Html.ValidationMessageFor(
+                m => m.Gender,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label for="Email" class="form-label">Email</label>
+
+            @Html.TextBoxFor(
+                m => m.Email,
+                new
+                {
+                    @class = "form-control",
+                    type = "email",
+                    placeholder = "Enter email address"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.Email,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div class="col-md-6">
+        <div class="form-group mb-3">
+            <label for="InsuranceId" class="form-label">Insurance ID</label>
+
+            @Html.TextBoxFor(
+                m => m.InsuranceId,
+                new
+                {
+                    @class = "form-control",
+                    placeholder = "Enter insurance ID"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.InsuranceId,
+                "",
+                new { @class = "text-danger" })
+        </div>
+    </div>
+
+</div>

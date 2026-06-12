@@ -2,66 +2,131 @@
 
 @{
     ViewBag.Title = "Doctor Details";
+
+    var appointments =
+        ViewBag.Appointments as IEnumerable<HealthAppWebAPI.Models.Dtos.AppointmentDto>;
 }
 
-<h2>Doctor Profile</h2>
+<div class="page-wrapper">
 
-<table class="table table-bordered">
+    <div class="page-header-box">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="page-title">Doctor Details</h2>
+                <p class="page-subtitle">
+                    View doctor profile and assigned appointments.
+                </p>
+            </div>
 
-    <tr>
-        <th>Doctor Id</th>
-        <td>@Model.DoctorId</td>
-    </tr>
+            <div class="col-md-4 text-end">
+                @Html.ActionLink(
+                    "Back to Doctors",
+                    "Index",
+                    "Doctor",
+                    null,
+                    new { @class = "btn btn-secondary btn-rounded" })
+            </div>
+        </div>
+    </div>
 
-    <tr>
-        <th>Name</th>
-        <td>@Model.FullName</td>
-    </tr>
+    <div class="table-card mb-4">
 
-    <tr>
-        <th>Specialisation</th>
-        <td>@Model.Specialisation</td>
-    </tr>
+        <div class="doctor-details-header">
+            <div class="doctor-details-avatar">
+                <i class="bi bi-person-badge"></i>
+            </div>
 
-    <tr>
-        <th>Phone Number</th>
-        <td>@Model.DoctorPhoneNo</td>
-    </tr>
+            <div>
+                <h3>@Model.FullName</h3>
+                <p>@Model.Specialisation</p>
+            </div>
+        </div>
 
-    <tr>
-        <th>Email</th>
-        <td>@Model.DoctorEmail</td>
-    </tr>
+        <hr />
 
-    <tr>
-        <th>Experience</th>
-        <td>@Model.YearsOfExperience Years</td>
-    </tr>
+        <div class="row">
+            <div class="col-md-6">
+                <p>
+                    <strong>Email:</strong>
+                    @Model.DoctorEmail
+                </p>
 
-    <tr>
-        <th>Consultation Fee</th>
-        <td>₹ @Model.ConsultationFee</td>
-    </tr>
+                <p>
+                    <strong>Phone:</strong>
+                    @Model.DoctorPhoneNo
+                </p>
+            </div>
 
-    <tr>
-        <th>Status</th>
-        <td>
-            @(Model.IsActive
-                ? "Active"
-                : "Inactive")
-        </td>
-    </tr>
+            <div class="col-md-6">
+                <p>
+                    <strong>Experience:</strong>
+                    @Model.YearsOfExperience years
+                </p>
 
-</table>
+                <p>
+                    <strong>Consultation Fee:</strong>
+                    ₹ @Model.ConsultationFee
+                </p>
+            </div>
+        </div>
 
-@Html.ActionLink(
-    "Edit",
-    "Edit",
-    new { id = Model.DoctorId },
-    new { @class = "btn btn-warning" })
+        <p>
+            <strong>Status:</strong>
 
-@Html.ActionLink(
-    "Back",
-    "Index",
-    null,
-    new { @class = "btn btn-secondary" })
+            @if (Model.IsActive)
+            {
+                <span class="doctor-status-badge status-active">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Available
+                </span>
+            }
+            else
+            {
+                <span class="doctor-status-badge status-inactive">
+                    <i class="bi bi-clock-fill"></i>
+                    Not Available
+                </span>
+            }
+        </p>
+
+    </div>
+
+    <div class="table-card">
+        <h4 class="mb-3">Appointments</h4>
+
+        <table class="table table-bordered table-striped custom-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (appointments == null || !appointments.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            No appointments found for this doctor.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in appointments)
+                    {
+                        <tr>
+                            <td>@item.PatientName</td>
+                            <td>@item.ScheduledDate</td>
+                            <td>@item.TimeSlot</td>
+                            <td>@item.Status</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

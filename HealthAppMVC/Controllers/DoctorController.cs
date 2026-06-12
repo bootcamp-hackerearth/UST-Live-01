@@ -1,5 +1,4 @@
-﻿using HealthAppMVC.Models;
-using HealthAppMVC.Services.Interface;
+﻿using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using System;
 using System.Linq;
@@ -8,325 +7,210 @@ using System.Web.Mvc;
 
 namespace HealthAppMVC.Controllers
 {
-
-    public class DoctorController
-        : Controller
+    public class DoctorController : Controller
     {
-        private readonly
-            IDoctorService
-            _doctorService;
+        private readonly IDoctorService _doctorService;
+        private readonly IAppointmentService _appointmentService;
 
         public DoctorController(
-            IDoctorService doctorService)
+            IDoctorService doctorService,
+            IAppointmentService appointmentService)
         {
-            _doctorService =
-                doctorService;
+            _doctorService = doctorService;
+            _appointmentService = appointmentService;
         }
 
-        // GET: Doctor
-        public async Task<ActionResult>Index(string specialisation = "")
-        {
-            var doctors =
-                await _doctorService
-                    .GetAllDoctorsAsync();
-
-            if (!string.IsNullOrWhiteSpace(
-                specialisation))
-            {
-                doctors =
-                    await _doctorService.SearchBySpecialisationAsync(specialisation);
-            }
-
-            ViewBag.Specialisations =
-                Enum.GetNames(
-                    typeof(SpecialisationType));
-
-            return View(doctors);
-        }
-
-        // GET: Doctor/Details/5
-        public async Task<ActionResult>
-            Details(int id)
+        public async Task<ActionResult> Index(string search, string specialisation)
         {
             try
             {
-                var doctor =
-                    await _doctorService
-                        .GetDoctorByIdAsync(id);
+                ViewBag.Search = search;
+                ViewBag.Specialisation = specialisation;
 
-                if (doctor == null)
+                var allDoctors = await _doctorService.GetAllDoctorsAsync();
+
+                ViewBag.Specialisations = allDoctors
+                    .Select(d => d.Specialisation)
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Distinct()
+                    .OrderBy(s => s)
+                    .ToList();
+
+                var filteredDoctors = allDoctors;
+
+                if (!string.IsNullOrWhiteSpace(search))
                 {
-                    return HttpNotFound();
+                    filteredDoctors = filteredDoctors
+                        .Where(d =>
+                            d.FullName != null &&
+                            d.FullName.ToLower().Contains(search.ToLower()))
+                        .ToList();
                 }
+
+                if (!string.IsNullOrWhiteSpace(specialisation))
+                {
+                    filteredDoctors = filteredDoctors
+                        .Where(d =>
+                            d.Specialisation != null &&
+                            d.Specialisation.Equals(
+                                specialisation,
+                                StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
+
+                return View(filteredDoctors);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View();
+            }
+        }
+
+        [HttpGet]
+        public ActionResult Create()
+        {
+            return PartialView("_CreateDoctorModal", new CreateDoctorDto());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(CreateDoctorDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_CreateDoctorModal", dto);
+            }
+
+            try
+            {
+                await _doctorService.AddDoctorAsync(dto);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Doctor added successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return PartialView("_CreateDoctorModal", dto);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Edit(int id)
+        {
+            try
+            {
+                var doctor = await _doctorService.GetDoctorByIdAsync(id);
+
+                var dto = new CreateDoctorDto
+                {
+                    FullName = doctor.FullName,
+                    Specialisation = doctor.Specialisation,
+                    YearsOfExperience = doctor.YearsOfExperience,
+                    ConsultationFee = doctor.ConsultationFee,
+                    DoctorEmail = doctor.DoctorEmail,
+                    DoctorPhoneNo = doctor.DoctorPhoneNo
+                };
+
+                ViewBag.DoctorId = id;
+
+                return PartialView("_EditDoctorModal", dto);
+            }
+            catch (Exception ex)
+            {
+                return Content(
+                    "<div class='modal-body'>" +
+                        "<div class='alert alert-danger'>" +
+                            Server.HtmlEncode(ex.Message) +
+                        "</div>" +
+                    "</div>"
+                );
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(int id, CreateDoctorDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.DoctorId = id;
+                return PartialView("_EditDoctorModal", dto);
+            }
+
+            try
+            {
+                await _doctorService.UpdateDoctorAsync(id, dto);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Doctor updated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.DoctorId = id;
+                ModelState.AddModelError("", ex.Message);
+                return PartialView("_EditDoctorModal", dto);
+            }
+        }
+
+        public async Task<ActionResult> Details(int id)
+        {
+            try
+            {
+                var doctor = await _doctorService.GetDoctorByIdAsync(id);
+                var appointments = await _appointmentService.GetAppointmentsByDoctorAsync(id);
+
+                ViewBag.Appointments = appointments;
 
                 return View(doctor);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
-
-                return RedirectToAction(
-                    "Index");
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
             }
         }
 
-        public ActionResult Create()
-        {
-            ViewBag.Specialisations =
-                Enum.GetNames(
-                    typeof(SpecialisationType));
 
-            return View();
-        }
-
-        // POST: Doctor/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Create(CreateDoctorDto dto)
+
+        public async Task<ActionResult> ChangeStatus(int id, bool? isActive)
         {
+            bool newStatus;
             try
             {
-                if (!ModelState.IsValid)
+                if (isActive.HasValue)
                 {
-                    ViewBag.Specialisations =
-                        Enum.GetNames(
-                            typeof(SpecialisationType));
-
-                    return View(dto);
+                    newStatus = isActive.Value;
+                }
+                else
+                {
+                    var doctor = await _doctorService.GetDoctorByIdAsync(id);
+                    newStatus = !doctor.IsActive;
                 }
 
-                await _doctorService
-                    .AddDoctorAsync(dto);
+                await _doctorService.ChangeDoctorStatusAsync(id, newStatus);
 
-                TempData["Success"] =
-                    "Doctor Registered Successfully";
-
-                return RedirectToAction(
-                    "DoctorServices",
-                    "Home");
+                TempData["Success"] = newStatus
+                    ? "Doctor marked as available."
+                    : "Doctor marked as not available.";
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
-
-                ViewBag.Specialisations =
-                    Enum.GetNames(
-                        typeof(SpecialisationType));
-
-                return View(dto);
+                TempData["Error"] = ex.Message;
             }
+
+            return RedirectToAction("Index");
         }
 
-        // GET: Doctor/Edit/5
-        public async Task<ActionResult>
-            Edit(int id)
-        {
-            try
-            {
-                var doctor =
-                    await _doctorService
-                        .GetDoctorByIdAsync(id);
 
-                if (doctor == null)
-                {
-                    return HttpNotFound();
-                }
-
-                CreateDoctorDto dto =
-                    new CreateDoctorDto
-                    {
-                        FullName =
-                            doctor.FullName,
-
-                        Specialisation =
-                            doctor.Specialisation,
-
-                        YearsOfExperience =
-                            doctor.YearsOfExperience,
-
-                        ConsultationFee =
-                            doctor.ConsultationFee,
-
-                        //DoctorEmail =
-                        //    doctor.DoctorEmail,
-
-                        DoctorPhoneNo =
-                            doctor.DoctorPhoneNo
-                    };
-
-                ViewBag.Specialisations =
-                    Enum.GetNames(
-                        typeof(SpecialisationType));
-
-                return View(dto);
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] =
-                    ex.Message;
-
-                return RedirectToAction(
-                    "DoctorServices",
-                    "Home");
-            }
-        }
-
-        // POST: Doctor/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                CreateDoctorDto dto)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    ViewBag.Specialisations =
-                        Enum.GetNames(
-                            typeof(SpecialisationType));
-
-                    return View(dto);
-                }
-
-                await _doctorService
-                    .UpdateDoctorAsync(
-                        id,
-                        dto);
-
-                TempData["Success"] =
-                    "Doctor Details Updated Successfully";
-
-                return RedirectToAction(
-                    "DoctorServices",
-                    "Home");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
-
-                ViewBag.Specialisations =
-                    Enum.GetNames(
-                        typeof(SpecialisationType));
-
-                return View(dto);
-            }
-        }
-
-        // GET: Doctor/ChangeStatus/5
-        public async Task<ActionResult>
-            ChangeStatus(int id)
-        {
-            try
-            {
-                var doctor =
-                    await _doctorService
-                        .GetDoctorByIdAsync(id);
-
-                if (doctor == null)
-                {
-                    return HttpNotFound();
-                }
-
-                bool newStatus =
-                    !doctor.IsActive;
-
-                await _doctorService.ChangeDoctorStatusAsync(
-                        id,
-                        newStatus);
-
-                TempData["Success"] =
-                    "Doctor status updated.";
-
-                return RedirectToAction(
-                    "Index");
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] =
-                    ex.Message;
-
-                return RedirectToAction(
-                    "Index");
-            }
-        }
-
-        public ActionResult SearchDoctor()
-        {
-            return View();
-        }
-
-        public async Task<JsonResult>
-            SearchDoctorNames(
-                string term)
-        {
-            var doctors =
-                await _doctorService
-                    .SearchByNameAsync(term);
-
-            var result =
-                doctors.Select(d => new
-                {
-                    label = d.FullName,
-                    value = d.DoctorId
-                }).ToList();
-
-            return Json(
-                result,
-                JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult
-            EditDoctorByName(int id)
-        {
-            return RedirectToAction(
-                "Edit",
-                new { id });
-        }
-
-        public async Task<ActionResult>
-            DoctorSearch(
-                string doctorName,
-                string specialisation)
-        {
-            var doctors =
-                await _doctorService
-                    .GetAllDoctorsAsync();
-
-            if (!string.IsNullOrWhiteSpace(
-                doctorName))
-            {
-                doctors =
-                    doctors.Where(d =>
-                        d.FullName
-                        .ToLower()
-                        .Contains(
-                            doctorName
-                            .ToLower()))
-                    .ToList();
-            }
-
-            if (!string.IsNullOrWhiteSpace(
-                specialisation))
-            {
-                doctors =
-                    doctors.Where(d =>
-                        d.Specialisation
-                        .Equals(
-                            specialisation,
-                            StringComparison
-                                .OrdinalIgnoreCase))
-                    .ToList();
-            }
-
-            return View(doctors);
-        }
     }
 }

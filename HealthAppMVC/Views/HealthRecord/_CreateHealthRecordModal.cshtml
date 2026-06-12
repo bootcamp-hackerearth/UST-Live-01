@@ -1,0 +1,110 @@
+﻿@model HealthAppWebAPI.Models.Dtos.CreateHealthRecordDto
+
+@using (Html.BeginForm(
+    "Create",
+    "HealthRecord",
+    FormMethod.Post,
+    new { onsubmit = "return submitAppointmentForm(this);" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.AppointmentId)
+
+    <div class="modal-header healthrecord-modal-header">
+        <h5 class="modal-title">
+            <i class="bi bi-journal-medical"></i>
+            Add Health Record
+        </h5>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new { @class = "text-danger" })
+
+        <div class="form-group mb-3">
+            <label for="Diagnosis" class="form-label">
+                Diagnosis
+            </label>
+
+            @Html.TextAreaFor(
+                m => m.Diagnosis,
+                new
+                {
+                    @class = "form-control",
+                    rows = 3,
+                    placeholder = "Enter diagnosis"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.Diagnosis,
+                "",
+                new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Prescription" class="form-label">
+                Prescription
+            </label>
+
+            @Html.TextAreaFor(
+                m => m.Prescription,
+                new
+                {
+                    @class = "form-control",
+                    rows = 3,
+                    placeholder = "Enter prescription"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.Prescription,
+                "",
+                new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="Notes" class="form-label">
+                Notes
+            </label>
+
+            @Html.TextAreaFor(
+                m => m.Notes,
+                new
+                {
+                    @class = "form-control",
+                    rows = 4,
+                    placeholder = "Enter notes"
+                })
+
+            @Html.ValidationMessageFor(
+                m => m.Notes,
+                "",
+                new { @class = "text-danger" })
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button type="submit"
+                class="btn btn-success btn-rounded">
+            <i class="bi bi-check-circle"></i>
+            Save Record
+        </button>
+
+        <button type="button"
+                class="btn btn-secondary btn-rounded"
+                data-bs-dismiss="modal">
+            Close
+        </button>
+
+    </div>
+}

@@ -4,175 +4,333 @@
     ViewBag.Title = "Doctors";
 }
 
-<h2>Doctors</h2>
+<div class="page-wrapper">
 
-<p>
-    @Html.ActionLink(
-        "Add Doctor",
-        "Create",
-        null,
-        new { @class = "btn btn-primary" })
-</p>
+    <div class="page-header-box">
+        <div class="row align-items-center">
 
-<form method="get">
-    <div class="row mb-3">
+            <div class="col-md-8">
+                <h2 class="page-title">Doctors</h2>
+                <p class="page-subtitle">
+                    Manage doctor profiles, specialisations, consultation fees, and availability.
+                </p>
+            </div>
 
-        <div class="col-md-4">
-
-            <select name="specialisation"
-                    class="form-control">
-
-                <option value="">
-                    All Specialisations
-                </option>
-
-                @foreach (var item in ViewBag.Specialisations)
-                {
-                    <option value="@item">
-                        @item
-                    </option>
-                }
-
-            </select>
+            <div class="col-md-4 text-end">
+                <button type="button"
+                        class="btn btn-primary btn-rounded"
+                        onclick="openDoctorCreateModal()">
+                    <i class="bi bi-plus-circle"></i>
+                    Add Doctor
+                </button>
+            </div>
 
         </div>
+    </div>
 
-        <div class="col-md-2">
+    <div class="filter-card">
 
-            <button type="submit"
-                    class="btn btn-secondary">
-                Filter
-            </button>
+        @using (Html.BeginForm("Index", "Doctor", FormMethod.Get))
+        {
+            <div class="row g-2 align-items-center">
 
+                <div class="col-md-4">
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           class="form-control"
+                           placeholder="Search doctor by name" />
+                </div>
+
+                <div class="col-md-4">
+                    <select name="specialisation"
+                            class="form-control">
+
+                        <option value="">
+                            All Specialisations
+                        </option>
+
+                        @if (ViewBag.Specialisations != null)
+                        {
+                            foreach (var item in ViewBag.Specialisations)
+                            {
+                                var selectedSpecialisation = Convert.ToString(ViewBag.Specialisation);
+                                var currentSpecialisation = Convert.ToString(item);
+
+                                if (selectedSpecialisation == currentSpecialisation)
+                                {
+                                    <option value="@currentSpecialisation" selected="selected">
+                                        @currentSpecialisation
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@currentSpecialisation">
+                                        @currentSpecialisation
+                                    </option>
+                                }
+                            }
+                        }
+
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-secondary btn-rounded">
+                        <i class="bi bi-funnel"></i>
+                        Filter
+                    </button>
+                </div>
+
+
+                <div class="col-md-2">
+                    <a href="@Url.Action("Index", "Doctor")"
+                       class="btn btn-outline-secondary btn-rounded">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Clear
+                    </a>
+                </div>
+
+
+            </div>
+        }
+
+    </div>
+
+    <div class="table-card">
+
+        <table class="table table-bordered table-striped custom-table">
+
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Specialisation</th>
+                    <th>Email</th>
+                    <th>Experience</th>
+                    <th>Fee</th>
+                    <th>Status</th>
+                    <th style="width: 180px;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            No doctors found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var doctor in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                <div class="doctor-name-cell">
+
+                                    <div class="doctor-avatar">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+
+                                    <div>
+                                        <strong>@doctor.FullName</strong>
+                                    </div>
+
+                                </div>
+                            </td>
+
+                            <td>
+                                @doctor.Specialisation
+                            </td>
+
+                            <td>
+                                @doctor.DoctorEmail
+                            </td>
+
+                            <td>
+                                @doctor.YearsOfExperience years
+                            </td>
+
+                            <td>
+                                ₹ @doctor.ConsultationFee
+                            </td>
+
+                            <td>
+                                @if (doctor.IsActive)
+                                {
+                                    <span class="doctor-status-badge status-active">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Available
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="doctor-status-badge status-inactive">
+                                        <i class="bi bi-clock-fill"></i>
+                                        Not Available
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <a href="@Url.Action("Details", "Doctor", new { id = doctor.DoctorId })"
+                                   class="btn btn-info btn-sm action-btn"
+                                   title="View Doctor">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <button type="button"
+                                        class="btn btn-warning btn-sm action-btn"
+                                        title="Edit Doctor"
+                                        onclick="openDoctorEditModal(@doctor.DoctorId)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                                @using (Html.BeginForm(
+                                    "ChangeStatus",
+                                    "Doctor",
+                                    new { id = doctor.DoctorId },
+                                    FormMethod.Post,
+                                    new { style = "display:inline;" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden"
+                                           name="isActive"
+                                           value="@((!doctor.IsActive).ToString().ToLower())" />
+
+                                    if (doctor.IsActive)
+                                    {
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm action-btn"
+                                                title="Mark Not Available">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="submit"
+                                                class="btn btn-success btn-sm action-btn"
+                                                title="Mark Available">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    }
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="doctorModal"
+     tabindex="-1"
+     aria-labelledby="doctorModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content"
+             id="doctorModalContent">
         </div>
 
     </div>
-</form>
 
-<table class="table table-bordered table-striped">
+</div>
 
-    <thead>
+@section scripts {
 
-        <tr>
-            <th>Name</th>
+    <script>
 
-            <th>Specialisation</th>
+        function openDoctorCreateModal() {
 
-            <th>Phone</th>
+            $.get('@Url.Action("Create", "Doctor")', function (data) {
 
-            <th>Email</th>
+                $('#doctorModalContent').html(data);
 
-            <th>Experience</th>
+                $.validator.unobtrusive.parse('#doctorModalContent');
 
-            <th>Fee</th>
+                var modalElement = document.getElementById('doctorModal');
+                var modal = new bootstrap.Modal(modalElement);
 
-            <th>Status</th>
-
-            <th width="250">
-                Actions
-            </th>
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        @foreach (var doctor in Model)
-        {
-            <tr>
-
-                <td>
-                    @doctor.FullName
-                </td>
-
-                <td>
-                    @doctor.Specialisation
-                </td>
-
-                <td>
-                    @doctor.DoctorPhoneNo
-                </td>
-
-                <td>
-                    @doctor.DoctorEmail
-                </td>
-
-                <td>
-                    @doctor.YearsOfExperience
-                </td>
-
-                <td>
-                    ₹ @doctor.ConsultationFee
-                </td>
-
-                <td>
-
-                    @if (doctor.IsActive)
-                    {
-                        <span class="badge bg-success">
-                            Active
-                        </span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">
-                            Inactive
-                        </span>
-                    }
-
-                </td>
-
-                <td>
-
-                    @Html.ActionLink(
-                        "Details",
-                        "Details",
-                        new
-                        {
-                            id =
-                            doctor.DoctorId
-                        },
-                        new
-                        {
-                            @class =
-                            "btn btn-info btn-sm"
-                        })
-
-                    @Html.ActionLink(
-                        "Edit",
-                        "Edit",
-                        new
-                        {
-                            id =
-                            doctor.DoctorId
-                        },
-                        new
-                        {
-                            @class =
-                            "btn btn-warning btn-sm"
-                        })
-
-                    @Html.ActionLink(
-                        doctor.IsActive
-                            ? "Deactivate"
-                            : "Activate",
-                        "ChangeStatus",
-                        new
-                        {
-                            id =
-                            doctor.DoctorId
-                        },
-                        new
-                        {
-                            @class =
-                            "btn btn-danger btn-sm"
-                        })
-
-                </td>
-
-            </tr>
+                modal.show();
+            });
         }
 
-    </tbody>
+        function openDoctorEditModal(id) {
 
-</table>
+            $.get('@Url.Action("Edit", "Doctor")', { id: id }, function (data) {
+
+                $('#doctorModalContent').html(data);
+
+                $.validator.unobtrusive.parse('#doctorModalContent');
+
+                var modalElement = document.getElementById('doctorModal');
+                var modal = new bootstrap.Modal(modalElement);
+
+                modal.show();
+            });
+        }
+
+        function submitDoctorForm(form) {
+
+            $.ajax({
+                url: $(form).attr('action'),
+                type: 'POST',
+                data: $(form).serialize(),
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        var modalElement = document.getElementById('doctorModal');
+                        var modal = bootstrap.Modal.getInstance(modalElement);
+
+                        if (modal) {
+                            modal.hide();
+                        }
+
+                        showToast("success", response.message);
+
+                        setTimeout(function () {
+                            location.reload();
+                        }, 900);
+                    }
+                    else {
+                        $('#doctorModalContent').html(response);
+                        $.validator.unobtrusive.parse('#doctorModalContent');
+                    }
+                },
+
+                error: function (xhr) {
+
+                    var message = "Something went wrong. Please try again.";
+
+                    if (xhr.responseText) {
+                        message = xhr.responseText;
+                    }
+
+                    showToast("error", message);
+                }
+            });
+
+            return false;
+        }
+
+    </script>
+
+}

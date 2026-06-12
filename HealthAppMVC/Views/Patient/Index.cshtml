@@ -4,128 +4,248 @@
     ViewBag.Title = "Patients";
 }
 
-<h2>Patients</h2>
+<div class="page-wrapper">
 
-<p>
-    @Html.ActionLink(
-        "Register Patient",
-        "Create",
-        null,
-        new { @class = "btn btn-primary" })
-</p>
+    <div class="page-header-box">
+        <div class="row align-items-center">
 
-<table class="table table-bordered table-striped">
+            <div class="col-md-8">
+                <h2 class="page-title">Patients</h2>
 
-    <thead>
+                <p class="page-subtitle">
+                    View registered patients, open patient details, and update patient information.
+                </p>
+            </div>
 
-        <tr>
+            <div class="col-md-4 text-end">
+                <button type="button"
+                        class="btn btn-primary btn-rounded"
+                        onclick="openPatientCreateModal()">
+                    <i class="bi bi-plus-circle"></i>
+                    Register Patient
+                </button>
+            </div>
 
-            <th>
-                Patient Id
-            </th>
+        </div>
+    </div>
 
-            <th>
-                Name
-            </th>
+    <div class="filter-card">
 
-            <th>
-                DOB
-            </th>
-
-            <th>
-                Gender
-            </th>
-
-            <th>
-                Phone
-            </th>
-
-            <th>
-                Email
-            </th>
-
-            <th>
-                Insurance
-            </th>
-
-            <th>
-                Actions
-            </th>
-
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        @foreach (var item in Model)
+        @using (Html.BeginForm("Index", "Patient", FormMethod.Get))
         {
-            <tr>
+            <div class="row g-2 align-items-center">
 
-                <td>
-                    @item.PatientId
-                </td>
+                <div class="col-md-5">
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           class="form-control"
+                           placeholder="Search patient by name" />
+                </div>
 
-                <td>
-                    @item.FullName
-                </td>
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-secondary btn-rounded">
+                        <i class="bi bi-search"></i>
+                        Search
+                    </button>
+                </div>
 
-                <td>
-                    @item.DateOfBirth
-                    .ToString("dd-MM-yyyy")
-                </td>
+                <div class="col-md-2">
+                    <a href="@Url.Action("Index", "Patient")"
+                       class="btn btn-outline-secondary btn-rounded">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Clear
+                    </a>
+                </div>
 
-                <td>
-                    @item.Gender
-                </td>
-
-                <td>
-                    @item.Phone
-                </td>
-
-                <td>
-                    @item.Email
-                </td>
-
-                <td>
-                    @item.InsuranceId
-                </td>
-
-                <td>
-
-                    @Html.ActionLink(
-                        "View",
-                        "Details",
-                        new
-                        {
-                            id =
-                            item.PatientId
-                        },
-                        new
-                        {
-                            @class =
-                            "btn btn-info btn-sm"
-                        })
-
-                    @Html.ActionLink(
-                        "Edit",
-                        "Edit",
-                        new
-                        {
-                            id =
-                            item.PatientId
-                        },
-                        new
-                        {
-                            @class =
-                            "btn btn-warning btn-sm"
-                        })
-
-                </td>
-
-            </tr>
+            </div>
         }
 
-    </tbody>
+    </div>
 
-</table>
+    <div class="table-card">
+
+        <table class="table table-bordered table-striped custom-table">
+
+            <thead>
+                <tr>
+                    <th>Patient Id</th>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Insurance</th>
+                    <th style="width: 140px;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            No patients found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @item.PatientId
+                            </td>
+
+                            <td>
+                                <strong>@item.FullName</strong>
+                            </td>
+
+                            <td>
+                                @item.DateOfBirth.ToString("dd-MM-yyyy")
+                            </td>
+
+                            <td>
+                                @item.Gender
+                            </td>
+
+                            <td>
+                                @item.Email
+                            </td>
+
+                            <td>
+                                @item.InsuranceId
+                            </td>
+
+                            <td>
+
+                                <a href="@Url.Action("Details", "Patient", new { id = item.PatientId })"
+                                   class="btn btn-info btn-sm action-btn"
+                                   title="View Patient"
+                                   aria-label="View Patient">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                <button type="button"
+                                        class="btn btn-warning btn-sm action-btn"
+                                        title="Edit Patient"
+                                        aria-label="Edit Patient"
+                                        onclick="openPatientEditModal(@item.PatientId)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="patientModal"
+     tabindex="-1"
+     aria-labelledby="patientModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content"
+             id="patientModalContent">
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts {
+
+    <script>
+
+        function openPatientCreateModal() {
+
+            $.get('@Url.Action("Create", "Patient")', function (data) {
+
+                $('#patientModalContent').html(data);
+
+                $.validator.unobtrusive.parse('#patientModalContent');
+
+                var modalElement = document.getElementById('patientModal');
+                var modal = new bootstrap.Modal(modalElement);
+
+                modal.show();
+            });
+        }
+
+        function openPatientEditModal(id) {
+
+            $.get('@Url.Action("Edit", "Patient")', { id: id }, function (data) {
+
+                $('#patientModalContent').html(data);
+
+                $.validator.unobtrusive.parse('#patientModalContent');
+
+                var modalElement = document.getElementById('patientModal');
+                var modal = new bootstrap.Modal(modalElement);
+
+                modal.show();
+            });
+        }
+
+        function submitPatientForm(form) {
+
+            $.ajax({
+                url: $(form).attr('action'),
+                type: 'POST',
+                data: $(form).serialize(),
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        var modalElement = document.getElementById('patientModal');
+                        var modal = bootstrap.Modal.getInstance(modalElement);
+
+                        if (modal) {
+                            modal.hide();
+                        }
+
+                        showToast("success", response.message);
+
+                        setTimeout(function () {
+                            location.reload();
+                        }, 900);
+                    }
+                    else {
+                        $('#patientModalContent').html(response);
+                        $.validator.unobtrusive.parse('#patientModalContent');
+                    }
+                },
+
+                error: function (xhr) {
+
+                    var message = "Something went wrong. Please try again.";
+
+                    if (xhr.responseText) {
+                        message = xhr.responseText;
+                    }
+
+                    showToast("error", message);
+                }
+            });
+
+            return false;
+        }
+
+    </script>
+
+}

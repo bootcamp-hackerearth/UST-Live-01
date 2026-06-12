@@ -1,0 +1,222 @@
+﻿@model HealthAppWebAPI.Models.Dtos.CreateAppointmentDto
+@using System
+@using System.Linq
+@using HealthAppWebAPI.Models.Dtos
+
+@{
+    var patients =
+        ViewBag.PatientsList as IEnumerable<PatientDto>;
+
+    var doctors =
+        ViewBag.DoctorsList as IEnumerable<DoctorDto>;
+
+    var selectedPatientName = "";
+
+    if (patients != null && Model.PatientId > 0)
+    {
+        var selectedPatient =
+            patients.FirstOrDefault(p => p.PatientId == Model.PatientId);
+
+        if (selectedPatient != null)
+        {
+            selectedPatientName = selectedPatient.FullName;
+        }
+    }
+
+    var selectedDoctorName = "";
+
+    if (doctors != null && Model.DoctorId > 0)
+    {
+        var selectedDoctor =
+            doctors.FirstOrDefault(d => d.DoctorId == Model.DoctorId);
+
+        if (selectedDoctor != null)
+        {
+            selectedDoctorName =
+                selectedDoctor.FullName + " - " + selectedDoctor.Specialisation;
+        }
+    }
+
+    var appointmentDateValue =
+        Model != null && Model.ScheduledDate != default(DateTime)
+            ? Model.ScheduledDate.ToString("yyyy-MM-dd")
+            : "";
+}
+
+@using (Html.BeginForm(
+    "Create",
+    "Appointment",
+    FormMethod.Post,
+    new { onsubmit = "return submitAppointmentForm(this);" }))
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(m => m.PatientId)
+    @Html.HiddenFor(m => m.DoctorId)
+
+    <div class="modal-header appointment-modal-header">
+        <h5 class="modal-title" id="appointmentModalLabel">
+            <i class="bi bi-calendar-plus"></i>
+            Book Appointment
+        </h5>
+
+        <button type="button"
+                class="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close">
+        </button>
+    </div>
+
+    <div class="modal-body">
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new { @class = "text-danger" })
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+
+                    <label for="PatientSearch"
+                           class="form-label">
+                        Patient
+                    </label>
+
+                    <input type="text"
+                           id="PatientSearch"
+                           class="form-control"
+                           list="patientList"
+                           value="@selectedPatientName"
+                           placeholder="Type patient name..."
+                           autocomplete="off"
+                           required />
+
+                    <datalist id="patientList">
+                        @if (patients != null)
+                        {
+                            foreach (var patient in patients)
+                            {
+                                <option data-id="@patient.PatientId"
+                                        value="@patient.FullName">
+                                </option>
+                            }
+                        }
+                    </datalist>
+
+                    @Html.ValidationMessageFor(
+                        m => m.PatientId,
+                        "",
+                        new { @class = "text-danger" })
+
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+
+                    <label for="DoctorSearch"
+                           class="form-label">
+                        Doctor
+                    </label>
+
+                    <input type="text"
+                           id="DoctorSearch"
+                           class="form-control"
+                           list="doctorList"
+                           value="@selectedDoctorName"
+                           placeholder="Type doctor name..."
+                           autocomplete="off"
+                           required />
+
+                    <datalist id="doctorList">
+                        @if (doctors != null)
+                        {
+                            foreach (var doctor in doctors)
+                            {
+                                <option data-id="@doctor.DoctorId"
+                                        value="@doctor.FullName - @doctor.Specialisation">
+                                </option>
+                            }
+                        }
+                    </datalist>
+
+                    @Html.ValidationMessageFor(
+                        m => m.DoctorId,
+                        "",
+                        new { @class = "text-danger" })
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+
+                    <label for="ScheduledDate"
+                           class="form-label">
+                        Appointment Date
+                    </label>
+
+                    <input type="date"
+                           id="ScheduledDate"
+                           name="ScheduledDate"
+                           value="@appointmentDateValue"
+                           class="form-control" />
+
+                    @Html.ValidationMessageFor(
+                        m => m.ScheduledDate,
+                        "",
+                        new { @class = "text-danger" })
+
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group mb-3">
+
+                    <label for="TimeSlot"
+                           class="form-label">
+                        Time Slot
+                    </label>
+
+                    <select id="TimeSlot"
+                            name="TimeSlot"
+                            class="form-select">
+                        <option value="">
+                            Select doctor and date first
+                        </option>
+                    </select>
+
+                    @Html.ValidationMessageFor(
+                        m => m.TimeSlot,
+                        "",
+                        new { @class = "text-danger" })
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button type="submit"
+                class="btn btn-success btn-rounded">
+            <i class="bi bi-check-circle"></i>
+            Book
+        </button>
+
+        <button type="button"
+                class="btn btn-secondary btn-rounded"
+                data-bs-dismiss="modal">
+            Close
+        </button>
+
+    </div>
+}

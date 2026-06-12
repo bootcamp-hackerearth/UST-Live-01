@@ -1,379 +1,294 @@
-﻿using HealthAppMVC.Models;
+﻿using HealthAppMVC.Constants;
 using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace HealthAppMVC.Controllers
 {
-
-    public class AppointmentController
-        : Controller
+    public class AppointmentController : Controller
     {
-        private readonly
-            IAppointmentService
-            _appointmentService;
-
-        private readonly
-            IPatientService
-            _patientService;
-
-        private readonly
-            IDoctorService
-            _doctorService;
+        private readonly IAppointmentService _appointmentService;
+        private readonly IPatientService _patientService;
+        private readonly IDoctorService _doctorService;
 
         public AppointmentController(
             IAppointmentService appointmentService,
             IPatientService patientService,
             IDoctorService doctorService)
         {
-            _appointmentService =
-                appointmentService;
-
-            _patientService =
-                patientService;
-
-            _doctorService =
-                doctorService;
+            _appointmentService = appointmentService;
+            _patientService = patientService;
+            _doctorService = doctorService;
         }
 
-        // GET: Appointment
-        public async Task<ActionResult>
-            Index()
-        {
-            var appointments =
-                await _appointmentService
-                    .GetAllAppointmentsAsync();
-
-            return View(appointments);
-        }
-
-        // GET: Appointment/Create
-        [HttpGet]
-        public async Task<ActionResult>
-            Create()
-        {
-            await LoadDropdowns();
-
-            return View();
-        }
-
-        // POST: Appointment/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Create(CreateAppointmentDto dto)
+        public async Task<ActionResult> Index(
+            string patientName,
+            int? doctorId,
+            int? patientId,
+            string status,
+            DateTime? date)
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    await LoadDropdowns();
-
-                    return View(dto);
-                }
-
-                await _appointmentService
-                    .BookAppointmentAsync(dto);
-
-                TempData["Success"] =
-                    "Appointment booked successfully.";
-
-                return RedirectToAction(
-                    "Index");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ViewBag.PatientName = patientName;
+                ViewBag.DoctorId = doctorId;
+                ViewBag.PatientId = patientId;
+                ViewBag.Status = status;
+                ViewBag.Date = date.HasValue ? date.Value.ToString("yyyy-MM-dd") : "";
 
                 await LoadDropdowns();
 
-                return View(dto);
-            }
-        }
+                var appointments = await _appointmentService.GetAllAppointmentsAsync();
 
-        // GET: Appointment/Confirm/5
-        [HttpGet]
-        public async Task<ActionResult>
-            Confirm(int id)
-        {
-            await _appointmentService
-                .ConfirmAppointmentAsync(id);
+                if (!string.IsNullOrWhiteSpace(patientName))
+                {
+                    appointments = appointments
+                        .Where(a =>
+                            a.PatientName != null &&
+                            a.PatientName.ToLower().Contains(patientName.ToLower()))
+                        .ToList();
+                }
 
-            TempData["Success"] =
-                "Appointment confirmed.";
+                if (doctorId.HasValue)
+                {
+                    appointments = appointments
+                        .Where(a => a.DoctorId == doctorId.Value)
+                        .ToList();
+                }
 
-            return RedirectToAction(
-                "UpcomingAppointments");
-        }
+                if (patientId.HasValue)
+                {
+                    appointments = appointments
+                        .Where(a => a.PatientId == patientId.Value)
+                        .ToList();
+                }
 
-        // GET: Appointment/Cancel/5
-        [HttpGet]
-        public async Task<ActionResult>
-            Cancel(int id)
-        {
-            var appointment =
-                await _appointmentService
-                    .GetAppointmentByIdAsync(id);
+                if (!string.IsNullOrWhiteSpace(status))
+                {
+                    appointments = appointments
+                        .Where(a =>
+                            a.Status != null &&
+                            a.Status.Equals(status, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                }
 
-            return View(appointment);
-        }
+                if (date.HasValue)
+                {
+                    appointments = appointments
+                        .Where(a =>
+                        {
+                            DateTime scheduledDate;
 
-        // POST: Appointment/Cancel/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Cancel(
-                int id,
-                string cancellationReason)
-        {
-            try
-            {
-                CancelAppointmentDto dto =
-                    new CancelAppointmentDto
-                    {
-                        CancellationReason =
-                            cancellationReason
-                    };
+                            return DateTime.TryParse(a.ScheduledDate, out scheduledDate)
+                                   && scheduledDate.Date == date.Value.Date;
+                        })
+                        .ToList();
+                }
 
-                await _appointmentService.CancelAppointmentAsync(id, cancellationReason);
-
-                TempData["Success"] =
-                    "Appointment cancelled.";
-
-                return RedirectToAction(
-                    "UpcomingAppointments");
+                return View(appointments);
             }
             catch (Exception ex)
             {
-                TempData["Error"] =
-                    ex.Message;
-
-                return RedirectToAction(
-                    "Cancel",
-                    new { id });
+                TempData["Error"] = ex.Message;
+                await LoadDropdowns();
+                return View(new List<AppointmentDto>());
             }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> Create()
+        {
+            await LoadDropdowns();
+
+            return PartialView(
+                "_CreateAppointmentModal",
+                new CreateAppointmentDto()
+            );
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(CreateAppointmentDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                await LoadDropdowns();
+
+                return PartialView(
+                    "_CreateAppointmentModal",
+                    dto
+                );
+            }
+
+            try
+            {
+                await _appointmentService.BookAppointmentAsync(dto);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Appointment booked successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                await LoadDropdowns();
+
+                ModelState.AddModelError("", ex.Message);
+
+                return PartialView(
+                    "_CreateAppointmentModal",
+                    dto
+                );
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Confirm(int id)
+        {
+            try
+            {
+                await _appointmentService.ConfirmAppointmentAsync(id);
+                TempData["Success"] = "Appointment confirmed successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
+
+            return RedirectToAction("Index");
         }
 
         private async Task LoadDropdowns()
         {
-            var patients =
-                await _patientService
-                    .GetAllPatientsAsync();
+            var patients = await _patientService.GetAllPatientsAsync();
+            var doctors = await _doctorService.GetAllDoctorsAsync();
 
-            var doctors =
-                await _doctorService
-                    .GetAllDoctorsAsync();
+            ViewBag.PatientsList = patients;
+            ViewBag.DoctorsList = doctors
+                .Where(d => d.IsActive)
+                .ToList();
 
-            ViewBag.Patients =
-                new SelectList(
-                    patients,
-                    "PatientId",
-                    "FullName");
+            ViewBag.Patients = new SelectList(
+                patients,
+                "PatientId",
+                "FullName");
 
-            ViewBag.Doctors =
-                new SelectList(
-                    doctors,
-                    "DoctorId",
-                    "FullName");
+            ViewBag.Doctors = new SelectList(
+                doctors.Where(d => d.IsActive),
+                "DoctorId",
+                "FullName");
+        }
+        public async Task<ActionResult> Details(int id)
+        {
+            try
+            {
+                var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+                var healthRecordExists = await _appointmentService.HealthRecordExistsAsync(id);
+
+                ViewBag.HealthRecordExists = healthRecordExists;
+
+                return View(appointment);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
         }
 
-        public async Task<ActionResult>
-            UpcomingAppointments(
-                string doctorName)
+        [HttpGet]
+        public async Task<JsonResult> GetAvailableSlots(int doctorId, DateTime scheduledDate)
         {
-            var appointments =
-                await _appointmentService
-                    .GetUpcomingAppointmentsAsync();
-
-            if (!string.IsNullOrWhiteSpace(
-                doctorName))
+            try
             {
-                appointments =
-                    appointments
-                    .Where(a =>
-                        a.DoctorName
-                        .ToLower()
-                        .Contains(
-                            doctorName
-                            .ToLower()))
-                    .ToList();
-            }
+                var apiAvailableSlots =
+                    await _appointmentService.GetAvailableSlotsAsync(
+                        doctorId,
+                        scheduledDate);
 
-            var appointmentsWithRecords =
-    new List<int>();
+                var availableSlots =
+                    HealthAppMVC.Constants.TimeSlots.Slots
+                        .Where(slot => apiAvailableSlots.Contains(slot))
+                        .ToList();
 
-            foreach (var appointment in appointments)
-            {
-                bool exists =
-                    await _appointmentService
-                        .HealthRecordExistsAsync(
-                            appointment.AppointmentId);
-
-                if (exists)
-                {
-                    appointmentsWithRecords
-                        .Add(appointment.AppointmentId);
-                }
-            }
-
-            ViewBag.AppointmentsWithRecords =
-                appointmentsWithRecords;
-
-            ViewBag.DoctorName =
-                doctorName;
-
-            return View(appointments);
-        }
-
-        public async Task<JsonResult>
-            SearchDoctorNames(
-                string term)
-        {
-            var doctors =
-                await _doctorService
-                    .SearchByNameAsync(term);
-
-            var result =
-                doctors
-                    .Select(d => new
+                return Json(
+                    new
                     {
-                        label = d.FullName,
-                        value = d.FullName
-                    })
-                    .ToList();
-
-            return Json(
-                result,
-                JsonRequestBehavior.AllowGet);
+                        success = true,
+                        slots = availableSlots
+                    },
+                    JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(
+                    new
+                    {
+                        success = false,
+                        message = ex.Message
+                    },
+                    JsonRequestBehavior.AllowGet);
+            }
         }
-
-        public ActionResult BookAppointment()
+        [HttpGet]
+        public ActionResult Cancel(int id)
         {
-            ViewBag.Specialisations =
-                Enum.GetNames(
-                    typeof(SpecialisationType));
+            ViewBag.AppointmentId = id;
 
-            return View();
+            return PartialView(
+                "_CancelAppointmentModal",
+                new CancelAppointmentDto()
+            );
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            BookAppointment(
-                CreateAppointmentDto dto)
+        public async Task<ActionResult> Cancel(int id, CancelAppointmentDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.CancellationReason))
+            {
+                ViewBag.AppointmentId = id;
+
+                ModelState.AddModelError(
+                    "",
+                    "Cancellation reason is required.");
+
+                return PartialView(
+                    "_CancelAppointmentModal",
+                    dto
+                );
+            }
+
             try
             {
-                await _appointmentService
-                    .BookAppointmentAsync(dto);
+                await _appointmentService.CancelAppointmentAsync(
+                    id,
+                    dto.CancellationReason);
 
-                TempData["Success"] =
-                    "Appointment booked successfully.";
-
-                return RedirectToAction(
-                    "PatientServices",
-                    "Home");
+                return Json(new
+                {
+                    success = true,
+                    message = "Appointment cancelled successfully."
+                });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                ViewBag.AppointmentId = id;
 
-                ViewBag.Specialisations =
-                    Enum.GetNames(
-                        typeof(SpecialisationType));
+                ModelState.AddModelError("", ex.Message);
 
-                return View(dto);
+                return PartialView(
+                    "_CancelAppointmentModal",
+                    dto
+                );
             }
         }
 
-        public async Task<JsonResult>
-            SearchPatientNames(
-                string term)
-        {
-            var patients =
-                await _patientService
-                    .SearchByNameAsync(term);
-
-            var result =
-                patients
-                    .Select(p => new
-                    {
-                        label = p.FullName,
-                        value = p.PatientId
-                    })
-                    .ToList();
-
-            return Json(
-                result,
-                JsonRequestBehavior.AllowGet);
-        }
-
-        public async Task<JsonResult> GetDoctorsBySpecialisation(string specialisation)
-        {
-            var doctors =await _doctorService.SearchBySpecialisationAsync(specialisation);
-
-            var result =
-                doctors
-                    .Where(d => d.IsActive)
-                    .Select(d => new
-                    {
-                        DoctorId =
-                            d.DoctorId,
-
-                        FullName =
-                            d.FullName
-                    })
-                    .ToList();
-
-            return Json(
-                result,
-                JsonRequestBehavior.AllowGet);
-        }
-
-        public async Task<JsonResult>
-            GetAvailableSlots(
-                int doctorId,
-                DateTime scheduledDate)
-        {
-            var slots =
-                await _appointmentService
-                    .GetAvailableSlotsAsync(
-                        doctorId,
-                        scheduledDate);
-
-            return Json(
-                slots,
-                JsonRequestBehavior.AllowGet);
-        }
-
-        public async Task<ActionResult>
-            ViewAppointments(
-                string patientName)
-        {
-            var appointments =
-                Enumerable.Empty
-                    <AppointmentDto>();
-
-            if (!string.IsNullOrWhiteSpace(
-                patientName))
-            {
-                appointments =
-                    await _appointmentService
-                        .GetAppointmentsByPatientNameAsync(
-                            patientName);
-            }
-
-            return View(appointments);
-        }
     }
-
 }

@@ -1,4 +1,5 @@
 ﻿using HealthAppWebAPI.Models.Dtos;
+using HealthAppWebAPI.Services.Impl;
 using HealthAppWebAPI.Services.Interfaces;
 using System;
 using System.Linq;
@@ -9,10 +10,12 @@ using System.Web.Http;
 public class AppointmentController : ApiController
 {
     private readonly IAppointmentService _service;
+    private readonly IHealthRecordService _healthRecordService;
 
-    public AppointmentController(IAppointmentService service)
+    public AppointmentController(IAppointmentService service, IHealthRecordService healthRecordService)
     {
         _service = service;
+        _healthRecordService=healthRecordService;
     }
     [HttpGet]
     [Route("")]
@@ -130,8 +133,7 @@ public class AppointmentController : ApiController
     [Route("{id:int}/healthrecord")]
     public async Task<IHttpActionResult> HealthRecordExists(int id)
     {
-        var data = await _service.GetAllAppointmentsAsync();
-        bool exists = data.Exists(a => a.AppointmentId == id);
+        bool exists = await _healthRecordService.ExistsByAppointmentIdAsync(id);
 
         return Ok(exists);
     }

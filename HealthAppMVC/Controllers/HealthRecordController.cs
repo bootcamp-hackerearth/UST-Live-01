@@ -1,145 +1,109 @@
-﻿using HealthAppMVC.Models;
-using HealthAppMVC.Services.Interface;
+﻿using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace HealthAppMVC.Controllers
 {
-
-    public class HealthRecordController
-        : Controller
+    public class HealthRecordController : Controller
     {
-        private readonly
-            IHealthRecordService
-            _healthRecordService;
-
-        private readonly
-            IPatientService
-            _patientService;
+        private readonly IHealthRecordService _healthRecordService;
+        private readonly IAppointmentService _appointmentService;
 
         public HealthRecordController(
             IHealthRecordService healthRecordService,
-            IPatientService patientService)
+            IAppointmentService appointmentService)
         {
-            _healthRecordService =
-                healthRecordService;
-
-            _patientService =
-                patientService;
+            _healthRecordService = healthRecordService;
+            _appointmentService = appointmentService;
         }
 
-        // GET:
-        // HealthRecord/Create?appointmentId=1
         [HttpGet]
-        public ActionResult Create(
-            int appointmentId)
-        {
-            CreateHealthRecordDto dto =
-                new CreateHealthRecordDto
-                {
-                    AppointmentId =
-                        appointmentId
-                };
-
-            return View(dto);
-        }
-
-        // POST:
-        // HealthRecord/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Create(
-                CreateHealthRecordDto dto)
+        public async Task<ActionResult> Create(int appointmentId)
         {
             try
             {
-                if (!ModelState.IsValid)
+                bool healthRecordExists =
+                    await _appointmentService.HealthRecordExistsAsync(appointmentId);
+
+                if (healthRecordExists)
                 {
-                    return View(dto);
+                    return Content(
+                        "<div class='modal-header healthrecord-modal-header'>" +
+                            "<h5 class='modal-title'>" +
+                                "<i class='bi bi-journal-medical'></i> Health Record" +
+                            "</h5>" +
+                            "<button type='button' class='btn-close btn-close-white' data-bs-dismiss='modal' aria-label='Close'></button>" +
+                        "</div>" +
+
+                        "<div class='modal-body'>" +
+                            "<div class='alert alert-warning'>" +
+                                "Health record already exists for this appointment." +
+                            "</div>" +
+                        "</div>" +
+
+                        "<div class='modal-footer'>" +
+                            "<button type='button' class='btn btn-secondary btn-rounded' data-bs-dismiss='modal'>Close</button>" +
+                        "</div>"
+                    );
                 }
 
-                await _healthRecordService.AddHealthRecordAsync(dto);
+                var model = new CreateHealthRecordDto
+                {
+                    AppointmentId = appointmentId
+                };
 
-                TempData["Success"] =
-                    "Health Record Added Successfully";
-
-                return RedirectToAction(
-                    "SearchPatientHistory");
+                return PartialView("_CreateHealthRecordModal", model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
+                return Content(
+                    "<div class='modal-header healthrecord-modal-header'>" +
+                        "<h5 class='modal-title'>" +
+                            "<i class='bi bi-journal-medical'></i> Health Record" +
+                        "</h5>" +
+                        "<button type='button' class='btn-close btn-close-white' data-bs-dismiss='modal' aria-label='Close'></button>" +
+                    "</div>" +
 
-                return View(dto);
+                    "<div class='modal-body'>" +
+                        "<div class='alert alert-danger'>" +
+                            Server.HtmlEncode(ex.Message) +
+                        "</div>" +
+                    "</div>" +
+
+                    "<div class='modal-footer'>" +
+                        "<button type='button' class='btn btn-secondary btn-rounded' data-bs-dismiss='modal'>Close</button>" +
+                    "</div>"
+                );
             }
         }
 
-        // GET:
-        // HealthRecord/Details/1
-        public async Task<ActionResult>
-            Details(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Create(CreateHealthRecordDto dto)
         {
-            var record =
-                await _healthRecordService
-                    .GetByIdAsync(id);
-
-            if (record == null)
+            if (!ModelState.IsValid)
             {
-                return HttpNotFound();
+                return PartialView("_CreateHealthRecordModal", dto);
             }
 
-            return View(record);
-        }
-
-        // GET:
-        // HealthRecord/SearchPatientHistory
-        public async Task<ActionResult>
-            SearchPatientHistory(
-                int? patientId)
-        {
-            IEnumerable<HealthRecordDto>
-                records =
-                    Enumerable.Empty
-                        <HealthRecordDto>();
-
-            if (patientId.HasValue)
+            try
             {
-                records =
-                    await _healthRecordService
-                        .GetPatientHistoryAsync(
-                            patientId.Value);
-            }
+                await _healthRecordService.AddHealthRecordAsync(dto);
 
-            return View(records);
-        }
-
-        public async Task<JsonResult>
-            SearchPatientNames(
-                string term)
-        {
-            var patients =
-                await _patientService
-                    .SearchByNameAsync(term);
-
-            var result =
-                patients
-                .Select(p => new
+                return Json(new
                 {
-                    label = p.FullName,
-                    value = p.PatientId
-                })
-                .ToList();
+                    success = true,
+                    message = "Health record added successfully. Appointment completed."
+                });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
 
-            return Json(
-                result,
-                JsonRequestBehavior.AllowGet);
+                return PartialView("_CreateHealthRecordModal", dto);
+            }
         }
     }
 }

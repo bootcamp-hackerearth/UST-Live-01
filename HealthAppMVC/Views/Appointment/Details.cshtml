@@ -1,0 +1,129 @@
+﻿@model HealthAppWebAPI.Models.Dtos.AppointmentDto
+
+@{
+    ViewBag.Title = "Appointment Details";
+}
+
+<div class="page-wrapper">
+
+    <div class="page-header-box">
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+                <h2 class="page-title">Appointment Details</h2>
+
+                <p class="page-subtitle">
+                    View appointment information and current appointment status.
+                </p>
+            </div>
+
+            <div class="col-md-4 text-end">
+                @Html.ActionLink(
+                    "Back to Appointments",
+                    "Index",
+                    "Appointment",
+                    null,
+                    new { @class = "btn btn-secondary btn-rounded" })
+            </div>
+
+        </div>
+    </div>
+
+    <div class="table-card mb-4">
+
+        <h4 class="mb-3">
+            <i class="bi bi-calendar-check"></i>
+            Appointment #@Model.AppointmentId
+        </h4>
+
+        <hr />
+
+        <div class="row">
+
+            <div class="col-md-6">
+
+                <p>
+                    <strong>Patient:</strong>
+                    @Model.PatientName
+                </p>
+
+                <p>
+                    <strong>Doctor:</strong>
+                    @Model.DoctorName
+                </p>
+
+                <p>
+                    <strong>Date:</strong>
+                    @Model.ScheduledDate
+                </p>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <p>
+                    <strong>Time Slot:</strong>
+                    @Model.TimeSlot
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+
+                    @if (Model.Status == "Pending")
+                    {
+                        <span class="appointment-status-badge status-pending">
+                            <i class="bi bi-hourglass-split"></i>
+                            Pending
+                        </span>
+                    }
+                    else if (Model.Status == "Confirmed")
+                    {
+                        <span class="appointment-status-badge status-confirmed">
+                            <i class="bi bi-check-circle-fill"></i>
+                            Confirmed
+                        </span>
+                    }
+                    else if (Model.Status == "Completed")
+                    {
+                        <span class="appointment-status-badge status-completed">
+                            <i class="bi bi-clipboard-check-fill"></i>
+                            Completed
+                        </span>
+                    }
+                    else if (Model.Status == "Cancelled")
+                    {
+                        <span class="appointment-status-badge status-cancelled">
+                            <i class="bi bi-x-circle-fill"></i>
+                            Cancelled
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="appointment-status-badge status-pending">
+                            @Model.Status
+                        </span>
+                    }
+                </p>
+
+                <p>
+                    <strong>Health Record Created:</strong>
+                    @(ViewBag.HealthRecordExists == true ? "Yes" : "No")
+                </p>
+
+            </div>
+
+        </div>
+
+        @if (Model.Status == "Cancelled")
+        {
+            <hr />
+
+            <p>
+                <strong>Cancellation Reason:</strong>
+                @Model.CancellationReason
+            </p>
+        }
+
+    </div>
+
+</div>

@@ -4,151 +4,167 @@
     ViewBag.Title = "Register Patient";
 }
 
-<h2>Register Patient</h2>
+
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
+<div class="form-horizontal">
+    <h2>Register Patient</h2>
 
-        @Html.ValidationSummary(
-            true,
+    @Html.ValidationSummary(
+        true,
+        "",
+        new { @class = "text-danger" })
+
+    <div class="form-group">
+
+        <label>Name</label>
+
+        @Html.TextBoxFor(
+            m => m.FullName,
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.FullName,
             "",
             new { @class = "text-danger" })
 
-        <div class="form-group">
+    </div>
 
-            <label>Name</label>
+    <div class="form-group">
 
-            @Html.TextBoxFor(
-                m => m.FullName,
-                new { @class = "form-control" })
+        <label>DOB</label>
 
-            @Html.ValidationMessageFor(
-                m => m.FullName,
-                "",
-                new { @class = "text-danger" })
+        @Html.TextBoxFor(
+            m => m.DateOfBirth,
+            "{0:yyyy-MM-dd}",
+            new
+            {
+                @class = "form-control",
+                type = "date"
+            })
 
-        </div>
-
-        <div class="form-group">
-
-            <label>DOB</label>
-
-            @Html.TextBoxFor(
-                m => m.DateOfBirth,
-                "{0:yyyy-MM-dd}",
-                new
-                {
-                    @class = "form-control",
-                    type = "date"
-                })
-
-            @Html.ValidationMessageFor(
-                m => m.DateOfBirth,
-                "",
-                new { @class = "text-danger" })
-
-        </div>
-
-        <div class="form-group">
-
-            <label>Gender</label>
-
-            @Html.DropDownListFor(
-                m => m.Gender,
-                new List<SelectListItem>
-                {
-                    new SelectListItem
-                    {
-                        Text = "Male",
-                        Value = "Male"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Female",
-                        Value = "Female"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Other",
-                        Value = "Other"
-                    }
-                },
-                "--Select--",
-                new { @class = "form-control" })
-
-            @Html.ValidationMessageFor(
-                m => m.Gender,
-                "",
-                new { @class = "text-danger" })
-
-        </div>
-
-        <div class="form-group">
-
-            <label>Phone</label>
-
-            @Html.TextBoxFor(
-                m => m.PhoneNumber,
-                new { @class = "form-control" })
-
-            @Html.ValidationMessageFor(
-                m => m.PhoneNumber,
-                "",
-                new { @class = "text-danger" })
-
-        </div>
-
-        <div class="form-group">
-
-            <label>Email</label>
-
-            @Html.TextBoxFor(
-                m => m.Email,
-                new
-                {
-                    @class = "form-control",
-                    type = "email"
-                })
-
-            @Html.ValidationMessageFor(
-                m => m.Email,
-                "",
-                new { @class = "text-danger" })
-
-        </div>
-
-        <div class="form-group">
-
-            <label>Insurance ID</label>
-
-            @Html.TextBoxFor(
-                m => m.InsuranceId,
-                new { @class = "form-control" })
-
-        </div>
-
-        <br />
-
-        <input type="submit"
-               value="Save"
-               class="btn btn-success" />
-
-        @Html.ActionLink(
-            "Back",
-            "Index",
-            null,
-            new { @class = "btn btn-secondary" })
+        @Html.ValidationMessageFor(
+            m => m.DateOfBirth,
+            "",
+            new { @class = "text-danger" })
 
     </div>
+
+    <div class="form-group">
+
+        <label>Gender</label>
+
+        @Html.DropDownListFor(
+            m => m.Gender,
+            new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Text = "Male",
+                    Value = "Male"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Female",
+                    Value = "Female"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Other",
+                    Value = "Other"
+                }
+            },
+            "--Select--",
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.Gender,
+            "",
+            new { @class = "text-danger" })
+
+    </div>
+
+    
+
+    <div class="form-group">
+
+        <label>Email</label>
+
+        @Html.TextBoxFor(
+            m => m.Email,
+            new
+            {
+                @class = "form-control",
+                type = "email"
+            })
+
+        @Html.ValidationMessageFor(
+            m => m.Email,
+            "",
+            new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group">
+
+        <label>Insurance ID</label>
+
+        @Html.TextBoxFor(
+            m => m.InsuranceId,
+            new { @class = "form-control" })
+
+    </div>
+
+    <br />
+
+    <input type="submit"
+           value="Save"
+           class="btn btn-success" />
+
+    @Html.ActionLink(
+        "Back",
+        "Index",
+        null,
+        new { @class = "btn btn-secondary" })
+
+</div>
 }
 
 @section Scripts {
 
     @Scripts.Render("~/bundles/jqueryval")
 
+    <script>
+
+        $(document).ready(function () {
+
+            $("#DateOfBirth").change(function () {
+
+                var selectedDate =
+                    new Date($(this).val());
+
+                var today =
+                    new Date();
+
+                today.setHours(0, 0, 0, 0);
+
+                $(".dob-error").remove();
+
+                if (selectedDate > today) {
+
+                    $(this).after(
+                        '<span class="text-danger dob-error">' +
+                        'Future date not allowed.' +
+                        '</span>');
+                }
+            });
+
+        });
+
+    </script>
 }

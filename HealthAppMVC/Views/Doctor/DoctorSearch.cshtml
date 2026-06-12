@@ -11,96 +11,48 @@
             "Doctor",
             FormMethod.Get))
 {
-    <div class="row mb-4">
 
+    <div class="row mb-4 align-items-end">
+
+        <!-- Doctor Name -->
         <div class="col-md-4">
-
+            <label class="form-label">Doctor Name</label>
             <input type="text"
                    name="doctorName"
                    class="form-control"
-                   placeholder="Doctor Name" />
-
+                   placeholder="Enter doctor name" />
         </div>
 
+        <!-- Specialisation -->
         <div class="col-md-4">
-
+            <label class="form-label">Specialisation</label>
             @Html.DropDownList(
                 "specialisation",
                 new List<SelectListItem>
                 {
-                    new SelectListItem
-                    {
-                        Text = "Cardiologist",
-                        Value = "Cardiologist"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Dermatologist",
-                        Value = "Dermatologist"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Neurologist",
-                        Value = "Neurologist"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Orthopedic",
-                        Value = "Orthopedic"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Pediatrician",
-                        Value = "Pediatrician"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "General Physician",
-                        Value = "GeneralPhysician"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Psychiatrist",
-                        Value = "Psychiatrist"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "ENT",
-                        Value = "ENT"
-                    },
-
-                    new SelectListItem
-                    {
-                        Text = "Gynecologist",
-                        Value = "Gynecologist"
-                    }
+                    new SelectListItem { Text = "Cardiologist", Value = "Cardiologist" },
+                    new SelectListItem { Text = "Dermatologist", Value = "Dermatologist" },
+                    new SelectListItem { Text = "Neurologist", Value = "Neurologist" },
+                    new SelectListItem { Text = "Orthopedic", Value = "Orthopedic" },
+                    new SelectListItem { Text = "Pediatrician", Value = "Pediatrician" },
+                    new SelectListItem { Text = "General Physician", Value = "GeneralPhysician" },
+                    new SelectListItem { Text = "Psychiatrist", Value = "Psychiatrist" },
+                    new SelectListItem { Text = "ENT", Value = "ENT" },
+                    new SelectListItem { Text = "Gynecologist", Value = "Gynecologist" }
                 },
                 "-- Select Specialisation --",
                 new { @class = "form-control" })
-
         </div>
 
-        <div class="col-md-2">
+        <!-- Buttons -->
+        <div class="col-md-4 d-flex gap-2">
 
-            <button class="btn btn-primary">
+            <button type="submit" class="btn btn-primary w-50">
                 Search
             </button>
 
-        </div>
-
-        <div class="col-md-2">
-
-            <a href="@Url.Action(
-                        "DoctorServices",
-                        "Home")"
-               class="btn btn-secondary">
+            <a href="@Url.Action("DoctorServices", "Home")"
+               class="btn btn-secondary w-50">
                 Back
             </a>
 
@@ -109,52 +61,55 @@
     </div>
 }
 
+
 <div class="row">
 
     @foreach (var doctor in Model)
     {
         <div class="col-md-4 mb-4">
 
-            <div class="card shadow h-100">
+            <div class="card h-100 shadow-sm border-0 rounded-4 hover-card">
 
                 <div class="card-body">
 
-                    <h4>
+                    <!-- Doctor Name -->
+                    <h5 class="fw-bold text-primary mb-3">
                         👨‍⚕️ @doctor.FullName
-                    </h4>
+                    </h5>
 
                     <hr />
 
-                    <p>
-                        <strong>Specialisation:</strong>
-                        @doctor.Specialisation
+                    <!-- Details -->
+                    <p class="mb-2">
+                        <span class="text-muted">Specialisation:</span><br />
+                        <strong>@doctor.Specialisation</strong>
                     </p>
 
-                    <p>
-                        <strong>Experience:</strong>
-                        @doctor.YearsOfExperience Years
+                    <p class="mb-2">
+                        <span class="text-muted">Experience:</span>
+                        <strong>@doctor.YearsOfExperience Years</strong>
                     </p>
 
-                    <p>
-                        <strong>Fee:</strong>
-                        ₹@doctor.ConsultationFee
+                    <p class="mb-2">
+                        <span class="text-muted">Consultation Fee:</span>
+                        <strong class="text-success">₹@doctor.ConsultationFee</strong>
                     </p>
 
-                    <p>
-                        <strong>Email:</strong>
-                        @doctor.DoctorEmail
+                    <p class="mb-2">
+                        <span class="text-muted">Email:</span><br />
+                        <small>@doctor.DoctorEmail</small>
                     </p>
 
-                    <p>
-                        <strong>Phone:</strong>
-                        @doctor.DoctorPhoneNo
+                    <p class="mb-2">
+                        <span class="text-muted">Phone:</span>
+                        <strong>@doctor.DoctorPhoneNo</strong>
                     </p>
 
-                    <p>
-                        <strong>Status:</strong>
-                        @(doctor.IsActive
-                            ? "Active"
-                            : "Inactive")
+                    <!-- Status Badge -->
+                    <p class="mt-3">
+                        <span class="badge @(doctor.IsActive ? "bg-success" : "bg-danger")">
+                            @(doctor.IsActive ? "Active" : "Inactive")
+                        </span>
                     </p>
 
                 </div>

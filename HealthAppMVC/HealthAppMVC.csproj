@@ -338,14 +338,6 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Appointment\Index.cshtml" />
-    <Content Include="Views\Appointment\Create.cshtml" />
-    <Content Include="Views\Appointment\Cancel.cshtml" />
-    <Content Include="Views\Appointment\UpcomingAppointments.cshtml" />
-    <Content Include="Views\Appointment\BookAppointment.cshtml" />
-    <Content Include="Views\Appointment\ViewAppointments.cshtml" />
-    <Content Include="Views\Appointment\Delete.cshtml" />
-    <Content Include="Views\Doctor\Create.cshtml" />
-    <Content Include="Views\Doctor\Details.cshtml" />
     <Content Include="Views\Doctor\DoctorSearch.cshtml" />
     <Content Include="Views\Doctor\Edit.cshtml" />
     <Content Include="Views\Doctor\Index.cshtml" />
@@ -359,12 +351,22 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Home\PatientServices.cshtml" />
     <Content Include="Views\Patient\Create.cshtml" />
-    <Content Include="Views\Patient\Delete.cshtml" />
     <Content Include="Views\Patient\Details.cshtml" />
     <Content Include="Views\Patient\Edit.cshtml" />
     <Content Include="Views\Patient\Index.cshtml" />
     <Content Include="Views\Patient\PatientSearch.cshtml" />
     <Content Include="Views\Patient\SearchPatient.cshtml" />
+    <Content Include="Views\Patient\_CreatePatientModal.cshtml" />
+    <Content Include="Views\Patient\_EditPatientModal.cshtml" />
+    <Content Include="Views\Patient\_PatientForm.cshtml" />
+    <Content Include="Views\Doctor\_DoctorForm.cshtml" />
+    <Content Include="Views\Doctor\_CreateDoctorModal.cshtml" />
+    <Content Include="Views\Doctor\_EditDoctorModal.cshtml" />
+    <Content Include="Views\Doctor\Details.cshtml" />
+    <Content Include="Views\Appointment\_CreateAppointmentModal.cshtml" />
+    <Content Include="Views\Appointment\_CancelAppointmentModal.cshtml" />
+    <Content Include="Views\Appointment\Details.cshtml" />
+    <Content Include="Views\HealthRecord\_CreateHealthRecordModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

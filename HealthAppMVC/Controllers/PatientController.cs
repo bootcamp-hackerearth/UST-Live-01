@@ -1,225 +1,195 @@
-﻿using HealthAppMVC.Models;
-using HealthAppMVC.Services.Interface;
+﻿using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace HealthAppMVC.Controllers
 {
-
-    public class PatientController
-         : Controller
+    public class PatientController : Controller
     {
-        private readonly
-            IPatientService
-            _patientService;
+        private readonly IPatientService _patientService;
+        private readonly IAppointmentService _appointmentService;
+        private readonly IHealthRecordService _healthRecordService;
 
         public PatientController(
-            IPatientService patientService)
+            IPatientService patientService,
+            IAppointmentService appointmentService,
+            IHealthRecordService healthRecordService)
         {
-            _patientService =
-                patientService;
+            _patientService = patientService;
+            _appointmentService = appointmentService;
+            _healthRecordService = healthRecordService;
         }
 
-        // GET: Patient
-        public async Task<ActionResult>
-            Index()
+        public async Task<ActionResult> Index(string search)
         {
-            var patients =
-                await _patientService
-                    .GetAllPatientsAsync();
-
-            return View(patients);
-        }
-
-        // GET: Patient/Details/5
-        public async Task<ActionResult>
-            Details(int id)
-        {
-            var patient =
-                await _patientService
-                    .GetPatientByIdAsync(id);
-
-            if (patient == null)
+            try
             {
-                return HttpNotFound();
-            }
+                ViewBag.Search = search;
 
-            return View(patient);
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    var result = await _patientService.SearchByNameAsync(search);
+                    return View(result);
+                }
+
+                var patients = await _patientService.GetAllPatientsAsync();
+                return View(patients);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View();
+            }
         }
 
-        // GET: Patient/Create
+        [HttpGet]
         public ActionResult Create()
         {
-            return View();
+            return PartialView("_CreatePatientModal", new CreatePatientDto());
         }
 
-        // POST: Patient/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Create(CreatePatientDto dto)
+        public async Task<ActionResult> Create(CreatePatientDto dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_CreatePatientModal", dto);
+            }
+
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return View(dto);
-                }
-
                 await _patientService.RegisterPatientAsync(dto);
 
-                return RedirectToAction(
-                    "Index");
+                return Json(new
+                {
+                    success = true,
+                    message = "Patient registered successfully."
+                });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
-
-                return View(dto);
+                ModelState.AddModelError("", ex.Message);
+                return PartialView("_CreatePatientModal", dto);
             }
         }
 
-        // GET: Patient/Edit/5
-        public async Task<ActionResult>
-            Edit(int id)
-        {
-            var patient =
-                await _patientService.GetPatientByIdAsync(id);
-
-            if (patient == null)
-            {
-                return HttpNotFound();
-            }
-
-            CreatePatientDto dto =
-                new CreatePatientDto
-                {
-                    FullName =
-                        patient.FullName,
-
-                    DateOfBirth =
-                        patient.DateOfBirth,
-
-                    Gender =
-                        patient.Gender,
-
-                    Email =
-                        patient.Email,
-
-                    PhoneNumber = patient.Phone,
-
-                    InsuranceId =
-                        patient.InsuranceId
-                };
-
-            return View(dto);
-        }
-
-        // POST: Patient/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult>
-            Edit(
-                int id,
-                CreatePatientDto dto)
+        [HttpGet]
+        public async Task<ActionResult> Edit(int id)
         {
             try
             {
-                if (!ModelState.IsValid)
+                var patient = await _patientService.GetPatientByIdAsync(id);
+
+                var dto = new CreatePatientDto
                 {
-                    return View(dto);
-                }
+                    FullName = patient.FullName,
+                    DateOfBirth = patient.DateOfBirth,
+                    Gender = patient.Gender,
+                    Email = patient.Email,
+                    PhoneNumber = patient.Phone,
+                    InsuranceId = patient.InsuranceId
+                };
 
-                await _patientService
-                    .UpdatePatientAsync(
-                        id,
-                        dto);
+                ViewBag.PatientId = id;
 
-                return RedirectToAction(
-                    "Index");
+                return PartialView("_EditPatientModal", dto);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(
-                    "",
-                    ex.Message);
-
-                return View(dto);
+                return Content("<div class='modal-body'><div class='alert alert-danger'>" + ex.Message + "</div></div>");
             }
         }
 
-        public ActionResult PatientServices()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(int id, CreatePatientDto dto)
         {
-            return View();
-        }
-
-        public async Task<ActionResult>
-            SearchPatient()
-        {
-            var patients =
-                await _patientService
-                    .GetAllPatientsAsync();
-
-            return View(patients);
-        }
-
-        public async Task<JsonResult>
-            SearchPatientNames(
-                string term)
-        {
-            var patients =
-                await _patientService
-                    .SearchByNameAsync(term);
-
-            var result =
-                patients.Select(p => new
-                {
-                    label = p.FullName,
-                    value = p.FullName
-                }).ToList();
-
-            return Json(
-                result,
-                JsonRequestBehavior.AllowGet);
-        }
-
-        public ActionResult
-            EditPatientByName(int id)
-        {
-            return RedirectToAction(
-                "Edit",
-                new { id });
-        }
-
-        public async Task<ActionResult>
-            PatientSearch(
-                string patientName)
-        {
-            var patients =
-                await _patientService
-                    .GetAllPatientsAsync();
-
-            if (!string.IsNullOrWhiteSpace(
-                patientName))
+            if (!ModelState.IsValid)
             {
-                patients =
-                    patients.Where(p =>
-                        p.FullName
-                        .ToLower()
-                        .Contains(
-                            patientName
-                            .ToLower()))
-                    .ToList();
+                ViewBag.PatientId = id;
+                return PartialView("_EditPatientModal", dto);
             }
 
-            return View(patients);
+            try
+            {
+                await _patientService.UpdatePatientAsync(id, dto);
+
+                return Json(new
+                {
+                    success = true,
+                    message = "Patient updated successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                ViewBag.PatientId = id;
+                ModelState.AddModelError("", ex.Message);
+                return PartialView("_EditPatientModal", dto);
+            }
+        }
+
+        public async Task<ActionResult> Details(int id)
+        {
+            try
+            {
+                var patient =
+                    await _patientService.GetPatientByIdAsync(id);
+
+                if (patient == null)
+                {
+                    TempData["Error"] = "Patient not found.";
+                    return RedirectToAction("Index");
+                }
+
+                try
+                {
+                    var appointments =
+                        await _appointmentService.GetAppointmentsByPatientAsync(id);
+
+                    ViewBag.Appointments = appointments;
+                }
+                catch
+                {
+                    ViewBag.Appointments =
+                        new List<HealthAppWebAPI.Models.Dtos.AppointmentDto>();
+                }
+
+                try
+                {
+                    var healthRecords =
+                        await _healthRecordService.GetPatientHistoryAsync(id);
+
+                    ViewBag.HealthRecords = healthRecords;
+                }
+                catch
+                {
+                    ViewBag.HealthRecords =
+                        new List<HealthAppWebAPI.Models.Dtos.HealthRecordDto>();
+                }
+
+                try
+                {
+                    var appointmentCount =
+                        await _patientService.GetAppointmentCountAsync(id);
+
+                    ViewBag.AppointmentCount = appointmentCount;
+                }
+                catch
+                {
+                    ViewBag.AppointmentCount = 0;
+                }
+
+                return View(patient);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
         }
     }
 }

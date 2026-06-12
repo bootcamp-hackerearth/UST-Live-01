@@ -17,6 +17,10 @@ namespace HealthAppWebAPI.Services.Interfaces
         Task AddAsync(CreateHealthRecordDto dto);
 
         Task<List<HealthRecordDto>> GetPatientHistoryAsync(int patientId);
+
+        Task<List<HealthRecordDto>> GetByPatientIdAsync(int patientId);
+
+        Task<bool> ExistsByAppointmentIdAsync(int appointmentId);
     }
 
 }

@@ -50,11 +50,14 @@ namespace HealthAppMVC.Services.Implementation
 
         public async Task AddHealthRecordAsync(CreateHealthRecordDto dto)
         {
-            var response = await _httpClient.PostAsJsonAsync("healthrecords", dto);
+            var response =
+                await _httpClient.PostAsJsonAsync("healthrecords", dto);
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                var error =
+                    await response.Content.ReadAsStringAsync();
+
                 throw new Exception(error);
             }
         }

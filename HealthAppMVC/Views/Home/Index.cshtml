@@ -1,57 +1,253 @@
 ﻿@{
-    ViewBag.Title = "Home";
+    ViewBag.Title = "Hospital Dashboard";
 }
 
-<div class="container mt-5">
+<section class="home-section">
+    <div class="container">
 
-    <h1 class="text-center mb-5">
-        HealthCare Management System
-    </h1>
-
-    <div class="row justify-content-center">
-
-        <div class="col-md-4 mb-4">
-            <div class="card shadow text-center h-100">
-
-                <div class="card-body">
-
-                    <div style="font-size:70px;">👨‍⚕️</div>
-
-                    <h3 class="mt-3">
-                        Doctor
-                    </h3>
-
-                    <a href="@Url.Action("DoctorServices","Home")"
-                       class="btn btn-primary mt-3">
-                        Open
-                    </a>
-
-                </div>
-
-            </div>
+        <div class="header-section text-center">
+            <h1 class="main-title">Hospital Management System</h1>
+            <p class="subtitle">
+                Manage patients, doctors, appointments, and medical records from one simple dashboard.
+            </p>
         </div>
 
-        <div class="col-md-4 mb-4">
-            <div class="card shadow text-center h-100">
+        <div class="row">
 
-                <div class="card-body">
+            <div class="col-md-4 col-sm-6">
+                <div class="service-card patient-card">
+                    <div class="icon-box patient-icon">
+                        <span>👤</span>
+                    </div>
 
-                    <div style="font-size:70px;">🧑‍🤝‍🧑</div>
+                    <h3>Patients</h3>
 
-                    <h3 class="mt-3">
-                        Patient
-                    </h3>
+                    <p>
+                        Register new patients, update patient details, view appointments,
+                        and access medical history.
+                    </p>
 
-                    <a href="@Url.Action("PatientServices","Home")"
-                       class="btn btn-success mt-3">
-                        Open
-                    </a>
-
+                    @Html.ActionLink(
+                        "Open Patients",
+                        "Index",
+                        "Patient",
+                        null,
+                        new { @class = "btn btn-patient" }
+                    )
                 </div>
-
             </div>
-        </div>
 
+            <div class="col-md-4 col-sm-6">
+                <div class="service-card doctor-card">
+                    <div class="icon-box doctor-icon">
+                        <span>⚕</span>
+                    </div>
+
+                    <h3>Doctors</h3>
+
+                    <p>
+                        Manage doctor profiles, specialisations, availability,
+                        active status, and appointments.
+                    </p>
+
+                    @Html.ActionLink(
+                        "Open Doctors",
+                        "Index",
+                        "Doctor",
+                        null,
+                        new { @class = "btn btn-doctor" }
+                    )
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+                <div class="service-card appointment-card">
+                    <div class="icon-box appointment-icon">
+                        <span>📅</span>
+                    </div>
+
+                    <h3>Appointments</h3>
+
+                    <p>
+                        Book appointments, confirm schedules, cancel visits,
+                        and track appointment status.
+                    </p>
+
+                    @Html.ActionLink(
+                        "Open Appointments",
+                        "Index",
+                        "Appointment",
+                        null,
+                        new { @class = "btn btn-appointment" }
+                    )
+                </div>
+            </div>
+
+        </div>
     </div>
+</section>
 
-</div>
+<style>
+    body {
+        background-color: #f4f8fb;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .home-section {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        padding: 60px 0;
+        background: linear-gradient(135deg, #eef7ff 0%, #f8fbff 100%);
+    }
+
+    .header-section {
+        margin-bottom: 50px;
+    }
+
+    .main-title {
+        font-size: 42px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 12px;
+    }
+
+    .subtitle {
+        font-size: 18px;
+        color: #6b7280;
+        max-width: 700px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    .service-card {
+        background-color: #ffffff;
+        border-radius: 22px;
+        padding: 40px 30px;
+        text-align: center;
+        height: 100%;
+        min-height: 370px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #eef2f7;
+        margin-bottom: 30px;
+    }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+        }
+
+    .icon-box {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 25px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .icon-box span {
+            font-size: 38px;
+            color: #ffffff;
+            line-height: 1;
+        }
+
+    .patient-icon {
+        background: linear-gradient(135deg, #059669, #34d399);
+    }
+
+    .doctor-icon {
+        background: linear-gradient(135deg, #2563eb, #38bdf8);
+    }
+
+    .appointment-icon {
+        background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    }
+
+    .service-card h3 {
+        font-size: 26px;
+        font-weight: 600;
+        color: #111827;
+        margin-bottom: 15px;
+    }
+
+    .service-card p {
+        font-size: 15px;
+        color: #6b7280;
+        line-height: 1.6;
+        min-height: 95px;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        border-radius: 30px;
+        padding: 11px 26px;
+        font-weight: 600;
+        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+    .btn-patient {
+        background-color: #059669;
+        color: #ffffff;
+    }
+
+        .btn-patient:hover,
+        .btn-patient:focus {
+            background-color: #047857;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+    .btn-doctor {
+        background-color: #2563eb;
+        color: #ffffff;
+    }
+
+        .btn-doctor:hover,
+        .btn-doctor:focus {
+            background-color: #1d4ed8;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+    .btn-appointment {
+        background-color: #f59e0b;
+        color: #ffffff;
+    }
+
+        .btn-appointment:hover,
+        .btn-appointment:focus {
+            background-color: #d97706;
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+    @@media (max-width: 991px) {
+        .service-card {
+            min-height: 350px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .home-section {
+            padding: 40px 0;
+        }
+
+        .main-title {
+            font-size: 32px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+        }
+
+        .service-card {
+            padding: 35px 25px;
+            min-height: auto;
+        }
+    }
+</style>

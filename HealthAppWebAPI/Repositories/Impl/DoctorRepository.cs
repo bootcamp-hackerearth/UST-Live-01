@@ -32,16 +32,38 @@ namespace HealthAppWebAPI.Repositories.Impl
 
         public async Task AddAsync(Doctor doctor)
         {
-            _context.Doctors.Add(doctor);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Doctors.Add(doctor);
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+               
+                throw new Exception(
+                    ex.InnerException?.InnerException?.Message
+                    ?? ex.InnerException?.Message
+                    ?? ex.Message);
+            }
         }
 
         public async Task UpdateAsync(Doctor doctor)
         {
-            _context.Entry(doctor).State =
-                EntityState.Modified;
+            try
+            {
+                _context.Entry(doctor).State =
+                    EntityState.Modified;
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    ex.InnerException?.InnerException?.Message
+                    ?? ex.InnerException?.Message
+                    ?? ex.Message);
+            }
         }
 
         public async Task ChangeStatusAsync(int id, bool isActive)

@@ -2,54 +2,198 @@
 
 @{
     ViewBag.Title = "Patient Details";
+
+    var appointments =
+        ViewBag.Appointments as IEnumerable<HealthAppWebAPI.Models.Dtos.AppointmentDto>;
+
+    var healthRecords =
+        ViewBag.HealthRecords as IEnumerable<HealthAppWebAPI.Models.Dtos.HealthRecordDto>;
 }
 
-<h2>Patient Details</h2>
+<div class="page-wrapper">
 
-<div class="card p-3">
+    <div class="page-header-box">
+        <div class="row align-items-center">
 
-    <p>
-        <strong>ID :</strong>
-        @Model.PatientId
-    </p>
+            <div class="col-md-8">
+                <h2 class="page-title">Patient Details</h2>
 
-    <p>
-        <strong>Name :</strong>
-        @Model.FullName
-    </p>
+                <p class="page-subtitle">
+                    View patient profile, appointments, and health records.
+                </p>
+            </div>
 
-    <p>
-        <strong>DOB :</strong>
-        @Model.DateOfBirth
-        .ToString("dd-MM-yyyy")
-    </p>
+            <div class="col-md-4 text-end">
+                @Html.ActionLink(
+                    "Back to Patients",
+                    "Index",
+                    "Patient",
+                    null,
+                    new { @class = "btn btn-secondary btn-rounded" })
+            </div>
 
-    <p>
-        <strong>Gender :</strong>
-        @Model.Gender
-    </p>
+        </div>
+    </div>
 
-    <p>
-        <strong>Phone :</strong>
-        @Model.Phone
-    </p>
+    <div class="table-card mb-4">
 
-    <p>
-        <strong>Email :</strong>
-        @Model.Email
-    </p>
+        <h4 class="mb-3">
+            <i class="bi bi-person"></i>
+            @Model.FullName
+        </h4>
 
-    <p>
-        <strong>Insurance :</strong>
-        @Model.InsuranceId
-    </p>
+        <hr />
+
+        <div class="row">
+
+            <div class="col-md-6">
+
+                <p>
+                    <strong>Patient Id:</strong>
+                    @Model.PatientId
+                </p>
+
+                <p>
+                    <strong>Date of Birth:</strong>
+                    @Model.DateOfBirth.ToString("dd-MM-yyyy")
+                </p>
+
+                <p>
+                    <strong>Gender:</strong>
+                    @Model.Gender
+                </p>
+
+            </div>
+
+            <div class="col-md-6">
+
+                <p>
+                    <strong>Email:</strong>
+                    @Model.Email
+                </p>
+
+                <p>
+                    <strong>Insurance ID:</strong>
+                    @Model.InsuranceId
+                </p>
+
+                <p>
+                    <strong>Total Appointments:</strong>
+                    @ViewBag.AppointmentCount
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="table-card mb-4">
+
+        <h4 class="mb-3">
+            Appointments
+        </h4>
+
+        <table class="table table-bordered table-striped custom-table">
+
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (appointments == null || !appointments.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center">
+                            No appointments found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in appointments)
+                    {
+                        <tr>
+                            <td>@item.DoctorName</td>
+                            <td>@item.ScheduledDate</td>
+                            <td>@item.TimeSlot</td>
+                            <td>@item.Status</td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="table-card">
+
+        <h4 class="mb-3">
+            Health Records
+        </h4>
+
+        <table class="table table-bordered table-striped custom-table">
+
+            <thead>
+                <tr>
+                    <th>Visit Date</th>
+                    <th>Doctor</th>
+                    <th>Diagnosis</th>
+                    <th>Prescription</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (healthRecords == null || !healthRecords.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">
+                            No health records found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var record in healthRecords)
+                    {
+                        <tr>
+                            <td>
+                                @record.VisitDate.ToString("dd-MM-yyyy")
+                            </td>
+
+                            <td>
+                                @record.DoctorName
+                            </td>
+
+                            <td>
+                                @record.Diagnosis
+                            </td>
+
+                            <td>
+                                @record.Prescription
+                            </td>
+
+                            <td>
+                                @record.Notes
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
 
 </div>
-
-<br />
-
-@Html.ActionLink(
-    "Back",
-    "Index",
-    null,
-    new { @class = "btn btn-secondary" })

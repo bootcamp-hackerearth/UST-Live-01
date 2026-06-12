@@ -4,139 +4,647 @@
     ViewBag.Title = "Appointments";
 }
 
-<h2>Appointments</h2>
+<div class="page-wrapper">
 
-<p>
-    @Html.ActionLink(
-        "Book Appointment",
-        "Create",
-        null,
-        new { @class = "btn btn-primary" })
-</p>
+    <div class="page-header-box">
+        <div class="row align-items-center">
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">
-        @TempData["Success"]
+            <div class="col-md-8">
+                <h2 class="page-title">Appointments</h2>
+
+                <p class="page-subtitle">
+                    View appointments, confirm schedules, cancel appointments, and add health records.
+                </p>
+            </div>
+
+            <div class="col-md-4 text-end">
+                <button type="button"
+                        class="btn btn-primary btn-rounded"
+                        onclick="openAppointmentCreateModal()">
+                    <i class="bi bi-plus-circle"></i>
+                    Book Appointment
+                </button>
+            </div>
+
+        </div>
     </div>
-}
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">
-        @TempData["Error"]
-    </div>
-}
+    <div class="filter-card">
 
-<table class="table table-bordered table-striped">
-
-    <thead>
-
-        <tr>
-            <th>Patient</th>
-
-            <th>Doctor</th>
-
-            <th>Date</th>
-
-            <th>Time Slot</th>
-
-            <th>Status</th>
-
-            <th width="300">
-                Actions
-            </th>
-        </tr>
-
-    </thead>
-
-    <tbody>
-
-        @foreach (var item in Model)
+        @using (Html.BeginForm("Index", "Appointment", FormMethod.Get))
         {
-            <tr>
+            <div class="row g-2 align-items-center">
 
-                <td>
-                    @item.PatientName
-                </td>
+                <div class="col-md-3">
+                    <input type="text"
+                           name="patientName"
+                           value="@ViewBag.PatientName"
+                           class="form-control"
+                           placeholder="Search patient name" />
+                </div>
 
-                <td>
-                    @item.DoctorName
-                </td>
+                <div class="col-md-3">
+                    @Html.DropDownList(
+                        "doctorId",
+                        ViewBag.Doctors as SelectList,
+                        "All Doctors",
+                        new { @class = "form-control" })
+                </div>
 
-                <td>
-                    @item.ScheduledDate
-                    .ToString("dd-MM-yyyy")
-                </td>
+                <div class="col-md-3">
+                    @Html.DropDownList(
+                        "patientId",
+                        ViewBag.Patients as SelectList,
+                        "All Patients",
+                        new { @class = "form-control" })
+                </div>
 
-                <td>
-                    @item.TimeSlot
-                </td>
+                <div class="col-md-3">
+                    <select name="status" class="form-control">
+                        <option value="">All Status</option>
 
-                <td>
-                    @item.Status
-                </td>
+                        <option value="Pending" @(ViewBag.Status == "Pending" ? "selected" : "")>
+                            Pending
+                        </option>
 
-                <td>
+                        <option value="Confirmed" @(ViewBag.Status == "Confirmed" ? "selected" : "")>
+                            Confirmed
+                        </option>
 
-                    @if (item.Status == "Pending")
-                    {
-                        @Html.ActionLink(
-                            "Confirm",
-                            "Confirm",
-                            new
-                            {
-                                id =
-                                item.AppointmentId
-                            },
-                            new
-                            {
-                                @class =
-                                "btn btn-success btn-sm me-1"
-                            })
-                    }
+                        <option value="Completed" @(ViewBag.Status == "Completed" ? "selected" : "")>
+                            Completed
+                        </option>
 
-                    @if (item.Status != "Completed"
-                        && item.Status != "Cancelled")
-                    {
-                        @Html.ActionLink(
-                            "Cancel",
-                            "Cancel",
-                            new
-                            {
-                                id =
-                                item.AppointmentId
-                            },
-                            new
-                            {
-                                @class =
-                                "btn btn-danger btn-sm me-1"
-                            })
-                    }
+                        <option value="Cancelled" @(ViewBag.Status == "Cancelled" ? "selected" : "")>
+                            Cancelled
+                        </option>
+                    </select>
+                </div>
 
-                    @if (item.Status == "Confirmed")
-                    {
-                        @Html.ActionLink(
-                            "Add Health Record",
-                            "Create",
-                            "HealthRecord",
-                            new
-                            {
-                                appointmentId =
-                                item.AppointmentId
-                            },
-                            new
-                            {
-                                @class =
-                                "btn btn-success btn-sm"
-                            })
-                    }
+            </div>
 
-                </td>
+            <div class="row g-2 align-items-center mt-2">
 
-            </tr>
+                <div class="col-md-3">
+                    <input type="date"
+                           name="date"
+                           value="@ViewBag.Date"
+                           class="form-control" />
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit"
+                            class="btn btn-secondary btn-rounded">
+                        <i class="bi bi-funnel"></i>
+                        Filter
+                    </button>
+                </div>
+
+                <div class="col-md-2">
+                    <a href="@Url.Action("Index", "Appointment")"
+                       class="btn btn-outline-secondary btn-rounded">
+                        <i class="bi bi-arrow-clockwise"></i>
+                        Clear
+                    </a>
+                </div>
+
+            </div>
         }
 
-    </tbody>
+    </div>
 
-</table>
+    <div class="table-card">
+
+        <table class="table table-bordered table-striped custom-table">
+
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th style="width: 230px;">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            No appointments found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                <strong>@item.PatientName</strong>
+                            </td>
+
+                            <td>
+                                @item.DoctorName
+                            </td>
+
+                            <td>
+                                @item.ScheduledDate
+                            </td>
+
+                            <td>
+                                @item.TimeSlot
+                            </td>
+
+                            <td>
+                                @if (item.Status == "Pending")
+                                {
+                                    <span class="appointment-status-badge status-pending">
+                                        <i class="bi bi-hourglass-split"></i>
+                                        Pending
+                                    </span>
+                                }
+                                else if (item.Status == "Confirmed")
+                                {
+                                    <span class="appointment-status-badge status-confirmed">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Confirmed
+                                    </span>
+                                }
+                                else if (item.Status == "Completed")
+                                {
+                                    <span class="appointment-status-badge status-completed">
+                                        <i class="bi bi-clipboard-check-fill"></i>
+                                        Completed
+                                    </span>
+                                }
+                                else if (item.Status == "Cancelled")
+                                {
+                                    <span class="appointment-status-badge status-cancelled">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        Cancelled
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="appointment-status-badge status-pending">
+                                        @item.Status
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+
+                                <a href="@Url.Action("Details", "Appointment", new { id = item.AppointmentId })"
+                                   class="btn btn-info btn-sm action-btn"
+                                   title="View Appointment"
+                                   aria-label="View Appointment">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+
+                                @if (item.Status == "Pending")
+                                {
+                                    using (Html.BeginForm(
+                                        "Confirm",
+                                        "Appointment",
+                                        new { id = item.AppointmentId },
+                                        FormMethod.Post,
+                                        new { style = "display:inline;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-success btn-sm action-btn"
+                                                title="Confirm Appointment"
+                                                aria-label="Confirm Appointment">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    }
+                                }
+
+                                @if (item.Status != "Completed" && item.Status != "Cancelled")
+                                {
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm action-btn"
+                                            title="Cancel Appointment"
+                                            aria-label="Cancel Appointment"
+                                            onclick="openAppointmentCancelModal(@item.AppointmentId)">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                }
+
+
+                                @if (item.Status == "Confirmed")
+                                {
+                                    <button type="button"
+                                            class="btn btn-primary btn-sm action-btn"
+                                            title="Add Health Record"
+                                            aria-label="Add Health Record"
+                                            onclick="openHealthRecordModal(@item.AppointmentId)">
+                                        <i class="bi bi-journal-medical"></i>
+                                    </button>
+                                }
+
+                                
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="appointmentModal"
+     tabindex="-1"
+     aria-labelledby="appointmentModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-lg">
+
+        <div class="modal-content"
+             id="appointmentModalContent">
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts {
+
+    <script>
+
+        function setHiddenIdFromDatalist(inputId, hiddenId, listId) {
+
+            var inputValue = $('#' + inputId).val();
+            var matchedId = "";
+
+            $('#' + listId + ' option').each(function () {
+
+                if ($(this).val() === inputValue) {
+                    matchedId = $(this).attr('data-id');
+                }
+
+            });
+
+            $('#' + hiddenId).val(matchedId);
+        }
+
+        function resetTimeSlotDropdown(message) {
+
+            $('#TimeSlot')
+                .empty()
+                .append(
+                    $('<option>', {
+                        value: '',
+                        text: message
+                    })
+                )
+                .prop('disabled', false);
+        }
+
+        function loadAvailableSlots() {
+
+            var doctorId = $('#DoctorId').val();
+            var scheduledDate = $('#ScheduledDate').val();
+
+            console.log('DoctorId:', doctorId);
+            console.log('ScheduledDate:', scheduledDate);
+
+            if (!doctorId || !scheduledDate) {
+                resetTimeSlotDropdown('Select doctor and date first');
+                return;
+            }
+
+            $('#TimeSlot')
+                .empty()
+                .append(
+                    $('<option>', {
+                        value: '',
+                        text: 'Loading available slots...'
+                    })
+                )
+                .prop('disabled', false);
+
+            $.get(
+                '@Url.Action("GetAvailableSlots", "Appointment")',
+                {
+                    doctorId: doctorId,
+                    scheduledDate: scheduledDate
+                },
+                function (response) {
+
+                    console.log('Slot response:', response);
+
+                    $('#TimeSlot').empty();
+
+                    if (!response.success) {
+                        resetTimeSlotDropdown('Unable to load slots');
+
+                        showToast(
+                            "error",
+                            response.message
+                        );
+
+                        return;
+                    }
+
+                    if (!response.slots || response.slots.length === 0) {
+                        resetTimeSlotDropdown('No slots available');
+                        return;
+                    }
+
+                    $('#TimeSlot').append(
+                        $('<option>', {
+                            value: '',
+                            text: 'Select Time Slot'
+                        })
+                    );
+
+                    $.each(response.slots, function (index, slot) {
+
+                        $('#TimeSlot').append(
+                            $('<option>', {
+                                value: slot,
+                                text: slot
+                            })
+                        );
+
+                    });
+
+                    $('#TimeSlot').prop('disabled', false);
+                }
+            );
+        }
+
+        function wireAppointmentAutocomplete() {
+
+            $('#PatientSearch').on('input change blur', function () {
+
+                setHiddenIdFromDatalist(
+                    'PatientSearch',
+                    'PatientId',
+                    'patientList'
+                );
+
+            });
+
+            $('#DoctorSearch').on('input change blur', function () {
+
+                setHiddenIdFromDatalist(
+                    'DoctorSearch',
+                    'DoctorId',
+                    'doctorList'
+                );
+
+                loadAvailableSlots();
+
+            });
+
+            $('#ScheduledDate').on('change blur', function () {
+
+                setHiddenIdFromDatalist(
+                    'DoctorSearch',
+                    'DoctorId',
+                    'doctorList'
+                );
+
+                loadAvailableSlots();
+
+            });
+
+            resetTimeSlotDropdown('Select doctor and date first');
+        }
+
+        function openAppointmentCreateModal() {
+
+            $.get('@Url.Action("Create", "Appointment")', function (data) {
+
+                $('#appointmentModalContent').html(data);
+
+                $.validator.unobtrusive.parse('#appointmentModalContent');
+
+                wireAppointmentAutocomplete();
+
+                var modalElement = document.getElementById('appointmentModal');
+                var modal = new bootstrap.Modal(modalElement);
+
+                modal.show();
+            });
+        }
+
+        function openAppointmentCancelModal(id) {
+
+            $.get('@Url.Action("Cancel", "Appointment")', { id: id }, function (data) {
+
+                $('#appointmentModalContent').html(data);
+
+                $.validator.unobtrusive.parse('#appointmentModalContent');
+
+                var modalElement = document.getElementById('appointmentModal');
+                var modal = new bootstrap.Modal(modalElement);
+
+                modal.show();
+            });
+        }
+
+        function submitAppointmentForm(form) {
+
+            if ($('#PatientSearch').length > 0) {
+                setHiddenIdFromDatalist(
+                    'PatientSearch',
+                    'PatientId',
+                    'patientList'
+                );
+            }
+
+            if ($('#DoctorSearch').length > 0) {
+                setHiddenIdFromDatalist(
+                    'DoctorSearch',
+                    'DoctorId',
+                    'doctorList'
+                );
+            }
+
+            if ($('#PatientSearch').length > 0 && !$('#PatientId').val()) {
+                showToast(
+                    "error",
+                    "Please select a valid patient from the list."
+                );
+
+                return false;
+            }
+
+            if ($('#DoctorSearch').length > 0 && !$('#DoctorId').val()) {
+                showToast(
+                    "error",
+                    "Please select a valid doctor from the list."
+                );
+
+                return false;
+            }
+
+            if (!$('#ScheduledDate').val()) {
+                showToast(
+                    "error",
+                    "Please select appointment date."
+                );
+
+                return false;
+            }
+
+            if (!$('#TimeSlot').val()) {
+                showToast(
+                    "error",
+                    "Please select an available time slot."
+                );
+
+                return false;
+            }
+
+            $.ajax({
+                url: $(form).attr('action'),
+                type: 'POST',
+                data: $(form).serialize(),
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        var modalElement =
+                            document.getElementById('appointmentModal');
+
+                        var modal =
+                            bootstrap.Modal.getInstance(modalElement);
+
+                        if (modal) {
+                            modal.hide();
+                        }
+
+                        showToast(
+                            "success",
+                            response.message
+                        );
+
+                        setTimeout(function () {
+                            location.reload();
+                        }, 900);
+                    }
+                    else {
+                        $('#appointmentModalContent').html(response);
+
+                        $.validator.unobtrusive.parse(
+                            '#appointmentModalContent'
+                        );
+
+                        wireAppointmentAutocomplete();
+                    }
+                },
+
+                error: function (xhr) {
+
+                    var message =
+                        "Something went wrong. Please try again.";
+
+                    if (xhr.responseText) {
+                        message = xhr.responseText;
+                    }
+
+                    showToast(
+                        "error",
+                        message
+                    );
+                }
+            });
+
+            return false;
+        }
+        function openHealthRecordModal(appointmentId) {
+
+        $.get(
+        '@Url.Action("Create", "HealthRecord")',
+        { appointmentId: appointmentId },
+        function (data) {
+
+            $('#appointmentModalContent').html(data);
+
+            $.validator.unobtrusive.parse('#appointmentModalContent');
+
+            var modalElement = document.getElementById('appointmentModal');
+            var modal = new bootstrap.Modal(modalElement);
+
+            modal.show();
+        }
+    );
+        }
+        function submitAppointmentForm(form) {
+
+            $.ajax({
+                url: $(form).attr('action'),
+                type: 'POST',
+                data: $(form).serialize(),
+
+                success: function (response) {
+
+                    if (response.success) {
+
+                        var modalElement =
+                            document.getElementById('appointmentModal');
+
+                        var modal =
+                            bootstrap.Modal.getInstance(modalElement);
+
+                        if (modal) {
+                            modal.hide();
+                        }
+
+                        showToast(
+                            "success",
+                            response.message
+                        );
+
+                        setTimeout(function () {
+                            location.reload();
+                        }, 900);
+                    }
+                    else {
+                        $('#appointmentModalContent').html(response);
+
+                        $.validator.unobtrusive.parse(
+                            '#appointmentModalContent'
+                        );
+                    }
+                },
+
+                error: function (xhr) {
+
+                    var message =
+                        "Something went wrong. Please try again.";
+
+                    if (xhr.responseText) {
+                        message = xhr.responseText;
+                    }
+
+                    showToast(
+                        "error",
+                        message
+                    );
+                }
+            });
+
+            return false;
+        }
+    </script>
+
+}
