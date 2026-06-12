@@ -1,0 +1,43 @@
+﻿@model List<Healthaxis2.Shared.DTOs.AppointmentDto>
+
+<div class="container mt-4">
+
+    <h3>My Appointments</h3>
+
+    <table class="table table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Slot</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ScheduledDate</td>
+                    <td>@item.DoctorName</td>
+                    <td>@item.Slot</td>
+                    <td>@item.Status</td>
+
+                    <td>
+                        @if (item.Status != "Cancelled")
+                        {
+                            <button class="btn btn-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal"
+                                    onclick="setId(@item.AppointmentId)">
+                                Cancel
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>

@@ -1,0 +1,36 @@
+﻿@{
+    ViewBag.Title = "Search Patient";
+}
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">Search Patient</h2>
+
+    @using (Html.BeginForm("Search", "Patient", FormMethod.Post))
+    {
+        <div class="input-group">
+
+            <input type="text" name="searchTerm"
+                   class="form-control"
+                   placeholder="Enter Patient ID / Phone / Name"
+                   required />
+
+            <button class="btn btn-primary">Search</button>
+
+        </div>
+    }
+
+</div>
+<div class="container mt-4">
+    <h3>Search Patient</h3>
+
+    @using (Html.BeginForm("Search","Patient",FormMethod.Post))
+    {
+        <div class="input-group">
+            <input type="text" name="searchTerm"
+                   class="form-control"
+                   placeholder="Enter ID / Name / Phone" />
+            <button class="btn btn-primary">Search</button>
+        </div>
+    }
+</div>

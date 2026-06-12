@@ -1,0 +1,47 @@
+﻿@model List<Healthaxis2.Shared.DTOs.PatientDto>
+
+<div class="container mt-4">
+
+    <h3>Search Results</h3>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <table class="table table-bordered mt-3">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.PatientId</td>
+                        <td>@item.PatientName</td>
+                        <td>@item.PhoneNumber</td>
+                        <td>@item.Email</td>
+
+                        <td>
+                            <a href="/Patient/Edit/@item.PatientId"
+                               class="btn btn-warning btn-sm">Edit</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-danger mt-3">
+            No patients found.
+        </div>
+    }
+
+</div>

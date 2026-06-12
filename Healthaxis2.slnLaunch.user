@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Healthaxis2\\Healthaxis2.csproj",
+        "Action": "Start",
+        "DebugTarget": "IIS Express (Microsoft Edge)"
+      },
+      {
+        "Path": "Healthaxis2.Web\\Healthaxis2.Web.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

@@ -1,0 +1,22 @@
+﻿<div class="container mt-4">
+
+    <h3>View Appointments</h3>
+
+    @using (Html.BeginForm("PatientAppointments", "Appointment", FormMethod.Post))
+    {
+        <div class="input-group">
+
+            <input type="number"
+                   name="patientId"
+                   class="form-control"
+                   placeholder="Enter Patient ID"
+                   required />
+
+            <button class="btn btn-primary">
+                Search
+            </button>
+
+        </div>
+    }
+
+</div>

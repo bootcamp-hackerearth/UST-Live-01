@@ -1,0 +1,31 @@
+﻿@model List<Healthaxis2.Shared.DTOs.HealthRecordDto>
+
+<h2>Patient Records (Doctor)</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <table border="1">
+        <tr>
+            <th>Patient</th>
+            <th>Date</th>
+            <th>Diagnosis</th>
+            <th>Prescription</th>
+            <th>Notes</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.PatientName</td>
+                <td>@item.VisitDate.ToShortDateString()</td>
+                <td>@item.Diagnosis</td>
+                <td>@item.Prescription</td>
+                <td>@item.Notes</td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>No records available.</p>
+}

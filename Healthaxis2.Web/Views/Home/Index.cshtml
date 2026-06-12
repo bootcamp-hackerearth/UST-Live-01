@@ -1,0 +1,77 @@
+﻿@{
+    ViewBag.Title = "HealthAxis Dashboard";
+}
+
+<div class="container mt-5">
+
+    <!-- ✅ TITLE -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-primary">HealthAxis</h1>
+        <p class="text-muted">Smart Healthcare Management System</p>
+    </div>
+
+    <!-- ✅ MODULE CARDS -->
+    <div class="row justify-content-center">
+
+        <!-- ✅ PATIENT CARD -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg border-0 h-100 hover-card">
+                <div class="card-body text-center">
+
+                    <div class="mb-3">
+                        <span style="font-size:50px;">👤</span>
+                    </div>
+
+                    <h4 class="card-title">Patient Module</h4>
+                    <p class="card-text text-muted">
+                        Manage patient records, book appointments, view history and more.
+                    </p>
+
+                    <a href="/Patient/Index" class="btn btn-primary">
+                        Go to Patient Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ DOCTOR CARD -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-lg border-0 h-100 hover-card">
+                <div class="card-body text-center">
+
+                    <div class="mb-3">
+                        <span style="font-size:50px;">🩺</span>
+                    </div>
+
+                    <h4 class="card-title">Doctor Module</h4>
+                    <p class="card-text text-muted">
+                        Manage doctors, appointments, and patient treatment records.
+                    </p>
+
+                    <a href="/Doctor/Index" class="btn btn-success">
+                        Go to Doctor Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ✅ INTERACTIVE EFFECTS -->
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 15px;
+    }
+
+        .hover-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+    body {
+        background: #f5f7fa;
+    }
+</style>

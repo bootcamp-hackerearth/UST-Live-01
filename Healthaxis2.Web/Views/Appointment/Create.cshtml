@@ -1,0 +1,93 @@
+﻿@model Healthaxis2.Shared.DTOs.AppointmentDto
+
+<div class="container mt-4">
+    <h3>Book Appointment</h3>
+
+    @using (Html.BeginForm())
+    {
+        <div class="row">
+
+            <!-- ✅ PATIENT -->
+            <div class="col-md-6 mb-3">
+                <label>Patient</label>
+                @Html.DropDownListFor(m => m.PatientId,
+                    new SelectList(ViewBag.Patients, "PatientId", "PatientName"),
+                    "--Select Patient--",
+                    new { @class = "form-control" })
+            </div>
+
+            <!-- ✅ SPECIALISATION -->
+            <div class="col-md-6 mb-3">
+                <label>Specialisation</label>
+                <select id="specialisation" class="form-control">
+                    <option value="">--Select--</option>
+
+                    @foreach (var s in ViewBag.Specialisations)
+                    {
+                        <option>@s</option>
+                    }
+                </select>
+            </div>
+
+            <!-- ✅ DOCTOR (Filtered) -->
+            <div class="col-md-6 mb-3">
+                <label>Doctor</label>
+                <select id="doctorDropdown" name="DoctorId" class="form-control">
+                    <option value="">--Select Doctor--</option>
+
+                    @foreach (var d in ViewBag.Doctors)
+                    {
+                        <option value="@d.DoctorId"
+                                data-spec="@d.Specialisation">
+                            @d.DoctorName (@d.Specialisation)
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <!-- ✅ DATE -->
+            <div class="col-md-6 mb-3">
+                <label>Date</label>
+                @Html.TextBoxFor(m => m.ScheduledDate,
+                    new { type = "date", @class = "form-control" })
+            </div>
+
+            <!-- ✅ SLOT -->
+            <div class="col-md-6 mb-3">
+                <label>Slot</label>
+                @Html.DropDownListFor(m => m.Slot,
+                    new SelectList(new[]
+                    {
+                        "09:00 AM",
+                        "10:00 AM",
+                        "11:00 AM",
+                        "02:00 PM",
+                        "03:00 PM"
+                    }),
+                    "--Select Slot--",
+                    new { @class = "form-control" })
+            </div>
+
+        </div>
+
+        <button class="btn btn-success mt-3">Book</button>
+    }
+</div>
+<script>
+    document.getElementById("specialisation").addEventListener("change", function () {
+
+        var selected = this.value;
+        var doctors = document.getElementById("doctorDropdown").options;
+
+        for (var i = 0; i < doctors.length; i++) {
+            var spec = doctors[i].getAttribute("data-spec");
+
+            if (!spec) continue;
+
+            if (selected === "" || spec === selected)
+                doctors[i].style.display = "block";
+            else
+                doctors[i].style.display = "none";
+        }
+    });
+</script>

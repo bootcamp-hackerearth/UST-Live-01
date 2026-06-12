@@ -1,0 +1,15 @@
+﻿@model Healthaxis2.Shared.DTOs.PatientDto
+
+<h2>Patient Details</h2>
+
+@if (Model != null)
+{
+    <p>Name: @Model.PatientName</p>
+    <p>DOB: @Model.DateOfBirth</p>
+    <p>Gender: @Model.Gender</p>
+    <p>Phone: @Model.PhoneNumber</p>
+    <p>Email: @Model.Email</p>
+    <p>Insurance: @Model.InsuranceId</p>
+
+    <a href="@Url.Action("Edit", new { id = Model.PatientId })">Edit</a>
+}

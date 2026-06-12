@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Patient Health History";
+}
+
+<h2>Patient Health History</h2>
+
+@using (Html.BeginForm("PatientHistory", "HealthRecord", FormMethod.Post))
+{
+    <div>
+        <label>Enter Patient ID:</label>
+        <input type="number" name="patientId" required />
+    </div>
+
+    <br />
+
+    <button type="submit">Search</button>
+}

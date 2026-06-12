@@ -1,0 +1,55 @@
+﻿@model List<Healthaxis2.Shared.DTOs.AppointmentDto>
+
+<h2>Appointments</h2>
+
+<table border="1">
+    <tr>
+        <th>Date</th>
+        <th>Doctor</th>
+        <th>Slot</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.ScheduledDate</td>
+            <td>@item.DoctorName</td>
+            <td>@item.Slot</td>
+            <td>@item.Status</td>
+            <td>
+                @if (item.Status != "Cancelled")
+                {
+                    <button onclick="openCancelModal(@item.AppointmentId)">
+                        Cancel
+                    </button>
+                }
+            </td>
+        </tr>
+    }
+</table>
+
+<!-- ✅ CANCEL MODAL -->
+<div id="cancelModal" style="display:none; background:#eee; padding:20px;">
+    <input type="hidden" id="apptId" />
+
+    <label>Reason:</label>
+    <input type="text" id="reason" />
+
+    <button onclick="cancel()">Confirm</button>
+</div>
+
+<script>
+function openCancelModal(id) {
+    document.getElementById("apptId").value = id;
+    document.getElementById("cancelModal").style.display = 'block';
+}
+
+function cancel() {
+    var id = document.getElementById("apptId").value;
+    var reason = document.getElementById("reason").value;
+
+    window.location.href = '/Appointment/Cancel?id=' + id + '&reason=' + reason;
+}
+</script>

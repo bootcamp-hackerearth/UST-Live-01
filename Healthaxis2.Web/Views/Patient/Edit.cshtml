@@ -1,0 +1,24 @@
+﻿@model Healthaxis2.Shared.DTOs.PatientDto
+
+<h2>Edit Patient</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.PatientId)
+
+    <label>Name</label>
+    @Html.TextBoxFor(m => m.PatientName)
+
+    <label>Phone</label>
+    @Html.TextBoxFor(m => m.PhoneNumber)
+
+    <label>Email</label>
+    @Html.TextBoxFor(m => m.Email)
+
+    <label>Insurance</label>
+    @Html.TextBoxFor(m => m.InsuranceId)
+
+    <br />
+    <br />
+    <button type="submit">Update</button>
+}

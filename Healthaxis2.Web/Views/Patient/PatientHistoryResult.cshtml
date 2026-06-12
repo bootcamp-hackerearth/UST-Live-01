@@ -1,0 +1,24 @@
+﻿@model List<Healthaxis2.Shared.DTOs.HealthRecordDto>
+
+<h2>Health Records</h2>
+
+<table border="1">
+    <tr>
+        <th>Date</th>
+        <th>Doctor</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+        <th>Notes</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.VisitDate</td>
+            <td>@item.DoctorName</td>
+            <td>@item.Diagnosis</td>
+            <td>@item.Prescription</td>
+            <td>@item.Notes</td>
+        </tr>
+    }
+</table>

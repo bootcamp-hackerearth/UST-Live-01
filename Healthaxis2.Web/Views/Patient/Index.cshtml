@@ -1,0 +1,188 @@
+﻿@{
+    ViewBag.Title = "Patient Dashboard";
+}
+
+<div class="container mt-4">
+
+    <h2 class="text-center mb-4">Patient Dashboard</h2>
+
+    <div class="row">
+
+        <!-- ✅ REGISTER (MODAL INSTEAD OF LINK) -->
+        <div class="col-md-4">
+            <div class="card shadow text-center p-3">
+                <h5>Register</h5>
+                <button class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#registerModal">
+                    Open
+                </button>
+            </div>
+        </div>
+
+        <!-- ✅ SEARCH PATIENT -->
+        <div class="col-md-4">
+            <div class="card shadow text-center p-3">
+                <h5>Search Patient</h5>
+                <a href="/Patient/Details" class="btn btn-success">Open</a>
+            </div>
+        </div>
+
+        <!-- ✅ BOOK APPOINTMENT -->
+        <div class="col-md-4">
+            <div class="card shadow text-center p-3">
+                <h5>Book Appointment</h5>
+                <a href="/Appointment/Create" class="btn btn-warning">Open</a>
+            </div>
+        </div>
+
+        <!-- ✅ HEALTH HISTORY -->
+        <div class="col-md-4 mt-3">
+            <div class="card shadow text-center p-3">
+                <h5>Health History</h5>
+                <a href="/HealthRecord/PatientHistory" class="btn btn-info">Open</a>
+            </div>
+        </div>
+
+        <!-- ✅ APPOINTMENTS -->
+        <div class="col-md-4 mt-3">
+            <div class="card shadow text-center p-3">
+                <h5>Appointments</h5>
+                <a href="/Appointment/PatientAppointments" class="btn btn-danger">Open</a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ✅ REGISTER MODAL -->
+<div class="modal fade" id="registerModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Register Patient</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                @using (Html.BeginForm("Create", "Patient", FormMethod.Post))
+                {
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label>Name</label>
+                            <input name="PatientName" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>DOB</label>
+                            <input type="date" name="DateOfBirth" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Gender</label>
+                            <select name="Gender" class="form-control">
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Transgender</option>
+                                <option>Others</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Phone</label>
+                            <input name="PhoneNumber" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Email</label>
+                            <input name="Email" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label>Insurance</label>
+                            <input name="InsuranceId" class="form-control" />
+                        </div>
+
+                    </div>
+
+                    <div class="text-end">
+
+                        <button type="button"
+                                class="btn btn-success"
+                                onclick="submitPatient()">
+                            Submit
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- ✅ SUCCESS MODAL -->
+<div class="modal fade" id="successModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header bg-success text-white">
+                <h5>Patient Registered Successfully ✅</h5>
+            </div>
+
+            <div class="modal-body">
+
+                <p><b>Patient ID:</b> <span id="pid"></span></p>
+                <p><b>Name:</b> <span id="pname"></span></p>
+                <p><b>Phone:</b> <span id="pphone"></span></p>
+                <p><b>Registered Date:</b> <span id="pdate"></span></p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function submitPatient() {
+
+        var formData = $("#registerForm").serialize();
+
+        $.ajax({
+            url: '/Patient/Create',
+            type: 'POST',
+            data: formData,
+            success: function (res) {
+
+                if (res.success) {
+
+                    // ✅ close register modal
+                    var regModal = bootstrap.Modal.getInstance(
+                        document.getElementById('registerModal')
+                    );
+                    regModal.hide();
+
+                    // ✅ fill success modal
+                    $("#pid").text(res.data.PatientId);
+                    $("#pname").text(res.data.PatientName);
+                    $("#pphone").text(res.data.PhoneNumber);
+                    $("#pdate").text(res.data.RegisteredDate);
+
+                    // ✅ show success modal
+                    var successModal = new bootstrap.Modal(
+                        document.getElementById('successModal')
+                    );
+                    successModal.show();
+
+                    // ✅ redirect after 3 sec
+                    setTimeout(function () {
+                        window.location.href = '/Patient/Index';
+                    }, 3000);
+                }
+            }
+        });
+    }
+</script>

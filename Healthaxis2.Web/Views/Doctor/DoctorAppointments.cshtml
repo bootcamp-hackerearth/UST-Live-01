@@ -1,0 +1,93 @@
+﻿@model List<Healthaxis2.Shared.DTOs.AppointmentDto>
+
+<div class="container mt-4">
+    <h3>Doctor Appointments</h3>
+
+    <table class="table table-bordered table-hover mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Slot</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.ScheduledDate.ToShortDateString()</td>
+                    <td>@item.PatientName</td>
+                    <td>@item.Slot</td>
+                    <td>
+                        <span class="badge bg-success">@item.Status</span>
+                    </td>
+
+                    <td>
+                        @if (item.Status == "Pending")
+                        {
+                            <a class="btn btn-success btn-sm"
+                               href="/Appointment/UpdateStatus?id=@item.AppointmentId&status=Confirmed">
+                                Confirm
+                            </a>
+
+                            <button class="btn btn-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal"
+                                    onclick="setId(@item.AppointmentId)">
+                                Cancel
+                            </button>
+                        }
+
+                        @if (item.Status == "Confirmed")
+                        {
+                            <a class="btn btn-primary btn-sm"
+                               href="/Appointment/UpdateStatus?id=@item.AppointmentId&status=Completed">
+                                Complete
+                            </a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- ✅ BOOTSTRAP MODAL -->
+<div class="modal fade" id="cancelModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5>Cancel Appointment</h5>
+            </div>
+
+            <div class="modal-body">
+                <input type="hidden" id="apptId" />
+                <input type="text" id="reason" class="form-control" placeholder="Enter reason" />
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="cancel()">Submit</button>
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function setId(id) {
+        document.getElementById("apptId").value = id;
+    }
+
+    function cancel() {
+        var id = document.getElementById("apptId").value;
+        var reason = document.getElementById("reason").value;
+
+        window.location.href =
+            '/Appointment/Cancel?id=' + id + '&reason=' + reason;
+    }
+</script>

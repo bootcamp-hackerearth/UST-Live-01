@@ -1,0 +1,31 @@
+﻿@model Healthaxis2.Shared.DTOs.HealthRecordDto
+
+<h2>Add Health Record</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(m => m.AppointmentId)
+
+    <label>Patient ID</label>
+    @Html.TextBoxFor(m => m.PatientId)
+
+    <label>Doctor ID</label>
+    @Html.TextBoxFor(m => m.DoctorId)
+
+    <label>Visit Date</label>
+    @Html.TextBoxFor(m => m.VisitDate, new { type = "date" })
+
+    <label>Diagnosis</label>
+    @Html.TextBoxFor(m => m.Diagnosis)
+
+    <label>Prescription</label>
+    @Html.TextBoxFor(m => m.Prescription)
+
+    <label>Notes</label>
+    @Html.TextBoxFor(m => m.Notes)
+
+    <br />
+    <br />
+
+    <button type="submit">Save Record</button>
+}

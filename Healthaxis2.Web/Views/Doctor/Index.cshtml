@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "Doctor Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Doctor Dashboard</h2>
+
+    <div class="row">
+
+        <!-- ✅ Add Doctor -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5>Add Doctor</h5>
+                    <p>Register new doctor</p>
+                    <a href="/Doctor/Create" class="btn btn-primary">Add</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Appointments -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5>Appointments</h5>
+
+                    @using (Html.BeginForm("DoctorAppointments", "Appointment", FormMethod.Get))
+                    {
+                        <input type="number" name="doctorId" class="form-control mb-2" placeholder="Doctor ID" required />
+                        <button class="btn btn-success">View</button>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ Records -->
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <h5>Patient Records</h5>
+
+                    @using (Html.BeginForm("DoctorRecords", "HealthRecord", FormMethod.Get))
+                    {
+                        <input type="number" name="doctorId" class="form-control mb-2" placeholder="Doctor ID" required />
+                        <button class="btn btn-info">View</button>
+                    }
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

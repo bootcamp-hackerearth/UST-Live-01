@@ -1,0 +1,29 @@
+﻿@model Healthaxis2.Shared.DTOs.PatientDto
+
+<h2>Register Patient</h2>
+
+@using (Html.BeginForm())
+{
+    <label>Name</label>
+    @Html.TextBoxFor(m => m.PatientName)
+
+    <label>DOB</label>
+    @Html.TextBoxFor(m => m.DateOfBirth, new { type = "date" })
+
+    <label>Gender</label>
+    @Html.DropDownListFor(m => m.Gender,
+        new SelectList(new[] { "Male", "Female", "Others" }))
+
+    <label>Phone</label>
+    @Html.TextBoxFor(m => m.PhoneNumber)
+
+    <label>Email</label>
+    @Html.TextBoxFor(m => m.Email)
+
+    <label>Insurance</label>
+    @Html.TextBoxFor(m => m.InsuranceId)
+
+    <br />
+    <br />
+    <button type="submit">Register</button>
+}
