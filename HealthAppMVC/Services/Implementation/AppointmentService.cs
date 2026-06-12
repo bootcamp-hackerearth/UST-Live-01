@@ -1,4 +1,4 @@
-﻿using HealthAppMVC.Models;
+﻿using HealthAppMVC.Helper;
 using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using Newtonsoft.Json;
@@ -25,10 +25,13 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
         }
 
@@ -39,10 +42,13 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<AppointmentDto>(data);
         }
 
@@ -53,23 +59,30 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
         }
 
         public async Task ConfirmAppointmentAsync(int appointmentId)
         {
             var response = await _httpClient.PostAsync(
-                $"appointments/{appointmentId}/confirm", null);
+                $"appointments/{appointmentId}/confirm",
+                null);
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
         }
 
-        public async Task CancelAppointmentAsync(int appointmentId, string reason)
+        public async Task CancelAppointmentAsync(
+            int appointmentId,
+            string reason)
         {
             var dto = new CancelAppointmentDto
             {
@@ -77,40 +90,53 @@ namespace HealthAppMVC.Services.Implementation
             };
 
             var response = await _httpClient.PostAsJsonAsync(
-                $"appointments/{appointmentId}/cancel", dto);
+                $"appointments/{appointmentId}/cancel",
+                dto);
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByPatientAsync(int patientId)
+        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByPatientAsync(
+            int patientId)
         {
-            var response = await _httpClient.GetAsync($"appointments/patient/{patientId}");
+            var response = await _httpClient.GetAsync(
+                $"appointments/patient/{patientId}");
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByDoctorAsync(int doctorId)
+        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByDoctorAsync(
+            int doctorId)
         {
-            var response = await _httpClient.GetAsync($"appointments/doctor/{doctorId}");
+            var response = await _httpClient.GetAsync(
+                $"appointments/doctor/{doctorId}");
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
         }
 
@@ -121,28 +147,38 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetUpcomingAppointmentsByDoctorAsync(int doctorId)
+        public async Task<IEnumerable<AppointmentDto>> GetUpcomingAppointmentsByDoctorAsync(
+            int doctorId)
         {
-            var response = await _httpClient.GetAsync($"appointments/upcoming/doctor/{doctorId}");
+            var response = await _httpClient.GetAsync(
+                $"appointments/upcoming/doctor/{doctorId}");
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
         }
 
-        public async Task<IEnumerable<string>> GetAvailableSlotsAsync(int doctorId, DateTime scheduledDate)
+        public async Task<IEnumerable<string>> GetAvailableSlotsAsync(
+            int doctorId,
+            DateTime scheduledDate)
         {
             string date = scheduledDate.ToString("yyyy-MM-dd");
 
@@ -152,14 +188,18 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<string>>(data);
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByPatientNameAsync(string patientName)
+        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByPatientNameAsync(
+            string patientName)
         {
             var response = await _httpClient.GetAsync(
                 $"appointments/search?patientName={patientName}");
@@ -167,10 +207,13 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
         }
 
@@ -182,10 +225,13 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
             var data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<bool>(data);
         }
     }

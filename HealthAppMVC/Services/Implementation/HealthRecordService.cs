@@ -1,4 +1,4 @@
-﻿using HealthAppMVC.Models;
+﻿using HealthAppMVC.Helper;
 using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using Newtonsoft.Json;
@@ -25,73 +25,86 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
-            var data = await response.Content.ReadAsStringAsync();
+            string data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<HealthRecordDto>>(data);
         }
 
         public async Task<int> GetPatientIdByAppointmentAsync(int appointmentId)
         {
-            var response = await _httpClient.GetAsync($"Appointment/{appointmentId}");
+            var response = await _httpClient.GetAsync(
+                $"appointments/{appointmentId}");
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
-            var result = await response.Content.ReadAsStringAsync();
-            AppointmentDto appointment = JsonConvert.DeserializeObject<AppointmentDto>(result);
+            string data = await response.Content.ReadAsStringAsync();
+
+            AppointmentDto appointment =
+                JsonConvert.DeserializeObject<AppointmentDto>(data);
 
             return appointment.PatientId;
         }
 
         public async Task<HealthRecordDto> GetByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"healthrecords/{id}");
-
-            var data = await response.Content.ReadAsStringAsync();
+            var response = await _httpClient.GetAsync(
+                $"healthrecords/{id}");
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(data);
+                string error = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
+
+            string data = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<HealthRecordDto>(data);
         }
 
         public async Task AddHealthRecordAsync(CreateHealthRecordDto dto)
         {
-            var response =
-                await _httpClient.PostAsJsonAsync("healthrecords", dto);
+            var response = await _httpClient.PostAsJsonAsync(
+                "healthrecords",
+                dto);
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
         }
 
         public async Task<List<HealthRecordDto>> GetPatientHistoryAsync(int patientId)
         {
-            HttpResponseMessage response =
-                await _httpClient.GetAsync(
-                    $"healthrecords/patient/{patientId}");
+            var response = await _httpClient.GetAsync(
+                $"healthrecords/patient/{patientId}");
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
-            string json =
-                await response.Content
-                    .ReadAsStringAsync();
+            string data = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert
-                .DeserializeObject<List<HealthRecordDto>>(json);
+            return JsonConvert.DeserializeObject<List<HealthRecordDto>>(data);
         }
     }
 }

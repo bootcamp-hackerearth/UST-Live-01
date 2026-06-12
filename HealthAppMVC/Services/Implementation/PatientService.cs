@@ -1,13 +1,11 @@
-﻿using HealthAppMVC.Models;
+﻿using HealthAppMVC.Helper;
 using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace HealthAppMVC.Services.Implementation
 {
@@ -27,10 +25,13 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
-            var data = await response.Content.ReadAsStringAsync();
+            string data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<PatientDto>>(data);
         }
 
@@ -41,37 +42,50 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
-            var data = await response.Content.ReadAsStringAsync();
+            string data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<PatientDto>(data);
         }
 
         public async Task RegisterPatientAsync(CreatePatientDto dto)
         {
-            var response = await _httpClient.PostAsJsonAsync("patients", dto);
+            var response = await _httpClient.PostAsJsonAsync(
+                "patients",
+                dto);
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
         }
 
-        public async Task UpdatePatientAsync(int id, CreatePatientDto dto)
+        public async Task UpdatePatientAsync(
+            int id,
+            CreatePatientDto dto)
         {
             var response = await _httpClient.PutAsJsonAsync(
-                $"patients/{id}", dto);
+                $"patients/{id}",
+                dto);
 
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
         }
 
-        public async Task<IEnumerable<PatientDto>> SearchByNameAsync(string name)
+        public async Task<IEnumerable<PatientDto>> SearchByNameAsync(
+            string name)
         {
             var response = await _httpClient.GetAsync(
                 $"patients/search?name={name}");
@@ -79,10 +93,13 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
-            var data = await response.Content.ReadAsStringAsync();
+            string data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<List<PatientDto>>(data);
         }
 
@@ -94,10 +111,13 @@ namespace HealthAppMVC.Services.Implementation
             if (!response.IsSuccessStatusCode)
             {
                 string error = await response.Content.ReadAsStringAsync();
-                throw new Exception(error);
+
+                throw new Exception(
+                    ApiErrorHelper.GetApiMessage(error));
             }
 
-            var data = await response.Content.ReadAsStringAsync();
+            string data = await response.Content.ReadAsStringAsync();
+
             return JsonConvert.DeserializeObject<int>(data);
         }
     }
