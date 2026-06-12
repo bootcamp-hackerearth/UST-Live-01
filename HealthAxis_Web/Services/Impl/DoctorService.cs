@@ -61,8 +61,8 @@ namespace HealthAxis.Api.Services
             {
                 FullName = dto.FullName,
                 Specialisation = dto.Specialisation.ToString(),
-                YearsOfExperience = dto.YearsOfExperience,
-                ConsultationFee = dto.ConsultationFee,
+                YearsOfExperience = dto.YearsOfExperience.Value,
+                ConsultationFee = dto.ConsultationFee.Value,
                 IsActive = true
             };
 

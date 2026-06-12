@@ -34,10 +34,10 @@ public class DoctorDto
         public Specialisation? Specialisation { get; set; }
 
         [Range(0, 50, ErrorMessage = "Experience cannot be negative")]
-        public int YearsOfExperience { get; set; }
+        public int? YearsOfExperience { get; set; }
 
         [Range(1, 10000, ErrorMessage = "Fee must be greater than 0")]
-        public decimal ConsultationFee { get; set; }
+        public decimal? ConsultationFee { get; set; }
 
     }
 

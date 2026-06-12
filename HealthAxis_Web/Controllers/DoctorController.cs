@@ -67,15 +67,19 @@ namespace HealthAxis.Api.Controllers
             {
                 FullName = dto.FullName,
                 Specialisation = dto.Specialisation.ToString(),
-                YearsOfExperience = dto.YearsOfExperience,
-                ConsultationFee = dto.ConsultationFee,
+                YearsOfExperience = dto.YearsOfExperience.Value,
+                ConsultationFee = dto.ConsultationFee.Value,
                 IsActive = true
             };
 
             _context.Doctors.Add(doctor);
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new ApiResponseDto
+            {
+                Success = true,
+                Message = "Doctor added successfully"
+            });
         }
 
         [HttpPut]
