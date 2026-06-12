@@ -381,6 +381,10 @@
     <Compile Include="Migrations\202606091053568_Changes.Designer.cs">
       <DependentUpon>202606091053568_Changes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202606121221283_DBonmodelChanges.cs" />
+    <Compile Include="Migrations\202606121221283_DBonmodelChanges.Designer.cs">
+      <DependentUpon>202606121221283_DBonmodelChanges.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Repositories\Interfaces\IAppointmentRepository.cs" />
     <Compile Include="Repositories\Interfaces\IDoctorRepository.cs" />
@@ -499,6 +503,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202606091053568_Changes.resx">
       <DependentUpon>202606091053568_Changes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202606121221283_DBonmodelChanges.resx">
+      <DependentUpon>202606121221283_DBonmodelChanges.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

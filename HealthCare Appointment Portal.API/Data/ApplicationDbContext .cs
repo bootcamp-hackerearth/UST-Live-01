@@ -56,6 +56,18 @@ namespace HealthCare_Appointment_Portal.Data
         protected override void OnModelCreating(
             DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<HealthRecord>()
+                .HasRequired(h => h.Doctor)
+                .WithMany(d => d.HealthRecords)
+                .HasForeignKey(h => h.DoctorId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<HealthRecord>()
+                .HasRequired(h => h.Patient)
+                .WithMany(p => p.HealthRecords)
+                .HasForeignKey(h => h.PatientId)
+                .WillCascadeOnDelete(false);
+
             base.OnModelCreating(
                 modelBuilder);
         }
