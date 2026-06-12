@@ -7,273 +7,343 @@ using HealthCare_Appointment_Portal.Models;
 using HealthCare_Appointment_Portal.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace HealthCare_Appointment_Portal.Tests
+namespace HealthCare_Appointment_Portal.Tests.Services
 {
+    [TestClass]
     public class DoctorServiceTests
     {
-        private Mock<IUnitOfWork> _unitOfWorkMock;
-        private Mock<IMapper> _mapperMock;
+        private Mock<IUnitOfWork> _mockUnitOfWork;
+        private Mock<IDoctorRepository> _mockDoctorRepo;
+        private Mock<IAppointmentRepository> _mockAppointmentRepo;
+        private Mock<IUserRepository> _mockUserRepo;
+        private Mock<IMapper> _mockMapper;
+        private DoctorService _sut;
 
-        private Mock<IDoctorRepository> _doctorRepositoryMock;
-        private Mock<IAppointmentRepository> _appointmentRepositoryMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-
-        private DoctorService _service;
-        [TestMethod]
-        public async Task AddDoctorAsync_ValidDoctor_ShouldReturnDoctorId()
+        [TestInitialize]
+        public void Setup()
         {
-            // Arrange
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
+            _mockDoctorRepo = new Mock<IDoctorRepository>();
+            _mockAppointmentRepo = new Mock<IAppointmentRepository>();
+            _mockUserRepo = new Mock<IUserRepository>();
+            _mockMapper = new Mock<IMapper>();
 
-            var dto = new CreateDoctorDto();
+            _mockUnitOfWork.Setup(u => u.Doctors).Returns(_mockDoctorRepo.Object);
+            _mockUnitOfWork.Setup(u => u.Appointments).Returns(_mockAppointmentRepo.Object);
+            _mockUnitOfWork.Setup(u => u.Users).Returns(_mockUserRepo.Object);
+
+            _sut = new DoctorService(
+                _mockUnitOfWork.Object,
+                _mockMapper.Object);
+        }
+
+        [TestMethod]
+        public async Task GetAllDoctorsAsync_ReturnsMappedDoctors()
+        {
+            var doctors = new List<Doctor>
+            {
+                new Doctor(),
+                new Doctor()
+            };
+
+            var doctorDtos = new List<DoctorDto>
+            {
+                new DoctorDto(),
+                new DoctorDto()
+            };
+
+            _mockDoctorRepo
+                .Setup(r => r.GetAllAsync())
+                .ReturnsAsync(doctors);
+
+            _mockMapper
+                .Setup(m => m.Map<IEnumerable<DoctorDto>>(doctors))
+                .Returns(doctorDtos);
+
+            var result = await _sut.GetAllDoctorsAsync();
+
+            Assert.AreEqual(2, result.Count());
+            _mockDoctorRepo.Verify(r => r.GetAllAsync(), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task GetDoctorByIdAsync_ValidId_ReturnsDoctor()
+        {
+            int doctorId = 1;
+
+            var doctor = new Doctor
+            {
+                DoctorId = doctorId
+            };
+
+            var doctorDto = new DoctorDto
+            {
+                DoctorId = doctorId
+            };
+
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(doctorId))
+                .ReturnsAsync(doctor);
+
+            _mockMapper
+                .Setup(m => m.Map<DoctorDto>(doctor))
+                .Returns(doctorDto);
+
+            var result = await _sut.GetDoctorByIdAsync(doctorId);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(doctorId, result.DoctorId);
+        }
+
+        [TestMethod]
+        public async Task GetDoctorByIdAsync_InvalidId_ThrowsDoctorNotFoundException()
+        {
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((Doctor)null);
+
+            await Assert.ThrowsExceptionAsync<DoctorNotFoundException>(
+                () => _sut.GetDoctorByIdAsync(99));
+        }
+
+        [TestMethod]
+        public async Task AddDoctorAsync_ValidDoctor_AddsDoctorUserAndCommits()
+        {
+            var createDto = new CreateDoctorDto();
 
             var doctor = new Doctor
             {
                 DoctorId = 1
             };
 
-            _mapperMock
-                .Setup(x => x.Map<Doctor>(dto))
+            _mockMapper
+                .Setup(m => m.Map<Doctor>(createDto))
                 .Returns(doctor);
 
-            // Act
-
-            int result =
-                await _service.AddDoctorAsync(dto);
-
-            // Assert
+            var result = await _sut.AddDoctorAsync(createDto);
 
             Assert.AreEqual(1, result);
 
-            _doctorRepositoryMock.Verify(
-                x => x.AddAsync(It.IsAny<Doctor>()),
+            _mockDoctorRepo.Verify(
+                r => r.AddAsync(doctor),
                 Times.Once);
 
-            _userRepositoryMock.Verify(
-                x => x.AddAsync(It.IsAny<User>()),
+            _mockUserRepo.Verify(
+                r => r.AddAsync(It.Is<User>(u =>
+                    u.UserCode == "D001" &&
+                    u.Email == "doctor1@hospital.com" &&
+                    u.Role == Role.Doctor &&
+                    u.ReferenceId == 1)),
                 Times.Once);
 
-            _unitOfWorkMock.Verify(
-                x => x.CommitAsync(),
+            _mockUnitOfWork.Verify(
+                u => u.CommitAsync(),
                 Times.Exactly(2));
         }
 
         [TestMethod]
-        public async Task GetDoctorByIdAsync_InvalidId_ShouldThrowDoctorNotFoundException()
+        public async Task UpdateDoctorAsync_InvalidId_ThrowsDoctorNotFoundException()
         {
-            // Arrange
-
-            _doctorRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync((Doctor)null);
 
-            // Act + Assert
+            await Assert.ThrowsExceptionAsync<DoctorNotFoundException>(
+                () => _sut.UpdateDoctorAsync(1, new UpdateDoctorDto()));
+        }
+
+        [TestMethod]
+        public async Task UpdateDoctorAsync_ValidDoctor_UpdatesAndCommits()
+        {
+            int doctorId = 1;
+
+            var updateDto = new UpdateDoctorDto();
+
+            var doctor = new Doctor
+            {
+                DoctorId = doctorId
+            };
+
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(doctorId))
+                .ReturnsAsync(doctor);
+
+            await _sut.UpdateDoctorAsync(doctorId, updateDto);
+
+            _mockMapper.Verify(
+                m => m.Map(updateDto, doctor),
+                Times.Once);
+
+            _mockDoctorRepo.Verify(
+                r => r.UpdateAsync(doctor),
+                Times.Once);
+
+            _mockUnitOfWork.Verify(
+                u => u.CommitAsync(),
+                Times.Once);
+        }
+
+        [TestMethod]
+        public async Task DeleteDoctorAsync_InvalidId_ThrowsDoctorNotFoundException()
+        {
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((Doctor)null);
 
             await Assert.ThrowsExceptionAsync<DoctorNotFoundException>(
-                () => _service.GetDoctorByIdAsync(1));
+                () => _sut.DeleteDoctorAsync(1));
         }
 
         [TestMethod]
-        public async Task UpdateDoctorAsync_ValidDoctor_ShouldUpdateDoctor()
+        public async Task DeleteDoctorAsync_HasConfirmedAppointments_ThrowsDoctorDeletionException()
         {
-            // Arrange
+            int doctorId = 1;
 
             var doctor = new Doctor
             {
-                DoctorId = 1
+                DoctorId = doctorId
             };
 
-            var dto = new UpdateDoctorDto();
-
-            _doctorRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
-                .ReturnsAsync(doctor);
-
-            // Act
-
-            await _service.UpdateDoctorAsync(
-                1,
-                dto);
-
-            // Assert
-
-            _doctorRepositoryMock.Verify(
-                x => x.UpdateAsync(doctor),
-                Times.Once);
-
-            _unitOfWorkMock.Verify(
-                x => x.CommitAsync(),
-                Times.Once);
-        }
-
-        [TestMethod]
-        public async Task DeleteDoctorAsync_ConfirmedAppointments_ShouldThrowDoctorDeletionException()
-        {
-            // Arrange
-
-            var doctor = new Doctor
+            var appointments = new List<Appointment>
             {
-                DoctorId = 1
-            };
-
-            var appointments =
-                new List<Appointment>
+                new Appointment
                 {
-            new Appointment
-            {
-                Status =
-                    AppointmentStatus.Confirmed
-            }
-                };
+                    Status = AppointmentStatus.Confirmed
+                }
+            };
 
-            _doctorRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(doctorId))
                 .ReturnsAsync(doctor);
 
-            _appointmentRepositoryMock
-                .Setup(x =>
-                    x.GetAppointmentsByDoctorAsync(1))
+            _mockAppointmentRepo
+                .Setup(r => r.GetAppointmentsByDoctorAsync(doctorId))
                 .ReturnsAsync(appointments);
-
-            // Act + Assert
 
             await Assert.ThrowsExceptionAsync<DoctorDeletionException>(
-                () => _service.DeleteDoctorAsync(1));
+                () => _sut.DeleteDoctorAsync(doctorId));
+
+            _mockDoctorRepo.Verify(
+                r => r.DeleteAsync(It.IsAny<int>()),
+                Times.Never);
         }
 
-
         [TestMethod]
-        public async Task DeleteDoctorAsync_PendingAppointments_ShouldCancelAppointments()
+        public async Task DeleteDoctorAsync_HasPendingAppointments_CancelsPendingAndDeletesDoctor()
         {
-            // Arrange
+            int doctorId = 1;
 
             var doctor = new Doctor
             {
-                DoctorId = 1
+                DoctorId = doctorId
             };
 
-            var appointments =
-                new List<Appointment>
-                {
-            new Appointment
+            var pendingAppointment = new Appointment
             {
-                Status =
-                    AppointmentStatus.Pending
-            }
-                };
+                AppointmentId = 10,
+                Status = AppointmentStatus.Pending
+            };
 
-            _doctorRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
+            var appointments = new List<Appointment>
+            {
+                pendingAppointment
+            };
+
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(doctorId))
                 .ReturnsAsync(doctor);
 
-            _appointmentRepositoryMock
-                .Setup(x =>
-                    x.GetAppointmentsByDoctorAsync(1))
+            _mockAppointmentRepo
+                .Setup(r => r.GetAppointmentsByDoctorAsync(doctorId))
                 .ReturnsAsync(appointments);
 
-            // Act
+            await _sut.DeleteDoctorAsync(doctorId);
 
-            await _service.DeleteDoctorAsync(1);
+            Assert.AreEqual(
+                AppointmentStatus.Cancelled,
+                pendingAppointment.Status);
 
-            // Assert
-
-            _appointmentRepositoryMock.Verify(
-                x => x.UpdateAsync(
-                    It.IsAny<Appointment>()),
+            _mockAppointmentRepo.Verify(
+                r => r.UpdateAsync(pendingAppointment),
                 Times.Once);
 
-            _doctorRepositoryMock.Verify(
-                x => x.DeleteAsync(1),
+            _mockDoctorRepo.Verify(
+                r => r.DeleteAsync(doctorId),
+                Times.Once);
+
+            _mockUnitOfWork.Verify(
+                u => u.CommitAsync(),
                 Times.Once);
         }
 
         [TestMethod]
-        public async Task DeleteDoctorAsync_NoAppointments_ShouldDeleteDoctor()
+        public async Task DeleteDoctorAsync_NoConfirmedAppointments_DeletesDoctor()
         {
-            // Arrange
+            int doctorId = 1;
 
             var doctor = new Doctor
             {
-                DoctorId = 1
+                DoctorId = doctorId
             };
 
-            _doctorRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
+            var appointments = new List<Appointment>();
+
+            _mockDoctorRepo
+                .Setup(r => r.GetByIdAsync(doctorId))
                 .ReturnsAsync(doctor);
 
-            _appointmentRepositoryMock
-                .Setup(x =>
-                    x.GetAppointmentsByDoctorAsync(1))
-                .ReturnsAsync(
-                    new List<Appointment>());
+            _mockAppointmentRepo
+                .Setup(r => r.GetAppointmentsByDoctorAsync(doctorId))
+                .ReturnsAsync(appointments);
 
-            // Act
+            await _sut.DeleteDoctorAsync(doctorId);
 
-            await _service.DeleteDoctorAsync(1);
-
-            // Assert
-
-            _doctorRepositoryMock.Verify(
-                x => x.DeleteAsync(1),
+            _mockDoctorRepo.Verify(
+                r => r.DeleteAsync(doctorId),
                 Times.Once);
 
-            _unitOfWorkMock.Verify(
-                x => x.CommitAsync(),
+            _mockUnitOfWork.Verify(
+                u => u.CommitAsync(),
                 Times.Once);
         }
 
         [TestMethod]
-        public async Task GetDoctorsBySpecialisationAsync_ShouldReturnDoctors()
+        public async Task GetDoctorsBySpecialisationAsync_ReturnsMappedDoctors()
         {
-            // Arrange
+            var specialisation = Specialisation.Cardiologist;
 
-            var doctors =
-                new List<Doctor>
-                {
-            new Doctor
+            var doctors = new List<Doctor>
             {
-                DoctorId = 1
-            }
-                };
+                new Doctor(),
+                new Doctor()
+            };
 
-            var doctorDtos =
-                new List<DoctorDto>
-                {
-            new DoctorDto
+            var doctorDtos = new List<DoctorDto>
             {
-                DoctorId = 1
-            }
-                };
+                new DoctorDto(),
+                new DoctorDto()
+            };
 
-            _doctorRepositoryMock
-                .Setup(x =>
-                    x.GetDoctorsBySpecialisationAsync(
-                        Specialisation.Cardiology))
+            _mockDoctorRepo
+                .Setup(r => r.GetDoctorsBySpecialisationAsync(specialisation))
                 .ReturnsAsync(doctors);
 
-            _mapperMock
-                .Setup(x =>
-                    x.Map<IEnumerable<DoctorDto>>(
-                        doctors))
+            _mockMapper
+                .Setup(m => m.Map<IEnumerable<DoctorDto>>(doctors))
                 .Returns(doctorDtos);
 
-            // Act
-
             var result =
-                await _service
-                    .GetDoctorsBySpecialisationAsync(
-                        Specialisation.Cardiology);
+                await _sut.GetDoctorsBySpecialisationAsync(specialisation);
 
-            // Assert
+            Assert.AreEqual(2, result.Count());
 
-            Assert.AreEqual(
-                1,
-                result.Count());
+            _mockDoctorRepo.Verify(
+                r => r.GetDoctorsBySpecialisationAsync(specialisation),
+                Times.Once);
         }
     }
 }

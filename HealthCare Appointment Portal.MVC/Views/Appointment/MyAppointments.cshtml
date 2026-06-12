@@ -2,95 +2,44 @@
 
 @{
     ViewBag.Title = "My Appointments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="container mt-5">
 
-    <div class="d-flex justify-content-between mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>My Appointments</h2>
 
-        <a href="@Url.Action("Dashboard", "Patient")"
-           class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i>
-            Back to Dashboard
+        <a href="@Url.Action("Dashboard", "Patient")" class="btn btn-secondary">
+            <i class="fa fa-arrow-left"></i> Back to Dashboard
         </a>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="modal fade" id="successModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+    <div class="card shadow-sm">
+        <div class="card-body">
 
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-check-circle"></i>
-                            Success
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
+            <div class="row mb-4">
 
-                    <div class="modal-body">
-                        @TempData["Success"]
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">
-                            OK
-                        </button>
-                    </div>
-
+                <div class="col-md-8">
+                    <input type="text"
+                           id="searchBox"
+                           class="form-control"
+                           placeholder="Search by Appointment Id, Doctor Name, Date, Time Slot" />
                 </div>
-            </div>
-        </div>
-    }
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="modal fade" id="errorModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-triangle-exclamation"></i>
-                            Error
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        @TempData["Error"]
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
-                            OK
-                        </button>
-                    </div>
-
+                <div class="col-md-4">
+                    <select id="statusFilter" class="form-control">
+                        <option value="">All Status</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </select>
                 </div>
+
             </div>
-        </div>
-    }
 
-    <div class="card shadow p-4">
-
-        @if (Model == null || !Model.Any())
-        {
-            <div class="alert alert-info text-center">
-                No appointments found.
-            </div>
-        }
-        else
-        {
-            <input type="text"
-                   id="appointmentSearch"
-                   class="form-control mb-4"
-                   placeholder="Search by Appointment Id, Doctor Name, Date, Time Slot, Status" />
-
-            <table class="table table-bordered table-hover"
-                   id="appointmentTable">
+            <table class="table table-bordered table-hover" id="appointmentsTable">
 
                 <thead class="table-light">
                     <tr>
@@ -99,400 +48,90 @@
                         <th>Appointment Date</th>
                         <th>Time Slot</th>
                         <th>Status</th>
-                        <th>Actions</th>
+                        <th width="250">Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-
-                    @foreach (var appointment in Model)
+                    @foreach (var item in Model)
                     {
-                        string status = appointment.Status.ToString();
-
-                        string viewModalId = "viewModal" + appointment.AppointmentId;
-                        string editModalId = "editModal" + appointment.AppointmentId;
-                        string deleteModalId = "deleteModal" + appointment.AppointmentId;
-
                         <tr>
-                            <td class="appointment-id">@appointment.AppointmentId</td>
+                            <td>@item.AppointmentId</td>
+                            <td>@item.DoctorName</td>
+                            <td>@item.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                            <td>@item.TimeSlot</td>
 
-                            <td class="doctor-name">@appointment.DoctorName</td>
-
-                            <td class="appointment-date">
-                                @appointment.ScheduledDate.ToString("dd-MMM-yyyy")
-                            </td>
-
-                            <td class="time-slot">@appointment.TimeSlot</td>
-
-                            <td class="status-text">
-                                @if (status == "Pending")
+                            <td>
+                                @if (item.Status.ToString() == "Pending")
                                 {
                                     <span class="badge bg-warning text-dark">Pending</span>
                                 }
-                                else if (status == "Confirmed")
+                                else if (item.Status.ToString() == "Confirmed")
                                 {
-                                    <span class="badge bg-info text-dark">Confirmed</span>
+                                    <span class="badge bg-success">Confirmed</span>
                                 }
-                                else if (status == "Completed")
+                                else if (item.Status.ToString() == "Completed")
                                 {
                                     <span class="badge bg-primary">Completed</span>
                                 }
-                                else if (status == "Cancelled")
+                                else if (item.Status.ToString() == "Cancelled")
                                 {
                                     <span class="badge bg-danger">Cancelled</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@item.Status</span>
                                 }
                             </td>
 
                             <td>
-                                <button type="button"
-                                        class="btn btn-info btn-sm text-white"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#@viewModalId">
-                                    <i class="fas fa-eye"></i>
-                                    View
-                                </button>
+                                <a href="@Url.Action("Details", "Appointment", new { id = item.AppointmentId })"
+                                   class="btn btn-info btn-sm text-white">
+                                    <i class="fa fa-eye"></i> View
+                                </a>
 
-                                <button type="button"
-                                        class="btn btn-warning btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#@editModalId">
-                                    <i class="fas fa-edit"></i>
-                                    Edit
-                                </button>
+                                <a href="@Url.Action("Edit", "Appointment", new { id = item.AppointmentId })"
+                                   class="btn btn-warning btn-sm">
+                                    <i class="fa fa-edit"></i> Edit
+                                </a>
 
-                                <button type="button"
-                                        class="btn btn-danger btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#@deleteModalId">
-                                    <i class="fas fa-trash"></i>
-                                    Delete
-                                </button>
+                                <a href="@Url.Action("Delete", "Appointment", new { id = item.AppointmentId })"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="fa fa-trash"></i> Delete
+                                </a>
                             </td>
                         </tr>
                     }
-
-                    <tr id="noDataRow" style="display:none;">
-                        <td colspan="6" class="text-center text-muted py-4">
-                            No appointments found.
-                        </td>
-                    </tr>
-
                 </tbody>
 
             </table>
-        }
 
+        </div>
     </div>
 
 </div>
 
-@if (Model != null)
-{
-    foreach (var appointment in Model)
-    {
-        string status = appointment.Status.ToString();
-
-        string viewModalId = "viewModal" + appointment.AppointmentId;
-        string editModalId = "editModal" + appointment.AppointmentId;
-        string deleteModalId = "deleteModal" + appointment.AppointmentId;
-
-        <div class="modal fade" id="@viewModalId" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header bg-info text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-calendar-check"></i>
-                            Appointment Details
-                        </h5>
-
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal">
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-
-                        <table class="table table-bordered">
-                            <tr>
-                                <th>Appointment Id</th>
-                                <td>@appointment.AppointmentId</td>
-                            </tr>
-
-                            <tr>
-                                <th>Doctor Name</th>
-                                <td>@appointment.DoctorName</td>
-                            </tr>
-
-                            <tr>
-                                <th>Appointment Date</th>
-                                <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
-                            </tr>
-
-                            <tr>
-                                <th>Time Slot</th>
-                                <td>@appointment.TimeSlot</td>
-                            </tr>
-
-                            <tr>
-                                <th>Status</th>
-                                <td>@appointment.Status</td>
-                            </tr>
-
-                            @if (status == "Cancelled")
-                            {
-                                <tr>
-                                    <th>Cancellation Reason</th>
-                                    <td>
-                                        @if (string.IsNullOrWhiteSpace(appointment.CancellationReason))
-                                        {
-                                            <span class="text-muted">No reason provided</span>
-                                        }
-                                        else
-                                        {
-                                            @appointment.CancellationReason
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </table>
-
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-secondary"
-                                data-bs-dismiss="modal">
-                            Close
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="@editModalId" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title">
-                            <i class="fas fa-edit"></i>
-                            Edit Appointment
-                        </h5>
-
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal">
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        @if (status == "Pending")
-                        {
-                            <p>Do you want to edit this appointment?</p>
-
-                            <table class="table table-bordered">
-                                <tr>
-                                    <th>Doctor</th>
-                                    <td>@appointment.DoctorName</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Date</th>
-                                    <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
-                                </tr>
-
-                                <tr>
-                                    <th>Time Slot</th>
-                                    <td>@appointment.TimeSlot</td>
-                                </tr>
-                            </table>
-                        }
-                        else
-                        {
-                            <div class="alert alert-warning mb-0">
-                                Only pending appointments can be edited.
-                            </div>
-                        }
-                    </div>
-
-                    <div class="modal-footer">
-                        @if (status == "Pending")
-                        {
-                            <a href="@Url.Action("Edit", "Appointment", new { id = appointment.AppointmentId })"
-                               class="btn btn-warning">
-                                <i class="fas fa-edit"></i>
-                                Yes, Edit
-                            </a>
-                        }
-
-                        <button type="button"
-                                class="btn btn-secondary"
-                                data-bs-dismiss="modal">
-                            Close
-                        </button>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="@deleteModalId" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title">
-                            <i class="fas fa-trash"></i>
-                            Delete Appointment
-                        </h5>
-
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal">
-                        </button>
-                    </div>
-
-                    @if (status == "Pending")
-                    {
-                        using (Html.BeginForm("PatientCancel", "Appointment", new { id = appointment.AppointmentId }, FormMethod.Post))
-                        {
-                            @Html.AntiForgeryToken()
-
-                            <div class="modal-body">
-
-                                <p>Are you sure you want to delete/cancel this appointment?</p>
-
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th>Doctor</th>
-                                        <td>@appointment.DoctorName</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Date</th>
-                                        <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th>Time Slot</th>
-                                        <td>@appointment.TimeSlot</td>
-                                    </tr>
-                                </table>
-
-                                <div class="mb-3">
-                                    <label class="form-label">
-                                        Cancellation Reason
-                                    </label>
-
-                                    <textarea name="reason"
-                                              class="form-control"
-                                              rows="3"
-                                              placeholder="Enter reason. This is optional."></textarea>
-                                </div>
-
-                            </div>
-
-                            <div class="modal-footer">
-                                <button type="submit"
-                                        class="btn btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                    Yes, Delete
-                                </button>
-
-                                <button type="button"
-                                        class="btn btn-secondary"
-                                        data-bs-dismiss="modal">
-                                    No
-                                </button>
-                            </div>
-                        }
-                    }
-                    else
-                    {
-                        <div class="modal-body">
-                            <div class="alert alert-warning mb-0">
-                                Only pending appointments can be deleted.
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal">
-                                Close
-                            </button>
-                        </div>
-                    }
-
-                </div>
-            </div>
-        </div>
-    }
-}
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    const searchBox = document.getElementById("searchBox");
+    const statusFilter = document.getElementById("statusFilter");
+    const table = document.getElementById("appointmentsTable");
+    const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
 
-        var successElement = document.getElementById("successModal");
-        if (successElement) {
-            new bootstrap.Modal(successElement).show();
+    function filterAppointments() {
+        const searchValue = searchBox.value.toLowerCase();
+        const selectedStatus = statusFilter.value.toLowerCase();
+
+        for (let i = 0; i < rows.length; i++) {
+            const rowText = rows[i].innerText.toLowerCase();
+            const statusText = rows[i].cells[4].innerText.toLowerCase();
+
+            const matchesSearch = rowText.includes(searchValue);
+            const matchesStatus = selectedStatus === "" || statusText === selectedStatus;
+
+            rows[i].style.display = matchesSearch && matchesStatus ? "" : "none";
         }
-
-        var errorElement = document.getElementById("errorModal");
-        if (errorElement) {
-            new bootstrap.Modal(errorElement).show();
-        }
-
-    });
-
-    var searchBox = document.getElementById("appointmentSearch");
-
-    if (searchBox) {
-        searchBox.addEventListener("keyup", function () {
-
-            var search = this.value.toLowerCase();
-
-            var rows =
-                document.querySelectorAll("#appointmentTable tbody tr:not(#noDataRow)");
-
-            var visibleCount = 0;
-
-            rows.forEach(function (row) {
-
-                var appointmentId =
-                    row.querySelector(".appointment-id").innerText.toLowerCase();
-
-                var doctorName =
-                    row.querySelector(".doctor-name").innerText.toLowerCase();
-
-                var date =
-                    row.querySelector(".appointment-date").innerText.toLowerCase();
-
-                var timeSlot =
-                    row.querySelector(".time-slot").innerText.toLowerCase();
-
-                var status =
-                    row.querySelector(".status-text").innerText.toLowerCase();
-
-                if (appointmentId.includes(search) ||
-                    doctorName.includes(search) ||
-                    date.includes(search) ||
-                    timeSlot.includes(search) ||
-                    status.includes(search)) {
-
-                    row.style.display = "";
-                    visibleCount++;
-                }
-                else {
-                    row.style.display = "none";
-                }
-            });
-
-            document.getElementById("noDataRow").style.display =
-                visibleCount === 0 ? "" : "none";
-        });
     }
+
+    searchBox.addEventListener("keyup", filterAppointments);
+    statusFilter.addEventListener("change", filterAppointments);
 </script>

@@ -203,7 +203,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             if (id == null)
             {
                 TempData["Error"] = "Health Record Id is missing.";
-                return RedirectToAction("CompletedAppointments", "Doctor");
+                return RedirectToAction("DoctorRecords", "HealthRecord");
             }
 
             try
@@ -218,14 +218,14 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 };
 
                 ViewBag.RecordId = id.Value;
-                ViewBag.ReturnUrl = returnUrl ?? Url.Action("CompletedAppointments", "Doctor");
+                ViewBag.ReturnUrl = returnUrl ?? Url.Action("DoctorRecords", "HealthRecord");
 
                 return View(dto);
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction("CompletedAppointments", "Doctor");
+                return RedirectToAction("DoctorRecords", "HealthRecord");
             }
         }
 
@@ -236,7 +236,7 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.RecordId = id;
-                ViewBag.ReturnUrl = returnUrl ?? Url.Action("CompletedAppointments", "Doctor");
+                ViewBag.ReturnUrl = returnUrl ?? Url.Action("DoctorRecords", "HealthRecord");
                 return View(dto);
             }
 
@@ -251,14 +251,14 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                     return Redirect(returnUrl);
                 }
 
-                return RedirectToAction("CompletedAppointments", "Doctor");
+                return RedirectToAction("DoctorRecords", "HealthRecord");
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", ex.Message);
 
                 ViewBag.RecordId = id;
-                ViewBag.ReturnUrl = returnUrl ?? Url.Action("CompletedAppointments", "Doctor");
+                ViewBag.ReturnUrl = returnUrl ?? Url.Action("DoctorRecords", "HealthRecord");
 
                 return View(dto);
             }

@@ -35,16 +35,15 @@
             <input type="text"
                    id="healthSearch"
                    class="form-control mb-4"
-                   placeholder="Search by Appointment Id, Patient Id, Doctor Id, Diagnosis" />
+                   placeholder="Search by Appointment Id, Doctor Name, Diagnosis" />
 
             <table class="table table-bordered table-hover"
                    id="healthTable">
 
                 <thead class="table-light">
                     <tr>
-                        <th>Appointment Id</th>
-                        <th>Patient Id</th>
-                        <th>Doctor Id</th>
+                        <th>Appointment Id</th> 
+                        <th>Doctor Name</th>
                         <th>Visit Date</th>
                         <th>Diagnosis</th>
                         <th>Prescription</th>
@@ -57,8 +56,7 @@
                     {
                         <tr>
                             <td class="appointment-id">@record.AppointmentId</td>
-                            <td class="patient-id">@record.PatientId</td>
-                            <td class="doctor-id">@record.DoctorId</td>
+                            <td class="doctor-id">@record.DoctorName</td>
                             <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
                             <td class="diagnosis">@record.Diagnosis</td>
                             <td>@record.Prescription</td>

@@ -1,4 +1,4 @@
-@model HealthCare_Appointment_Portal.DTOs.DoctorDtos.UpdateDoctorDto
+@model HealthCare_Appointment_Portal.DTOs.PatientDtos.UpdatePatientDto
 
 @{
     ViewBag.Title = "Edit My Profile";
@@ -6,18 +6,20 @@
 
 <div class="container mt-5">
 
-    <h2 class="mb-4">Edit My Profile</h2>
+    <h2 class="text-center mb-4">
+        Edit My Profile
+    </h2>
 
-    <div class="card shadow p-4">
+    <div class="card shadow p-4 mx-auto" style="max-width: 800px;">
 
-        @if (ViewBag.Success != null)
+        @if (TempData["Success"] != null)
         {
-            <div class="alert alert-success">
-                @ViewBag.Success
+            <div class="alert alert-success text-center fw-bold">
+                @TempData["Success"]
             </div>
         }
 
-        @using (Html.BeginForm("EditMyProfile", "Doctor", FormMethod.Post))
+        @using (Html.BeginForm("EditMyProfile", "Patient", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
 
@@ -30,49 +32,40 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Specialisation</label>
+                <label class="form-label">Date Of Birth</label>
+                @Html.TextBoxFor(
+                    m => m.DateOfBirth,
+                    "{0:yyyy-MM-dd}",
+                    new { @class = "form-control", type = "date" })
+                @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Gender</label>
                 @Html.EnumDropDownListFor(
-                    m => m.Specialisation,
-                    "-- Select Specialisation --",
+                    m => m.Gender,
+                    "-- Select Gender --",
                     new { @class = "form-select" })
-                @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Years Of Experience</label>
-                @Html.TextBoxFor(
-                    m => m.YearsOfExperience,
-                    new { @class = "form-control", type = "number", min = "0" })
-                @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Consultation Fee</label>
-                @Html.TextBoxFor(
-                    m => m.ConsultationFee,
-                    new { @class = "form-control", type = "number", step = "0.01", min = "0" })
-                @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
+                <label class="form-label">Phone Number</label>
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
             </div>
 
             <div class="mb-4">
-                <label class="form-label d-block">Doctor Status</label>
-
-                <div class="form-check form-switch fs-5">
-                    @Html.CheckBoxFor(
-                        m => m.IsActive,
-                        new { @class = "form-check-input", id = "statusToggle" })
-
-                    <label class="form-check-label" for="statusToggle" id="statusText">
-                        @(Model.IsActive ? "Active" : "Inactive")
-                    </label>
-                </div>
+                <label class="form-label">Email</label>
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", type = "email" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
             </div>
 
             <button type="submit" class="btn btn-primary">
                 Save Changes
             </button>
 
-            <a href="@Url.Action("MyProfile", "Doctor")"
+            <a href="@Url.Action("MyProfile", "Patient")"
                class="btn btn-secondary">
                 Back to Profile
             </a>
@@ -81,17 +74,6 @@
     </div>
 
 </div>
-
-<script>
-    var toggle = document.getElementById("statusToggle");
-    var text = document.getElementById("statusText");
-
-    if (toggle) {
-        toggle.addEventListener("change", function () {
-            text.innerText = toggle.checked ? "Active" : "Inactive";
-        });
-    }
-</script>
 
 @section Scripts
 {

@@ -26,6 +26,7 @@ namespace HealthCare_Appointment_Portal.Enums
         [Display(Name = "General Surgery")]
         GeneralSurgery,
         [Display(Name = "Emergency Surgery")]
-        EmergencySurgery
+        EmergencySurgery,
+        Cardiologist
     }
 }

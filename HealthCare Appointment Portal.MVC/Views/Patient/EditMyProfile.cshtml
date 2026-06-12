@@ -4,182 +4,73 @@
     ViewBag.Title = "Edit My Profile";
 }
 
-<div class="container-fluid">
+<div class="container mt-5">
 
-    <div class="row mb-4">
+    <h1 class="mb-4 text-center">
+        Edit My Profile
+    </h1>
 
-        <div class="col">
+    <div class="row justify-content-center">
 
-            <h2>
-                Edit My Profile
-            </h2>
+        <div class="col-lg-8 col-md-10">
 
-        </div>
+            <div class="card shadow p-4"
+                 style="border-radius:20px;">
 
-    </div>
-
-    <div class="card shadow-sm">
-
-        <div class="card-body">
-
-            @if (ViewBag.Success != null)
-            {
-                <div class="alert alert-success">
-                    @ViewBag.Success
-                </div>
-            }
-
-            @using (Html.BeginForm("EditMyProfile", "Patient", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-
-                if (ViewData.ModelState[""] != null &&
-                    ViewData.ModelState[""].Errors.Count > 0)
+                @using (Html.BeginForm("EditMyProfile", "Patient", FormMethod.Post))
                 {
-                    @Html.ValidationSummary(
-                        true,
-                        "",
-                        new
-                        {
-                            @class = "alert alert-danger"
-                        })
-                }
+                    @Html.AntiForgeryToken()
 
-                <div class="mb-3">
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-                    <label class="form-label">
-                        Full Name
-                    </label>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                    </div>
 
-                    @Html.TextBoxFor(
-                        m => m.FullName,
-                        new
-                        {
-                            @class = "form-control"
-                        })
+                    <div class="mb-3">
+                        <label class="form-label">Date Of Birth</label>
+                        @Html.TextBoxFor(
+                            m => m.DateOfBirth,
+                            "{0:yyyy-MM-dd}",
+                            new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
+                    </div>
 
-                    @Html.ValidationMessageFor(
-                        m => m.FullName,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
+                    <div class="mb-3">
+                        <label class="form-label">Gender</label>
+                        @Html.EnumDropDownListFor(
+                            m => m.Gender,
+                            "-- Select Gender --",
+                            new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
+                    </div>
 
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+                    </div>
 
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Date Of Birth
-                    </label>
-
-                    @Html.TextBoxFor(
-                        m => m.DateOfBirth,
-                        "{0:yyyy-MM-dd}",
-                        new
-                        {
-                            @class = "form-control",
-                            type = "date"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.DateOfBirth,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Gender
-                    </label>
-
-                    @Html.EnumDropDownListFor(
-                        m => m.Gender,
-                        "-- Select Gender --",
-                        new
-                        {
-                            @class = "form-select"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.Gender,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Phone Number
-                    </label>
-
-                    @Html.TextBoxFor(
-                        m => m.PhoneNumber,
-                        new
-                        {
-                            @class = "form-control"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.PhoneNumber,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                <div class="mb-3">
-
-                    <label class="form-label">
-                        Email
-                    </label>
-
-                    @Html.TextBoxFor(
-                        m => m.Email,
-                        new
-                        {
-                            @class = "form-control",
-                            type = "email"
-                        })
-
-                    @Html.ValidationMessageFor(
-                        m => m.Email,
-                        "",
-                        new
-                        {
-                            @class = "text-danger d-block mt-1"
-                        })
-
-                </div>
-
-                <div class="mt-4">
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+                    </div>
 
                     <button type="submit"
                             class="btn btn-primary">
-
                         Save Changes
-
                     </button>
 
-                    <a href="@Url.Action("Dashboard", "Patient")"
+                    <a href="@Url.Action("MyProfile", "Patient")"
                        class="btn btn-secondary">
-                        Back to Dashboard
+                        Back to Profile
                     </a>
+                }
 
-                </div>
-            }
+            </div>
 
         </div>
 
@@ -187,7 +78,6 @@
 
 </div>
 
-@section Scripts
-{
+@section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
