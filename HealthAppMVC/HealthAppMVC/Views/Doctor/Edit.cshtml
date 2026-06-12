@@ -1,0 +1,179 @@
+﻿@model SharedDto.DoctorDtos.CreateDoctorDto
+
+@{
+    ViewBag.Title = "Edit Doctor";
+}
+
+<h2>Edit Doctor</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(
+        true,
+        "",
+        new { @class = "text-danger" })
+
+    <div class="form-group">
+        <label>Name</label>
+
+        @Html.TextBoxFor(
+            m => m.FullName,
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.FullName,
+            "",
+            new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label>Specialisation</label>
+
+        @Html.DropDownListFor(
+            m => m.Specialisation,
+            new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Text = "Cardiologist",
+                    Value = "Cardiologist"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Dermatologist",
+                    Value = "Dermatologist"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Neurologist",
+                    Value = "Neurologist"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Orthopedic",
+                    Value = "Orthopedic"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Pediatrician",
+                    Value = "Pediatrician"
+                },
+
+                new SelectListItem
+                {
+                    Text = "General Physician",
+                    Value = "GeneralPhysician"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Psychiatrist",
+                    Value = "Psychiatrist"
+                },
+
+                new SelectListItem
+                {
+                    Text = "ENT",
+                    Value = "ENT"
+                },
+
+                new SelectListItem
+                {
+                    Text = "Gynecologist",
+                    Value = "Gynecologist"
+                }
+            },
+            "--Select--",
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.Specialisation,
+            "",
+            new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label>Phone Number</label>
+
+        @Html.TextBoxFor(
+            m => m.DoctorPhoneNo,
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.DoctorPhoneNo,
+            "",
+            new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+
+        @Html.TextBoxFor(
+            m => m.DoctorEmail,
+            new
+            {
+                @class = "form-control",
+                type = "email"
+            })
+
+        @Html.ValidationMessageFor(
+            m => m.DoctorEmail,
+            "",
+            new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label>Experience</label>
+
+        @Html.TextBoxFor(
+            m => m.YearsOfExperience,
+            new
+            {
+                @class = "form-control",
+                type = "number"
+            })
+
+        @Html.ValidationMessageFor(
+            m => m.YearsOfExperience,
+            "",
+            new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <label>Consultation Fee</label>
+
+        @Html.TextBoxFor(
+            m => m.ConsultationFee,
+            new
+            {
+                @class = "form-control",
+                type = "number",
+                step = "0.01"
+            })
+
+        @Html.ValidationMessageFor(
+            m => m.ConsultationFee,
+            "",
+            new { @class = "text-danger" })
+    </div>
+
+    <br />
+
+    <button type="submit"
+            class="btn btn-success">
+        Save
+    </button>
+
+    @Html.ActionLink(
+        "Back",
+        "DoctorServices",
+        "Home",
+        null,
+        new { @class = "btn btn-secondary" })
+}

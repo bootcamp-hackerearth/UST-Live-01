@@ -1,0 +1,67 @@
+﻿@model SharedDto.DoctorDtos.DoctorDto
+
+@{
+    ViewBag.Title = "Doctor Details";
+}
+
+<h2>Doctor Profile</h2>
+
+<table class="table table-bordered">
+
+    <tr>
+        <th>Doctor Id</th>
+        <td>@Model.DoctorId</td>
+    </tr>
+
+    <tr>
+        <th>Name</th>
+        <td>@Model.FullName</td>
+    </tr>
+
+    <tr>
+        <th>Specialisation</th>
+        <td>@Model.Specialisation</td>
+    </tr>
+
+    <tr>
+        <th>Phone Number</th>
+        <td>@Model.DoctorPhoneNo</td>
+    </tr>
+
+    <tr>
+        <th>Email</th>
+        <td>@Model.DoctorEmail</td>
+    </tr>
+
+    <tr>
+        <th>Experience</th>
+        <td>@Model.YearsOfExperience Years</td>
+    </tr>
+
+    <tr>
+        <th>Consultation Fee</th>
+        <td>₹ @Model.ConsultationFee</td>
+    </tr>
+
+    <tr>
+        <th>Status</th>
+        <td>
+            @(Model.IsActive
+                ? "Active"
+                : "Inactive")
+        </td>
+    </tr>
+
+</table>
+
+@Html.ActionLink(
+    "Edit",
+    "Edit",
+    new { id = Model.DoctorId },
+    new { @class = "btn btn-warning" })
+
+@Html.ActionLink(
+    "Back",
+    "Index",
+    null,
+    new { @class = "btn btn-secondary" })

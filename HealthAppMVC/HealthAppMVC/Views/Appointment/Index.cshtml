@@ -1,0 +1,142 @@
+﻿@model IEnumerable<SharedDto.AppointmentDtos.AppointmentDto>
+
+@{
+    ViewBag.Title = "Appointments";
+}
+
+<h2>Appointments</h2>
+
+<p>
+    @Html.ActionLink(
+        "Book Appointment",
+        "Create",
+        null,
+        new { @class = "btn btn-primary" })
+</p>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<table class="table table-bordered table-striped">
+
+    <thead>
+
+        <tr>
+            <th>Patient</th>
+
+            <th>Doctor</th>
+
+            <th>Date</th>
+
+            <th>Time Slot</th>
+
+            <th>Status</th>
+
+            <th width="300">
+                Actions
+            </th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+
+                <td>
+                    @item.PatientName
+                </td>
+
+                <td>
+                    @item.DoctorName
+                </td>
+
+                <td>
+                    @item.ScheduledDate
+                    .ToString("dd-MM-yyyy")
+                </td>
+
+                <td>
+                    @item.TimeSlot
+                </td>
+
+                <td>
+                    @item.Status
+                </td>
+
+                <td>
+
+                    @if (item.Status == "Pending")
+                    {
+                        @Html.ActionLink(
+                            "Confirm",
+                            "Confirm",
+                            new
+                            {
+                                id =
+                                item.AppointmentId
+                            },
+                            new
+                            {
+                                @class =
+                                "btn btn-success btn-sm me-1"
+                            })
+                    }
+
+                    @if (item.Status != "Completed"
+                        && item.Status != "Cancelled")
+                    {
+                        @Html.ActionLink(
+                            "Cancel",
+                            "Cancel",
+                            new
+                            {
+                                id =
+                                item.AppointmentId
+                            },
+                            new
+                            {
+                                @class =
+                                "btn btn-danger btn-sm me-1"
+                            })
+                    }
+
+                    @if (item.Status == "Confirmed")
+                    {
+                        @Html.ActionLink(
+                            "Add Health Record",
+                            "Create",
+                            "HealthRecord",
+                            new
+                            {
+                                appointmentId =
+                                item.AppointmentId
+                            },
+                            new
+                            {
+                                @class =
+                                "btn btn-success btn-sm"
+                            })
+                    }
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>

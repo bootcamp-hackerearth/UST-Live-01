@@ -1,0 +1,269 @@
+﻿@model SharedDto.PatientDtos.CreatePatientDto
+
+@{
+ViewBag.Title = "Register Patient";
+}
+
+<div class="container mt-5">
+
+
+<div class="row justify-content-center">
+
+    <div class="col-lg-8">
+
+        <div class="card shadow border-0">
+
+            <div class="card-header bg-primary text-white py-3">
+
+                <h3 class="mb-0">
+                    👤 Patient Registration
+                </h3>
+
+                <small>
+                    Register a new patient in the Healthcare System
+                </small>
+
+            </div>
+
+            <div class="card-body p-4">
+
+
+                @if (TempData["PatientCreateSuccess"] != null)
+                {
+                    <div class="alert alert-success text-center">
+                        @TempData["PatientCreateSuccess"]
+                    </div>
+                }
+
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    @Html.ValidationSummary(
+                        false,
+                        "",
+                        new { @class = "alert alert-danger" })
+                }
+
+                @using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">
+                                Full Name
+                            </label>
+
+                            @Html.TextBoxFor(
+                                m => m.FullName,
+                                new
+                                {
+                                    @class = "form-control",
+                                    placeholder = "Enter full name"
+                                })
+
+                            @Html.ValidationMessageFor(
+                                m => m.FullName,
+                                "",
+                                new { @class = "text-danger" })
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">
+                                Date of Birth
+                            </label>
+
+                            @Html.TextBoxFor(
+                                m => m.DateOfBirth,
+                                "{0:yyyy-MM-dd}",
+                                new
+                                {
+                                    @class = "form-control",
+                                    type = "date"
+                                })
+
+                            @Html.ValidationMessageFor(
+                                m => m.DateOfBirth,
+                                "",
+                                new { @class = "text-danger" })
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">
+                                Gender
+                            </label>
+
+                            @Html.DropDownListFor(
+                                m => m.Gender,
+                                new List<SelectListItem>
+                                {
+                                    new SelectListItem
+                                    {
+                                        Text = "Male",
+                                        Value = "Male"
+                                    },
+                                    new SelectListItem
+                                    {
+                                        Text = "Female",
+                                        Value = "Female"
+                                    },
+                                    new SelectListItem
+                                    {
+                                        Text = "Other",
+                                        Value = "Other"
+                                    }
+                                },
+                                "-- Select Gender --",
+                                new { @class = "form-control" })
+
+                            @Html.ValidationMessageFor(
+                                m => m.Gender,
+                                "",
+                                new { @class = "text-danger" })
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">
+                                Phone Number
+                            </label>
+
+                            @Html.TextBoxFor(
+                                m => m.PhoneNumber,
+                                new
+                                {
+                                    @class = "form-control",
+                                    placeholder = "Enter phone number"
+                                })
+
+                            @Html.ValidationMessageFor(
+                                m => m.PhoneNumber,
+                                "",
+                                new { @class = "text-danger" })
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">
+                                Email Address
+                            </label>
+
+                            @Html.TextBoxFor(
+                                m => m.Email,
+                                new
+                                {
+                                    @class = "form-control",
+                                    type = "email",
+                                    placeholder = "Enter email address"
+                                })
+
+                            @Html.ValidationMessageFor(
+                                m => m.Email,
+                                "",
+                                new { @class = "text-danger" })
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label fw-bold">
+                                Insurance ID
+                            </label>
+
+                            @Html.TextBoxFor(
+                                m => m.InsuranceId,
+                                new
+                                {
+                                    @class = "form-control",
+                                    placeholder = "Optional"
+                                })
+
+                        </div>
+
+                    </div>
+
+                    <hr />
+
+                    <div class="d-flex justify-content-between">
+
+                        <a href="@Url.Action(
+                                    "PatientServices",
+                                    "Home")"
+                           class="btn btn-outline-secondary">
+
+                            ← Back
+
+                        </a>
+
+                        <button type="submit"
+                                class="btn btn-success px-4">
+
+                            💾 Register Patient
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+@section Scripts {
+
+
+@Scripts.Render("~/bundles/jqueryval")
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#DateOfBirth").change(function () {
+
+            var selectedDate =
+                new Date($(this).val());
+
+            var today =
+                new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            $(".dob-error").remove();
+
+            if (selectedDate > today) {
+
+                $(this).after(
+                    '<span class="text-danger dob-error">' +
+                    'Future date not allowed.' +
+                    '</span>');
+            }
+        });
+
+    });
+
+</script>
+
+}

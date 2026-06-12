@@ -1,0 +1,169 @@
+﻿@model IEnumerable<SharedDto.HealthRecordDtos.HealthRecordDto>
+
+@{
+    ViewBag.Title =
+        "Patient Health History";
+}
+
+<h2 class="mb-4">
+    Patient Health History
+</h2>
+
+<div class="form-group">
+
+    <label>
+        Patient Name
+    </label>
+
+    <input type="text"
+           id="patientName"
+           class="form-control" />
+
+    <input type="hidden"
+           id="patientId" />
+
+    <span id="patientError"
+          class="text-danger">
+    </span>
+
+</div>
+
+<br />
+
+<button id="btnHistory"
+        class="btn btn-primary">
+
+    View History
+
+</button>
+
+<a href="@Url.Action("DoctorServices", "Home")"
+   class="btn btn-secondary ms-2">
+    Back
+</a>
+
+<div id="historyContainer">
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row mt-4">
+
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 mb-4">
+
+                    <div class="card shadow-sm border-0 h-100">
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                👨‍⚕️ @item.DoctorName
+                            </h5>
+
+                            <p>
+                                <strong>
+                                    Visit Date:
+                                </strong>
+
+                                @item.VisitDate.ToString("dd-MM-yyyy")
+                            </p>
+
+                            <p>
+                                <strong>
+                                    Diagnosis:
+                                </strong>
+
+                                @item.Diagnosis
+                            </p>
+
+                            <p>
+                                <strong>
+                                    Prescription:
+                                </strong>
+
+                                @item.Prescription
+                            </p>
+
+                            <p>
+                                <strong>
+                                    Notes:
+                                </strong>
+
+                                @item.Notes
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+    </div>
+
+    @section Scripts{
+
+        <script>
+
+        $(function () {
+
+            $("#patientName")
+                .autocomplete({
+
+                    source:
+                        '@Url.Action(
+                            "SearchPatientNames",
+                            "HealthRecord")',
+
+                    minLength: 1,
+
+                    select: function (
+                        event,
+                        ui) {
+
+                        $("#patientId")
+                            .val(ui.item.value);
+                    }
+                });
+
+            $("#btnHistory").click(function () {
+
+                var id =
+                    $("#patientId").val();
+
+                var patientName =
+                    $("#patientName").val();
+
+                if (!patientName) {
+
+                    $("#patientError")
+                        .text("Please enter patient name.");
+
+                    $("#historyContainer").empty();
+
+                    return;
+                }
+
+                if (!id || id === "0") {
+
+                    $("#patientError")
+                        .text("No patient available.");
+                    $("#historyContainer").empty();
+
+                    return;
+                }
+
+                $("#patientError").text("");
+
+                window.location =
+                    '/HealthRecord/SearchPatientHistory?patientId='
+                    + id;
+            });
+        });
+
+        </script>
+
+    }

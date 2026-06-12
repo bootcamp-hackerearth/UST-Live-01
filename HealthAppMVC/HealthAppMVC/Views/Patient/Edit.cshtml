@@ -1,0 +1,211 @@
+﻿@model SharedDto.PatientDtos.CreatePatientDto
+
+@{
+ViewBag.Title = "Edit Patient";
+}
+
+<div class="container mt-5">
+
+```
+<div class="card shadow">
+
+    <div class="card-header bg-warning text-dark">
+        <h3>✏️ Edit Patient</h3>
+    </div>
+
+    <div class="card-body">
+
+        @Html.ValidationSummary(
+            false,
+            "",
+            new { @class = "text-danger" })
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Full Name
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.FullName,
+                    new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(
+                    m => m.FullName,
+                    "",
+                    new { @class = "text-danger" })
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Date of Birth
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.DateOfBirth,
+                    "{0:yyyy-MM-dd}",
+                    new
+                    {
+                        @class = "form-control",
+                        type = "date"
+                    })
+
+                @Html.ValidationMessageFor(
+                    m => m.DateOfBirth,
+                    "",
+                    new { @class = "text-danger" })
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Gender
+                </label>
+
+                @Html.DropDownListFor(
+                    m => m.Gender,
+                    new List<SelectListItem>
+                    {
+                        new SelectListItem
+                        {
+                            Text = "Male",
+                            Value = "Male"
+                        },
+                        new SelectListItem
+                        {
+                            Text = "Female",
+                            Value = "Female"
+                        },
+                        new SelectListItem
+                        {
+                            Text = "Other",
+                            Value = "Other"
+                        }
+                    },
+                    "-- Select Gender --",
+                    new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(
+                    m => m.Gender,
+                    "",
+                    new { @class = "text-danger" })
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Phone Number
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.PhoneNumber,
+                    new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(
+                    m => m.PhoneNumber,
+                    "",
+                    new { @class = "text-danger" })
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Email
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.Email,
+                    new
+                    {
+                        @class = "form-control",
+                        type = "email"
+                    })
+
+                @Html.ValidationMessageFor(
+                    m => m.Email,
+                    "",
+                    new { @class = "text-danger" })
+
+            </div>
+
+            <div class="mb-3">
+
+                <label class="form-label">
+                    Insurance ID
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.InsuranceId,
+                    new { @class = "form-control" })
+
+            </div>
+
+            <button type="submit"
+                    class="btn btn-warning">
+
+                Update Patient
+
+            </button>
+
+            <a href="@Url.Action(
+                        "PatientServices",
+                        "Home")"
+               class="btn btn-secondary">
+
+                Back
+
+            </a>
+        }
+
+    </div>
+
+</div>
+```
+
+</div>
+
+@section Scripts {
+
+```
+@Scripts.Render("~/bundles/jqueryval")
+
+<script>
+
+    $(document).ready(function () {
+
+        $("#DateOfBirth").change(function () {
+
+            var selectedDate =
+                new Date($(this).val());
+
+            var today =
+                new Date();
+
+            today.setHours(0, 0, 0, 0);
+
+            $(".dob-error").remove();
+
+            if (selectedDate > today) {
+
+                $(this).after(
+                    '<span class="text-danger dob-error">' +
+                    'Future date not allowed.' +
+                    '</span>');
+            }
+        });
+
+    });
+
+</script>
+```
+
+}

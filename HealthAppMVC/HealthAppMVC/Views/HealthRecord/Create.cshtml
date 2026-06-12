@@ -1,0 +1,111 @@
+﻿@model SharedDto.HealthRecordDtos.CreateHealthRecordDto
+
+@{
+    ViewBag.Title = "Add Health Record";
+}
+
+<h2>Add Health Record</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(
+        m => m.AppointmentId)
+
+    @Html.ValidationSummary(
+        true,
+        "",
+        new { @class = "text-danger" })
+
+    <div class="card">
+
+        <div class="card-body">
+
+            <div class="form-group">
+
+                <label>Diagnosis</label>
+
+                @Html.TextAreaFor(
+                    m => m.Diagnosis,
+                    new
+                    {
+                        @class = "form-control",
+                        rows = 3
+                    })
+
+                @Html.ValidationMessageFor(
+                    m => m.Diagnosis,
+                    "",
+                    new
+                    {
+                        @class = "text-danger"
+                    })
+
+            </div>
+
+            <div class="form-group mt-3">
+
+                <label>Prescription</label>
+
+                @Html.TextAreaFor(
+                    m => m.Prescription,
+                    new
+                    {
+                        @class = "form-control",
+                        rows = 3
+                    })
+
+                @Html.ValidationMessageFor(
+                    m => m.Prescription,
+                    "",
+                    new
+                    {
+                        @class = "text-danger"
+                    })
+
+            </div>
+
+            <div class="form-group mt-3">
+
+                <label>Notes</label>
+
+                @Html.TextAreaFor(
+                    m => m.Notes,
+                    new
+                    {
+                        @class = "form-control",
+                        rows = 4
+                    })
+
+                @Html.ValidationMessageFor(
+                    m => m.Notes,
+                    "",
+                    new
+                    {
+                        @class = "text-danger"
+                    })
+
+            </div>
+
+            <br />
+
+            <button type="submit"
+                    class="btn btn-success">
+                Save Record
+            </button>
+
+            @Html.ActionLink(
+                "Cancel",
+                "Index",
+                "Appointment",
+                null,
+                new
+                {
+                    @class = "btn btn-secondary"
+                })
+
+        </div>
+
+    </div>
+}

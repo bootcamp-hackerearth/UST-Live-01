@@ -1,0 +1,135 @@
+﻿@model SharedDto.AppointmentDtos.CreateAppointmentDto
+
+@{
+    ViewBag.Title = "Book Appointment";
+}
+
+<h2>Book Appointment</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(
+        true,
+        "",
+        new { @class = "text-danger" })
+
+    <div class="form-group mb-3">
+
+        <label>Patient</label>
+
+        @Html.DropDownListFor(
+            m => m.PatientId,
+            (SelectList)ViewBag.Patients,
+            "-- Select Patient --",
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.PatientId,
+            "",
+            new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group mb-3">
+
+        <label>Doctor</label>
+
+        @Html.DropDownListFor(
+            m => m.DoctorId,
+            (SelectList)ViewBag.Doctors,
+            "-- Select Doctor --",
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.DoctorId,
+            "",
+            new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group mb-3">
+
+        <label>Date</label>
+
+        @Html.TextBoxFor(
+            m => m.ScheduledDate,
+            "{0:yyyy-MM-dd}",
+            new
+            {
+                @class = "form-control",
+                type = "date"
+            })
+
+        @Html.ValidationMessageFor(
+            m => m.ScheduledDate,
+            "",
+            new { @class = "text-danger" })
+
+    </div>
+
+    <div class="form-group mb-3">
+
+        <label>Time Slot</label>
+
+        @Html.DropDownListFor(
+            m => m.TimeSlot,
+            new List<SelectListItem>
+            {
+                new SelectListItem
+                {
+                    Text = "09:00 AM",
+                    Value = "09:00 AM"
+                },
+
+                new SelectListItem
+                {
+                    Text = "10:00 AM",
+                    Value = "10:00 AM"
+                },
+
+                new SelectListItem
+                {
+                    Text = "11:00 AM",
+                    Value = "11:00 AM"
+                },
+
+                new SelectListItem
+                {
+                    Text = "02:00 PM",
+                    Value = "02:00 PM"
+                },
+
+                new SelectListItem
+                {
+                    Text = "03:00 PM",
+                    Value = "03:00 PM"
+                }
+            },
+            "-- Select Slot --",
+            new { @class = "form-control" })
+
+        @Html.ValidationMessageFor(
+            m => m.TimeSlot,
+            "",
+            new { @class = "text-danger" })
+
+    </div>
+
+    <button type="submit"
+            class="btn btn-primary">
+        Save
+    </button>
+
+    @Html.ActionLink(
+        "Back",
+        "Index",
+        null,
+        new { @class = "btn btn-secondary" })
+}
+
+@section Scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+}

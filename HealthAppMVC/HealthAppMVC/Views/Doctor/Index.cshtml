@@ -1,0 +1,178 @@
+﻿@model IEnumerable<SharedDto.DoctorDtos.DoctorDto>
+
+@{
+    ViewBag.Title = "Doctors";
+}
+
+<h2>Doctors</h2>
+
+<p>
+    @Html.ActionLink(
+        "Add Doctor",
+        "Create",
+        null,
+        new { @class = "btn btn-primary" })
+</p>
+
+<form method="get">
+    <div class="row mb-3">
+
+        <div class="col-md-4">
+
+            <select name="specialisation"
+                    class="form-control">
+
+                <option value="">
+                    All Specialisations
+                </option>
+
+                @foreach (var item in ViewBag.Specialisations)
+                {
+                    <option value="@item">
+                        @item
+                    </option>
+                }
+
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+
+            <button type="submit"
+                    class="btn btn-secondary">
+                Filter
+            </button>
+
+        </div>
+
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+
+    <thead>
+
+        <tr>
+            <th>Name</th>
+
+            <th>Specialisation</th>
+
+            <th>Phone</th>
+
+            <th>Email</th>
+
+            <th>Experience</th>
+
+            <th>Fee</th>
+
+            <th>Status</th>
+
+            <th width="250">
+                Actions
+            </th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var doctor in Model)
+        {
+            <tr>
+
+                <td>
+                    @doctor.FullName
+                </td>
+
+                <td>
+                    @doctor.Specialisation
+                </td>
+
+                <td>
+                    @doctor.DoctorPhoneNo
+                </td>
+
+                <td>
+                    @doctor.DoctorEmail
+                </td>
+
+                <td>
+                    @doctor.YearsOfExperience
+                </td>
+
+                <td>
+                    ₹ @doctor.ConsultationFee
+                </td>
+
+                <td>
+
+                    @if (doctor.IsActive)
+                    {
+                        <span class="badge bg-success">
+                            Active
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Inactive
+                        </span>
+                    }
+
+                </td>
+
+                <td>
+
+                    @Html.ActionLink(
+                        "Details",
+                        "Details",
+                        new
+                        {
+                            id =
+                            doctor.DoctorId
+                        },
+                        new
+                        {
+                            @class =
+                            "btn btn-info btn-sm"
+                        })
+
+                    @Html.ActionLink(
+                        "Edit",
+                        "Edit",
+                        new
+                        {
+                            id =
+                            doctor.DoctorId
+                        },
+                        new
+                        {
+                            @class =
+                            "btn btn-warning btn-sm"
+                        })
+
+                    @Html.ActionLink(
+                        doctor.IsActive
+                            ? "Deactivate"
+                            : "Activate",
+                        "ChangeStatus",
+                        new
+                        {
+                            id =
+                            doctor.DoctorId
+                        },
+                        new
+                        {
+                            @class =
+                            "btn btn-danger btn-sm"
+                        })
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
