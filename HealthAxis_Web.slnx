@@ -2,4 +2,5 @@
   <Project Path="HealthAxis.Shared/HealthAxis.Shared.csproj" Id="23dc4fc3-f1ca-4579-8bdb-bbe1304be981" />
   <Project Path="HealthAxisWeb/HealthAxis.Web.csproj" Id="1367f6e9-8ccd-44d3-b022-927a490f839f" />
   <Project Path="HealthAxis_Web/HealthAxis_Web.csproj" Id="dc83854d-ae22-474d-b7ab-68f3b900992c" />
+  <Project Path="HealthAxis_WebTests/HealthAxis_WebTests.csproj" Id="16d62044-0916-4921-8d1c-22c1f4621a12" />
 </Solution>

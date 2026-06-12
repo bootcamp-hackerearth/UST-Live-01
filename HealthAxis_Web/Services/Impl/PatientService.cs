@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using HealthAxis.Api.Models;
 using HealthAxis.Api.Repositories;
 using HealthAxis.Shared.Dtos;
 using System;
@@ -10,20 +10,25 @@ namespace HealthAxis.Api.Services
     public class PatientServiceImpl : IPatientService
     {
         private readonly IPatientRepository _repo;
-        private readonly IMapper _mapper;
 
-        public PatientServiceImpl(IPatientRepository repo, IMapper mapper)
+        public PatientServiceImpl(IPatientRepository repo)
         {
             _repo = repo;
-            _mapper = mapper;
         }
 
         public ApiResponseDto Create(CreatePatientDto dto)
         {
-            var patient = _mapper.Map<Patient>(dto);
-
-            patient.CreatedDate = DateTime.Now;
-            patient.IsActive = true;
+            var patient = new Patient
+            {
+                FullName = dto.FullName,
+                DateOfBirth = dto.DateOfBirth.Value,
+                Gender = dto.Gender,
+                PhoneNumber = dto.PhoneNumber,
+                Email = dto.Email,
+                InsuranceId = dto.InsuranceId,
+                CreatedDate = DateTime.Now,
+                IsActive = true
+            };
 
             _repo.Add(patient);
             _repo.Save();
@@ -37,7 +42,17 @@ namespace HealthAxis.Api.Services
 
         public List<PatientDto> GetAllPatients()
         {
-            return _mapper.Map<List<PatientDto>>(_repo.GetAll());
+            return _repo.GetAll().Select(p => new PatientDto
+            {
+                PatientId = p.PatientId,
+                FullName = p.FullName,
+                DateOfBirth = p.DateOfBirth,
+                Gender = p.Gender,
+                PhoneNumber = p.PhoneNumber,
+                Email = p.Email,
+                InsuranceId = p.InsuranceId,
+                IsActive = p.IsActive
+            }).ToList();
         }
 
         public PatientDto GetById(int id)
@@ -47,15 +62,25 @@ namespace HealthAxis.Api.Services
             if (patient == null)
                 return null;
 
-            var patientDto = _mapper.Map<PatientDto>(patient);
+            var dto = new PatientDto
+            {
+                PatientId = patient.PatientId,
+                FullName = patient.FullName,
+                DateOfBirth = patient.DateOfBirth,
+                Gender = patient.Gender,
+                PhoneNumber = patient.PhoneNumber,
+                Email = patient.Email,
+                InsuranceId = patient.InsuranceId,
+                IsActive = patient.IsActive
+            };
 
             var count = _repo.GetAppointmentsByPatientId(id)
                 .Count(a => a.ScheduledDate >= DateTime.Today
                             && a.Status != "Cancelled");
 
-            patientDto.UpcomingAppointments = count;
+            dto.UpcomingAppointments = count;
 
-            return patientDto;
+            return dto;
         }
 
         public PatientDto Update(int id, PatientDto dto)
@@ -63,12 +88,28 @@ namespace HealthAxis.Api.Services
             var patient = _repo.GetById(id);
             if (patient == null) return null;
 
-            _mapper.Map(dto, patient);
+            patient.FullName = dto.FullName;
+            patient.DateOfBirth = dto.DateOfBirth;
+            patient.Gender = dto.Gender;
+            patient.PhoneNumber = dto.PhoneNumber;
+            patient.Email = dto.Email;
+            patient.InsuranceId = dto.InsuranceId;
+            patient.IsActive = dto.IsActive;
 
             _repo.Update(patient);
             _repo.Save();
 
-            return _mapper.Map<PatientDto>(patient);
+            return new PatientDto
+            {
+                PatientId = patient.PatientId,
+                FullName = patient.FullName,
+                DateOfBirth = patient.DateOfBirth,
+                Gender = patient.Gender,
+                PhoneNumber = patient.PhoneNumber,
+                Email = patient.Email,
+                InsuranceId = patient.InsuranceId,
+                IsActive = patient.IsActive
+            };
         }
 
         public bool Deactivate(int id)
@@ -82,6 +123,5 @@ namespace HealthAxis.Api.Services
 
             return true;
         }
-
     }
 }
