@@ -28,7 +28,6 @@ namespace HealthAxis.Api.Models
         [Required]
         public string Status { get; set; }
 
-        [StringLength(3)]
         public string CancellationReason { get; set; }
         public string CancelledBy { get; set; }
     }

@@ -43,12 +43,12 @@ public class AppointmentController : ApiController
         return Ok(result);
     }
 
-    [HttpPost]
-    [Route("UpdateStatus")]
-    public IHttpActionResult UpdateStatus([FromUri] int id, [FromBody] UpdateAppointmentStatusDto dto)
+    [HttpPut]
+    [Route("{id}/status")]
+    public IHttpActionResult UpdateStatus(int id, UpdateAppointmentStatusDto dto)
     {
         if (dto == null)
-            return BadRequest("DTO null");
+            return BadRequest("Invalid request");
 
         var result = _service.UpdateStatus(id, dto);
 

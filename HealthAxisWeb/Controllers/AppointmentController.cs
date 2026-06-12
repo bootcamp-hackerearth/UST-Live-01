@@ -3,8 +3,10 @@ using HealthAxis.Web.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 
 namespace HealthAxis.Web.Controllers
 {
@@ -131,6 +133,7 @@ namespace HealthAxis.Web.Controllers
             };
 
             var result = await _service.UpdateStatus(id, dto);
+
 
             return Json(new
             {

@@ -225,10 +225,9 @@
 
         fetch('/Appointment/UpdateStatus?id=' + id, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `Status=${status}`
+            body: new URLSearchParams({
+                Status: status
+            })
         })
             .then(res => res.json())
             .then(data => {
@@ -264,10 +263,11 @@
 
         fetch('/Appointment/UpdateStatus?id=' + currentId, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `Status=Cancelled&CancellationReason=${encodeURIComponent(reason)}&CancelledBy=${currentRole}`
+            body: new URLSearchParams({
+                Status: "Cancelled",
+                CancellationReason: reason,
+                CancelledBy: currentRole
+            })
         })
             .then(res => res.json())
             .then(data => {
