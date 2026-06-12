@@ -158,6 +158,11 @@
                                           onclick="updateStatus(@a.AppointmentId, 'Confirmed')">
                                         Confirm
                                     </span>
+
+                                    <span class="action-link"
+                                          onclick="openModal(@a.AppointmentId, 'Doctor')">
+                                        Cancel
+                                    </span>
                                 }
 
                                 @if (a.Status == AppointmentStatus.Confirmed)
@@ -166,14 +171,18 @@
                                           onclick="updateStatus(@a.AppointmentId, 'Completed')">
                                         Complete
                                     </span>
-                                }
 
-                                @if (a.Status == AppointmentStatus.Pending ||
-                                     a.Status == AppointmentStatus.Confirmed)
-                                {
                                     <span class="action-link"
                                           onclick="openModal(@a.AppointmentId, 'Doctor')">
                                         Cancel
+                                    </span>
+                                }
+
+                                @if (a.Status == AppointmentStatus.Completed)
+                                {
+                                    <span class="action-link"
+                                          onclick="openHealthModal(@a.AppointmentId, @a.PatientId, @a.DoctorId)">
+                                        Add Health Record
                                     </span>
                                 }
 
@@ -211,6 +220,28 @@
         <div style="margin-top:15px; display:flex; justify-content:space-between;">
             <button onclick="submitCancel()">Submit</button>
             <button onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+<div id="healthModal"
+     style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+     background:rgba(0,0,0,0.6); justify-content:center; align-items:center;">
+
+    <div style="background:#1f2937; padding:20px; border-radius:10px; width:320px;">
+        <h3>Add Health Record</h3>
+
+        <div id="healthError" class="error-text"></div>
+
+        <input id="diagnosis" placeholder="Diagnosis" style="width:100%; margin-top:10px; padding:8px;" />
+        <input id="treatment" placeholder="Treatment" style="width:100%; margin-top:10px; padding:8px;" />
+
+        <textarea id="notes"
+                  placeholder="Notes"
+                  style="width:100%; margin-top:10px; padding:8px;"></textarea>
+
+        <div style="margin-top:15px; display:flex; justify-content:space-between;">
+            <button onclick="submitHealth()">Save</button>
+            <button onclick="closeHealthModal()">Close</button>
         </div>
     </div>
 </div>
@@ -275,6 +306,52 @@
                     document.getElementById("modalError").innerText = data.Message;
                     return;
                 }
+                location.reload();
+            });
+    }
+    let healthAppointmentId = 0;
+
+    function openHealthModal(id) {
+        healthAppointmentId = id;
+
+        document.getElementById("diagnosis").value = "";
+        document.getElementById("treatment").value = "";
+        document.getElementById("notes").value = "";
+
+        document.getElementById("healthError").innerText = "";
+        document.getElementById("healthModal").style.display = "flex";
+    }
+
+    function closeHealthModal() {
+        document.getElementById("healthModal").style.display = "none";
+    }
+    function submitHealth() {
+
+        let diagnosis = document.getElementById("diagnosis").value;
+        let treatment = document.getElementById("treatment").value;
+        let notes = document.getElementById("notes").value;
+
+        if (!diagnosis || !treatment) {
+            document.getElementById("healthError").innerText = "Required fields missing";
+            return;
+        }
+
+        fetch('/HealthRecord/Create', {
+            method: 'POST',
+            body: new URLSearchParams({
+                AppointmentId: healthAppointmentId,
+                Diagnosis: diagnosis,
+                Prescription: treatment,
+                Notes: notes
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.Success) {
+                    document.getElementById("healthError").innerText = data.Message;
+                    return;
+                }
+
                 location.reload();
             });
     }

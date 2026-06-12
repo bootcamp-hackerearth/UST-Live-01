@@ -7,66 +7,33 @@ namespace HealthAxis.Web.Controllers
 {
     public class HealthRecordController : Controller
     {
-        private readonly IHealthRecordApiService _healthService;
-        private readonly IAppointmentApiService _appointmentService;
+        private readonly IHealthRecordApiService _service;
 
-        public HealthRecordController(
-            IHealthRecordApiService healthService,
-            IAppointmentApiService appointmentService)
+        public HealthRecordController(IHealthRecordApiService service)
         {
-            _healthService = healthService;
-            _appointmentService = appointmentService;
+            _service = service;
         }
-
-        public async Task<ActionResult> Create(int appointmentId)
+        public ActionResult Index()
         {
-            var appointment = await _appointmentService.GetById(appointmentId);
-
-            if (appointment == null)
-            {
-                TempData["Error"] = "Invalid appointment";
-                return RedirectToAction("Index", "Doctor");
-            }
-
-            var dto = new HealthRecordDto
-            {
-                PatientId = appointment.PatientId,
-                DoctorId = appointment.DoctorId,
-                VisitDate = System.DateTime.Now
-            };
-
-            return View(dto);
+            return View();
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(HealthRecordDto dto)
+        public async Task<JsonResult> Create(CreateHealthRecordDto dto)
         {
-            if (!ModelState.IsValid)
-                return View(dto);
+            var result = await _service.Create(dto);
 
-            var result = await _healthService.AddHealthRecord(dto);
-
-            if (!result.Success)
+            return Json(new
             {
-                ViewBag.Error = result.Message;
-                return View(dto);
-            }
-
-            TempData["Success"] = "Health record added successfully!";
-
-            return RedirectToAction("ByDoctor", "Appointment", new { id = dto.DoctorId });
+                Success = result.Success,
+                Message = result.Message
+            });
         }
-        public async Task<ActionResult> GetByPatient(int patientId)
+        [HttpGet]
+        public async Task<JsonResult> GetByPatient(int id)
         {
-            var records = await _healthService.GetByPatient(patientId);
-
-            if (records == null || records.Count == 0)
-            {
-                ViewBag.Error = "No health records found";
-                return View(new System.Collections.Generic.List<HealthRecordDto>());
-            }
-
-            return View(records);
+            var records = await _service.GetByPatient(id);
+            return Json(records, JsonRequestBehavior.AllowGet);
         }
     }
 }

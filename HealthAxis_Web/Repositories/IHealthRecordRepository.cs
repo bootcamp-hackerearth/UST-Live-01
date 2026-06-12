@@ -1,10 +1,10 @@
 ﻿using HealthAxis.Api.Models;
 using System.Collections.Generic;
 
-namespace HealthAxis.Api.Repositories
+public interface IHealthRecordRepository
 {
-    public interface IHealthRecordRepository
-    {
-        List<HealthRecord> GetByPatientId(int patientId);
-    }
+    void Add(HealthRecord record);
+    void Save();
+    bool ExistsByAppointment(int appointmentId);
+    List<HealthRecord> GetByPatient(int patientId);
 }

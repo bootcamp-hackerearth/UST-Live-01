@@ -272,6 +272,7 @@
     <Content Include="Views\Patient\Create.cshtml" />
     <Content Include="Views\Appointment\Index.cshtml" />
     <Content Include="Views\Appointment\DoctorSchedule.cshtml" />
+    <Content Include="Views\HealthRecord\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,142 @@
+﻿@{
+    ViewBag.Title = "Health Records";
+}
+
+<style>
+    body {
+        background: #111827;
+        color: #e5e7eb;
+        font-family: 'Segoe UI';
+        margin: 0;
+    }
+
+    .container {
+        padding: 30px;
+    }
+
+    .main-card {
+        background: #1f2937;
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+    }
+
+    input {
+        padding: 8px;
+        border-radius: 6px;
+        border: none;
+        margin-right: 10px;
+    }
+
+    button {
+        background: #374151;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+        button:hover {
+            background: #4b5563;
+        }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th {
+        text-align: left;
+        color: #9ca3af;
+        font-size: 13px;
+        padding-bottom: 10px;
+    }
+
+    td {
+        padding: 12px;
+        border-top: 1px solid #374151;
+    }
+
+    .error-text {
+        color: #ef4444;
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container">
+
+    <h2 style="color:#1f2937">Health Records</h2>
+
+    <div class="main-card">
+
+        <input type="number" id="patientId" placeholder="Enter Patient ID" />
+        <button onclick="loadRecords()">Search</button>
+
+        <div id="error" class="error-text"></div>
+
+    </div>
+
+    <div class="main-card">
+        <table id="recordsTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Diagnosis</th>
+                    <th>Prescription</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody id="recordsBody"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+
+    function loadRecords() {
+
+        let patientId = document.getElementById("patientId").value;
+
+        if (!patientId) {
+            document.getElementById("error").innerText = "Enter Patient ID";
+            return;
+        }
+
+        document.getElementById("error").innerText = "";
+
+        fetch('/HealthRecord/GetByPatient?id=' + patientId)
+            .then(res => res.json())
+            .then(data => {
+
+                let table = document.getElementById("recordsTable");
+                let body = document.getElementById("recordsBody");
+
+                body.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    document.getElementById("error").innerText = "No records found";
+                    table.style.display = "none";
+                    return;
+                }
+
+                table.style.display = "table";
+
+                data.forEach(r => {
+
+                    body.innerHTML += `
+                        <tr>
+                            <td>${new Date(r.VisitDate).toLocaleDateString()}</td>
+                            <td>${r.Diagnosis}</td>
+                            <td>${r.Prescription}</td>
+                            <td>${r.Notes || ''}</td>
+                        </tr>
+                    `;
+                });
+
+            });
+    }
+
+</script>

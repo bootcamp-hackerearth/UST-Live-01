@@ -1,51 +1,98 @@
 ﻿using AutoMapper;
+using HealthAxis.Api.Models;
 using HealthAxis.Api.Repositories;
 using HealthAxis.Shared.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace HealthAxis.Api.Services
 {
     public class HealthRecordServiceImpl : IHealthRecordService
     {
         private readonly IHealthRecordRepository _repo;
-        private readonly IDoctorRepository _doctorRepo;
-        private readonly IMapper _mapper;
+        private readonly IAppointmentRepository _appointmentRepo;
 
-        public HealthRecordServiceImpl(
-            IHealthRecordRepository repo,
-            IDoctorRepository doctorRepo,
-            IMapper mapper)
+        public HealthRecordServiceImpl(IHealthRecordRepository repo,
+                                       IAppointmentRepository appointmentRepo)
         {
             _repo = repo;
-            _doctorRepo = doctorRepo;
-            _mapper = mapper;
+            _appointmentRepo = appointmentRepo;
         }
 
-        public List<HealthRecordDto> GetByPatient(int patientId)
+        public ApiResponseDto Create(CreateHealthRecordDto dto)
         {
-            var records = _repo.GetByPatientId(patientId)
-                               .OrderByDescending(r => r.VisitDate)
-                               .ToList();
-
-            var result = new List<HealthRecordDto>();
-
-            foreach (var r in records)
+            if (dto == null)
             {
-                var dto = _mapper.Map<HealthRecordDto>(r);
-
-                var doctor = _doctorRepo.GetById(r.DoctorId);
-
-                if (doctor != null)
+                return new ApiResponseDto
                 {
-                    dto.DoctorName = doctor.FullName;
-                    dto.Specialisation = doctor.Specialisation;
-                }
-
-                result.Add(dto);
+                    Success = false,
+                    Message = "Invalid data"
+                };
             }
 
-            return result;
+            if (_repo.ExistsByAppointment(dto.AppointmentId))
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Health record already exists"
+                };
+            }
+
+            var appointment = _appointmentRepo.GetById(dto.AppointmentId);
+
+            if (appointment == null)
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Invalid AppointmentId"
+                };
+            }
+
+            var record = new HealthRecord
+            {
+                AppointmentId = dto.AppointmentId,
+
+                PatientId = appointment.PatientId,
+                DoctorId = appointment.DoctorId,
+
+                VisitDate = DateTime.Now,
+
+                Diagnosis = dto.Diagnosis,
+                Prescription = dto.Prescription,
+                Notes = dto.Notes
+            };
+
+            _repo.Add(record);
+            _repo.Save();
+
+            appointment.Status = AppointmentStatus.Completed.ToString();
+            _appointmentRepo.Update(appointment);
+            _appointmentRepo.Save();
+
+            return new ApiResponseDto
+            {
+                Success = true,
+                Message = "Health record added successfully"
+            };
         }
+        public List<HealthRecordDto> GetByPatient(int patientId)
+        {
+            var records = _repo.GetByPatient(patientId);
+
+            return records.Select(r => new HealthRecordDto
+            {
+                RecordId = r.RecordId,
+                AppointmentId = r.AppointmentId,
+                VisitDate = r.VisitDate,
+                Diagnosis = r.Diagnosis,
+                Prescription = r.Prescription,
+                Notes = r.Notes
+            }).ToList();
+        }
+
     }
 }

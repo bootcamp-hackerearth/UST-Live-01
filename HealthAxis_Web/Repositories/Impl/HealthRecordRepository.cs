@@ -9,21 +9,35 @@ using HealthAxis.Api.Repositories;
 
 
 namespace HealthAxis.Api.Repositories
-{ 
-  public class HealthRecordRepositoryImpl : IHealthRecordRepository
-  {
-      private readonly AppDBContext _context;
-  
-      public HealthRecordRepositoryImpl(AppDBContext context)
-      {
-          _context = context;
-      }
-  
-      public List<HealthRecord> GetByPatientId(int patientId)
-      {
-          return _context.HealthRecords
-              .Where(h => h.PatientId == patientId)
-              .ToList();
-      }
-  }
+{
+    public class HealthRecordRepositoryImpl : IHealthRecordRepository
+    {
+        private readonly AppDBContext _context;
+
+        public HealthRecordRepositoryImpl(AppDBContext context)
+        {
+            _context = context;
+        }
+
+        public void Add(HealthRecord record)
+        {
+            _context.HealthRecords.Add(record);
+        }
+        public List<HealthRecord> GetByPatient(int patientId)
+        {
+            return _context.HealthRecords
+                .Where(x => x.PatientId == patientId)
+                .ToList();
+        }
+
+        public bool ExistsByAppointment(int appointmentId)
+        {
+            return _context.HealthRecords.Any(x => x.AppointmentId == appointmentId);
+        }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
+    }
 }

@@ -12,14 +12,13 @@ namespace HealthAxis.Web.Controllers
     {
         private readonly IPatientApiService _patientService;
         private readonly IAppointmentApiService _appointmentService;
-        public PatientController(IAppointmentApiService appointmentService)
-        {
-            _appointmentService = appointmentService;
-        }
 
-        public PatientController(IPatientApiService patientService)
+        public PatientController(
+            IPatientApiService patientService,
+            IAppointmentApiService appointmentService)
         {
             _patientService = patientService;
+            _appointmentService = appointmentService;
         }
 
         public async Task<ActionResult> Index(string sort, bool? isActive, bool? insured)

@@ -6,10 +6,8 @@ namespace HealthAxis.Web.Services
 {
     public interface IHealthRecordApiService
     {
-        Task<ApiResponseDto> AddHealthRecord(HealthRecordDto dto);
-
+        Task<ApiResponseDto> Create(CreateHealthRecordDto dto);
         Task<List<HealthRecordDto>> GetByPatient(int patientId);
 
-        Task<HealthRecordDto> GetById(int recordId);
     }
 }

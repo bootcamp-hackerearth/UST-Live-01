@@ -1,6 +1,5 @@
 ﻿using HealthAxis.Shared.Dtos;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -15,10 +14,9 @@ namespace HealthAxis.Web.Services
         public HealthRecordApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-
         }
 
-        public async Task<ApiResponseDto> AddHealthRecord(HealthRecordDto dto)
+        public async Task<ApiResponseDto> Create(CreateHealthRecordDto dto)
         {
             var content = new StringContent(
                 JsonConvert.SerializeObject(dto),
@@ -32,7 +30,6 @@ namespace HealthAxis.Web.Services
 
             return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
-
         public async Task<List<HealthRecordDto>> GetByPatient(int patientId)
         {
             var response = await _httpClient.GetAsync($"healthrecord/patient/{patientId}");
@@ -43,18 +40,6 @@ namespace HealthAxis.Web.Services
             var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
-        }
-
-        public async Task<HealthRecordDto> GetById(int recordId)
-        {
-            var response = await _httpClient.GetAsync($"healthrecord/{recordId}");
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<HealthRecordDto>(json);
         }
     }
 }

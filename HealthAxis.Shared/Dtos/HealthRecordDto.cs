@@ -21,5 +21,14 @@ namespace HealthAxis.Shared.Dtos
         public string DoctorName { get; set; }
 
         public string Specialisation { get; set; }
+        public int AppointmentId { get; set; }
+    }
+    public class CreateHealthRecordDto
+    {
+        public int AppointmentId { get; set; }
+
+        public string Diagnosis { get; set; }
+        public string Prescription { get; set; }
+        public string Notes { get; set; }
     }
 }

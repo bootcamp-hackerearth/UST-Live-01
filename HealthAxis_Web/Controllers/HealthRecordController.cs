@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HealthAxis.Api.Database;
 using HealthAxis.Api.Models;
+using HealthAxis.Api.Services;
 using HealthAxis.Shared.Dtos;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,46 +12,38 @@ namespace HealthAxis.Api.Controllers
     [RoutePrefix("api/healthrecord")]
     public class HealthRecordController : ApiController
     {
-        private readonly AppDBContext _context;
-        private readonly IMapper _mapper;
+        private readonly IHealthRecordService _service;
 
-        public HealthRecordController(AppDBContext context, IMapper mapper)
+        public HealthRecordController(IHealthRecordService service)
         {
-            _context = context;
-            _mapper = mapper;
+            _service = service;
         }
 
-        [HttpGet, Route("patient/{patientId}")]
-        public IHttpActionResult GetByPatient(int patientId)
+        [HttpPost]
+        [Route("")]
+        public IHttpActionResult Create(CreateHealthRecordDto dto)
         {
-            var records = _context.HealthRecords
-                .Where(h => h.PatientId == patientId)
-                .OrderByDescending(h => h.VisitDate)
-                .ToList();
+            if (dto == null)
+                return BadRequest("Invalid request");
 
-            if (records == null || records.Count == 0)
-                return Ok(new List<HealthRecordDto>());
+            var result = _service.Create(dto);
 
-            var result = records.Select(h => new HealthRecordDto
-            {
-                RecordId = h.RecordId,
-                PatientId = h.PatientId,
-                DoctorId = h.DoctorId,
-                VisitDate = h.VisitDate,
-                Diagnosis = h.Diagnosis,
-                Prescription = h.Prescription,
-                Notes = h.Notes,
-                DoctorName = _context.Doctors
-                                .Where(d => d.DoctorId == h.DoctorId)
-                                .Select(d => d.FullName)
-                                .FirstOrDefault(),
-                Specialisation = _context.Doctors
-                                .Where(d => d.DoctorId == h.DoctorId)
-                                .Select(d => d.Specialisation)
-                                .FirstOrDefault()
-            }).ToList();
+            if (!result.Success)
+                return Content(System.Net.HttpStatusCode.BadRequest, result);
 
             return Ok(result);
         }
+        [HttpGet]
+        [Route("patient/{id}")]
+        public IHttpActionResult GetByPatient(int id)
+        {
+            if (id <= 0)
+                return BadRequest("Invalid patient id");
+
+            var result = _service.GetByPatient(id);
+
+            return Ok(result);
+        }
+
     }
 }
