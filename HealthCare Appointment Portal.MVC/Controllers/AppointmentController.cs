@@ -457,7 +457,7 @@ public class AppointmentController : Controller
             await _appointmentService
                 .ConfirmAppointmentAsync(id);
 
-            TempData["Success"] =
+            TempData["UpcomingSuccess"] =
                 "Appointment confirmed successfully.";
 
             return RedirectToAction(
@@ -466,7 +466,7 @@ public class AppointmentController : Controller
         }
         catch (Exception ex)
         {
-            TempData["Error"] =
+            TempData["UpcomingError"] =
                 ex.Message;
 
             return RedirectToAction(
@@ -479,7 +479,7 @@ public class AppointmentController : Controller
     {
         if (id == null)
         {
-            TempData["Error"] =
+            TempData["UpcomingError"] =
                 "Appointment Id is missing.";
 
             return RedirectToAction(
@@ -497,7 +497,7 @@ public class AppointmentController : Controller
         }
         catch (Exception ex)
         {
-            TempData["Error"] =
+            TempData["UpcomingError"] =
                 ex.Message;
 
             return RedirectToAction(
@@ -514,7 +514,7 @@ public class AppointmentController : Controller
     {
         if (id == null)
         {
-            TempData["Error"] =
+            TempData["UpcomingError"] =
                 "Appointment Id is missing.";
 
             return RedirectToAction(
@@ -535,7 +535,7 @@ public class AppointmentController : Controller
                     id.Value,
                     reason);
 
-            TempData["Success"] =
+            TempData["UpcomingSuccess"] =
                 "Appointment cancelled successfully.";
 
             return RedirectToAction(
@@ -544,15 +544,12 @@ public class AppointmentController : Controller
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(
-                "",
-                ex.Message);
+            TempData["UpcomingError"] =
+                ex.Message;
 
-            var appointment =
-                await _appointmentService
-                    .GetAppointmentByIdAsync(id.Value);
-
-            return View(appointment);
+            return RedirectToAction(
+                "UpcomingAppointments",
+                "Doctor");
         }
     }
 
@@ -565,7 +562,7 @@ public class AppointmentController : Controller
             await _appointmentService
                 .CompleteAppointmentAsync(id);
 
-            TempData["Success"] =
+            TempData["HealthRecordInfo"] =
                 "Appointment completed successfully. Please add health record.";
 
             return RedirectToAction(
@@ -578,7 +575,7 @@ public class AppointmentController : Controller
         }
         catch (Exception ex)
         {
-            TempData["Error"] =
+            TempData["UpcomingError"] =
                 ex.Message;
 
             return RedirectToAction(

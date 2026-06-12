@@ -6,78 +6,118 @@
 
 <div class="container mt-5">
 
-    <h1 class="mb-4 text-center">
+    <h2 class="text-center mb-4">
         Edit My Profile
-    </h1>
+    </h2>
 
-    <div class="row justify-content-center">
+    <div class="card shadow p-4 mx-auto" style="max-width: 800px;">
 
-        <div class="col-lg-8 col-md-10">
+        @if (TempData.Peek("SuccessMessage") != null)
+        {
+            <div class="alert alert-success text-center fw-bold">
+                <i class="fa fa-check-circle"></i>
+                @TempData["SuccessMessage"]
+            </div>
+        }
 
-            <div class="card shadow p-4"
-                 style="border-radius:20px;">
+        @using (Html.BeginForm("EditMyProfile", "Patient", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
 
-                @using (Html.BeginForm("EditMyProfile", "Patient", FormMethod.Post))
-                {
-                    @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
-                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+            <div class="mb-3">
+                <label class="form-label">
+                    Full Name
+                </label>
 
-                    <div class="mb-3">
-                        <label class="form-label">Full Name</label>
-                        @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
-                    </div>
+                @Html.TextBoxFor(
+                    m => m.FullName,
+                    new { @class = "form-control" })
 
-                    <div class="mb-3">
-                        <label class="form-label">Date Of Birth</label>
-                        @Html.TextBoxFor(
-                            m => m.DateOfBirth,
-                            "{0:yyyy-MM-dd}",
-                            new { @class = "form-control", type = "date" })
-                        @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Gender</label>
-                        @Html.EnumDropDownListFor(
-                            m => m.Gender,
-                            "-- Select Gender --",
-                            new { @class = "form-select" })
-                        @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Phone Number</label>
-                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Email</label>
-                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-                    </div>
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Save Changes
-                    </button>
-
-                    <a href="@Url.Action("MyProfile", "Patient")"
-                       class="btn btn-secondary">
-                        Back to Profile
-                    </a>
-                }
-
+                @Html.ValidationMessageFor(
+                    m => m.FullName,
+                    "",
+                    new { @class = "text-danger" })
             </div>
 
-        </div>
+            <div class="mb-3">
+                <label class="form-label">
+                    Date Of Birth
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.DateOfBirth,
+                    "{0:yyyy-MM-dd}",
+                    new { @class = "form-control", type = "date" })
+
+                @Html.ValidationMessageFor(
+                    m => m.DateOfBirth,
+                    "",
+                    new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Gender
+                </label>
+
+                @Html.EnumDropDownListFor(
+                    m => m.Gender,
+                    "-- Select Gender --",
+                    new { @class = "form-select" })
+
+                @Html.ValidationMessageFor(
+                    m => m.Gender,
+                    "",
+                    new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">
+                    Phone Number
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.PhoneNumber,
+                    new { @class = "form-control" })
+
+                @Html.ValidationMessageFor(
+                    m => m.PhoneNumber,
+                    "",
+                    new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label">
+                    Email
+                </label>
+
+                @Html.TextBoxFor(
+                    m => m.Email,
+                    new { @class = "form-control", type = "email" })
+
+                @Html.ValidationMessageFor(
+                    m => m.Email,
+                    "",
+                    new { @class = "text-danger" })
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Save Changes
+            </button>
+
+            <a href="@Url.Action("MyProfile", "Patient")"
+               class="btn btn-secondary">
+                Back to Profile
+            </a>
+        }
 
     </div>
 
 </div>
 
-@section Scripts {
+@section Scripts
+{
     @Scripts.Render("~/bundles/jqueryval")
 }

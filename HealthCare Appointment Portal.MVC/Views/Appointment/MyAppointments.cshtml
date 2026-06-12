@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="col-md-4">
-                    <select id="statusFilter" class="form-control">
+                    <select id="statusFilter" class="form-select">
                         <option value="">All Status</option>
                         <option value="Pending">Pending</option>
                         <option value="Confirmed">Confirmed</option>
@@ -55,32 +55,34 @@
                 <tbody>
                     @foreach (var item in Model)
                     {
-                        <tr>
+                        var statusValue = item.Status.ToString();
+
+                        <tr data-status="@statusValue">
                             <td>@item.AppointmentId</td>
                             <td>@item.DoctorName</td>
                             <td>@item.ScheduledDate.ToString("dd-MMM-yyyy")</td>
                             <td>@item.TimeSlot</td>
 
                             <td>
-                                @if (item.Status.ToString() == "Pending")
+                                @if (statusValue == "Pending")
                                 {
                                     <span class="badge bg-warning text-dark">Pending</span>
                                 }
-                                else if (item.Status.ToString() == "Confirmed")
+                                else if (statusValue == "Confirmed")
                                 {
                                     <span class="badge bg-success">Confirmed</span>
                                 }
-                                else if (item.Status.ToString() == "Completed")
+                                else if (statusValue == "Completed")
                                 {
                                     <span class="badge bg-primary">Completed</span>
                                 }
-                                else if (item.Status.ToString() == "Cancelled")
+                                else if (statusValue == "Cancelled")
                                 {
                                     <span class="badge bg-danger">Cancelled</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">@item.Status</span>
+                                    <span class="badge bg-secondary">@statusValue</span>
                                 }
                             </td>
 
@@ -112,26 +114,31 @@
 </div>
 
 <script>
-    const searchBox = document.getElementById("searchBox");
-    const statusFilter = document.getElementById("statusFilter");
-    const table = document.getElementById("appointmentsTable");
-    const rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchBox = document.getElementById("searchBox");
+        const statusFilter = document.getElementById("statusFilter");
+        const rows = document.querySelectorAll("#appointmentsTable tbody tr");
 
-    function filterAppointments() {
-        const searchValue = searchBox.value.toLowerCase();
-        const selectedStatus = statusFilter.value.toLowerCase();
+        function filterAppointments() {
+            const searchValue = searchBox.value.trim().toLowerCase();
+            const selectedStatus = statusFilter.value.trim().toLowerCase();
 
-        for (let i = 0; i < rows.length; i++) {
-            const rowText = rows[i].innerText.toLowerCase();
-            const statusText = rows[i].cells[4].innerText.toLowerCase();
+            rows.forEach(function (row) {
+                const rowText = row.innerText.toLowerCase();
+                const rowStatus = row.getAttribute("data-status").trim().toLowerCase();
 
-            const matchesSearch = rowText.includes(searchValue);
-            const matchesStatus = selectedStatus === "" || statusText === selectedStatus;
+                const matchesSearch =
+                    searchValue === "" || rowText.includes(searchValue);
 
-            rows[i].style.display = matchesSearch && matchesStatus ? "" : "none";
+                const matchesStatus =
+                    selectedStatus === "" || rowStatus === selectedStatus;
+
+                row.style.display =
+                    matchesSearch && matchesStatus ? "" : "none";
+            });
         }
-    }
 
-    searchBox.addEventListener("keyup", filterAppointments);
-    statusFilter.addEventListener("change", filterAppointments);
+        searchBox.addEventListener("keyup", filterAppointments);
+        statusFilter.addEventListener("change", filterAppointments);
+    });
 </script>

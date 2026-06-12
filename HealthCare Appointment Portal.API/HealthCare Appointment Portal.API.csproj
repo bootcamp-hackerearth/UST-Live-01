@@ -328,7 +328,6 @@
     <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\DoctorController.cs" />
     <Compile Include="Controllers\HealthRecordController.cs" />
-    <Compile Include="Controllers\IAppointmentApiService.cs" />
     <Compile Include="Controllers\InsuranceController.cs" />
     <Compile Include="Controllers\PatientController.cs" />
     <Compile Include="Controllers\UserController.cs" />

@@ -5,6 +5,12 @@
 @{
     ViewBag.Title = "Completed Appointments";
 
+    TempData.Remove("Success");
+    TempData.Remove("Error");
+    TempData.Remove("UpcomingSuccess");
+    TempData.Remove("UpcomingError");
+    TempData.Remove("HealthRecordInfo");
+
     var healthRecords =
         ViewBag.HealthRecords as Dictionary<int, HealthRecordDto>;
 }
@@ -21,6 +27,76 @@
         </a>
     </div>
 
+    @if (TempData["CompletedSuccess"] != null)
+    {
+        <div class="modal fade" id="completedSuccessModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-check-circle"></i>
+                            Success
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        @TempData["CompletedSuccess"]
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-success"
+                                data-bs-dismiss="modal">
+                            OK
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (TempData["CompletedError"] != null)
+    {
+        <div class="modal fade" id="completedErrorModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title">
+                            <i class="fas fa-triangle-exclamation"></i>
+                            Error
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        @TempData["CompletedError"]
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-danger"
+                                data-bs-dismiss="modal">
+                            OK
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    }
+
     <div class="card shadow p-4">
 
         @if (Model == null || !Model.Any())
@@ -31,7 +107,16 @@
         }
         else
         {
-            <table class="table table-bordered table-hover">
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <input type="text"
+                           id="completedSearch"
+                           class="form-control"
+                           placeholder="Search by Appointment Id, Patient Name, Date, Time Slot" />
+                </div>
+            </div>
+
+            <table class="table table-bordered table-hover" id="completedTable">
 
                 <thead class="table-light">
                     <tr>
@@ -62,15 +147,23 @@
                             "recordModal" + appointment.AppointmentId;
 
                         <tr>
-                            <td>@appointment.AppointmentId</td>
+                            <td class="appointment-id">
+                                @appointment.AppointmentId
+                            </td>
 
-                            <td>@appointment.PatientName</td>
+                            <td class="patient-name">
+                                @appointment.PatientName
+                            </td>
 
-                            <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                            <td class="appointment-date">
+                                @appointment.ScheduledDate.ToString("dd-MMM-yyyy")
+                            </td>
 
-                            <td>@appointment.TimeSlot</td>
+                            <td class="time-slot">
+                                @appointment.TimeSlot
+                            </td>
 
-                            <td>
+                            <td class="status-text">
                                 <span class="badge bg-primary">
                                     Completed
                                 </span>
@@ -106,13 +199,19 @@
                             </td>
                         </tr>
                     }
+
+                    <tr id="completedNoDataRow" style="display:none;">
+                        <td colspan="6"
+                            class="text-center text-muted py-4">
+                            No completed appointments found.
+                        </td>
+                    </tr>
                 </tbody>
 
             </table>
         }
 
     </div>
-
 </div>
 
 @if (Model != null)
@@ -289,3 +388,84 @@
         }
     }
 }
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var successElement =
+            document.getElementById("completedSuccessModal");
+
+        if (successElement) {
+            new bootstrap.Modal(successElement).show();
+        }
+
+        var errorElement =
+            document.getElementById("completedErrorModal");
+
+        if (errorElement) {
+            new bootstrap.Modal(errorElement).show();
+        }
+
+        var searchBox =
+            document.getElementById("completedSearch");
+
+        if (searchBox) {
+            searchBox.addEventListener("keyup", filterCompletedAppointments);
+        }
+    });
+
+    function filterCompletedAppointments() {
+        var searchBox =
+            document.getElementById("completedSearch");
+
+        var searchValue =
+            searchBox.value.toLowerCase().trim();
+
+        var rows =
+            document.querySelectorAll("#completedTable tbody tr:not(#completedNoDataRow)");
+
+        var visibleCount =
+            0;
+
+        rows.forEach(function (row) {
+
+            var appointmentId =
+                row.querySelector(".appointment-id").innerText.toLowerCase();
+
+            var patientName =
+                row.querySelector(".patient-name").innerText.toLowerCase();
+
+            var appointmentDate =
+                row.querySelector(".appointment-date").innerText.toLowerCase();
+
+            var timeSlot =
+                row.querySelector(".time-slot").innerText.toLowerCase();
+
+            var status =
+                row.querySelector(".status-text").innerText.toLowerCase();
+
+            var rowMatches =
+                appointmentId.includes(searchValue) ||
+                patientName.includes(searchValue) ||
+                appointmentDate.includes(searchValue) ||
+                timeSlot.includes(searchValue) ||
+                status.includes(searchValue);
+
+            if (searchValue === "" || rowMatches) {
+                row.style.display = "";
+                visibleCount++;
+            }
+            else {
+                row.style.display = "none";
+            }
+        });
+
+        var noDataRow =
+            document.getElementById("completedNoDataRow");
+
+        if (noDataRow) {
+            noDataRow.style.display =
+                visibleCount === 0 ? "" : "none";
+        }
+    }
+</script>

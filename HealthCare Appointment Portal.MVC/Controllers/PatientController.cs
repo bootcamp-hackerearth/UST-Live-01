@@ -100,7 +100,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
 
             return View(patient);
         }
-
         // GET: Patient/EditMyProfile
         public async Task<ActionResult> EditMyProfile()
         {
@@ -116,51 +115,43 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 await _patientService
                     .GetPatientByIdAsync(patientId);
 
-            return View(
-                new UpdatePatientDto
-                {
-                    FullName = patient.FullName,
-                    DateOfBirth = patient.DateOfBirth,
-                    Gender = patient.Gender,
-                    PhoneNumber = patient.PhoneNumber,
-                    Email = patient.Email
-                });
+            var model = new UpdatePatientDto
+            {
+                FullName = patient.FullName,
+                DateOfBirth = patient.DateOfBirth,
+                Gender = patient.Gender,
+                PhoneNumber = patient.PhoneNumber,
+                Email = patient.Email
+            };
+
+            return View(model);
         }
 
         // POST: Patient/EditMyProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
-        
-        public async Task<ActionResult> EditMyProfile(UpdatePatientDto dto)
+        public async Task<ActionResult> EditMyProfile(UpdatePatientDto model)
         {
             if (Session["ReferenceId"] == null)
             {
-                return RedirectToAction("Create", "Patient");
+                return RedirectToAction("Create");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
             }
 
             int patientId =
                 Convert.ToInt32(Session["ReferenceId"]);
 
-            if (!ModelState.IsValid)
-            {
-                return View(dto);
-            }
+            await _patientService
+                .UpdatePatientAsync(patientId, model);
 
-            try
-            {
-                await _patientService.UpdatePatientAsync(patientId, dto);
+            TempData["SuccessMessage"] =
+                "Profile updated successfully.";
 
-                ViewBag.Success =
-                    "Profile updated successfully.";
-
-                return View(dto);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError("", ex.Message);
-
-                return View(dto);
-            }
+            return RedirectToAction("EditMyProfile");
         }
         // ==================================
         // ADMIN / DOCTOR PATIENT LIST

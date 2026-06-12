@@ -49,7 +49,8 @@
 
                     @foreach (var appointment in Model)
                     {
-                        string modalId = "cancelledModal" + appointment.AppointmentId;
+                        string modalId =
+                            "cancelledModal" + appointment.AppointmentId;
 
                         <tr>
                             <td class="appointment-id">
@@ -86,7 +87,8 @@
                         </tr>
                     }
 
-                    <tr id="noDataRow" style="display:none;">
+                    <tr id="noDataRow"
+                        style="display:none;">
                         <td colspan="6"
                             class="text-center text-muted py-4">
                             No cancelled appointments found.
@@ -106,7 +108,8 @@
 {
     foreach (var appointment in Model)
     {
-        string modalId = "cancelledModal" + appointment.AppointmentId;
+        string modalId =
+            "cancelledModal" + appointment.AppointmentId;
 
         <div class="modal fade"
              id="@modalId"
@@ -163,17 +166,15 @@
                             <tr>
                                 <th>Cancellation Reason</th>
                                 <td>
-                                    @{
-                                        var reason = appointment.CancellationReason;
-                                    }
-
-                                    @if (string.IsNullOrWhiteSpace(reason))
+                                    @if (string.IsNullOrWhiteSpace(appointment.CancellationReason))
                                     {
-                                        <span class="text-muted">No reason provided</span>
+                                        <span class="text-muted">
+                                            No reason provided
+                                        </span>
                                     }
                                     else
                                     {
-                                        @reason
+                                        @appointment.CancellationReason
                                     }
                                 </td>
                             </tr>
@@ -198,17 +199,20 @@
 }
 
 <script>
-    var searchBox = document.getElementById("cancelledSearch");
+    var searchBox =
+        document.getElementById("cancelledSearch");
 
     if (searchBox) {
         searchBox.addEventListener("keyup", function () {
 
-            var search = this.value.toLowerCase();
+            var search =
+                this.value.toLowerCase();
 
             var rows =
                 document.querySelectorAll("#cancelledTable tbody tr:not(#noDataRow)");
 
-            var visibleCount = 0;
+            var visibleCount =
+                0;
 
             rows.forEach(function (row) {
 
@@ -220,7 +224,6 @@
 
                 if (appointmentId.includes(search) ||
                     patientName.includes(search)) {
-
                     row.style.display = "";
                     visibleCount++;
                 }

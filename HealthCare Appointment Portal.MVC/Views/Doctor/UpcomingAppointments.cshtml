@@ -2,6 +2,12 @@
 
 @{
     ViewBag.Title = "Upcoming Appointments";
+
+    TempData.Remove("Success");
+    TempData.Remove("Error");
+    TempData.Remove("CompletedSuccess");
+    TempData.Remove("CompletedError");
+    TempData.Remove("HealthRecordInfo");
 }
 
 <div class="container mt-5">
@@ -16,7 +22,7 @@
         </a>
     </div>
 
-    @if (TempData["Success"] != null)
+    @if (TempData["UpcomingSuccess"] != null)
     {
         <div class="modal fade" id="successModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
@@ -35,7 +41,7 @@
                     </div>
 
                     <div class="modal-body">
-                        @TempData["Success"]
+                        @TempData["UpcomingSuccess"]
                     </div>
 
                     <div class="modal-footer">
@@ -51,7 +57,7 @@
         </div>
     }
 
-    @if (TempData["Error"] != null)
+    @if (TempData["UpcomingError"] != null)
     {
         <div class="modal fade" id="errorModal" tabindex="-1">
             <div class="modal-dialog modal-dialog-centered">
@@ -70,7 +76,7 @@
                     </div>
 
                     <div class="modal-body">
-                        @TempData["Error"]
+                        @TempData["UpcomingError"]
                     </div>
 
                     <div class="modal-footer">
@@ -513,20 +519,22 @@
             new bootstrap.Modal(errorElement).show();
         }
 
+        var searchBox = document.getElementById("upcomingSearch");
+        var dateBox = document.getElementById("dateSearch");
+
+        if (searchBox) {
+            searchBox.addEventListener("keyup", filterUpcoming);
+        }
+
+        if (dateBox) {
+            dateBox.addEventListener("change", filterUpcoming);
+        }
     });
 
-    var searchBox = document.getElementById("upcomingSearch");
-    var dateBox = document.getElementById("dateSearch");
-
-    if (searchBox) {
-        searchBox.addEventListener("keyup", filterUpcoming);
-    }
-
-    if (dateBox) {
-        dateBox.addEventListener("change", filterUpcoming);
-    }
-
     function filterUpcoming() {
+        var searchBox = document.getElementById("upcomingSearch");
+        var dateBox = document.getElementById("dateSearch");
+
         var search = searchBox.value.toLowerCase();
         var selectedDate = dateBox.value;
 
@@ -567,7 +575,11 @@
             }
         });
 
-        document.getElementById("noDataRow").style.display =
-            visibleCount === 0 ? "" : "none";
+        var noDataRow = document.getElementById("noDataRow");
+
+        if (noDataRow) {
+            noDataRow.style.display =
+                visibleCount === 0 ? "" : "none";
+        }
     }
 </script>
