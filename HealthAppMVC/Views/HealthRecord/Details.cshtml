@@ -1,76 +1,96 @@
-﻿
-@model HealthAppWebAPI.Models.Dtos.HealthRecordDto
+﻿@model HealthAppWebAPI.Models.Dtos.HealthRecordDto
 
 @{
     ViewBag.Title = "Health Record Details";
 }
 
-<h2>Health Record Details</h2>
+<div class="page-wrapper">
 
-<div class="card">
+    <div class="page-header-box">
+        <div class="row align-items-center">
 
-    <div class="card-body">
+            <div class="col-md-8">
+                <h2 class="page-title">Health Record Details</h2>
 
-        <dl class="row">
+                <p class="page-subtitle">
+                    View diagnosis, prescription, notes, patient, and doctor information.
+                </p>
+            </div>
 
-            <dt class="col-md-3">
-                Patient
-            </dt>
+            <div class="col-md-4 text-end">
+                @Html.ActionLink(
+                    "Back to Patient",
+                    "Details",
+                    "Patient",
+                    new { id = Model.PatientId },
+                    new { @class = "btn btn-secondary btn-rounded" })
+            </div>
 
-            <dd class="col-md-9">
-                @Model.PatientName
-            </dd>
+        </div>
+    </div>
 
-            <dt class="col-md-3">
-                Doctor
-            </dt>
+    <div class="table-card">
 
-            <dd class="col-md-9">
-                @Model.DoctorName
-            </dd>
+        <h4 class="mb-3">
+            <i class="bi bi-journal-medical"></i>
+            Health Record #@Model.HealthRecordId
+        </h4>
 
-            <dt class="col-md-3">
-                Visit Date
-            </dt>
+        <hr />
 
-            <dd class="col-md-9">
-                @Model.VisitDate.ToString("dd-MM-yyyy")
-            </dd>
+        <div class="row">
 
-            <dt class="col-md-3">
-                Diagnosis
-            </dt>
+            <div class="col-md-6">
 
-            <dd class="col-md-9">
-                @Model.Diagnosis
-            </dd>
+                <p>
+                    <strong>Patient:</strong>
+                    @Model.PatientName
+                </p>
 
-            <dt class="col-md-3">
-                Prescription
-            </dt>
+                <p>
+                    <strong>Doctor:</strong>
+                    @Model.DoctorName
+                </p>
 
-            <dd class="col-md-9">
-                @Model.Prescription
-            </dd>
+                <p>
+                    <strong>Visit Date:</strong>
+                    @Model.VisitDate.ToString("dd-MM-yyyy")
+                </p>
 
-            <dt class="col-md-3">
-                Notes
-            </dt>
+            </div>
 
-            <dd class="col-md-9">
-                @Model.Notes
-            </dd>
+            <div class="col-md-6">
 
-        </dl>
+                <p>
+                    <strong>Appointment Id:</strong>
+                    @Model.AppointmentId
+                </p>
 
-        @Html.ActionLink(
-            "Back",
-            "SearchPatientHistory",
-            null,
-            new
-            {
-                @class = "btn btn-secondary"
-            })
+                <p>
+                    <strong>Patient Id:</strong>
+                    @Model.PatientId
+                </p>
+
+            </div>
+
+        </div>
+
+        <hr />
+
+        <div class="mb-3">
+            <h5>Diagnosis</h5>
+            <p>@Model.Diagnosis</p>
+        </div>
+
+        <div class="mb-3">
+            <h5>Prescription</h5>
+            <p>@Model.Prescription</p>
+        </div>
+
+        <div class="mb-3">
+            <h5>Notes</h5>
+            <p>@Model.Notes</p>
+        </div>
 
     </div>
 

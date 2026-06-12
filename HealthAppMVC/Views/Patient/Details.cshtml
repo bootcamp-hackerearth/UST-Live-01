@@ -149,6 +149,7 @@
                     <th>Diagnosis</th>
                     <th>Prescription</th>
                     <th>Notes</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -167,27 +168,36 @@
                 {
                     foreach (var record in healthRecords)
                     {
-                        <tr>
-                            <td>
-                                @record.VisitDate.ToString("dd-MM-yyyy")
-                            </td>
+            <tr>
+                <td>
+                    @record.VisitDate.ToString("dd-MM-yyyy")
+                </td>
 
-                            <td>
-                                @record.DoctorName
-                            </td>
+                <td>
+                    @record.DoctorName
+                </td>
 
-                            <td>
-                                @record.Diagnosis
-                            </td>
+                <td>
+                    @record.Diagnosis
+                </td>
 
-                            <td>
-                                @record.Prescription
-                            </td>
+                <td>
+                    @record.Prescription
+                </td>
 
-                            <td>
-                                @record.Notes
-                            </td>
-                        </tr>
+                <td>
+                    @record.Notes
+                </td>
+                <td>
+                    <a href="@Url.Action("Details", "HealthRecord", new { id = record.HealthRecordId })"
+                       class="btn btn-info btn-sm action-btn"
+                       title="View Health Record"
+                       aria-label="View Health Record">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </td>
+
+            </tr>
                     }
                 }
 

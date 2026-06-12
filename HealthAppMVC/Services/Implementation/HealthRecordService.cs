@@ -41,10 +41,13 @@ namespace HealthAppMVC.Services.Implementation
         {
             var response = await _httpClient.GetAsync($"healthrecords/{id}");
 
-            if (!response.IsSuccessStatusCode)
-                throw new Exception("Health record not found.");
-
             var data = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(data);
+            }
+
             return JsonConvert.DeserializeObject<HealthRecordDto>(data);
         }
 

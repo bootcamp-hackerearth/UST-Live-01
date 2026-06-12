@@ -105,5 +105,21 @@ namespace HealthAppMVC.Controllers
                 return PartialView("_CreateHealthRecordModal", dto);
             }
         }
+        public async Task<ActionResult> Details(int id)
+        {
+            try
+            {
+                var record = await _healthRecordService.GetByIdAsync(id);
+
+                return View(record);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+
+                return RedirectToAction("Index", "Patient");
+            }
+        }
+
     }
 }
