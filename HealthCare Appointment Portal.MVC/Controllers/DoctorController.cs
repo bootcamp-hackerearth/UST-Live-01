@@ -421,9 +421,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                         .CreateDoctorAsync(
                             doctor);
 
-                TempData[
-                    Constants.SuccessKey] =
-                    "Doctor created successfully.";
 
                 return RedirectToAction(
                     Constants.DetailsAction,
@@ -536,9 +533,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
                 await _doctorService
                     .DeleteDoctorAsync(id);
 
-                TempData[
-                    Constants.SuccessKey] =
-                    "Doctor deactivated successfully.";
 
                 return RedirectToAction(
                     Constants.IndexAction);

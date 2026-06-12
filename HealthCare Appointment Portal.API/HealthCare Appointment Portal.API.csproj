@@ -346,6 +346,7 @@
     <Compile Include="Exceptions\PastTimeSlotException.cs" />
     <Compile Include="Exceptions\PatientDeletionException.cs" />
     <Compile Include="Exceptions\PatientNotFoundException .cs" />
+    <Compile Include="Exceptions\TimeSlotPassedException.cs" />
     <Compile Include="Exceptions\UserNotFoundException.cs" />
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="Global.asax.cs">

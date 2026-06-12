@@ -1,8 +1,6 @@
 ﻿@{
     var role = Session["Role"]?.ToString();
-    var userCode = Session["UserCode"]?.ToString();
 }
-
 <!DOCTYPE html>
 
 <html lang="en" xml:lang="en">
@@ -308,7 +306,7 @@
 
                 </ul>
 
-                @if (Session["UserId"] != null)
+                @if (!string.IsNullOrEmpty(role))
                 {
                     <ul class="navbar-nav">
 
@@ -320,9 +318,7 @@
 
                                 <div class="profile-avatar">
 
-                                    @(string.IsNullOrEmpty(userCode)
-                                        ? "U"
-                                        : userCode.Substring(0, 1).ToUpper())
+                                    @role.Substring(0, 1).ToUpper()
 
                                 </div>
 
@@ -331,9 +327,13 @@
                             <ul class="dropdown-menu dropdown-menu-end">
 
                                 <li>
+
                                     <h6 class="dropdown-header">
-                                        @userCode
+
+                                        @role Dashboard
+
                                     </h6>
+
                                 </li>
 
                                 <li>
@@ -341,14 +341,37 @@
                                 </li>
 
                                 <li>
+
+                                    <a class="dropdown-item"
+                                       href="@Url.Action(
+                                            "Index",
+                                            "DashboardSelection")">
+
+                                        <i class="fas fa-home me-2"></i>
+
+                                        Dashboard Selection
+
+                                    </a>
+
+                                </li>
+
+                                <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+
+                                <li>
+
                                     <a class="dropdown-item text-danger"
-                                       href="@Url.Action("Logout","User")">
+                                       href="@Url.Action(
+                                                    "Logout",
+                                                    "DashboardSelection")">
 
                                         <i class="fas fa-sign-out-alt me-2"></i>
 
                                         Logout
 
                                     </a>
+
                                 </li>
 
                             </ul>

@@ -99,6 +99,22 @@ namespace HealthCare_Appointment_Portal.Services
                 throw new PastDateException();
             }
 
+            if (appointmentDto.ScheduledDate.Date == DateTime.Today)
+            {
+                string startTime =
+                    appointmentDto.TimeSlot
+                        .Split('-')[0]
+                        .Trim();
+
+                TimeSpan slotTime =
+                    TimeSpan.Parse(startTime);
+
+                if (slotTime <= DateTime.Now.TimeOfDay)
+                {
+                    throw new TimeSlotPassedException();
+                }
+            }
+
             if (appointmentDto.ScheduledDate.Date >
                 DateTime.Today.AddMonths(6))
             {

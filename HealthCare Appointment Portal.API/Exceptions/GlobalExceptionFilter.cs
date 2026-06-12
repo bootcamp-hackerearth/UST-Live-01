@@ -38,6 +38,7 @@ namespace HealthCare_Appointment_Portal.Filters
             else if (context.Exception is InvalidAppointmentStatusException
                      || context.Exception is PastDateException
                      || context.Exception is PastTimeSlotException
+                     || context.Exception is TimeSlotPassedException
                      || context.Exception is AdvanceBookingLimitException
                      || context.Exception is DoctorUnavailableException
                      || context.Exception is DoctorDeletionException
