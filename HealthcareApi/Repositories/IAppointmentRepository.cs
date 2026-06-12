@@ -58,7 +58,21 @@ namespace HealthcareApi.Repositories
 
         List<Appointment> SearchCancelledAppointmentsByDoctorId(int doctorId, string query);
 
-        List<Appointment> SearchUpcomingAppointmentsByDoctorId(int doctorId, string query);
+        List<Appointment> SearchUpcomingAppointmentsByDoctorId(int doctorId, string query, AppointmentStatus? status);
+
         List<Appointment> GetExpiredPendingAppointments(DateTime today);
+
+        bool PatientHasAnotherAppointmentWithDoctorOnDate(
+            int appointmentId,
+            int patientId,
+            int doctorId,
+            DateTime date);
+
+        bool IsSlotBookedByAnotherAppointment(
+            int appointmentId,
+            int doctorId,
+            DateTime date,
+            int slotNumber);
+
     }
 }

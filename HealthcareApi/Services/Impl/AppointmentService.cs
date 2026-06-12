@@ -117,21 +117,28 @@ namespace HealthcareApi.Services.Implementations
                 throw new AppointmentRuleException("Appointment details are required.");
             }
 
+            DateTime appointmentDate = dto.ScheduledDate.Date;
+
             ValidatePatientExists(dto.PatientId);
 
             Doctor doctor = ValidateDoctorExists(dto.DoctorId);
 
-            ValidateAppointmentDate(dto.ScheduledDate);
-            ValidateDoctorAvailability(doctor, dto.ScheduledDate);
-            ValidatePatientDuplicateAppointment(dto.PatientId, dto.DoctorId, dto.ScheduledDate);
+            ValidateAppointmentDate(appointmentDate);
+            ValidateDoctorAvailability(doctor, appointmentDate);
 
-            int assignedSlotNumber = FindNextAvailableSlot(dto.DoctorId, dto.ScheduledDate);
+            ValidatePatientDuplicateAppointment(
+                dto.PatientId,
+                dto.DoctorId,
+                appointmentDate);
+
+            int assignedSlotNumber =
+                FindNextAvailableSlot(dto.DoctorId, appointmentDate);
 
             Appointment appointment = new Appointment
             {
                 PatientId = dto.PatientId,
                 DoctorId = dto.DoctorId,
-                ScheduledDate = dto.ScheduledDate.Date,
+                ScheduledDate = appointmentDate,
                 SlotNumber = assignedSlotNumber,
                 Status = AppointmentStatus.Pending,
                 CancellationReason = string.Empty
@@ -153,6 +160,8 @@ namespace HealthcareApi.Services.Implementations
 
             Appointment existingAppointment = GetAppointmentEntityById(appointmentId);
 
+            ValidateAppointmentCanBeEdited(existingAppointment);
+
             ValidatePatientExists(dto.PatientId);
 
             Doctor doctor = ValidateDoctorExists(dto.DoctorId);
@@ -160,16 +169,23 @@ namespace HealthcareApi.Services.Implementations
             ValidateAppointmentDate(dto.ScheduledDate);
             ValidateSlotNumber(dto.SlotNumber);
             ValidateDoctorAvailability(doctor, dto.ScheduledDate);
+            ValidatePatientDuplicateAppointmentForUpdate(
+                appointmentId,
+                dto.PatientId,
+                dto.DoctorId,
+                dto.ScheduledDate);
 
             bool slotTakenByAnotherAppointment =
-                _appointmentRepository.IsSlotBooked(
+                _appointmentRepository.IsSlotBookedByAnotherAppointment(
+                    appointmentId,
                     dto.DoctorId,
                     dto.ScheduledDate,
-                    dto.SlotNumber)
-                &&
-                !(existingAppointment.DoctorId == dto.DoctorId &&
-                  existingAppointment.ScheduledDate.Date == dto.ScheduledDate.Date &&
-                  existingAppointment.SlotNumber == dto.SlotNumber);
+                    dto.SlotNumber);
+
+            if (slotTakenByAnotherAppointment)
+            {
+                throw new AppointmentRuleException("Selected appointment slot is already booked.");
+            }
 
             if (slotTakenByAnotherAppointment)
             {
@@ -302,7 +318,7 @@ namespace HealthcareApi.Services.Implementations
         {
             ValidateDoctorExists(doctorId);
 
-
+            AutoCancelExpiredPendingAppointments();
 
             List<Appointment> appointments =
                 _appointmentRepository.GetCancelledAppointmentsByDoctorId(doctorId);
@@ -317,8 +333,6 @@ namespace HealthcareApi.Services.Implementations
             }
 
             ValidateDoctorExists(dto.DoctorId);
-
-            AutoCancelExpiredPendingAppointments();
 
             Appointment appointment = GetAppointmentEntityById(appointmentId);
 
@@ -441,7 +455,8 @@ namespace HealthcareApi.Services.Implementations
         }
         public List<AppointmentDto> SearchUpcomingAppointmentsByDoctor(
             int doctorId,
-            string query)
+            string query,
+            AppointmentStatus? status)
         {
             ValidateDoctorExists(doctorId);
 
@@ -450,7 +465,8 @@ namespace HealthcareApi.Services.Implementations
             List<Appointment> appointments =
                 _appointmentRepository.SearchUpcomingAppointmentsByDoctorId(
                     doctorId,
-                    query);
+                    query,
+                    status);
 
             return MapAppointmentsToDtos(appointments);
         }
@@ -512,10 +528,10 @@ namespace HealthcareApi.Services.Implementations
 
         private void ValidateAppointmentDate(DateTime scheduledDate)
         {
-            if (scheduledDate.Date < DateTime.Today)
+            if (scheduledDate.Date <= DateTime.Today)
             {
                 throw new AppointmentRuleException(
-                    "Appointment date cannot be in the past.");
+                    "Appointments must be booked at least one day in advance.");
             }
         }
 
@@ -562,6 +578,26 @@ namespace HealthcareApi.Services.Implementations
             }
         }
 
+        private void ValidatePatientDuplicateAppointmentForUpdate(
+    int appointmentId,
+    int patientId,
+    int doctorId,
+    DateTime scheduledDate)
+        {
+            bool duplicate =
+                _appointmentRepository.PatientHasAnotherAppointmentWithDoctorOnDate(
+                    appointmentId,
+                    patientId,
+                    doctorId,
+                    scheduledDate.Date);
+
+            if (duplicate)
+            {
+                throw new AppointmentRuleException(
+                    "Patient already has an appointment with this doctor on the selected date.");
+            }
+        }
+
         private void ValidateCancellationReason(string reason)
         {
             if (string.IsNullOrWhiteSpace(reason))
@@ -574,6 +610,20 @@ namespace HealthcareApi.Services.Implementations
             {
                 throw new AppointmentRuleException(
                     "Cancellation reason cannot exceed 500 characters.");
+            }
+        }
+
+        private void ValidateAppointmentCanBeEdited(Appointment appointment)
+        {
+            if (appointment == null)
+            {
+                throw new AppointmentRuleException("Appointment details are required.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Pending)
+            {
+                throw new AppointmentRuleException(
+                    "Only pending appointments can be edited.");
             }
         }
         private int FindNextAvailableSlot(int doctorId, DateTime scheduledDate)
@@ -655,7 +705,7 @@ namespace HealthcareApi.Services.Implementations
             {
                 appointment.Status = AppointmentStatus.Cancelled;
                 appointment.CancellationReason =
-                    "Automatically cancelled because the appointment was still pending on the scheduled date.";
+                    "Automatically cancelled because the appointment was still pending on the scheduled date - Cancelled by Doctor";
 
                 _appointmentRepository.Update(appointment.AppointmentId, appointment);
             }

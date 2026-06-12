@@ -87,8 +87,8 @@ namespace HealthcareApi.Repositories.Implementations
                 .Where(a =>
                     a.PatientId == patientId &&
                     a.ScheduledDate >= today &&
-                    a.Status != AppointmentStatus.Cancelled &&
-                    a.Status != AppointmentStatus.Completed)
+                    (a.Status == AppointmentStatus.Pending ||
+                        a.Status == AppointmentStatus.Confirmed))
                 .OrderBy(a => a.ScheduledDate)
                 .ThenBy(a => a.SlotNumber)
                 .ToList();
@@ -99,12 +99,12 @@ namespace HealthcareApi.Repositories.Implementations
             DateTime today = DateTime.Today;
 
             return _context.Appointments
-                .Include(a => a.Doctor)
+                .Include(a => a.Patient)
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.ScheduledDate >= today &&
-                    a.Status != AppointmentStatus.Cancelled &&
-                    a.Status != AppointmentStatus.Completed)
+                   (a.Status == AppointmentStatus.Pending ||
+                       a.Status == AppointmentStatus.Confirmed))
                 .OrderBy(a => a.ScheduledDate)
                 .ThenBy(a => a.SlotNumber)
                 .ToList();
@@ -252,7 +252,7 @@ namespace HealthcareApi.Repositories.Implementations
 
         public List<Appointment> SearchUpcomingAppointmentsByDoctorId(
             int doctorId,
-            string query)
+            string query, AppointmentStatus? status)
         {
             DateTime today = DateTime.Today;
 
@@ -262,8 +262,14 @@ namespace HealthcareApi.Repositories.Implementations
                 .Where(a =>
                     a.DoctorId == doctorId &&
                     a.ScheduledDate >= today &&
-                    a.Status != AppointmentStatus.Cancelled &&
-                    a.Status != AppointmentStatus.Completed);
+                    (a.Status == AppointmentStatus.Pending ||
+                        a.Status == AppointmentStatus.Confirmed));
+
+
+            if (status.HasValue)
+            {
+                appointments = appointments.Where(a => a.Status == status.Value);
+            }
 
             appointments = ApplyAppointmentSearch(appointments, query);
 
@@ -272,6 +278,7 @@ namespace HealthcareApi.Repositories.Implementations
                 .ThenBy(a => a.SlotNumber)
                 .ToList();
         }
+
         public bool IsSlotBooked(int doctorId, DateTime date, int slotNumber)
         {
             DateTime selectedDate = date.Date;
@@ -284,9 +291,9 @@ namespace HealthcareApi.Repositories.Implementations
         }
 
         public bool PatientHasActiveAppointmentWithDoctorOnDate(
-            int patientId,
-            int doctorId,
-            DateTime date)
+     int patientId,
+     int doctorId,
+     DateTime date)
         {
             DateTime selectedDate = date.Date;
 
@@ -294,7 +301,7 @@ namespace HealthcareApi.Repositories.Implementations
                 a.PatientId == patientId &&
                 a.DoctorId == doctorId &&
                 a.ScheduledDate == selectedDate &&
-                a.Status != AppointmentStatus.Cancelled);
+                a.Status != AppointmentStatus.Cancelled );
         }
 
         public bool HasConfirmedAppointmentForDoctorOnDate(int doctorId, DateTime date)
@@ -373,6 +380,39 @@ namespace HealthcareApi.Repositories.Implementations
                     a.ScheduledDate <= today)
                 .ToList();
         }
+
+        public bool PatientHasAnotherAppointmentWithDoctorOnDate(
+            int appointmentId,
+            int patientId,
+            int doctorId,
+            DateTime date)
+        {
+            DateTime selectedDate = date.Date;
+
+            return _context.Appointments.Any(a =>
+                a.AppointmentId != appointmentId &&
+                a.PatientId == patientId &&
+                a.DoctorId == doctorId &&
+                a.ScheduledDate == selectedDate &&
+                a.Status != AppointmentStatus.Cancelled);
+        }
+
+        public bool IsSlotBookedByAnotherAppointment(
+            int appointmentId,
+            int doctorId,
+            DateTime date,
+            int slotNumber)
+        {
+            DateTime selectedDate = date.Date;
+
+            return _context.Appointments.Any(a =>
+                a.AppointmentId != appointmentId &&
+                a.DoctorId == doctorId &&
+                a.ScheduledDate == selectedDate &&
+                a.SlotNumber == slotNumber &&
+                a.Status != AppointmentStatus.Cancelled);
+        }
+
     }
 }
 

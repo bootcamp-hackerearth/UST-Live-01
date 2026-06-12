@@ -1,4 +1,5 @@
 ﻿using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -48,7 +49,7 @@ namespace HealthcareWeb.Services
 
         Task<List<AppointmentDto>> SearchUpcomingByDoctorAsync(
             int doctorId,
-            string query);
+            string query, AppointmentStatus? status);
 
     }
 }

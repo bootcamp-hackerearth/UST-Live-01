@@ -118,24 +118,85 @@
                                             new { @class = "btn btn-warning btn-sm" }
                                         )
 
-                                        @Html.ActionLink(
-                                                "Delete",
-                                                "DeleteHealthRecord",
-                                                "Admin",
-                                                new { id = record.HealthRecordId },
-                                                new
-                                                {
-                                                    @class = "btn btn-danger btn-sm",
-                                                    onclick = "return confirm('Are you sure you want to delete this health record?');"
-                                                }
-                                            )
-                                        )
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteHealthRecordModal_@record.HealthRecordId">
+                                            Delete
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+                @foreach (var record in Model)
+                {
+                    string patientDisplay = string.IsNullOrWhiteSpace(record.PatientName)
+                        ? "Patient #" + record.PatientId
+                        : record.PatientName + " (#" + record.PatientId + ")";
+
+                    string doctorDisplay = string.IsNullOrWhiteSpace(record.DoctorName)
+                        ? "Doctor #" + record.DoctorId
+                        : record.DoctorName + " (#" + record.DoctorId + ")";
+
+                    <div class="modal fade"
+                         id="deleteHealthRecordModal_@record.HealthRecordId"
+                         tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        Confirm Health Record Deletion
+                                    </h5>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p>
+                                        Are you sure you want to delete this health record?
+                                    </p>
+
+                                    <p><strong>Health Record ID:</strong> @record.HealthRecordId</p>
+                                    <p><strong>Appointment ID:</strong> @record.AppointmentId</p>
+                                    <p><strong>Patient:</strong> @patientDisplay</p>
+                                    <p><strong>Doctor:</strong> @doctorDisplay</p>
+                                    <p><strong>Visit Date:</strong> @record.VisitDate.ToString("dd-MM-yyyy")</p>
+
+                                    <p class="text-danger">
+                                        This action cannot be undone.
+                                    </p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+                                    @using (Html.BeginForm(
+                                            "DeleteHealthRecord",
+                                            "Admin",
+                                            new { id = record.HealthRecordId },
+                                            FormMethod.Post,
+                                            new { @class = "m-0 d-inline-flex" }))
+                                        {
+                                            <button type="submit"
+                                                    class="btn btn-danger">
+                                                Delete Health Record
+                                            </button>
+                                        }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     }

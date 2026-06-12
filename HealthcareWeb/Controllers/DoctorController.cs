@@ -1,7 +1,9 @@
 ﻿using HealthcareWeb.Filters;
 using HealthcareWeb.Services;
 using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -72,20 +74,31 @@ namespace HealthcareWeb.Controllers
         }
 
         [RequirePositiveIntParameters(
-             "doctorId",
-             ErrorMessage = "Please login before viewing doctor appointments.")]
-        public async Task<ActionResult> UpcomingAppointments(int? doctorId, string query)
+    "doctorId",
+    ErrorMessage = "Please login before viewing doctor appointments.")]
+        public async Task<ActionResult> UpcomingAppointments(
+            int? doctorId,
+            string query,
+            AppointmentStatus? status)
         {
             try
             {
                 ViewBag.DoctorId = doctorId.Value;
                 ViewBag.Doctor = await _doctorApiService.GetByIdAsync(doctorId.Value);
 
-                var appointments = string.IsNullOrWhiteSpace(query)
-                    ? await _appointmentApiService.GetUpcomingByDoctorAsync(doctorId.Value)
-                    : await _appointmentApiService.SearchUpcomingByDoctorAsync(doctorId.Value, query);
+                bool hasSearchCriteria =
+                    !string.IsNullOrWhiteSpace(query) ||
+                    status.HasValue;
+
+                List<AppointmentDto> appointments = hasSearchCriteria
+                    ? await _appointmentApiService.SearchUpcomingByDoctorAsync(
+                        doctorId.Value,
+                        query,
+                        status)
+                    : await _appointmentApiService.GetUpcomingByDoctorAsync(doctorId.Value);
 
                 ViewBag.SearchQuery = query;
+                ViewBag.SelectedStatus = status;
 
                 return View(appointments);
             }

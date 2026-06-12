@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -143,11 +144,21 @@ namespace HealthcareWeb.Services
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
         }
 
-        public async Task<List<AppointmentDto>> SearchUpcomingByDoctorAsync(int doctorId, string query)
+        public async Task<List<AppointmentDto>> SearchUpcomingByDoctorAsync(
+            int doctorId,
+            string query,
+            AppointmentStatus? status)
         {
             string encodedQuery = Uri.EscapeDataString(query ?? string.Empty);
 
-            string url = "appointments/doctor/" + doctorId + "/upcoming/search?query=" + encodedQuery;
+            string url =
+                "appointments/doctor/" + doctorId +
+                "/upcoming/search?query=" + encodedQuery;
+
+            if (status.HasValue)
+            {
+                url += "&status=" + status.Value;
+            }
 
             var response = await _httpClient.GetAsync(url);
 
@@ -157,6 +168,7 @@ namespace HealthcareWeb.Services
 
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
         }
+
         public async Task<AppointmentDto> UpdateAsync(int id, UpdateAppointmentDto dto)
         {
             var json = JsonConvert.SerializeObject(dto);

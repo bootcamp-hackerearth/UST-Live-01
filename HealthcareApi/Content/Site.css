@@ -11,3 +11,14 @@ select,
 textarea {
     max-width: 280px;
 }
+.modal-footer form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.modal-footer {
+    align-items: center;
+    gap: 8px;
+}
+
+

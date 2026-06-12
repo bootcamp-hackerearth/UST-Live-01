@@ -126,10 +126,6 @@
     <Content Include="Views\Admin\CreateDoctor.cshtml" />
     <Content Include="Views\Admin\CreateHealthRecord.cshtml" />
     <Content Include="Views\Admin\CreatePatient.cshtml" />
-    <Content Include="Views\Admin\DeactivateDoctor.cshtml" />
-    <Content Include="Views\Admin\DeleteAppointment.cshtml" />
-    <Content Include="Views\Admin\DeleteHealthRecord.cshtml" />
-    <Content Include="Views\Admin\DeletePatient.cshtml" />
     <Content Include="Views\Admin\Doctors.cshtml" />
     <Content Include="Views\Admin\EditAppointment.cshtml" />
     <Content Include="Views\Admin\EditDoctor.cshtml" />
@@ -138,7 +134,6 @@
     <Content Include="Views\Admin\HealthRecords.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\Patients.cshtml" />
-    <Content Include="Views\Admin\ReactivateDoctor.cshtml" />
     <Content Include="Views\Doctor\AddHealthRecord.cshtml" />
     <Content Include="Views\Doctor\Dashboard.cshtml" />
     <Content Include="Views\Doctor\EditHealthRecord.cshtml" />

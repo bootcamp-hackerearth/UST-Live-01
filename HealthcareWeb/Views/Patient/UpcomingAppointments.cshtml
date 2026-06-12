@@ -63,6 +63,8 @@
                                 ? "Doctor #" + appointment.DoctorId
                                 : appointment.DoctorName + " (#" + appointment.DoctorId + ")";
 
+                            bool canPatientCancel = appointment.ScheduledDate.Date > DateTime.Today;
+
                             <tr>
                                 <td>@appointment.AppointmentId</td>
                                 <td>@doctorDisplay</td>
@@ -86,27 +88,93 @@
                                 </td>
                                 <td>
                                     <div class="data-table-actions">
-                                        @Html.ActionLink(
-                                             "Cancel",
-                                             "CancelAppointment",
-                                             "Patient",
-                                             new
-                                             {
-                                                 appointmentId = appointment.AppointmentId,
-                                                 patientId = patientId
-                                             },
-                                             new
-                                             {
-                                                 @class = "btn btn-danger btn-sm",
-                                                 onclick = "return confirm('Are you sure you want to cancel this appointment?');"
-                                             }
-                                         )
+                                        @if (canPatientCancel)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-danger btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#cancelAppointmentModal_@appointment.AppointmentId">
+                                                Cancel
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small-note">
+                                                Cancellation closed
+                                            </span>
+                                        }
                                     </div>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
+                @foreach (var appointment in Model)
+                {
+                    bool canPatientCancel = appointment.ScheduledDate.Date > DateTime.Today;
+
+                    if (canPatientCancel)
+                    {
+                        string doctorDisplay = string.IsNullOrWhiteSpace(appointment.DoctorName)
+                            ? "Doctor #" + appointment.DoctorId
+                            : appointment.DoctorName + " (#" + appointment.DoctorId + ")";
+
+                        <div class="modal fade"
+                             id="cancelAppointmentModal_@appointment.AppointmentId"
+                             tabindex="-1"
+                             aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Confirm Appointment Cancellation
+                                        </h5>
+
+                                        <button type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal"
+                                                aria-label="Close">
+                                        </button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <p>
+                                            Are you sure you want to cancel this appointment?
+                                        </p>
+
+                                        <p><strong>Appointment ID:</strong> @appointment.AppointmentId</p>
+                                        <p><strong>Doctor:</strong> @doctorDisplay</p>
+                                        <p><strong>Scheduled Date:</strong> @appointment.ScheduledDate.ToString("dd-MM-yyyy")</p>
+                                        <p><strong>Slot:</strong> @appointment.SlotNumber</p>
+                                        <p><strong>Status:</strong> @appointment.Status</p>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button"
+                                                class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+                                            Keep Appointment
+                                        </button>
+
+                                        @Html.ActionLink(
+                                            "Cancel Appointment",
+                                            "CancelAppointment",
+                                            "Patient",
+                                            new
+                                            {
+                                                appointmentId = appointment.AppointmentId,
+                                                patientId = patientId
+                                            },
+                                            new { @class = "btn btn-danger" }
+                                        )
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
             </div>
         </div>
     }

@@ -3,7 +3,16 @@
 
 @{
     ViewBag.Title = "Upcoming Appointments";
-    int doctorId = ViewBag.DoctorId != null ? Convert.ToInt32(ViewBag.DoctorId) : 0;
+
+    int doctorId =
+        ViewBag.DoctorId != null
+            ? Convert.ToInt32(ViewBag.DoctorId)
+            : 0;
+
+    string selectedStatus =
+        ViewBag.SelectedStatus != null
+            ? ViewBag.SelectedStatus.ToString()
+            : "";
 }
 
 <h2 class="text-success">Upcoming Appointments</h2>
@@ -30,13 +39,40 @@
         <input type="hidden" name="doctorId" value="@doctorId" />
         <div class="form-panel" style="margin-bottom: 1rem;">
             <div class="form-row-grid">
-                <div class="mb-2 form-row-full">
+                <div class="mb-2">
                     <label class="fw-bold">Search Upcoming Appointments</label>
+
                     <input type="text"
                            name="query"
                            value="@ViewBag.SearchQuery"
                            class="form-control border-dark"
                            placeholder="Search by patient name" />
+                </div>
+
+                <div class="mb-2">
+                    <label class="fw-bold">Status</label>
+
+                    <select name="status" class="form-control border-dark">
+                        <option value="">All Statuses</option>
+
+                        @if (selectedStatus == "Pending")
+                        {
+                            <option value="Pending" selected="selected">Pending</option>
+                        }
+                        else
+                        {
+                            <option value="Pending">Pending</option>
+                        }
+
+                        @if (selectedStatus == "Confirmed")
+                        {
+                            <option value="Confirmed" selected="selected">Confirmed</option>
+                        }
+                        else
+                        {
+                            <option value="Confirmed">Confirmed</option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="button-group">
@@ -83,6 +119,7 @@
                             bool isPending = appointment.Status == AppointmentStatus.Pending;
                             bool isConfirmed = appointment.Status == AppointmentStatus.Confirmed;
                             bool isToday = appointment.ScheduledDate.Date == DateTime.Today;
+                            bool canDoctorCancel = isPending || (isConfirmed && !isToday);
 
                             string patientDisplay = string.IsNullOrWhiteSpace(appointment.PatientName)
                                 ? "Patient #" + appointment.PatientId
@@ -129,8 +166,7 @@
                                                 <input type="hidden" name="doctorId" value="@doctorId" />
 
                                                 <button type="submit"
-                                                        class="btn btn-success btn-sm"
-                                                        onclick="return confirm('Are you sure you want to confirm this appointment?');">
+                                                        class="btn btn-success btn-sm">
                                                     Confirm
                                                 </button>
                                             }
@@ -144,14 +180,13 @@
                                                 <input type="hidden" name="doctorId" value="@doctorId" />
 
                                                 <button type="submit"
-                                                        class="btn btn-primary btn-sm"
-                                                        onclick="return confirm('Are you sure the appointment is completed? You will be entering health record details next');">
+                                                        class="btn btn-primary btn-sm">
                                                     Complete
                                                 </button>
                                             }
                                         }
 
-                                        @if (isPending || isConfirmed)
+                                        @if (canDoctorCancel)
                                         {
                                             using (Html.BeginForm("CancelAppointment", "Doctor", FormMethod.Post))
                                             {
@@ -166,12 +201,17 @@
                                                            required="required" />
 
                                                     <button type="submit"
-                                                            class="btn btn-danger btn-sm"
-                                                            onclick="return confirm">
+                                                            class="btn btn-danger btn-sm">
                                                         Cancel
                                                     </button>
                                                 </div>
                                             }
+                                        }
+                                        @if (isConfirmed && isToday)
+                                        {
+                                            <span class="text-muted small-note">
+                                                Same-day confirmed appointments cannot be cancelled
+                                            </span>
                                         }
 
                                         @if (!isPending && !isConfirmed)
@@ -185,6 +225,7 @@
                                                 Complete available on scheduled date
                                             </span>
                                         }
+
                                     </div>
                                 </td>
                             </tr>

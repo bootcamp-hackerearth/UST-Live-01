@@ -114,25 +114,141 @@
 
         @if (Model.IsActive)
         {
-            using (Html.BeginForm("DeactivateSelf", "Doctor", new { doctorId = Model.DoctorId }, FormMethod.Post))
-            {
-                <button type="submit"
-                        class="btn btn-danger"
-                        onclick="return confirm('Are you sure you want to deactivate your account? Patients will not be able to book new appointments with you while inactive.');">
-                    Deactivate Account
-                </button>
-            }
+            <button type="button"
+                    class="btn btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deactivateSelfModal">
+                Deactivate Account
+            </button>
+
+            <div class="modal fade"
+                 id="deactivateSelfModal"
+                 tabindex="-1"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Confirm Account Deactivation
+                            </h5>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close">
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>
+                                Are you sure you want to deactivate your account?
+                            </p>
+
+                            <p>
+                                Patients will not be able to book new appointments with you while your account is inactive.
+                            </p>
+
+                            <p class="text-danger">
+                                This action may fail if you have confirmed appointments scheduled for today.
+                            </p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+
+                            @using (Html.BeginForm(
+                                "DeactivateSelf",
+                                "Doctor",
+                                new { doctorId = Model.DoctorId },
+                                FormMethod.Post,
+                                new { @class = "m-0 d-inline-flex" }))
+                            {
+                                <button type="submit"
+                                        class="btn btn-danger">
+                                    Deactivate Account
+                                </button>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         }
         else
         {
-            using (Html.BeginForm("ReactivateSelf", "Doctor", new { doctorId = Model.DoctorId }, FormMethod.Post))
-            {
-                <button type="submit"
-                        class="btn btn-success"
-                        onclick="return confirm('Are you sure you want to reactivate your account? Patients will be able to book appointments with you again.');">
-                    Reactivate Account
-                </button>
-            }
+            <button type="button"
+                    class="btn btn-success"
+                    data-bs-toggle="modal"
+                    data-bs-target="#reactivateSelfModal">
+                Reactivate Account
+            </button>
+
+            <div class="modal fade"
+                 id="reactivateSelfModal"
+                 tabindex="-1"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                Confirm Account Reactivation
+                            </h5>
+
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close">
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>
+                                Are you sure you want to reactivate your account?
+                            </p>
+
+                            <p>
+                                Patients will be able to book appointments with you again.
+                            </p>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-bs-dismiss="modal">
+                                Cancel
+                            </button>
+                            <div class="modal-footer">
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+                                    Cancel
+                                </button>
+
+                                @using (Html.BeginForm(
+                                    "ReactivateSelf",
+                                    "Doctor",
+                                    new { doctorId = Model.DoctorId },
+                                    FormMethod.Post,
+                                    new { @class = "m-0 d-inline-flex" }))
+                                {
+                                    <button type="submit"
+                                            class="btn btn-success">
+                                        Reactivate Account
+                                    </button>
+                                }
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
         }
     </div>
 

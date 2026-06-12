@@ -1,4 +1,5 @@
 ﻿using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using System.Collections.Generic;
 
 namespace HealthcareApi.Services
@@ -46,6 +47,7 @@ namespace HealthcareApi.Services
 
         List<AppointmentDto> SearchUpcomingAppointmentsByDoctor(
             int doctorId,
-            string query);
+            string query,
+            AppointmentStatus? status);
     }
 }

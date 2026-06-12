@@ -1,6 +1,7 @@
 ﻿using HealthcareApi.Models;
 using HealthcareApi.Services;
 using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using System.Web.Http;
 
 namespace HealthcareApi.Controllers
@@ -120,11 +121,16 @@ namespace HealthcareApi.Controllers
         }
         [HttpGet]
         [Route("doctor/{doctorId:int}/upcoming/search")]
-        public IHttpActionResult SearchUpcomingByDoctor(int doctorId,
-            [FromUri] string query = "")
+        public IHttpActionResult SearchUpcomingByDoctor(
+            int doctorId,
+            [FromUri] string query = "",
+            [FromUri] AppointmentStatus? status = null)
         {
             var appointments =
-                _service.SearchUpcomingAppointmentsByDoctor(doctorId, query);
+                _service.SearchUpcomingAppointmentsByDoctor(
+                    doctorId,
+                    query,
+                    status);
 
             return Ok(appointments);
         }

@@ -1,6 +1,7 @@
 ﻿using HealthcareWeb.Filters;
 using HealthcareWeb.Services;
 using SharedClasses.Dtos;
+using SharedClasses.Enums;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -169,7 +170,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = "Patient could not be deleted. "+ex.Message;
             }
 
             return RedirectToAction("Patients");
@@ -314,7 +315,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = "Failed to reactivate Doctor" + ex.Message;
             }
 
             return RedirectToAction("Doctors");
@@ -357,7 +358,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = "Failed to deactivate doctor" + ex.Message;
             }
 
             return RedirectToAction("Doctors");
@@ -439,6 +440,11 @@ namespace HealthcareWeb.Controllers
             {
                 AppointmentDto appointment = await _appointmentApiService.GetByIdAsync(id.Value);
 
+                if (appointment.Status != AppointmentStatus.Pending)
+                {
+                    TempData["ErrorMessage"] = "Only pending appointments can be edited";
+                }
+
                 ViewBag.AppointmentId = appointment.AppointmentId;
                 ViewBag.Patients = await _patientApiService.GetAllAsync();
                 ViewBag.Doctors = await _doctorApiService.GetAllActiveAsync();
@@ -485,7 +491,7 @@ namespace HealthcareWeb.Controllers
                 ViewBag.Patients = await _patientApiService.GetAllAsync();
                 ViewBag.Doctors = await _doctorApiService.GetAllActiveAsync();
 
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError("","Failde to update appointment " + ex.Message);
                 return View(dto);
             }
         }
@@ -527,7 +533,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] ="Failed to delete appointment" +  ex.Message;
             }
 
             return RedirectToAction("Appointments");
@@ -694,7 +700,7 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = "Failed to delete  health record " + ex.Message;
                 return RedirectToAction("HealthRecords");
             }
         }
@@ -717,11 +723,12 @@ namespace HealthcareWeb.Controllers
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                TempData["ErrorMessage"] = "Failed to delete health record " + ex.Message;
             }
 
             return RedirectToAction("HealthRecords");
         }
+
         [RequirePositiveIntParameters(
              "id",
              RedirectController = "Admin",

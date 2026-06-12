@@ -117,28 +117,22 @@
 
                                         @if (doctor.IsActive)
                                         {
-                                            @Html.ActionLink(
-                                            "Deactivate",
-                                            "DeactivateDoctor",
-                                            "Admin",
-                                                new { id = doctor.DoctorId },
-                                                new
-                                                {
-                                                    @class = "btn btn-danger btn-sm",
-                                                    onclick = "return confirm('Are you sure you want to deactivate this doctor?');"
-                                                }
-                                            )
+                                            <button type="button"
+                                                    class="btn btn-success btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deactivateDoctorModal_@doctor.DoctorId">
+                                                Deactivate
+                                            </button>
 
                                         }
                                         else
                                         {
-                                            @Html.ActionLink(
-                                                "Reactivate",
-                                                "ReactivateDoctor",
-                                                "Admin",
-                                                new { id = doctor.DoctorId },
-                                                new { @class = "btn btn-success btn-sm" }
-                                            )
+                                            <button type="button"
+                                                    class="btn btn-success btn-sm"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#reactivateDoctorModal_@doctor.DoctorId">
+                                                Reactivate
+                                            </button>
                                         }
 
                                         @Html.ActionLink(
@@ -154,6 +148,127 @@
                         }
                     </tbody>
                 </table>
+                @foreach (var doctor in Model)
+                {
+                    <div class="modal fade"
+                         id="deactivateDoctorModal_@doctor.DoctorId"
+                         tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        Confirm Doctor Deactivation
+                                    </h5>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p>
+                                        Are you sure you want to deactivate this doctor?
+                                    </p>
+
+                                    <p>
+                                        <strong>Doctor:</strong>
+                                        Dr. @doctor.FullName (#@doctor.DoctorId)
+                                    </p>
+
+                                    <p class="text-danger">
+                                        This action may fail if the doctor has confirmed appointments scheduled for today.
+                                    </p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>                            
+                                    @using (Html.BeginForm(
+                                            "DeactivateDoctor",
+                                            "Admin",
+                                            new { id = doctor.DoctorId },
+                                            FormMethod.Post,
+                                            new { @class = "m-0 d-inline-flex" }))
+                                        {
+                                            <button type="submit"
+                                                    class="btn btn-danger">
+                                                Deactivate Doctor
+                                            </button>
+                                        }
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
+                @foreach (var doctor in Model)
+                {
+                    <div class="modal fade"
+                         id="reactivateDoctorModal_@doctor.DoctorId"
+                         tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">
+                                        Confirm Doctor Reactivation
+                                    </h5>
+
+                                    <button type="button"
+                                            class="btn-close"
+                                            data-bs-dismiss="modal"
+                                            aria-label="Close">
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p>
+                                        Are you sure you want to reactivate this doctor?
+                                    </p>
+
+                                    <p>
+                                        <strong>Doctor:</strong>
+                                        Dr. @doctor.FullName (#@doctor.DoctorId)
+                                    </p>
+
+                                    <p>
+                                        Patients will be able to book appointments with this doctor again.
+                                    </p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button"
+                                            class="btn btn-secondary"
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+
+                                    @using (Html.BeginForm(
+                                        "ReactivateDoctor",
+                                        "Admin",
+                                        new { id = doctor.DoctorId },
+                                        FormMethod.Post,
+                                        new { @class = "m-0 d-inline-flex" }))
+                                    {
+                                        <button type="submit"
+                                                class="btn btn-success">
+                                            Reactivate Doctor
+                                        </button>
+                                    }
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     }
