@@ -128,7 +128,7 @@
 
                     body.innerHTML += `
                         <tr>
-                            <td>${new Date(r.VisitDate).toLocaleDateString()}</td>
+                            <td>${formatDate(r.VisitDate)}</td>
                             <td>${r.Diagnosis}</td>
                             <td>${r.Prescription}</td>
                             <td>${r.Notes || ''}</td>
@@ -137,6 +137,16 @@
                 });
 
             });
+    }
+    function formatDate(dateStr) {
+
+        if (!dateStr) return "";
+
+        let timestamp = parseInt(dateStr.replace("/Date(", "").replace(")/", ""));
+
+        let date = new Date(timestamp);
+
+        return date.toLocaleDateString();
     }
 
 </script>
