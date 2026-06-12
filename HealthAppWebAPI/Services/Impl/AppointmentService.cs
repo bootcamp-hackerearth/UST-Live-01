@@ -51,28 +51,87 @@ namespace HealthAppWebAPI.Services.Impl
 
         public async Task BookAppointmentAsync(CreateAppointmentDto dto)
         {
-            if (dto.ScheduledDate.Date < DateTime.Today)
-                throw new Exception("Past date not allowed.");
+            if (dto == null)
+            {
+                throw new ArgumentException("Appointment data is required.");
+            }
 
-            if (!TimeSlots.Slots.Contains(dto.TimeSlot))
-                throw new Exception("Invalid time slot.");
+            if (dto.PatientId <= 0)
+            {
+                throw new ArgumentException("Please select a valid patient.");
+            }
+
+            if (dto.DoctorId <= 0)
+            {
+                throw new ArgumentException("Please select a valid doctor.");
+            }
+
+            if (dto.ScheduledDate == default(DateTime))
+            {
+                throw new ArgumentException("Please select appointment date.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.TimeSlot))
+            {
+                throw new ArgumentException("Please select time slot.");
+            }
+
+            dto.TimeSlot = dto.TimeSlot.Trim();
+
+            if (dto.ScheduledDate.Date < DateTime.Today)
+            {
+                throw new InvalidOperationException("Past date not allowed.");
+            }
+
+            bool validSlot =
+                TimeSlots.Slots.Any(s =>
+                    string.Equals(
+                        s.Trim(),
+                        dto.TimeSlot,
+                        StringComparison.OrdinalIgnoreCase));
+
+            if (!validSlot)
+            {
+                throw new InvalidOperationException("Invalid time slot selected.");
+            }
 
             if (dto.ScheduledDate.Date == DateTime.Today)
             {
-                DateTime slotDateTime = GetSlotDateTime(dto.ScheduledDate, dto.TimeSlot);
+                DateTime slotDateTime =
+                    GetSlotDateTime(dto.ScheduledDate, dto.TimeSlot);
 
                 if (slotDateTime < DateTime.Now)
-                    throw new Exception("Cannot book a past time slot.");
+                {
+                    throw new InvalidOperationException("Cannot book a past time slot.");
+                }
             }
 
-            if (await _repo.IsDoctorSlotBookedAsync(dto.DoctorId, dto.ScheduledDate, dto.TimeSlot))
-                throw new Exception("Doctor already booked.");
+            if (await _repo.IsDoctorSlotBookedAsync(
+                dto.DoctorId,
+                dto.ScheduledDate,
+                dto.TimeSlot))
+            {
+                throw new InvalidOperationException(
+                    "Doctor is already booked for this time slot.");
+            }
 
-            if (await _repo.HasPatientSlotConflictAsync(dto.PatientId, dto.ScheduledDate, dto.TimeSlot))
-                throw new Exception("Patient conflict.");
+            if (await _repo.HasPatientSlotConflictAsync(
+                dto.PatientId,
+                dto.ScheduledDate,
+                dto.TimeSlot))
+            {
+                throw new InvalidOperationException(
+                    "Patient already has an appointment for this time slot.");
+            }
 
-            if (await _repo.HasAppointmentWithDoctorOnSameDayAsync(dto.PatientId, dto.DoctorId, dto.ScheduledDate))
-                throw new Exception("Duplicate doctor booking.");
+            if (await _repo.HasAppointmentWithDoctorOnSameDayAsync(
+                dto.PatientId,
+                dto.DoctorId,
+                dto.ScheduledDate))
+            {
+                throw new InvalidOperationException(
+                    "Patient already has an appointment with this doctor on the selected date.");
+            }
 
             var appointment = new Appointment
             {
@@ -91,22 +150,35 @@ namespace HealthAppWebAPI.Services.Impl
             var appointment = await _repo.GetByIdAsync(id);
 
             if (appointment == null)
-                throw new Exception("Appointment not found.");
+            {
+                throw new KeyNotFoundException("Appointment not found.");
+            }
 
             appointment.Status = AppointmentStatus.Confirmed.ToString();
 
             await _repo.UpdateAsync(appointment);
         }
 
+
         public async Task CancelAppointmentAsync(int id, string reason)
         {
             var appointment = await _repo.GetByIdAsync(id);
 
             if (appointment == null)
-                throw new Exception("Appointment not found.");
+            {
+                throw new KeyNotFoundException("Appointment not found.");
+            }
 
             if (appointment.Status == AppointmentStatus.Completed.ToString())
-                throw new Exception("Cannot cancel completed appointment.");
+            {
+                throw new InvalidOperationException(
+                    "Cannot cancel completed appointment.");
+            }
+
+            if (string.IsNullOrWhiteSpace(reason))
+            {
+                throw new ArgumentException("Cancellation reason is required.");
+            }
 
             appointment.Status = AppointmentStatus.Cancelled.ToString();
             appointment.CancellationReason = reason;
@@ -114,12 +186,26 @@ namespace HealthAppWebAPI.Services.Impl
             await _repo.UpdateAsync(appointment);
         }
 
+
         private DateTime GetSlotDateTime(DateTime date, string slot)
         {
-            string timePart = DateTime.Parse(slot).ToString("HH:mm");
+            DateTime parsedTime;
 
-            return DateTime.Parse(
-                date.ToString("yyyy-MM-dd") + " " + timePart);
+            bool parsed =
+                DateTime.TryParse(slot, out parsedTime);
+
+            if (!parsed)
+            {
+                throw new ArgumentException("Invalid time slot format.");
+            }
+
+            return new DateTime(
+                date.Year,
+                date.Month,
+                date.Day,
+                parsedTime.Hour,
+                parsedTime.Minute,
+                0);
         }
     }
 }

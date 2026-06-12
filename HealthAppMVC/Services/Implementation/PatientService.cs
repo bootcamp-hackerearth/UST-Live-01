@@ -11,7 +11,6 @@ using System.Web;
 
 namespace HealthAppMVC.Services.Implementation
 {
-
     public class PatientService : IPatientService
     {
         private readonly HttpClient _httpClient;
@@ -24,7 +23,12 @@ namespace HealthAppMVC.Services.Implementation
         public async Task<IEnumerable<PatientDto>> GetAllPatientsAsync()
         {
             var response = await _httpClient.GetAsync("patients");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<PatientDto>>(data);
@@ -35,7 +39,10 @@ namespace HealthAppMVC.Services.Implementation
             var response = await _httpClient.GetAsync($"patients/{id}");
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception($"Patient with Id {id} not found.");
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<PatientDto>(data);
@@ -47,7 +54,7 @@ namespace HealthAppMVC.Services.Implementation
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                string error = await response.Content.ReadAsStringAsync();
                 throw new Exception(error);
             }
         }
@@ -59,7 +66,7 @@ namespace HealthAppMVC.Services.Implementation
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                string error = await response.Content.ReadAsStringAsync();
                 throw new Exception(error);
             }
         }
@@ -69,7 +76,11 @@ namespace HealthAppMVC.Services.Implementation
             var response = await _httpClient.GetAsync(
                 $"patients/search?name={name}");
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<PatientDto>>(data);
@@ -80,11 +91,14 @@ namespace HealthAppMVC.Services.Implementation
             var response = await _httpClient.GetAsync(
                 $"patients/{patientId}/appointments/count");
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<int>(data);
         }
     }
-
 }

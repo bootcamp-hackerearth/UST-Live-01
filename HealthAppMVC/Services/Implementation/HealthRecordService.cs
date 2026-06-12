@@ -21,19 +21,30 @@ namespace HealthAppMVC.Services.Implementation
         public async Task<IEnumerable<HealthRecordDto>> GetAllAsync()
         {
             var response = await _httpClient.GetAsync("healthrecords");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<HealthRecordDto>>(data);
         }
 
-
         public async Task<int> GetPatientIdByAppointmentAsync(int appointmentId)
         {
             var response = await _httpClient.GetAsync($"Appointment/{appointmentId}");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
+
             var result = await response.Content.ReadAsStringAsync();
-            AppointmentDto appointment=JsonConvert.DeserializeObject<AppointmentDto>(result);
+            AppointmentDto appointment = JsonConvert.DeserializeObject<AppointmentDto>(result);
+
             return appointment.PatientId;
         }
 
@@ -58,31 +69,29 @@ namespace HealthAppMVC.Services.Implementation
 
             if (!response.IsSuccessStatusCode)
             {
-                var error =
-                    await response.Content.ReadAsStringAsync();
-
+                string error = await response.Content.ReadAsStringAsync();
                 throw new Exception(error);
             }
         }
 
-        public async Task<List<HealthRecordDto>>
-            GetPatientHistoryAsync(
-                int patientId)
+        public async Task<List<HealthRecordDto>> GetPatientHistoryAsync(int patientId)
         {
             HttpResponseMessage response =
                 await _httpClient.GetAsync(
                     $"healthrecords/patient/{patientId}");
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             string json =
                 await response.Content
                     .ReadAsStringAsync();
 
             return JsonConvert
-                .DeserializeObject
-                <List<HealthRecordDto>>(json);
+                .DeserializeObject<List<HealthRecordDto>>(json);
         }
     }
-
 }

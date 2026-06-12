@@ -55,6 +55,5 @@ namespace HealthAppWebAPI.Repositories.Impl
                 .OrderByDescending(h => h.VisitDate)
                 .ToListAsync();
         }
-
     }
 }

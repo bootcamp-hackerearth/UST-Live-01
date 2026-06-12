@@ -1,12 +1,9 @@
 ﻿using HealthAppMVC.Enums;
+using HealthAppWebAPI.Enums;
 using HealthAppWebAPI.Repositories.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Threading.Tasks;
 
 namespace HealthAppWebAPI.Repositories.Impl
@@ -22,56 +19,40 @@ namespace HealthAppWebAPI.Repositories.Impl
 
         public async Task<List<Doctor>> GetAllAsync()
         {
-            return await _context.Doctors.ToListAsync();
+            return await _context.Doctors
+                .ToListAsync();
         }
 
         public async Task<Doctor> GetByIdAsync(int id)
         {
-            return await _context.Doctors.FindAsync(id);
+            return await _context.Doctors
+                .FindAsync(id);
         }
 
         public async Task AddAsync(Doctor doctor)
         {
-            try
-            {
-                _context.Doctors.Add(doctor);
+            _context.Doctors.Add(doctor);
 
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-               
-                throw new Exception(
-                    ex.InnerException?.InnerException?.Message
-                    ?? ex.InnerException?.Message
-                    ?? ex.Message);
-            }
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Doctor doctor)
         {
-            try
-            {
-                _context.Entry(doctor).State =
-                    EntityState.Modified;
+            _context.Entry(doctor).State =
+                EntityState.Modified;
 
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(
-                    ex.InnerException?.InnerException?.Message
-                    ?? ex.InnerException?.Message
-                    ?? ex.Message);
-            }
+            await _context.SaveChangesAsync();
         }
 
         public async Task ChangeStatusAsync(int id, bool isActive)
         {
-            var doctor = await _context.Doctors.FindAsync(id);
+            var doctor =
+                await _context.Doctors.FindAsync(id);
 
             if (doctor == null)
+            {
                 return;
+            }
 
             doctor.IsActive = isActive;
 
@@ -81,9 +62,35 @@ namespace HealthAppWebAPI.Repositories.Impl
         public async Task<List<Doctor>> GetBySpecialisationAsync(
             SpecialisationType specialisation)
         {
+            string specialisationValue =
+                specialisation.ToString();
+
             return await _context.Doctors
-                .Where(d => d.Specialisation == specialisation.ToString())
+                .Where(d => d.Specialisation == specialisationValue)
                 .ToListAsync();
+        }
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            string normalizedEmail =
+                email.Trim().ToLower();
+
+            return await _context.Doctors
+                .AnyAsync(d =>
+                    d.DoctorEmail.ToLower() == normalizedEmail);
+        }
+
+        public async Task<bool> EmailExistsForOtherDoctorAsync(
+            int doctorId,
+            string email)
+        {
+            string normalizedEmail =
+                email.Trim().ToLower();
+
+            return await _context.Doctors
+                .AnyAsync(d =>
+                    d.DoctorId != doctorId &&
+                    d.DoctorEmail.ToLower() == normalizedEmail);
         }
     }
 }

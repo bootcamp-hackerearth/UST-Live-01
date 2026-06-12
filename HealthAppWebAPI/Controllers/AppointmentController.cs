@@ -42,8 +42,14 @@ public class AppointmentController : ApiController
     [Route("")]
     public async Task<IHttpActionResult> Book(CreateAppointmentDto dto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         await _service.BookAppointmentAsync(dto);
-        return Ok();
+
+        return Ok("Appointment booked successfully.");
     }
 
     [HttpPost]

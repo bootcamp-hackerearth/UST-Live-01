@@ -4,17 +4,11 @@ using HealthAppWebAPI.Models.Dtos;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace HealthAppMVC.Services.Implementation
 {
-
-
     public class AppointmentService : IAppointmentService
     {
         private readonly HttpClient _httpClient;
@@ -27,7 +21,12 @@ namespace HealthAppMVC.Services.Implementation
         public async Task<IEnumerable<AppointmentDto>> GetAllAppointmentsAsync()
         {
             var response = await _httpClient.GetAsync("appointments");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
@@ -38,7 +37,10 @@ namespace HealthAppMVC.Services.Implementation
             var response = await _httpClient.GetAsync($"appointments/{id}");
 
             if (!response.IsSuccessStatusCode)
-                throw new Exception("Appointment not found.");
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AppointmentDto>(data);
@@ -50,7 +52,7 @@ namespace HealthAppMVC.Services.Implementation
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                string error = await response.Content.ReadAsStringAsync();
                 throw new Exception(error);
             }
         }
@@ -62,7 +64,7 @@ namespace HealthAppMVC.Services.Implementation
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                string error = await response.Content.ReadAsStringAsync();
                 throw new Exception(error);
             }
         }
@@ -79,7 +81,7 @@ namespace HealthAppMVC.Services.Implementation
 
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
+                string error = await response.Content.ReadAsStringAsync();
                 throw new Exception(error);
             }
         }
@@ -87,7 +89,12 @@ namespace HealthAppMVC.Services.Implementation
         public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByPatientAsync(int patientId)
         {
             var response = await _httpClient.GetAsync($"appointments/patient/{patientId}");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
@@ -96,7 +103,12 @@ namespace HealthAppMVC.Services.Implementation
         public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByDoctorAsync(int doctorId)
         {
             var response = await _httpClient.GetAsync($"appointments/doctor/{doctorId}");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
@@ -105,7 +117,12 @@ namespace HealthAppMVC.Services.Implementation
         public async Task<IEnumerable<AppointmentDto>> GetUpcomingAppointmentsAsync()
         {
             var response = await _httpClient.GetAsync("appointments/upcoming");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
@@ -114,7 +131,12 @@ namespace HealthAppMVC.Services.Implementation
         public async Task<IEnumerable<AppointmentDto>> GetUpcomingAppointmentsByDoctorAsync(int doctorId)
         {
             var response = await _httpClient.GetAsync($"appointments/upcoming/doctor/{doctorId}");
-            response.EnsureSuccessStatusCode();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
@@ -127,7 +149,11 @@ namespace HealthAppMVC.Services.Implementation
             var response = await _httpClient.GetAsync(
                 $"appointments/slots?doctorId={doctorId}&date={date}");
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<string>>(data);
@@ -138,7 +164,11 @@ namespace HealthAppMVC.Services.Implementation
             var response = await _httpClient.GetAsync(
                 $"appointments/search?patientName={patientName}");
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<AppointmentDto>>(data);
@@ -149,11 +179,14 @@ namespace HealthAppMVC.Services.Implementation
             var response = await _httpClient.GetAsync(
                 $"appointments/{appointmentId}/healthrecord");
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
+            }
 
             var data = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<bool>(data);
         }
     }
-
 }

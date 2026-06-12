@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HealthAppWebAPI.Repositories.Interfaces
@@ -15,6 +12,11 @@ namespace HealthAppWebAPI.Repositories.Interfaces
         Task AddAsync(Patient patient);
 
         Task UpdateAsync(Patient patient);
-    }
 
+        Task<bool> EmailExistsAsync(string email);
+
+        Task<bool> EmailExistsForOtherPatientAsync(
+            int patientId,
+            string email);
+    }
 }

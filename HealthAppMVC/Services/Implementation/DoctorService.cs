@@ -1,5 +1,4 @@
-﻿
-using HealthAppMVC.Services.Interface;
+﻿using HealthAppMVC.Services.Interface;
 using HealthAppWebAPI.Models.Dtos;
 using Newtonsoft.Json;
 using System;
@@ -19,7 +18,12 @@ public class DoctorService : IDoctorService
     public async Task<IEnumerable<DoctorDto>> GetAllDoctorsAsync()
     {
         var response = await _httpClient.GetAsync("doctors");
-        response.EnsureSuccessStatusCode();
+
+        if (!response.IsSuccessStatusCode)
+        {
+            string error = await response.Content.ReadAsStringAsync();
+            throw new Exception(error);
+        }
 
         var data = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<List<DoctorDto>>(data);
@@ -30,7 +34,10 @@ public class DoctorService : IDoctorService
         var response = await _httpClient.GetAsync($"doctors/{id}");
 
         if (!response.IsSuccessStatusCode)
-            throw new Exception($"Doctor with Id {id} not found.");
+        {
+            string error = await response.Content.ReadAsStringAsync();
+            throw new Exception(error);
+        }
 
         var data = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<DoctorDto>(data);
@@ -42,7 +49,7 @@ public class DoctorService : IDoctorService
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            string error = await response.Content.ReadAsStringAsync();
             throw new Exception(error);
         }
     }
@@ -54,7 +61,7 @@ public class DoctorService : IDoctorService
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            string error = await response.Content.ReadAsStringAsync();
             throw new Exception(error);
         }
     }
@@ -69,7 +76,7 @@ public class DoctorService : IDoctorService
 
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content.ReadAsStringAsync();
+            string error = await response.Content.ReadAsStringAsync();
             throw new Exception(error);
         }
     }
@@ -79,7 +86,11 @@ public class DoctorService : IDoctorService
         var response = await _httpClient.GetAsync(
             $"doctors/specialisation/{specialisation}");
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            string error = await response.Content.ReadAsStringAsync();
+            throw new Exception(error);
+        }
 
         var data = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<List<DoctorDto>>(data);
@@ -90,7 +101,11 @@ public class DoctorService : IDoctorService
         var response = await _httpClient.GetAsync(
             $"doctors/search?name={name}");
 
-        response.EnsureSuccessStatusCode();
+        if (!response.IsSuccessStatusCode)
+        {
+            string error = await response.Content.ReadAsStringAsync();
+            throw new Exception(error);
+        }
 
         var data = await response.Content.ReadAsStringAsync();
         return JsonConvert.DeserializeObject<List<DoctorDto>>(data);
