@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="HealthApp.Shared/HealthApp.Shared.csproj" Id="7c14763c-6946-47db-a48e-c9fd1281a989" />
   <Project Path="HealthAppMVC/HealthAppMVC.csproj" Id="78e4b2fd-0487-44f6-9f60-05450a7666c6" />
+  <Project Path="HealthAppTesting/HealthAppTesting.csproj" Id="f37d3192-185f-4aea-863c-80af410cc52e" />
   <Project Path="HealthAppWebAPI/HealthAppWebAPI.csproj" Id="2c872629-791d-4218-a69d-bd8e1077fd20" />
 </Solution>
