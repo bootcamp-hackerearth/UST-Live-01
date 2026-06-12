@@ -34,13 +34,27 @@ namespace HealthApp.API.Controllers
             return Ok(data);
         }
 
-        // ✅ FILTER
+        // ✅ ✅ ✅ FIXED FILTER METHOD
         [HttpGet]
         [Route("filter")]
-        public async Task<IHttpActionResult> GetByDoctorAndPatient(int doctorId, int patientId)
+        public async Task<IHttpActionResult> GetByDoctorAndPatient(int? doctorId = null, int? patientId = null)
         {
-            var data = await _service.GetHealthRecordsByDoctor(doctorId, patientId);
-            return Ok(data);
+            try
+            {
+                // ✅ validation (at least one required)
+                if (!doctorId.HasValue && !patientId.HasValue)
+                {
+                    return BadRequest("At least DoctorId or PatientId is required");
+                }
+
+                var data = await _service.GetHealthRecordsByDoctor(doctorId, patientId);
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // ✅ CREATE

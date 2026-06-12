@@ -19,7 +19,7 @@ namespace HealthApp.Controllers
             _appointmentService = appointmentService;
         }
 
-        // ✅ GET
+        // ✅ GET ALL
         public async Task<ActionResult> HealthRecordsIndex()
         {
             var records = await _service.GetAll();
@@ -32,7 +32,7 @@ namespace HealthApp.Controllers
             return View();
         }
 
-        // ✅ ✅ CREATE (POST)
+        // ✅ CREATE (POST)
         [HttpPost]
         public async Task<ActionResult> Create(HealthRecordDto dto)
         {
@@ -40,7 +40,7 @@ namespace HealthApp.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return View(dto);   
+                    return View(dto);
                 }
 
                 await _service.Create(dto);
@@ -55,7 +55,7 @@ namespace HealthApp.Controllers
             }
         }
 
-        // ✅ GET: from appointment
+        // ✅ FROM APPOINTMENT (GET)
         public async Task<ActionResult> CreateFromAppointment(int appointmentId)
         {
             var appointment = await _appointmentService.GetById(appointmentId);
@@ -73,7 +73,7 @@ namespace HealthApp.Controllers
             return View(model);
         }
 
-        // ✅ ✅ POST: from appointment (FIXED)
+        // ✅ FROM APPOINTMENT (POST)
         [HttpPost]
         public async Task<ActionResult> CreateFromAppointment(HealthRecordDto dto)
         {
@@ -81,7 +81,7 @@ namespace HealthApp.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return View(dto);   
+                    return View(dto);
                 }
 
                 await _service.Create(dto);
@@ -95,6 +95,48 @@ namespace HealthApp.Controllers
             {
                 TempData["Error"] = ex.Message;
                 return View(dto);
+            }
+        }
+
+        // ✅ ✅ ✅ SEARCH BY DOCTOR + PATIENT 
+        [HttpGet]
+        public async Task<ActionResult> GetRecordsByDoctorAndPatient(int? doctorId, int? patientId)
+        {
+            try
+            {
+                // ✅ ✅ VALIDATION (IMPORTANT)
+                if (!doctorId.HasValue && !patientId.HasValue)
+                {
+                    TempData["Error"] = "Please enter Doctor Id or Patient Id";
+                    return RedirectToAction("HealthRecordsIndex");
+                }
+
+                var records = await _service.GetRecordsByDoctorAndPatient(doctorId, patientId);
+
+                return View("HealthRecordsIndex", records);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("HealthRecordsIndex");
+            }
+        }
+
+
+        // ✅ ✅ ✅ GET PATIENT RECORDS 
+        [HttpGet]
+        public async Task<ActionResult> GetPatientRecords(int patientId)
+        {
+            try
+            {
+                var records = await _service.GetPatientRecords(patientId);
+
+                return View("GetPatientRecords", records);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("HealthRecordsIndex");
             }
         }
     }

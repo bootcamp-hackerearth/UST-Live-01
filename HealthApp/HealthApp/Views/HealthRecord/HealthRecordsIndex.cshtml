@@ -1,54 +1,31 @@
-﻿﻿@model List<HealthApp.Shared.DTOs.HealthRecordDto>
+﻿@model List<HealthApp.Shared.DTOs.HealthRecordDto>
+
+@{
+    ViewBag.Title = "Health Records";
+}
+
+<!-- ✅ TOP BAR -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <a href="/Home/Index" class="btn btn-outline-secondary">
+        ← Back
+    </a>
+
+    <div>
+        <a href="/HealthRecord/Create" class="btn btn-success me-2">
+            + Record
+        </a>
+
+        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#searchModal">
+            <i class="bi bi-search"></i>
+        </button>
+    </div>
+
+</div>
 
 <h2 class="text-primary mb-3">Health Records</h2>
 
-<div class="mb-3">
-    <a href="/HealthRecord/Create" class="btn btn-success">
-        Add New Record
-    </a>
-</div>
-
-<h5 class="text-secondary">Search Records</h5>
-
-<div class="card p-3 mb-3 shadow">
-    <form method="get" action="/HealthRecord/GetRecordsByDoctorAndPatient">
-        <div class="row">
-            <div class="col-md-4">
-                <label>Doctor Id</label>
-                <input type="number" name="doctorId" class="form-control" />
-            </div>
-
-            <div class="col-md-4">
-                <label>Patient Id</label>
-                <input type="number" name="patientId" class="form-control" />
-            </div>
-
-            <div class="col-md-4 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100">
-                    Search
-                </button>
-            </div>
-        </div>
-    </form>
-</div>
-
-<div class="card p-3 mb-3 shadow">
-    <form method="get" action="/HealthRecord/GetPatientRecords">
-        <div class="row">
-            <div class="col-md-6">
-                <label>Patient Id</label>
-                <input type="number" name="patientId" class="form-control" />
-            </div>
-
-            <div class="col-md-6 d-flex align-items-end">
-                <button type="submit" class="btn btn-success w-100">
-                    Get Patient Records
-                </button>
-            </div>
-        </div>
-    </form>
-</div>
-
+<!-- ✅ TABLE -->
 <table class="table table-bordered table-striped table-hover">
     <thead class="thead-dark">
         <tr>
@@ -88,3 +65,100 @@
         }
     </tbody>
 </table>
+
+<!-- ✅ ✅ MODERN SEARCH MODAL -->
+<div class="modal fade" id="searchModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+
+            <h5 class="fw-bold mb-3">Search Records</h5>
+
+            <!-- ✅ ERROR BOX -->
+            <div id="validationBox" class="alert alert-danger d-none">
+                Please enter Doctor Id or Patient Id
+            </div>
+
+            <!-- ✅ FILTER CARD -->
+            <div class="card border-0 shadow-sm p-3 mb-3">
+
+                <form method="get" action="/HealthRecord/GetRecordsByDoctorAndPatient"
+                      onsubmit="return validateSearch()">
+
+                    <div class="mb-2">
+                        <label>Doctor Id</label>
+                        <input type="number" id="doctorId" name="doctorId"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Patient Id</label>
+                        <input type="number" id="patientId" name="patientId"
+                               class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- ✅ DIVIDER -->
+            <div class="text-center text-muted mb-2">OR</div>
+
+            <!-- ✅ PATIENT SECTION -->
+            <div class="card border-0 shadow-sm p-3">
+
+                <form method="get" action="/HealthRecord/GetPatientRecords">
+
+                    <div class="mb-3">
+                        <label>Patient Id</label>
+                        <input type="number" name="patientId"
+                               class="form-control" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-person-lines-fill me-1"></i>
+                        Get Patient Records
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ SCRIPT -->
+<script>
+
+    function validateSearch() {
+
+        var doctor = document.getElementById("doctorId");
+        var patient = document.getElementById("patientId");
+        var box = document.getElementById("validationBox");
+
+        if (doctor.value === "" && patient.value === "") {
+            box.classList.remove("d-none"); // show
+            return false;
+        }
+
+        box.classList.add("d-none"); // hide
+        return true;
+    }
+
+    // ✅ AUTO HIDE WHEN USER TYPES
+    document.addEventListener("DOMContentLoaded", function () {
+
+        document.getElementById("doctorId").addEventListener("input", hideError);
+        document.getElementById("patientId").addEventListener("input", hideError);
+
+    });
+
+    function hideError() {
+        document.getElementById("validationBox").classList.add("d-none");
+    }
+
+</script>

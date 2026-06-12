@@ -5,7 +5,7 @@
     ViewBag.Title = "Appointment Details";
 }
 
-<!-- ✅ BACK BUTTON -->
+<!-- ✅ TOP BAR -->
 <div class="d-flex justify-content-between align-items-center mb-3">
 
     <a href="/Home/Index" class="btn btn-outline-secondary">
@@ -21,7 +21,7 @@
         <button class="btn btn-outline-primary ms-2"
                 data-bs-toggle="modal"
                 data-bs-target="#searchModal">
-            🔍
+            <i class="bi bi-search"></i>
         </button>
     </div>
 
@@ -72,6 +72,7 @@
                     <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
                     <td>@item.TimeSlot</td>
 
+                    <!-- ✅ STATUS -->
                     <td>
                         <span class="badge
                         @(item.Status == AppointmentStatus.Confirmed ? "bg-success" :
@@ -82,42 +83,47 @@
                         </span>
                     </td>
 
+                    <!-- ✅ ACTIONS -->
                     <td>
+
                         @if (item.Status == AppointmentStatus.Pending)
                         {
+                            <!-- ✅ CONFIRM -->
                             using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
                             {
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@item.AppointmentId" />
 
-                                <!-- ✅ TICK BUTTON -->
                                 <button type="submit"
                                         class="btn btn-success btn-sm me-1"
-                                        onclick="return confirm('Confirm appointment?')">
-                                    ✔
+                                        title="Confirm Appointment">
+                                    <i class="bi bi-check-lg"></i>
                                 </button>
                             }
 
+                            <!-- ✅ CANCEL -->
                             using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
                             {
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@item.AppointmentId" />
 
-                                <!-- ✅ CROSS BUTTON -->
                                 <button type="submit"
                                         class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Cancel appointment?')">
-                                    ✖
+                                        title="Cancel Appointment">
+                                    <i class="bi bi-x-lg"></i>
                                 </button>
                             }
                         }
                         else if (item.Status == AppointmentStatus.Confirmed)
                         {
+                            <!-- ✅ CREATE RECORD -->
                             <a href="@Url.Action("CreateFromAppointment", "HealthRecord", new { appointmentId = item.AppointmentId })"
-                               class="btn btn-info btn-sm me-1">
-                                +
+                               class="btn btn-info btn-sm me-1"
+                               title="Add Health Record">
+                                <i class="bi bi-plus-lg"></i>
                             </a>
 
+                            <!-- ✅ CANCEL -->
                             using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
                             {
                                 @Html.AntiForgeryToken()
@@ -125,20 +131,22 @@
 
                                 <button type="submit"
                                         class="btn btn-danger btn-sm"
-                                        onclick="return confirm('Cancel appointment?')">
-                                    ✖
+                                        title="Cancel Appointment">
+                                    <i class="bi bi-x-lg"></i>
                                 </button>
                             }
                         }
                         else if (item.Status == AppointmentStatus.Cancelled)
                         {
-                            <span class="text-danger">Cancelled</span>
+                            <span class="text-danger fw-semibold">Cancelled</span>
                         }
                         else if (item.Status == AppointmentStatus.Completed)
                         {
-                            <span class="text-success">Completed</span>
+                            <span class="text-success fw-semibold">Completed</span>
                         }
+
                     </td>
+
                 </tr>
             }
         }
@@ -153,22 +161,24 @@
     </tbody>
 </table>
 
-<!-- ✅ SEARCH MODAL POPUP -->
+<!-- ✅ SEARCH MODAL -->
 <div class="modal fade" id="searchModal">
-    <div class="modal-dialog">
-        <div class="modal-content p-3">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
 
-            <h5 class="mb-3">Search Appointment</h5>
+            <h5 class="mb-3 fw-bold">Search Appointment</h5>
 
             <form method="get" action="/Appointment/GetById">
+
                 <input type="number"
                        name="id"
-                       class="form-control mb-2"
+                       class="form-control mb-3"
                        placeholder="Enter Appointment Id" />
 
                 <button class="btn btn-primary w-100">
-                    Search
+                    <i class="bi bi-search me-1"></i> Search
                 </button>
+
             </form>
 
         </div>

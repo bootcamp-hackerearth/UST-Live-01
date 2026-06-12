@@ -12,6 +12,6 @@ namespace HealthApp.API.Service.Interface
 
         Task<List<HealthRecordDto>> GetPatientRecords(int patientId);
 
-        Task<List<HealthRecordDto>> GetHealthRecordsByDoctor(int doctorId, int patientId);
+        Task<List<HealthRecordDto>> GetHealthRecordsByDoctor(int? doctorId, int? patientId);
     }
 }

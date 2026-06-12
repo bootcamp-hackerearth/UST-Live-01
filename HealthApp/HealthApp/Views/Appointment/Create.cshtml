@@ -12,7 +12,6 @@
     </div>
 }
 
-<!-- ✅ BACK BUTTON -->
 <div class="mb-3">
     <a href="/Appointment/AppointmentIndex" class="btn btn-outline-secondary">
         ← Back
@@ -29,54 +28,59 @@
             {
                 @Html.AntiForgeryToken()
 
-                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
-
-                <!-- ✅ Patient Id -->
+                <!-- ✅ PATIENT -->
                 <div class="form-group">
-                    <label class="fw-semibold">Patient Id</label>
-                    @Html.TextBoxFor(m => m.PatientId, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.PatientId, "", new { @class = "text-danger" })
+                    <label>Patient Id</label>
+                    <input type="number" id="patientId" name="PatientId" class="form-control" />
+
+                    <input type="text" id="patientName"
+                           class="form-control mt-2"
+                           placeholder="Patient Name"
+                           readonly />
+
+                    <!-- ✅ ERROR MESSAGE -->
+                    <span id="patientError" class="text-danger" style="display:none;"></span>
                 </div>
 
-                <!-- ✅ Doctor Id -->
+                <!-- ✅ SPECIALIZATION -->
                 <div class="form-group mt-3">
-                    <label class="fw-semibold">Doctor Id</label>
-                    @Html.TextBoxFor(m => m.DoctorId, new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.DoctorId, "", new { @class = "text-danger" })
+                    <label>Specialization</label>
+                    <select id="specialization" class="form-control">
+                        <option value="">-- Select Specialization --</option>
+                        <option>GeneralPhysician</option>
+                        <option>Cardiologist</option>
+                        <option>Dermatologist</option>
+                        <option>Neurologist</option>
+                        <option>Orthopedic</option>
+                        <option>Pediatrician</option>
+                        <option>Psychiatrist</option>
+                        <option>ENT</option>
+                        <option>Gynecologist</option>
+                    </select>
                 </div>
 
-                <!-- ✅ Date -->
+                <!-- ✅ DOCTOR -->
                 <div class="form-group mt-3">
-                    <label class="fw-semibold">Date</label>
-                    @Html.TextBoxFor(m => m.ScheduledDate,
-                        "{0:yyyy-MM-dd}",
-                        new
-                        {
-                            @class = "form-control",
-                            type = "date",
-                            min = DateTime.Today.ToString("yyyy-MM-dd")
-                        })
-                    @Html.ValidationMessageFor(m => m.ScheduledDate, "", new { @class = "text-danger" })
+                    <label>Doctor</label>
+                    <select id="doctorId" name="DoctorId" class="form-control">
+                        <option value="">-- Select Doctor --</option>
+                    </select>
                 </div>
 
-                <!-- ✅ TIME SLOT DROPDOWN -->
+                <!-- ✅ DATE -->
                 <div class="form-group mt-3">
-                    <label class="fw-semibold">Time Slot</label>
-                    @Html.DropDownListFor(m => m.TimeSlot,
-                        new SelectList(new List<string>
-                        {
-                            "09:00 AM",
-                            "10:00 AM",
-                            "11:00 AM",
-                            "12:00 PM",
-                            "02:00 PM",
-                            "03:00 PM",
-                            "04:00 PM",
-                            "05:00 PM"
-                        }),
-                        "-- Select Slot --",
-                        new { @class = "form-control" })
-                    @Html.ValidationMessageFor(m => m.TimeSlot, "", new { @class = "text-danger" })
+                    <label>Date</label>
+                    <input type="date" id="date" name="ScheduledDate"
+                           class="form-control"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                </div>
+
+                <!-- ✅ SLOT -->
+                <div class="form-group mt-3">
+                    <label>Time Slot</label>
+                    <select id="slot" name="TimeSlot" class="form-control">
+                        <option value="">-- Select Slot --</option>
+                    </select>
                 </div>
 
                 <!-- ✅ BUTTON -->
@@ -86,7 +90,104 @@
                     </button>
                 </div>
             }
-
         </div>
     </div>
 </div>
+
+@section Scripts{
+
+    <script>
+
+        // ✅ ✅ ✅ PATIENT NAME + ERROR HANDLING
+        $("#patientId").on("input", function () {
+
+            var id = $(this).val();
+
+            if (!id) {
+                $("#patientName").val("");
+                $("#patientError").hide();
+                $("#patientId").removeClass("is-invalid");
+                return;
+            }
+
+            $.get("/Appointment/GetPatientName?id=" + id)
+                .done(function (res) {
+
+                    if (res.FullName) {
+                        $("#patientName").val(res.FullName);
+                        $("#patientError").hide();
+                        $("#patientId").removeClass("is-invalid");
+                    }
+                    else if (res.error) {
+                        $("#patientName").val("");
+                        $("#patientError").text(res.error).show();
+                        $("#patientId").addClass("is-invalid");
+                    }
+
+                })
+                .fail(function () {
+                    $("#patientName").val("");
+                    $("#patientError").text("Patient not found").show();
+                    $("#patientId").addClass("is-invalid");
+                });
+
+        });
+
+
+        // ✅ ✅ ✅ DOCTORS
+        $("#specialization").on("change", function () {
+
+            var spec = $(this).val();
+
+            if (!spec) return;
+
+            $("#doctorId").html('<option>Loading...</option>');
+
+            $.get("/Appointment/GetDoctors?specialization=" + spec, function (res) {
+
+                $("#doctorId").empty()
+                    .append('<option value="">-- Select Doctor --</option>');
+
+                $.each(res, function (i, item) {
+
+                    $("#doctorId").append(
+                        '<option value="' + item.DoctorId + '">' + item.FullName + '</option>'
+                    );
+
+                });
+
+            });
+
+        });
+
+
+        // ✅ ✅ ✅ SLOTS
+        $("#doctorId, #date").on("change", function () {
+
+            var doctorId = $("#doctorId").val();
+            var date = $("#date").val();
+
+            if (!doctorId || !date) return;
+
+            $("#slot").html('<option>Loading...</option>');
+
+            $.get("/Appointment/GetSlots?doctorId=" + doctorId + "&date=" + date, function (res) {
+
+                $("#slot").empty()
+                    .append('<option value="">-- Select Slot --</option>');
+
+                $.each(res, function (i, item) {
+
+                    $("#slot").append(
+                        '<option value="' + item + '">' + item + '</option>'
+                    );
+
+                });
+
+            });
+
+        });
+
+    </script>
+
+}

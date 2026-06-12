@@ -4,34 +4,34 @@
     ViewBag.Title = "Patient Details";
 }
 
+<!-- ✅ TOP BAR -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <!-- ✅ BACK -->
+    <a href="/Home/Index" class="btn btn-outline-secondary">
+        ← Back
+    </a>
+
+    <div>
+        <!-- ✅ ADD -->
+        <a href="/Patient/Create" class="btn btn-success me-2">
+            + Patient
+        </a>
+
+        <!-- ✅ SEARCH ICON -->
+        <button class="btn btn-outline-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#searchModal">
+            <i class="bi bi-search"></i>
+        </button>
+    </div>
+
+</div>
+
 <h2 class="text-primary mb-3">Patient Details</h2>
 
-<div class="mb-3">
-    <a href="/Patient/Create" class="btn btn-success">
-        Add New Patient
-    </a>
-</div>
-
-<div class="card p-3 mb-3 shadow">
-    @using (Html.BeginForm("Search", "Patient", FormMethod.Get))
-    {
-        <div style="display:flex; align-items:center; gap:10px;">
-            <label style="margin-bottom:0;"><b>Search:</b></label>
-
-            <input type="text"
-                   name="query"
-                   class="form-control"
-                   style="max-width:250px;"
-                   placeholder="Enter ID or Name" />
-
-            <button type="submit" class="btn btn-primary">
-                Search
-            </button>
-        </div>
-    }
-</div>
-
-<table class="table table-bordered table-striped table-hover">
+<!-- ✅ TABLE -->
+<table class="table table-bordered table-hover">
     <thead class="thead-dark">
         <tr>
             <th>Id</th>
@@ -60,16 +60,21 @@
                     <td>@item.InsuranceId</td>
 
                     <td>
-                        <a href="/Patient/GetById/@item.PatientId"
-                           class="btn btn-info btn-sm">
-                            View
-                        </a>
 
+                        <!-- VIEW -->
+                        <button class="btn btn-info btn-sm me-1"
+                                onclick="showDetails(@item.PatientId)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+
+                        <!-- EDIT -->
                         <a href="/Patient/Edit/@item.PatientId"
                            class="btn btn-warning btn-sm">
-                            Edit
+                            <i class="bi bi-pencil"></i>
                         </a>
+
                     </td>
+                    
                 </tr>
             }
         }
@@ -83,3 +88,58 @@
         }
     </tbody>
 </table>
+
+<!-- ✅ SEARCH MODAL -->
+<div class="modal fade" id="searchModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+
+            <h5>Search Patient</h5>
+
+            <form method="get" action="/Patient/Search">
+                <input type="text"
+                       name="query"
+                       class="form-control mb-2"
+                       placeholder="Enter ID or Name" />
+
+                <button type="submit"
+                        class="btn btn-primary w-100">
+                    Search
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ VIEW POPUP -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+
+            <h5>Patient Details</h5>
+
+            <div id="patientContent"></div>
+
+            <button class="btn btn-secondary mt-3"
+                    data-bs-dismiss="modal">
+                Close
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<!-- ✅ SCRIPT -->
+<script>
+    function showDetails(id) {
+        fetch('/Patient/GetById/' + id)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("patientContent").innerHTML = data;
+
+                var modal = new bootstrap.Modal(document.getElementById('detailModal'));
+                modal.show();
+            });
+    }
+</script>

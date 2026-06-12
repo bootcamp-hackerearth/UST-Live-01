@@ -8,7 +8,8 @@ namespace HealthApp.Service.Interface
     {
         Task<List<HealthRecordDto>> GetAll();
         Task<List<HealthRecordDto>> GetByPatient(int patientId);
-        Task<List<HealthRecordDto>> GetByDoctorAndPatient(int doctorId, int patientId);
+        Task<List<HealthRecordDto>> GetRecordsByDoctorAndPatient(int? doctorId, int? patientId);
+        Task<List<HealthRecordDto>> GetPatientRecords(int patientId);
         Task Create(HealthRecordDto dto);
     }
 }

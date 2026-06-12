@@ -156,5 +156,39 @@ namespace HealthApp.Controllers
                 return RedirectToAction("AppointmentIndex");
             }
         }
+
+        // ✅ ✅ ✅ GET PATIENT NAME (AJAX)
+
+        public async Task<JsonResult> GetPatientName(int id)
+        {
+            var patient = await _service.GetPatient(id);
+            return Json(patient, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        // ✅ ✅ ✅ GET DOCTORS BY SPECIALIZATION (AJAX)
+
+        public async Task<JsonResult> GetDoctors(string specialization)
+        {
+            var doctors = await _service.GetDoctors(specialization);
+            return Json(doctors, JsonRequestBehavior.AllowGet);
+        }
+
+
+
+        // ✅ ✅ ✅ GET AVAILABLE SLOTS (AJAX)
+        public async Task<JsonResult> GetSlots(int doctorId, DateTime date)
+        {
+            try
+            {
+                var slots = await _service.GetAvailableSlots(doctorId, date);
+                return Json(slots, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
     }
 }

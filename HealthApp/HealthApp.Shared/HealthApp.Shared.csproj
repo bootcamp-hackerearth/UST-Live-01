@@ -48,8 +48,10 @@
     <Compile Include="Constant\TimeSlots.cs" />
     <Compile Include="DTOs\AppointmentDto.cs" />
     <Compile Include="DTOs\DoctorDto.cs" />
+    <Compile Include="DTOs\DoctorLookupDto.cs" />
     <Compile Include="DTOs\HealthRecordDto.cs" />
     <Compile Include="DTOs\PatientDto.cs" />
+    <Compile Include="DTOs\PatientLookupDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

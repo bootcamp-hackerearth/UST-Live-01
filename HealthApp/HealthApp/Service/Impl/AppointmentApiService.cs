@@ -13,12 +13,11 @@ namespace HealthApp.Service.Impl
 
         private string ExtractError(string error)
         {
-            // ✅ clean error message from API JSON
             return error.Replace("{", "")
-                      .Replace("}", "")
-                      .Replace("\"", "")
-                      .Replace("Message:", "")
-                      .Trim();
+                        .Replace("}", "")
+                        .Replace("\"", "")
+                        .Replace("Message:", "")
+                        .Trim();
         }
 
         public async Task<List<AppointmentDto>> GetAll()
@@ -69,7 +68,6 @@ namespace HealthApp.Service.Impl
             }
         }
 
-        // ✅ FIXED CREATE
         public async Task Create(AppointmentDto dto)
         {
             using (HttpClient client = new HttpClient())
@@ -84,7 +82,6 @@ namespace HealthApp.Service.Impl
             }
         }
 
-        // ✅ FIXED CONFIRM
         public async Task Confirm(int id)
         {
             using (HttpClient client = new HttpClient())
@@ -99,7 +96,6 @@ namespace HealthApp.Service.Impl
             }
         }
 
-        // ✅ FIXED CANCEL
         public async Task Cancel(int id, string reason)
         {
             using (HttpClient client = new HttpClient())
@@ -114,13 +110,11 @@ namespace HealthApp.Service.Impl
             }
         }
 
-        // ✅ FIXED AVAILABILITY
         public async Task<List<string>> CheckAvailability(int doctorId, DateTime date)
         {
             using (HttpClient client = new HttpClient())
             {
-                var res = await client.GetAsync(
-                    $"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
+                var res = await client.GetAsync($"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
 
                 if (!res.IsSuccessStatusCode)
                 {
@@ -132,7 +126,6 @@ namespace HealthApp.Service.Impl
             }
         }
 
-        // ✅ FIXED COMPLETE
         public async Task MarkCompleted(int id)
         {
             using (HttpClient client = new HttpClient())
@@ -144,6 +137,56 @@ namespace HealthApp.Service.Impl
                     var error = await res.Content.ReadAsStringAsync();
                     throw new Exception(ExtractError(error));
                 }
+            }
+        }
+
+        public async Task<PatientLookupDto> GetPatient(int id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.GetAsync($"{baseUrl}/patient/{id}");
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    var error = await res.Content.ReadAsStringAsync();
+                    throw new Exception(ExtractError(error));
+                }
+
+                return await res.Content.ReadAsAsync<PatientLookupDto>();
+            }
+        }
+
+
+        public async Task<List<DoctorLookupDto>> GetDoctors(string specialization)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.GetAsync($"{baseUrl}/doctors?specialization={specialization}");
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    var error = await res.Content.ReadAsStringAsync();
+                    throw new Exception(ExtractError(error));
+                }
+
+                return await res.Content.ReadAsAsync<List<DoctorLookupDto>>();
+            }
+        }
+
+
+        public async Task<List<string>> GetAvailableSlots(int doctorId, DateTime date)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.GetAsync($"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    var error = await res.Content.ReadAsStringAsync();
+                    throw new Exception(ExtractError(error));
+                }
+
+                return await res.Content.ReadAsAsync<List<string>>();
             }
         }
     }

@@ -53,17 +53,39 @@ namespace HealthApp.API.Service.Impl
         }
 
         // ✅ FILTER BY DOCTOR + PATIENT
-        public async Task<List<HealthRecordDto>> GetHealthRecordsByDoctor(int doctorId, int patientId)
+        public async Task<List<HealthRecordDto>> GetHealthRecordsByDoctor(int? doctorId, int? patientId)
         {
             var list = await _repo.GetAllAsync();
 
-            var filtered = list
-                .Where(r => r.DoctorId == doctorId &&
-                            r.PatientId == patientId)
+            IEnumerable<HealthRecord> filtered = list;
+
+            // ✅ BOTH provided
+            if (doctorId.HasValue && patientId.HasValue)
+            {
+                filtered = list.Where(r => r.DoctorId == doctorId.Value &&
+                                           r.PatientId == patientId.Value);
+            }
+            // ✅ ONLY DOCTOR
+            else if (doctorId.HasValue)
+            {
+                filtered = list.Where(r => r.DoctorId == doctorId.Value);
+            }
+            // ✅ ONLY PATIENT
+            else if (patientId.HasValue)
+            {
+                filtered = list.Where(r => r.PatientId == patientId.Value);
+            }
+            // ✅ NONE PROVIDED
+            else
+            {
+                filtered = new List<HealthRecord>(); 
+            }
+
+            var result = filtered
                 .OrderByDescending(r => r.VisitDate)
                 .ToList();
 
-            return _mapper.Map<List<HealthRecordDto>>(filtered);
+            return _mapper.Map<List<HealthRecordDto>>(result);
         }
     }
 }

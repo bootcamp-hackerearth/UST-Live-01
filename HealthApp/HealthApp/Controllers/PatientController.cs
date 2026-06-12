@@ -1,5 +1,6 @@
 ﻿using HealthApp.Service.Interface;
 using HealthApp.Shared.DTOs;
+using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -31,12 +32,31 @@ namespace HealthApp.Controllers
             return View();
         }
 
+        // ✅ ✅ ✅ FIXED CREATE
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(PatientDto dto)
         {
-            await _service.Create(dto);
-            return RedirectToAction("PatientIndex");
+            try
+            {
+                // ✅ IMPORTANT: validate DTO
+                if (!ModelState.IsValid)
+                {
+                    return View(dto); // stay on same page and show red errors
+                }
+
+                await _service.Create(dto);
+
+                return RedirectToAction("PatientIndex"); // only when valid
+            }
+            catch (Exception ex)
+            {
+                // ✅ show backend error also in red
+                ModelState.AddModelError("", ex.Message);
+                return View(dto);
+            }
         }
+
         public async Task<ActionResult> Search(string query)
         {
             if (string.IsNullOrEmpty(query))
@@ -62,11 +82,27 @@ namespace HealthApp.Controllers
             return View(patient);
         }
 
+        // ✅ ✅ ✅ FIXED EDIT ALSO (same logic)
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, PatientDto dto)
         {
-            await _service.Update(id, dto);
-            return RedirectToAction("PatientIndex");
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(dto);
+                }
+
+                await _service.Update(id, dto);
+
+                return RedirectToAction("PatientIndex");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                return View(dto);
+            }
         }
     }
 }

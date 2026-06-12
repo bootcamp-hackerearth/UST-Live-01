@@ -1,24 +1,30 @@
-﻿using HealthApp.API.Service.Interface;
+﻿using HealthApp.API.Data;
+using HealthApp.API.Service.Interface;
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Data.Entity;
 
 namespace HealthApp.API.Controllers
 {
+    [RoutePrefix("api/appointments")]
     public class AppointmentApiController : ApiController
     {
         private readonly IAppointmentService _service;
+        private readonly HealthAppEntities _db;
 
         public AppointmentApiController(IAppointmentService service)
         {
             _service = service;
+            _db = new HealthAppEntities();
         }
 
         // ✅ GET ALL
         [HttpGet]
-        [Route("api/appointments")]
+        [Route("")]
         public async Task<IEnumerable<AppointmentDto>> Get()
         {
             return await _service.GetAllAppointments();
@@ -26,7 +32,7 @@ namespace HealthApp.API.Controllers
 
         // ✅ GET BY ID
         [HttpGet]
-        [Route("api/appointments/{id}")]
+        [Route("{id}")]
         public async Task<IHttpActionResult> GetById(int id)
         {
             try
@@ -34,15 +40,15 @@ namespace HealthApp.API.Controllers
                 var data = await _service.GetAppointmentById(id);
                 return Ok(data);
             }
-            catch
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
         }
 
         // ✅ CREATE
         [HttpPost]
-        [Route("api/appointments")]
+        [Route("")]
         public async Task<IHttpActionResult> Post(AppointmentDto dto)
         {
             try
@@ -58,7 +64,7 @@ namespace HealthApp.API.Controllers
 
         // ✅ CANCEL
         [HttpPut]
-        [Route("api/appointments/{id}/cancel")]
+        [Route("{id}/cancel")]
         public async Task<IHttpActionResult> Cancel(int id, string reason)
         {
             try
@@ -74,7 +80,7 @@ namespace HealthApp.API.Controllers
 
         // ✅ CONFIRM
         [HttpPut]
-        [Route("api/appointments/{id}/confirm")]
+        [Route("{id}/confirm")]
         public async Task<IHttpActionResult> Confirm(int id)
         {
             try
@@ -90,13 +96,80 @@ namespace HealthApp.API.Controllers
 
         // ✅ COMPLETE
         [HttpPut]
-        [Route("api/appointments/{id}/complete")]
+        [Route("{id}/complete")]
         public async Task<IHttpActionResult> Complete(int id)
         {
             try
             {
                 await _service.CompleteAppointment(id);
                 return Ok("Appointment completed");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // ✅ ✅ ✅ GET PATIENT NAME
+        [HttpGet]
+        [Route("patient/{id}")]
+        public async Task<IHttpActionResult> GetPatient(int id)
+        {
+            try
+            {
+                var patient = await _db.Patients
+                    .Where(p => p.PatientId == id)
+                    .Select(p => new
+                    {
+                        doctorId = 0,      // not used, but keeps JSON consistent
+                        fullName = p.FullName
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (patient == null)
+                    return BadRequest("Invalid Patient Id");
+
+                return Ok(patient);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // ✅ ✅ ✅ GET DOCTORS BY SPECIALIZATION
+        [HttpGet]
+        [Route("doctors")]
+        public async Task<IHttpActionResult> GetDoctors(string specialization)
+        {
+            try
+            {
+                var doctors = await _db.Doctors
+                    .Where(d => d.Specialisation == specialization && d.IsActive)
+                    .Select(d => new
+                    {
+                        doctorId = d.DoctorId,
+                        fullName = d.FullName
+                    })
+                    .ToListAsync();
+
+                return Ok(doctors);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // ✅ ✅ ✅ GET AVAILABLE SLOTS
+        [HttpGet]
+        [Route("availability")]
+        public async Task<IHttpActionResult> GetAvailability(int doctorId, DateTime date)
+        {
+            try
+            {
+                var slots = await _service.CheckDoctorAvailability(doctorId, date);
+                return Ok(slots);
             }
             catch (Exception ex)
             {
