@@ -24,7 +24,7 @@ namespace HealthCare.Shared.DTOs.Doctor
         [Range(0, 100000)]
         public decimal ConsultationFee { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select at least one time slot")]
         public List<string> TimeSlots { get; set; }
     }
 }

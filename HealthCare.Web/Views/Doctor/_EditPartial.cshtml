@@ -1,70 +1,88 @@
-﻿@model HealthCare.Shared.DTOs.Doctor.DoctorDto
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Doctor.DoctorDto>
 
-@using (Html.BeginForm("Edit", "Doctor", FormMethod.Post, new { id = "editDoctorForm" }))
-{
-    @Html.AntiForgeryToken()
-    @Html.HiddenFor(m => m.DoctorId)
+<div id="editDoctorFormContainer">
+    @using (Html.BeginForm("Edit", "Doctor", FormMethod.Post, new { id = "editDoctorForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Items[0].DoctorId)
 
-    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+        <div class="row g-3">
 
-    <div class="row g-3">
+            <!-- Full Name -->
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.Items[0].FullName, new { @class = "form-label fw-semibold" })
 
-        
-        <div class="col-md-6">
-            @Html.LabelFor(m => m.FullName, new { @class = "form-label" })
+                @Html.TextBoxFor(m => m.Items[0].FullName, new
+                {
+                    @class = "form-control",
+                    required = "required",
+                    maxlength = "100"
+                })
 
-            @Html.TextBoxFor(m => m.FullName, new
-            {
-                @class = "form-control"
-            })
+                @Html.ValidationMessageFor(m => m.Items[0].FullName, "", new { @class = "text-danger" })
+            </div>
 
-            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+            <!-- Specialisation -->
+            <div class="col-md-6">
+
+                @Html.LabelFor(m => m.Items[0].Specialisation,
+                    new { @class = "form-label fw-semibold" })
+
+                @Html.DropDownListFor(m => m.Items[0].Specialisation,
+                    new List<SelectListItem>
+                    {
+                        new SelectListItem { Text = "Cardiologist", Value = "Cardiologist" },
+                        new SelectListItem { Text = "Dermatologist", Value = "Dermatologist" },
+                        new SelectListItem { Text = "Neurologist", Value = "Neurologist" },
+                        new SelectListItem { Text = "Pediatrician", Value = "Pediatrician" },
+                        new SelectListItem { Text = "Orthopedic", Value = "Orthopedic" }
+                    },
+                    "Select Specialisation",
+                    new { @class = "form-select", required = "required" }
+                )
+
+                @Html.ValidationMessageFor(m => m.Items[0].Specialisation, "",
+                    new { @class = "text-danger" })
+            </div>
+
+            <!-- Experience -->
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.Items[0].YearsOfExperience, new { @class = "form-label fw-semibold" })
+
+                @Html.TextBoxFor(m => m.Items[0].YearsOfExperience, new
+                {
+                    @class = "form-control",
+                    type = "number",
+                    min = "0",
+                    max = "60",
+                    required = "required"
+                })
+
+                @Html.ValidationMessageFor(m => m.Items[0].YearsOfExperience, "", new { @class = "text-danger" })
+            </div>
+
+            <!-- Fee -->
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.Items[0].ConsultationFee, new { @class = "form-label fw-semibold" })
+
+                @Html.TextBoxFor(m => m.Items[0].ConsultationFee, new
+                {
+                    @class = "form-control",
+                    type = "number",
+                    min = "0",
+                    required = "required"
+                })
+
+                @Html.ValidationMessageFor(m => m.Items[0].ConsultationFee, "", new { @class = "text-danger" })
+            </div>
+
         </div>
 
-        
-        <div class="col-md-6">
-            @Html.LabelFor(m => m.Specialisation, new { @class = "form-label" })
-
-            @Html.TextBoxFor(m => m.Specialisation, new
-            {
-                @class = "form-control"
-            })
-
-            @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+        <!-- Actions -->
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-primary">
+                Update Doctor
+            </button>
         </div>
-
-        
-        <div class="col-md-6">
-            @Html.LabelFor(m => m.YearsOfExperience, new { @class = "form-label" })
-
-            @Html.TextBoxFor(m => m.YearsOfExperience, new
-            {
-                @class = "form-control",
-                type = "number"
-            })
-
-            @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
-        </div>
-
-     
-        <div class="col-md-6">
-            @Html.LabelFor(m => m.ConsultationFee, new { @class = "form-label" })
-
-            @Html.TextBoxFor(m => m.ConsultationFee, new
-            {
-                @class = "form-control",
-                type = "number"
-            })
-
-            @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
-        </div>
-
-    </div>
-
-    <
-    <div class="mt-4 text-end">
-        <button type="submit" class="btn btn-primary">
-            Update Doctor
-        </button>
-    </div>
-}
+    }
+</div>

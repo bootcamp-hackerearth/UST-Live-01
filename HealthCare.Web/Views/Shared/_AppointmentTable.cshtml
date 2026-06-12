@@ -19,7 +19,7 @@
                 </thead>
 
                 <tbody>
-                    @if (Model != null && Model.Any())
+                    @if (Model != null && Model.ToList().Count > 0)
                     {
                         foreach (var appt in Model)
                         {
@@ -55,7 +55,7 @@
 
                                         @if (appt.Status == "Pending")
                                         {
-                                            
+
                                             using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post, new { @class = "d-inline" }))
                                             {
                                                 @Html.AntiForgeryToken()
@@ -68,7 +68,7 @@
                                                 </button>
                                             }
 
-                                            
+
                                             <button type="button"
                                                     class="btn btn-sm btn-outline-danger"
                                                     onclick="openCancelModal(@appt.AppointmentId, @appt.PatientId)"
@@ -78,7 +78,7 @@
                                         }
                                         else if (appt.Status == "Confirmed")
                                         {
-                                            
+
                                             <a href="@Url.Action("Create", "HealthRecord", new {
                     patientId = appt.PatientId,
                     doctorId = appt.DoctorId,
@@ -91,7 +91,7 @@
                                         }
                                         else if (appt.Status == "Completed")
                                         {
-                                            
+
                                             <a href="@Url.Action("Single", "HealthRecord", new { id = appt.AppointmentId })"
                                                class="btn btn-sm btn-outline-primary"
                                                title="View Health Record">
@@ -122,14 +122,14 @@
 </div>
 
 <script>
-    function openCancelModal(appointmentId) {
+    function openCancelModal(appointmentId, patientId) {
 
-        console.log("Opening modal for:", appointmentId);
+        console.log("AppointmentId:", appointmentId);
+        console.log("PatientId:", patientId);
 
-        
         document.getElementById("cancelId").value = appointmentId;
+        document.getElementById("cancelPatientId").value = patientId;
 
-       
         var modal = new bootstrap.Modal(
             document.getElementById('cancelModal')
         );

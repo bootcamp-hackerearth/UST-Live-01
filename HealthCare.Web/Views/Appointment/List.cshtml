@@ -10,29 +10,26 @@
 <div class="container-fluid">
 
     <!-- HEADER -->
-    <div class="mb-4">
-        <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center">
 
-            <div>
-                <h2 class="fw-bold mb-1">Appointment List</h2>
-                <p class="text-muted mb-0">
-                    View and manage appointments.
-                </p>
-            </div>
-
-
-            <a href="@Url.Action("Book", "Appointment")"
-            class="btn btn-success fw-semibold">
-            + Book Appointment
-            </a>
-
-
+        <div>
+            <h2 class="fw-bold mb-1">Appointment List</h2>
+            <p class="text-muted mb-0">
+                View and manage appointments.
+            </p>
         </div>
+
+        <!-- Book Appointment Button -->
+        <a href="@Url.Action("Book", "Appointment")"
+           class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Book Appointment
+        </a>
+
     </div>
 
 
-    <
-    @if (Model.Items != null && Model.Items.Any())
+    <!--  CONTEXT -->
+    @if (Model != null && Model.Items.Count > 0)
 
     {
         <div class="alert alert-secondary">
@@ -41,9 +38,10 @@
         </div>
     }
 
-  
+    <!--  SEARCH + FILTER -->
     <div class="mb-4 d-flex flex-wrap gap-3 align-items-end">
 
+        <!--  Patient Search -->
         @using (Html.BeginForm("List", "Appointment", FormMethod.Get))
         {
             <div class="d-flex gap-2">
@@ -60,6 +58,7 @@
             </div>
         }
 
+        <!--  Doctor Search -->
         @using (Html.BeginForm("Upcoming", "Appointment", FormMethod.Get))
         {
             <div class="d-flex gap-2">
@@ -78,14 +77,14 @@
             </div>
         }
 
-        <!-- ✅ Status Filter (only when data present) -->
-        @if (Model.Items != null && Model.Items.Any())
+        <!--  Status Filter (only when data present) -->
+        @if (Model != null && Model.Items.Count > 0)
         {
             using (Html.BeginForm("List", "Appointment", FormMethod.Get))
             {
                 <div class="d-flex gap-2">
 
-                    
+                    <!-- preserve filters -->
                     <input type="hidden" name="patientId" value="@Request["patientId"]" />
                     <input type="hidden" name="doctorId" value="@Request["doctorId"]" />
 
@@ -107,7 +106,7 @@
 
     </div>
 
-    <!-- ✅ TABLE -->
+    <!--  TABLE -->
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-0">
 
@@ -118,7 +117,7 @@
         </div>
     </div>
 
-    <!-- ✅ PAGINATION -->
+    <!--  PAGINATION -->
     <nav class="mt-4">
         <ul class="pagination justify-content-center">
 
@@ -187,10 +186,10 @@
             .then(response => response.text())
             .then(html => {
 
-                // ✅ inject partial into modal
+                //  inject partial into modal
                 document.getElementById("modalContent").innerHTML = html;
 
-                // ✅ show modal
+                //  show modal
                 new bootstrap.Modal(document.getElementById('mainModal')).show();
             })
             .catch(err => console.error(err));

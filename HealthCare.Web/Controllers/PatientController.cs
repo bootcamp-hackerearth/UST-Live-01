@@ -2,6 +2,7 @@
 using HealthCare.Web.Services.Interfaces;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using HealthCare.Shared;
 using HealthCare.Web.Services;
 
 namespace HealthCare.Web.Controllers
@@ -11,44 +12,39 @@ namespace HealthCare.Web.Controllers
         private readonly IPatientService _service;
         private const int PageSize = 10;
 
-        public PatientController()
+        public PatientController(IPatientService service)
         {
-            _service = new PatientService();
+            _service = service;
         }
 
-        
+        // LIST 
         public async Task<ActionResult> List(string searchTerm, int pageNumber = 1)
         {
             var result = await _service.GetPatientsAsync(searchTerm, pageNumber, PageSize);
             return View(result);
         }
 
-      
+        // PROFILE
         public async Task<ActionResult> Profile(int id)
         {
             if (id == 0)
-                return HttpNotFound();
+                TempData["Error"] = "Patient does not exist.";
 
             var patient = await _service.GetByIdAsync(id);
 
             if (patient == null)
-                return HttpNotFound();
+                TempData["Error"] = "Patient does not exist.";
 
-            return View(patient);
+            return View("List", patient);
         }
 
-        
-        public ActionResult Register()
-        {
-            return View();
-        }
-
+        // REGISTER (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(PatientDto dto)
         {
             if (!ModelState.IsValid)
-                return View(dto);
+                return PartialView("_RegisterPartial", dto);
 
             var result = await _service.CreateAsync(dto);
 
@@ -59,44 +55,44 @@ namespace HealthCare.Web.Controllers
             }
 
             ModelState.AddModelError("", "");
-            return View(dto);
+            return PartialView("_RegisterPartial", dto);
         }
 
-        
+        // EDIT (GET)
         public async Task<ActionResult> Edit(int id)
         {
             if (id == 0)
-                return HttpNotFound();
+                return PartialView("_EditPartial", id);
 
             var patient = await _service.GetByIdAsync(id);
 
             if (patient == null)
-                return HttpNotFound();
+                return PartialView("_EditPartial", patient);
 
-            return View(patient);
+            return PartialView("_EditPartial", patient);
         }
 
-        
+        // EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(PatientDto dto)
+        public async Task<ActionResult> Edit(PagedResult<PatientDto> dto)
         {
             if (!ModelState.IsValid)
-                return View(dto);
+                return PartialView("_EditPartial", dto);
 
-            var result = await _service.UpdateAsync(dto);
+            var result = await _service.UpdateAsync(dto.Items[0]);
 
             if (result)
             {
                 TempData["Success"] = "Patient updated successfully.";
-                return RedirectToAction("List", new { id = dto.PatientId });
+                return RedirectToAction("List");
             }
 
             ModelState.AddModelError("", "Error updating patient");
-            return View(dto);
+            return PartialView("_EditPartial", dto);
         }
 
-        
+        // DELETE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)

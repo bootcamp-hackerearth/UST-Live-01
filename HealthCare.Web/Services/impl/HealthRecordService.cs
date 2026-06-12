@@ -11,10 +11,15 @@ namespace HealthCare.Web.Services
 {
     public class HealthRecordService : IHealthRecordService
     {
-        private static readonly HttpClient client = new HttpClient();
-        private readonly string baseUrl = "https://localhost:44384//api/healthrecords";
+        private readonly HttpClient _client;
 
-        
+        public HealthRecordService(HttpClient client)
+        {
+            _client = client;
+        }
+        private readonly string baseUrl = "https://localhost:44384/api/healthrecords";
+
+        //  GET PAGINATED HISTORY
         public async Task<PagedResult<HealthRecordDto>> GetPatientHealthHistoryAsync(
             int patientId,
             int pageNumber,
@@ -22,7 +27,7 @@ namespace HealthCare.Web.Services
         {
             string url = $"{baseUrl}/patient/{patientId}?pageNumber={pageNumber}&pageSize={pageSize}";
 
-            var response = await client.GetAsync(url);
+            var response = await _client.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
                 return new PagedResult<HealthRecordDto>();
@@ -32,7 +37,7 @@ namespace HealthCare.Web.Services
             return JsonConvert.DeserializeObject<PagedResult<HealthRecordDto>>(json);
         }
 
-        
+        //  CREATE RECORD
         public async Task<bool> CreateAsync(CreateHealthRecordDto dto)
         {
             System.Diagnostics.Debug.WriteLine(dto.AppointmentId);
@@ -41,14 +46,14 @@ namespace HealthCare.Web.Services
 
             System.Diagnostics.Debug.WriteLine(content);
 
-            var response = await client.PostAsync(baseUrl, content);
+            var response = await _client.PostAsync(baseUrl, content);
 
             return response.IsSuccessStatusCode;
         }
 
         public async Task<HealthRecordDto> GetByAppointmentIdAsync(int appointmentId)
         {
-            var response = await client.GetAsync($"{baseUrl}/appointment/{appointmentId}");
+            var response = await _client.GetAsync($"{baseUrl}/appointment/{appointmentId}");
 
             if (!response.IsSuccessStatusCode)
                 return null;
@@ -57,9 +62,10 @@ namespace HealthCare.Web.Services
 
             return JsonConvert.DeserializeObject<HealthRecordDto>(json);
         }
-        public async Task<HealthRecordDto> GetByIdAsync(int appointmentId)
+
+        public async Task<HealthRecordDto> GetByIdAsync(int recordId)
         {
-            var response = await client.GetAsync($"{baseUrl}/{appointmentId}");
+            var response = await _client.GetAsync($"{baseUrl}/record/{recordId}");
 
             if (!response.IsSuccessStatusCode)
                 return null;

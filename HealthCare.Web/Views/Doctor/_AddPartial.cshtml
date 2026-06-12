@@ -1,138 +1,192 @@
 ﻿@model HealthCare.Shared.DTOs.Doctor.CreateDoctorDto
 
-@using (Html.BeginForm("Add", "Doctor", FormMethod.Post, new { id = "addDoctorForm" }))
-{
-    @Html.AntiForgeryToken()
+<div id="doctorFormContainer">
+    @using (Html.BeginForm("Add", "Doctor", FormMethod.Post, new { id = "addDoctorForm" }))
+    {
+        @Html.AntiForgeryToken()
 
-    
-    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+        <div class="row g-3">
 
-    <div class="row g-3">
+            <!-- Full Name -->
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Full Name *</label>
 
-        
-        <div class="col-md-6">
-            <label class="form-label fw-semibold">Full Name *</label>
-
-            @Html.TextBoxFor(m => m.FullName, new
-            {
-                @class = "form-control"
-            })
-
-            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
-        </div>
-
-        <
-        <div class="col-md-6">
-            <label class="form-label fw-semibold">Specialisation *</label>
-
-            @Html.DropDownListFor(m => m.Specialisation,
-                new List<SelectListItem>
+                @Html.TextBoxFor(m => m.FullName, new
                 {
-                    new SelectListItem { Text = "Cardiologist", Value = "Cardiologist" },
-                    new SelectListItem { Text = "Dermatologist", Value = "Dermatologist" },
-                    new SelectListItem { Text = "Neurologist", Value = "Neurologist" },
-                    new SelectListItem { Text = "Pediatrician", Value = "Pediatrician" },
-                    new SelectListItem { Text = "Orthopedic", Value = "Orthopedic" }
-                },
-                "Select Specialisation",
-                new { @class = "form-select" })
+                    @class = "form-control",
+                    required = "required",
+                    maxlength = "100"
+                })
 
-            @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
-        </div>
+                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+            </div>
 
-        
-        <div class="col-md-6">
-            <label class="form-label fw-semibold">Experience (Years) *</label>
+            <!-- Specialisation -->
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Specialisation *</label>
 
-            @Html.TextBoxFor(m => m.YearsOfExperience, new
-            {
-                type = "number",
-                @class = "form-control"
-            })
+                @Html.DropDownListFor(m => m.Specialisation,
+                    new List<SelectListItem>
+                    {
+                        new SelectListItem { Text = "Cardiologist", Value = "Cardiologist" },
+                        new SelectListItem { Text = "Dermatologist", Value = "Dermatologist" },
+                        new SelectListItem { Text = "Neurologist", Value = "Neurologist" },
+                        new SelectListItem { Text = "Pediatrician", Value = "Pediatrician" },
+                        new SelectListItem { Text = "Orthopedic", Value = "Orthopedic" }
+                    },
+                    "Select Specialisation",
+                    new { @class = "form-select", required = "required" })
 
-            @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
-        </div>
+                @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+            </div>
 
-        
-        <div class="col-md-6">
-            <label class="form-label fw-semibold">Consultation Fee *</label>
+            <!-- Experience -->
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Experience (Years) *</label>
 
-            @Html.TextBoxFor(m => m.ConsultationFee, new
-            {
-                type = "number",
-                @class = "form-control"
-            })
-
-            @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
-        </div>
-
-        
-        <div class="col-md-6">
-            <label class="form-label fw-semibold">Email *</label>
-
-            @Html.TextBoxFor(m => m.Email, new
-            {
-                type = "email",
-                @class = "form-control"
-            })
-
-            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
-        </div>
-
-    </div>
-
-   
-    <div class="mt-3">
-        <label class="form-label fw-semibold">
-            Available Time Slots *
-        </label>
-
-        <div class="d-flex flex-wrap gap-3">
-
-            @{
-                var slots = new List<string>
+                @Html.TextBoxFor(m => m.YearsOfExperience, new
                 {
+                    type = "number",
+                    @class = "form-control",
+                    min = "0",
+                    max = "60",
+                    required = "required"
+                })
+
+                @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
+            </div>
+
+            <!-- Fee -->
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Consultation Fee *</label>
+
+                @Html.TextBoxFor(m => m.ConsultationFee, new
+                {
+                    type = "number",
+                    @class = "form-control",
+                    min = "0",
+                    required = "required"
+                })
+
+                @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Email *</label>
+
+                @Html.TextBoxFor(m => m.Email, new
+                {
+                    type = "email",
+                    @class = "form-control",
+                    required = "required"
+                })
+
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+        <!-- Time Slots -->
+        <div class="mt-3">
+            <label class="form-label fw-semibold">Available Time Slots *</label>
+
+            <div class="d-flex flex-wrap gap-3">
+                @{
+                    var slots = new List<string>
+                            {
                     "9 AM", "10 AM", "11 AM", "12 PM",
                     "1 PM", "2 PM", "3 PM", "4 PM", "5 PM"
                 };
-            }
+                }
 
-            @foreach (var slot in slots)
-            {
-                <div class="form-check">
+                @foreach (var slot in slots)
+                {
+                    <div class="form-check">
+                        <input type="checkbox"
+                               name="TimeSlots"
+                               value="@slot"
+                               class="form-check-input"
+                               @(Model?.TimeSlots != null && Model.TimeSlots.Contains(slot) ? "checked" : "") />
 
-                    <input type="checkbox"
-                           name="TimeSlots"
-                           value="@slot"
-                           class="form-check-input"
-                           @(Model?.TimeSlots != null && Model.TimeSlots.Contains(slot) ? "checked" : "") />
+                        <label class="form-check-label">@slot</label>
+                    </div>
+                }
+            </div>
 
-                    <label class="form-check-label">
-                        @slot
-                    </label>
-
-                </div>
-            }
-
+            <!-- Error below checkboxes -->
+            @Html.ValidationMessage("TimeSlots", "", new { @class = "text-danger d-block mt-2" })
         </div>
 
-        
-        @if (ViewData.ModelState["TimeSlots"]?.Errors.Count > 0)
-        {
-            <div class="text-danger mt-2">
-                @ViewData.ModelState["TimeSlots"].Errors[0].ErrorMessage
-            </div>
+        <!-- Actions -->
+        <div class="mt-4 text-end">
+            <button type="reset" class="btn btn-outline-danger me-2">
+                Clear
+            </button>
+
+            <button type="submit" class="btn btn-primary">
+                Register Doctor
+            </button>
+        </div>
+    }
+</div>
+
+<!--AJAX SCRIPT -->
+<script>
+    $(document).on("submit", "#addDoctorForm", function (e) {
+
+        e.preventDefault();
+
+        var form = $(this);
+
+        // Trigger built-in MVC validation first
+        if (!form.valid()) {
+            return; // ❌ stop if other fields are invalid
         }
-    </div>
 
-    
-    <div class="mt-4 text-end">
-        <button type="reset" class="btn btn-outline-danger me-2">
-            Clear
-        </button>
+        // Custom validation: TimeSlots
+        var selectedSlots = $('input[name="TimeSlots"]:checked');
 
-        <button type="submit" class="btn btn-primary">
-            Register Doctor
-        </button>
-    </div>
-}
+        if (selectedSlots.length === 0) {
+
+            // Show error using MVC validation span
+            var errorDiv = $('[data-valmsg-for="TimeSlots"]');
+            errorDiv.text("Please select at least one time slot");
+            errorDiv.removeClass("field-validation-valid")
+                .addClass("field-validation-error");
+
+            return; 
+        } else {
+            
+            var errorDiv = $('[data-valmsg-for="TimeSlots"]');
+            errorDiv.text("");
+            errorDiv.removeClass("field-validation-error")
+                .addClass("field-validation-valid");
+        }
+
+        // AJAX submit
+        $.ajax({
+            url: form.attr("action"),
+            type: "POST",
+            data: form.serialize(),
+            success: function (response) {
+
+                if (response && response.success) {
+                    alert("Doctor added successfully");
+                    location.reload();
+                    return;
+                }
+
+                // Replace form with validation errors
+                $("#doctorFormContainer").html(response);
+
+                // Rebind validation after DOM replace
+                $.validator.unobtrusive.parse("#doctorFormContainer");
+            },
+            error: function (xhr) {
+                console.log(xhr.responseText);
+                alert("Something went wrong");
+            }
+        });
+    });
+</script>

@@ -1,5 +1,6 @@
-﻿@model HealthCare.Shared.DTOs.Patient.PatientDto
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Patient.PatientDto>
 
+<!--  Profile Header -->
 <div class="text-center mb-3">
 
     <div class="rounded-circle bg-primary text-white
@@ -10,38 +11,38 @@
     </div>
 
     <h5 class="mt-2 mb-0">
-        @Model.FullName
+        @Model.Items[0].FullName
     </h5>
 
     <small class="text-muted">
-        ID: @Model.PatientId
+        ID: @Model.Items[0].PatientId
     </small>
 </div>
 
 <hr />
 
-
+<!--  Details -->
 <div class="row g-3">
 
     <div class="col-md-6">
         <label class="fw-bold">Email</label>
-        <input class="form-control" value="@Model.Email" readonly />
+        <input class="form-control" value="@Model.Items[0].Email" readonly />
     </div>
 
     <div class="col-md-6">
         <label class="fw-bold">Phone</label>
-        <input class="form-control" value="@Model.PhoneNumber" readonly />
+        <input class="form-control" value="@Model.Items[0].PhoneNumber" readonly />
     </div>
 
     <div class="col-md-6">
         <label class="fw-bold">Gender</label>
-        <input class="form-control" value="@Model.Gender" readonly />
+        <input class="form-control" value="@Model.Items[0].Gender" readonly />
     </div>
 
     <div class="col-md-6">
         <label class="fw-bold">Date of Birth</label>
         <input class="form-control"
-               value="@(Model.DateOfBirth != null ? Model.DateOfBirth.ToString("dd MMM yyyy") : "N/A")"
+               value="@(Model.Items[0].DateOfBirth != null ? Model.Items[0].DateOfBirth.ToString("dd MMM yyyy") : "N/A")"
                readonly />
     </div>
 
@@ -49,7 +50,7 @@
         <label class="fw-bold">Insurance</label>
 
         <div class="mt-2">
-            @if (!string.IsNullOrEmpty(Model.InsuranceId))
+            @if (!string.IsNullOrEmpty(Model.Items[0].InsuranceId))
             {
                 <span class="badge bg-success">Insured</span>
             }

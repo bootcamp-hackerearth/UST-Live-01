@@ -4,33 +4,29 @@
 
 <div class="container py-5">
 
-    
+    <!-- HEADER -->
     <div class="text-center mb-5">
         <h1 class="fw-bold text-primary">🏥 HealthCare Portal</h1>
         <p class="text-muted">Access your healthcare services quickly and easily</p>
     </div>
 
-    
+    <!-- MAIN OPTIONS -->
     <div class="row justify-content-center g-4">
 
-        
+        <!-- VIEW DOCTORS -->
         <div class="col-md-4">
-            <a href="@Url.Action("List", "Doctor")"
-               class="text-decoration-none">
-
+            <a href="@Url.Action("List", "Doctor")" class="text-decoration-none">
                 <div class="card option-card text-center p-4">
                     <h1>👨‍⚕️</h1>
-                    <h4 class="mt-2">Doctors list</h4>
+                    <h4 class="mt-2">View Available Doctors</h4>
                     <p class="text-muted">Browse doctors and specializations</p>
                 </div>
-
             </a>
         </div>
 
-        
+        <!-- VIEW APPOINTMENTS -->
         <div class="col-md-4">
-            <a href="@Url.Action("List", "Appointment")"
-               class="text-decoration-none">
+            <a href="@Url.Action("List", "Appointment")" class="text-decoration-none">
                 <div class="card option-card text-center p-4">
                     <h1>📅</h1>
                     <h4 class="mt-2">View Appointments</h4>
@@ -39,13 +35,12 @@
             </a>
         </div>
 
-        
+        <!-- HEALTH HISTORY -->
         <div class="col-md-4">
-            <a href="@Url.Action("List", "HealthRecord")"
-               class="text-decoration-none">
+            <a href="@Url.Action("List", "HealthRecord")" class="text-decoration-none">
                 <div class="card option-card text-center p-4">
                     <h1>📋</h1>
-                    <h4 class="mt-2">View Health History</h4>
+                    <h4 class="mt-2">Health History</h4>
                     <p class="text-muted">View medical records & reports</p>
                 </div>
             </a>
@@ -55,7 +50,7 @@
 
 </div>
 
-
+<!-- STYLES -->
 <style>
 
     body {
@@ -78,8 +73,7 @@
         .option-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-            background-color: #0d6efd;
-            color: white;
+            background: #ffffff;
         }
 
     h1 {

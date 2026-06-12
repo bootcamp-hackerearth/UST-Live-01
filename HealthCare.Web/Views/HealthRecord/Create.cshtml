@@ -6,7 +6,7 @@
 
 <div class="page-card">
 
-    
+    <!-- HEADER -->
     <div class="page-header">
         <div>
             <h2 class="page-title">Add Health Record</h2>
@@ -16,18 +16,8 @@
         </div>
     </div>
 
-    <!
+    <!-- VISIT INFO -->
     <div class="profile-grid" style="margin-bottom:20px;">
-
-        @*<div class="profile-item">
-                <div class="profile-label">Patient</div>
-                <div class="profile-value">@Model.PatientName</div>
-            </div>
-
-            <div class="profile-item">
-                <div class="profile-label">Doctor</div>
-                <div class="profile-value">@Model.DoctorName</div>
-            </div>*@
 
         <div class="profile-item">
             <div class="profile-label">Visit Date</div>
@@ -38,54 +28,65 @@
 
     </div>
 
-    
+    <!-- FORM -->
     @using (Html.BeginForm("Create", "HealthRecord", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 
-        <input type="hidden" name="AppointmentId" value="@Request["appointmentId"]" />
-        <input type="hidden" name="PatientId" value="@Request["PatientId"]" />
-        <input type="hidden" name="DoctorId" value="@Request["DoctorId"]" />
+        @Html.HiddenFor(m => m.AppointmentId)
+        @Html.HiddenFor(m => m.PatientId)
+        @Html.HiddenFor(m => m.DoctorId)
 
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-      
+        <!-- Diagnosis -->
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.Diagnosis, new { @class = "form-label" })
+            @Html.LabelFor(m => m.Diagnosis, new { @class = "form-label fw-semibold" })
+
             @Html.TextAreaFor(m => m.Diagnosis, new
             {
                 @class = "form-control",
                 rows = "4",
-                placeholder = "Enter diagnosis"
+                placeholder = "Enter diagnosis",
+                required = "required",
+                minlength = "5",
+                maxlength = "500"
             })
+
             @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
         </div>
 
-        
+        <!-- Prescription -->
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.Prescription, new { @class = "form-label" })
+            @Html.LabelFor(m => m.Prescription, new { @class = "form-label fw-semibold" })
+
             @Html.TextAreaFor(m => m.Prescription, new
             {
                 @class = "form-control",
                 rows = "4",
-                placeholder = "Enter prescription"
+                placeholder = "Enter prescription",
+                required = "required",
+                minlength = "5",
+                maxlength = "500"
             })
+
             @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
         </div>
 
-        
+        <!-- Notes -->
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.Notes, new { @class = "form-label" })
+            @Html.LabelFor(m => m.Notes, new { @class = "form-label fw-semibold" })
+
             @Html.TextAreaFor(m => m.Notes, new
             {
                 @class = "form-control",
                 rows = "4",
-                placeholder = "Optional notes"
+                placeholder = "Optional notes",
+                maxlength = "1000"
             })
+
             @Html.ValidationMessageFor(m => m.Notes, "", new { @class = "text-danger" })
         </div>
 
-        
+        <!-- ACTIONS -->
         <div class="d-flex gap-2">
 
             <button type="submit" class="btn btn-success">

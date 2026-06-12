@@ -1,8 +1,10 @@
 ﻿using HealthCare.Shared.DTOs.Doctor;
+using HealthCare.Web.Services;
 using HealthCare.Web.Services.Interfaces;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using HealthCare.Web.Services;
+using HealthCare.Shared;
 
 namespace HealthCare.Web.Controllers
 {
@@ -11,11 +13,12 @@ namespace HealthCare.Web.Controllers
         private readonly IDoctorService _service;
         private const int PageSize = 10;
 
-        public DoctorController()
+        public DoctorController(IDoctorService service)
         {
-            _service = new DoctorService();
+            _service = service;
         }
 
+        //  LIST → Doctor/List.cshtml
         public async Task<ActionResult> List(
             string specialization,
             string searchTerm,
@@ -32,29 +35,37 @@ namespace HealthCare.Web.Controllers
             return View("List", result);
         }
 
-        
+        //  PROFILE → Doctor/Profile.cshtml
         public async Task<ActionResult> Profile(int id)
         {
             var doctor = await _service.GetByIdAsync(id);
 
             if (doctor == null)
-                return HttpNotFound();
+            {
+                TempData["Error"] = "Doctor does not exist.";
+            }
 
-            return View("Profile", doctor);
+            return View("List", doctor);
         }
 
+        //  CREATE (GET) → Doctor/Register.cshtml
         public ActionResult Add()
         {
             return View("Add");
         }
 
-      
+        //  CREATE (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Add(CreateDoctorDto dto)
         {
+            if (dto.TimeSlots == null || !dto.TimeSlots.Any())
+            {
+                ModelState.AddModelError("TimeSlots", "Please select at least one time slot");
+            }
+
             if (!ModelState.IsValid)
-                return View(dto);
+                return PartialView("_EditPartial", dto);
 
             var result = await _service.CreateAsync(dto);
 
@@ -65,40 +76,41 @@ namespace HealthCare.Web.Controllers
             }
 
             ModelState.AddModelError("", "Error creating doctor");
-            return View(dto);
+            return PartialView("_EditPartial", dto);
         }
 
-      
+        //  EDIT (GET) → Doctor/Edit.cshtml
         public async Task<ActionResult> Edit(int id)
         {
             var doctor = await _service.GetByIdAsync(id);
 
             if (doctor == null)
-                return HttpNotFound();
+                return View("NotFound"); ;
 
             return View("Edit", doctor);
         }
 
-   
+        //  EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(UpdateDoctorDto dto)
+        public async Task<ActionResult> Edit(PagedResult<UpdateDoctorDto> dto)
         {
             if (!ModelState.IsValid)
-                return View("Edit", dto);
+                return PartialView("_EditPartial", dto);
 
-            var result = await _service.UpdateAsync(dto);
+            var result = await _service.UpdateAsync(dto.Items[0]);
 
             if (result)
             {
                 TempData["Success"] = "Doctor updated successfully.";
-                return RedirectToAction("List", new { id = dto.DoctorId });
+                return RedirectToAction("List", new { id = dto.Items[0].DoctorId });
             }
 
             ModelState.AddModelError("", "Error updating doctor");
-            return View("Edit", dto);
+            return PartialView("_EditPartial", dto);
         }
 
+        //  DELETE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(int id)

@@ -4,19 +4,22 @@ using HealthCare.Web.Services;
 using HealthCare.Web.Services.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 public class HealthRecordController : Controller
 {
     private readonly IHealthRecordService _service;
+
     private const int PageSize = 10;
 
-    public HealthRecordController()
+    public HealthRecordController(IHealthRecordService service)
     {
-        _service = new HealthRecordService();
+        _service = service;
     }
 
+    //  LIST / HISTORY
     
     public async Task<ActionResult> List(int? patientId, int pageNumber = 1)
     {
@@ -38,27 +41,33 @@ public class HealthRecordController : Controller
         return View("List", result);
     }
 
+    //  ADD (GET)
     
-    public ActionResult Create(int patientId)
+    public ActionResult Create(int appointmentId, int patientId, int doctorId)
     {
         var model = new CreateHealthRecordDto
         {
-            PatientId = patientId
+            AppointmentId = appointmentId,
+            PatientId = patientId,
+            DoctorId = doctorId,
         };
 
-        return View("Create", model);
+        return View(model);
     }
 
+
+    //  ADD (POST)
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<ActionResult> Create(CreateHealthRecordDto dto)
     {
+        System.Diagnostics.Debug.WriteLine(dto.AppointmentId);
         if (!ModelState.IsValid)
             return View("Create", dto);
 
         var result = await _service.CreateAsync(dto);
 
-        if (result != null)
+        if (result)
         {
             TempData["Success"] = "Health record added successfully.";
             return RedirectToAction("List", new { patientId = dto.PatientId });

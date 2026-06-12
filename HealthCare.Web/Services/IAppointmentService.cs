@@ -11,8 +11,12 @@ namespace HealthCare.Web.Services.Interfaces
     public interface IAppointmentService
     {
 
-        Task<IEnumerable<AppointmentDto>> GetTodayAppointmentsAsync(int doctorId);
-        Task<IEnumerable<AppointmentDto>> GetWeeklyAppointmentsAsync(int doctorId);
+        Task<PagedResult<AppointmentDto>> GetAppointmentsAsync(
+            int? patientId,
+            int? doctorId,
+            string status,
+            int pageNumber,
+            int pageSize);
         Task<IEnumerable<AppointmentDto>> GetByDateAsync(DateTime date);
         Task<List<string>> GetAvailableSlotsAsync(int doctorId, DateTime date);
 
@@ -23,13 +27,7 @@ namespace HealthCare.Web.Services.Interfaces
         Task<PagedResult<AppointmentDto>> GetUpcomingAppointmentsAsync(
             int? patientId,
             int? doctorId,
-            string status,
-            int pageNumber,
-            int pageSize);
-        Task<PagedResult<AppointmentDto>> GetAppointmentsAsync(
-            int? patientId,
-            int? doctorId,
-            string status,
+            string status,   
             int pageNumber,
             int pageSize);
 

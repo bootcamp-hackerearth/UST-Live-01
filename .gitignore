@@ -2,6 +2,7 @@
 .vs/
 **/bin/
 **/obj/
+**/.sonarqube/
 
 # Optional project-specific ignores
 *.user
@@ -13,3 +14,16 @@
 
 *.lscache
 coverage.xml
+
+HealthApp - Copy
+HealthApp.Tests - Copy
+HealthApp.Tests
+HealthApp
+copy
+TestResults
+TestResults - Copy
+HealthCare.Web.zip
+dotnet-tools - Copy.json
+HealthCare.Web.Tests
+
+**/packages/

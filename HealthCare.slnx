@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="HealthCare.Shared/HealthCare.Shared.csproj" Id="b3a298e5-51fa-42df-aa6f-8960450d71a1" />
+<Project Path="HealthCare.Web/HealthCare.Web.csproj" Id="c3e0556b-6902-4e90-b69f-3ac8d40bb6b6" />
+  <Project Path="HealthCareApi/HealthCareApi.csproj" Id="059115ad-7358-4d67-8d10-dfbab5f5db20" />
+</Solution>
+ 
