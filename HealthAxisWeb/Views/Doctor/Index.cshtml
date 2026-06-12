@@ -131,16 +131,55 @@
         color: white;
         border: none;
     }
+    .view-btn {
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: #374151;
+        color: white;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .view-btn:hover {
+            background: #4b5563;
+        }
+    #searchInput {
+        flex: 1;
+        height: 38px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: #374151;
+        color: white;
+        border: none;
+    }
+
+        #searchInput::placeholder {
+            color: #9ca3af;
+        }
+
+    
+
 </style>
 
 <div class="container">
 
     <div class="header">
-        <h2 style="color:#1f2937">Doctor Management</h2>
+
+        <div style="display:flex; align-items:center; gap:10px;">
+
+            <a href="@Url.Action("Index", "Home")"
+               style="font-size:40px; text-decoration:none; color:#1f2937;">
+                ←
+            </a>
+
+            <h2 style="color:#1f2937">Doctor Management</h2>
+
+        </div>
 
         <a href="@Url.Action("Create", "Doctor")" class="add-btn">
             + Add Doctor
         </a>
+
     </div>
 
     <div class="card-box">
@@ -163,7 +202,12 @@
     <div class="main-card">
 
         <form method="get"
-              style="display:flex; gap:15px; align-items:center; margin-bottom:15px;">
+              style="display:flex; gap:10px; align-items:center; margin-bottom:15px; flex-wrap:wrap;">
+
+            <input type="text"
+                   id="searchInput"
+                   placeholder="Search name / ID"
+                   style="flex:1; height:38px; border-radius:8px; border:none; padding:8px;" />
 
             @Html.DropDownList(
                 "specialisation",
@@ -172,16 +216,20 @@
                 new { onchange = "this.form.submit()", @class = "filter-dropdown" }
             )
 
-            <select name="isActive"
-                    onchange="this.form.submit()"
-                    class="filter-dropdown">
+        <select name="isActive"
+                onchange="this.form.submit()"
+                class="filter-dropdown">
 
-                <option value="">Select Status</option>
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
+            <option value="">Select Status</option>
+            <option value="true" @(Request["isActive"] == "true" ? "selected" : "")>Active</option>
+            <option value="false" @(Request["isActive"] == "false" ? "selected" : "")>Inactive</option>
 
-            </select>
+        </select>
+
+            <button type="button" onclick="clearFilters()">Clear</button>
+
         </form>
+
 
         <table>
             <thead>
@@ -225,7 +273,8 @@
                         </td>
 
                         <td>
-                            <a href="@Url.Action("Details", new { id = d.DoctorId })">
+                            <a href="@Url.Action("Details", "Doctor", new { id = d.DoctorId })"
+                               class="view-btn">
                                 👁
                             </a>
                         </td>
@@ -252,5 +301,34 @@
                     location.reload();
                 }
             });
+    }
+    const searchInput = document.getElementById("searchInput");
+
+    searchInput.addEventListener("keyup", function () {
+
+        let value = this.value.toLowerCase();
+        let rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(row => {
+
+            let text = row.innerText.toLowerCase();
+
+            if (text.includes(value)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+    function clearFilters() {
+
+        document.getElementById("searchInput").value = "";
+
+        document.querySelector("select[name='isActive']").selectedIndex = 0;
+
+        let spec = document.querySelector("select[name='specialisation']");
+        if (spec) spec.selectedIndex = 0;
+
+        window.location.href = '/Doctor/Index';
     }
 </script>

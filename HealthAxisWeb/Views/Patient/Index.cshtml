@@ -100,9 +100,10 @@
     <div class="header">
         <h2 style="color:#1f2937;">Patient Management</h2>
 
-        @Url.Action("Create", "Patient")" class="add-btn">
-        + Add Patient
+        <a href="@Url.Action("Create", "Patient")" class="add-btn">
+            + Add Patient
         </a>
+
     </div>
 
     <div class="card-box">
@@ -139,6 +140,7 @@
             </select>
 
         </form>
+        
 
         <table>
             <thead>
@@ -186,7 +188,7 @@
 
                         <td>
                             <a href="@Url.Action("Details", "Patient", new { id = p.PatientId })">
-                            👁
+                                👁
                             </a>
                         </td>
 

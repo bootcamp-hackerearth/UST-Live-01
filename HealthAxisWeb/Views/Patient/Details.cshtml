@@ -83,6 +83,12 @@
                 @ViewBag.Error
             </div>
         }
+        @if (TempData["Success"] != null)
+        {
+            <div class="info" style="color:#10b981; margin-bottom:10px;">
+                @TempData["Success"]
+            </div>
+        }
 
         <div class="info">
             <span class="label">Email:</span>

@@ -1,4 +1,4 @@
-﻿@model HealthAxis.Shared.Dtos.PatientDto
+﻿@model HealthAxis.Shared.Dtos.CreatePatientDto
 
 <style>
     .page-container {
@@ -86,61 +86,66 @@
             </div>
         }
 
-        <div class="form-wrapper">
+    <div class="form-wrapper">
 
-            @using (Html.BeginForm())
-            {
-                @Html.ValidationSummary(true, "", new { @class = "validation" })
+        @using (Html.BeginForm("Create", "Patient", FormMethod.Post))
+        {
+            @Html.ValidationSummary(true, "", new { @class = "validation" })
 
-                <div class="form-group">
-                    @Html.TextBoxFor(m => m.FullName, new { placeholder = "Full Name" })
-                    @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "validation" })
-                </div>
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.FullName, new { placeholder = "Full Name" })
+                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "validation" })
+            </div>
 
-                <div class="form-group">
-                    @Html.TextBoxFor(m => m.DateOfBirth,
-                        "{0:yyyy-MM-dd}",
-                        new { type = "date" })
-                    @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "validation" })
-                </div>
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.DateOfBirth,
+                new
+                     {
+                    type = "date",
+                    max = DateTime.Now.ToString("yyyy-MM-dd"),
+                    placeholder = "yyyy-MM-dd",
+                    required = "required"
+                })
 
-                <div class="form-group">
-                    @Html.DropDownListFor(m => m.Gender,
-                        new SelectList(new[] { "Male", "Female", "Other" }),
-                        "Select Gender")
-                    @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "validation" })
-                </div>
+            </div>
 
-                <div class="form-group">
-                    @Html.TextBoxFor(m => m.PhoneNumber,
-                        new { placeholder = "Phone Number" })
-                    @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "validation" })
-                </div>
+            <div class="form-group">
+                @Html.DropDownListFor(m => m.Gender,
+                    new SelectList(new[] { "Male", "Female", "Other" }),
+                    "Select Gender")
+                @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "validation" })
+            </div>
 
-                <div class="form-group">
-                    @Html.TextBoxFor(m => m.Email,
-                        new { type = "email", placeholder = "Email" })
-                    @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation" })
-                </div>
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.PhoneNumber,
+                    new { placeholder = "Phone Number" })
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "validation" })
+            </div>
 
-                <div class="form-group">
-                    @Html.TextBoxFor(m => m.InsuranceId,
-                        new { placeholder = "Insurance ID (Optional)" })
-                    @Html.ValidationMessageFor(m => m.InsuranceId, "", new { @class = "validation" })
-                </div>
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.Email,
+                    new { type = "email", placeholder = "Email" })
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation" })
+            </div>
 
-                <div class="btn-group">
-                    <a href="@Url.Action("Index", "Patient")" class="btn-back">
-                        ← Back
-                    </a>
+            <div class="form-group">
+                @Html.TextBoxFor(m => m.InsuranceId,
+                    new { placeholder = "Insurance ID (Optional)" })
+                @Html.ValidationMessageFor(m => m.InsuranceId, "", new { @class = "validation" })
+            </div>
 
-                    <button type="submit" class="btn-save">
-                        Add Patient
-                    </button>
-                </div>
-            }
+            <div class="btn-group">
+                <a href="@Url.Action("Index", "Patient")" class="btn-back">
+                    ← Back
+                </a>
 
-        </div>
+                <button type="submit" class="btn-save">
+                    Add Patient
+                </button>
+            </div>
+        }
+
+    </div>
 
     </div>
 

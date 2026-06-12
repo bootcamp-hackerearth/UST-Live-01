@@ -60,7 +60,7 @@ namespace HealthAxis.Api.Services
             var doctor = new Doctor
             {
                 FullName = dto.FullName,
-                Specialisation = dto.Specialisation,
+                Specialisation = dto.Specialisation.ToString(),
                 YearsOfExperience = dto.YearsOfExperience,
                 ConsultationFee = dto.ConsultationFee,
                 IsActive = true

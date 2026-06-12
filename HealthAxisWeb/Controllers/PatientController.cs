@@ -1,7 +1,10 @@
 ﻿using HealthAxis.Shared.Dtos;
 using HealthAxis.Web.Services;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Services.Description;
@@ -71,27 +74,36 @@ namespace HealthAxis.Web.Controllers
 
         public ActionResult Create()
         {
-            return View(new PatientDto());
+            return View(new CreatePatientDto());
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(PatientDto dto)
+        public async Task<ActionResult> Create(CreatePatientDto dto)
         {
+            if (string.IsNullOrWhiteSpace(Request["DateOfBirth"]))
+            {
+                ModelState.AddModelError("DateOfBirth", "Date of Birth is required");
+            }
+
             if (!ModelState.IsValid)
             {
-                return View(dto);
+                return View("Create", dto);
             }
 
-            var result = await _patientService.Register(dto);
+            var result = await _patientService.Create(dto);
 
-            if (!result.Success)
+    if (!result.Success)
             {
                 ViewBag.Error = result.Message;
-                return View(dto);
+                return View("Create", dto);
             }
+
+            TempData["Success"] = "Patient added successfully";
 
             return RedirectToAction("Index");
         }
+
+
 
         public async Task<ActionResult> Edit(int id)
         {
@@ -122,8 +134,11 @@ namespace HealthAxis.Web.Controllers
                 return View(dto);
             }
 
+            TempData["Success"] = "Patient updated successfully";
+
             return RedirectToAction("Details", new { id = id });
         }
+
 
         [HttpPost]
         public async Task<JsonResult> Deactivate(int id)

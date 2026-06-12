@@ -1,5 +1,6 @@
 ﻿using HealthAxis.Shared.Dtos;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -89,6 +90,29 @@ namespace HealthAxis.Web.Services
             var json = await response.Content.ReadAsStringAsync();
 
             return JsonConvert.DeserializeObject<List<HealthRecordDto>>(json);
+        }
+
+        public async Task<ApiResponseDto> Create(CreatePatientDto dto)
+        {
+            var content = new StringContent(
+                JsonConvert.SerializeObject(dto),
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            var response = await _httpClient.PostAsync("patient/create", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "API call failed"
+                };
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }
     }
 }

@@ -1,8 +1,11 @@
 ﻿using HealthAxis.Shared.Dtos;
 using HealthAxis.Web.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Services.Description;
@@ -65,15 +68,21 @@ namespace HealthAxis.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(dto);
+                return View("Create", dto);
             }
 
             var result = await _doctorService.Create(dto);
 
+            if (result == null)
+            {
+                ViewBag.Error = "Something went wrong";
+                return View("Create", dto);
+            }
+
             if (!result.Success)
             {
                 ViewBag.Error = result.Message;
-                return View(dto);
+                return View("Create", dto);
             }
 
             return RedirectToAction("Index");

@@ -32,7 +32,7 @@ namespace HealthAxis.Api.Mapping
 
 
             CreateMap<Patient, PatientDto>().ReverseMap();
-
+            CreateMap<CreatePatientDto, Patient>();
 
 
             CreateMap<Appointment, AppointmentDto>()

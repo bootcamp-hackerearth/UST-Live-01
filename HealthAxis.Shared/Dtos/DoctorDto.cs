@@ -23,15 +23,22 @@ public class DoctorDto
     public int UpcomingAppointments { get; set; }
     }
 
-public class CreateDoctorDto
+
+
+    public class CreateDoctorDto
     {
+        [Required(ErrorMessage = "Name is required")]
         public string FullName { get; set; }
 
-        public string Specialisation { get; set; }
+        [Required(ErrorMessage = "Specialisation is required")]
+        public Specialisation? Specialisation { get; set; }
 
+        [Range(0, 50, ErrorMessage = "Experience cannot be negative")]
         public int YearsOfExperience { get; set; }
 
+        [Range(1, 10000, ErrorMessage = "Fee must be greater than 0")]
         public decimal ConsultationFee { get; set; }
+
     }
 
     public class UpdateDoctorDto

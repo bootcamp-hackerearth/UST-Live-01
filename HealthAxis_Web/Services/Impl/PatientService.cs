@@ -18,19 +18,21 @@ namespace HealthAxis.Api.Services
             _mapper = mapper;
         }
 
-        public PatientDto Register(PatientDto dto)
+        public ApiResponseDto Create(CreatePatientDto dto)
         {
-            if (_repo.ExistsByEmail(dto.Email))
-                return null;
-
             var patient = _mapper.Map<Patient>(dto);
+
             patient.CreatedDate = DateTime.Now;
             patient.IsActive = true;
 
             _repo.Add(patient);
             _repo.Save();
 
-            return _mapper.Map<PatientDto>(patient);
+            return new ApiResponseDto
+            {
+                Success = true,
+                Message = "Patient created successfully"
+            };
         }
 
         public List<PatientDto> GetAllPatients()

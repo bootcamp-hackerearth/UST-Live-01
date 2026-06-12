@@ -66,7 +66,7 @@ namespace HealthAxis.Api.Controllers
             var doctor = new Doctor
             {
                 FullName = dto.FullName,
-                Specialisation = dto.Specialisation,
+                Specialisation = dto.Specialisation.ToString(),
                 YearsOfExperience = dto.YearsOfExperience,
                 ConsultationFee = dto.ConsultationFee,
                 IsActive = true
@@ -98,7 +98,11 @@ namespace HealthAxis.Api.Controllers
 
             _context.SaveChanges();
 
-            return Ok();
+            return Ok(new ApiResponseDto
+            {
+                Success = true,
+                Message = "Doctor updated successfully"
+            });
         }
         [HttpGet, Route("specialisation/{spec}")]
         public IHttpActionResult GetBySpec(string spec)

@@ -1,5 +1,6 @@
 ﻿using HealthAxis.Api.Services;
 using HealthAxis.Shared.Dtos;
+using System.Runtime.Remoting.Messaging;
 using System.Web.Http;
 
 namespace HealthAxis.Api.Controllers
@@ -34,19 +35,17 @@ namespace HealthAxis.Api.Controllers
         }
 
         [HttpPost]
-        [Route("")]
-        public IHttpActionResult Register(PatientDto dto)
+        [Route("create")]
+        public IHttpActionResult Create(CreatePatientDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = _service.Register(dto);
+            var result = _service.Create(dto);
 
-            if (result == null)
-                return BadRequest("Email already exists");
-
-            return Ok(result);
+         return Ok(result);
         }
+
 
         [HttpPut]
         [Route("{id}")]
@@ -60,8 +59,13 @@ namespace HealthAxis.Api.Controllers
             if (updated == null)
                 return NotFound();
 
-            return Ok(updated);
+            return Ok(new ApiResponseDto
+                {
+                Success = true,
+                Message = "Patient updated successfully"
+        });
         }
+
 
         [HttpPut]
         [Route("{id}/deactivate")]

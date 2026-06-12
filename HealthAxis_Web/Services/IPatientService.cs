@@ -5,7 +5,8 @@ namespace HealthAxis.Api.Services
 {
     public interface IPatientService
     {
-        PatientDto Register(PatientDto dto);
+        ApiResponseDto Create(CreatePatientDto dto);
+
 
         List<PatientDto> GetAllPatients();
 

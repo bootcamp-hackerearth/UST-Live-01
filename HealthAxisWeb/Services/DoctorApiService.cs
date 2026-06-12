@@ -70,7 +70,25 @@ namespace HealthAxis.Web.Services
 
             var response = await _httpClient.PutAsync($"doctor/{id}", content);
 
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Update failed"
+                };
+            }
+
             var json = await response.Content.ReadAsStringAsync();
+
+            if (string.IsNullOrEmpty(json))
+            {
+                return new ApiResponseDto
+                {
+                    Success = false,
+                    Message = "Empty response"
+                };
+            }
 
             return JsonConvert.DeserializeObject<ApiResponseDto>(json);
         }

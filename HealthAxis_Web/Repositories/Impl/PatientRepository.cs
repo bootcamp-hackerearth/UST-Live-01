@@ -1,8 +1,9 @@
 ﻿using HealthAxis.Api.Database;
 using HealthAxis.Api.Models;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 
 namespace HealthAxis.Api.Repositories
 {
@@ -58,7 +59,23 @@ namespace HealthAxis.Api.Repositories
 
         public void Save()
         {
-            _context.SaveChanges();
+            try
+            {
+                _context.SaveChanges();
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+            {
+                foreach (var entityErrors in ex.EntityValidationErrors)
+                {
+                    foreach (var error in entityErrors.ValidationErrors)
+                    {
+                        Console.WriteLine($"Property: {error.PropertyName} Error: {error.ErrorMessage}");
+                    }
+                }
+
+                return;
+            }
+
         }
     }
 }

@@ -17,5 +17,6 @@ namespace HealthAxis.Web.Services
         Task<ApiResponseDto> Deactivate(int id);
 
         Task<List<HealthRecordDto>> GetHealthRecords(int patientId);
+        Task<ApiResponseDto> Create(CreatePatientDto dto);
     }
 }
