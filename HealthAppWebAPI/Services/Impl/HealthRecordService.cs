@@ -87,9 +87,7 @@ namespace HealthAppWebAPI.Services.Impl
 
             await _appointmentRepo.UpdateAsync(appointment);
         }
-        public async Task<List<HealthRecordDto>>
-            GetPatientHistoryAsync(
-                int patientId)
+        public async Task<List<HealthRecordDto>> GetPatientHistoryAsync(int patientId)
         {
             var records =
                 await _recordRepo.GetByPatientIdAsync(patientId);
@@ -97,30 +95,34 @@ namespace HealthAppWebAPI.Services.Impl
             return records
                 .Select(h => new HealthRecordDto
                 {
-                    HealthRecordId =
-                        h.HealthRecordId,
+                    HealthRecordId = h.HealthRecordId,
 
-                    VisitDate =
-                        h.VisitDate,
+                    AppointmentId = h.AppointmentId,
+
+                    PatientId =
+                        h.Appointment != null
+                            ? h.Appointment.PatientId.GetValueOrDefault()
+                            : 0,
+
+                    VisitDate = h.VisitDate,
 
                     PatientName =
-                        h.Appointment
-                            .Patient
-                            .FullName,
+                        h.Appointment != null &&
+                        h.Appointment.Patient != null
+                            ? h.Appointment.Patient.FullName
+                            : "",
 
                     DoctorName =
-                        h.Appointment
-                            .Doctor
-                            .FullName,
+                        h.Appointment != null &&
+                        h.Appointment.Doctor != null
+                            ? h.Appointment.Doctor.FullName
+                            : "",
 
-                    Diagnosis =
-                        h.Diagnosis,
+                    Diagnosis = h.Diagnosis,
 
-                    Prescription =
-                        h.Prescription,
+                    Prescription = h.Prescription,
 
-                    Notes =
-                        h.Notes
+                    Notes = h.Notes
                 })
                 .ToList();
         }

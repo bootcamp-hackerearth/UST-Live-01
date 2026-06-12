@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using HealthAppWebAPI.Models.Dtos;
+using HealthAppWebAPI.Services.Interfaces;
+using System;
+using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace HealthAppWebAPI.Controllers
 {
-    using HealthAppWebAPI.Models.Dtos;
-    using HealthAppWebAPI.Services.Interfaces;
-    using System;
-    using System.Threading.Tasks;
-    using System.Web.Http;
-
     [RoutePrefix("api/healthrecords")]
     public class HealthRecordsController : ApiController
     {
@@ -26,6 +21,7 @@ namespace HealthAppWebAPI.Controllers
         public async Task<IHttpActionResult> GetAll()
         {
             var result = await _service.GetAllAsync();
+
             return Ok(result);
         }
 
@@ -36,6 +32,7 @@ namespace HealthAppWebAPI.Controllers
             try
             {
                 var record = await _service.GetByIdAsync(id);
+
                 return Ok(record);
             }
             catch (Exception ex)
@@ -59,15 +56,12 @@ namespace HealthAppWebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("healthrecords/patient/{patientId:int}")]
+        [Route("patient/{patientId:int}")]
         public async Task<IHttpActionResult> GetByPatient(int patientId)
         {
-            var result = await _service.GetByPatientIdAsync(patientId);
+            var result = await _service.GetPatientHistoryAsync(patientId);
 
             return Ok(result);
         }
-
-        
     }
-
 }
