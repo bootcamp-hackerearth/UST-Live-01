@@ -1,0 +1,588 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "5.6.0.0",
+        "fileVersion": "5.6.0-2.26230.102 (caa81fa4971f74880cdab61990cb1b11420939ec)",
+        "semanticVersion": "5.6.0",
+        "language": "en-US"
+      },
+      "results": [
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 61,
+                  "startColumn": 34,
+                  "endLine": 61,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 61,
+                  "startColumn": 34,
+                  "endLine": 61,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 34,
+                  "endLine": 65,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 34,
+                  "endLine": 65,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 33,
+                  "endLine": 75,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 33,
+                  "endLine": 75,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 33,
+                  "endLine": 65,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 33,
+                  "endLine": 65,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 59,
+                  "startColumn": 40,
+                  "endLine": 59,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 114,
+                  "startColumn": 34,
+                  "endLine": 114,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 114,
+                  "startColumn": 34,
+                  "endLine": 114,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 129,
+                  "startColumn": 33,
+                  "endLine": 129,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 135,
+                  "startColumn": 34,
+                  "endLine": 135,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 135,
+                  "startColumn": 34,
+                  "endLine": 135,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 156,
+                  "startColumn": 34,
+                  "endLine": 156,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 156,
+                  "startColumn": 34,
+                  "endLine": 156,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 161,
+                  "startColumn": 29,
+                  "endLine": 161,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 195,
+                  "startColumn": 34,
+                  "endLine": 195,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 195,
+                  "startColumn": 34,
+                  "endLine": 195,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8600",
+          "level": "warning",
+          "message": "Converting null literal or possible null value to non-nullable type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 212,
+                  "startColumn": 34,
+                  "endLine": 212,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8625",
+          "level": "warning",
+          "message": "Cannot convert null literal to non-nullable reference type.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 212,
+                  "startColumn": 34,
+                  "endLine": 212,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetValidDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 27,
+                  "startColumn": 27,
+                  "endLine": 27,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetValidDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 28,
+                  "startColumn": 33,
+                  "endLine": 28,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetValidDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 44,
+                  "startColumn": 32,
+                  "endLine": 44,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetValidDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/APITests/ServiceTests/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 28,
+                  "startColumn": 28,
+                  "endLine": 28,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "CA1822": {
+          "id": "CA1822",
+          "shortDescription": "Mark members as static",
+          "fullDescription": "Members that do not access instance data or call instance methods can be marked as static. After you mark the methods as static, the compiler will emit nonvirtual call sites to these members. This can give you a measurable performance gain for performance-sensitive code.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "PortedFromFxCop",
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CS8600": {
+          "id": "CS8600",
+          "shortDescription": "Converting null literal or possible null value to non-nullable type.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8600)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "CS8625": {
+          "id": "CS8625",
+          "shortDescription": "Cannot convert null literal to non-nullable reference type.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8625)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

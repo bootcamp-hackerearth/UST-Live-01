@@ -1,0 +1,223 @@
+﻿@using HealthAxisApp.Shared.Enums
+@model IEnumerable<HealthAxisApp.Shared.DTOs.AppointmentDto>
+
+@{
+    ViewBag.Title = "My Appointments";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 1000px;
+        margin: auto;
+        padding: 35px 0;
+    }
+
+    .panel {
+        backdrop-filter: blur(8px);
+        background: rgba(255,255,255,0.75);
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .header h2 {
+            margin: 0;
+            color: #0f172a;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin: 5px 0 0;
+            color: #475569;
+            font-size: 13px;
+        }
+
+    .btn-back {
+        background: #60a5fa;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        text-decoration: none;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+        .btn-back:hover {
+            opacity: 0.9;
+        }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+        gap: 18px;
+        margin-top: 15px;
+    }
+
+    .card {
+        position: relative;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px;
+        border: 1px solid #e2e8f0;
+        transition: 0.25s;
+    }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(#3b82f6,#6366f1);
+            border-radius: 12px 0 0 12px;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+    .doc {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .id {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 6px;
+    }
+
+    .date {
+        font-size: 13px;
+        color: #334155;
+        margin-bottom: 5px;
+    }
+
+    .slot {
+        font-size: 13px;
+        color: #475569;
+        margin-bottom: 8px;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .confirmed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .completed {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .empty {
+        background: rgba(255,255,255,0.7);
+        text-align: center;
+        padding: 30px;
+        border-radius: 12px;
+        color: #475569;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="wrap">
+
+    <div class="panel">
+
+        <div class="header">
+            <div>
+                <h2>My Appointments</h2>
+                <p>Overview of all scheduled appointments</p>
+            </div>
+
+            @Html.ActionLink("Back", "Index", "Patients", null, new { @class = "btn-back" })
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty">
+                No appointments found for this patient
+            </div>
+        }
+        else
+        {
+            <div class="grid">
+
+                @foreach (var a in Model)
+                {
+                    <div class="card">
+
+                        <div class="id">#@a.AppointmentId</div>
+
+                        <div class="doc">
+                            @a.DoctorName
+                        </div>
+
+                        <div class="date">
+                            @a.ScheduledDate.ToString("dd MMM yyyy")
+                        </div>
+
+                        <div class="slot">
+                            @a.TimeSlot
+                        </div>
+
+                        <div>
+                            @if (a.Status == AppointmentStatusEnum.Pending)
+                            {
+                                <span class="status pending">Pending</span>
+                            }
+                            else if (a.Status == AppointmentStatusEnum.Confirmed)
+                            {
+                                <span class="status confirmed">Confirmed</span>
+                            }
+                            else if (a.Status == AppointmentStatusEnum.Cancelled)
+                            {
+                                <span class="status cancelled">Cancelled</span>
+                            }
+                            else if (a.Status == AppointmentStatusEnum.Completed)
+                            {
+                                <span class="status completed">Completed</span>
+                            }
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>

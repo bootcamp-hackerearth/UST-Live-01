@@ -1,0 +1,218 @@
+﻿@{
+    ViewBag.Title = "Contact HealthAxis";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 1000px;
+        margin: auto;
+        padding: 40px 0;
+    }
+
+    .hero {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+        .hero h2 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .hero p {
+            font-size: 14px;
+            color: #475569;
+            margin-top: 8px;
+        }
+
+    .panel {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.7);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+        margin-bottom: 20px;
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+        gap: 18px;
+    }
+
+    .card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        transition: 0.25s;
+        position: relative;
+    }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(#3b82f6,#6366f1);
+            border-radius: 10px 0 0 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+    .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+    }
+
+        .icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+    .title {
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .text {
+        font-size: 13px;
+        color: #475569;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+        gap: 12px;
+        margin-top: 10px;
+    }
+
+    .feature {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        font-size: 13px;
+        color: #334155;
+        transition: 0.2s;
+    }
+
+        .feature:hover {
+            background: #f8fafc;
+        }
+
+    a {
+        color: #2563eb;
+        text-decoration: none;
+    }
+</style>
+
+<div class="wrap">
+
+    <div class="hero">
+        <h2>Contact & Support</h2>
+        <p>
+            Reach out to our team for assistance with appointments, records or system support.
+        </p>
+    </div>
+
+    <div class="panel">
+
+        <div class="grid-2">
+
+            <div class="card">
+
+                <div class="icon" style="background:#3b82f6;">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </div>
+
+                <div class="title">Support Center</div>
+
+                <div class="text">
+                    Contact our support team for platform assistance and technical help.
+                </div>
+
+                <div class="text" style="margin-top:10px;">
+                    📍 Trivandrum, Kerala<br />
+                    📧 <a href="mailto:help@healthaxis.com">help@healthaxis.com</a><br />
+                    📞 +91 90000 11223
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="icon" style="background:#22c55e;">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+
+                <div class="title">Working Hours</div>
+
+                <div class="text">
+                    Our support team is available during these hours.
+                </div>
+
+                <div class="text" style="margin-top:10px;">
+                    Mon – Fri: 9:00 AM – 6:00 PM<br />
+                    Saturday: 9:00 AM – 2:00 PM<br />
+                    Sunday: Closed
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <div class="feature-grid">
+
+            <div class="feature">
+                ✔ Patient support and booking assistance
+            </div>
+
+            <div class="feature">
+                ✔ Access help with health records
+            </div>
+
+            <div class="feature">
+                ✔ Doctor schedule and system queries
+            </div>
+
+            <div class="feature">
+                ✔ Technical support and troubleshooting
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,198 @@
+﻿@model HealthAxisApp.Shared.DTOs.HealthRecordDto
+
+@{
+    ViewBag.Title = "Add Health Record";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 750px;
+        margin: auto;
+        padding: 40px 0;
+    }
+
+    .glass-card {
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,0.75);
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+        position: relative;
+    }
+
+    .header {
+        margin-bottom: 22px;
+    }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #0f172a;
+        }
+
+        .header p {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+    .section {
+        margin-top: 20px;
+    }
+
+    .section-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    textarea {
+        width: 100%;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        padding: 12px;
+        font-size: 13px;
+        min-height: 110px;
+        resize: none;
+        transition: 0.2s;
+    }
+
+        textarea:focus {
+            border-color: #8b5cf6;
+            outline: none;
+            box-shadow: 0 0 8px rgba(139,92,246,0.25);
+        }
+
+    label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .error {
+        font-size: 12px;
+        color: #dc2626;
+        margin-top: 3px;
+    }
+
+    .actions {
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn {
+        padding: 8px 18px;
+        border-radius: 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-main {
+        background: linear-gradient(90deg,#8b5cf6,#06b6d4);
+        color: white;
+        box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+    }
+
+        .btn-main:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+        .btn-back:hover {
+            background: #cbd5e1;
+        }
+</style>
+
+<div class="wrap">
+
+    <div class="glass-card">
+
+        <div class="header">
+            <h2>Health Record Entry</h2>
+            <p>Document diagnosis, treatment plan and clinical notes</p>
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(m => m.AppointmentId)
+            @Html.HiddenFor(m => m.PatientId)
+            @Html.HiddenFor(m => m.DoctorId)
+
+            @Html.ValidationSummary(true, "", new { @class = "error" })
+
+            <div class="section">
+                <div class="section-title">Diagnosis</div>
+
+                @Html.TextAreaFor(m => m.Diagnosis, new
+                {
+                    placeholder = "Enter diagnosis details"
+                })
+
+                @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "error" })
+            </div>
+
+            <div class="section">
+                <div class="section-title">Prescription</div>
+
+                @Html.TextAreaFor(m => m.Prescription, new
+                {
+                    placeholder = "Enter prescribed medication / treatment"
+                })
+
+                @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "error" })
+            </div>
+
+            <div class="section">
+                <div class="section-title">Additional Notes</div>
+
+                @Html.TextAreaFor(m => m.Notes, new
+                {
+                    placeholder = "Any additional clinical notes"
+                })
+
+                @Html.ValidationMessageFor(m => m.Notes, "", new { @class = "error" })
+            </div>
+
+            <div class="actions">
+
+                <button type="submit" class="btn btn-main">
+                    Save Record
+                </button>
+
+                @Html.ActionLink(
+                    "Back",
+                    "PatientHistory",
+                    "HealthRecords",
+                    new { patientId = Model.PatientId },
+                    new { @class = "btn btn-back" })
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

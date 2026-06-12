@@ -1,0 +1,1 @@
+Roslyn version: 5.6.0.0Language version: CSharp7_3!Concurrent execution: enabled ›File 'C:\Users\310033\source\repos\HealthAxisApp\HealthAxisAppMVC\obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.cs' was recognized as generated

@@ -1,0 +1,202 @@
+﻿@{
+    ViewBag.Title = "HealthAxis App";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 0;
+    }
+
+    .container-box {
+        width: 100%;
+        max-width: 1000px;
+    }
+
+    .hero {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: #475569;
+            margin-top: 10px;
+        }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 20px;
+    }
+
+    .card {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.75);
+        border-radius: 16px;
+        padding: 30px;
+        text-align: center;
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        transition: 0.3s;
+        position: relative;
+    }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99,102,241,0.2), transparent);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+        }
+
+    .icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+
+        .icon svg {
+            width: 30px;
+            height: 30px;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+    .title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .text {
+        font-size: 14px;
+        color: #475569;
+        margin-bottom: 18px;
+    }
+
+    .btn {
+        padding: 10px 22px;
+        border-radius: 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-patient {
+        background: linear-gradient(90deg,#3b82f6,#6366f1);
+        color: white;
+        box-shadow: 0 5px 14px rgba(59,130,246,0.3);
+    }
+
+    .btn-doctor {
+        background: linear-gradient(90deg,#22c55e,#16a34a);
+        color: white;
+        box-shadow: 0 5px 14px rgba(34,197,94,0.3);
+    }
+
+    .btn:hover {
+        transform: translateY(-1px);
+        opacity: 0.9;
+    }
+</style>
+
+<div class="wrap">
+
+    <div class="container-box">
+
+        <div class="hero">
+            <h1>HealthAxis Portal</h1>
+            <p>
+                A unified healthcare platform connecting patients and doctors
+                through smart scheduling and record management.
+            </p>
+        </div>
+
+        <div class="grid">
+
+            <!-- PATIENT -->
+            <div class="card">
+
+                <div class="icon" style="background:#3b82f6;">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M3 21c0-4 2.8-7 6-7s6 3 6 7"></path>
+                    </svg>
+                </div>
+
+                <div class="title">Patient Portal</div>
+
+                <div class="text">
+                    Book appointments, explore doctors and access
+                    your health records with ease.
+                </div>
+
+                @Html.ActionLink(
+                    "Enter Portal",
+                    "Index",
+                    "Patients",
+                    null,
+                    new { @class = "btn btn-patient" })
+            </div>
+
+            <!-- DOCTOR -->
+            <div class="card">
+
+                <div class="icon" style="background:#22c55e;">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M6 3v5a4 4 0 0 0 8 0V3"></path>
+                        <path d="M10 12v2a5 5 0 0 0 10 0"></path>
+                    </svg>
+                </div>
+
+                <div class="title">Doctor Portal</div>
+
+                <div class="text">
+                    Manage appointments, patient interactions and
+                    clinical records from your dashboard.
+                </div>
+
+                @Html.ActionLink(
+                    "Enter Portal",
+                    "Index",
+                    "Doctors",
+                    null,
+                    new { @class = "btn btn-doctor" })
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

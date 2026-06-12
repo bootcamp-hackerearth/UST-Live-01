@@ -1,0 +1,217 @@
+﻿@{
+    ViewBag.Title = "About HealthAxis";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 1050px;
+        margin: auto;
+        padding: 40px 0;
+    }
+
+    .hero {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+        .hero h2 {
+            font-size: 34px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .hero p {
+            color: #475569;
+            font-size: 15px;
+            max-width: 650px;
+            margin: 10px auto 0;
+        }
+
+    .panel {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.7);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+        gap: 18px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        transition: 0.25s;
+        position: relative;
+    }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(#3b82f6,#6366f1);
+            border-radius: 10px 0 0 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+    .icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        color: white;
+    }
+
+        .icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+    .title {
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .text {
+        font-size: 13px;
+        color: #475569;
+    }
+
+    .features {
+        margin-top: 30px;
+    }
+
+        .features h3 {
+            color: #0f172a;
+            margin-bottom: 15px;
+        }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+        gap: 12px;
+    }
+
+    .feature {
+        background: white;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        font-size: 13px;
+        color: #334155;
+        transition: 0.2s;
+    }
+
+        .feature:hover {
+            background: #f8fafc;
+        }
+</style>
+
+<div class="wrap">
+
+    <div class="hero">
+        <h2>HealthAxis Platform</h2>
+        <p>
+            A modern healthcare coordination system designed to streamline
+            patient interactions, appointments, and clinical data management
+            in a scalable and secure environment.
+        </p>
+    </div>
+
+    <div class="panel">
+        <div class="grid-2">
+
+            <div class="card">
+
+                <div class="icon" style="background:#3b82f6;">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="12" cy="7" r="4"></circle>
+                        <path d="M5 21c0-4 3-7 7-7s7 3 7 7"></path>
+                    </svg>
+                </div>
+
+                <div class="title">Patient Experience</div>
+
+                <div class="text">
+                    Manage appointments, access records, and track healthcare
+                    activity through a simplified and intuitive interface.
+                </div>
+
+                <div class="text" style="margin-top:10px;">
+                    ✔ Appointment booking<br />
+                    ✔ Medical history access<br />
+                    ✔ Doctor discovery<br />
+                    ✔ Visit tracking
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="icon" style="background:#22c55e;">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M6 3v5a4 4 0 0 0 8 0V3"></path>
+                        <path d="M10 12v2a5 5 0 0 0 10 0"></path>
+                    </svg>
+                </div>
+
+                <div class="title">Doctor Tools</div>
+
+                <div class="text">
+                    Provide efficient tools for managing schedules,
+                    consultations, and patient interactions.
+                </div>
+
+                <div class="text" style="margin-top:10px;">
+                    ✔ Appointment handling<br />
+                    ✔ Schedule management<br />
+                    ✔ Digital records<br />
+                    ✔ Patient overview
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="features">
+            <h3>Core Features</h3>
+
+            <div class="feature-grid">
+                <div class="feature">✔ Secure authentication</div>
+                <div class="feature">✔ Role-based access</div>
+                <div class="feature">✔ Appointment scheduling</div>
+                <div class="feature">✔ Time-slot validation</div>
+                <div class="feature">✔ Medical record tracking</div>
+                <div class="feature">✔ Doctor schedule management</div>
+                <div class="feature">✔ Data security</div>
+                <div class="feature">✔ Scalable system design</div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

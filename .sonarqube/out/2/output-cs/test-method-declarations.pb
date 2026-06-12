@@ -1,0 +1,41 @@
+ï
+WC:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\PatientServiceTests.csAPITestsE
+)APITests.ServiceTests.PatientServiceTestsGetAll_ReturnsMappedDtosI
+)APITests.ServiceTests.PatientServiceTestsGetById_NotFound_ReturnsNullK
+)APITests.ServiceTests.PatientServiceTestsGetById_Valid_ReturnsMappedDtoO
+)APITests.ServiceTests.PatientServiceTests"Create_DuplicateEmail_ReturnsFalseS
+)APITests.ServiceTests.PatientServiceTests&Create_DuplicateInsurance_ReturnsFalseE
+)APITests.ServiceTests.PatientServiceTestsCreate_Valid_ReturnsTrueJ
+)APITests.ServiceTests.PatientServiceTestsCreate_Valid_SavesCorrectDataO
+)APITests.ServiceTests.PatientServiceTests"Update_DuplicateEmail_ReturnsFalseI
+)APITests.ServiceTests.PatientServiceTestsUpdate_NotFound_ReturnsFalseE
+)APITests.ServiceTests.PatientServiceTestsUpdate_Valid_ReturnsTrueE
+)APITests.ServiceTests.PatientServiceTestsDelete_Valid_ReturnsTrueH
+)APITests.ServiceTests.PatientServiceTestsDelete_Invalid_ReturnsFalse²
+\C:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\HealthRecordServiceTests.csAPITestsJ
+.APITests.ServiceTests.HealthRecordServiceTestsCreate_Valid_ReturnsTrueO
+.APITests.ServiceTests.HealthRecordServiceTestsCreate_Valid_SavesCorrectDataP
+.APITests.ServiceTests.HealthRecordServiceTestsGetByPatient_ReturnsMappedDtosY
+.APITests.ServiceTests.HealthRecordServiceTests'GetByPatient_NoRecords_ReturnsEmptyListÌ
+VC:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\DoctorServiceTests.csAPITestsD
+(APITests.ServiceTests.DoctorServiceTestsGetAll_ReturnsMappedDtosH
+(APITests.ServiceTests.DoctorServiceTestsGetById_NotFound_ReturnsNullG
+(APITests.ServiceTests.DoctorServiceTestsGetById_Valid_ReturnsDoctorK
+(APITests.ServiceTests.DoctorServiceTestsCreate_NegativeFee_ReturnsFalseD
+(APITests.ServiceTests.DoctorServiceTestsCreate_Valid_ReturnsTrueK
+(APITests.ServiceTests.DoctorServiceTestsUpdate_NegativeFee_ReturnsFalseN
+(APITests.ServiceTests.DoctorServiceTests"Update_DoctorNotFound_ReturnsFalseD
+(APITests.ServiceTests.DoctorServiceTestsUpdate_Valid_ReturnsTrueJ
+(APITests.ServiceTests.DoctorServiceTestsToggleStatus_Valid_ReturnsTrueM
+(APITests.ServiceTests.DoctorServiceTests!ToggleStatus_Invalid_ReturnsFalseœ
+[C:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\AppointmentServiceTests.csAPITestsQ
+-APITests.ServiceTests.AppointmentServiceTests Book_InvalidPatient_ReturnsFalseP
+-APITests.ServiceTests.AppointmentServiceTestsBook_InvalidDoctor_ReturnsFalseK
+-APITests.ServiceTests.AppointmentServiceTestsBook_PastDate_ReturnsFalseR
+-APITests.ServiceTests.AppointmentServiceTests!Book_SlotUnavailable_ReturnsFalseN
+-APITests.ServiceTests.AppointmentServiceTestsBook_ValidRequest_ReturnsTrueZ
+-APITests.ServiceTests.AppointmentServiceTests)Book_ValidRequest_SavesCorrectAppointment^
+-APITests.ServiceTests.AppointmentServiceTests-UpdateStatus_CancelWithoutReason_ReturnsFalseO
+-APITests.ServiceTests.AppointmentServiceTestsUpdateStatus_Valid_ReturnsTrueK
+-APITests.ServiceTests.AppointmentServiceTestsDelete_ValidId_ReturnsTrueC
+-APITests.ServiceTests.AppointmentServiceTestsGetAll_ReturnsDtos

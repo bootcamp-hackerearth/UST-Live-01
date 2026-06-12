@@ -1,0 +1,273 @@
+﻿@model IEnumerable<HealthAxisApp.Shared.DTOs.DoctorDto>
+
+@{
+    ViewBag.Title = "Doctors";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 1100px;
+        margin: auto;
+        padding: 35px 0;
+    }
+
+    .panel {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.75);
+        border-radius: 14px;
+        padding: 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .header h2 {
+        margin: 0;
+        color: #0f172a;
+    }
+
+    .header p {
+        color: #475569;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .search-box {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+        .search-box input,
+        .search-box select {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            font-size: 13px;
+        }
+
+            .search-box input:focus,
+            .search-box select:focus {
+                border-color: #3b82f6;
+                outline: none;
+            }
+
+    .btn {
+        border-radius: 22px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .btn-main {
+        background: linear-gradient(90deg,#3b82f6,#6366f1);
+        color: white;
+    }
+
+    .btn-clear {
+        background: #e2e8f0;
+    }
+
+    .result-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .doctor-card {
+        background: white;
+        border-radius: 12px;
+        padding: 14px;
+        border: 1px solid #e2e8f0;
+        transition: 0.25s;
+        position: relative;
+    }
+
+        .doctor-card::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(#3b82f6,#6366f1);
+            border-radius: 10px 0 0 10px;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.07);
+        }
+
+    .doc-name {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .doc-meta {
+        font-size: 12px;
+        color: #64748b;
+        margin: 4px 0;
+    }
+
+    .doc-footer {
+        margin-top: 8px;
+    }
+
+    .btn-id {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 18px;
+        background: #3b82f6;
+        color: white;
+        text-decoration: none;
+    }
+
+    .grid-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+        gap: 18px;
+        margin-top: 25px;
+    }
+
+    .action-card {
+        background: white;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        text-align: center;
+        transition: 0.25s;
+    }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .action-card h4 {
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .action-card p {
+            font-size: 13px;
+            color: #64748b;
+        }
+</style>
+
+<div class="wrap">
+
+    <div class="panel header">
+        <h2>Doctor Control Center</h2>
+        <p>Search, manage and navigate doctor operations</p>
+    </div>
+
+    <div class="panel">
+        @using (Html.BeginForm("Index", "Doctors", FormMethod.Get))
+        {
+            <div class="search-box">
+
+                <input name="searchText"
+                       value="@ViewBag.SearchText"
+                       placeholder="Search doctor..." />
+
+                <select name="specialisation">
+                    <option value="">All</option>
+                    @foreach (var item in ViewBag.SpecialisationList as SelectList)
+                    {
+                        <option value="@item.Text"
+                                @(ViewBag.Specialisation == item.Text ? "selected" : "")>
+                            @item.Text
+                        </option>
+                    }
+                </select>
+
+                <button type="submit" class="btn btn-main">Search</button>
+
+                <a href="@Url.Action("Index","Doctors")" class="btn btn-clear">Clear</a>
+            </div>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(ViewBag.SearchText) && Model != null && Model.Any())
+    {
+        <div class="panel">
+
+            <p style="font-size:13px;color:#475569;">
+                Select a doctor to view full profile
+            </p>
+
+            <div class="result-grid">
+                @foreach (var d in Model)
+                {
+                    <div class="doctor-card">
+
+                        <div class="doc-name">@d.FullName</div>
+
+                        <div class="doc-meta">
+                            @d.Specialisation
+                        </div>
+
+                        <div class="doc-meta">
+                            @d.YearsOfExperience years experience
+                        </div>
+
+                        <div class="doc-footer">
+                            @Html.ActionLink(
+                                "ID: " + d.DoctorId,
+                                "Details",
+                                "Doctors",
+                                new { id = d.DoctorId },
+                                new { @class = "btn-id" }
+                            )
+                        </div>
+
+                    </div>
+                }
+            </div>
+
+        </div>
+    }
+
+    <div class="grid-actions">
+
+        <div class="action-card">
+            <h4>Register Doctor</h4>
+            <p>Add and manage doctor profiles</p>
+            @Html.ActionLink("Open", "Create", "Doctors", null, new { @class = "btn btn-main" })
+        </div>
+
+        <div class="action-card">
+            <h4>Appointments</h4>
+            <p>Manage all doctor schedules</p>
+            @Html.ActionLink("Open", "DoctorAppointments", "Appointments", null, new { @class = "btn btn-main" })
+        </div>
+
+        <div class="action-card">
+            <h4>Today's Schedule</h4>
+            <p>View today's appointments</p>
+            @Html.ActionLink("View", "TodaySchedule", "Appointments", null, new { @class = "btn btn-main" })
+        </div>
+
+        <div class="action-card">
+            <h4>Weekly Overview</h4>
+            <p>Track weekly bookings</p>
+            @Html.ActionLink("Open", "WeeklySchedule", "Appointments", null, new { @class = "btn btn-main" })
+        </div>
+
+        <div class="action-card">
+            <h4>Patients</h4>
+            <p>Access patient records</p>
+            @Html.ActionLink("View", "PatientList", "Doctors", null, new { @class = "btn btn-main" })
+        </div>
+
+    </div>
+
+</div>

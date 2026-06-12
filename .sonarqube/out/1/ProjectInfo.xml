@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
+  <ProjectName>HealthAxisApp</ProjectName>
+  <ProjectLanguage>C#</ProjectLanguage>
+  <ProjectType>Product</ProjectType>
+  <ProjectGuid>4a980a65-0a06-4f4e-ba52-a0c7ea1759f6</ProjectGuid>
+  <FullPath>C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp\HealthAxisApp.csproj</FullPath>
+  <IsExcluded>false</IsExcluded>
+  <AnalysisResultFiles>
+    <AnalysisResultFile Id="FilesToAnalyze" Location="C:\Users\310033\source\repos\HealthAxisApp\.sonarqube\conf\1\FilesToAnalyze.txt" />
+  </AnalysisResultFiles>
+  <AnalysisSettings>
+    <Property Name="sonar.cs.roslyn.reportFilePaths">C:\Users\310033\source\repos\HealthAxisApp\.sonarqube\out\1\Issues.json</Property>
+    <Property Name="sonar.cs.analyzer.projectOutPaths">C:\Users\310033\source\repos\HealthAxisApp\.sonarqube\out\1</Property>
+    <Property Name="sonar.cs.scanner.telemetry">C:\Users\310033\source\repos\HealthAxisApp\.sonarqube\out\1\Telemetry.json</Property>
+  </AnalysisSettings>
+  <Configuration>Debug</Configuration>
+  <Platform>AnyCPU</Platform>
+</ProjectInfo>

@@ -1,0 +1,25 @@
+﻿using HealthAxisApp.Shared.DTOs;
+using System.Collections.Generic;
+
+namespace HealthAxisAppMVC.Services.Interfaces
+{
+    public interface IPatientMvcService
+    {
+        IEnumerable<PatientDto> GetAll(string insuranceStatus = null, string searchText = null);
+
+        PatientDto GetById(int id);
+
+        bool Create(
+    PatientDto dto,
+    out string errorMessage,
+    out int patientId);
+
+        bool Update(
+            PatientDto dto,
+            out string error);
+
+        bool Delete(
+            int id,
+            out string error);
+    }
+}

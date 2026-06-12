@@ -1,0 +1,215 @@
+﻿@model HealthAxisApp.Shared.DTOs.DoctorDto
+
+@{
+    ViewBag.Title = "Doctor";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 750px;
+        margin: auto;
+        padding: 40px 0;
+    }
+
+    .glass-card {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.7);
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .header {
+        margin-bottom: 20px;
+    }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #0f172a;
+        }
+
+        .header p {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+    .section {
+        margin-top: 18px;
+    }
+
+    .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+    }
+
+    .row-flex {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .col-flex {
+        flex: 1;
+        min-width: 48%;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 13px;
+        transition: 0.2s;
+    }
+
+        input:focus, select:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 6px rgba(59,130,246,0.25);
+        }
+
+    label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .error {
+        font-size: 12px;
+        color: #dc2626;
+    }
+
+    .actions {
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn {
+        padding: 8px 18px;
+        border-radius: 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-main {
+        background: linear-gradient(90deg,#3b82f6,#6366f1);
+        color: white;
+        box-shadow: 0 4px 10px rgba(59,130,246,0.3);
+    }
+
+        .btn-main:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+        .btn-back:hover {
+            background: #cbd5e1;
+        }
+</style>
+
+<div class="wrap">
+
+    <div class="glass-card">
+
+        <div class="header">
+            <h2>Doctor Profile</h2>
+            <p>Enter professional details and manage doctor information</p>
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(m => m.DoctorId)
+
+            @Html.ValidationSummary(true, "", new { @class = "error" })
+
+            <div class="section">
+                <div class="section-title">Basic Info</div>
+
+                <label>Full Name</label>
+                @Html.TextBoxFor(m => m.FullName, new { placeholder = "Doctor name" })
+                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "error" })
+
+                <label style="margin-top:10px;">Specialisation</label>
+                @Html.DropDownListFor(
+                    m => m.Specialisation,
+                    ViewBag.SpecialisationList as SelectList,
+                    "Select",
+                    new { })
+                @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "error" })
+            </div>
+
+            <div class="section">
+                <div class="section-title">Experience & Fee</div>
+
+                <div class="row-flex">
+                    <div class="col-flex">
+                        <label>Experience</label>
+                        @Html.TextBoxFor(m => m.YearsOfExperience, new
+                        {
+                            type = "number",
+                            min = "0",
+                            placeholder = "Years"
+                        })
+                        @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "error" })
+                    </div>
+
+                    <div class="col-flex">
+                        <label>Consultation Fee</label>
+                        @Html.TextBoxFor(m => m.ConsultationFee, new
+                        {
+                            type = "number",
+                            step = "0.01",
+                            min = "1",
+                            placeholder = "Amount"
+                        })
+                        @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "error" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+
+                <button type="submit" class="btn btn-main">
+                    Save
+                </button>
+
+                @Html.ActionLink(
+                    "Back",
+                    "Index",
+                    "Doctors",
+                    null,
+                    new { @class = "btn btn-back" })
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

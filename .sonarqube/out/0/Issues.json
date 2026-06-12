@@ -1,0 +1,137 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "5.6.0.0",
+        "fileVersion": "5.6.0-2.26230.15 (a0ccfc09f8af4a6d4756397fa89c65efd95f70a6)",
+        "semanticVersion": "5.6.0",
+        "language": "en-US"
+      },
+      "results": [
+        {
+          "ruleId": "S125",
+          "level": "warning",
+          "message": "Remove this commented out code.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/HealthAxisApp.Shared/App_Start/UnityConfig.cs",
+                "region": {
+                  "startLine": 16,
+                  "startColumn": 13,
+                  "endLine": 16,
+                  "endColumn": 73
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2344",
+          "level": "warning",
+          "message": "Rename this enumeration to remove the 'Enum' suffix.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/HealthAxisApp.Shared/Enums/AppointmentStatusEnum.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 17,
+                  "endLine": 9,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2344",
+          "level": "warning",
+          "message": "Rename this enumeration to remove the 'Enum' suffix.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/HealthAxisApp.Shared/Enums/SpecialisationEnum.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 17,
+                  "endLine": 9,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2344",
+          "level": "warning",
+          "message": "Rename this enumeration to remove the 'Enum' suffix.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxisApp/HealthAxisApp.Shared/Enums/GenderEnum.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 17,
+                  "endLine": 9,
+                  "endColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "S125": {
+          "id": "S125",
+          "shortDescription": "Sections of code should not be commented out",
+          "fullDescription": "Commented-out code distracts the focus from the actual executed code. It creates a noise that increases maintenance code. And because it is never executed, it quickly becomes out of date and invalid.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-125",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S2344": {
+          "id": "S2344",
+          "shortDescription": "Enumeration type names should not have \"Flags\" or \"Enum\" suffixes",
+          "fullDescription": "The information that an enumeration type is actually an enumeration or a set of flags should not be duplicated in its name.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2344",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

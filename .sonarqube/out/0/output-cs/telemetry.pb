@@ -1,0 +1,1 @@
+iR[C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\HealthAxisApp.Shared.csprojò	CSharp7_3

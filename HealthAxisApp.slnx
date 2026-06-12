@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="APITests/APITests.csproj" Id="28da2d45-55e4-4857-9b13-4a6fd7967ff2" />
+  <Project Path="HealthAxisApp.Shared/HealthAxisApp.Shared.csproj" Id="4c18d52e-2cff-43ac-99ee-6f937bfe6af8" />
+  <Project Path="HealthAxisApp/HealthAxisApp.csproj" Id="4a980a65-0a06-4f4e-ba52-a0c7ea1759f6" />
+  <Project Path="HealthAxisAppMVC/HealthAxisAppMVC.csproj" Id="622f0752-0657-4f3a-9ff4-dbecd1e8ae70" />
+</Solution>

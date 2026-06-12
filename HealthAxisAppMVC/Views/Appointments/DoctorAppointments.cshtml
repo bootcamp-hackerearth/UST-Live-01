@@ -1,0 +1,307 @@
+﻿@using HealthAxisApp.Shared.Enums
+@model IEnumerable<HealthAxisApp.Shared.DTOs.AppointmentDto>
+
+@{
+    ViewBag.Title = "Doctor Appointments";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 1100px;
+        margin: auto;
+        padding: 35px 0;
+    }
+
+    .panel {
+        backdrop-filter: blur(6px);
+        background: rgba(255,255,255,0.7);
+        border-radius: 12px;
+        padding: 22px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: #0f172a;
+        }
+
+        .header small {
+            color: #475569;
+        }
+
+    .btn {
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: none;
+        font-size: 12px;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        transition: 0.2s;
+    }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+    .btn-back {
+        background: #60a5fa;
+        color: white;
+    }
+
+    .btn-ok {
+        background: #34d399;
+        color: white;
+    }
+
+    .btn-stop {
+        background: #f87171;
+        color: white;
+    }
+
+    .btn-done {
+        background: #fbbf24;
+        color: white;
+    }
+
+    .btn-rec {
+        background: #818cf8;
+        color: white;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px,1fr));
+        gap: 18px;
+    }
+
+    .appt-card {
+        position: relative;
+        border-radius: 12px;
+        padding: 16px;
+        background: rgba(255,255,255,0.9);
+        border: 1px solid #e2e8f0;
+        transition: 0.25s;
+        overflow: hidden;
+    }
+
+        .appt-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(#3b82f6, #6366f1);
+        }
+
+        .appt-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+    .appt-top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+    }
+
+    .appt-name {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .appt-date {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .appt-slot {
+        font-size: 13px;
+        color: #334155;
+        margin-bottom: 10px;
+    }
+
+    .status {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .confirmed {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .completed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .alert {
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 14px;
+        font-size: 13px;
+    }
+
+    .ok-msg {
+        background: #ecfdf5;
+        color: #065f46;
+    }
+
+    .err-msg {
+        background: #fef2f2;
+        color: #991b1b;
+    }
+</style>
+
+<div class="wrap">
+
+    <div class="panel header">
+        <div>
+            <h2>Control Panel</h2>
+            <small>Monitor and manage appointments in real time</small>
+        </div>
+
+        @Html.ActionLink("Back", "Index", "Doctors", null, new { @class = "btn btn-back" })
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert ok-msg">@TempData["Success"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert err-msg">@TempData["Error"]</div>
+    }
+
+    <div class="card-grid">
+
+        @foreach (var a in Model)
+        {
+            <div class="appt-card">
+
+                <div class="appt-top">
+                    <div class="appt-name">@a.PatientName</div>
+                    <div class="appt-date">@a.ScheduledDate.ToString("dd MMM")</div>
+                </div>
+
+                <div class="appt-slot">@a.TimeSlot</div>
+
+                <div>
+                    @if (a.Status == AppointmentStatusEnum.Pending)
+                    {
+                        <span class="status pending">Pending</span>
+                    }
+                    else if (a.Status == AppointmentStatusEnum.Confirmed)
+                    {
+                        <span class="status confirmed">Confirmed</span>
+                    }
+                    else if (a.Status == AppointmentStatusEnum.Completed)
+                    {
+                        <span class="status completed">Completed</span>
+                    }
+                    else
+                    {
+                        <span class="status cancelled">Cancelled</span>
+                    }
+                </div>
+
+                <div class="actions">
+
+                    @if (a.Status == AppointmentStatusEnum.Pending)
+                    {
+                        using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("AppointmentId", a.AppointmentId)
+                            @Html.Hidden("Status", AppointmentStatusEnum.Confirmed)
+                            @Html.Hidden("patientId", a.PatientId)
+                            @Html.Hidden("doctorId", a.DoctorId)
+
+                            <button type="submit" class="btn btn-ok">Approve</button>
+                        }
+
+                        using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("AppointmentId", a.AppointmentId)
+                            @Html.Hidden("Status", AppointmentStatusEnum.Cancelled)
+                            @Html.Hidden("patientId", a.PatientId)
+                            @Html.Hidden("doctorId", a.DoctorId)
+
+                            <button type="submit" class="btn btn-stop">Cancel</button>
+                        }
+                    }
+
+                    else if (a.Status == AppointmentStatusEnum.Confirmed)
+                    {
+                        using (Html.BeginForm("UpdateStatus", "Appointments", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("AppointmentId", a.AppointmentId)
+                            @Html.Hidden("Status", AppointmentStatusEnum.Completed)
+                            @Html.Hidden("patientId", a.PatientId)
+                            @Html.Hidden("doctorId", a.DoctorId)
+
+                            <button type="submit" class="btn btn-done">Complete</button>
+                        }
+                    }
+
+                    else if (a.Status == AppointmentStatusEnum.Completed)
+                    {
+                        @Html.ActionLink(
+                            "Add Record",
+                            "Create",
+                            "HealthRecords",
+                            new
+                            {
+                                patientId = a.PatientId,
+                                doctorId = a.DoctorId
+                            },
+                            new { @class = "btn btn-rec" })
+                    }
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

@@ -1,0 +1,245 @@
+﻿@model HealthAxisApp.Shared.DTOs.PatientDto
+
+@{
+    ViewBag.Title = "Patient";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 850px;
+        margin: auto;
+        padding: 40px 0;
+    }
+
+    .glass-card {
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,0.75);
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .header h2 {
+            margin: 0;
+            font-size: 26px;
+            color: #0f172a;
+        }
+
+        .header p {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+    .section {
+        margin-top: 20px;
+    }
+
+    .section-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .row-flex {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .col-flex {
+        flex: 1;
+        min-width: 48%;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        font-size: 13px;
+        transition: 0.2s;
+    }
+
+        input:focus, select:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 6px rgba(99,102,241,0.25);
+        }
+
+    label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .error {
+        font-size: 12px;
+        color: #dc2626;
+        margin-top: 3px;
+    }
+
+    .actions {
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn {
+        padding: 8px 18px;
+        border-radius: 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-main {
+        background: linear-gradient(90deg,#6366f1,#3b82f6);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+    }
+
+        .btn-main:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+        .btn-back:hover {
+            background: #cbd5e1;
+        }
+</style>
+
+<div class="wrap">
+
+    <div class="glass-card">
+
+        <div class="header">
+            <h2>@ViewBag.FormTitle</h2>
+            <p>Enter patient information and contact details</p>
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary(true, "", new { @class = "error" })
+
+            <!-- PERSONAL -->
+            <div class="section">
+                <div class="section-title">Personal Info</div>
+
+                <div class="row-flex">
+
+                    <div class="col-flex">
+                        <label>Full Name</label>
+                        @Html.TextBoxFor(m => m.FullName, new { placeholder = "John Doe" })
+                        @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "error" })
+                    </div>
+
+                    <div class="col-flex">
+                        <label>Date of Birth</label>
+                        @Html.TextBoxFor(m => m.DateOfBirth, "{0:yyyy-MM-dd}", new
+                   {
+                            type = "date",
+                            min = "1900-01-01",
+                            max = DateTime.Today.ToString("yyyy-MM-dd")
+                   })
+                        @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "error" })
+                    </div>
+
+                </div>
+
+                <label style="margin-top:10px;">Gender</label>
+                @Html.DropDownListFor(
+                    m => m.Gender,
+                    new SelectList(new[] { "Male", "Female", "Transgender", "Other" }),
+                    "Select",
+                    new { })
+                @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "error" })
+            </div>
+
+            <!-- CONTACT -->
+            <div class="section">
+                <div class="section-title">Contact Info</div>
+
+                <div class="row-flex">
+
+                    <div class="col-flex">
+                        <label>Phone</label>
+                        @Html.TextBoxFor(m => m.PhoneNumber, new
+                        {
+                            placeholder = "10-digit number",
+                            maxlength = "10"
+                        })
+                        @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "error" })
+                    </div>
+
+                    <div class="col-flex">
+                        <label>Email</label>
+                        @Html.TextBoxFor(m => m.Email, new
+                        {
+                            type = "email",
+                            placeholder = "name@email.com"
+                        })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "error" })
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- INSURANCE -->
+            <div class="section">
+                <div class="section-title">Insurance</div>
+
+                <label>Insurance ID</label>
+                @Html.TextBoxFor(m => m.InsuranceID, new
+                {
+                    placeholder = "Optional",
+                    maxlength = "10"
+                })
+                @Html.ValidationMessageFor(m => m.InsuranceID, "", new { @class = "error" })
+            </div>
+
+            <div class="actions">
+
+                <button type="submit" class="btn btn-main">
+                    @ViewBag.SubmitText
+                </button>
+
+                @Html.ActionLink(
+                    "Back",
+                    "Index",
+                    "Patients",
+                    null,
+                    new { @class = "btn btn-back" })
+            </div>
+        }
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

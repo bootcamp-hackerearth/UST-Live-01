@@ -1,0 +1,159 @@
+﻿@model HealthAxisApp.Shared.DTOs.PatientDto
+
+@{
+    ViewBag.Title = "Deactivate Patient";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .glass-card {
+        width: 450px;
+        padding: 30px;
+        border-radius: 14px;
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,0.75);
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        text-align: center;
+        position: relative;
+    }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: -30px;
+            left: -30px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(252,165,165,0.6), transparent);
+            border-radius: 50%;
+        }
+
+    .icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,#ef4444,#dc2626);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+
+        .icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+            stroke-width: 2;
+        }
+
+    .title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .text {
+        font-size: 13px;
+        color: #475569;
+        margin-top: 10px;
+        line-height: 1.5;
+    }
+
+    .highlight {
+        font-weight: 600;
+        color: #dc2626;
+    }
+
+    .actions {
+        margin-top: 25px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-danger {
+        background: #dc2626;
+        color: white;
+        box-shadow: 0 4px 12px rgba(220,38,38,0.3);
+    }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+    .btn-cancel {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+        .btn-cancel:hover {
+            background: #cbd5e1;
+        }
+</style>
+
+<div class="wrap">
+
+    <div class="glass-card">
+
+        <div class="icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 9v4"></path>
+                <path d="M12 17h.01"></path>
+                <path d="M10.3 4.3 2.8 17.5A2 2 0 0 0 4.5 20h15a2 2 0 0 0 1.7-2.5L13.7 4.3a2 2 0 0 0-3.4 0z"></path>
+            </svg>
+        </div>
+
+        <div class="title">Deactivate Patient</div>
+
+        <div class="text">
+            You are about to deactivate
+            <span class="highlight">@Model.FullName</span>.
+            This action may restrict access and cannot be easily undone.
+        </div>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PatientId)
+
+            <div class="actions">
+
+                <button type="submit" class="btn btn-danger">
+                    Confirm
+                </button>
+
+                @Html.ActionLink(
+                    "Cancel",
+                    "Index",
+                    "Patients",
+                    null,
+                    new { @class = "btn btn-cancel" })
+
+            </div>
+        }
+
+    </div>
+
+</div>

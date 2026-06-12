@@ -1,0 +1,218 @@
+﻿@model HealthAxisApp.Shared.DTOs.DoctorDto
+
+@{
+    ViewBag.Title = "Doctor Profile";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 900px;
+        margin: auto;
+        padding: 40px 0;
+    }
+
+    .glass-card {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.75);
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .header h2 {
+            margin: 0;
+            color: #0f172a;
+            font-size: 24px;
+        }
+
+        .header p {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+    .stat-box {
+        background: linear-gradient(135deg,#34d399,#10b981);
+        border-radius: 12px;
+        padding: 15px 20px;
+        text-align: center;
+        min-width: 150px;
+        box-shadow: 0 6px 15px rgba(16,185,129,0.2);
+    }
+
+        .stat-box span {
+            display: block;
+        }
+
+    .stat-number {
+        font-size: 26px;
+        font-weight: 700;
+        color: white;
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: white;
+        margin-top: 4px;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .info-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 15px;
+        border: 1px solid #e2e8f0;
+        transition: 0.25s;
+        position: relative;
+    }
+
+        .info-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(#3b82f6,#6366f1);
+            border-radius: 10px 0 0 10px;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+    .label {
+        font-size: 11px;
+        color: #64748b;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .actions {
+        margin-top: 25px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn {
+        padding: 8px 18px;
+        border-radius: 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-main {
+        background: linear-gradient(90deg,#3b82f6,#6366f1);
+        color: white;
+    }
+
+        .btn-main:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+        .btn-back:hover {
+            background: #cbd5e1;
+        }
+</style>
+
+<div class="wrap">
+
+    <div class="glass-card">
+
+        <div class="header">
+            <div>
+                <h2>Doctor Profile</h2>
+                <p>Detailed view of doctor information</p>
+            </div>
+
+            <div class="stat-box">
+                <span class="stat-number">@Model.UpcomingAppointmentCount</span>
+                <span class="stat-label">Upcoming</span>
+            </div>
+        </div>
+
+        <div class="grid">
+
+            <div class="info-card">
+                <div class="label">Doctor ID</div>
+                <div class="value">@Model.DoctorId</div>
+            </div>
+
+            <div class="info-card">
+                <div class="label">Full Name</div>
+                <div class="value">@Model.FullName</div>
+            </div>
+
+            <div class="info-card">
+                <div class="label">Specialisation</div>
+                <div class="value">@Model.Specialisation</div>
+            </div>
+
+            <div class="info-card">
+                <div class="label">Experience</div>
+                <div class="value">@Model.YearsOfExperience years</div>
+            </div>
+
+            <div class="info-card">
+                <div class="label">Consultation Fee</div>
+                <div class="value">₹ @Model.ConsultationFee</div>
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+            @Html.ActionLink(
+                "Edit",
+                "Edit",
+                "Doctors",
+                new { id = Model.DoctorId },
+                new { @class = "btn btn-main" })
+
+            @Html.ActionLink(
+                "Back",
+                "Index",
+                "Doctors",
+                null,
+                new { @class = "btn btn-back" })
+
+        </div>
+
+    </div>
+
+</div>

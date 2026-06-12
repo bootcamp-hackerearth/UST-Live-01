@@ -1,0 +1,130 @@
+﻿@{
+    ViewBag.Title = "Patient Quick Access";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .glass-card {
+        width: 420px;
+        padding: 30px;
+        border-radius: 14px;
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,0.7);
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        text-align: center;
+        position: relative;
+    }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #8b5cf6, transparent);
+            border-radius: 50%;
+        }
+
+    .title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+        color: #475569;
+        margin-bottom: 20px;
+    }
+
+    input {
+        width: 100%;
+        padding: 11px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        text-align: center;
+        font-size: 14px;
+    }
+
+        input:focus {
+            border-color: #8b5cf6;
+            outline: none;
+            box-shadow: 0 0 8px rgba(139,92,246,0.3);
+        }
+
+    .actions {
+        margin-top: 20px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+    }
+
+    .btn-main {
+        background: linear-gradient(90deg,#8b5cf6,#6366f1);
+        color: white;
+    }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+</style>
+
+<div class="wrap">
+
+    <div class="glass-card">
+
+        <div class="title">Quick Patient Lookup</div>
+
+        <div class="subtitle">
+            Direct access for known patient IDs
+        </div>
+
+        @using (Html.BeginForm("PatientHistory", "HealthRecords", FormMethod.Get))
+        {
+            <input name="patientId"
+                   type="number"
+                   placeholder="Patient ID"
+                   required
+                   min="1" />
+
+            <div class="actions">
+                <button type="submit" class="btn btn-main">
+                    Open Records
+                </button>
+
+                @Html.ActionLink(
+                    "Back",
+                    "Index",
+                    "Patients",
+                    null,
+                    new { @class = "btn btn-back" })
+            </div>
+        }
+
+    </div>
+
+</div>
+``

@@ -1,0 +1,154 @@
+﻿@{
+    ViewBag.Title = "Enter Patient ID";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .glass-card {
+        width: 420px;
+        padding: 30px;
+        border-radius: 14px;
+        backdrop-filter: blur(12px);
+        background: rgba(255,255,255,0.65);
+        border: 1px solid rgba(255,255,255,0.4);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        position: relative;
+        text-align: center;
+    }
+
+        .glass-card::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, #a78bfa, transparent);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+    .title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 6px;
+        position: relative;
+    }
+
+    .subtitle {
+        font-size: 13px;
+        color: #475569;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .input-box {
+        margin-top: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 11px;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        text-align: center;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+        input:focus {
+            border-color: #8b5cf6;
+            outline: none;
+            box-shadow: 0 0 6px rgba(139,92,246,0.35);
+        }
+
+    .actions {
+        margin-top: 22px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border-radius: 22px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .btn-main {
+        background: linear-gradient(90deg,#8b5cf6,#6366f1);
+        color: white;
+        box-shadow: 0 3px 10px rgba(99,102,241,0.3);
+    }
+
+        .btn-main:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+    .btn-back {
+        background: #e2e8f0;
+        color: #1e293b;
+    }
+
+        .btn-back:hover {
+            background: #cbd5e1;
+        }
+
+    ::placeholder {
+        color: #94a3b8;
+    }
+</style>
+
+<div class="wrap">
+
+    <div class="glass-card">
+
+        <div class="title">Patient Lookup</div>
+
+        <div class="subtitle">
+            Enter patient ID to access records, history and details
+        </div>
+
+        @using (Html.BeginForm("PatientHistory", "HealthRecords", FormMethod.Get))
+        {
+            <div class="input-box">
+                <input name="patientId"
+                       type="number"
+                       placeholder="Patient ID"
+                       required
+                       min="1" />
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-main">
+                    Load Records
+                </button>
+
+                @Html.ActionLink(
+                    "Back",
+                    "Index",
+                    "Patients",
+                    null,
+                    new { @class = "btn btn-back" })
+            </div>
+        }
+
+    </div>
+
+</div>

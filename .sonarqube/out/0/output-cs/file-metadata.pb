@@ -1,0 +1,12 @@
+g
+^C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Enums\AppointmentStatusEnum.csutf-8‡
+|C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\obj\Debug\.NETFramework,Version=v4.7.2.AssemblyAttributes.csutf-8k
+bC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\AppointmentStatusUpdateDto.csutf-8\
+SC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Enums\GenderEnum.csutf-8c
+ZC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Properties\AssemblyInfo.csutf-8Z
+QC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\DoctorDto.csutf-8d
+[C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Enums\SpecialisationEnum.csutf-8[
+RC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\PatientDto.csutf-8`
+WC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\HealthRecordDto.csutf-8_
+VC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\AppointmentDto.csutf-8a
+XC:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\App_Start\UnityConfig.csutf-8

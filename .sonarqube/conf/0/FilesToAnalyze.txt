@@ -1,0 +1,12 @@
+﻿C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\App_Start\UnityConfig.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\AppointmentDto.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\AppointmentStatusUpdateDto.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\DoctorDto.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\HealthRecordDto.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\DTOs\PatientDto.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Enums\AppointmentStatusEnum.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Enums\GenderEnum.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Enums\SpecialisationEnum.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\Properties\AssemblyInfo.cs
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\App.config
+C:\Users\310033\source\repos\HealthAxisApp\HealthAxisApp.Shared\packages.config

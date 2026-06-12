@@ -1,0 +1,196 @@
+﻿@model IEnumerable<HealthAxisApp.Shared.DTOs.HealthRecordDto>
+
+@{
+    ViewBag.Title = "Health Records";
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .wrap {
+        max-width: 900px;
+        margin: auto;
+        padding: 35px 0;
+    }
+
+    .panel {
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.75);
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .header {
+        margin-bottom: 20px;
+    }
+
+        .header h2 {
+            margin: 0;
+            color: #0f172a;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #475569;
+            margin-top: 5px;
+        }
+
+    .timeline {
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .record {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        position: relative;
+        transition: 0.25s;
+    }
+
+        .record::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(#8b5cf6,#06b6d4);
+            border-radius: 10px 0 0 10px;
+        }
+
+        .record:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+    .top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .doctor {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .date {
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    .meta {
+        font-size: 12px;
+        color: #475569;
+        margin-bottom: 10px;
+    }
+
+    .section {
+        margin-top: 10px;
+    }
+
+    .label {
+        font-size: 11px;
+        color: #64748b;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    .value {
+        font-size: 13px;
+        color: #334155;
+        line-height: 1.4;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 30px;
+        color: #475569;
+    }
+
+    .btn-back {
+        margin-top: 20px;
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: #e2e8f0;
+        color: #1e293b;
+        text-decoration: none;
+        font-size: 13px;
+    }
+</style>
+
+<div class="wrap">
+
+    <div class="panel">
+
+        <div class="header">
+            <h2>Health Records</h2>
+            <p>Complete clinical history of patient visits</p>
+        </div>
+
+        @if (Model == null || !Model.Any())
+        {
+            <div class="empty">
+                No health records found
+            </div>
+        }
+        else
+        {
+            <div class="timeline">
+
+                @foreach (var r in Model)
+                {
+                    <div class="record">
+
+                        <div class="top">
+                            <div class="doctor">@r.DoctorName</div>
+                            <div class="date">
+                                @r.VisitDate.ToString("dd MMM yyyy")
+                            </div>
+                        </div>
+
+                        <div class="meta">
+                            @r.DoctorSpecialisation
+                        </div>
+
+                        <div class="section">
+                            <div class="label">Diagnosis</div>
+                            <div class="value">@r.Diagnosis</div>
+                        </div>
+
+                        <div class="section">
+                            <div class="label">Prescription</div>
+                            <div class="value">@r.Prescription</div>
+                        </div>
+
+                        <div class="section">
+                            <div class="label">Notes</div>
+                            <div class="value">@r.Notes</div>
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+        @Html.ActionLink(
+            "Back",
+            "Index",
+            "Patients",
+            null,
+            new { @class = "btn-back" })
+
+    </div>
+
+</div>

@@ -1,0 +1,9 @@
+k
+`C:\Users\310033\source\repos\HealthAxisApp\APITests\obj\Debug\net10.0\APITests.GlobalUsings.g.csutf-8i
+^C:\Users\310033\source\repos\HealthAxisApp\APITests\obj\Debug\net10.0\APITests.AssemblyInfo.csutf-8€
+uC:\Users\310033\source\repos\HealthAxisApp\APITests\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8x
+mC:\Users\310033\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.csutf-8`
+WC:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\PatientServiceTests.csutf-8e
+\C:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\HealthRecordServiceTests.csutf-8_
+VC:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\DoctorServiceTests.csutf-8d
+[C:\Users\310033\source\repos\HealthAxisApp\APITests\ServiceTests\AppointmentServiceTests.csutf-8
