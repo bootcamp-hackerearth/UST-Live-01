@@ -262,7 +262,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Dashboard\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HealthCare Appointment Portal.Shared\HealthCare Appointment Portal.Shared.csproj">

@@ -13,5 +13,6 @@ namespace HealthCare_Appointment_Portal_MVC.Controllers
         {
             return View();
         }
-    }
+
+}
 }

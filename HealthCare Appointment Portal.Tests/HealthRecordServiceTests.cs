@@ -5,7 +5,6 @@ using HealthCare_Appointment_Portal.Exceptions;
 using HealthCare_Appointment_Portal.Interfaces;
 using HealthCare_Appointment_Portal.Models;
 using HealthCare_Appointment_Portal.Services;
-using HealthCare_Appointment_Portal.Utilities;
 using Moq;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +77,46 @@ namespace HealthCare_Appointment_Portal.Tests.Services
             Assert.Equal(
                 2,
                 result.Count());
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.GetAllAsync(),
+                Times.Once);
+
+            _mapperMock.Verify(
+                x => x.Map<IEnumerable<HealthRecordDto>>(records),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task GetAllHealthRecordsAsync_WhenNoRecords_ReturnsEmptyList()
+        {
+            var records =
+                new List<HealthRecord>();
+
+            var recordDtos =
+                new List<HealthRecordDto>();
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(records);
+
+            _mapperMock
+                .Setup(x =>
+                    x.Map<IEnumerable<HealthRecordDto>>(records))
+                .Returns(recordDtos);
+
+            var result =
+                await _service.GetAllHealthRecordsAsync();
+
+            Assert.Empty(result);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.GetAllAsync(),
+                Times.Once);
+
+            _mapperMock.Verify(
+                x => x.Map<IEnumerable<HealthRecordDto>>(records),
+                Times.Once);
         }
 
         [Fact]
@@ -105,6 +144,14 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                 await _service.GetHealthRecordByIdAsync(1);
 
             Assert.NotNull(result);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.GetByIdAsync(1),
+                Times.Once);
+
+            _mapperMock.Verify(
+                x => x.Map<HealthRecordDto>(record),
+                Times.Once);
         }
 
         [Fact]
@@ -115,9 +162,13 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                     x.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync((HealthRecord)null!);
 
-            await Assert.ThrowsAsync<
-                HealthRecordNotFoundException>(
+            await Assert.ThrowsAsync<HealthRecordNotFoundException>(
                 () => _service.GetHealthRecordByIdAsync(1));
+
+            _mapperMock.Verify(
+                x => x.Map<HealthRecordDto>(
+                    It.IsAny<HealthRecord>()),
+                Times.Never);
         }
 
         [Fact]
@@ -149,6 +200,39 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                 await _service.GetRecordsByPatientAsync(1);
 
             Assert.Single(result);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.GetByPatientAsync(1),
+                Times.Once);
+
+            _mapperMock.Verify(
+                x => x.Map<IEnumerable<HealthRecordDto>>(records),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task GetRecordsByPatientAsync_WhenNoRecords_ReturnsEmptyList()
+        {
+            var records =
+                new List<HealthRecord>();
+
+            var recordDtos =
+                new List<HealthRecordDto>();
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByPatientAsync(1))
+                .ReturnsAsync(records);
+
+            _mapperMock
+                .Setup(x =>
+                    x.Map<IEnumerable<HealthRecordDto>>(records))
+                .Returns(recordDtos);
+
+            var result =
+                await _service.GetRecordsByPatientAsync(1);
+
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -180,6 +264,39 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                 await _service.GetRecordsByDoctorAsync(1);
 
             Assert.Single(result);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.GetByDoctorAsync(1),
+                Times.Once);
+
+            _mapperMock.Verify(
+                x => x.Map<IEnumerable<HealthRecordDto>>(records),
+                Times.Once);
+        }
+
+        [Fact]
+        public async Task GetRecordsByDoctorAsync_WhenNoRecords_ReturnsEmptyList()
+        {
+            var records =
+                new List<HealthRecord>();
+
+            var recordDtos =
+                new List<HealthRecordDto>();
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.GetByDoctorAsync(1))
+                .ReturnsAsync(records);
+
+            _mapperMock
+                .Setup(x =>
+                    x.Map<IEnumerable<HealthRecordDto>>(records))
+                .Returns(recordDtos);
+
+            var result =
+                await _service.GetRecordsByDoctorAsync(1);
+
+            Assert.Empty(result);
         }
 
         [Fact]
@@ -231,6 +348,18 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                 1,
                 result);
 
+            _appointmentRepositoryMock.Verify(
+                x => x.GetByIdAsync(dto.AppointmentId),
+                Times.Once);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.ExistsByAppointmentAsync(dto.AppointmentId),
+                Times.Once);
+
+            _mapperMock.Verify(
+                x => x.Map<HealthRecord>(dto),
+                Times.Once);
+
             _healthRecordRepositoryMock.Verify(
                 x => x.AddAsync(record),
                 Times.Once);
@@ -244,35 +373,68 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                     x.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync((Appointment)null!);
 
-            await Assert.ThrowsAsync<
-                AppointmentNotFoundException>(
-                () => _service.AddHealthRecordAsync(
-                    new CreateHealthRecordDto()));
-        }
-
-        [Fact]
-        public async Task AddHealthRecordAsync_WhenAppointmentNotCompleted_ThrowsException()
-        {
-            var appointment =
-                new Appointment
-                {
-                    AppointmentId = 1,
-                    Status =
-                        AppointmentStatus.Pending
-                };
-
-            _appointmentRepositoryMock
-                .Setup(x =>
-                    x.GetByIdAsync(1))
-                .ReturnsAsync(appointment);
-
-            await Assert.ThrowsAsync<
-                InvalidAppointmentStatusException>(
+            await Assert.ThrowsAsync<AppointmentNotFoundException>(
                 () => _service.AddHealthRecordAsync(
                     new CreateHealthRecordDto
                     {
                         AppointmentId = 1
                     }));
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.ExistsByAppointmentAsync(
+                    It.IsAny<int>()),
+                Times.Never);
+
+            _mapperMock.Verify(
+                x => x.Map<HealthRecord>(
+                    It.IsAny<CreateHealthRecordDto>()),
+                Times.Never);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.AddAsync(
+                    It.IsAny<HealthRecord>()),
+                Times.Never);
+        }
+
+        [Theory]
+        [InlineData(AppointmentStatus.Pending)]
+        [InlineData(AppointmentStatus.Confirmed)]
+        [InlineData(AppointmentStatus.Cancelled)]
+        public async Task AddHealthRecordAsync_WhenAppointmentNotCompleted_ThrowsException(
+            AppointmentStatus status)
+        {
+            var appointment =
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    Status = status
+                };
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(1))
+                .ReturnsAsync(appointment);
+
+            await Assert.ThrowsAsync<InvalidAppointmentStatusException>(
+                () => _service.AddHealthRecordAsync(
+                    new CreateHealthRecordDto
+                    {
+                        AppointmentId = 1
+                    }));
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.ExistsByAppointmentAsync(
+                    It.IsAny<int>()),
+                Times.Never);
+
+            _mapperMock.Verify(
+                x => x.Map<HealthRecord>(
+                    It.IsAny<CreateHealthRecordDto>()),
+                Times.Never);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.AddAsync(
+                    It.IsAny<HealthRecord>()),
+                Times.Never);
         }
 
         [Fact]
@@ -287,8 +449,7 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                 };
 
             _appointmentRepositoryMock
-                .Setup(x =>
-                    x.GetByIdAsync(1))
+                .Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(appointment);
 
             _healthRecordRepositoryMock
@@ -296,13 +457,80 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                     x.ExistsByAppointmentAsync(1))
                 .ReturnsAsync(true);
 
-            await Assert.ThrowsAsync<
-                DuplicateHealthRecordException>(
+            await Assert.ThrowsAsync<DuplicateHealthRecordException>(
                 () => _service.AddHealthRecordAsync(
                     new CreateHealthRecordDto
                     {
                         AppointmentId = 1
                     }));
+
+            _mapperMock.Verify(
+                x => x.Map<HealthRecord>(
+                    It.IsAny<CreateHealthRecordDto>()),
+                Times.Never);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.AddAsync(
+                    It.IsAny<HealthRecord>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task AddHealthRecordAsync_WhenRecordDoesNotExist_MapsAndAddsRecord()
+        {
+            var dto =
+                new CreateHealthRecordDto
+                {
+                    AppointmentId = 10
+                };
+
+            var appointment =
+                new Appointment
+                {
+                    AppointmentId = 10,
+                    Status =
+                        AppointmentStatus.Completed
+                };
+
+            var record =
+                new HealthRecord
+                {
+                    RecordId = 25
+                };
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(dto.AppointmentId))
+                .ReturnsAsync(appointment);
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.ExistsByAppointmentAsync(dto.AppointmentId))
+                .ReturnsAsync(false);
+
+            _mapperMock
+                .Setup(x =>
+                    x.Map<HealthRecord>(dto))
+                .Returns(record);
+
+            _healthRecordRepositoryMock
+                .Setup(x =>
+                    x.AddAsync(record))
+                .Returns(Task.CompletedTask);
+
+            var result =
+                await _service.AddHealthRecordAsync(dto);
+
+            Assert.Equal(
+                25,
+                result);
+
+            _mapperMock.Verify(
+                x => x.Map<HealthRecord>(dto),
+                Times.Once);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.AddAsync(record),
+                Times.Once);
         }
 
         [Fact]
@@ -350,11 +578,21 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                     x.GetByIdAsync(1))
                 .ReturnsAsync((HealthRecord)null!);
 
-            await Assert.ThrowsAsync<
-                HealthRecordNotFoundException>(
+            await Assert.ThrowsAsync<HealthRecordNotFoundException>(
                 () => _service.UpdateHealthRecordAsync(
                     1,
                     new UpdateHealthRecordDto()));
+
+            _mapperMock.Verify(
+                x => x.Map(
+                    It.IsAny<UpdateHealthRecordDto>(),
+                    It.IsAny<HealthRecord>()),
+                Times.Never);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.UpdateAsync(
+                    It.IsAny<HealthRecord>()),
+                Times.Never);
         }
 
         [Fact]
@@ -379,6 +617,10 @@ namespace HealthCare_Appointment_Portal.Tests.Services
             await _service.DeleteHealthRecordAsync(1);
 
             _healthRecordRepositoryMock.Verify(
+                x => x.GetByIdAsync(1),
+                Times.Once);
+
+            _healthRecordRepositoryMock.Verify(
                 x => x.DeleteAsync(1),
                 Times.Once);
         }
@@ -391,9 +633,13 @@ namespace HealthCare_Appointment_Portal.Tests.Services
                     x.GetByIdAsync(1))
                 .ReturnsAsync((HealthRecord)null!);
 
-            await Assert.ThrowsAsync<
-                HealthRecordNotFoundException>(
+            await Assert.ThrowsAsync<HealthRecordNotFoundException>(
                 () => _service.DeleteHealthRecordAsync(1));
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.DeleteAsync(
+                    It.IsAny<int>()),
+                Times.Never);
         }
     }
 }

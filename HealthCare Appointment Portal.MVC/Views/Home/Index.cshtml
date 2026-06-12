@@ -68,31 +68,70 @@
     <div class="container">
         <div class="row align-items-center min-vh-100">
 
-            <!-- LEFT -->
+            <!-- LEFT CONTENT -->
             <div class="col-lg-6">
-                <h1 class="display-3 fw-bold mb-4">
+                <div class="hero-badge mb-4">
+                    Digital Healthcare Platform
+                </div>
+
+                <h1 class="display-3 fw-bold mb-4 hero-title">
                     Better Healthcare
                     <br />
                     For A Better Tomorrow
                 </h1>
 
-                <p class="lead mb-4">
-                    HealthAxis Health connects patients,
-                    doctors and healthcare providers
-                    through one secure and modern platform.
+                <p class="lead mb-4 hero-text">
+                    HealthAxis Health connects patients, doctors and healthcare
+                    providers through one secure and modern platform.
                 </p>
 
-                <a href="@Url.Action("DashboardSelection", "Home")"
-                   class="btn btn-primary btn-lg">
-                    Go to Dashboard
-                </a>
+                <div class="d-flex flex-wrap gap-3 hero-buttons">
+                    <a href="@Url.Action("DashboardSelection", "Home")"
+                       class="btn btn-primary btn-lg dashboard-btn">
+                        Go to Dashboard
+                    </a>
+
+                    <a href="@Url.Action("Index", "Home")#services"
+                       class="btn btn-outline-primary btn-lg learn-btn">
+                        Explore Services
+                    </a>
+                </div>
+
+                <div class="hero-stats mt-5">
+                    <div>
+                        <h4>24/7</h4>
+                        <p>Online Access</p>
+                    </div>
+
+                    <div>
+                        <h4>3+</h4>
+                        <p>User Roles</p>
+                    </div>
+
+                    <div>
+                        <h4>100%</h4>
+                        <p>Secure Platform</p>
+                    </div>
+                </div>
             </div>
 
-            <!-- RIGHT -->
-            <div class="col-lg-6 text-center">
-                <img src="@Url.Content("~/Content/Images/login-bg.jpg")"
-                     class="img-fluid hero-image"
-                     alt="Healthcare" />
+            <!-- RIGHT IMAGE CARD -->
+            <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                <div class="hero-image-wrapper">
+                    <img src="@Url.Content("~/Content/Images/login-bg.jpg")"
+                         class="img-fluid hero-image"
+                         alt="Healthcare" />
+
+                    <div class="floating-card floating-card-one">
+                        <h6>Appointments</h6>
+                        <p>Easy scheduling</p>
+                    </div>
+
+                    <div class="floating-card floating-card-two">
+                        <h6>Health Records</h6>
+                        <p>Secure access</p>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -100,35 +139,63 @@
 </section>
 
 <!-- ABOUT -->
-<section id="about" class="py-5">
-    <div class="container text-center">
+<section id="about" class="about-section">
+    <div class="container">
 
-        <h2 class="section-title mb-3">
-            Who We Are
-        </h2>
+        <div class="row align-items-center">
 
-        <p class="section-subtitle mb-4">
-            Transforming healthcare through innovation and technology.
-        </p>
+            <div class="col-lg-5 mb-4 mb-lg-0">
+                <span class="small-heading">
+                    Who We Are
+                </span>
 
-        <div class="card shadow-sm border-0 p-5">
-            <p class="fs-5">
-                HealthAxis Health is a digital healthcare platform designed
-                to simplify healthcare delivery and improve patient experience.
-            </p>
+                <h2 class="section-title mt-2 mb-4">
+                    Transforming healthcare through innovation and technology.
+                </h2>
 
-            <p class="text-muted">
-                We empower patients, doctors, and administrators with tools
-                for scheduling, records, and healthcare operations.
-            </p>
+                <p class="section-subtitle">
+                    HealthAxis Health is a digital healthcare platform designed
+                    to simplify healthcare delivery and improve patient experience.
+                </p>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="about-card">
+                    <div class="about-icon">
+                        +
+                    </div>
+
+                    <div>
+                        <h4>
+                            Smarter Healthcare Management
+                        </h4>
+
+                        <p>
+                            We empower patients, doctors, and administrators with tools
+                            for scheduling, records, and healthcare operations.
+                        </p>
+
+                        <div class="about-points">
+                            <span>Patient Management</span>
+                            <span>Doctor Scheduling</span>
+                            <span>Health Records</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>
 </section>
 
 <!-- SERVICES -->
-<section id="services" class="py-5 bg-light">
+<section id="services" class="services-section">
     <div class="container text-center">
+
+        <span class="small-heading">
+            Our Services
+        </span>
 
         <h2 class="section-title mb-5">
             What We Provide
@@ -137,37 +204,52 @@
         <div class="row">
 
             <div class="col-md-4 mb-4">
-                <div class="card feature-card p-4">
+                <div class="card feature-card active-feature">
+                    <div class="feature-icon">
+                        P
+                    </div>
+
                     <h4>
                         Patients
                     </h4>
 
                     <p>
-                        Manage profiles and appointments.
+                        Manage profiles, appointments and access healthcare
+                        information from one place.
                     </p>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card feature-card p-4">
+                <div class="card feature-card active-feature">
+                    <div class="feature-icon">
+                        D
+                    </div>
+
                     <h4>
                         Doctors
                     </h4>
 
                     <p>
-                        Manage availability and schedules.
+                        Manage schedules, appointments and patient health
+                        interactions efficiently.
                     </p>
                 </div>
             </div>
 
             <div class="col-md-4 mb-4">
-                <div class="card feature-card p-4">
+                <div class="card feature-card active-feature">
+                    <div class="feature-icon">
+                        A
+                    </div>
+
                     <h4>
                         Admin
                     </h4>
 
                     <p>
-                        Full system management access.
+                        Full system management access for doctors, patients,
+                        appointments and records.
                     </p>
                 </div>
             </div>
@@ -178,40 +260,67 @@
 </section>
 
 <!-- CTA -->
-<section class="py-5 text-center">
+<section class="cta-section">
     <div class="container">
+        <div class="cta-box">
 
-        <h2 class="mb-4">
-            Ready To Experience Smarter Healthcare?
-        </h2>
+            <div>
+                <h2>
+                    Ready To Experience Smarter Healthcare?
+                </h2>
 
-        <a href="@Url.Action("DashboardSelection", "Home")"
-           class="btn btn-primary btn-lg">
-            Go to Dashboard
-        </a>
+                <p>
+                    Access your dashboard and manage healthcare operations easily.
+                </p>
+            </div>
 
+            <a href="@Url.Action("DashboardSelection", "Home")"
+               class="btn btn-primary btn-lg dashboard-btn">
+                Go to Dashboard
+            </a>
+
+        </div>
     </div>
 </section>
 
 <!-- CONTACT -->
 <section id="contact" class="contact-section">
-    <div class="container text-center">
+    <div class="container">
 
-        <h2 class="mb-4">
-            Contact Us
-        </h2>
+        <div class="text-center mb-5">
+            <span class="small-heading">
+                Contact
+            </span>
 
-        <p>
-            support@healthaxishealth.com
-        </p>
+            <h2 class="section-title">
+                Contact Us
+            </h2>
+        </div>
 
-        <p>
-            +91 98765 43210
-        </p>
+        <div class="row justify-content-center">
 
-        <p>
-            Online Service Only
-        </p>
+            <div class="col-md-4 mb-4">
+                <div class="contact-card">
+                    <h5>Email</h5>
+                    <p>support@healthaxishealth.com</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="contact-card">
+                    <h5>Phone</h5>
+                    <p>+91 98765 43210</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 mb-4">
+                <div class="contact-card">
+                    <h5>Location</h5>
+                    <p>Online Service Only</p>
+                </div>
+            </div>
+
+        </div>
 
     </div>
 </section>
@@ -229,12 +338,19 @@
         scroll-behavior: smooth;
     }
 
+    body {
+        background: #ffffff;
+    }
+
     .custom-navbar {
         background: #1E3A7A;
+        padding: 14px 0;
+        box-shadow: 0 8px 25px rgba(0,0,0,.12);
     }
 
     .navbar-brand {
         color: #ffffff !important;
+        letter-spacing: .3px;
     }
 
     .navbar-nav .nav-link {
@@ -251,12 +367,154 @@
 
     .hero-section {
         background: linear-gradient(135deg,#F8FAFC,#E0F2FE);
-        padding-top: 70px;
+        padding-top: 80px;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border-radius: 50%;
+            background: rgba(30,58,122,.08);
+            top: 110px;
+            right: -140px;
+        }
+
+        .hero-section::after {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: rgba(30,58,122,.07);
+            bottom: 50px;
+            left: -120px;
+        }
+
+    .hero-title {
+        color: #0F172A;
+        line-height: 1.1;
+    }
+
+    .hero-text {
+        color: #475569;
+        max-width: 560px;
+    }
+
+    .hero-badge {
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 50px;
+        background: #ffffff;
+        color: #1E3A7A;
+        font-weight: 600;
+        box-shadow: 0 8px 25px rgba(0,0,0,.08);
+    }
+
+    .hero-buttons {
+        position: relative;
+        z-index: 5;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 5;
+    }
+
+    .dashboard-btn {
+        box-shadow: 0 10px 25px rgba(30,58,122,.25);
+    }
+
+    .learn-btn {
+        border-color: #1E3A7A;
+        color: #1E3A7A;
+    }
+
+        .learn-btn:hover {
+            background: #1E3A7A;
+            color: #ffffff;
+        }
+
+    .hero-stats {
+        display: flex;
+        gap: 35px;
+        flex-wrap: wrap;
+    }
+
+        .hero-stats h4 {
+            color: #1E3A7A;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .hero-stats p {
+            color: #64748B;
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+    .hero-image-wrapper {
+        position: relative;
+        display: inline-block;
+        z-index: 1;
     }
 
     .hero-image {
-        border-radius: 25px;
-        box-shadow: 0 15px 40px rgba(0,0,0,.15);
+        border-radius: 35px;
+        box-shadow: 0 20px 50px rgba(0,0,0,.18);
+        max-height: 520px;
+        object-fit: cover;
+    }
+
+    .floating-card {
+        position: absolute;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 16px 20px;
+        box-shadow: 0 12px 35px rgba(0,0,0,.15);
+        text-align: left;
+        min-width: 170px;
+    }
+
+        .floating-card h6 {
+            color: #1E3A7A;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .floating-card p {
+            margin: 0;
+            color: #64748B;
+            font-size: 14px;
+        }
+
+    .floating-card-one {
+        top: 40px;
+        left: -45px;
+    }
+
+    .floating-card-two {
+        bottom: 45px;
+        right: -45px;
+    }
+
+    .about-section {
+        padding: 90px 0;
+        background: #ffffff;
+    }
+
+    .small-heading {
+        color: #1E3A7A;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 14px;
     }
 
     .section-title {
@@ -266,27 +524,209 @@
 
     .section-subtitle {
         color: gray;
+        font-size: 18px;
+        line-height: 1.7;
+    }
+
+    .about-card {
+        display: flex;
+        gap: 25px;
+        align-items: flex-start;
+        padding: 40px;
+        border-radius: 28px;
+        background: #F8FAFC;
+        box-shadow: 0 15px 40px rgba(0,0,0,.08);
+    }
+
+    .about-icon {
+        width: 70px;
+        height: 70px;
+        min-width: 70px;
+        border-radius: 20px;
+        background: #1E3A7A;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        font-weight: 600;
+        line-height: 1;
+    }
+
+    .about-card h4 {
+        color: #0F172A;
+        font-weight: 700;
+        margin-bottom: 12px;
+    }
+
+    .about-card p {
+        color: #64748B;
+        margin-bottom: 20px;
+    }
+
+    .about-points {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+        .about-points span {
+            background: #ffffff;
+            color: #1E3A7A;
+            padding: 8px 14px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+    .services-section {
+        padding: 90px 0;
+        background: #F8FAFC;
     }
 
     .feature-card {
-        border-radius: 20px;
-        transition: .3s;
+        border: 0;
+        border-radius: 28px;
+        padding: 40px 30px;
         height: 100%;
+        transition: .3s;
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
     }
 
         .feature-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-10px);
+            box-shadow: 0 18px 45px rgba(0,0,0,.13);
+        }
+
+        .feature-card h4 {
+            color: #0F172A;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #64748B;
+            margin-bottom: 0;
+        }
+
+    .active-feature {
+        border-top: 5px solid #1E3A7A;
+    }
+
+    .feature-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 18px;
+        background: #1E3A7A;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 22px;
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    .cta-section {
+        padding: 80px 0;
+        background: #ffffff;
+    }
+
+    .cta-box {
+        background: linear-gradient(135deg,#F8FAFC,#E0F2FE);
+        border-radius: 35px;
+        padding: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 25px;
+        box-shadow: 0 15px 45px rgba(0,0,0,.08);
+    }
+
+        .cta-box h2 {
+            color: #1E3A7A;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .cta-box p {
+            color: #64748B;
+            margin-bottom: 0;
         }
 
     .contact-section {
         background: #F8FAFC;
-        padding: 70px 0;
+        padding: 90px 0;
     }
+
+    .contact-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px 25px;
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        transition: .3s;
+    }
+
+        .contact-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .contact-card h5 {
+            color: #1E3A7A;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .contact-card p {
+            color: #64748B;
+            margin-bottom: 0;
+        }
 
     footer {
         background: #0F172A;
         color: white;
         text-align: center;
-        padding: 20px;
+        padding: 22px;
+    }
+
+    @@media (max-width: 991px) {
+        .hero-section {
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .hero-text {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-buttons {
+            justify-content: center;
+        }
+
+        .hero-stats {
+            justify-content: center;
+        }
+
+        .floating-card {
+            display: none;
+        }
+
+        .cta-box {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .about-card {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+
+        .about-points {
+            justify-content: center;
+        }
     }
 </style>
