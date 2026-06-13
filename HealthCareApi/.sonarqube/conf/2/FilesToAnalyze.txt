@@ -1,0 +1,15 @@
+﻿C:\Users\310508\source\repos\Sprint 2\HealthCare.Api.Tests\AppointmentServiceTests.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Api.Tests\DoctorServiceTests.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Api.Tests\HealthRecordServiceTests.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Api.Tests\PatientServiceTests.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Api.Tests\Properties\AssemblyInfo.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\xunit.runner.visualstudio.2.4.5\build\net462\xunit.runner.visualstudio.testadapter.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\xunit.runner.visualstudio.2.4.5\build\net462\xunit.runner.reporters.net452.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\xunit.runner.visualstudio.2.4.5\build\net462\xunit.runner.utility.net452.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\xunit.runner.visualstudio.2.4.5\build\net462\xunit.abstractions.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCareApi\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.TestPlatform.AdapterUtilities.dll
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Api.Tests\App.config
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Api.Tests\packages.config

@@ -1,0 +1,16 @@
+﻿C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Appointment\AppointmentDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Appointment\CancelAppointmentDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Appointment\CreateAppointmentDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Appointment\UpdateAppointmentDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Appointment\ViewAppointmentDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Doctor\CreateDoctorDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Doctor\DoctorDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Doctor\DoctorLookupDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Doctor\UpdateDoctorDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\HealthRecord\HealthRecordDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Patient\CreatePatientDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\DTOs\Patient\PatientDto.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\PagedResult.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\Properties\AssemblyInfo.cs
+C:\Users\310508\source\repos\Sprint 2\HealthCare.Shared\packages.config
