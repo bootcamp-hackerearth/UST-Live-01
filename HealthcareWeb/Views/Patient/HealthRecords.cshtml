@@ -1,0 +1,199 @@
+@model List<SharedClasses.Dtos.HealthRecordDto>
+@using System.Linq
+@functions {
+    public string GetSlotTime(int slotNumber)
+    {
+        switch (slotNumber)
+        {
+            case 1: return "09:00 AM - 09:30 AM";
+            case 2: return "09:30 AM - 10:00 AM";
+            case 3: return "10:00 AM - 10:30 AM";
+            case 4: return "10:30 AM - 11:00 AM";
+            case 5: return "11:00 AM - 11:30 AM";
+            case 6: return "11:30 AM - 12:00 PM";
+            case 7: return "12:00 PM - 12:30 PM";
+            case 8: return "12:30 PM - 01:00 PM";
+            case 9: return "01:00 PM - 01:30 PM";
+            case 10: return "01:30 PM - 02:00 PM";
+            case 11: return "02:00 PM - 02:30 PM";
+            case 12: return "02:30 PM - 03:00 PM";
+            case 13: return "03:00 PM - 03:30 PM";
+            case 14: return "03:30 PM - 04:00 PM";
+            case 15: return "04:00 PM - 04:30 PM";
+            case 16: return "04:30 PM - 05:00 PM";
+            default: return "Invalid Slot";
+        }
+    }
+}
+@{
+    ViewBag.Title = "Health Records";
+
+    int patientId = ViewBag.PatientId != null
+        ? Convert.ToInt32(ViewBag.PatientId)
+        : 0;
+
+    var cancelledAppointments =
+        ViewBag.CancelledAppointments as List<SharedClasses.Dtos.AppointmentDto>;
+
+    var doctors =
+        ViewBag.Doctors as List<SharedClasses.Dtos.DoctorDto>;
+}
+
+<h2 class="text-success">Health Records</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (ViewBag.Patient != null)
+{
+    <p>
+        <strong>Patient:</strong> @ViewBag.Patient.FullName
+    </p>
+}
+
+<div class="button-group">
+    @Html.ActionLink(
+        "Back to Dashboard",
+        "Dashboard",
+        "Patient",
+        new { patientId = patientId },
+        new { @class = "btn btn-secondary" }
+    )
+</div>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>No health records found.</p>
+}
+else
+{
+    <h4>Medical Records</h4>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Record ID</th>
+                <th>Appointment ID</th>
+                <th>Doctor</th>
+                <th>Visit Date</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var record in Model)
+            {
+                var doctor = doctors == null
+                    ? null
+                    : doctors.FirstOrDefault(d => d.DoctorId == record.DoctorId);
+
+                <tr>
+                    <td>@record.HealthRecordId</td>
+                    <td>@record.AppointmentId</td>
+
+                    <td>
+                        @if (doctor != null)
+                        {
+                            <span>Dr. @doctor.FullName</span>
+                        }
+                        else
+                        {
+                            <span>ID: @record.DoctorId</span>
+                        }
+                    </td>
+
+                    <td>@record.VisitDate.ToString("dd-MM-yyyy")</td>
+                    <td>@record.Diagnosis</td>
+                    <td>@record.Prescription</td>
+
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(record.Notes))
+                        {
+                            <span>-</span>
+                        }
+                        else
+                        {
+                            @record.Notes
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<hr />
+
+<h4>Cancelled Appointments</h4>
+
+@if (cancelledAppointments == null || cancelledAppointments.Count == 0)
+{
+    <p>No cancelled appointments found.</p>
+}
+else
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Appointment ID</th>
+                <th>Doctor</th>
+                <th>Scheduled Date</th>
+                <th>Slot TIme</th>
+                <th>Status</th>
+                <th>Cancellation Reason</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var appointment in cancelledAppointments)
+            {
+                var doctor = doctors == null
+                    ? null
+                    : doctors.FirstOrDefault(d => d.DoctorId == appointment.DoctorId);
+
+                <tr>
+                    <td>@appointment.AppointmentId</td>
+
+                    <td>
+                        @if (doctor != null)
+                        {
+                            <span>Dr. @doctor.FullName</span>
+                        }
+                        else
+                        {
+                            <span>ID: @appointment.DoctorId</span>
+                        }
+                    </td>
+
+                    <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                    <td>@GetSlotTime(appointment.SlotNumber)</td>
+                    <td>@appointment.Status</td>
+
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(appointment.CancellationReason))
+                        {
+                            <span>-</span>
+                        }
+                        else
+                        {
+                            @appointment.CancellationReason
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

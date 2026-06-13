@@ -1,0 +1,316 @@
+@model List<SharedClasses.Dtos.DoctorDto>
+@using SharedClasses.Enums
+
+@{
+    ViewBag.Title = "Search Doctors";
+
+    int patientId = ViewBag.PatientId != null
+        ? Convert.ToInt32(ViewBag.PatientId)
+        : 0;
+
+    string searchText = ViewBag.SearchText as string ?? "";
+    string searchBy = ViewBag.SearchBy as string ?? "All";
+
+    string selectedSpecialisation =
+        ViewBag.SelectedSpecialisation != null
+            ? ViewBag.SelectedSpecialisation.ToString()
+            : "";
+}
+
+<h2 class="text-success">Search Doctors</h2>
+
+<p class="page-subtitle">
+    Search doctors by ID, name, or specialisation and review consultation details.
+</p>
+
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+<div class="form-panel form-panel-wide">
+    <div class="form-panel-header">
+        <h4>Find Doctors</h4>
+        <p>Use doctor ID, name, or specialisation to filter available doctors.</p>
+    </div>
+
+    @using (Html.BeginForm("SearchDoctors", "Patient", FormMethod.Get))
+    {
+        <input type="hidden" name="patientId" value="@patientId" />
+
+        <div class="form-row-grid">
+            <div class="mb-2">
+                <label class="fw-bold">Search By</label>
+
+                <select id="searchBy"
+                        name="searchBy"
+                        class="form-control">
+                    <option value="All" @(searchBy == "All" ? "selected" : "")>All</option>
+                    <option value="Id" @(searchBy == "Id" ? "selected" : "")>Doctor ID</option>
+                    <option value="Name" @(searchBy == "Name" ? "selected" : "")>Doctor Name</option>
+                </select>
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Search Text</label>
+
+                <input type="text"
+                       id="doctorSearchText"
+                       name="searchText"
+                       value="@searchText"
+                       class="form-control"
+                       list="doctorSuggestions"
+                       placeholder="Type doctor ID or name" />
+
+                <datalist id="doctorSuggestions">
+                    @if (Model != null)
+                    {
+                        foreach (var doctor in Model)
+                        {
+                            <option value="@doctor.DoctorId" label="Dr. @doctor.FullName"></option>
+                            <option value="@doctor.FullName" label="@doctor.Specialisation"></option>
+                        }
+                    }
+                </datalist>
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Specialisation</label>
+
+                <select id="specialisationFilter"
+                        name="specialisation"
+                        class="form-control">
+                    <option value="">All Specialisations</option>
+
+                    @foreach (Specialisation item in Enum.GetValues(typeof(Specialisation)))
+                    {
+                        string itemValue = item.ToString();
+
+                        if (itemValue == selectedSpecialisation)
+                        {
+                            <option value="@itemValue" selected="selected">@itemValue</option>
+                        }
+                        else
+                        {
+                            <option value="@itemValue">@itemValue</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Search
+            </button>
+
+            @Html.ActionLink(
+                "Clear",
+                "SearchDoctors",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary" }
+            )
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-dark" }
+            )
+        </div>
+    }
+</div>
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Doctor Directory</h4>
+            <p>Doctors will be filtered while typing or selecting specialisation.</p>
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No doctors found</h4>
+            <p>No doctors match the current search criteria.</p>
+        </div>
+    }
+    else
+    {
+        <div id="noDoctorMatch" class="empty-state-card" style="display:none;">
+            <h4>No doctors found</h4>
+            <p>No doctors match the current search criteria.</p>
+        </div>
+
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor ID</th>
+                            <th>Full Name</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Consultation Fee</th>
+                            <th>Book</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="doctorTableBody">
+                        @foreach (var doctor in Model)
+                        {
+                            <tr class="doctor-row"
+                                data-id="@doctor.DoctorId"
+                                data-name="@doctor.FullName.ToLower()"
+                                data-specialisation="@doctor.Specialisation.ToString().ToLower()">
+
+                                <td>@doctor.DoctorId</td>
+
+                                <td class="text-left">
+                                    Dr. @doctor.FullName
+                                </td>
+
+                                <td>
+                                    <span class="status-badge status-badge-info">
+                                        @doctor.Specialisation
+                                    </span>
+                                </td>
+
+                                <td>@doctor.YearsOfExperience years</td>
+
+                                <td>@doctor.ConsultationFee</td>
+
+                                <td>
+                                    @Html.ActionLink(
+                                        "Book Appointment",
+                                        "BookAppointment",
+                                        "Patient",
+                                        new
+                                        {
+                                            patientId = patientId,
+                                            specialisation = doctor.Specialisation
+                                        },
+                                        new { @class = "btn btn-primary btn-sm" }
+                                    )
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        (function () {
+            var searchInput = document.getElementById("doctorSearchText");
+            var searchBySelect = document.getElementById("searchBy");
+            var specialisationSelect = document.getElementById("specialisationFilter");
+            var rows = document.querySelectorAll(".doctor-row");
+            var noMatch = document.getElementById("noDoctorMatch");
+
+            function getElementValue(element) {
+                if (element == null) {
+                    return "";
+                }
+
+                if (typeof element.value === "undefined" || element.value == null) {
+                    return "";
+                }
+
+                return element.value.toString();
+            }
+
+            function filterDoctors() {
+                var searchText = getElementValue(searchInput).toLowerCase().trim();
+                var searchBy = getElementValue(searchBySelect);
+
+                if (searchBy.length === 0) {
+                    searchBy = "All";
+                }
+
+                var selectedSpecialisation =
+                    getElementValue(specialisationSelect).toLowerCase().trim();
+
+                var visibleCount = 0;
+
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+
+                    var doctorId = row.getAttribute("data-id");
+
+                    if (doctorId == null) {
+                        doctorId = "";
+                    }
+
+                    var doctorName = row.getAttribute("data-name");
+
+                    if (doctorName == null) {
+                        doctorName = "";
+                    }
+
+                    var doctorSpecialisation = row.getAttribute("data-specialisation");
+
+                    if (doctorSpecialisation == null) {
+                        doctorSpecialisation = "";
+                    }
+
+                    var matchesSearch = true;
+                    var matchesSpecialisation = true;
+
+                    if (searchText.length > 0) {
+                        if (searchBy === "Id") {
+                            matchesSearch = doctorId.indexOf(searchText) >= 0;
+                        }
+                        else if (searchBy === "Name") {
+                            matchesSearch = doctorName.indexOf(searchText) >= 0;
+                        }
+                        else {
+                            matchesSearch =
+                                doctorId.indexOf(searchText) >= 0 ||
+                                doctorName.indexOf(searchText) >= 0;
+                        }
+                    }
+
+                    if (selectedSpecialisation.length > 0) {
+                        matchesSpecialisation =
+                            doctorSpecialisation === selectedSpecialisation;
+                    }
+
+                    if (matchesSearch && matchesSpecialisation) {
+                        row.setAttribute("style", "");
+                        visibleCount++;
+                    }
+                    else {
+                        row.setAttribute("style", "display:none;");
+                    }
+                }
+
+                if (noMatch != null) {
+                    if (visibleCount === 0) {
+                        noMatch.setAttribute("style", "display:block;");
+                    }
+                    else {
+                        noMatch.setAttribute("style", "display:none;");
+                    }
+                }
+            }
+
+            if (searchInput != null) {
+                searchInput.addEventListener("input", filterDoctors);
+            }
+
+            if (searchBySelect != null) {
+                searchBySelect.addEventListener("change", filterDoctors);
+            }
+
+            if (specialisationSelect != null) {
+                specialisationSelect.addEventListener("change", filterDoctors);
+            }
+
+            filterDoctors();
+        })();
+    </script>
+}

@@ -1,0 +1,217 @@
+﻿@using System.Collections.Generic
+@model List<SharedClasses.Dtos.DoctorDto>
+
+@{
+    ViewBag.Title = "Doctors";
+
+    string searchText = ViewBag.SearchText as string ?? "";
+    var doctorSuggestions = ViewBag.DoctorSuggestions as List<SharedClasses.Dtos.DoctorDto>;
+}
+
+<style>
+    .admin-doctor-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+        .admin-doctor-actions .btn {
+            min-width: 92px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .admin-doctor-actions .btn-info {
+            min-width: 112px;
+        }
+
+    .admin-actions-column {
+        min-width: 330px;
+    }
+</style>
+
+<h2 class="text-success">Doctors</h2>
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Doctor Directory</h4>
+            <p>Search, update, and manage doctor profiles, specialisations, consultation fees, and account availability.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Create Doctor",
+                "CreateDoctor",
+                "Admin",
+                null,
+                new { @class = "btn btn-primary" }
+            )
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Index",
+                "Admin",
+                null,
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    </div>
+
+    <div class="form-panel form-panel-wide"
+         style="width:100%; max-width:100%; margin:10px 0 15px 0; padding:20px 25px;">
+        @using (Html.BeginForm("Doctors", "Admin", FormMethod.Get))
+        {
+            <div class="form-row-grid" style="width:100%;">
+                <div class="mb-2 form-row-full" style="margin-bottom:10px;">
+                    <label class="fw-bold">Search Doctor</label>
+
+                    <input type="text"
+                           name="searchText"
+                           value="@searchText"
+                           class="form-control"
+                           list="doctorSuggestions"
+                           placeholder="Search by doctor ID, name, or specialisation" />
+
+                    <datalist id="doctorSuggestions">
+                        @if (doctorSuggestions != null)
+                        {
+                            foreach (var doctor in doctorSuggestions)
+                            {
+                                <option value="@doctor.DoctorId" label="@doctor.FullName"></option>
+                                <option value="@doctor.FullName" label="Doctor Name"></option>
+                                <option value="@doctor.Specialisation" label="@doctor.FullName"></option>
+                            }
+                        }
+                    </datalist>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">
+                    Search
+                </button>
+
+                @Html.ActionLink(
+                    "Clear",
+                    "Doctors",
+                    "Admin",
+                    null,
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        }
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No doctors found</h4>
+            <p>No doctor records match the current search criteria.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor ID</th>
+                            <th>Full Name</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Consultation Fee</th>
+                            <th>Status</th>
+                            <th class="admin-actions-column">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var doctor in Model)
+                        {
+                            <tr>
+                                <td>@doctor.DoctorId</td>
+
+                                <td class="text-left">
+                                    Dr. @doctor.FullName
+                                </td>
+
+                                <td>
+                                    <span class="status-badge status-badge-info">
+                                        @doctor.Specialisation
+                                    </span>
+                                </td>
+
+                                <td>@doctor.YearsOfExperience years</td>
+
+                                <td>@doctor.ConsultationFee</td>
+
+                                <td>
+                                    @if (doctor.IsActive)
+                                    {
+                                        <span class="status-badge status-badge-success">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-badge-danger">
+                                            Inactive
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="admin-actions-column">
+                                    <div class="admin-doctor-actions">
+                                        @Html.ActionLink(
+                                            "Edit",
+                                            "EditDoctor",
+                                            "Admin",
+                                            new { id = doctor.DoctorId },
+                                            new { @class = "btn btn-warning btn-sm" }
+                                        )
+
+                                        @if (doctor.IsActive)
+                                        {
+                                            @Html.ActionLink(
+                                                "Deactivate",
+                                                "DeactivateDoctor",
+                                                "Admin",
+                                                new { id = doctor.DoctorId },
+                                                new { @class = "btn btn-danger btn-sm" }
+                                            )
+                                        }
+                                        else
+                                        {
+                                            @Html.ActionLink(
+                                                "Reactivate",
+                                                "ReactivateDoctor",
+                                                "Admin",
+                                                new { id = doctor.DoctorId },
+                                                new { @class = "btn btn-success btn-sm" }
+                                            )
+                                        }
+
+                                        @Html.ActionLink(
+                                            "Appointments",
+                                            "AppointmentsByDoctor",
+                                            "Admin",
+                                            new { doctorId = doctor.DoctorId },
+                                            new { @class = "btn btn-info btn-sm" }
+                                        )
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

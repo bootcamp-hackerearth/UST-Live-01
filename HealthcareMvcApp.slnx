@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="HealthcareApi.Tests/HealthcareApi.Tests.csproj" Id="b66eba57-e330-444f-b811-b42e9419538e" />
+  <Project Path="HealthcareApi/HealthcareApi.csproj" Id="426e5d61-18cc-44de-a421-c3a2bf6ac56c" />
+  <Project Path="HealthcareWeb.Tests/HealthcareWeb.Tests.csproj" Id="067bffcd-cea2-44eb-990b-b37f6e2e63cc" />
+  <Project Path="HealthcareWeb/HealthcareWeb.csproj" Id="afcf679b-75bf-4c00-970b-5f00af27ebf4" />
+  <Project Path="SharedClasses/SharedClasses.csproj" Id="302c7621-3b7b-4fe7-ae54-6414a7bde31d" />
+</Solution>

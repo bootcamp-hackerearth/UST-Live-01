@@ -1,0 +1,84 @@
+@model SharedClasses.Dtos.AppointmentDto
+
+@{
+    ViewBag.Title = "Cancel Appointment";
+}
+
+<h2>Cancel Appointment</h2>
+
+<p class="page-subtitle">
+    Confirm cancellation of this appointment and provide a reason.
+</p>
+
+<div class="danger-panel">
+    <div class="danger-panel-header">
+        <h4>Cancel Appointment Request</h4>
+        <p>
+            This will cancel the selected appointment. The slot may become available for another booking.
+        </p>
+    </div>
+
+    <div class="form-meta-card danger-summary">
+        <div class="form-meta-grid">
+            <div class="form-meta-item">
+                <span>Appointment ID</span>
+                <strong>@Model.AppointmentId</strong>
+            </div>
+
+            <div class="form-meta-item">
+                <span>Patient ID</span>
+                <strong>@Model.PatientId</strong>
+            </div>
+
+            <div class="form-meta-item">
+                <span>Doctor ID</span>
+                <strong>@Model.DoctorId</strong>
+            </div>
+
+            <div class="form-meta-item">
+                <span>Scheduled Date</span>
+                <strong>@Model.ScheduledDate.ToString("dd-MM-yyyy")</strong>
+            </div>
+
+            <div class="form-meta-item">
+                <span>Slot</span>
+                <strong>@Model.SlotNumber</strong>
+            </div>
+
+            <div class="form-meta-item">
+                <span>Status</span>
+                <strong>@Model.Status</strong>
+            </div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("CancelAppointment", "Patient", FormMethod.Post))
+    {
+        <input type="hidden" name="appointmentId" value="@Model.AppointmentId" />
+        <input type="hidden" name="patientId" value="@Model.PatientId" />
+
+        <div class="mb-2">
+            <label class="fw-bold">Cancellation Reason</label>
+
+            <textarea name="reason"
+                      class="form-control border-dark"
+                      rows="4"
+                      placeholder="Enter cancellation reason"
+                      required="required"></textarea>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-danger">
+                Cancel Appointment
+            </button>
+
+            @Html.ActionLink(
+                "Back to Upcoming Appointments",
+                "UpcomingAppointments",
+                "Patient",
+                new { patientId = Model.PatientId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
+</div>

@@ -1,0 +1,19 @@
+﻿
+# Visual Studio local workspace/cache
+.vs
+.vs/
+.vs/**
+**/.vs/
+**/.vs/**
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.slnLaunch.user
+
+# Build outputs
+bin/
+obj/
+
+# NuGet packages folder, if using packages.config
+packages/

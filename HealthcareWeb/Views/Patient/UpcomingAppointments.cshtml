@@ -1,0 +1,136 @@
+@model List<SharedClasses.Dtos.AppointmentDto>
+@functions {
+    public string GetSlotTime(int slotNumber)
+    {
+        switch (slotNumber)
+        {
+            case 1: return "09:00 AM - 09:30 AM";
+            case 2: return "09:30 AM - 10:00 AM";
+            case 3: return "10:00 AM - 10:30 AM";
+            case 4: return "10:30 AM - 11:00 AM";
+            case 5: return "11:00 AM - 11:30 AM";
+            case 6: return "11:30 AM - 12:00 PM";
+            case 7: return "12:00 PM - 12:30 PM";
+            case 8: return "12:30 PM - 01:00 PM";
+            case 9: return "01:00 PM - 01:30 PM";
+            case 10: return "01:30 PM - 02:00 PM";
+            case 11: return "02:00 PM - 02:30 PM";
+            case 12: return "02:30 PM - 03:00 PM";
+            case 13: return "03:00 PM - 03:30 PM";
+            case 14: return "03:30 PM - 04:00 PM";
+            case 15: return "04:00 PM - 04:30 PM";
+            case 16: return "04:30 PM - 05:00 PM";
+            default: return "Invalid Slot";
+        }
+    }
+}
+@{
+    ViewBag.Title = "Upcoming Appointments";
+    int patientId = ViewBag.PatientId != null ? Convert.ToInt32(ViewBag.PatientId) : 0;
+}
+
+<h2 class="text-success">Upcoming Appointments</h2>
+
+@if (ViewBag.Patient != null)
+{
+    <p>
+        <strong>Patient:</strong> @ViewBag.Patient.FullName
+    </p>
+}
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Upcoming Appointment Schedule</h4>
+            <p>Review scheduled consultations and cancel appointments when required.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink(
+                "Book Appointment",
+                "BookAppointment",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-primary" }
+            )
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No upcoming appointments</h4>
+            <p>You do not currently have any upcoming appointments.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <div class="data-table-scroll">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Doctor ID</th>
+                            <th>Scheduled Date</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>@appointment.AppointmentId</td>
+                                <td>@appointment.DoctorId</td>
+                                <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+                                <td>@GetSlotTime(appointment.SlotNumber)</td>
+                                <td>
+                                    @if (appointment.Status.ToString() == "Pending")
+                                    {
+                                        <span class="status-badge status-badge-warning">Pending</span>
+                                    }
+                                    else if (appointment.Status.ToString() == "Confirmed")
+                                    {
+                                        <span class="status-badge status-badge-info">Confirmed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-badge-muted">
+                                            @appointment.Status
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="data-table-actions">
+                                        @Html.ActionLink(
+                                            "Cancel",
+                                            "CancelAppointment",
+                                            "Patient",
+                                            new
+                                            {
+                                                appointmentId = appointment.AppointmentId,
+                                                patientId = patientId
+                                            },
+                                            new { @class = "btn btn-danger btn-sm" }
+                                        )
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

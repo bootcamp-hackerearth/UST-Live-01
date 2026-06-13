@@ -1,0 +1,195 @@
+@model SharedClasses.Dtos.BookAppointmentDto
+@using SharedClasses.Enums
+
+@{
+    ViewBag.Title = "Book Appointment";
+
+    var doctors = ViewBag.Doctors as System.Collections.Generic.List<SharedClasses.Dtos.DoctorDto>;
+
+    string selectedSpecialisation =
+        ViewBag.SelectedSpecialisation != null
+            ? ViewBag.SelectedSpecialisation.ToString()
+            : "";
+
+    string scheduledDate =
+        Model != null
+            ? Model.ScheduledDate.ToString("yyyy-MM-dd")
+            : DateTime.Today.AddDays(1).ToString("yyyy-MM-dd");
+
+    int patientId =
+        Model != null
+            ? Model.PatientId
+            : 0;
+}
+
+<h2>Book Appointment</h2>
+
+<p class="page-subtitle">
+    Search doctors by specialisation, select a doctor, choose a preferred time slot,
+    and submit the appointment request.
+</p>
+
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+<div class="form-panel form-panel-wide">
+    <div class="form-panel-header">
+        <h4>Find Available Doctors</h4>
+        <p>Select a specialisation and appointment date to view matching doctors.</p>
+    </div>
+
+    @using (Html.BeginForm("BookAppointment", "Patient", FormMethod.Get))
+    {
+        <input type="hidden" name="patientId" value="@patientId" />
+
+        <div class="form-row-grid">
+            <div class="mb-2">
+                <label class="fw-bold">Specialisation</label>
+
+                <select name="specialisation" class="form-control border-dark">
+                    <option value="">Select Specialisation</option>
+
+                    @foreach (Specialisation item in Enum.GetValues(typeof(Specialisation)))
+                    {
+                        string itemValue = item.ToString();
+
+                        if (itemValue == selectedSpecialisation)
+                        {
+                            <option value="@itemValue" selected="selected">@itemValue</option>
+                        }
+                        else
+                        {
+                            <option value="@itemValue">@itemValue</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="mb-2">
+                <label class="fw-bold">Appointment Date</label>
+
+                <input type="date"
+                       name="scheduledDate"
+                       value="@scheduledDate"
+                       class="form-control border-dark" />
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Show Doctors
+            </button>
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
+</div>
+
+@if (doctors != null)
+{
+    <div class="data-section">
+        <div class="data-section-header">
+            <div class="data-section-title">
+                <h4>Available Doctors</h4>
+                <p>Select a doctor and preferred time slot to complete the booking request.</p>
+            </div>
+        </div>
+
+        @if (doctors.Count == 0)
+        {
+            <div class="empty-state-card">
+                <h4>No doctors found</h4>
+                <p>No doctors were found for the selected specialisation.</p>
+            </div>
+        }
+        else
+        {
+            <div class="data-table-card">
+                <div class="data-table-scroll">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Doctor ID</th>
+                                <th>Name</th>
+                                <th>Specialisation</th>
+                                <th>Experience</th>
+                                <th>Fee</th>
+                                <th>Time Slot</th>
+                                <th>Book</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var doctor in doctors)
+                            {
+                                <tr>
+                                    <td>@doctor.DoctorId</td>
+
+                                    <td class="text-left">
+                                        Dr. @doctor.FullName
+                                    </td>
+
+                                    <td>
+                                        <span class="status-badge status-badge-info">
+                                            @doctor.Specialisation
+                                        </span>
+                                    </td>
+
+                                    <td>@doctor.YearsOfExperience years</td>
+
+                                    <td>@doctor.ConsultationFee</td>
+
+                                    @using (Html.BeginForm("BookAppointment", "Patient", FormMethod.Post))
+                                    {
+                                        <td>
+                                            <input type="hidden" name="PatientId" value="@patientId" />
+                                            <input type="hidden" name="DoctorId" value="@doctor.DoctorId" />
+                                            <input type="hidden" name="ScheduledDate" value="@scheduledDate" />
+
+                                            <select name="SlotNumber"
+                                                    class="form-control"
+                                                    required="required"
+                                                    title="Please select a time slot.">
+                                                <option value="">Select Time Slot</option>
+                                                <option value="1">09:00 AM - 09:30 AM</option>
+                                                <option value="2">09:30 AM - 10:00 AM</option>
+                                                <option value="3">10:00 AM - 10:30 AM</option>
+                                                <option value="4">10:30 AM - 11:00 AM</option>
+                                                <option value="5">11:00 AM - 11:30 AM</option>
+                                                <option value="6">11:30 AM - 12:00 PM</option>
+                                                <option value="7">12:00 PM - 12:30 PM</option>
+                                                <option value="8">12:30 PM - 01:00 PM</option>
+                                                <option value="9">01:00 PM - 01:30 PM</option>
+                                                <option value="10">01:30 PM - 02:00 PM</option>
+                                                <option value="11">02:00 PM - 02:30 PM</option>
+                                                <option value="12">02:30 PM - 03:00 PM</option>
+                                                <option value="13">03:00 PM - 03:30 PM</option>
+                                                <option value="14">03:30 PM - 04:00 PM</option>
+                                                <option value="15">04:00 PM - 04:30 PM</option>
+                                                <option value="16">04:30 PM - 05:00 PM</option>
+                                            </select>
+                                        </td>
+
+                                        <td>
+                                            <div class="data-table-actions">
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    Book Appointment
+                                                </button>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}
+``

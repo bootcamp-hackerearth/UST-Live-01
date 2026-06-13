@@ -1,0 +1,167 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@model List<SharedClasses.Dtos.HealthRecordDto>
+
+@{
+    ViewBag.Title = "Health Records";
+
+    var patients = ViewBag.Patients as List<SharedClasses.Dtos.PatientDto>;
+    var doctors = ViewBag.Doctors as List<SharedClasses.Dtos.DoctorDto>;
+}
+
+<h2 class="text-success">Health Records</h2>
+
+<div class="data-section">
+
+    <!-- HEADER -->
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Health Record Register</h4>
+            <p>Review diagnoses, prescriptions, and patient medical history.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink("Back to Dashboard", "Index", "Admin", null,
+                new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No health records found</h4>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <table class="data-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>Record ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Appointment ID</th>
+                        <th>Visit Date</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                        <th>Notes</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var record in Model)
+                    {
+                        var patient = patients?.FirstOrDefault(p => p.PatientId == record.PatientId);
+                        var doctor = doctors?.FirstOrDefault(d => d.DoctorId == record.DoctorId);
+
+                        <tr>
+                            <td>@record.HealthRecordId</td>
+
+                            <!-- ✅ PATIENT -->
+                            <td>
+                                @if (patient != null)
+                                {
+                                    <span>@patient.FullName</span><br />
+                                    <small>ID: @record.PatientId</small>
+                                }
+                                else
+                                {
+                                    <span>ID: @record.PatientId</span>
+                                }
+                            </td>
+
+                            <!-- ✅ DOCTOR -->
+                            <td>
+                                @if (doctor != null)
+                                {
+                                    <span>Dr. @doctor.FullName</span><br />
+                                    <small>ID: @record.DoctorId</small>
+                                }
+                                else
+                                {
+                                    <span>ID: @record.DoctorId</span>
+                                }
+                            </td>
+
+                            <td>@record.AppointmentId</td>
+
+                            <td>@record.VisitDate.ToString("dd-MM-yyyy")</td>
+
+                            <td>@record.Diagnosis</td>
+
+                            <td>@record.Prescription</td>
+
+                            <td>@record.Notes</td>
+
+                            <!-- ✅ VIEW BUTTON -->
+                            <td>
+                                <button class="btn-view view-btn"
+                                        data-id="@record.HealthRecordId"
+                                        data-patient="@(patient != null ? patient.FullName : "ID: " + record.PatientId)"
+                                        data-doctor="@(doctor != null ? doctor.FullName : "ID: " + record.DoctorId)"
+                                        data-appointment="@record.AppointmentId"
+                                        data-date="@record.VisitDate.ToString("dd-MM-yyyy")"
+                                        data-diagnosis="@record.Diagnosis"
+                                        data-prescription="@record.Prescription"
+                                        data-notes="@record.Notes">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- ✅ MODAL -->
+<div id="recordModal" class="custom-modal">
+    <div class="modal-box">
+        <h3>Health Record Details</h3>
+
+        <p><b>ID:</b> <span id="mId"></span></p>
+        <p><b>Patient:</b> <span id="mPatient"></span></p>
+        <p><b>Doctor:</b> <span id="mDoctor"></span></p>
+        <p><b>Appointment:</b> <span id="mAppointment"></span></p>
+        <p><b>Visit Date:</b> <span id="mDate"></span></p>
+        <p><b>Diagnosis:</b> <span id="mDiagnosis"></span></p>
+        <p><b>Prescription:</b> <span id="mPrescription"></span></p>
+        <p><b>Notes:</b> <span id="mNotes"></span></p>
+
+        <button class="btn btn-secondary" onclick="closeRecord()">Close</button>
+    </div>
+</div>
+
+<!-- ✅ SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".view-btn").forEach(function (btn) {
+
+        btn.addEventListener("click", function () {
+
+            document.getElementById("mId").textContent = btn.dataset.id;
+            document.getElementById("mPatient").textContent = btn.dataset.patient;
+            document.getElementById("mDoctor").textContent = btn.dataset.doctor;
+            document.getElementById("mAppointment").textContent = btn.dataset.appointment;
+            document.getElementById("mDate").textContent = btn.dataset.date;
+            document.getElementById("mDiagnosis").textContent = btn.dataset.diagnosis;
+            document.getElementById("mPrescription").textContent = btn.dataset.prescription;
+            document.getElementById("mNotes").textContent = btn.dataset.notes;
+
+            document.getElementById("recordModal").style.display = "flex";
+        });
+
+    });
+
+});
+
+function closeRecord(){
+    document.getElementById("recordModal").style.display = "none";
+}
+</script>
+``

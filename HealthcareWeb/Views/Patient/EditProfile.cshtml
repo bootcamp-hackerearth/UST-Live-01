@@ -1,0 +1,167 @@
+@model SharedClasses.Dtos.UpdatePatientDto
+@using SharedClasses.Enums
+
+@{
+    ViewBag.Title = "Edit Profile";
+
+    int patientId = ViewBag.PatientId != null
+        ? Convert.ToInt32(ViewBag.PatientId)
+        : 0;
+}
+
+<h2>Edit Profile</h2>
+
+<p class="page-subtitle">
+    Keep your personal, contact, and insurance information accurate for appointment and health record management.
+</p>
+
+<div class="form-panel">
+    <div class="form-panel-header">
+        <h4>Patient Profile Details</h4>
+        <p>Update the information associated with your patient account.</p>
+    </div>
+
+    <div class="form-meta-card">
+        <div class="form-meta-grid">
+            <div class="form-meta-item">
+                <span>Patient ID</span>
+                <strong>@patientId</strong>
+            </div>
+
+            <div class="form-meta-item">
+                <span>Account Type</span>
+                <strong>Registered Patient</strong>
+            </div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm())
+    {
+        <input type="hidden" name="id" value="@patientId" />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-row-grid">
+            <div class="mb-2">
+                @Html.LabelFor(m => m.FullName, new { @class = "fw-bold" })
+
+                @Html.TextBoxFor(m => m.FullName, new
+                {
+                    @class = "form-control",
+                    required = "required",
+                    pattern = @"^[A-Za-z][A-Za-z\s]*$",
+                    title = "Name should contain only letters and spaces.",
+                    placeholder = "Enter full name"
+                })
+
+                @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-2">
+                @Html.LabelFor(m => m.DateOfBirth, new { @class = "fw-bold" })
+                @Html.TextBoxFor(
+                    m => m.DateOfBirth,
+                    "{0:yyyy-MM-dd}",
+                    new
+                    {
+                        @class = "form-control border-dark",
+                        type = "date"
+                    }
+                )
+                @Html.ValidationMessageFor(m => m.DateOfBirth, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-2">
+                @Html.LabelFor(m => m.Gender, new { @class = "fw-bold" })
+
+                <div class="gender-options">
+                    <label class="form-check-inline">
+                        @Html.RadioButtonFor(
+                            m => m.Gender,
+                            Gender.Male,
+                            new { @class = "form-check-input" }
+                        )
+                        <span class="form-check-label">Male</span>
+                    </label>
+
+                    <label class="form-check-inline">
+                        @Html.RadioButtonFor(
+                            m => m.Gender,
+                            Gender.Female,
+                            new { @class = "form-check-input" }
+                        )
+                        <span class="form-check-label">Female</span>
+                    </label>
+
+                    <label class="form-check-inline">
+                        @Html.RadioButtonFor(
+                            m => m.Gender,
+                            Gender.Other,
+                            new { @class = "form-check-input" }
+                        )
+                        <span class="form-check-label">Other</span>
+                    </label>
+                </div>
+
+                @Html.ValidationMessageFor(m => m.Gender, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-2">
+                @Html.LabelFor(m => m.PhoneNumber, new { @class = "fw-bold" })
+
+                @Html.TextBoxFor(m => m.PhoneNumber, new
+                {
+                    @class = "form-control",
+                    required = "required",
+                    pattern = "^[0-9]{10}$",
+                    inputmode = "numeric",
+                    title = "Phone number must contain exactly 10 digits.",
+                    placeholder = "Enter 10 digit phone number"
+                })
+
+                @Html.ValidationMessageFor(m => m.PhoneNumber, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-2">
+                @Html.LabelFor(m => m.Email, new { @class = "fw-bold" })
+                @Html.TextBoxFor(
+                    m => m.Email,
+                    new
+                    {
+                        @class = "form-control border-dark",
+                        type = "email",
+                        placeholder = "Enter email address"
+                    }
+                )
+                @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-2 form-row-full">
+                @Html.LabelFor(m => m.InsuranceId, new { @class = "fw-bold" })
+                @Html.TextBoxFor(
+                    m => m.InsuranceId,
+                    new
+                    {
+                        @class = "form-control border-dark",
+                        placeholder = "Enter insurance ID"
+                    }
+                )
+                @Html.ValidationMessageFor(m => m.InsuranceId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Update Profile
+            </button>
+
+            @Html.ActionLink(
+                "Back to Dashboard",
+                "Dashboard",
+                "Patient",
+                new { patientId = patientId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
+</div>

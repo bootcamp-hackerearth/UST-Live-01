@@ -1,0 +1,123 @@
+﻿<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>@ViewBag.Title - HealthAxis</title>
+
+    @Styles.Render("~/Content/css")
+
+    <link href="@Url.Content("~/Content/Site.css")?v=20260611" rel="stylesheet" />
+
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="app-header">
+            <nav class="navbar navbar-expand-sm app-navbar">
+                <div class="container-fluid app-navbar-container">
+                    @Html.ActionLink(
+                        "HealthAxis",
+                        "Index",
+                        "Home",
+                        new { area = "" },
+                        new { @class = "navbar-brand app-brand" }
+                    )
+
+                    <button type="button"
+                            class="navbar-toggler"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#mainNavbar"
+                            aria-controls="mainNavbar"
+                            aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="mainNavbar">
+                        <ul class="navbar-nav ms-auto app-nav-links">
+                            <li class="nav-item">
+                                @Html.ActionLink(
+                                    "Home",
+                                    "Index",
+                                    "Home",
+                                    new { area = "" },
+                                    new { @class = "nav-link" }
+                                )
+                            </li>
+
+                            <li class="nav-item">
+                                @Html.ActionLink(
+                                    "Patient Workspace",
+                                    "Login",
+                                    "Patient",
+                                    null,
+                                    new { @class = "nav-link" }
+                                )
+                            </li>
+
+                            <li class="nav-item">
+                                @Html.ActionLink(
+                                    "Doctor Workspace",
+                                    "Login",
+                                    "Doctor",
+                                    null,
+                                    new { @class = "nav-link" }
+                                )
+                            </li>
+
+                            <li class="nav-item">
+                                @Html.ActionLink(
+                                    "Operations",
+                                    "Index",
+                                    "Admin",
+                                    null,
+                                    new { @class = "nav-link nav-link-admin" }
+                                )
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+
+        <main class="app-main">
+            <section class="app-card">
+
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success app-alert">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger app-alert">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+
+                <div class="page-content">
+                    @RenderBody()
+                </div>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <div class="app-footer-content">
+                <span>&copy; @DateTime.Now.Year HealthAxis Healthcare Management</span>
+                <span class="app-footer-separator">•</span>
+                <span>Connected appointments, clinical care, and health records</span>
+            </div>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

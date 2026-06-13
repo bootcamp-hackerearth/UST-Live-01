@@ -1,0 +1,94 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div class="hero-panel home-blue-theme">
+    <div class="hero-badge">
+        HealthAxis Healthcare Management
+    </div>
+
+    <h2 class="hero-title">
+        Welcome to HealthAxis - Your Centralized Healthcare Management Portal
+    </h2>
+
+    <p class="hero-subtitle">
+        Manage patient registration, clinical teams, appointment workflows, and care records through one organized platform.
+    </p>
+
+    <div class="portal-card-grid">
+        <div class="portal-card">
+            <div class="portal-card-icon">👤</div>
+
+            <h4>Patient Care</h4>
+
+            <p>
+                Register new patients, open patient workspace, view appointments, and access health records.
+            </p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink(
+                    "New Patient",
+                    "Register",
+                    "Patient",
+                    null,
+                    new { @class = "btn btn-primary" }
+                )
+
+                @Html.ActionLink(
+                    "Patient Workspace",
+                    "Login",
+                    "Patient",
+                    null,
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+
+        <div class="portal-card">
+            <div class="portal-card-icon">🩺</div>
+
+            <h4>Clinical Team</h4>
+
+            <p>
+                Register doctors, review doctor profiles, and access the doctor workspace for appointments.
+            </p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink(
+                    "Create Doctor",
+                    "CreateDoctor",
+                    "Admin",
+                    null,
+                    new { @class = "btn btn-primary" }
+                )
+                @Html.ActionLink(
+                    "Doctor Workspace",
+                    "Login",
+                    "Doctor",
+                    null,
+                    new { @class = "btn btn-secondary" }
+                )
+            </div>
+        </div>
+
+        <div class="portal-card">
+            <div class="portal-card-icon">📋</div>
+
+            <h4>Operations Console</h4>
+
+            <p>
+                Manage patients, doctors, appointments, and care records from the operations workspace.
+            </p>
+
+            <div class="portal-card-actions">
+                @Html.ActionLink(
+                    "Open Operations",
+                    "Index",
+                    "Admin",
+                    null,
+                    new { @class = "btn btn-info" }
+                )
+            </div>
+        </div>
+    </div>
+</div>

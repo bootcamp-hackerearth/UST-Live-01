@@ -1,0 +1,95 @@
+﻿@model SharedClasses.Dtos.AddHealthRecordDto
+
+@{
+    ViewBag.Title = "Create Health Record";
+}
+
+<h2 class="text-success">Create Health Record</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="col-5">
+    @using (Html.BeginForm())
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="mb-2">
+            @Html.LabelFor(m => m.AppointmentId, new { @class = "fw-bold" })
+            @Html.TextBoxFor(
+                m => m.AppointmentId,
+                new
+                {
+                    @class = "form-control border-dark",
+                    type = "number",
+                    min = "1"
+                }
+            )
+            @Html.ValidationMessageFor(m => m.AppointmentId, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-2">
+            @Html.LabelFor(m => m.Diagnosis, new { @class = "fw-bold" })
+            @Html.TextAreaFor(
+                m => m.Diagnosis,
+                new
+                {
+                    @class = "form-control border-dark",
+                    rows = "4"
+                }
+            )
+            @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-2">
+            @Html.LabelFor(m => m.Prescription, new { @class = "fw-bold" })
+            @Html.TextAreaFor(
+                m => m.Prescription,
+                new
+                {
+                    @class = "form-control border-dark",
+                    rows = "4"
+                }
+            )
+            @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-2">
+            @Html.LabelFor(m => m.Notes, new { @class = "fw-bold" })
+            @Html.TextAreaFor(
+                m => m.Notes,
+                new
+                {
+                    @class = "form-control border-dark",
+                    rows = "4"
+                }
+            )
+            @Html.ValidationMessageFor(m => m.Notes, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Create Health Record
+            </button>
+
+            @Html.ActionLink(
+                "Back",
+                "HealthRecords",
+                "Admin",
+                null,
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
+</div>

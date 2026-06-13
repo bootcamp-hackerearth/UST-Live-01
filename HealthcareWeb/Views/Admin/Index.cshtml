@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Admin Dashboard";
+}
+
+<div class="dashboard-hero">
+    <div class="dashboard-hero-content">
+        <div class="dashboard-kicker">Administration Portal</div>
+
+        <h2>Admin Dashboard</h2>
+
+        <p>
+            Manage patients, doctors, appointments, and health records from one central workspace.
+        </p>
+    </div>
+</div>
+
+<div class="dashboard-card-grid">
+    <div class="dashboard-card">
+
+        <div class="dashboard-card-icon">👤</div>
+
+        <h4>Patients</h4>
+
+        <p>
+            View patient profiles, create new patient records, update information, and manage patient data.
+        </p>
+
+        @Html.ActionLink(
+            "Manage Patients",
+            "Patients",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">🩺</div>
+        <h4>Doctors</h4>
+
+        <p>
+            Manage doctor profiles, specialisations, consultation fees, and active account status.
+        </p>
+
+        @Html.ActionLink(
+            "Manage Doctors",
+            "Doctors",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">📅</div>
+        <h4>Appointments</h4>
+
+        <p>
+            Review appointment schedules, update bookings, and manage patient-doctor appointments.
+        </p>
+
+        @Html.ActionLink(
+            "Manage Appointments",
+            "Appointments",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+    </div>
+
+    <div class="dashboard-card">
+        <div class="dashboard-card-icon">📋</div>
+        <h4>Health Records</h4>
+
+        <p>
+            Access health record history, diagnoses, prescriptions, notes, and related appointment data.
+        </p>
+
+        @Html.ActionLink(
+            "Manage Health Records",
+            "HealthRecords",
+            "Admin",
+            null,
+            new { @class = "btn btn-primary" }
+        )
+    </div>
+</div>
+
+<div class="button-group">
+    @Html.ActionLink(
+        "Back to Home",
+        "Index",
+        "Home",
+        null,
+        new { @class = "btn btn-secondary" }
+    )
+</div>

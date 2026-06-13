@@ -1,0 +1,94 @@
+@model SharedClasses.Dtos.UpdateHealthRecordDto
+
+@{
+    ViewBag.Title = "Edit Health Record";
+    int doctorId = ViewBag.DoctorId != null ? Convert.ToInt32(ViewBag.DoctorId) : 0;
+    int healthRecordId = ViewBag.HealthRecordId != null ? Convert.ToInt32(ViewBag.HealthRecordId) : 0;
+}
+
+<h2 class="text-success">Edit Health Record</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="col-5">
+    @using (Html.BeginForm())
+    {
+        <input type="hidden" name="id" value="@healthRecordId" />
+        <input type="hidden" name="doctorId" value="@doctorId" />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="mb-2">
+            <label class="fw-bold">Health Record ID</label>
+            <input type="text"
+                   class="form-control border-dark"
+                   value="@healthRecordId"
+                   readonly="readonly" />
+        </div>
+
+        <div class="mb-2">
+            @Html.LabelFor(m => m.Diagnosis, new { @class = "fw-bold" })
+            @Html.TextAreaFor(
+                m => m.Diagnosis,
+                new
+                {
+                    @class = "form-control border-dark",
+                    rows = "4"
+                }
+            )
+            @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-2">
+            @Html.LabelFor(m => m.Prescription, new { @class = "fw-bold" })
+            @Html.TextAreaFor(
+                m => m.Prescription,
+                new
+                {
+                    @class = "form-control border-dark",
+                    rows = "4"
+                }
+            )
+            @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="mb-2">
+            @Html.LabelFor(m => m.Notes, new { @class = "fw-bold" })
+            @Html.TextAreaFor(
+                m => m.Notes,
+                new
+                {
+                    @class = "form-control border-dark",
+                    rows = "4"
+                }
+            )
+            @Html.ValidationMessageFor(m => m.Notes, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="btn btn-primary">
+                Update Health Record
+            </button>
+
+            @Html.ActionLink(
+                "Back to Health Records",
+                "HealthRecords",
+                "Doctor",
+                new { doctorId = doctorId },
+                new { @class = "btn btn-secondary" }
+            )
+        </div>
+    }
+</div>

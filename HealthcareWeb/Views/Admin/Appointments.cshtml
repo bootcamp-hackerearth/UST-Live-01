@@ -1,0 +1,225 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@model List<SharedClasses.Dtos.AppointmentDto>
+
+@functions {
+    public string GetSlotTime(int slotNumber)
+    {
+        switch (slotNumber)
+        {
+            case 1: return "09:00 AM - 09:30 AM";
+            case 2: return "09:30 AM - 10:00 AM";
+            case 3: return "10:00 AM - 10:30 AM";
+            case 4: return "10:30 AM - 11:00 AM";
+            case 5: return "11:00 AM - 11:30 AM";
+            case 6: return "11:30 AM - 12:00 PM";
+            case 7: return "12:00 PM - 12:30 PM";
+            case 8: return "12:30 PM - 01:00 PM";
+            case 9: return "01:00 PM - 01:30 PM";
+            case 10: return "01:30 PM - 02:00 PM";
+            case 11: return "02:00 PM - 02:30 PM";
+            case 12: return "02:30 PM - 03:00 PM";
+            case 13: return "03:00 PM - 03:30 PM";
+            case 14: return "03:30 PM - 04:00 PM";
+            case 15: return "04:00 PM - 04:30 PM";
+            case 16: return "04:30 PM - 05:00 PM";
+            default: return "Invalid Slot";
+        }
+    }
+}
+
+@{
+    ViewBag.Title = "Appointments";
+    string searchText = ViewBag.SearchText as string ?? "";
+
+    var patients = ViewBag.Patients as List<SharedClasses.Dtos.PatientDto>;
+    var doctors = ViewBag.Doctors as List<SharedClasses.Dtos.DoctorDto>;
+}
+
+<h2 class="text-success">Appointments</h2>
+
+<div class="data-section">
+
+    <!-- HEADER -->
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Appointment Register</h4>
+            <p>Search, review, and view appointment details.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink("Create Appointment", "CreateAppointment", "Admin", null,
+                new { @class = "btn btn-primary" })
+
+            @Html.ActionLink("Back to Dashboard", "Index", "Admin", null,
+                new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+
+    <!-- ✅ SEARCH (UNCHANGED) -->
+    <div class="form-panel form-panel-wide search-full">
+                @using (Html.BeginForm("Appointments", "Admin", FormMethod.Get))
+        {
+            <div class="search-row">
+                <div class="search-input">
+                    <label class="fw-bold">Search Appointment</label>
+
+                    <input type="text"
+                           name="searchText"
+                           value="@searchText"
+                           class="form-control"
+                           placeholder="Search by appointment ID, patient, doctor..." />
+                </div>
+
+                <div class="search-buttons">
+                    <button type="submit" class="btn btn-primary">Search</button>
+
+                    @Html.ActionLink("Clear", "Appointments", "Admin", null,
+                        new { @class = "btn btn-secondary" })
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <!-- TABLE -->
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No appointments found</h4>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <table class="data-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var appointment in Model)
+                    {
+                        var patient = patients?.FirstOrDefault(p => p.PatientId == appointment.PatientId);
+                        var doctor = doctors?.FirstOrDefault(d => d.DoctorId == appointment.DoctorId);
+
+                        <tr>
+                            <td>@appointment.AppointmentId</td>
+
+                            <td class="text-left">
+                                @if (patient != null)
+                                {
+                                    <span>@patient.FullName</span><br />
+                                    <small>ID: @appointment.PatientId</small>
+                                }
+                                else
+                                {
+                                    <span>ID: @appointment.PatientId</span>
+                                }
+                            </td>
+                            
+                            <td class="text-left">
+                                @if (doctor != null)
+                                {
+                                    <span>Dr. @doctor.FullName</span><br />
+                                    <small>ID: @appointment.DoctorId</small>
+                                }
+                                else
+                                {
+                                    <span>ID: @appointment.DoctorId</span>
+                                }
+                            </td>
+                            <td>@appointment.ScheduledDate.ToString("dd-MM-yyyy")</td>
+
+                            <td>@GetSlotTime(appointment.SlotNumber)</td>
+
+                            <!-- ✅ STATUS COLORS -->
+                            <td>
+                                @if (appointment.Status.ToString() == "Pending")
+                                {
+                                    <span class="status-badge status-badge-warning">Pending</span>
+                                }
+                                else if (appointment.Status.ToString() == "Confirmed")
+                                {
+                                    <span class="status-badge status-badge-info">Confirmed</span>
+                                }
+                                else if (appointment.Status.ToString() == "Completed")
+                                {
+                                    <span class="status-badge status-badge-success">Completed</span>
+                                }
+                                else if (appointment.Status.ToString() == "Cancelled")
+                                {
+                                    <span class="status-badge status-badge-danger">Cancelled</span>
+                                }
+                            </td>
+
+                            <!-- ✅ VIEW BUTTON -->
+                            <td>
+                                <button class="btn-view view-btn"
+                                        data-id="@appointment.AppointmentId"
+                                        data-patient="@(patient != null ? patient.FullName : "ID: " + appointment.PatientId)"
+                                        data-doctor="@(doctor != null ? doctor.FullName : "ID: " + appointment.DoctorId)"
+                                        data-date="@appointment.ScheduledDate.ToString("dd-MM-yyyy")"
+                                        data-time="@GetSlotTime(appointment.SlotNumber)"
+                                        data-status="@appointment.Status">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- ✅ MODAL -->
+<div id="appointmentModal" class="custom-modal">
+    <div class="modal-box">
+        <h3>Appointment Details</h3>
+
+        <p><b>ID:</b> <span id="modalId"></span></p>
+        <p><b>Patient:</b> <span id="modalPatient"></span></p>
+        <p><b>Doctor:</b> <span id="modalDoctor"></span></p>
+        <p><b>Date:</b> <span id="modalDate"></span></p>
+        <p><b>Time:</b> <span id="modalTime"></span></p>
+        <p><b>Status:</b> <span id="modalStatus"></span></p>
+
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<!-- ✅ SCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    document.querySelectorAll(".view-btn").forEach(function(button){
+
+        button.addEventListener("click", function(){
+
+            document.getElementById("modalId").textContent = button.dataset.id;
+            document.getElementById("modalPatient").textContent = button.dataset.patient;
+            document.getElementById("modalDoctor").textContent = button.dataset.doctor;
+            document.getElementById("modalDate").textContent = button.dataset.date;
+            document.getElementById("modalTime").textContent = button.dataset.time;
+            document.getElementById("modalStatus").textContent = button.dataset.status;
+
+            document.getElementById("appointmentModal").style.display = "flex";
+        });
+
+    });
+
+});
+
+function closeModal(){
+    document.getElementById("appointmentModal").style.display = "none";
+}
+</script>

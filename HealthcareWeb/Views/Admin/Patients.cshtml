@@ -1,0 +1,140 @@
+﻿@using System.Collections.Generic
+@model List<SharedClasses.Dtos.PatientDto>
+
+@{
+    ViewBag.Title = "Patients";
+
+    string searchText = ViewBag.SearchText as string ?? "";
+    var patientSuggestions = ViewBag.PatientSuggestions as List<SharedClasses.Dtos.PatientDto>;
+}
+
+<h2 class="text-success">Patients</h2>
+
+<div class="data-section">
+    <div class="data-section-header">
+        <div class="data-section-title">
+            <h4>Patient Directory</h4>
+            <p>View, search, update, and manage registered patient records.</p>
+        </div>
+
+        <div class="data-section-actions">
+            @Html.ActionLink("Create Patient", "CreatePatient", "Admin", null, new { @class = "btn btn-primary" })
+            @Html.ActionLink("Back to Dashboard", "Index", "Admin", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="form-panel form-panel-wide" style="margin-bottom:10px; padding-bottom:10px; max-width:100%;">
+        @using (Html.BeginForm("Patients", "Admin", FormMethod.Get))
+        {
+            <div class="form-row-grid" style="width:100%;">
+                <div class="mb-2 form-row-full" style="width:100%;">
+                    <label class="fw-bold">Search Patient</label>
+
+                    <input type="text"
+                           name="searchText"
+                           value="@searchText"
+                           class="form-control"
+                           list="patientSuggestions"
+                           placeholder="Search by patient ID, name, email, phone, or insurance ID" />
+
+                    <datalist id="patientSuggestions">
+                        @if (patientSuggestions != null)
+                        {
+                            foreach (var patient in patientSuggestions)
+                            {
+                                <option value="@patient.PatientId" label="@patient.FullName"></option>
+                                <option value="@patient.FullName" label="Patient Name"></option>
+                                <option value="@patient.Email" label="@patient.FullName"></option>
+                                <option value="@patient.PhoneNumber" label="@patient.FullName"></option>
+                                <option value="@patient.InsuranceId" label="@patient.FullName"></option>
+                            }
+                        }
+                    </datalist>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:15px; margin-top:15px;">
+                <button type="submit" class="btn btn-primary">Search</button>
+                @Html.ActionLink("Clear", "Patients", "Admin", null, new { @class = "btn btn-secondary" })
+            </div>
+        }
+    </div>
+
+    <!-- TABLE -->
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="empty-state-card">
+            <h4>No patients found</h4>
+            <p>No patient records match the current search criteria.</p>
+        </div>
+    }
+    else
+    {
+        <div class="data-table-card">
+            <table class="data-table" style="width:100%;">
+                <thead>
+                    <tr>
+                        <th style="width:80px;">Patient ID</th>
+                        <th>Full Name</th>
+                        <th style="width:130px;">Date of Birth</th>
+                        <th style="width:120px;">Gender</th>
+                        <th style="width:140px;">Phone</th>
+                        <th style="width:220px;">Email</th>
+                        <th style="width:120px;">Insurance ID</th>
+                        <th style="width:200px;">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var patient in Model)
+                    {
+                        <tr>
+                            <td>@patient.PatientId</td>
+
+                            <td>@patient.FullName</td>
+
+                            <td>@patient.DateOfBirth.ToString("dd-MM-yyyy")</td>
+
+                            <td>
+                                <span class="status-badge status-badge-info">
+                                    @patient.Gender
+                                </span>
+                            </td>
+
+                            <td>@patient.PhoneNumber</td>
+
+                            <td style="word-break: break-word;">
+                                @patient.Email
+                            </td>
+
+                            <td>@patient.InsuranceId</td>
+
+                            <td>
+                                <div class="actions-row">
+
+                                    @Html.ActionLink(
+                                        "Edit",
+                                        "EditPatient",
+                                        "Admin",
+                                        new { id = patient.PatientId },
+                                        new { @class = "btn btn-warning btn-sm" }
+                                    )
+
+                                    @Html.ActionLink(
+                                        "Appointments",
+                                        "AppointmentsByPatient",
+                                        "Admin",
+                                        new { patientId = patient.PatientId },
+                                        new { @class = "btn btn-info btn-sm" }
+                                    )
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
