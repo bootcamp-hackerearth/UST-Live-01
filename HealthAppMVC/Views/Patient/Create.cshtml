@@ -2,169 +2,452 @@
 
 @{
     ViewBag.Title = "Register Patient";
+
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+    var minimumDob = DateTime.Today.AddYears(-110).ToString("yyyy-MM-dd");
 }
 
+<style>
+    .is-invalid {
+        border: 1px solid #dc3545 !important;
+    }
 
+    .custom-error {
+        display: block;
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: 5px;
+    }
 
-@using (Html.BeginForm())
+    .form-group {
+        margin-bottom: 15px;
+    }
+</style>
+
+@using (Html.BeginForm(
+    "Create",
+    "Patient",
+    FormMethod.Post,
+    new { id = "patientCreateForm" }))
 {
     @Html.AntiForgeryToken()
 
-<div class="form-horizontal">
-    <h2>Register Patient</h2>
+    <div class="form-horizontal">
 
-    @Html.ValidationSummary(
-        true,
-        "",
-        new { @class = "text-danger" })
+        <h2>Register Patient</h2>
 
-    <div class="form-group">
-
-        <label>Name</label>
-
-        @Html.TextBoxFor(
-            m => m.FullName,
-            new { @class = "form-control" })
-
-        @Html.ValidationMessageFor(
-            m => m.FullName,
+        @Html.ValidationSummary(
+            true,
             "",
             new { @class = "text-danger" })
 
-    </div>
+        <div class="form-group">
+            <label for="FullName">Name</label>
 
-    <div class="form-group">
-
-        <label>DOB</label>
-
-        @Html.TextBoxFor(
-            m => m.DateOfBirth,
-            "{0:yyyy-MM-dd}",
-            new
-            {
-                @class = "form-control",
-                type = "date"
-            })
-
-        @Html.ValidationMessageFor(
-            m => m.DateOfBirth,
-            "",
-            new { @class = "text-danger" })
-
-    </div>
-
-    <div class="form-group">
-
-        <label>Gender</label>
-
-        @Html.DropDownListFor(
-            m => m.Gender,
-            new List<SelectListItem>
-            {
-                new SelectListItem
+            @Html.TextBoxFor(
+                m => m.FullName,
+                new
                 {
-                    Text = "Male",
-                    Value = "Male"
+                    @class = "form-control",
+                    placeholder = "Enter patient full name",
+                    minlength = "3",
+                    maxlength = "100"
+                })
+
+            <span id="FullNameError" class="custom-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="DateOfBirth">DOB</label>
+
+            @Html.TextBoxFor(
+                m => m.DateOfBirth,
+                "{0:yyyy-MM-dd}",
+                new
+                {
+                    @class = "form-control",
+                    type = "date",
+                    min = minimumDob,
+                    max = today
+                })
+
+            <span id="DateOfBirthError" class="custom-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="Gender">Gender</label>
+
+            @Html.DropDownListFor(
+                m => m.Gender,
+                new List<SelectListItem>
+                {
+                    new SelectListItem
+                    {
+                        Text = "Male",
+                        Value = "Male"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Female",
+                        Value = "Female"
+                    },
+                    new SelectListItem
+                    {
+                        Text = "Other",
+                        Value = "Other"
+                    }
                 },
-
-                new SelectListItem
+                "--Select--",
+                new
                 {
-                    Text = "Female",
-                    Value = "Female"
-                },
+                    @class = "form-control"
+                })
 
-                new SelectListItem
+            <span id="GenderError" class="custom-error"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="Email">Email</label>
+
+            @Html.TextBoxFor(
+                m => m.Email,
+                new
                 {
-                    Text = "Other",
-                    Value = "Other"
-                }
-            },
-            "--Select--",
-            new { @class = "form-control" })
+                    @class = "form-control",
+                    type = "text",
+                    placeholder = "Enter email address",
+                    maxlength = "150"
+                })
 
-        @Html.ValidationMessageFor(
-            m => m.Gender,
-            "",
-            new { @class = "text-danger" })
+            <span id="EmailError" class="custom-error"></span>
+        </div>
 
-    </div>
+        <div class="form-group">
+            <label for="InsuranceId">Insurance ID</label>
 
-    
+            @Html.TextBoxFor(
+                m => m.InsuranceId,
+                new
+                {
+                    @class = "form-control",
+                    placeholder = "Enter insurance ID",
+                    maxlength = "50"
+                })
 
-    <div class="form-group">
+            <span id="InsuranceIdError" class="custom-error"></span>
+        </div>
 
-        <label>Email</label>
+        <br />
 
-        @Html.TextBoxFor(
-            m => m.Email,
-            new
-            {
-                @class = "form-control",
-                type = "email"
-            })
+        <input type="submit"
+               value="Save"
+               class="btn btn-success" />
 
-        @Html.ValidationMessageFor(
-            m => m.Email,
-            "",
-            new { @class = "text-danger" })
-
-    </div>
-
-    <div class="form-group">
-
-        <label>Insurance ID</label>
-
-        @Html.TextBoxFor(
-            m => m.InsuranceId,
-            new { @class = "form-control" })
+        @Html.ActionLink(
+            "Back",
+            "Index",
+            null,
+            new { @class = "btn btn-secondary" })
 
     </div>
-
-    <br />
-
-    <input type="submit"
-           value="Save"
-           class="btn btn-success" />
-
-    @Html.ActionLink(
-        "Back",
-        "Index",
-        null,
-        new { @class = "btn btn-secondary" })
-
-</div>
 }
 
 @section Scripts {
-
-    @Scripts.Render("~/bundles/jqueryval")
 
     <script>
 
         $(document).ready(function () {
 
-            $("#DateOfBirth").change(function () {
+            $("#FullName").on("input blur", function () {
+                validateFullName();
+            });
 
-                var selectedDate =
-                    new Date($(this).val());
+            $("#DateOfBirth").on("input change blur", function () {
+                validateDateOfBirth();
+            });
 
-                var today =
-                    new Date();
+            $("#Gender").on("change blur", function () {
+                validateGender();
+            });
 
-                today.setHours(0, 0, 0, 0);
+            $("#Email").on("input blur", function () {
+                validateEmail();
+            });
 
-                $(".dob-error").remove();
+            $("#InsuranceId").on("input blur", function () {
+                validateInsuranceId();
+            });
 
-                if (selectedDate > today) {
+            $("#patientCreateForm").on("submit", function (event) {
 
-                    $(this).after(
-                        '<span class="text-danger dob-error">' +
-                        'Future date not allowed.' +
-                        '</span>');
+                var isValid = validatePatientForm();
+
+                if (!isValid) {
+                    event.preventDefault();
+                    return false;
                 }
+
+                return true;
             });
 
         });
+
+        function validatePatientForm() {
+
+            var isFullNameValid = validateFullName();
+            var isDateOfBirthValid = validateDateOfBirth();
+            var isGenderValid = validateGender();
+            var isEmailValid = validateEmail();
+            var isInsuranceIdValid = validateInsuranceId();
+
+            return isFullNameValid &&
+                   isDateOfBirthValid &&
+                   isGenderValid &&
+                   isEmailValid &&
+                   isInsuranceIdValid;
+        }
+
+        function validateFullName() {
+
+            var fullName = $("#FullName").val().trim();
+
+            if (fullName === "") {
+
+                showFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Patient name is required.");
+
+                return false;
+            }
+
+            if (fullName.length < 3) {
+
+                showFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Patient name must be at least 3 characters.");
+
+                return false;
+            }
+
+            if (fullName.length > 100) {
+
+                showFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Patient name cannot exceed 100 characters.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "FullName",
+                "FullNameError");
+
+            return true;
+        }
+
+        function validateDateOfBirth() {
+
+            var dobValue = $("#DateOfBirth").val();
+
+            if (!dobValue) {
+
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Date of birth is required.");
+
+                return false;
+            }
+
+            var selectedDate = new Date(dobValue);
+
+            if (isNaN(selectedDate.getTime())) {
+
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Enter a valid date of birth.");
+
+                return false;
+            }
+
+            var today = new Date();
+            var minimumDate = new Date();
+
+            minimumDate.setFullYear(
+                minimumDate.getFullYear() - 110
+            );
+
+            today.setHours(0, 0, 0, 0);
+            minimumDate.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate > today) {
+
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Future date not allowed.");
+
+                return false;
+            }
+
+            if (selectedDate < minimumDate) {
+
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Date of birth cannot be more than 110 years ago.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "DateOfBirth",
+                "DateOfBirthError");
+
+            return true;
+        }
+
+        function validateGender() {
+
+            var gender = $("#Gender").val();
+
+            if (!gender) {
+
+                showFieldError(
+                    "Gender",
+                    "GenderError",
+                    "Gender is required.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "Gender",
+                "GenderError");
+
+            return true;
+        }
+
+        function validateEmail() {
+
+    var email = $("#Email").val();
+
+    if (!email || email.trim() === "") {
+
+        showFieldError(
+            "Email",
+            "EmailError",
+            "Email is required.");
+
+        return false;
+    }
+
+    email = email.trim();
+
+    var emailPattern =
+        /^[A-Za-z0-9._%+-]+@@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    if (email.length > 150) {
+
+        showFieldError(
+            "Email",
+            "EmailError",
+            "Email cannot exceed 150 characters.");
+
+        return false;
+    }
+
+    if (/\s/.test(email)) {
+
+        showFieldError(
+            "Email",
+            "EmailError",
+            "Email cannot contain spaces.");
+
+        return false;
+    }
+
+    if (email.startsWith(".") || email.endsWith(".")) {
+
+        showFieldError(
+            "Email",
+            "EmailError",
+            "Email cannot start or end with a dot.");
+
+        return false;
+    }
+
+    if (email.indexOf("..") !== -1) {
+
+        showFieldError(
+            "Email",
+            "EmailError",
+            "Email cannot contain consecutive dots.");
+
+        return false;
+    }
+
+    if (!emailPattern.test(email)) {
+
+        showFieldError(
+            "Email",
+            "EmailError",
+            "Enter a valid email address.");
+
+        return false;
+    }
+
+    clearFieldError(
+        "Email",
+        "EmailError");
+
+    return true;
+}
+
+        function validateInsuranceId() {
+
+            var insuranceId = $("#InsuranceId").val().trim();
+
+            if (insuranceId.length > 50) {
+
+                showFieldError(
+                    "InsuranceId",
+                    "InsuranceIdError",
+                    "Insurance ID cannot exceed 50 characters.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "InsuranceId",
+                "InsuranceIdError");
+
+            return true;
+        }
+
+        function showFieldError(
+            fieldId,
+            errorId,
+            message) {
+
+            $("#" + fieldId).addClass("is-invalid");
+
+            $("#" + errorId).text(message);
+        }
+
+        function clearFieldError(
+            fieldId,
+            errorId) {
+
+            $("#" + fieldId).removeClass("is-invalid");
+
+            $("#" + errorId).text("");
+        }
 
     </script>
 }

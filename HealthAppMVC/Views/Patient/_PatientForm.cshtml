@@ -1,30 +1,56 @@
 ﻿@model HealthAppWebAPI.Models.Dtos.CreatePatientDto
 @using HealthAppMVC.Models
 
+@{
+    var today = DateTime.Today.ToString("yyyy-MM-dd");
+    var minimumDob = DateTime.Today.AddYears(-110).ToString("yyyy-MM-dd");
+}
+
+<style>
+    .is-invalid {
+        border: 1px solid #dc3545 !important;
+    }
+
+    .custom-error {
+        display: block;
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+</style>
+
 <div class="row">
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            <label for="FullName" class="form-label">Full Name</label>
+
+            <label for="FullName" class="form-label">
+                Full Name
+            </label>
 
             @Html.TextBoxFor(
                 m => m.FullName,
                 new
                 {
                     @class = "form-control",
-                    placeholder = "Enter patient full name"
+                    placeholder = "Enter patient full name",
+                    minlength = "3",
+                    maxlength = "100"
                 })
 
-            @Html.ValidationMessageFor(
-                m => m.FullName,
-                "",
-                new { @class = "text-danger" })
+            <span id="FullNameError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            <label for="DateOfBirth" class="form-label">Date of Birth</label>
+
+            <label for="DateOfBirth" class="form-label">
+                Date of Birth
+            </label>
 
             @Html.TextBox(
                 "DateOfBirth",
@@ -34,13 +60,15 @@
                 new
                 {
                     @class = "form-control",
-                    type = "date"
+                    type = "date",
+                    min = minimumDob,
+                    max = today
                 })
 
-            @Html.ValidationMessageFor(
-                m => m.DateOfBirth,
-                "",
-                new { @class = "text-danger" })
+            <span id="DateOfBirthError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
@@ -50,7 +78,10 @@
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            <label for="Gender" class="form-label">Gender</label>
+
+            <label for="Gender" class="form-label">
+                Gender
+            </label>
 
             @Html.DropDownListFor(
                 m => m.Gender,
@@ -59,32 +90,39 @@
                     Model != null ? Model.Gender : null
                 ),
                 "Select Gender",
-                new { @class = "form-control" })
+                new
+                {
+                    @class = "form-control"
+                })
 
-            @Html.ValidationMessageFor(
-                m => m.Gender,
-                "",
-                new { @class = "text-danger" })
+            <span id="GenderError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            <label for="Email" class="form-label">Email</label>
+
+            <label for="Email" class="form-label">
+                Email
+            </label>
 
             @Html.TextBoxFor(
                 m => m.Email,
                 new
                 {
                     @class = "form-control",
-                    type = "email",
-                    placeholder = "Enter email address"
+                    type = "text",
+                    placeholder = "Enter email address",
+                    maxlength = "150"
                 })
 
-            @Html.ValidationMessageFor(
-                m => m.Email,
-                "",
-                new { @class = "text-danger" })
+            <span id="EmailError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
@@ -94,20 +132,24 @@
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            <label for="InsuranceId" class="form-label">Insurance ID</label>
+
+            <label for="InsuranceId" class="form-label">
+                Insurance ID
+            </label>
 
             @Html.TextBoxFor(
                 m => m.InsuranceId,
                 new
                 {
                     @class = "form-control",
-                    placeholder = "Enter insurance ID"
+                    placeholder = "Enter insurance ID",
+                    maxlength = "50"
                 })
 
-            @Html.ValidationMessageFor(
-                m => m.InsuranceId,
-                "",
-                new { @class = "text-danger" })
+            <span id="InsuranceIdError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 

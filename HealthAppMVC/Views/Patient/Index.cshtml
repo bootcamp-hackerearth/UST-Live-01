@@ -203,6 +203,10 @@
 
         function submitPatientForm(form) {
 
+            if (!validatePatientForm()) {
+                return false;
+            }
+
             $.ajax({
                 url: $(form).attr('action'),
                 type: 'POST',
@@ -212,14 +216,20 @@
 
                     if (response.success) {
 
-                        var modalElement = document.getElementById('patientModal');
-                        var modal = bootstrap.Modal.getInstance(modalElement);
+                        var modalElement =
+                            document.getElementById('patientModal');
+
+                        var modal =
+                            bootstrap.Modal.getInstance(modalElement);
 
                         if (modal) {
                             modal.hide();
                         }
 
-                        showToast("success", response.message);
+                        showToast(
+                            "success",
+                            response.message
+                        );
 
                         setTimeout(function () {
                             location.reload();
@@ -227,23 +237,296 @@
                     }
                     else {
                         $('#patientModalContent').html(response);
-                        $.validator.unobtrusive.parse('#patientModalContent');
+
+                        $.validator.unobtrusive.parse(
+                            '#patientModalContent'
+                        );
+
+                        wirePatientValidation();
                     }
                 },
 
                 error: function (xhr) {
 
-                    var message = "Something went wrong. Please try again.";
+                    var message =
+                        "Something went wrong. Please try again.";
 
                     if (xhr.responseText) {
                         message = xhr.responseText;
                     }
 
-                    showToast("error", message);
+                    showToast(
+                        "error",
+                        message
+                    );
                 }
             });
 
             return false;
+        }
+        function wirePatientValidation() {
+
+            $("#FullName").off("input blur").on("input blur", function () {
+                validateFullName();
+            });
+
+            $("#DateOfBirth").off("input change blur").on("input change blur", function () {
+                validateDateOfBirth();
+            });
+
+            $("#Gender").off("change blur").on("change blur", function () {
+                validateGender();
+            });
+
+            $("#Email").off("input blur").on("input blur", function () {
+                validateEmail();
+            });
+
+            $("#InsuranceId").off("input blur").on("input blur", function () {
+                validateInsuranceId();
+            });
+        }
+
+        function validatePatientForm() {
+
+            var isFullNameValid = validateFullName();
+            var isDateOfBirthValid = validateDateOfBirth();
+            var isGenderValid = validateGender();
+            var isEmailValid = validateEmail();
+            var isInsuranceIdValid = validateInsuranceId();
+
+            return isFullNameValid &&
+                isDateOfBirthValid &&
+                isGenderValid &&
+                isEmailValid &&
+                isInsuranceIdValid;
+        }
+
+        function validateFullName() {
+
+            var fullName = $("#FullName").val().trim();
+
+            if (fullName === "") {
+                showFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Patient name is required.");
+
+                return false;
+            }
+
+            if (fullName.length < 3) {
+                showFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Patient name must be at least 3 characters.");
+
+                return false;
+            }
+
+            if (fullName.length > 100) {
+                showFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Patient name cannot exceed 100 characters.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "FullName",
+                "FullNameError");
+
+            return true;
+        }
+
+        function validateDateOfBirth() {
+
+            var dobValue = $("#DateOfBirth").val();
+
+            if (!dobValue) {
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Date of birth is required.");
+
+                return false;
+            }
+
+            var selectedDate = new Date(dobValue);
+
+            if (isNaN(selectedDate.getTime())) {
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Enter a valid date of birth.");
+
+                return false;
+            }
+
+            var today = new Date();
+            var minimumDate = new Date();
+
+            minimumDate.setFullYear(
+                minimumDate.getFullYear() - 110
+            );
+
+            today.setHours(0, 0, 0, 0);
+            minimumDate.setHours(0, 0, 0, 0);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate > today) {
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Future date not allowed.");
+
+                return false;
+            }
+
+            if (selectedDate < minimumDate) {
+                showFieldError(
+                    "DateOfBirth",
+                    "DateOfBirthError",
+                    "Date of birth cannot be more than 110 years ago.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "DateOfBirth",
+                "DateOfBirthError");
+
+            return true;
+        }
+
+        function validateGender() {
+
+            var gender = $("#Gender").val();
+
+            if (!gender) {
+                showFieldError(
+                    "Gender",
+                    "GenderError",
+                    "Gender is required.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "Gender",
+                "GenderError");
+
+            return true;
+        }
+
+        function validateEmail() {
+
+            var email = $("#Email").val();
+
+            if (!email || email.trim() === "") {
+                showFieldError(
+                    "Email",
+                    "EmailError",
+                    "Email is required.");
+
+                return false;
+            }
+
+            email = email.trim();
+
+            var emailPattern =
+                /^[A-Za-z0-9._%+-]+@@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+            if (email.length > 150) {
+                showFieldError(
+                    "Email",
+                    "EmailError",
+                    "Email cannot exceed 150 characters.");
+
+                return false;
+            }
+
+            if (/\s/.test(email)) {
+                showFieldError(
+                    "Email",
+                    "EmailError",
+                    "Email cannot contain spaces.");
+
+                return false;
+            }
+
+            if (email.startsWith(".") || email.endsWith(".")) {
+                showFieldError(
+                    "Email",
+                    "EmailError",
+                    "Email cannot start or end with a dot.");
+
+                return false;
+            }
+
+            if (email.indexOf("..") !== -1) {
+                showFieldError(
+                    "Email",
+                    "EmailError",
+                    "Email cannot contain consecutive dots.");
+
+                return false;
+            }
+
+            if (!emailPattern.test(email)) {
+                showFieldError(
+                    "Email",
+                    "EmailError",
+                    "Enter a valid email address.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "Email",
+                "EmailError");
+
+            return true;
+        }
+
+        function validateInsuranceId() {
+
+            var insuranceId = $("#InsuranceId").val().trim();
+
+            if (insuranceId.length > 50) {
+                showFieldError(
+                    "InsuranceId",
+                    "InsuranceIdError",
+                    "Insurance ID cannot exceed 50 characters.");
+
+                return false;
+            }
+
+            clearFieldError(
+                "InsuranceId",
+                "InsuranceIdError");
+
+            return true;
+        }
+
+        function showFieldError(
+            fieldId,
+            errorId,
+            message) {
+
+            $("#" + fieldId).addClass("is-invalid");
+
+            $("#" + errorId).text(message);
+        }
+
+        function clearFieldError(
+            fieldId,
+            errorId) {
+
+            $("#" + fieldId).removeClass("is-invalid");
+
+            $("#" + errorId).text("");
         }
 
     </script>

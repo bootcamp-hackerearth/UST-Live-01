@@ -1,26 +1,51 @@
 ﻿@model HealthAppWebAPI.Models.Dtos.CreateDoctorDto
 @using HealthAppMVC.Models
 
+<style>
+    .is-invalid {
+        border: 1px solid #dc3545 !important;
+    }
+
+    .custom-error {
+        display: block;
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+</style>
 
 <div class="row">
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.FullName)
+
+            <label for="FullName" class="form-label">
+                Full Name
+            </label>
+
             @Html.TextBoxFor(
                 m => m.FullName,
                 new
                 {
                     @class = "form-control",
-                    placeholder = "Enter doctor full name"
+                    placeholder = "Enter doctor name",
+                    minlength = "3",
+                    maxlength = "100"
                 })
-            @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+
+            <span id="FullNameError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.Specialisation)
+
+            <label for="Specialisation" class="form-label">
+                Specialisation
+            </label>
 
             @Html.DropDownListFor(
                 m => m.Specialisation,
@@ -29,43 +54,66 @@
                     Model != null ? Model.Specialisation : null
                 ),
                 "Select Specialisation",
-                new { @class = "form-control" })
+                new
+                {
+                    @class = "form-control"
+                })
 
-            @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+            <span id="SpecialisationError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
 </div>
 
-
-
 <div class="row">
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.DoctorEmail)
+
+            <label for="DoctorEmail" class="form-label">
+                Email
+            </label>
+
             @Html.TextBoxFor(
                 m => m.DoctorEmail,
                 new
                 {
                     @class = "form-control",
-                    placeholder = "Enter email address"
+                    type = "text",
+                    placeholder = "Enter email address",
+                    maxlength = "150"
                 })
-            @Html.ValidationMessageFor(m => m.DoctorEmail, "", new { @class = "text-danger" })
+
+            <span id="DoctorEmailError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.DoctorPhoneNo)
+
+            <label for="DoctorPhoneNo" class="form-label">
+                Phone Number
+            </label>
+
             @Html.TextBoxFor(
                 m => m.DoctorPhoneNo,
                 new
                 {
                     @class = "form-control",
-                    placeholder = "Enter phone number"
+                    placeholder = "Enter phone number",
+                    maxlength = "10"
                 })
-            @Html.ValidationMessageFor(m => m.DoctorPhoneNo, "", new { @class = "text-danger" })
+
+            <span id="DoctorPhoneNoError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
@@ -75,7 +123,11 @@
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.YearsOfExperience)
+
+            <label for="YearsOfExperience" class="form-label">
+                Years Of Experience
+            </label>
+
             @Html.TextBoxFor(
                 m => m.YearsOfExperience,
                 new
@@ -83,15 +135,24 @@
                     @class = "form-control",
                     type = "number",
                     min = "0",
+                    max = "60",
                     placeholder = "Enter years of experience"
                 })
-            @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
+
+            <span id="YearsOfExperienceError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
     <div class="col-md-6">
         <div class="form-group mb-3">
-            @Html.LabelFor(m => m.ConsultationFee)
+
+            <label for="ConsultationFee" class="form-label">
+                Consultation Fee
+            </label>
+
             @Html.TextBoxFor(
                 m => m.ConsultationFee,
                 new
@@ -99,12 +160,16 @@
                     @class = "form-control",
                     type = "number",
                     step = "0.01",
-                    min = "0",
+                    min = "1",
+                    max = "100000",
                     placeholder = "Enter consultation fee"
                 })
-            @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
+
+            <span id="ConsultationFeeError"
+                  class="custom-error">
+            </span>
+
         </div>
     </div>
 
 </div>
-

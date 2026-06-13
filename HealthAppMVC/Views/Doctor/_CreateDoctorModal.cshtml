@@ -1,12 +1,21 @@
 ﻿@model HealthAppWebAPI.Models.Dtos.CreateDoctorDto
 
-@using (Html.BeginForm("Create", "Doctor", FormMethod.Post, new { onsubmit = "return submitDoctorForm(this);" }))
+@using (Html.BeginForm(
+    "Create",
+    "Doctor",
+    FormMethod.Post,
+    new
+    {
+        id = "doctorForm",
+        onsubmit = "return submitDoctorForm(this);"
+    }))
 {
     @Html.AntiForgeryToken()
 
     <div class="modal-header doctor-modal-header">
         <h5 class="modal-title" id="doctorModalLabel">
-            <i class="bi bi-person-plus"></i> Add Doctor
+            <i class="bi bi-person-plus"></i>
+            Add Doctor
         </h5>
 
         <button type="button"
@@ -17,14 +26,22 @@
     </div>
 
     <div class="modal-body">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        @Html.ValidationSummary(
+            true,
+            "",
+            new { @class = "text-danger" })
 
         @Html.Partial("_DoctorForm", Model)
+
     </div>
 
     <div class="modal-footer">
-        <button type="submit" class="btn btn-success btn-rounded">
-            <i class="bi bi-check-circle"></i> Save
+
+        <button type="submit"
+                class="btn btn-success btn-rounded">
+            <i class="bi bi-check-circle"></i>
+            Save
         </button>
 
         <button type="button"
@@ -32,5 +49,6 @@
                 data-bs-dismiss="modal">
             Close
         </button>
+
     </div>
 }

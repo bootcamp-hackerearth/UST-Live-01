@@ -258,35 +258,43 @@
 
         function openDoctorCreateModal() {
 
-            $.get('@Url.Action("Create", "Doctor")', function (data) {
+    $.get('@Url.Action("Create", "Doctor")', function (data) {
 
-                $('#doctorModalContent').html(data);
+        $('#doctorModalContent').html(data);
 
-                $.validator.unobtrusive.parse('#doctorModalContent');
+        $.validator.unobtrusive.parse('#doctorModalContent');
 
-                var modalElement = document.getElementById('doctorModal');
-                var modal = new bootstrap.Modal(modalElement);
+        wireDoctorValidation();
 
-                modal.show();
-            });
-        }
+        var modalElement = document.getElementById('doctorModal');
+        var modal = new bootstrap.Modal(modalElement);
+
+        modal.show();
+    });
+}
 
         function openDoctorEditModal(id) {
 
-            $.get('@Url.Action("Edit", "Doctor")', { id: id }, function (data) {
+    $.get('@Url.Action("Edit", "Doctor")', { id: id }, function (data) {
 
-                $('#doctorModalContent').html(data);
+        $('#doctorModalContent').html(data);
 
-                $.validator.unobtrusive.parse('#doctorModalContent');
+        $.validator.unobtrusive.parse('#doctorModalContent');
 
-                var modalElement = document.getElementById('doctorModal');
-                var modal = new bootstrap.Modal(modalElement);
+        wireDoctorValidation();
 
-                modal.show();
-            });
-        }
+        var modalElement = document.getElementById('doctorModal');
+        var modal = new bootstrap.Modal(modalElement);
+
+        modal.show();
+    });
+}
 
         function submitDoctorForm(form) {
+
+            if (!validateDoctorForm()) {
+                return false;
+            }
 
             $.ajax({
                 url: $(form).attr('action'),
@@ -312,7 +320,10 @@
                     }
                     else {
                         $('#doctorModalContent').html(response);
+
                         $.validator.unobtrusive.parse('#doctorModalContent');
+
+                        wireDoctorValidation();
                     }
                 },
 
@@ -330,6 +341,308 @@
 
             return false;
         }
+
+        function wireDoctorValidation() {
+
+            $("#FullName").off("input blur").on("input blur", function () {
+                validateDoctorName();
+            });
+
+            $("#Specialisation").off("change blur").on("change blur", function () {
+                validateSpecialisation();
+            });
+
+            $("#DoctorEmail").off("input blur").on("input blur", function () {
+                validateDoctorEmail();
+            });
+
+            $("#DoctorPhoneNo").off("input blur").on("input blur", function () {
+                validateDoctorPhone();
+            });
+
+            $("#YearsOfExperience").off("input blur").on("input blur", function () {
+                validateYearsOfExperience();
+            });
+
+            $("#ConsultationFee").off("input blur").on("input blur", function () {
+                validateConsultationFee();
+            });
+        }
+
+        function validateDoctorForm() {
+
+            var isNameValid = validateDoctorName();
+            var isSpecialisationValid = validateSpecialisation();
+            var isEmailValid = validateDoctorEmail();
+            var isPhoneValid = validateDoctorPhone();
+            var isExperienceValid = validateYearsOfExperience();
+            var isFeeValid = validateConsultationFee();
+
+            return isNameValid &&
+                isSpecialisationValid &&
+                isEmailValid &&
+                isPhoneValid &&
+                isExperienceValid &&
+                isFeeValid;
+        }
+
+        function validateDoctorName() {
+
+            var fullName = $("#FullName").val().trim();
+
+            if (fullName === "") {
+
+                showDoctorFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Doctor name is required.");
+
+                return false;
+            }
+
+            if (fullName.length < 3) {
+
+                showDoctorFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Doctor name must be at least 3 characters.");
+
+                return false;
+            }
+
+            if (fullName.length > 100) {
+
+                showDoctorFieldError(
+                    "FullName",
+                    "FullNameError",
+                    "Doctor name cannot exceed 100 characters.");
+
+                return false;
+            }
+
+            clearDoctorFieldError(
+                "FullName",
+                "FullNameError");
+
+            return true;
+        }
+
+        function validateSpecialisation() {
+
+            var specialisation = $("#Specialisation").val();
+
+            if (!specialisation) {
+
+                showDoctorFieldError(
+                    "Specialisation",
+                    "SpecialisationError",
+                    "Specialisation is required.");
+
+                return false;
+            }
+
+            clearDoctorFieldError(
+                "Specialisation",
+                "SpecialisationError");
+
+            return true;
+        }
+
+        function validateDoctorEmail() {
+
+            var email = $("#DoctorEmail").val();
+
+            if (!email || email.trim() === "") {
+
+                showDoctorFieldError(
+                    "DoctorEmail",
+                    "DoctorEmailError",
+                    "Doctor email is required.");
+
+                return false;
+            }
+
+            email = email.trim();
+
+            var emailPattern =
+                /^[A-Za-z0-9._%+-]+@@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+            if (email.length > 150) {
+
+                showDoctorFieldError(
+                    "DoctorEmail",
+                    "DoctorEmailError",
+                    "Email cannot exceed 150 characters.");
+
+                return false;
+            }
+
+            if (/\s/.test(email)) {
+
+                showDoctorFieldError(
+                    "DoctorEmail",
+                    "DoctorEmailError",
+                    "Email cannot contain spaces.");
+
+                return false;
+            }
+
+            if (email.startsWith(".") || email.endsWith(".")) {
+
+                showDoctorFieldError(
+                    "DoctorEmail",
+                    "DoctorEmailError",
+                    "Email cannot start or end with a dot.");
+
+                return false;
+            }
+
+            if (email.indexOf("..") !== -1) {
+
+                showDoctorFieldError(
+                    "DoctorEmail",
+                    "DoctorEmailError",
+                    "Email cannot contain consecutive dots.");
+
+                return false;
+            }
+
+            if (!emailPattern.test(email)) {
+
+                showDoctorFieldError(
+                    "DoctorEmail",
+                    "DoctorEmailError",
+                    "Enter a valid email address.");
+
+                return false;
+            }
+
+            clearDoctorFieldError(
+                "DoctorEmail",
+                "DoctorEmailError");
+
+            return true;
+        }
+
+        function validateDoctorPhone() {
+
+            var phone = $("#DoctorPhoneNo").val().trim();
+
+            var phonePattern =
+                /^[6-9][0-9]{9}$/;
+
+            if (!phone) {
+
+                showDoctorFieldError(
+                    "DoctorPhoneNo",
+                    "DoctorPhoneNoError",
+                    "Phone number is required.");
+
+                return false;
+            }
+
+            if (!phonePattern.test(phone)) {
+
+                showDoctorFieldError(
+                    "DoctorPhoneNo",
+                    "DoctorPhoneNoError",
+                    "Enter a valid 10-digit phone number.");
+
+                return false;
+            }
+
+            clearDoctorFieldError(
+                "DoctorPhoneNo",
+                "DoctorPhoneNoError");
+
+            return true;
+        }
+
+        function validateYearsOfExperience() {
+
+            var experience = $("#YearsOfExperience").val();
+
+            if (experience === "") {
+
+                showDoctorFieldError(
+                    "YearsOfExperience",
+                    "YearsOfExperienceError",
+                    "Years of experience is required.");
+
+                return false;
+            }
+
+            experience = Number(experience);
+
+            if (isNaN(experience) || experience < 0 || experience > 60) {
+
+                showDoctorFieldError(
+                    "YearsOfExperience",
+                    "YearsOfExperienceError",
+                    "Experience must be between 0 and 60 years.");
+
+                return false;
+            }
+
+            clearDoctorFieldError(
+                "YearsOfExperience",
+                "YearsOfExperienceError");
+
+            return true;
+        }
+
+        function validateConsultationFee() {
+
+            var fee = $("#ConsultationFee").val();
+
+            if (fee === "") {
+
+                showDoctorFieldError(
+                    "ConsultationFee",
+                    "ConsultationFeeError",
+                    "Consultation fee is required.");
+
+                return false;
+            }
+
+            fee = Number(fee);
+
+            if (isNaN(fee) || fee <= 0 || fee > 100000) {
+
+                showDoctorFieldError(
+                    "ConsultationFee",
+                    "ConsultationFeeError",
+                    "Consultation fee must be between 1 and 100000.");
+
+                return false;
+            }
+
+            clearDoctorFieldError(
+                "ConsultationFee",
+                "ConsultationFeeError");
+
+            return true;
+        }
+
+        function showDoctorFieldError(
+            fieldId,
+            errorId,
+            message) {
+
+            $("#" + fieldId).addClass("is-invalid");
+
+            $("#" + errorId).text(message);
+        }
+
+        function clearDoctorFieldError(
+            fieldId,
+            errorId) {
+
+            $("#" + fieldId).removeClass("is-invalid");
+
+            $("#" + errorId).text("");
+        }
+        ``
 
     </script>
 
