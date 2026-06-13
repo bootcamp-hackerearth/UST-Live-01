@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Not Found";
+}
+
+<div class="text-center mt-5">
+
+    <h1 class="text-warning">404 - Resource Not Found</h1>
+
+    <p class="lead mt-3">
+        The page or resource you’re looking for doesn’t exist.
+    </p>
+
+    <p class="text-muted">
+        It might have been removed, renamed, or is temporarily unavailable.
+    </p>
+
+    <a href="@Url.Action("Index", "Home")"
+       class="btn btn-primary mt-3">
+        Go Home
+    </a>
+
+</div>

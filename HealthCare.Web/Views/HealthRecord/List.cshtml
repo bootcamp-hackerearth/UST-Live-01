@@ -1,0 +1,148 @@
+@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.HealthRecord.HealthRecordDto>
+
+@{
+    ViewBag.Title = "Health Records";
+
+    int currentPage = Model.PageNumber;
+    int totalPages = Model.TotalPages;
+}
+
+<div class="container-fluid">
+
+    <!--  HEADER -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Health Records</h2>
+        <p class="text-muted">Manage patient health records.</p>
+    </div>
+
+    <!--  SEARCH SECTION -->
+    <div class="mb-4 d-flex flex-wrap gap-3">
+
+        <!--  Search by Patient -->
+        @using (Html.BeginForm("List", "HealthRecord", FormMethod.Get))
+        {
+            <div class="d-flex gap-2">
+                <input type="number"
+                       name="patientId"
+                       value="@Request["patientId"]"
+                       class="form-control"
+                       placeholder="Enter Patient ID"
+                       style="width:180px;" />
+
+                <button type="submit" class="btn btn-primary">
+                    Search Patient
+                </button>
+            </div>
+        }
+
+        <!--  Search by Record -->
+        @using (Html.BeginForm("GetRecord", "HealthRecord", FormMethod.Get))
+        {
+            <div class="d-flex gap-2">
+
+                <input type="number"
+                       name="id"
+                       value="@Request["id"]"
+                       class="form-control"
+                       placeholder="Enter Record ID"
+                       style="width:180px;" />
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-search"></i>
+                </button>
+
+            </div>
+        }
+
+    </div>
+
+    <!--  TABLE -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">Record ID</th>
+                            <th class="px-4 py-3">Diagnosis</th>
+                            <th class="px-4 py-3">Prescription</th>
+                            <th class="px-4 py-3">Notes</th>
+                            <th class="px-4 py-3">Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            foreach (var rec in Model.Items)
+                            {
+                                <tr>
+                                    <td class="px-4 py-3">@rec.RecordId</td>
+
+                                    <td class="px-4 py-3">@rec.Diagnosis</td>
+
+                                    <td class="px-4 py-3">@rec.Prescription</td>
+
+                                    <td class="px-4 py-3">
+                                        @(string.IsNullOrEmpty(rec.Notes) ? "-" : rec.Diagnosis)
+                                    </td>
+
+                                    <td class="px-4 py-3">
+                                        @rec.VisitDate.ToString("dd MMM yyyy")
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-4 text-muted">
+                                    Search with correct ID to view Health Records.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!--  PAGINATION -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <!-- Previous -->
+            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("List", new { pageNumber = currentPage - 1 })">
+                    Previous
+                </a>
+            </li>
+
+            <!-- Pages -->
+            @for (int i = 1; i <= totalPages; i++)
+            {
+                <li class="page-item @(i == currentPage ? "active" : "")">
+                    <a class="page-link"
+                       href="@Url.Action("List", new { pageNumber = i })">
+                        @i
+                    </a>
+                </li>
+            }
+
+            <!-- Next -->
+            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                <a class="page-link"
+                   href="@Url.Action("List", new { pageNumber = currentPage + 1 })">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>

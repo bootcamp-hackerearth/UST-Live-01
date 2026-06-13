@@ -1,0 +1,48 @@
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Doctor.DoctorDto>
+
+<!--  Profile Header -->
+<div class="text-center mb-3">
+
+    <div class="rounded-circle bg-primary text-white
+                d-inline-flex align-items-center
+                justify-content-center"
+         style="width:80px;height:80px;font-size:30px;">
+        👨‍⚕️
+    </div>
+
+    <h5 class="mt-2 mb-0">
+        @Model.Items[0].FullName
+    </h5>
+
+    <small class="text-muted">
+        ID: @Model.Items[0].DoctorId
+    </small>
+
+    <div class="mt-2">
+        <span class="badge @(Model.Items[0].IsActive ? "bg-success" : "bg-danger")">
+            @(Model.Items[0].IsActive ? "Active" : "Inactive")
+        </span>
+    </div>
+</div>
+
+<hr />
+
+<!--  Details -->
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <label class="fw-bold">Specialisation</label>
+        <input class="form-control" value="@Model.Items[0].Specialisation" readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Experience</label>
+        <input class="form-control" value="@Model.Items[0].YearsOfExperience years" readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Consultation Fee</label>
+        <input class="form-control" value="₹@Model.Items[0].ConsultationFee" readonly />
+    </div>
+
+</div> 

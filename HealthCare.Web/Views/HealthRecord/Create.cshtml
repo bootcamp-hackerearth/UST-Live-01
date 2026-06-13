@@ -1,0 +1,108 @@
+@model HealthCare.Shared.DTOs.HealthRecord.CreateHealthRecordDto
+
+@{
+    ViewBag.Title = "Add Health Record";
+}
+
+<div class="page-card">
+
+    <!--HEADER -->
+    <div class="page-header">
+        <div>
+            <h2 class="page-title">Add Health Record</h2>
+            <div class="page-subtitle">
+                Enter diagnosis, prescription and notes for completed appointment.
+            </div>
+        </div>
+    </div>
+
+    <!-- VISIT INFO -->
+    <div class="profile-grid" style="margin-bottom:20px;">
+
+        <div class="profile-item">
+            <div class="profile-label">Visit Date</div>
+            <div class="profile-value">
+                @Model.VisitDate.ToString("dd-MMM-yyyy hh:mm tt")
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FORM -->
+    @using (Html.BeginForm("Create", "HealthRecord", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(m => m.AppointmentId)
+        @Html.HiddenFor(m => m.PatientId)
+        @Html.HiddenFor(m => m.DoctorId)
+
+        <!--Diagnosis -->
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.Diagnosis, new { @class = "form-label fw-semibold" })
+
+            @Html.TextAreaFor(m => m.Diagnosis, new
+            {
+                @class = "form-control",
+                rows = "4",
+                placeholder = "Enter diagnosis",
+                required = "required",
+                minlength = "5",
+                maxlength = "500"
+            })
+
+            @Html.ValidationMessageFor(m => m.Diagnosis, "", new { @class = "text-danger" })
+        </div>
+
+        <!--  Prescription -->
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.Prescription, new { @class = "form-label fw-semibold" })
+
+            @Html.TextAreaFor(m => m.Prescription, new
+            {
+                @class = "form-control",
+                rows = "4",
+                placeholder = "Enter prescription",
+                required = "required",
+                minlength = "5",
+                maxlength = "500"
+            })
+
+            @Html.ValidationMessageFor(m => m.Prescription, "", new { @class = "text-danger" })
+        </div>
+
+        <!--  Notes -->
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.Notes, new { @class = "form-label fw-semibold" })
+
+            @Html.TextAreaFor(m => m.Notes, new
+            {
+                @class = "form-control",
+                rows = "4",
+                placeholder = "Optional notes",
+                maxlength = "1000"
+            })
+
+            @Html.ValidationMessageFor(m => m.Notes, "", new { @class = "text-danger" })
+        </div>
+
+        <!--  ACTIONS -->
+        <div class="d-flex gap-2">
+
+            <button type="submit" class="btn btn-success">
+                Save Health Record
+            </button>
+
+            <a href="@Url.Action("List", "HealthRecord")"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

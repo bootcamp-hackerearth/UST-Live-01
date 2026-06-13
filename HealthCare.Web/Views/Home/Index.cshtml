@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Home - HealthCare Management System";
+}
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold" style="color:#d63384;">🏥 HealthCareApp Portal</h1>
+        <p class="text-muted">Access your healthcare services quickly and easily</p>
+    </div>
+
+    <!-- OPTIONS -->
+    <div class="row g-4">
+
+        <!-- DOCTORS -->
+        <div class="col-md-4">
+            <a href="@Url.Action("List", "Doctor")" class="text-decoration-none">
+                <div class="card option-card text-center p-4">
+                    <h1>👨‍⚕️</h1>
+                    <h5>View Available Doctors</h5>
+                    <p class="text-muted">Browse doctors</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- APPOINTMENTS -->
+        <div class="col-md-4">
+            <a href="@Url.Action("Book", "Appointment")" class="text-decoration-none">
+                <div class="card option-card text-center p-4">
+                    <h1>📅</h1>
+                    <h5>Book Appointments</h5>
+                    <p class="text-muted">Check schedules</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- HEALTH RECORD -->
+        <div class="col-md-4">
+            <a href="@Url.Action("List", "HealthRecord")" class="text-decoration-none">
+                <div class="card option-card text-center p-4">
+                    <h1>📋</h1>
+                    <h5>Patient Health History</h5>
+                    <p class="text-muted">View reports</p>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+    .option-card {
+        border-radius: 18px;
+        border: none;
+        height: 220px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .option-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(214,51,132,0.25);
+        background: linear-gradient(135deg,#ffd6e7,#ffeaf3);
+    }
+
+    .option-card h1 {
+        color: #d63384;
+        font-size: 40px;
+    }
+
+</style>

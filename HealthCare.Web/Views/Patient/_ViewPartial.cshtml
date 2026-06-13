@@ -1,0 +1,64 @@
+﻿@model HealthCare.Shared.PagedResult<HealthCare.Shared.DTOs.Patient.PatientDto>
+
+<!--  Profile Header -->
+<div class="text-center mb-3">
+
+    <div class="rounded-circle bg-primary text-white
+                d-inline-flex align-items-center
+                justify-content-center"
+         style="width:80px;height:80px;font-size:30px;">
+        👤
+    </div>
+
+    <h5 class="mt-2 mb-0">
+        @Model.Items[0].FullName
+    </h5>
+
+    <small class="text-muted">
+        ID: @Model.Items[0].PatientId
+    </small>
+</div>
+
+<hr />
+
+<!--  Details -->
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <label class="fw-bold">Email</label>
+        <input class="form-control" value="@Model.Items[0].Email" readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Phone</label>
+        <input class="form-control" value="@Model.Items[0].PhoneNumber" readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Gender</label>
+        <input class="form-control" value="@Model.Items[0].Gender" readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Date of Birth</label>
+        <input class="form-control"
+               value="@(Model.Items[0].DateOfBirth != null ? Model.Items[0].DateOfBirth.ToString("dd MMM yyyy") : "N/A")"
+               readonly />
+    </div>
+
+    <div class="col-md-6">
+        <label class="fw-bold">Insurance</label>
+
+        <div class="mt-2">
+            @if (!string.IsNullOrEmpty(Model.Items[0].InsuranceId))
+            {
+                <span class="badge bg-success">Insured</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Not Insured</span>
+            }
+        </div>
+    </div>
+
+</div>
