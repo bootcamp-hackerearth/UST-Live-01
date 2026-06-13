@@ -16,5 +16,6 @@ namespace HealthApp.API.Service.Interface
         Task<List<DoctorDto>> SearchBySpecialisation(SpecialisationType specialisation);
 
         Task ChangeDoctorStatus(int id);
+        Task UpdateDoctor(int id, DoctorDto dto);
     }
 }

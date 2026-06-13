@@ -4,7 +4,6 @@
     ViewBag.Title = "Doctor Details";
 }
 
-<!-- ✅ TOP BAR -->
 <div class="d-flex justify-content-between align-items-center mb-3">
 
     <a href="/Home/Index" class="btn btn-outline-secondary">
@@ -24,6 +23,23 @@
     </div>
 
 </div>
+
+<!-- ✅ ✅ ✅ IMPORTANT: ALERTS (FIXED) -->
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show">
+        @TempData["Error"]
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["Success"]
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
 <h2 class="text-primary mb-3">Doctor Details</h2>
 
@@ -58,14 +74,28 @@
                         </span>
                     </td>
 
-                    <!-- ✅TOGGLE -->
-                    <td>
-                        <label class="switch">
+                    <td class="d-flex align-items-center gap-2">
+
+                        <!-- ✅ VIEW -->
+                        <button class="btn btn-info btn-sm"
+                                onclick="showDoctor(@item.DoctorId)">
+                            <i class="bi bi-eye"></i>
+                        </button>
+
+                        <!-- ✅ EDIT -->
+                        <a href="/Doctor/Edit/@item.DoctorId"
+                           class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <!-- ✅ TOGGLE -->
+                        <label class="switch ms-2">
                             <input type="checkbox"
                                    onclick="openConfirm(@item.DoctorId, @(item.IsActive.ToString().ToLower()))"
                                    @(item.IsActive ? "checked" : "") />
                             <span class="slider"></span>
                         </label>
+
                     </td>
 
                 </tr>
@@ -81,6 +111,26 @@
         }
     </tbody>
 </table>
+
+<!-- ✅ VIEW MODAL -->
+<div class="modal fade" id="doctorModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+
+            <h4 class="text-primary mb-3">Doctor Details</h4>
+
+            <div id="doctorContent"></div>
+
+            <div class="text-end mt-3">
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Close
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <!-- ✅ SEARCH MODAL -->
 <div class="modal fade" id="searchModal" tabindex="-1">
@@ -105,7 +155,7 @@
     </div>
 </div>
 
-<!-- ✅ ✅ PROFESSIONAL CONFIRM POPUP -->
+<!-- ✅ CONFIRM MODAL -->
 <div class="modal fade" id="confirmModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4 text-center">
@@ -126,30 +176,57 @@
     </div>
 </div>
 
-<!-- ✅ SCRIPT -->
-<script>
-    var selectedId = 0;
+@section Scripts{
+    <script>
 
-    function openConfirm(id, isActive) {
+        var selectedId = 0;
 
-        selectedId = id;
+        // ✅ VIEW
+        function showDoctor(id) {
 
-        var message = isActive
-            ? "Are you sure you want to deactivate?"
-            : "Are you sure you want to activate?";
+            fetch('/Doctor/GetById/' + id)
+                .then(res => res.json())
+                .then(data => {
 
-        document.getElementById("confirmText").innerText = message;
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
 
-        var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-        modal.show();
-    }
+                    document.getElementById("doctorContent").innerHTML = `
+                    <p><b>Id:</b> ${data.DoctorId}</p>
+                    <p><b>Name:</b> ${data.FullName}</p>
+                    <p><b>Specialisation:</b> ${data.Specialisation}</p>
+                    <p><b>Experience:</b> ${data.YearsOfExperience} years</p>
+                    <p><b>Fee:</b> ${data.ConsultationFee}</p>
+                    <p><b>Status:</b> ${data.IsActive ? "Active" : "Inactive"}</p>
+                `;
 
-    document.getElementById("confirmBtn").onclick = function () {
-        window.location.href = '/Doctor/ToggleStatus/' + selectedId;
-    };
-</script>
+                    new bootstrap.Modal(document.getElementById('doctorModal')).show();
+                });
+        }
 
-<!-- ✅ SMALLER CLEAN TOGGLE -->
+        // ✅ TOGGLE
+        function openConfirm(id, isActive) {
+
+            selectedId = id;
+
+            let message = isActive
+                ? "Are you sure you want to deactivate?"
+                : "Are you sure you want to activate?";
+
+            document.getElementById("confirmText").innerText = message;
+
+            new bootstrap.Modal(document.getElementById('confirmModal')).show();
+        }
+
+        document.getElementById("confirmBtn").onclick = function () {
+            window.location.href = '/Doctor/ToggleStatus/' + selectedId;
+        };
+
+    </script>
+}
+
 <style>
     .switch {
         position: relative;
@@ -160,20 +237,16 @@
 
         .switch input {
             opacity: 0;
-            width: 0;
-            height: 0;
         }
 
     .slider {
         position: absolute;
-        cursor: pointer;
         background-color: #dc3545;
         border-radius: 34px;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        transition: 0.3s;
     }
 
         .slider:before {
@@ -183,9 +256,8 @@
             width: 20px;
             left: 3px;
             bottom: 3px;
-            background-color: white;
+            background: white;
             border-radius: 50%;
-            transition: 0.3s;
         }
 
     input:checked + .slider {

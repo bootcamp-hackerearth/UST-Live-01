@@ -62,19 +62,22 @@ namespace HealthApp.Controllers
         }
 
         // GET BY ID
-        public async Task<ActionResult> GetById(int id)
+        public async Task<JsonResult> GetById(int id)
         {
             try
             {
                 var doctor = await _service.GetById(id);
-                return View(doctor);
+                return Json(doctor, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
-                TempData["Error"] = ex.Message;
-                return RedirectToAction("DoctorIndex");
+                return Json(new
+                {
+                    error = ex.Message
+                }, JsonRequestBehavior.AllowGet);
             }
         }
+
 
 
         // TOGGLE STATUS
@@ -95,31 +98,70 @@ namespace HealthApp.Controllers
 
         // SEARCH
         public async Task<ActionResult> Search(string query)
+{
+    try
+    {
+        if (string.IsNullOrEmpty(query))
+            return RedirectToAction("DoctorIndex");
+
+        var doctors = await _service.GetAll();
+
+        if (int.TryParse(query, out int id))
+        {
+            var doctor = await _service.GetById(id);
+
+            return View("DoctorIndex", new List<DoctorDto> { doctor });
+        }
+
+        var filtered = doctors
+            .Where(d => d.FullName.ToLower().Contains(query.ToLower()))
+            .ToList();
+
+        if (filtered.Count == 0)
+        {
+            TempData["Error"] = "No doctors found";
+        }
+
+        return View("DoctorIndex", filtered);
+    }
+    catch (Exception ex)
+    {
+        // ✅ FIX: ensure message always present
+        TempData["Error"] = ex.Message;
+
+        return RedirectToAction("DoctorIndex");
+    }
+}
+
+   
+        // ✅ EDIT GET
+        public async Task<ActionResult> Edit(int id)
+        {
+            var doctor = await _service.GetById(id);
+            return View(doctor);
+        }
+
+        // ✅ EDIT POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Edit(int id, DoctorDto dto)
         {
             try
             {
-                if (string.IsNullOrEmpty(query))
-                    return RedirectToAction("DoctorIndex");
+                if (!ModelState.IsValid)
+                    return View(dto);
 
-                var doctors = await _service.GetAll();
+                await _service.Update(id, dto);
 
-                if (int.TryParse(query, out int id))
-                {
-                    var doctor = await _service.GetById(id);
-                    return View("GetById", doctor);
-                }
-
-                var filtered = doctors
-                    .Where(d => d.FullName.ToLower().Contains(query.ToLower()))
-                    .ToList();
-
-                return View("DoctorIndex", filtered);
+                TempData["Success"] = "Doctor updated successfully!";
+                return RedirectToAction("DoctorIndex");
             }
             catch (Exception ex)
             {
                 TempData["Error"] = ex.Message;
-                return RedirectToAction("DoctorIndex");
+                return View(dto);
             }
         }
+
     }
 }

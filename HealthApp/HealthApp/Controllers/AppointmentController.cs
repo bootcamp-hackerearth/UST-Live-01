@@ -2,6 +2,7 @@
 using HealthApp.Shared.DTOs;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -28,6 +29,33 @@ namespace HealthApp.Controllers
             {
                 TempData["Error"] = ex.Message;
                 return View(new List<AppointmentDto>());
+            }
+        }
+
+        // ✅ ✅ ✅ NEW SEARCH (ID / PATIENT / DOCTOR)
+        public async Task<ActionResult> Search(string query)
+        {
+            try
+            {
+                var list = await _service.GetAll();
+
+                if (string.IsNullOrEmpty(query))
+                    return View("AppointmentIndex", list);
+
+                query = query.ToLower();
+
+                var result = list.Where(a =>
+                    a.AppointmentId.ToString().Contains(query) ||
+                    a.PatientName.ToLower().Contains(query) ||
+                    a.DoctorName.ToLower().Contains(query)
+                ).ToList();
+
+                return View("AppointmentIndex", result);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("AppointmentIndex");
             }
         }
 
@@ -69,7 +97,7 @@ namespace HealthApp.Controllers
             }
         }
 
-        // ✅ CONFIRM
+        // ✅ ✅ CONFIRM (NO CHANGE)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Confirm(int id)
@@ -77,7 +105,6 @@ namespace HealthApp.Controllers
             try
             {
                 await _service.Confirm(id);
-
                 TempData["Success"] = "Appointment confirmed!";
             }
             catch (Exception ex)
@@ -88,14 +115,20 @@ namespace HealthApp.Controllers
             return RedirectToAction("AppointmentIndex");
         }
 
-        // ✅ CANCEL
+        // ✅ ✅ ✅ FIXED CANCEL (NOW TAKES REASON)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Cancel(int id)
+        public async Task<ActionResult> Cancel(int id, string reason)
         {
             try
             {
-                await _service.Cancel(id, "Cancelled by user");
+                if (string.IsNullOrWhiteSpace(reason))
+                {
+                    TempData["Error"] = "Cancellation reason is required";
+                    return RedirectToAction("AppointmentIndex");
+                }
+
+                await _service.Cancel(id, reason);
 
                 TempData["Success"] = "Appointment cancelled!";
             }
@@ -157,17 +190,12 @@ namespace HealthApp.Controllers
             }
         }
 
-        // ✅ ✅ ✅ GET PATIENT NAME (AJAX)
-
+        // ✅ AJAX METHODS (UNCHANGED)
         public async Task<JsonResult> GetPatientName(int id)
         {
             var patient = await _service.GetPatient(id);
             return Json(patient, JsonRequestBehavior.AllowGet);
         }
-
-
-
-        // ✅ ✅ ✅ GET DOCTORS BY SPECIALIZATION (AJAX)
 
         public async Task<JsonResult> GetDoctors(string specialization)
         {
@@ -175,9 +203,6 @@ namespace HealthApp.Controllers
             return Json(doctors, JsonRequestBehavior.AllowGet);
         }
 
-
-
-        // ✅ ✅ ✅ GET AVAILABLE SLOTS (AJAX)
         public async Task<JsonResult> GetSlots(int doctorId, DateTime date)
         {
             try

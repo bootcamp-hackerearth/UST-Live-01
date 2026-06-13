@@ -106,5 +106,19 @@ namespace HealthApp.Service.Impl
                 }
             }
         }
+
+        public async Task Update(int id, DoctorDto dto)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var res = await client.PutAsJsonAsync($"{baseUrl}/{id}", dto);
+
+                if (!res.IsSuccessStatusCode)
+                {
+                    var error = await res.Content.ReadAsStringAsync();
+                    throw new Exception(CleanError(error));
+                }
+            }
+        }
     }
 }

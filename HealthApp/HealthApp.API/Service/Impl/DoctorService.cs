@@ -79,5 +79,26 @@ namespace HealthApp.API.Service.Impl
 
             await _repo.UpdateAsync(doctor);
         }
+
+        public async Task UpdateDoctor(int id, DoctorDto dto)
+        {
+            if (id <= 0)
+                throw new Exception("Invalid doctor id");
+
+            if (string.IsNullOrWhiteSpace(dto.FullName))
+                throw new Exception("Doctor name is required");
+
+            var existing = await _repo.GetByIdAsync(id);
+
+            if (existing == null)
+                throw new Exception("Doctor not found");
+
+            existing.FullName = dto.FullName;
+            existing.Specialisation = dto.Specialisation;
+            existing.YearsOfExperience = dto.YearsOfExperience;
+            existing.ConsultationFee = dto.ConsultationFee;
+
+            await _repo.UpdateAsync(existing);
+        }
     }
 }

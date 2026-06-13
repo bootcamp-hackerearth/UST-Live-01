@@ -41,8 +41,9 @@ namespace HealthApp.API.Controllers
             }
             catch (Exception ex)
             {
-                return Content(System.Net.HttpStatusCode.NotFound, ex.Message);
+                return BadRequest(ex.Message);
             }
+
         }
 
         // ✅ CREATE new patient

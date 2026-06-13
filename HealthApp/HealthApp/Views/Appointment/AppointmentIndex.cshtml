@@ -5,7 +5,6 @@
     ViewBag.Title = "Appointment Details";
 }
 
-<!-- ✅ TOP BAR -->
 <div class="d-flex justify-content-between align-items-center mb-3">
 
     <a href="/Home/Index" class="btn btn-outline-secondary">
@@ -17,7 +16,6 @@
             + Book Appointment
         </a>
 
-        <!-- ✅ SEARCH ICON -->
         <button class="btn btn-outline-primary ms-2"
                 data-bs-toggle="modal"
                 data-bs-target="#searchModal">
@@ -27,7 +25,6 @@
 
 </div>
 
-<!-- ✅ ALERTS -->
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show">
@@ -46,7 +43,6 @@
 
 <h2 class="text-primary mb-3">Appointment Details</h2>
 
-<!-- ✅ TABLE -->
 <table class="table table-bordered table-hover shadow-sm">
     <thead class="table-dark">
         <tr>
@@ -61,126 +57,205 @@
     </thead>
 
     <tbody>
-        @if (Model != null && Model.Count > 0)
-        {
-            foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.AppointmentId</td>
-                    <td>@item.PatientName</td>
-                    <td>@item.DoctorName</td>
-                    <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
-                    <td>@item.TimeSlot</td>
-
-                    <!-- ✅ STATUS -->
-                    <td>
-                        <span class="badge
-                        @(item.Status == AppointmentStatus.Confirmed ? "bg-success" :
-                          item.Status == AppointmentStatus.Cancelled ? "bg-danger" :
-                          item.Status == AppointmentStatus.Completed ? "bg-info" :
-                          "bg-warning")">
-                            @item.Status
-                        </span>
-                    </td>
-
-                    <!-- ✅ ACTIONS -->
-                    <td>
-
-                        @if (item.Status == AppointmentStatus.Pending)
-                        {
-                            <!-- ✅ CONFIRM -->
-                            using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@item.AppointmentId" />
-
-                                <button type="submit"
-                                        class="btn btn-success btn-sm me-1"
-                                        title="Confirm Appointment">
-                                    <i class="bi bi-check-lg"></i>
-                                </button>
-                            }
-
-                            <!-- ✅ CANCEL -->
-                            using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@item.AppointmentId" />
-
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        title="Cancel Appointment">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                            }
-                        }
-                        else if (item.Status == AppointmentStatus.Confirmed)
-                        {
-                            <!-- ✅ CREATE RECORD -->
-                            <a href="@Url.Action("CreateFromAppointment", "HealthRecord", new { appointmentId = item.AppointmentId })"
-                               class="btn btn-info btn-sm me-1"
-                               title="Add Health Record">
-                                <i class="bi bi-plus-lg"></i>
-                            </a>
-
-                            <!-- ✅ CANCEL -->
-                            using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post, new { style = "display:inline;" }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@item.AppointmentId" />
-
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        title="Cancel Appointment">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                            }
-                        }
-                        else if (item.Status == AppointmentStatus.Cancelled)
-                        {
-                            <span class="text-danger fw-semibold">Cancelled</span>
-                        }
-                        else if (item.Status == AppointmentStatus.Completed)
-                        {
-                            <span class="text-success fw-semibold">Completed</span>
-                        }
-
-                    </td>
-
-                </tr>
-            }
-        }
-        else
+        @foreach (var item in Model)
         {
             <tr>
-                <td colspan="7" class="text-danger text-center">
-                    No appointments found
+                <td>@item.AppointmentId</td>
+                <td>@item.PatientName</td>
+                <td>@item.DoctorName</td>
+                <td>@item.ScheduledDate.ToString("yyyy-MM-dd")</td>
+                <td>@item.TimeSlot</td>
+
+                <td>
+                    <span class="badge
+                    @(item.Status == AppointmentStatus.Confirmed ? "bg-success" :
+                      item.Status == AppointmentStatus.Cancelled ? "bg-danger" :
+                      item.Status == AppointmentStatus.Completed ? "bg-info" :
+                      "bg-warning")">
+                        @item.Status
+                    </span>
+
+                    <!-- ✅ SHOW REASON ICON ONLY IF CANCELLED -->
+                    @if (item.Status == AppointmentStatus.Cancelled)
+                    {
+                        <button class="btn btn-link btn-sm text-danger"
+                                onclick="showReason('@item.CancellationReason')">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    }
+                </td>
+
+                <td>
+
+                    @if (item.Status == AppointmentStatus.Pending)
+                    {
+                        using (Html.BeginForm("Confirm", "Appointment", FormMethod.Post,
+                            new { style = "display:inline;", @class = "confirm-form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.AppointmentId" />
+
+                            <button type="button" class="btn btn-success btn-sm me-1 confirm-btn">
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                        }
+
+                        using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post,
+                            new { style = "display:inline;", @class = "cancel-form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.AppointmentId" />
+                            <input type="hidden" name="reason" class="reasonInput" />
+
+                            <button type="button" class="btn btn-danger btn-sm cancel-btn">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        }
+                    }
+                    else if (item.Status == AppointmentStatus.Confirmed)
+                    {
+                        <a href="@Url.Action("CreateFromAppointment", "HealthRecord",
+                            new { appointmentId = item.AppointmentId })"
+                           class="btn btn-info btn-sm me-1">
+                            <i class="bi bi-plus-lg"></i>
+                        </a>
+
+                        using (Html.BeginForm("Cancel", "Appointment", FormMethod.Post,
+                            new { style = "display:inline;", @class = "cancel-form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.AppointmentId" />
+                            <input type="hidden" name="reason" class="reasonInput" />
+
+                            <button type="button" class="btn btn-danger btn-sm cancel-btn">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        }
+                    }
+                    else if (item.Status == AppointmentStatus.Cancelled)
+                    {
+                        <span class="text-danger fw-semibold">Cancelled</span>
+                    }
+                    else if (item.Status == AppointmentStatus.Completed)
+                    {
+                        <span class="text-success fw-semibold">Completed</span>
+                    }
+
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- ✅ SEARCH MODAL -->
+<!-- ✅ REASON MODAL -->
+<div class="modal fade" id="reasonModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+
+            <h5>Cancellation Reason</h5>
+
+            <p id="reasonText"></p>
+
+            <button class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+                Close
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<!-- EXISTING MODALS (unchanged) -->
 <div class="modal fade" id="searchModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content p-4">
 
             <h5 class="mb-3 fw-bold">Search Appointment</h5>
 
-            <form method="get" action="/Appointment/GetById">
-
-                <input type="number"
-                       name="id"
+            <form method="get" action="/Appointment/Search">
+                <input type="text"
+                       name="query"
                        class="form-control mb-3"
-                       placeholder="Enter Appointment Id" />
+                       placeholder="Enter Id / Patient / Doctor" />
 
                 <button class="btn btn-primary w-100">
                     <i class="bi bi-search me-1"></i> Search
                 </button>
-
             </form>
 
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="confirmModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4 text-center">
+            <h5>Are you sure to confirm?</h5>
+            <button class="btn btn-success mt-3" id="confirmYes">Yes</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cancelModal">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-4">
+
+            <h5>Cancel Appointment</h5>
+
+            <input type="text" id="cancelReason" class="form-control mt-3"
+                   placeholder="Enter cancellation reason" />
+
+            <span id="cancelError" class="text-danger"></span>
+
+            <button class="btn btn-danger mt-3" id="cancelSubmit">Cancel Appointment</button>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+    <script>
+        let selectedForm;
+
+        // ✅ CONFIRM
+        $(".confirm-btn").click(function () {
+            selectedForm = $(this).closest("form");
+            $("#confirmModal").modal("show");
+        });
+
+        $("#confirmYes").click(function () {
+            selectedForm.submit();
+        });
+
+        // ✅ CANCEL
+        $(".cancel-btn").click(function () {
+            selectedForm = $(this).closest("form");
+            $("#cancelReason").val("");
+            $("#cancelError").text("");
+            $("#cancelModal").modal("show");
+        });
+
+        $("#cancelSubmit").click(function () {
+
+            let reason = $("#cancelReason").val();
+
+            if (!reason) {
+                $("#cancelError").text("Reason required");
+                return;
+            }
+
+            selectedForm.find(".reasonInput").val(reason);
+            selectedForm.submit();
+        });
+
+        // ✅ ✅ NEW: SHOW REASON
+        function showReason(text) {
+            document.getElementById("reasonText").innerText = text || "No reason provided";
+
+            var modal = new bootstrap.Modal(document.getElementById('reasonModal'));
+            modal.show();
+        }
+    </script>
+
+}

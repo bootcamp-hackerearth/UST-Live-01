@@ -1,5 +1,6 @@
 ﻿using HealthApp.Service.Interface;
 using HealthApp.Shared.DTOs;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -52,6 +53,7 @@ namespace HealthApp.Service.Impl
             }
         }
 
+        // ✅ ✅ ✅ FIXED METHOD
         public async Task<List<AppointmentDto>> GetByPatient(int patientId)
         {
             using (HttpClient client = new HttpClient())
@@ -64,7 +66,18 @@ namespace HealthApp.Service.Impl
                     throw new Exception(ExtractError(error));
                 }
 
-                return await res.Content.ReadAsAsync<List<AppointmentDto>>();
+                var json = await res.Content.ReadAsStringAsync();
+
+                // ✅ Fix: handle both object and array
+                if (json.Trim().StartsWith("["))
+                {
+                    return JsonConvert.DeserializeObject<List<AppointmentDto>>(json);
+                }
+                else
+                {
+                    var single = JsonConvert.DeserializeObject<AppointmentDto>(json);
+                    return new List<AppointmentDto> { single };
+                }
             }
         }
 
@@ -100,7 +113,9 @@ namespace HealthApp.Service.Impl
         {
             using (HttpClient client = new HttpClient())
             {
-                var res = await client.PutAsync($"{baseUrl}/{id}/cancel?reason={Uri.EscapeDataString(reason)}", null);
+                var res = await client.PutAsync(
+                    $"{baseUrl}/{id}/cancel?reason={Uri.EscapeDataString(reason)}",
+                    null);
 
                 if (!res.IsSuccessStatusCode)
                 {
@@ -110,11 +125,13 @@ namespace HealthApp.Service.Impl
             }
         }
 
+        // ✅ FIXED &amp;
         public async Task<List<string>> CheckAvailability(int doctorId, DateTime date)
         {
             using (HttpClient client = new HttpClient())
             {
-                var res = await client.GetAsync($"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
+                var res = await client.GetAsync(
+                    $"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
 
                 if (!res.IsSuccessStatusCode)
                 {
@@ -156,12 +173,12 @@ namespace HealthApp.Service.Impl
             }
         }
 
-
         public async Task<List<DoctorLookupDto>> GetDoctors(string specialization)
         {
             using (HttpClient client = new HttpClient())
             {
-                var res = await client.GetAsync($"{baseUrl}/doctors?specialization={specialization}");
+                var res = await client.GetAsync(
+                    $"{baseUrl}/doctors?specialization={specialization}");
 
                 if (!res.IsSuccessStatusCode)
                 {
@@ -173,12 +190,13 @@ namespace HealthApp.Service.Impl
             }
         }
 
-
+        // ✅ FIXED &amp;
         public async Task<List<string>> GetAvailableSlots(int doctorId, DateTime date)
         {
             using (HttpClient client = new HttpClient())
             {
-                var res = await client.GetAsync($"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
+                var res = await client.GetAsync(
+                    $"{baseUrl}/availability?doctorId={doctorId}&date={date:yyyy-MM-dd}");
 
                 if (!res.IsSuccessStatusCode)
                 {

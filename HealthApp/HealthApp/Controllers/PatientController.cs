@@ -1,6 +1,9 @@
 ﻿using HealthApp.Service.Interface;
 using HealthApp.Shared.DTOs;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -21,68 +24,101 @@ namespace HealthApp.Controllers
             return View(patients);
         }
 
-        public async Task<ActionResult> GetById(int id)
+        // ✅ JSON for modal view
+        public async Task<JsonResult> GetById(int id)
         {
-            var patient = await _service.GetById(id);
-            return View(patient);
+            try
+            {
+                var patient = await _service.GetById(id);
+                return Json(patient, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    error = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
         }
+
 
         public ActionResult Create()
         {
             return View();
         }
 
-        // ✅ ✅ ✅ FIXED CREATE
+        // ✅ CREATE
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(PatientDto dto)
         {
             try
             {
-                // ✅ IMPORTANT: validate DTO
                 if (!ModelState.IsValid)
                 {
-                    return View(dto); // stay on same page and show red errors
+                    return View(dto);
                 }
 
                 await _service.Create(dto);
 
-                return RedirectToAction("PatientIndex"); // only when valid
+                return RedirectToAction("PatientIndex");
             }
             catch (Exception ex)
             {
-                // ✅ show backend error also in red
                 ModelState.AddModelError("", ex.Message);
                 return View(dto);
             }
         }
 
+        // ✅ SEARCH (ID or NAME)
         public async Task<ActionResult> Search(string query)
         {
             if (string.IsNullOrEmpty(query))
                 return RedirectToAction("PatientIndex");
 
-            var patients = await _service.GetAll();
-
-            if (int.TryParse(query, out int id))
+            try
             {
-                var result = patients.Find(p => p.PatientId == id);
-                return View("GetById", result);
+                // ✅ SEARCH BY ID (use service → exception comes from backend)
+                if (int.TryParse(query, out int id))
+                {
+                    var result = await _service.GetById(id);
+
+                    return View("PatientIndex", new List<PatientDto> { result });
+                }
+
+                // ✅ SEARCH BY NAME
+                var patients = await _service.GetAll();
+
+                var filtered = patients
+                    .Where(p => p.FullName.ToLower().Contains(query.ToLower()))
+                    .ToList();
+
+                if (filtered.Count == 0)
+                {
+                    TempData["Error"] = "No patients found";
+                }
+
+                return View("PatientIndex", filtered);
             }
+            catch (Exception ex)
+            {
+                TempData["Error"] = string.IsNullOrWhiteSpace(ex.Message)
+                    ? "Patient not found"
+                    : ex.Message;
 
-            var filtered = patients
-                .FindAll(p => p.FullName.ToLower().Contains(query.ToLower()));
-
-            return View("PatientIndex", filtered);
+                return RedirectToAction("PatientIndex");
+            }
         }
 
+
+        // ✅ EDIT (GET)
         public async Task<ActionResult> Edit(int id)
         {
             var patient = await _service.GetById(id);
             return View(patient);
         }
 
-        // ✅ ✅ ✅ FIXED EDIT ALSO (same logic)
+        // ✅ EDIT (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, PatientDto dto)

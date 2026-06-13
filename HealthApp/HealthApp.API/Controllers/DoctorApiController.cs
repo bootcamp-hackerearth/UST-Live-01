@@ -36,9 +36,9 @@ namespace HealthApp.API.Controllers
                 var doctor = await _service.GetDoctorById(id);
                 return Ok(doctor);
             }
-            catch
+            catch(Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
         }
 
@@ -76,6 +76,21 @@ namespace HealthApp.API.Controllers
             {
                 await _service.ChangeDoctorStatus(id);
                 return Ok("Doctor status updated");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IHttpActionResult> Update(int id, DoctorDto dto)
+        {
+            try
+            {
+                await _service.UpdateDoctor(id, dto);
+                return Ok("Doctor updated successfully");
             }
             catch (Exception ex)
             {

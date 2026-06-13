@@ -1,5 +1,6 @@
-﻿using HealthApp.Shared.DTOs;
-using HealthApp.Service.Interface;
+﻿using HealthApp.Service.Interface;
+using HealthApp.Shared.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,6 +10,16 @@ namespace HealthApp.Service.Impl
     public class PatientApiService : IPatientApiService
     {
         private readonly string baseUrl = "https://localhost:44339/api/patients";
+
+        private string CleanError(string error)
+        {
+            return error.Replace("{", "")
+                        .Replace("}", "")
+                        .Replace("\"", "")
+                        .Replace("Message:", "")
+                        .Replace("message:", "")
+                        .Trim();
+        }
 
         public async Task<List<PatientDto>> GetAll()
         {
@@ -31,13 +42,19 @@ namespace HealthApp.Service.Impl
             {
                 var response = await client.GetAsync($"{baseUrl}/{id}");
 
+                // ✅ SUCCESS
                 if (response.IsSuccessStatusCode)
                 {
                     return await response.Content.ReadAsAsync<PatientDto>();
                 }
-            }
 
-            return null;
+                // ✅ ERROR → CLEAN MESSAGE
+                var error = await response.Content.ReadAsStringAsync();
+
+                throw new Exception(string.IsNullOrWhiteSpace(error)
+                    ? "Patient not found"
+                    : CleanError(error));   // ✅ IMPORTANT FIX
+            }
         }
 
         public async Task Create(PatientDto dto)

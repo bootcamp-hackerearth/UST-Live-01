@@ -1,0 +1,92 @@
+﻿@model HealthApp.Shared.DTOs.DoctorDto
+
+@{
+    ViewBag.Title = "Edit Doctor";
+}
+
+<!-- ✅ BACK BUTTON -->
+<div class="mb-3">
+    <a href="/Doctor/DoctorIndex" class="btn btn-outline-secondary">
+        ← Back
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <h2 class="mb-3 text-primary">Edit Doctor</h2>
+
+        <div class="card shadow p-4">
+
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(m => m.DoctorId)
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                <!-- ✅ Name -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Name</label>
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.FullName, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Specialisation -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Specialisation</label>
+
+                    <select name="Specialisation" class="form-control">
+                        <option value="">-- Select --</option>
+
+                        <option @(Model.Specialisation == "GeneralPhysician" ? "selected" : "")>GeneralPhysician</option>
+                        <option @(Model.Specialisation == "Cardiologist" ? "selected" : "")>Cardiologist</option>
+                        <option @(Model.Specialisation == "Dermatologist" ? "selected" : "")>Dermatologist</option>
+                        <option @(Model.Specialisation == "Neurologist" ? "selected" : "")>Neurologist</option>
+                        <option @(Model.Specialisation == "Orthopedic" ? "selected" : "")>Orthopedic</option>
+                        <option @(Model.Specialisation == "Pediatrician" ? "selected" : "")>Pediatrician</option>
+                        <option @(Model.Specialisation == "Psychiatrist" ? "selected" : "")>Psychiatrist</option>
+                        <option @(Model.Specialisation == "ENT" ? "selected" : "")>ENT</option>
+                        <option @(Model.Specialisation == "Gynecologist" ? "selected" : "")>Gynecologist</option>
+                    </select>
+
+                    @Html.ValidationMessageFor(m => m.Specialisation, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Experience -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Experience (Years)</label>
+                    @Html.TextBoxFor(m => m.YearsOfExperience,
+                        new { @class = "form-control", type = "number", min = "0", max = "50" })
+                    @Html.ValidationMessageFor(m => m.YearsOfExperience, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ Fee -->
+                <div class="form-group mb-3">
+                    <label class="fw-semibold">Consultation Fee</label>
+                    @Html.TextBoxFor(m => m.ConsultationFee,
+                        new { @class = "form-control", type = "number", step = "0.01", min = "1" })
+                    @Html.ValidationMessageFor(m => m.ConsultationFee, "", new { @class = "text-danger" })
+                </div>
+
+                <!-- ✅ BUTTONS -->
+                <div class="mt-4 text-center">
+
+                    <button type="submit"
+                            class="btn btn-primary me-2"
+                            onclick="return confirm('Update doctor details?')">
+                        Update
+                    </button>
+
+                    <a href="/Doctor/DoctorIndex"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

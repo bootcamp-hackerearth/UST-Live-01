@@ -7,8 +7,7 @@ namespace HealthApp.Shared.DTOs
         public int DoctorId { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
-        [RegularExpression("^[a-zA-Z ]+$", ErrorMessage = "Name cannot contain numbers")]
-        public string FullName { get; set; } = string.Empty;
+        [RegularExpression(@"^[a-zA-Z. ]+$", ErrorMessage = "Name can only contain letters")] public string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Specialisation is required")]
         public string Specialisation { get; set; }

@@ -12,5 +12,7 @@ namespace HealthApp.Service.Interface
         Task Create(DoctorDto dto);
         Task<List<DoctorDto>> SearchBySpecialisation(SpecialisationType type);
         Task ToggleStatus(int id);
+        Task Update(int id, DoctorDto dto);
+
     }
 }
