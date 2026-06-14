@@ -18,9 +18,5 @@ namespace HealthApp.Api.Models
         [Required]
         [RegularExpression("^(Patient|Doctor|Admin)$")]
         public string Role { get; set; }
-
-        public virtual Patient Patient { get; set; }
-
-        public virtual Doctor Doctor { get; set; }
     }
 }
