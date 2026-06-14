@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="HealthAxis Health.API/HealthAxis Health.API.csproj" />
+  <Project Path="HealthAxis Health.Tests/HealthAxis Health.Tests.csproj" Id="bb132ed5-42bb-4b4a-8e27-58ad9cc9ee2f" />
+</Solution>
