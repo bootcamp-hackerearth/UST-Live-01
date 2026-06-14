@@ -9,17 +9,17 @@ namespace HealthAxisCore_Api.Models
         public int AppointmentId { get; set; }
         [ForeignKey("PId")]
         public int PatientId { get; set; }
-        public Patient Patient { get; set; }
+        public required Patient Patient { get; set; }
         [ForeignKey("DoctorId")]
         public int DoctorId { get; set; }
-        public Doctor Doctor { get; set; }
+        public required Doctor Doctor { get; set; }
         [Required]
         public DateTime ScheduledDate { get; set; }
         [Required]
-        public string  TimeSlot { get; set; }
+        public required string  TimeSlot { get; set; }
         [RegularExpression("(Pending|Confirmed|Cancelled|Completed)")]
-        public string Status { get; set; }
+        public required string Status { get; set; }
         [MaxLength(100)]
-        public string CancellationReason { get; set; }
+        public required string CancellationReason { get; set; }
     }
 }
