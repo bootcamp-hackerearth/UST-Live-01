@@ -16,6 +16,7 @@ namespace HealthApp.Api.Models
         public string PasswordHash { get; set; }
 
         [Required]
+        [RegularExpression("^(Patient|Doctor|Admin)$")]
         public string Role { get; set; }
 
         public virtual Patient Patient { get; set; }
