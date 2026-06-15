@@ -25,42 +25,31 @@ namespace HealthAxis.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Admin User Seed Data
             modelBuilder.Entity<User>()
-                .HasData(
-                    new User
-                    {
-                        UserId = 1,
-                        FullName = "System Admin",
-                        Email = "admin@healthaxis.com",
-                        PasswordHash = "Admin123",
-                        Role = "Admin",
-                        IsActive = true
-                    }
-                );
+                .HasIndex(x => x.Email)
+                .IsUnique();
 
-            // Doctor Seed Data
+            modelBuilder.Entity<User>()
+                .Property(x => x.Role)
+                .HasConversion<string>();
+
             modelBuilder.Entity<Doctor>()
-                .HasData(
-                    new Doctor
-                    {
-                        DoctorId = 1,
-                        FullName = "Dr. Raj Kumar",
-                        Specialisation = "Cardiology",
-                        YearsOfExperience = 10,
-                        ConsultationFee = 800,
-                        IsActive = true
-                    },
-                    new Doctor
-                    {
-                        DoctorId = 2,
-                        FullName = "Dr. Priya Sharma",
-                        Specialisation = "Dermatology",
-                        YearsOfExperience = 8,
-                        ConsultationFee = 600,
-                        IsActive = true
-                    }
-                );
+                .Property(x => x.Specialisation)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<Appointment>()
+                .Property(x => x.Status)
+                .HasConversion<string>();
+
+            modelBuilder.Entity<User>()
+                .HasOne(x => x.Doctor)
+                .WithOne(x => x.User)
+                .HasForeignKey<Doctor>(x => x.UserId);
+
+            modelBuilder.Entity<User>()
+                .HasOne(x => x.Patient)
+                .WithOne(x => x.User)
+                .HasForeignKey<Patient>(x => x.UserId);
         }
     }
 }

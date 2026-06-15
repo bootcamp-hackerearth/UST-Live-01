@@ -1,26 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using HealthAxis.API.Enums;
+using HealthAxis.API.Models;
 
-namespace HealthAxis.API.Models
+namespace HealthAxis.API.Models;
+
+public class Doctor
 {
-    public class Doctor
-    {
-        public int DoctorId { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string FullName { get; set; }
+    public int UserId { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string Specialisation { get; set; }
+    public Specialization Specialisation { get; set; }
 
-        [Range(0, 50)]
-        public int YearsOfExperience { get; set; }
+    public DateOnly PracticeStartDate { get; set; }
 
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal ConsultationFee { get; set; }
+    public decimal ConsultationFee { get; set; }
 
-        public bool IsActive { get; set; } = true;
-    }
+    public bool IsAvailable { get; set; } = true;
+
+    public User? User { get; set; }
 }

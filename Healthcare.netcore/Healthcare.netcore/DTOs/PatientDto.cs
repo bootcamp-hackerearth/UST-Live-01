@@ -1,10 +1,12 @@
-﻿namespace HealthAxis.API.Models;
+﻿namespace HealthAxis.API.Dtos.PatientDtos;
 
-public class Patient
+public class PatientDto
 {
     public int Id { get; set; }
 
     public int UserId { get; set; }
+
+    public string FullName { get; set; } = string.Empty;
 
     public DateOnly DateOfBirth { get; set; }
 
@@ -13,6 +15,4 @@ public class Patient
     public string PhoneNumber { get; set; } = string.Empty;
 
     public string Address { get; set; } = string.Empty;
-
-    public User? User { get; set; }
 }

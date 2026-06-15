@@ -1,4 +1,6 @@
-﻿public class HealthRecord
+﻿namespace HealthAxis.API.Dtos.HealthRecordDtos;
+
+public class HealthRecordDto
 {
     public int Id { get; set; }
 

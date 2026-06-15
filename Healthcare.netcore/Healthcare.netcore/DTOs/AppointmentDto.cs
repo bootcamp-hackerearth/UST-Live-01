@@ -1,6 +1,6 @@
-﻿using HealthAxis.API.Enums;
+﻿namespace HealthAxis.API.Dtos.AppointmentDtos;
 
-public class Appointment
+public class AppointmentDto
 {
     public int Id { get; set; }
 
@@ -10,5 +10,5 @@ public class Appointment
 
     public DateTime AppointmentDate { get; set; }
 
-    public AppointmentStatus Status { get; set; }
+    public string Status { get; set; } = string.Empty;
 }
