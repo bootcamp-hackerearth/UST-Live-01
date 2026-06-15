@@ -12,7 +12,7 @@ namespace HealthCare.Api.Models
         public DateOnly LeaveDate { get; set; }
 
         [MaxLength(300)]
-        public string Reason { get; set; }
+        public string? Reason { get; set; }
 
         public DateTimeOffset CreateDate { get; set; }= DateTimeOffset.UtcNow;
 

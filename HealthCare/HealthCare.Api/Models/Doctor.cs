@@ -35,13 +35,13 @@ namespace HealthCare.Api.Models
 
         // Navigation
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public User? User { get; set; }
 
-        public ICollection<Appointment> Appointments { get; set; }
-        public ICollection<AvailableSlots> AvailableSlots { get; set; }
-        public ICollection<DoctorLeaves> DoctorLeaves { get; set; }
+        public ICollection<Appointment> Appointments { get; set; } = [];
+        public ICollection<AvailableSlots> AvailableSlots { get; set; } = [];
+        public ICollection<DoctorLeaves> DoctorLeaves { get; set; } = [];
 
-        public ICollection<HealthRecord>HealthRecords { get; set; }
+        public ICollection<HealthRecord> HealthRecords { get; set; } = [];
 
     }
 }

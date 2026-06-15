@@ -56,7 +56,7 @@ namespace HealthCare.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("AppointmentId");
@@ -82,6 +82,9 @@ namespace HealthCare.Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -136,6 +139,8 @@ namespace HealthCare.Api.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
+                    b.HasIndex(new[] { "Specialisation" }, "IX_Doctor_Specialisation");
+
                     b.ToTable("Doctors");
                 });
 
@@ -146,6 +151,9 @@ namespace HealthCare.Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -161,7 +169,7 @@ namespace HealthCare.Api.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("AvailableLeaves");
+                    b.ToTable("DoctorLeaves");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.HealthRecord", b =>
@@ -228,9 +236,6 @@ namespace HealthCare.Api.Migrations
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
@@ -259,15 +264,15 @@ namespace HealthCare.Api.Migrations
 
             modelBuilder.Entity("HealthCare.Api.Models.User", b =>
                 {
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -286,7 +291,10 @@ namespace HealthCare.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("UserID");
+                    b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -335,7 +343,7 @@ namespace HealthCare.Api.Migrations
             modelBuilder.Entity("HealthCare.Api.Models.DoctorLeaves", b =>
                 {
                     b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
-                        .WithMany("AvailableLeaves")
+                        .WithMany("DoctorLeaves")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -390,9 +398,9 @@ namespace HealthCare.Api.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("AvailableLeaves");
-
                     b.Navigation("AvailableSlots");
+
+                    b.Navigation("DoctorLeaves");
 
                     b.Navigation("HealthRecords");
                 });

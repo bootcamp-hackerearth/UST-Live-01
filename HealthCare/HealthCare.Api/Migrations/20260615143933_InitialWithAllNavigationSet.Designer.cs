@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare.Api.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    [Migration("20260615113449_FixInDoctor")]
-    partial class FixInDoctor
+    [Migration("20260615143933_InitialWithAllNavigationSet")]
+    partial class InitialWithAllNavigationSet
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,8 +37,8 @@ namespace HealthCare.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -59,14 +59,21 @@ namespace HealthCare.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int?>("UserId")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("AppointmentId");
 
-                    b.HasIndex("DoctorId");
+                    b.HasIndex("DoctorId", "ScheduledDate")
+                        .HasDatabaseName("IX_Appointments_Doctor_Date");
 
-                    b.HasIndex("PatientId");
+                    b.HasIndex("PatientId", "ScheduledDate")
+                        .HasDatabaseName("IX_Appointments_Patient_Date");
+
+                    b.HasIndex("DoctorId", "ScheduledDate", "TimeSlot")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_Appointments_Doctor_Date_Slot")
+                        .HasFilter("[Status] != 'Cancelled'");
 
                     b.ToTable("Appointments");
                 });
@@ -78,6 +85,9 @@ namespace HealthCare.Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -105,8 +115,8 @@ namespace HealthCare.Api.Migrations
                     b.Property<decimal>("ConsultationFee")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -132,6 +142,8 @@ namespace HealthCare.Api.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
+                    b.HasIndex(new[] { "Specialisation" }, "IX_Doctor_Specialisation");
+
                     b.ToTable("Doctors");
                 });
 
@@ -142,6 +154,9 @@ namespace HealthCare.Api.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreateDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -157,7 +172,7 @@ namespace HealthCare.Api.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("AvailableLeaves");
+                    b.ToTable("DoctorLeaves");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.HealthRecord", b =>
@@ -171,8 +186,8 @@ namespace HealthCare.Api.Migrations
                     b.Property<int>("AppointmentId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Diagnosis")
                         .IsRequired()
@@ -204,7 +219,8 @@ namespace HealthCare.Api.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.HasIndex("PatientId");
+                    b.HasIndex("PatientId", "VisitDate")
+                        .HasDatabaseName("IX_HealthRecords_Patient_VisitDate");
 
                     b.ToTable("HealthRecords");
                 });
@@ -217,14 +233,11 @@ namespace HealthCare.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PatientId"));
 
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("CreatedDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
@@ -254,15 +267,15 @@ namespace HealthCare.Api.Migrations
 
             modelBuilder.Entity("HealthCare.Api.Models.User", b =>
                 {
-                    b.Property<int>("UserID")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -273,15 +286,18 @@ namespace HealthCare.Api.Migrations
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
-                    b.Property<DateTime>("RefreshTokenExpiry")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("RefreshTokenExpiry")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("UserID");
+                    b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });
@@ -291,13 +307,13 @@ namespace HealthCare.Api.Migrations
                     b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
                         .WithMany("Appointments")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HealthCare.Api.Models.Patient", "Patient")
                         .WithMany("Appointments")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Doctor");
@@ -321,7 +337,7 @@ namespace HealthCare.Api.Migrations
                     b.HasOne("HealthCare.Api.Models.User", "User")
                         .WithOne("Doctor")
                         .HasForeignKey("HealthCare.Api.Models.Doctor", "UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -330,7 +346,7 @@ namespace HealthCare.Api.Migrations
             modelBuilder.Entity("HealthCare.Api.Models.DoctorLeaves", b =>
                 {
                     b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
-                        .WithMany("AvailableLeaves")
+                        .WithMany("DoctorLeaves")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -343,19 +359,19 @@ namespace HealthCare.Api.Migrations
                     b.HasOne("HealthCare.Api.Models.Appointment", "Appointment")
                         .WithOne("HealthRecord")
                         .HasForeignKey("HealthCare.Api.Models.HealthRecord", "AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
                         .WithMany("HealthRecords")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("HealthCare.Api.Models.Patient", "Patient")
                         .WithMany("HealthRecords")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Appointment");
@@ -370,7 +386,7 @@ namespace HealthCare.Api.Migrations
                     b.HasOne("HealthCare.Api.Models.User", "User")
                         .WithOne("Patient")
                         .HasForeignKey("HealthCare.Api.Models.Patient", "UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -385,9 +401,9 @@ namespace HealthCare.Api.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("AvailableLeaves");
-
                     b.Navigation("AvailableSlots");
+
+                    b.Navigation("DoctorLeaves");
 
                     b.Navigation("HealthRecords");
                 });

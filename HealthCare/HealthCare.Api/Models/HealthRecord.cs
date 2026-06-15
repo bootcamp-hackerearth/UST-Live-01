@@ -9,7 +9,6 @@ namespace HealthCare.Api.Models
         [Key]
         public int RecordId { get; set; }
 
-        [Required]
         public int AppointmentId { get; set; }
 
         public int PatientId { get; set; }
@@ -21,14 +20,14 @@ namespace HealthCare.Api.Models
 
         [Required]
         [MaxLength(500)]
-        public string Diagnosis { get; set; }
+        public string? Diagnosis { get; set; }
 
         [Required]
         [MaxLength(500)]
-        public string Prescription { get; set; }
+        public string? Prescription { get; set; }
 
         [MaxLength(1000)]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
 
         public DateTimeOffset CreatedDate { get; set; }
 

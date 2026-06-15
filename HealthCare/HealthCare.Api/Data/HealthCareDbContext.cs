@@ -88,9 +88,9 @@ namespace HealthCare.Api.Data
           //  SeedData(modelBuilder);
         }
 
-        public static void SeedData()
-        {
+        //public static void SeedData()
+        //{
 
-        }
+        //}
     }
 }

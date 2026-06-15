@@ -12,19 +12,19 @@ namespace HealthCare.Api.Models
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required]
         [MaxLength(20)]
         [AllowedValues("Patient","Doctor","Admin",ErrorMessage="Role must be Admin,Patient or Doctor")]
-        public string Role { get; set; } = null;
+        public string? Role { get; set; } = null;
 
         [Required]
         [MaxLength(256)]
-        public string PasswordHash { get; set; } = null;
+        public string? PasswordHash { get; set; } = null;
 
         [MaxLength(512)]
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
 
         public DateTimeOffset RefreshTokenExpiry { get; set; }= DateTimeOffset.UtcNow;
 

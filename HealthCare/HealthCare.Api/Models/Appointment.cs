@@ -27,7 +27,7 @@ namespace HealthCare.Api.Models
         public string Status { get; set; } = "Pending";
 
         [MaxLength(500)]
-        public string CancellationReason { get; set; }
+        public string? CancellationReason { get; set; }
 
         public DateTimeOffset CreatedDate { get; set; }= DateTimeOffset.UtcNow;
 
@@ -38,6 +38,6 @@ namespace HealthCare.Api.Models
         [ForeignKey("DoctorId")]
         public Doctor Doctor { get; set; } = null!;
 
-        public HealthRecord HealthRecord { get; set; }
+        public HealthRecord ?HealthRecord { get; set; }
     }
 }
