@@ -1,0 +1,6 @@
+@Healthcare.netcore_HostAddress = http://localhost:5145
+
+GET {{Healthcare.netcore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
