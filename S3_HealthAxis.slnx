@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="S3_HealthAxisApi/S3_HealthAxisApi.csproj" />
+</Solution>
