@@ -1,26 +1,71 @@
-using HealthAxisCore_Api.Data;
+using HealthCareApp.Data;
+
+using HealthCareApp.Repository.Impl;
+
+using HealthCareApp.Repository.Interface;
+
+using HealthCareApp.Services;
+using HealthCareApp.Services.Impl;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
 builder.Services.AddControllers();
 
-// Register HealthAxisDbContext with SQL Server
+// Register HealthAxisDbContext with SQL Server.
+
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbCon")));
 
-// Swagger/OpenAPI
+// Register DbContext for generic repository constructor.
+
+builder.Services.AddScoped<DbContext, HealthAxisDbContext>();
+
+// Register AutoMapper.
+
+builder.Services.AddAutoMapper(typeof(Program));
+
+// Register generic repository.
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+// Register entity-specific repositories.
+
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+
+// Register services.
+
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+
+// Swagger/OpenAPI.
+
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
 // Configure HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
+
 {
+
     app.UseSwagger();
+
     app.UseSwaggerUI();
+
 }
 
 app.UseHttpsRedirection();

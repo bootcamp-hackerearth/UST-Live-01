@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using HealthAxisCore_Api.Enums;
-namespace HealthAxisCore_Api.Models
+using HealthCareApp.Enums;
+namespace HealthCareApp.Models
 {
     [Index(nameof(Email), IsUnique = true)]
     public class User

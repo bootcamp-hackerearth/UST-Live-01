@@ -1,0 +1,42 @@
+﻿using HealthCareApp.Dtos;
+using HealthCareApp.Enums;
+
+namespace HealthCareApp.Services
+{
+    public interface IAppointmentService
+    {
+        Task<List<AppointmentDto>> GetAllAppointmentsAsync();
+
+        Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId);
+
+        Task<List<AppointmentDto>> GetAppointmentsByPatientIdAsync(int patientId);
+
+        Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId);
+
+        Task<List<AppointmentDto>> GetAppointmentsByStatusAsync(AppointmentStatus status);
+
+        Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync();
+
+        Task<List<AppointmentDto>> GetUpcomingAppointmentsByPatientIdAsync(int patientId);
+
+        Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctorIdAsync(int doctorId);
+
+        Task<List<AppointmentDto>> GetPendingAppointmentsByPatientIdAsync(int patientId);
+
+        Task<List<AppointmentDto>> GetPendingAppointmentsByDoctorIdAsync(int doctorId);
+
+        Task<List<AppointmentDto>> GetTodayConfirmedAppointmentsByDoctorIdAsync(int doctorId);
+
+        Task<AppointmentDto> BookAppointmentAsync(BookAppointmentDto dto);
+
+        Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto);
+
+        Task<AppointmentDto> ConfirmAppointmentAsync(int appointmentId);
+
+        Task<AppointmentDto> CompleteAppointmentAsync(int appointmentId);
+
+        Task<AppointmentDto> CancelAppointmentAsync(CancelAppointmentDto dto);
+
+        Task<AppointmentDto> DeleteAppointmentAsync(int appointmentId);
+    }
+}

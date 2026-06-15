@@ -1,8 +1,8 @@
-﻿using HealthAxisCore_Api.Enums;
-using HealthAxisCore_Api.Models;
+﻿using HealthCareApp.Enums;
+using HealthCareApp.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthAxisCore_Api.Data
+namespace HealthCareApp.Data
 {
     public class HealthAxisDbContext : DbContext
     {

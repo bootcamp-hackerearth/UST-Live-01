@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using HealthAxisCore_Api.Enums;
+using HealthCareApp.Enums;
 
-namespace HealthAxisCore_Api.Models
+namespace HealthCareApp.Models
 {
     public class Doctor
     {

@@ -1,4 +1,6 @@
-﻿namespace HealthAxisCore_Api.Enums
+﻿
+
+namespace HealthCareApp.Enums
 {
     public enum GenderType
     {
