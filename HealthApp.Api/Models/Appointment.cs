@@ -22,13 +22,13 @@ namespace HealthApp.Api.Models
         public int PatientId { get; set; }
 
         [ForeignKey(nameof(PatientId))]
-        public Patient Patient { get; set; } = default!;
+        public Patient Patient { get; set; }
 
         [Required(ErrorMessage = "Doctor is required.")]
         public int DoctorId { get; set; }
 
         [ForeignKey(nameof(DoctorId))]
-        public Doctor Doctor { get; set; } = default!;
+        public Doctor Doctor { get; set; } 
 
         [Required(ErrorMessage = "Scheduled date is required.")]
         public DateTime ScheduledDate { get; set; }
