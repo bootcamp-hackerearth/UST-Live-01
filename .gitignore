@@ -1,0 +1,48 @@
+# =========================
+# Visual Studio files
+# =========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Build folders
+# =========================
+bin/
+obj/
+
+# =========================
+# Rider / VS Code (optional)
+# =========================
+.idea/
+.vscode/
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# EF Core migration temp files (optional)
+# =========================
+*.dbmdl
+*.jfm
+
+# =========================
+# Publish output
+# =========================
+publish/
+
+# =========================
+# Secrets / local config (important)
+# =========================
+appsettings.Development.json
+secrets.json
