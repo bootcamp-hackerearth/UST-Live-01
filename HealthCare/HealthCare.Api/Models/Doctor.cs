@@ -5,7 +5,7 @@ namespace HealthCare.Api.Models
 {
     public class Doctor
     {
-        [Key]
+       
         public int DoctorId { get; set; }
 
         [Required]

@@ -14,8 +14,7 @@ namespace HealthCare.Api.Models
         public string FullName { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
-        public DateTime DateOfBirth { get; set; }
+        public DateOnly DateOfBirth { get; set; }
 
         [RegularExpression("Male|Female|Other")]
         public string Gender { get; set; }
@@ -25,12 +24,17 @@ namespace HealthCare.Api.Models
         [RegularExpression(@"^[6789]\d{9}$",ErrorMessage="PhoneNumber must start with 6,7,8,9 and be only 10 digit long")]
         public int PhoneNumber { get; set; }
 
+        [Required]
         [EmailAddress]
+        [MaxLength(100)]
         public string Email { get; set; }
+
+        [MaxLength(50)]
         public string InsuranceId { get; set; }
         public DateTime CreatedDate { get; set; }
         public bool IsActived { get; set; }
 
-        public virtual ICollection<Patient> Patients { get; set; }
+        public  ICollection<Appointment> Appointments { get; set; }
+        public  ICollection<HealthRecord> HealthRecords { get; set; }
     }
 }
