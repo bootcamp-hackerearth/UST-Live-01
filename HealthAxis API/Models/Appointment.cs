@@ -1,0 +1,130 @@
+﻿using HealthAxis.API.Enums;
+using HealthAxis.API.Utilities;
+using Microsoft.VisualBasic;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HealthAxis.API.Models
+{
+    public class Appointment
+    {
+        [Key]
+        public int AppointmentId
+        {
+            get;
+            set;
+        }
+
+        [Required(ErrorMessage = Constant.PatientRequired)]
+        public int PatientId
+        {
+            get;
+            set;
+        }
+
+        [ForeignKey(nameof(PatientId))]
+        public virtual Patient Patient
+        {
+            get;
+            set;
+        }
+
+        [Required(ErrorMessage = Constant.DoctorRequired)]
+        public int DoctorId
+        {
+            get;
+            set;
+        }
+
+        [ForeignKey(nameof(DoctorId))]
+        public virtual Doctor Doctor
+        {
+            get;
+            set;
+        }
+    
+        [Required(ErrorMessage = Constant.ScheduledDateRequired)]
+        [DataType(DataType.Date)]
+        public DateTime ScheduledDate
+        {
+            get;
+            set;
+        }
+
+        [Required(ErrorMessage = Constant.TimeSlotRequired)]
+        [StringLength(ValidationLimits.TimeSlotLength)]
+        public string TimeSlot
+        {
+            get;
+            set;
+        } = string.Empty;
+
+        [Required(ErrorMessage = Constant.AppointmentStatusRequired)]
+        public AppointmentStatus Status
+        {
+            get;
+            set;
+        }
+
+        [StringLength(
+            ValidationLimits.CancellationReasonLength)]
+        public string CancellationReason
+        {
+            get;
+            set;
+        } = string.Empty;
+
+        public virtual ICollection<HealthRecord>
+            HealthRecords
+        {
+            get;
+            set;
+        }
+            = new List<HealthRecord>();
+
+        public void Confirm()
+        {
+            Status =
+                AppointmentStatus.Confirmed;
+        }
+
+        public void Cancel(
+            string reason)
+        {
+            Status =
+                AppointmentStatus.Cancelled;
+
+            CancellationReason =
+                reason;
+        }
+
+        public void Complete()
+        {
+            Status =
+                AppointmentStatus.Completed;
+        }
+
+        public bool IsUpcoming()
+        {
+            return ScheduledDate.Date >=
+                   DateTime.Today
+                   &&
+                   Status !=
+                   AppointmentStatus.Cancelled;
+        }
+
+        public bool IsCancelled()
+        {
+            return Status ==
+                   AppointmentStatus.Cancelled;
+        }
+
+        public bool IsCompleted()
+        {
+            return Status ==
+                   AppointmentStatus.Completed;
+        }
+    }
+}
