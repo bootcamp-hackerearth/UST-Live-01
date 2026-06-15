@@ -1,21 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthApp.Api.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthApp.Api.Models
 {
-
-    public enum SpecialisationType
-    {
-        GeneralPhysician,
-        Cardiologist,
-        Dermatologist,
-        Neurologist,
-        Orthopedic,
-        Pediatrician,
-        Psychiatrist,
-        ENT,
-        Gynecologist
-    }
 
     [Table("Doctors")]
     public class Doctor

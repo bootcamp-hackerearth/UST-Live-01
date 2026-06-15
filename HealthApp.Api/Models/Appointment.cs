@@ -1,16 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthApp.Api.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthApp.Api.Models
 {
-
-    public enum AppointmentStatus
-    {
-        Pending = 0,
-        Confirmed = 1,
-        Cancelled = 2,
-        Completed = 3
-    }
 
     [Table("Appointments")]
     public class Appointment

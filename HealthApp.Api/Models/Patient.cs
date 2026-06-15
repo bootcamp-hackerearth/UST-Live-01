@@ -10,8 +10,6 @@ namespace HealthApp.Api.Models
         [Key]
         public int PatientId { get; set; }
 
-
-
         [Required]
         [MinLength(3, ErrorMessage = "Full name must be at least 3 characters long.")]
         public string FullName { get; set; }
