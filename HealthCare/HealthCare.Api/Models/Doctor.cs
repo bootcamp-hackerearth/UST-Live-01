@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthCare.Api.Models
 {
+    [Index(nameof(Specialisation),Name ="IX_Doctor_Specialisation")]
     public class Doctor
     {
        
@@ -13,28 +15,33 @@ namespace HealthCare.Api.Models
 
         [Required]
         [MaxLength(100)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = null!;
 
         [Required]
         [MaxLength(50)]
-        public string Specialisation { get; set; }
+        public string Specialisation { get; set; }= null!;
 
+        [Required]
+        [Range(0,60)]
         public int YearsOfExperience { get; set; }
 
+        [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal ConsultationFee { get; set; }
 
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
-        public DateTime CreatedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; } = DateTimeOffset.UtcNow;
 
         // Navigation
-       // [ForeignKey("UserId")]
-      //  public virtual User User { get; set; }
+        [ForeignKey("UserId")]
+        public User User { get; set; }
 
-        public virtual ICollection<Appointment> Appointments { get; set; }
-       // public virtual ICollection<DoctorAvailableSlot> AvailableSlots { get; set; }
-       // public virtual ICollection<DoctorLeave> Leaves { get; set; }
+        public ICollection<Appointment> Appointments { get; set; }
+        public ICollection<AvailableSlots> AvailableSlots { get; set; }
+        public ICollection<DoctorLeaves> DoctorLeaves { get; set; }
+
+        public ICollection<HealthRecord>HealthRecords { get; set; }
 
     }
 }

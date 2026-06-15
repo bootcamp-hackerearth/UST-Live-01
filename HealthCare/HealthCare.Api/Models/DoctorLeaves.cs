@@ -3,21 +3,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthCare.Api.Models
 {
-    public class AvailableSlots
+    public class DoctorLeaves
     {
         public int Id { get; set; }
-
-        [Required]
         public int DoctorId { get; set; }
 
         [Required]
-        [MaxLength(20)]
-        public string TimeSlot { get; set; } = null!;
+        public DateOnly LeaveDate { get; set; }
 
-        public DateTimeOffset CreatedDate { get; set; }= DateTimeOffset.UtcNow;
+        [MaxLength(300)]
+        public string Reason { get; set; }
+
+        public DateTimeOffset CreateDate { get; set; }= DateTimeOffset.UtcNow;
 
         [ForeignKey(nameof(DoctorId))]
         public Doctor Doctor { get; set; } = null!;
-
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare.Api.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    [Migration("20260615023640_InitalWithmodel")]
-    partial class InitalWithmodel
+    [Migration("20260615113449_FixInDoctor")]
+    partial class FixInDoctor
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,7 +34,6 @@ namespace HealthCare.Api.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
                     b.Property<string>("CancellationReason")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -47,8 +46,8 @@ namespace HealthCare.Api.Migrations
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ScheduledDate")
-                        .HasColumnType("Date");
+                    b.Property<DateOnly>("ScheduledDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -60,6 +59,9 @@ namespace HealthCare.Api.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("AppointmentId");
 
                     b.HasIndex("DoctorId");
@@ -67,6 +69,29 @@ namespace HealthCare.Api.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("HealthCare.Api.Models.AvailableSlots", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TimeSlot")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("AvailableSlots");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.Doctor", b =>
@@ -104,7 +129,35 @@ namespace HealthCare.Api.Migrations
 
                     b.HasKey("DoctorId");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("Doctors");
+                });
+
+            modelBuilder.Entity("HealthCare.Api.Models.DoctorLeaves", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("LeaveDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("AvailableLeaves");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.HealthRecord", b =>
@@ -126,9 +179,15 @@ namespace HealthCare.Api.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Notes")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Prescription")
                         .IsRequired()
@@ -142,6 +201,10 @@ namespace HealthCare.Api.Migrations
 
                     b.HasIndex("AppointmentId")
                         .IsUnique();
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
 
                     b.ToTable("HealthRecords");
                 });
@@ -157,39 +220,70 @@ namespace HealthCare.Api.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Gender")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InsuranceId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActived")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("PatientId1")
-                        .HasColumnType("int");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PhoneNumber")
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("PatientId");
 
-                    b.HasIndex("PatientId1");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Patients");
+                });
+
+            modelBuilder.Entity("HealthCare.Api.Models.User", b =>
+                {
+                    b.Property<int>("UserID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("RefreshToken")
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<DateTime>("RefreshTokenExpiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("UserID");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.Appointment", b =>
@@ -197,11 +291,11 @@ namespace HealthCare.Api.Migrations
                     b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
                         .WithMany("Appointments")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("HealthCare.Api.Models.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -209,6 +303,39 @@ namespace HealthCare.Api.Migrations
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
+                });
+
+            modelBuilder.Entity("HealthCare.Api.Models.AvailableSlots", b =>
+                {
+                    b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
+                        .WithMany("AvailableSlots")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
+            modelBuilder.Entity("HealthCare.Api.Models.Doctor", b =>
+                {
+                    b.HasOne("HealthCare.Api.Models.User", "User")
+                        .WithOne("Doctor")
+                        .HasForeignKey("HealthCare.Api.Models.Doctor", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HealthCare.Api.Models.DoctorLeaves", b =>
+                {
+                    b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
+                        .WithMany("AvailableLeaves")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.HealthRecord", b =>
@@ -219,30 +346,64 @@ namespace HealthCare.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("HealthCare.Api.Models.Doctor", "Doctor")
+                        .WithMany("HealthRecords")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("HealthCare.Api.Models.Patient", "Patient")
+                        .WithMany("HealthRecords")
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.Navigation("Appointment");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.Patient", b =>
                 {
-                    b.HasOne("HealthCare.Api.Models.Patient", null)
-                        .WithMany("Patients")
-                        .HasForeignKey("PatientId1");
+                    b.HasOne("HealthCare.Api.Models.User", "User")
+                        .WithOne("Patient")
+                        .HasForeignKey("HealthCare.Api.Models.Patient", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.Appointment", b =>
                 {
-                    b.Navigation("HealthRecord")
-                        .IsRequired();
+                    b.Navigation("HealthRecord");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.Doctor", b =>
                 {
                     b.Navigation("Appointments");
+
+                    b.Navigation("AvailableLeaves");
+
+                    b.Navigation("AvailableSlots");
+
+                    b.Navigation("HealthRecords");
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.Patient", b =>
                 {
-                    b.Navigation("Patients");
+                    b.Navigation("Appointments");
+
+                    b.Navigation("HealthRecords");
+                });
+
+            modelBuilder.Entity("HealthCare.Api.Models.User", b =>
+                {
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
                 });
 #pragma warning restore 612, 618
         }

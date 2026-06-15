@@ -5,7 +5,7 @@ namespace HealthCare.Api.Models
 {
     public class Appointment
     {
-        [Key]
+       
         public int AppointmentId { get; set; }
 
         [Required]
@@ -15,29 +15,29 @@ namespace HealthCare.Api.Models
         public int DoctorId { get; set; }
 
         [Required]
-        [Column(TypeName = "Date")]
-        public DateTime ScheduledDate { get; set; }
+        public DateOnly ScheduledDate { get; set; }
 
         [Required]
         [MaxLength(20)]
-        public string TimeSlot { get; set; }
+        public string TimeSlot { get; set; } = null!;
 
         [Required]
         [MaxLength(20)]
-        public string Status { get; set; } // "Confirmed" | "Pending" | "Cancelled" | "Completed"
+        [AllowedValues("Pending", "Confirmed", "Cancelled", "Completed", ErrorMessage = "Status should be Pending,Confirmed,Concelled or Completed")]
+        public string Status { get; set; } = "Pending";
 
         [MaxLength(500)]
         public string CancellationReason { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public DateTimeOffset CreatedDate { get; set; }= DateTimeOffset.UtcNow;
 
         // Navigation
         [ForeignKey("PatientId")]
-        public virtual Patient Patient { get; set; }
+        public Patient Patient { get; set; } = null!;
 
         [ForeignKey("DoctorId")]
-        public virtual Doctor Doctor { get; set; }
+        public Doctor Doctor { get; set; } = null!;
 
-        public virtual HealthRecord HealthRecord { get; set; }
+        public HealthRecord HealthRecord { get; set; }
     }
 }

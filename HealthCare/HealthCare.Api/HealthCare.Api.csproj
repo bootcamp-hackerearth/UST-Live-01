@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>enaable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
@@ -18,6 +18,10 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="DTOs\Doctor\" />
+    <Folder Include="DTOs\HealthRecord\" />
+    <Folder Include="DTOs\Appointments\" />
+    <Folder Include="Repositories\Implementations\" />
   </ItemGroup>
 
   <ItemGroup>
