@@ -16,8 +16,7 @@ namespace HealthAxis.API.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
-        protected override void OnModelCreating(
-            ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -27,71 +26,37 @@ namespace HealthAxis.API.Data
 
             modelBuilder.Entity<Doctor>().Property(d => d.ConsultationFee).HasPrecision(10, 2);
 
-            modelBuilder.Entity<Patient>()
-                .HasIndex(p => p.Email)
-                .IsUnique();
+            modelBuilder.Entity<Patient>().HasIndex(p => p.Email).IsUnique();
 
-            modelBuilder.Entity<Patient>()
-                .Property(p => p.Gender)
-                .HasConversion<string>()
-                .HasMaxLength(10);
+            modelBuilder.Entity<Patient>() .Property(p => p.Gender).HasConversion<string>().HasMaxLength(10);
 
-            modelBuilder.Entity<Doctor>()
-                .Property(d => d.Specialisation)
-                .HasConversion<string>()
-                .HasMaxLength(50);
+            modelBuilder.Entity<Doctor>() .Property(d => d.Specialisation).HasConversion<string>() .HasMaxLength(50);
 
-            modelBuilder.Entity<Appointment>()
-                .Property(a => a.Status)
-                .HasConversion<string>()
-                .HasMaxLength(20);
+            modelBuilder.Entity<Appointment>() .Property(a => a.Status) .HasConversion<string>().HasMaxLength(20);
 
             SeedData(modelBuilder);
         }
 
-        private static void ConfigureAppointmentRelationships(
-            ModelBuilder modelBuilder)
+        private static void ConfigureAppointmentRelationships(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Appointment>()
-                .HasOne(a => a.Patient)
-                .WithMany(p => p.Appointments)
-                .HasForeignKey(a => a.PatientId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Appointment>().HasOne(a => a.Patient).WithMany(p => p.Appointments) .HasForeignKey(a => a.PatientId).OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Appointment>()
-                .HasOne(a => a.Doctor)
-                .WithMany(d => d.Appointments)
-                .HasForeignKey(a => a.DoctorId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Appointment>().HasOne(a => a.Doctor).WithMany(d => d.Appointments).HasForeignKey(a => a.DoctorId).OnDelete(DeleteBehavior.Restrict);
         }
 
         private static void ConfigureHealthRecordRelationships(
             ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<HealthRecord>()
-                .HasOne(h => h.Patient)
-                .WithMany(p => p.HealthRecords)
-                .HasForeignKey(h => h.PatientId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<HealthRecord>().HasOne(h => h.Patient).WithMany(p => p.HealthRecords).HasForeignKey(h => h.PatientId).OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HealthRecord>()
-                .HasOne(h => h.Doctor)
-                .WithMany(d => d.HealthRecords)
-                .HasForeignKey(h => h.DoctorId)
-                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<HealthRecord>().HasOne(h => h.Doctor).WithMany(d => d.HealthRecords).HasForeignKey(h => h.DoctorId).OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Appointment>()
-                .HasOne(a => a.HealthRecord)
-                .WithOne(hr => hr.Appointment)
-                .HasForeignKey<HealthRecord>(hr => hr.AppointmentId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Appointment>().HasOne(a => a.HealthRecord).WithOne(hr => hr.Appointment).HasForeignKey<HealthRecord>(hr => hr.AppointmentId) .OnDelete(DeleteBehavior.Cascade);
         }
 
         private static void SeedData(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Doctor>()
-                .HasData(
-
+            modelBuilder.Entity<Doctor>().HasData(
                     new Doctor
                     {
                         DoctorId = 1,
@@ -143,8 +108,7 @@ namespace HealthAxis.API.Data
                     }
                 );
 
-            modelBuilder.Entity<Patient>()
-            .HasData(
+            modelBuilder.Entity<Patient>() .HasData(
 
                 new Patient
                 {
