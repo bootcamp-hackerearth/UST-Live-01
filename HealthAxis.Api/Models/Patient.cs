@@ -22,5 +22,6 @@ namespace HealthAxisCore_Api.Models
         [Phone]
         public required string PhoneNumber { get; set; }
         public string? InsuranceID { get; set; }
+        public bool IsActive { get; set; }
     }
 }
