@@ -4,6 +4,7 @@ using HealthCare.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare.Api.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    partial class HealthCareDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260615150623_SeedingForUsers")]
+    partial class SeedingForUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,18 +142,6 @@ namespace HealthCare.Api.Migrations
                     b.HasIndex(new[] { "Specialisation" }, "IX_Doctor_Specialisation");
 
                     b.ToTable("Doctors");
-
-                    b.HasData(
-                        new
-                        {
-                            DoctorId = 1,
-                            ConsultationFee = 500m,
-                            FullName = "Dr. Arun Kumar",
-                            IsActive = true,
-                            Specialisation = "Cardiology",
-                            UserId = 3,
-                            YearsOfExperience = 3
-                        });
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.DoctorLeaves", b =>
@@ -266,18 +257,6 @@ namespace HealthCare.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("Patients");
-
-                    b.HasData(
-                        new
-                        {
-                            PatientId = 1,
-                            DateOfBirth = new DateOnly(2003, 4, 7),
-                            FullName = "Abishek",
-                            Gender = "Male",
-                            IsActived = true,
-                            PhoneNumber = "9876543210",
-                            UserId = 2
-                        });
                 });
 
             modelBuilder.Entity("HealthCare.Api.Models.User", b =>

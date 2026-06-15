@@ -18,7 +18,6 @@ namespace HealthCare.Api.Models
         public string? PhoneNumber { get; set; }
 
         public string? InsuranceId { get; set; }
-        public DateTimeOffset CreatedDate { get; set; }= DateTimeOffset.UtcNow;
         public bool IsActived { get; set; } = true;
 
         public User? User { get; set; }

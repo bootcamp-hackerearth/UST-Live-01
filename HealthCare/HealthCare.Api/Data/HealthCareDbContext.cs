@@ -85,12 +85,19 @@ namespace HealthCare.Api.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             // -- Seed data --
-          //  SeedData(modelBuilder);
+            SeedData(modelBuilder);
         }
 
-        //public static void SeedData()
-        //{
+        public static void SeedData(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().HasData(new User { UserId = 1 ,Email="admin@demo.com",PasswordHash="$12QWER.1Fds",Role="Admin", CreatedDate = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero) });
+            modelBuilder.Entity<User>().HasData(new User { UserId = 2, Email = "patient@demo.com", PasswordHash = "yX9v14Eexx1Fds", Role = "Patient" , CreatedDate = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero) });
+            modelBuilder.Entity<User>().HasData(new User { UserId = 3, Email = "doctort@demo.com", PasswordHash = "yX9v14Eexx1Fds", Role = "Doctor" , CreatedDate = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero) });
 
-        //}
+            modelBuilder.Entity<Doctor>().HasData(new Doctor {DoctorId=1,UserId=3,FullName="Dr. Arun Kumar",Specialisation="Cardiology",YearsOfExperience=3,ConsultationFee=500,IsActive=true});
+
+            modelBuilder.Entity<Patient>().HasData(new Patient {PatientId=1,UserId=2,FullName="Abishek",DateOfBirth=new DateOnly(2003,4,7),Gender="Male",PhoneNumber="9876543210" });
+
+        }
     }
 }

@@ -26,7 +26,9 @@ namespace HealthCare.Api.Models
         [MaxLength(512)]
         public string? RefreshToken { get; set; }
 
-        public DateTimeOffset RefreshTokenExpiry { get; set; }= DateTimeOffset.UtcNow;
+        public DateTimeOffset RefreshTokenExpiry { get; set; }
+        
+        public DateTimeOffset CreatedDate { get; set; }
 
         public Patient? Patient { get; set; }
 
