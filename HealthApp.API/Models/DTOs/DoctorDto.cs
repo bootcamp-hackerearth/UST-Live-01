@@ -7,7 +7,7 @@ namespace HealthApp.API.Models.DTOs
         public int DoctorId { get; set; }
         [Required]
         [MinLength(2)]
-        [RegularExpression(@"[A-Z][A-Za-z\s]")]
+        [RegularExpression(@"[A-Z][A-Za-z\s]+")]
         public required string DoctorName { get; set; }
         [Required]
         [RegularExpression("(Endocrinologist|Oncologist|Gynecologist|OrthopedicSurgeon|Psychiatrist|Pediatrician|Neurologist|Dermatologist|Cardiologist|GeneralPractitioner)", ErrorMessage = "Invalid Specialisation")]

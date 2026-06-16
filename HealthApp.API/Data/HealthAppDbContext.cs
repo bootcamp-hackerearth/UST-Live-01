@@ -1,9 +1,11 @@
 ﻿using HealthApp.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.API.Data
 {
-    public class HealthAppDbContext : DbContext
+    public class HealthAppDbContext : IdentityDbContext<IdentityUser>
     {
         public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options) : base(options)
         {
@@ -14,7 +16,7 @@ namespace HealthApp.API.Data
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<HealthRecord> HealthRecords { get; set; }
-        public DbSet<User> Users { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

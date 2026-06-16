@@ -1,0 +1,9 @@
+﻿namespace HealthApp.API.Models
+{
+    public class AuthResponse
+    {
+        public string AccessToken { get; set; } = string.Empty;
+        public int ExpiresIn { get; set; }
+        public string Message { get; set; } = string.Empty;
+    }
+}
