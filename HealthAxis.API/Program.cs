@@ -4,6 +4,7 @@ using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services;
 using HealthAxis.API.Services.Implementation;
+using HealthAxis.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();

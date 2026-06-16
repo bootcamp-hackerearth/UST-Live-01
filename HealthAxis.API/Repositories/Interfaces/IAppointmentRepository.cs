@@ -1,6 +1,8 @@
-﻿namespace HealthAxis.API.Repositories.Interfaces
+﻿using HealthAxis.API.Models;
+
+namespace HealthAxis.API.Repositories.Interfaces
 {
-    public interface IAppointmentRepository
+    public interface IAppointmentRepository : IRepository<Appointment>
     {
     }
 }

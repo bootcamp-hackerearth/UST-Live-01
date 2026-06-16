@@ -4,6 +4,7 @@ namespace HealthAxis.API.Services
 {
     public interface IPatientService
     {
+   
         Task<List<PatientDto>> GetAllAsync();
 
         Task<PatientDto?> GetByIdAsync(int id);

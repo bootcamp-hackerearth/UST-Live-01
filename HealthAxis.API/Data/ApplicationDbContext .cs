@@ -1,10 +1,12 @@
 ﻿using HealthAxis.API.Enums;
 using HealthAxis.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxis.API.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -118,7 +120,6 @@ namespace HealthAxis.API.Data
                     Gender = Gender.Female,
                     PhoneNumber = "9876543210",
                     Email = "anu@example.com",
-                    InsuranceId = "INS1001",
                     CreatedDate = new DateTime(2026, 1, 1)
                 },
 
@@ -129,8 +130,7 @@ namespace HealthAxis.API.Data
                     DateOfBirth = new DateTime(1992, 9, 25),
                     Gender = Gender.Male,
                     PhoneNumber = "9876543211",
-                    Email = "rajit@example.com",
-                    InsuranceId = "INS1002",
+                    Email = "rajit@example.com", 
                     CreatedDate = new DateTime(2026, 1, 1)
                 }
             );
