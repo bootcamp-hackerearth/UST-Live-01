@@ -41,5 +41,16 @@ namespace HealthAxisCore_Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete("users/{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var (success, message) = await service.DeleteUser(id);
+            if (!success)
+                return NotFound(new { message });
+
+            return Ok(new { message });
+        }
+
     }
 }

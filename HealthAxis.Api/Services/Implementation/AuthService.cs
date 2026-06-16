@@ -61,6 +61,21 @@ namespace HealthAxisCore_Api.Services.Implementation
 
 
         }
+        public async Task<(bool Success, string Message)> DeleteUser(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user is null)
+                return (false, "User not found");
+
+            var result = await userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return (false, errors);
+            }
+
+            return (true, "User deleted successfully");
+        }
 
         private async Task<string> GenerateToken(IdentityUser user)
         {
