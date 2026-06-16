@@ -23,7 +23,7 @@ namespace HealthApp.Api.Models
         public Appointment Appointment { get; set; }
 
         [Required]
-        public DateTime VisitDate { get; set; }
+        public DateOnly VisitDate { get; set; }
 
         [Required]
         [MinLength(3, ErrorMessage = "Diagnosis must be at least 3 characters long.")]

@@ -1,14 +1,38 @@
-﻿namespace HealthApp.Api.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HealthApp.Api.Dtos
 {
     public class PatientDto
-{
-    public int PatientId { get; set; }
-    public string FullName { get; set; }
-    public DateOnly DateOfBirth { get; set; }
-    public string Gender { get; set; }
-    public string PhoneNumber { get; set; }
-    public string Email { get; set; }
-    public string? InsuranceId { get; set; }
-    public DateTime CreatedDate { get; set; }
-}
+    {
+        [Required]
+        public int PatientId { get; set; }
+
+        [Required]
+        [MinLength(3, ErrorMessage = "Full name must be at least 3 characters long.")]
+        [StringLength(50, ErrorMessage = "Full name cannot exceed 50 characters.")]
+        public string FullName { get; set; }
+
+        [Required(ErrorMessage = "Date of birth is required.")]
+        public DateOnly DateOfBirth { get; set; }
+
+        [Required(ErrorMessage = "Gender is required.")]
+        [RegularExpression("^(Male|Female|Other)$",
+            ErrorMessage = "Gender must be Male, Female, or Other.")]
+        public string Gender { get; set; }
+
+        [Required]
+        [RegularExpression(@"^\d{10}$",
+            ErrorMessage = "Phone number must be exactly 10 digits.")]
+        public string PhoneNumber { get; set; }
+
+        [Required]
+        [EmailAddress(ErrorMessage = "Invalid email address.")]
+        public string Email { get; set; }
+
+        [StringLength(50, ErrorMessage = "Insurance ID cannot exceed 50 characters.")]
+        public string? InsuranceId { get; set; }
+
+        [Required(ErrorMessage = "Created date is required.")]
+        public DateTime CreatedDate { get; set; }
+    }
 }
