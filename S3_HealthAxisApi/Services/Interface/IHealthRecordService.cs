@@ -1,15 +1,15 @@
-﻿using S3_HealthAxisApi.Models;
+﻿using S3_HealthAxisApi.DTOs.HealthRecord;
 
 namespace S3_HealthAxisApi.Services.Interface
 {
     public interface IHealthRecordService
     {
-        Task<HealthRecord?> GetByIdAsync(int id);
+        Task<HealthRecordDto?> GetByIdAsync(int id);
 
-        Task<HealthRecord?> GetByAppointmentIdAsync(int appointmentId);
+        Task<HealthRecordDto?> GetByAppointmentIdAsync(int appointmentId);
 
-        Task AddHealthRecordAsync(HealthRecord record);
+        Task<HealthRecordDto> CreateAsync(CreateHealthRecordDto dto);
 
-        Task UpdateHealthRecordAsync(int id, HealthRecord record);
+        Task UpdateAsync(int id, UpdateHealthRecordDto dto);
     }
 }
