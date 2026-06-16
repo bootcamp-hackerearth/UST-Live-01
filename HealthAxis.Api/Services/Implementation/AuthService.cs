@@ -37,7 +37,9 @@ namespace HealthAxisCore_Api.Services.Implementation
                 return (false, "Password Do Not Match", string.Empty);
             }
 
-            if (request.Role != "Admin" && request.Role != "Employee")
+            var validRoles = new[] { "Admin", "Patient", "Doctor" };
+
+            if (!validRoles.Contains(request.Role, StringComparer.OrdinalIgnoreCase))
             {
                 return (false, "Invalid Role", string.Empty);
             }
