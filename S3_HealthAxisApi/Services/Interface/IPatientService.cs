@@ -1,17 +1,21 @@
-﻿using S3_HealthAxisApi.Models;
+﻿using S3_HealthAxisApi.DTOs.Patient;
 
 namespace S3_HealthAxisApi.Services.Interface
 {
     public interface IPatientService
     {
-        Task<IEnumerable<Patient>> GetAllPatientsAsync();
+        Task<IEnumerable<PatientDto>> GetAllAsync();
 
-        Task<Patient?> GetPatientByIdAsync(int id);
+        Task<PatientDto?> GetByIdAsync(int id);
 
-        Task<IEnumerable<Patient>> SearchPatientsAsync(string name);
+        Task<IEnumerable<PatientSearchResultDto>> SearchByNameAsync(string name);
 
-        Task AddPatientAsync(Patient patient);
+        Task<PatientDto> CreateAsync(CreatePatientDto dto);
 
-        Task UpdatePatientAsync(int id, Patient patient);
+        Task UpdateAsync(int id, UpdatePatientDto dto);
+
+        Task DeactivateAsync(int id);
+
+        Task ActivateAsync(int id);
     }
 }
