@@ -33,7 +33,7 @@ namespace HealthAxis.API.Services.Implementation
                 {
                     return (false, "Password Do not Match", string.Empty);
                 }
-                if (request.Role != "Admin" && request.Role != "User")
+                if (request.Role != "Admin" && request.Role != "Patient" && request.Role != "Doctor")
                 {
                     return (false, "Invalid Role", string.Empty);
                 }
@@ -72,9 +72,9 @@ namespace HealthAxis.API.Services.Implementation
 
             };
 
-                foreach (var role in roles)
+                foreach (var r in roles)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
+                    claims.Add(new Claim(ClaimTypes.Role, r));
                 }
 
                 var expirationMinutes = int.Parse(jwtSettings["AccessTokenExpirationMinutes"]!);
