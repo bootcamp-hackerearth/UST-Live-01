@@ -1,17 +1,37 @@
 using HealthAxis.API.Data;
+using HealthAxis.API.Repositories;
+using HealthAxis.API.Services;
 using Microsoft.EntityFrameworkCore;
+using HealthAxis.API.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddAutoMapper(config =>
+{
+    config.AddProfile<MappingProfile>();
+});
 
-// Register HealthAxis DbContext.
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("HealthAxisDb")));
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
 
 var app = builder.Build();
 

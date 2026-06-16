@@ -60,7 +60,7 @@ namespace HealthAxis.API.Models
 
         [Required(
             ErrorMessage =
-            Constant.VisitDateRequired)]
+            Helpers.VisitDateRequired)]
         public DateTime VisitDate
         {
             get;
@@ -69,7 +69,7 @@ namespace HealthAxis.API.Models
 
         [Required(
             ErrorMessage =
-            Constant.DiagnosisRequired)]
+            Helpers.DiagnosisRequired)]
         [StringLength(
             ValidationLimits.DiagnosisLength)]
         public string Diagnosis
@@ -80,7 +80,7 @@ namespace HealthAxis.API.Models
 
         [Required(
             ErrorMessage =
-            Constant.PrescriptionRequired)]
+            Helpers.PrescriptionRequired)]
         [StringLength(
             ValidationLimits.PrescriptionLength)]
         public string Prescription

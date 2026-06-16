@@ -21,8 +21,6 @@ namespace HealthAxis.API.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
-        public DbSet<Insurance> Insurances { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,7 +30,6 @@ namespace HealthAxis.API.Data
             ConfigureDoctor(modelBuilder);
             ConfigureAppointment(modelBuilder);
             ConfigureHealthRecord(modelBuilder);
-            ConfigureInsurance(modelBuilder);
             SeedData(modelBuilder);
         }
 
@@ -211,43 +208,6 @@ namespace HealthAxis.API.Data
                 entity.HasOne(record => record.Doctor)
                     .WithMany(doctor => doctor.HealthRecords)
                     .HasForeignKey(record => record.DoctorId)
-                    .OnDelete(DeleteBehavior.Restrict);
-            });
-        }
-
-        private static void ConfigureInsurance(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Insurance>(entity =>
-            {
-                entity.HasKey(insurance => insurance.InsuranceId);
-
-                entity.Property(insurance => insurance.PatientId)
-                    .IsRequired();
-
-                entity.Property(insurance => insurance.ProviderName)
-                    .IsRequired()
-                    .HasMaxLength(100);
-
-                entity.Property(insurance => insurance.PolicyNumber)
-                    .IsRequired()
-                    .HasMaxLength(50);
-
-                entity.Property(insurance => insurance.CoverageAmount)
-                    .IsRequired();
-
-                entity.Property(insurance => insurance.ExpiryDate)
-                    .IsRequired();
-
-                entity.Property(insurance => insurance.Status)
-                    .IsRequired()
-                    .HasConversion<int>();
-
-                entity.HasIndex(insurance => insurance.PolicyNumber)
-                    .IsUnique();
-
-                entity.HasOne(insurance => insurance.Patient)
-                    .WithMany(patient => patient.Insurances)
-                    .HasForeignKey(insurance => insurance.PatientId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }

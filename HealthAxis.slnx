@@ -1,3 +1,7 @@
 <Solution>
+  <Folder Name="/Solutionitems/">
+    <File Path=".gitignore" />
+  </Folder>
   <Project Path="HealthAxis API/HealthAxis.API.csproj" />
+  <Project Path="HealthAxis.Shared/HealthAxis.Shared.csproj" />
 </Solution>

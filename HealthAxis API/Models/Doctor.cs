@@ -15,27 +15,27 @@ namespace HealthAxis.API.Models
         [Key]
         public int DoctorId { get; set; }
 
-        [Required(ErrorMessage = Constant.FullNameRequired)]
+        [Required(ErrorMessage = Helpers.FullNameRequired)]
         [StringLength(ValidationLimits.FullNameLength)]
         [RegularExpression(
             RegexPatterns.FullName,
-            ErrorMessage = Constant.InvalidFullNameFormat)]
+            ErrorMessage = Helpers.InvalidFullNameFormat)]
         public string FullName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = Constant.SpecialisationRequired)]
+        [Required(ErrorMessage = Helpers.SpecialisationRequired)]
         public Specialisation Specialisation { get; set; }
 
         [Range(
             ValidationLimits.MinExperience,
             ValidationLimits.MaxExperience,
-            ErrorMessage = Constant.InvalidExperienceRange)]
+            ErrorMessage = Helpers.InvalidExperienceRange)]
         public int YearsOfExperience { get; set; }
 
         [Range(
             typeof(decimal),
             ValidationLimits.MinConsultationFee,
             ValidationLimits.MaxConsultationFee,
-            ErrorMessage = Constant.InvalidConsultationFee)]
+            ErrorMessage = Helpers.InvalidConsultationFee)]
         public decimal ConsultationFee { get; set; }
 
         public bool IsActive { get; set; } = true;
