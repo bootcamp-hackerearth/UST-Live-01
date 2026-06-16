@@ -1,4 +1,6 @@
-﻿namespace S3_HealthAxisApi.DTOs.Patient
+﻿using S3_HealthAxisApi.Enums;
+
+namespace S3_HealthAxisApi.DTOs.Patient
 {
     public class PatientDto
     {

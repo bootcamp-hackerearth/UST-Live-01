@@ -1,6 +1,8 @@
-﻿namespace S3_HealthAxisApi.Services.Implementation
+﻿using S3_HealthAxisApi.Services.Interface;
+
+namespace S3_HealthAxisApi.Services.Implementation
 {
-    public class UserService
+    public class UserService : IUserService
     {
     }
 }

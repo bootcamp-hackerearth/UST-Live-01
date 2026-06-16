@@ -1,0 +1,96 @@
+{
+  "scannerProperties": [
+    {
+      "key": "sonar.scanner.app",
+      "value": "ScannerMSBuild"
+    },
+    {
+      "key": "sonar.scanner.appVersion",
+      "value": "11.2.1"
+    },
+    {
+      "key": "sonar.scanner.bootstrapStartTime",
+      "value": "1781610466000"
+    },
+    {
+      "key": "sonar.projectKey",
+      "value": "HealthAxisCore"
+    },
+    {
+      "key": "sonar.working.directory",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\.sonarqube\\out\\.sonar"
+    },
+    {
+      "key": "sonar.projectBaseDir",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi"
+    },
+    {
+      "key": "sonar.pullrequest.cache.basepath",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi"
+    },
+    {
+      "key": "sonar.sources",
+      "value": ""
+    },
+    {
+      "key": "sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "sonar.modules",
+      "value": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.projectKey",
+      "value": "HealthAxisCore:FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.projectName",
+      "value": "S3_HealthAxisApi"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.projectBaseDir",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.working.directory",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\.sonarqube\\out\\.sonar\\mod0"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.sources",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Controllers\\HealthController.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Data\\AppDbContext.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Appointment\\AppointmentDetailsDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Appointment\\AppointmentDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Appointment\\CancelAppointmentDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Appointment\\CreateAppointmentDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Appointment\\DoctorScheduleItemDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Appointment\\PatientAppointmentHistoryDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Appointment\\UpdateAppointmentDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Auth\\CreateUserDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Auth\\LoginDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Auth\\UserDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Doctor\\CreateDoctorDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Doctor\\DoctorDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Doctor\\UpdateDoctorDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\HealthRecord\\CreateHealthRecordDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\HealthRecord\\HealthRecordDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\HealthRecord\\UpdateHealthRecordDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Patient\\CreatePatientDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Patient\\DeactivatePatientDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Patient\\PatientDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Patient\\PatientSearchResultDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Patient\\PatientSummaryDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\DTOs\\Patient\\UpdatePatientDto.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Enums\\AppointmentStatus.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Enums\\DoctorSpecialization.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Enums\\Gender.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Enums\\InsuranceStatus.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Enums\\TimeSlot.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Enums\\UserRole.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Middleware\\RequestLoggingMiddleware.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Models\\Appointment.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Models\\Doctor.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Models\\HealthRecord.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Models\\Patient.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Models\\User.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Program.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Implementation\\AppointmentRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Implementation\\DoctorRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Implementation\\GenericRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Implementation\\HealthRecord.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Implementation\\PatientRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Implementation\\UserRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Interface\\IAppointmentRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Interface\\IDoctorRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Interface\\IGenericRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Interface\\IHealthRecordRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Interface\\IPatientRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Repositories\\Interface\\IUserRepository.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Implementation\\AppointmentService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Implementation\\DoctorService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Implementation\\HealthRecordService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Implementation\\PatientService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Implementation\\UserService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Interface\\IAppointmentService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Interface\\IDoctorService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Interface\\IHealthRecordService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Interface\\IPatientService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Services\\Interface\\IUserService.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\S3_HealthAxisApi.GlobalUsings.g.cs,\"C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs\",C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\S3_HealthAxisApi.AssemblyInfo.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\S3_HealthAxisApi.MvcApplicationPartsAssemblyInfo.cs,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\appsettings.Development.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\appsettings.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\Properties\\launchSettings.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\project.assets.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\S3_HealthAxisApi.csproj.nuget.dgspec.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\appsettings.Development.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\appsettings.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\S3_HealthAxisApi.deps.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\S3_HealthAxisApi.runtimeconfig.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\S3_HealthAxisApi.staticwebassets.endpoints.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\ApiEndpoints.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\rjsmcshtml.dswa.cache.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\rjsmrazor.dswa.cache.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\rpswa.dswa.cache.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\S3_HealthAxisApi.sourcelink.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\staticwebassets.build.endpoints.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\staticwebassets.build.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\BuildHost-net472\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\BuildHost-netcore\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\bin\\Debug\\net10.0\\BuildHost-netcore\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json,C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\obj\\Debug\\net10.0\\EndpointInfo\\S3_HealthAxisApi.json"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\.sonarqube\\out\\0"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\.sonarqube\\out\\0\\Issues.json"
+    },
+    {
+      "key": "FB2D68D4-6989-4CAF-8B10-C1BD9826CF2E.sonar.cs.scanner.telemetry",
+      "value": "C:\\Users\\287766\\source\\repos\\S3_HealthAxis\\S3_HealthAxisApi\\.sonarqube\\out\\0\\Telemetry.json"
+    },
+    {
+      "key": "sonar.token",
+      "value": "***"
+    },
+    {
+      "key": "sonar.host.url",
+      "value": "http://localhost:9000"
+    },
+    {
+      "key": "sonar.visualstudio.enable",
+      "value": "false"
+    }
+  ]
+}

@@ -1,7 +1,10 @@
-﻿public enum Gender
+﻿namespace S3_HealthAxisApi.Enums
 {
-    Male = 1,
-    Female = 2,
-    NonBinary = 3,
-    PreferNotToSay = 4
+    public enum Gender
+    {
+        Male = 1,
+        Female = 2,
+        NonBinary = 3,
+        PreferNotToSay = 4
+    }
 }
