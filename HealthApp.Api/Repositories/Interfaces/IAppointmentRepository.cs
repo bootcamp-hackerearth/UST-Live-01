@@ -1,6 +1,9 @@
-﻿namespace HealthApp.Api.Repositories.Interfaces
+﻿using HealthApp.Api.Models;
+
+namespace HealthApp.Api.Repositories.Interfaces
 {
-    public interface IAppointmentRepository
+    public interface IAppointmentRepository : IRepository<Appointment>
     {
+
     }
 }
