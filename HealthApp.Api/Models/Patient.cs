@@ -36,7 +36,6 @@ namespace HealthApp.Api.Models
         [Required]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        public virtual User User { get; set; }
         public virtual ICollection<Appointment> Appointments { get; set; }
         public virtual ICollection<HealthRecord> HealthRecords { get; set; }
     }
