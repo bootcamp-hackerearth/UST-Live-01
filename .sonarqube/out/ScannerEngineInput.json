@@ -1,0 +1,96 @@
+{
+  "scannerProperties": [
+    {
+      "key": "sonar.scanner.app",
+      "value": "ScannerMSBuild"
+    },
+    {
+      "key": "sonar.scanner.appVersion",
+      "value": "11.2.1"
+    },
+    {
+      "key": "sonar.scanner.bootstrapStartTime",
+      "value": "1781584179000"
+    },
+    {
+      "key": "sonar.projectKey",
+      "value": "HealthAxis"
+    },
+    {
+      "key": "sonar.working.directory",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\.sonarqube\\out\\.sonar"
+    },
+    {
+      "key": "sonar.projectBaseDir",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis"
+    },
+    {
+      "key": "sonar.pullrequest.cache.basepath",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis"
+    },
+    {
+      "key": "sonar.sources",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\.vs\\HealthAxis.slnx\\v18\\DocumentLayout.backup.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\.vs\\HealthAxis.slnx\\v18\\DocumentLayout.json"
+    },
+    {
+      "key": "sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "sonar.modules",
+      "value": "4F3F1264-C090-480F-9A42-E5B611B935D6"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.projectKey",
+      "value": "HealthAxis:4F3F1264-C090-480F-9A42-E5B611B935D6"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.projectName",
+      "value": "HealthAxisApplicn"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.projectBaseDir",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.working.directory",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\.sonarqube\\out\\.sonar\\mod0"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.sources",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Data\\AppDbContext.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Dto\\AppointmentDto.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Dto\\DoctorDto.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Dto\\HealthRecordDto.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Dto\\PatientDto.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Dto\\UserDto.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Mappings\\MappingProfile.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Models\\Appointment.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Models\\Doctor.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Models\\HealthRecord.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Models\\Patient.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Models\\User.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Program.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\IAppointmentRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\IDoctorRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\IHealthRecordRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\Impl\\AppointmentRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\Impl\\DoctorRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\Impl\\HealthRecordRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\Impl\\PatientRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\Impl\\Repository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\IPatientRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Repositories\\IRepository.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\IAppointmentService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\IDoctorService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\IHealthRecordService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\Impl\\AppointmentService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\Impl\\DoctorService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\Impl\\HealthRecordService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\Impl\\PatientService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Services\\IPatientService.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\HealthAxisApplicn.GlobalUsings.g.cs,\"C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs\",C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\HealthAxisApplicn.AssemblyInfo.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\HealthAxisApplicn.MvcApplicationPartsAssemblyInfo.cs,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\appsettings.Development.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\appsettings.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\HealthAxisApplicn.http,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\Properties\\launchSettings.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\HealthAxisApplicn.csproj.nuget.dgspec.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\project.assets.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\appsettings.Development.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\appsettings.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\HealthAxisApplicn.deps.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\HealthAxisApplicn.runtimeconfig.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\HealthAxisApplicn.staticwebassets.endpoints.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\rjsmcshtml.dswa.cache.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\rjsmrazor.dswa.cache.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\rpswa.dswa.cache.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\staticwebassets.build.endpoints.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\obj\\Debug\\net10.0\\staticwebassets.build.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\BuildHost-net472\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\BuildHost-netcore\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json,C:\\Users\\310033\\source\\repos\\HealthAxis\\HealthAxisApplicn\\bin\\Debug\\net10.0\\BuildHost-netcore\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\.sonarqube\\out\\1"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\.sonarqube\\out\\1\\Issues.json"
+    },
+    {
+      "key": "4F3F1264-C090-480F-9A42-E5B611B935D6.sonar.cs.scanner.telemetry",
+      "value": "C:\\Users\\310033\\source\\repos\\HealthAxis\\.sonarqube\\out\\1\\Telemetry.json"
+    },
+    {
+      "key": "sonar.token",
+      "value": "***"
+    },
+    {
+      "key": "sonar.host.url",
+      "value": "http://localhost:9000"
+    },
+    {
+      "key": "sonar.visualstudio.enable",
+      "value": "false"
+    }
+  ]
+}

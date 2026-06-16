@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "5.6.0.0",
+        "fileVersion": "5.6.0-2.26230.102 (caa81fa4971f74880cdab61990cb1b11420939ec)",
+        "semanticVersion": "5.6.0",
+        "language": "en-US"
+      },
+      "results": [
+        {
+          "ruleId": "CS0738",
+          "level": "error",
+          "message": "'DoctorService' does not implement interface member 'IDoctorService.SearchDoctorByNameAsync(string)'. 'DoctorService.SearchDoctorByNameAsync(string)' cannot implement 'IDoctorService.SearchDoctorByNameAsync(string)' because it does not have the matching return type of 'Task<List<Doctor>>'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310033/source/repos/HealthAxis/HealthAxisApplicn/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 80,
+                  "endLine": 9,
+                  "endColumn": 94
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "rules": {
+        "CS0738": {
+          "id": "CS0738",
+          "defaultLevel": "error",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0738)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry",
+              "NotConfigurable"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
