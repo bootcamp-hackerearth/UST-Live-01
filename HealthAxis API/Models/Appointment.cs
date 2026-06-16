@@ -17,7 +17,7 @@ namespace HealthAxis.API.Models
             set;
         }
 
-        [Required(ErrorMessage = Constant.PatientRequired)]
+        [Required(ErrorMessage = Helpers.PatientRequired)]
         public int PatientId
         {
             get;
@@ -31,7 +31,7 @@ namespace HealthAxis.API.Models
             set;
         }
 
-        [Required(ErrorMessage = Constant.DoctorRequired)]
+        [Required(ErrorMessage = Helpers.DoctorRequired)]
         public int DoctorId
         {
             get;
@@ -45,7 +45,7 @@ namespace HealthAxis.API.Models
             set;
         }
     
-        [Required(ErrorMessage = Constant.ScheduledDateRequired)]
+        [Required(ErrorMessage = Helpers.ScheduledDateRequired)]
         [DataType(DataType.Date)]
         public DateTime ScheduledDate
         {
@@ -53,7 +53,7 @@ namespace HealthAxis.API.Models
             set;
         }
 
-        [Required(ErrorMessage = Constant.TimeSlotRequired)]
+        [Required(ErrorMessage = Helpers.TimeSlotRequired)]
         [StringLength(ValidationLimits.TimeSlotLength)]
         public string TimeSlot
         {
@@ -61,7 +61,7 @@ namespace HealthAxis.API.Models
             set;
         } = string.Empty;
 
-        [Required(ErrorMessage = Constant.AppointmentStatusRequired)]
+        [Required(ErrorMessage = Helpers.AppointmentStatusRequired)]
         public AppointmentStatus Status
         {
             get;

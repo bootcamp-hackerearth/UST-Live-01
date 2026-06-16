@@ -4,7 +4,7 @@ namespace HealthAxis.API.Utilities
 {
 
     [ExcludeFromCodeCoverage]
-    public static class Constant
+    public static class Helpers
     {
         #region Validation Messages
 

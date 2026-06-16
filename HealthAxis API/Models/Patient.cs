@@ -16,33 +16,33 @@ namespace HealthAxis.API.Models
         [Key]
         public int PatientId { get; set; }
 
-        [Required(ErrorMessage = Constant.FullNameRequired)]
+        [Required(ErrorMessage = Helpers.FullNameRequired)]
         [StringLength(ValidationLimits.FullNameLength)]
         [RegularExpression(
             RegexPatterns.FullName,
-            ErrorMessage = Constant.InvalidFullNameFormat)]
+            ErrorMessage = Helpers.InvalidFullNameFormat)]
         public string FullName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = Constant.DateOfBirthRequired)]
+        [Required(ErrorMessage = Helpers.DateOfBirthRequired)]
         [DataType(DataType.Date)]
         [CustomValidation(
             typeof(Patient),
             nameof(ValidateDateOfBirth))]
         public DateTime DateOfBirth { get; set; }
 
-        [Required(ErrorMessage = Constant.GenderRequired)]
+        [Required(ErrorMessage = Helpers.GenderRequired)]
         public Gender Gender { get; set; }
 
-        [Required(ErrorMessage = Constant.PhoneNumberRequired)]
+        [Required(ErrorMessage = Helpers.PhoneNumberRequired)]
         [StringLength(ValidationLimits.PhoneNumberLength)]
         [RegularExpression(
             RegexPatterns.PhoneNumber,
-            ErrorMessage = Constant.InvalidPhoneNumberFormat)]
+            ErrorMessage = Helpers.InvalidPhoneNumberFormat)]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = Constant.EmailRequired)]
+        [Required(ErrorMessage = Helpers.EmailRequired)]
         [EmailAddress(
-            ErrorMessage = Constant.InvalidEmailFormat)]
+            ErrorMessage = Helpers.InvalidEmailFormat)]
         [StringLength(ValidationLimits.EmailLength)]
         public string Email { get; set; } = string.Empty;
 
@@ -53,9 +53,6 @@ namespace HealthAxis.API.Models
 
         public virtual ICollection<HealthRecord> HealthRecords { get; set; }
             = new List<HealthRecord>();
-
-        public virtual ICollection<Insurance> Insurances { get; set; }
-            = new List<Insurance>();
 
         public int GetAge()
         {
@@ -80,7 +77,7 @@ namespace HealthAxis.API.Models
             {
 
                 return new ValidationResult(
-                    Constant.DateOfBirthCannotBeFuture);
+                    Helpers.DateOfBirthCannotBeFuture);
             }
 
             return ValidationResult.Success;
