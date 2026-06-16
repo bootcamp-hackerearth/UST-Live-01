@@ -1,10 +1,12 @@
 ﻿using HealthCareApp.Enums;
 using HealthCareApp.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Data
 {
-    public class HealthAxisDbContext : DbContext
+    public class HealthAxisDbContext : IdentityDbContext<IdentityUser>
     {
         public HealthAxisDbContext(DbContextOptions<HealthAxisDbContext> options)
             : base(options)
@@ -18,7 +20,6 @@ namespace HealthCareApp.Data
         public DbSet<Appointment> Appointments { get; set; }
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
-        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -204,38 +205,7 @@ namespace HealthCareApp.Data
                 }
             );
 
-            modelBuilder.Entity<User>().HasData(
-    new User
-    {
-        UserId = 1,
-        Email = "admin@healthaxis.com",
-        PasswordHash = "AdminPasswordHashDemo",
-        PasswordSalt = new byte[] { 1, 2, 3, 4, 5 },
-        Role = UserRole.Admin,
-        ReferenceId = null,
-        CreatedDate = new DateTime(2026, 6, 15)
-    },
-    new User
-    {
-        UserId = 2,
-        Email = "ravi.kumar@example.com",
-        PasswordHash = "PatientPasswordHashDemo",
-        PasswordSalt = new byte[] { 6, 7, 8, 9, 10 },
-        Role = UserRole.Patient,
-        ReferenceId = 1,
-        CreatedDate = new DateTime(2026, 6, 15)
-    },
-    new User
-    {
-        UserId = 3,
-        Email = "arun.menon@example.com",
-        PasswordHash = "DoctorPasswordHashDemo",
-        PasswordSalt = new byte[] { 11, 12, 13, 14, 15 },
-        Role = UserRole.Doctor,
-        ReferenceId = 1,
-        CreatedDate = new DateTime(2026, 6, 15)
-    }
-);
+          
         }
     }
 }

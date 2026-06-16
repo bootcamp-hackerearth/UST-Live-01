@@ -1,5 +1,5 @@
 using HealthCareApp.Data;
-
+using HealthCareApp.Mapping;
 using HealthCareApp.Repository.Impl;
 
 using HealthCareApp.Repository.Interface;
@@ -24,8 +24,11 @@ builder.Services.AddDbContext<HealthAxisDbContext>(options =>
 builder.Services.AddScoped<DbContext, HealthAxisDbContext>();
 
 // Register AutoMapper.
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
 
-builder.Services.AddAutoMapper(typeof(Program));
+});
 
 // Register generic repository.
 
@@ -47,6 +50,9 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+
+builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
+
 
 // Swagger/OpenAPI.
 
