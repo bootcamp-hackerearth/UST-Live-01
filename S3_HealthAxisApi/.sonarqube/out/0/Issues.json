@@ -18,6 +18,27 @@
           "locations": [
             {
               "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Program.cs",
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 1,
+                  "endLine": 35,
+                  "endColumn": 4
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S125",
+          "level": "warning",
+          "message": "Remove this commented out code.",
+          "locations": [
+            {
+              "resultFile": {
                 "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Services/Interface/IUserService.cs",
                 "region": {
                   "startLine": 8,
@@ -568,6 +589,67 @@
           }
         },
         {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Users' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260616160604_UpdatedUsersMOdel.cs",
+                "region": {
+                  "startLine": 16,
+                  "startColumn": 24,
+                  "endLine": 16,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260616160604_UpdatedUsersMOdel.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 24,
+                  "endLine": 22,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260616160604_UpdatedUsersMOdel.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 24,
+                  "endLine": 32,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260616160604_UpdatedUsersMOdel.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 24,
+                  "endLine": 36,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
           "ruleId": "S6968",
           "level": "warning",
           "message": "Annotate this method with ProducesResponseType containing the return type for successful responses.",
@@ -605,6 +687,27 @@
           }
         },
         {
+          "ruleId": "S6964",
+          "level": "warning",
+          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/DTOs/Auth/RegisterDto.cs",
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 25,
+                  "endLine": 19,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
           "ruleId": "CA1873",
           "level": "note",
           "message": "Evaluation of this argument may be expensive and unnecessary if logging is disabled",
@@ -638,27 +741,6 @@
                   "startColumn": 13,
                   "endLine": 27,
                   "endColumn": 45
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S6966",
-          "level": "warning",
-          "message": "Await RunAsync instead.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Program.cs",
-                "region": {
-                  "startLine": 63,
-                  "startColumn": 1,
-                  "endLine": 63,
-                  "endColumn": 10
                 }
               }
             }
@@ -762,9 +844,85 @@
               "paramName": "columns"
             }
           }
+        },
+        {
+          "ruleId": "S6966",
+          "level": "warning",
+          "message": "Await RunAsync instead.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Program.cs",
+                "region": {
+                  "startLine": 166,
+                  "startColumn": 1,
+                  "endLine": 166,
+                  "endColumn": 10
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1850",
+          "level": "note",
+          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
+                "region": {
+                  "startLine": 155,
+                  "startColumn": 27,
+                  "endLine": 155,
+                  "endColumn": 52
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
+                "region": {
+                  "startLine": 151,
+                  "startColumn": 23,
+                  "endLine": 151,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ComputeTypePropertyKey": "ComputeHash",
+              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
+              "HashCreationIndexPropertyKey": "0",
+              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
+            }
+          }
         }
       ],
       "rules": {
+        "CA1850": {
+          "id": "CA1850",
+          "shortDescription": "Prefer static 'HashData' method over 'ComputeHash'",
+          "fullDescription": "It is more efficient to use the static 'HashData' method over creating and managing a HashAlgorithm instance to call 'ComputeHash'.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
         "CA1861": {
           "id": "CA1861",
           "shortDescription": "Avoid constant arrays as arguments",
@@ -824,6 +982,22 @@
               "C#",
               "MainSourceScope",
               "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S6964": {
+          "id": "S6964",
+          "shortDescription": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
+          "fullDescription": "\"Under-posting\" refers to a situation where a client sends less data than expected to the server during an HTTP request, for example when the client omits some properties from the request body that the server expects to receive.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-6964",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
               "SonarWay"
             ]
           }

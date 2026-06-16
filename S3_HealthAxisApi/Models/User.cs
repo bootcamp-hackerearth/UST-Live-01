@@ -22,5 +22,9 @@ namespace S3_HealthAxisApi.Models
         public int? ReferenceId { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+
+        public string? RefreshToken { get; set; }
+
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }
