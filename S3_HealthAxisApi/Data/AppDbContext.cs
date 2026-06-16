@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using S3_HealthAxisApi.Enums;
 using S3_HealthAxisApi.Models;
 
 namespace HealthAxis.API.Data
 {
-    public class HealthAxisDbContext : DbContext
+    public class HealthAxisDbContext : IdentityDbContext<IdentityUser>
     {
         public HealthAxisDbContext(DbContextOptions<HealthAxisDbContext> options)
             : base(options)
