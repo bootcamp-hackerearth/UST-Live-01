@@ -8,16 +8,19 @@
 
   <ItemGroup>
     <PackageReference Include="automapper" Version="16.1.1" />
+    <PackageReference Include="Microsoft.aspnetcore.authentication.jwtbearer" Version="10.0.9" />
+    <PackageReference Include="microsoft.aspnetcore.Identity.entityframeworkcore" Version="10.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="swashbuckle.Aspnetcore" Version="10.2.1" />
+    <PackageReference Include="system.identitymodel.tokens.jwt" Version="8.19.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
 	  <Compile Update="Migrations\**\*.cs">
 		  <SonarQubeExclude>true</SonarQubeExclude>
 	  </Compile>
