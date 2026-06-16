@@ -7,7 +7,7 @@
         public string PatientName { get; set; } = string.Empty;
         public int DoctorId { get; set; }
         public string DoctorName { get; set; } = string.Empty;
-        public DateTime ScheduledDate { get; set; }
+        public DateOnly ScheduledDate { get; set; }
         public int TimeSlot { get; set; }
         public int Status { get; set; }
         public string? CancellationReason { get; set; }

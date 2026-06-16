@@ -1,25 +1,30 @@
-﻿using S3_HealthAxisApi.Models;
+﻿using S3_HealthAxisApi.DTOs.Appointment;
 
 namespace S3_HealthAxisApi.Services.Interface
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<Appointment>> GetAllAppointmentsAsync();
+        Task<IEnumerable<AppointmentDto>> GetAllAsync();
 
-        Task<Appointment?> GetAppointmentByIdAsync(int id);
+        Task<AppointmentDetailsDto?> GetByIdAsync(int id);
 
-        Task<IEnumerable<Appointment>> GetAppointmentsByPatientAsync(int patientId);
+        Task<IEnumerable<PatientAppointmentHistoryDto>> GetPatientHistoryAsync(int patientId);
 
-        Task<IEnumerable<Appointment>> GetDoctorTodayScheduleAsync(int doctorId);
+        Task<IEnumerable<DoctorScheduleItemDto>> GetDoctorTodayScheduleAsync(int doctorId);
 
-        Task<IEnumerable<Appointment>> GetDoctorWeekScheduleAsync(int doctorId);
+        Task<IEnumerable<DoctorScheduleItemDto>> GetDoctorWeekScheduleAsync(
+            int doctorId,
+            DateOnly startDate,
+            DateOnly endDate);
 
-        Task BookAppointmentAsync(Appointment appointment);
+        Task<AppointmentDto> CreateAsync(CreateAppointmentDto dto);
 
-        Task CancelAppointmentAsync(int appointmentId, string reason);
+        Task UpdateAsync(int id, UpdateAppointmentDto dto);
 
-        Task CompleteAppointmentAsync(int appointmentId);
+        Task ConfirmAsync(int id);
 
-        Task UpdateAppointmentAsync(int appointmentId, Appointment appointment);
+        Task CompleteAsync(int id);
+
+        Task CancelAsync(int id, CancelAppointmentDto dto);
     }
 }
