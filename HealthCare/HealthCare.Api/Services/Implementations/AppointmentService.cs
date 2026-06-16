@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
-using HealthCare.Api.DTOs.Appointment;
 using HealthCare.Api.DTOs.Appointments;
-using HealthCare.Api.DTOs.Doctor;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
@@ -52,10 +50,10 @@ namespace HealthCare.Api.Services.Implementations
             return appointment == null ? null : _mapper.Map<AppointmentListDto?>(appointment);
         }
 
-        public async Task<IEnumerable<DoctorListDto>> GetAllAsync()
+        public async Task<IEnumerable<AppointmentListDto>> GetAllAsync()
         {
             var appointments = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<DoctorListDto>>(appointments);
+            return _mapper.Map<IEnumerable<AppointmentListDto>>(appointments);
 
         }
     }

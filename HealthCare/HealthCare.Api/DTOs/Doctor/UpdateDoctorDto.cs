@@ -19,4 +19,4 @@ namespace HealthCare.Api.DTOs.Doctor
         public decimal ConsultationFee { get; set; }
     }
 }
-}
+
