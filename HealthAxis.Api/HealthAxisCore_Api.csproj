@@ -21,7 +21,6 @@
 	  <Compile Update="Migrations\**\*.cs">
 		  <SonarQubeExclude>true</SonarQubeExclude>
 	  </Compile>
-	  <Folder Include="Mappings\" />
 
   </ItemGroup>
 

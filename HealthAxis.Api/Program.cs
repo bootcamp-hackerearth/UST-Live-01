@@ -1,4 +1,9 @@
 using HealthAxisCore_Api.Data;
+using HealthAxisCore_Api.Mappings;
+using HealthAxisCore_Api.Repositories.Implementation;
+using HealthAxisCore_Api.Repositories.Interface;
+using HealthAxisCore_Api.Services.Implementation;
+using HealthAxisCore_Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,9 +13,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPatientService, PatientService>(); 
+builder.Services.AddScoped<IDoctorRepository, DoctorRepository>(); 
+builder.Services.AddScoped<IDoctorService, DoctorService>(); 
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>(); 
+builder.Services.AddScoped<IAppointmentService, AppointmentService>(); 
+builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>(); 
+builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
+});
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
 });
 var app = builder.Build();
 
