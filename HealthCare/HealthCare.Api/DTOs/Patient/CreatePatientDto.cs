@@ -2,8 +2,9 @@
 
 namespace HealthCare.Api.DTOs.Patient
 {
-    public class UpdateDto
+    public class CreatePatientDto
     {
+        public int UsertId { get; set; }
 
         [Required]
         public string FullName { get; set; }
@@ -11,7 +12,7 @@ namespace HealthCare.Api.DTOs.Patient
         [Required]
         public DateOnly DateOfBirth { get; set; }
 
-        [RegularExpression("Male|Female|Other", ErrorMessage = "Gender must be Male, Female, or Other.")]
+        [RegularExpression("Male|Female|Other,ErrorMessage = \"Gender must be Male, Female, or Other.")]
         public string Gender { get; set; }
 
         [Required]
