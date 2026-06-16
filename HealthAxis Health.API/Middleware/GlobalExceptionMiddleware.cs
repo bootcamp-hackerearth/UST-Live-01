@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
-using HealthAxisHealth.API.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
 using HealthAxisHealth.API.Exceptions;
 
 namespace HealthAxisHealth.API.Middleware

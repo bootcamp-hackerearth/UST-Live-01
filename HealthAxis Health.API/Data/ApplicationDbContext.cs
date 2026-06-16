@@ -1,4 +1,4 @@
-﻿using HealthAxisHealth.API.Enums;
+﻿using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Models;
 using Microsoft.EntityFrameworkCore;
 

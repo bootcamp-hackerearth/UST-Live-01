@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+  </Folder>
   <Project Path="HealthAxis Health.API/HealthAxis Health.API.csproj" />
+  <Project Path="HealthAxis Health.Shared/HealthAxis Health.Shared.csproj" Id="aee6524e-8969-4b02-a1c2-37458191d920" />
   <Project Path="HealthAxis Health.Tests/HealthAxis Health.Tests.csproj" Id="bb132ed5-42bb-4b4a-8e27-58ad9cc9ee2f" />
 </Solution>

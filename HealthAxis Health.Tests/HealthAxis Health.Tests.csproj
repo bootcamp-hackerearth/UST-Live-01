@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HealthAxis Health.API\HealthAxis Health.API.csproj" />
+    <ProjectReference Include="..\HealthAxis Health.Shared\HealthAxis Health.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.AppointmentDtos;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.AppointmentDtos;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -341,7 +341,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                     break;
             }
 
-            _unitOfWork.Appointments.Update(appointment);
+            await _unitOfWork.Appointments.UpdateAsync(appointment);
 
             await _unitOfWork.CommitAsync();
         }
@@ -377,7 +377,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                     "Confirmed appointments cannot be deleted.");
             }
 
-            _unitOfWork.Appointments.Delete(appointment);
+            await _unitOfWork.Appointments.DeleteAsync(appointment);
 
             await _unitOfWork.CommitAsync();
         }

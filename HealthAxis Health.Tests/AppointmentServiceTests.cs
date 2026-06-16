@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.AppointmentDtos;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.AppointmentDtos;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -691,7 +691,7 @@ namespace HealthAxisHealth.Tests.Services
                 });
 
             _appointmentRepositoryMock.Verify(
-                x => x.Update(It.IsAny<Appointment>()),
+                x => x.UpdateAsync(It.IsAny<Appointment>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -720,7 +720,7 @@ namespace HealthAxisHealth.Tests.Services
                 });
 
             _appointmentRepositoryMock.Verify(
-                x => x.Update(It.IsAny<Appointment>()),
+                x => x.UpdateAsync(It.IsAny<Appointment>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -755,7 +755,7 @@ namespace HealthAxisHealth.Tests.Services
 
             // Assert
             _appointmentRepositoryMock.Verify(
-                x => x.Update(It.IsAny<Appointment>()),
+                x => x.UpdateAsync(It.IsAny<Appointment>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -791,7 +791,7 @@ namespace HealthAxisHealth.Tests.Services
                 appointment.Status);
 
             _appointmentRepositoryMock.Verify(
-                x => x.Update(It.IsAny<Appointment>()),
+                x => x.UpdateAsync(It.IsAny<Appointment>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -873,7 +873,7 @@ namespace HealthAxisHealth.Tests.Services
 
             // Assert
             _appointmentRepositoryMock.Verify(
-                x => x.Delete(appointment),
+                x => x.DeleteAsync(appointment),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -900,7 +900,7 @@ namespace HealthAxisHealth.Tests.Services
 
             // Assert
             _appointmentRepositoryMock.Verify(
-                x => x.Delete(appointment),
+                x => x.DeleteAsync(appointment),
                 Times.Once);
 
             _unitOfWorkMock.Verify(

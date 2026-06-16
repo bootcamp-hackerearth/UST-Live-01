@@ -6,15 +6,13 @@ namespace HealthAxisHealth.API.UnitOfWork
     {
         #region Repositories
 
-        IUserRepository Users { get; } 
+        IUserRepository Users { get; }
 
         IPatientRepository Patients { get; }
 
         IDoctorRepository Doctors { get; }
 
-
         IAppointmentRepository Appointments { get; }
-
 
         IHealthRecordRepository HealthRecords { get; }
 
@@ -22,7 +20,8 @@ namespace HealthAxisHealth.API.UnitOfWork
 
         #region Methods
 
-        Task<int> CommitAsync();
+        Task<int> CommitAsync(
+            CancellationToken cancellationToken = default);
 
         #endregion
     }

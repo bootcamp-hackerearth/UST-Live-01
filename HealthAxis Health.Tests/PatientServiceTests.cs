@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.HealthRecordDtos;
-using HealthAxisHealth.API.DTOs.PatientDtos;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.HealthRecordDtos;
+using HealthAxisHealth.Shared.DTOs.PatientDtos;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -321,11 +321,11 @@ namespace HealthAxisHealth.API.Tests.Services
             Assert.Equal(dto.Email, user.Email);
 
             _patientRepositoryMock.Verify(
-                x => x.Update(It.IsAny<Patient>()),
+                x => x.UpdateAsync(It.IsAny<Patient>()),
                 Times.Once);
 
             _userRepositoryMock.Verify(
-                x => x.Update(It.IsAny<User>()),
+                x => x.UpdateAsync(It.IsAny<User>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -388,11 +388,11 @@ namespace HealthAxisHealth.API.Tests.Services
             await _service.UpdateByUserIdAsync(10, dto);
 
             _patientRepositoryMock.Verify(
-                x => x.Update(It.IsAny<Patient>()),
+                x => x.UpdateAsync(It.IsAny<Patient>()),
                 Times.Once);
 
             _userRepositoryMock.Verify(
-                x => x.Update(It.IsAny<User>()),
+                x => x.UpdateAsync(It.IsAny<User>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(

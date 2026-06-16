@@ -1,8 +1,8 @@
 ﻿using HealthAxisHealth.API.Data;
-using HealthAxisHealth.API.DTOs.CommonDtos;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Repositories.Interfaces;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxisHealth.API.Repositories.Implementations
@@ -24,43 +24,45 @@ namespace HealthAxisHealth.API.Repositories.Implementations
         #region Methods
 
         public async Task<Patient?> GetByUserIdAsync(
-            int userId)
+            int userId,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Patients
                 .FirstOrDefaultAsync(
-                    p => p.UserId == userId);
+                    p => p.UserId == userId,
+                    cancellationToken);
         }
 
         public async Task<Patient?> GetByEmailAsync(
-            string email)
+            string email,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Patients
                 .FirstOrDefaultAsync(
-                    p => p.Email == email);
+                    p => p.Email == email,
+                    cancellationToken);
         }
 
-        public async Task<Patient?>
-            GetPatientWithHealthRecordsAsync(
-                int patientId)
+        public async Task<Patient?> GetPatientWithHealthRecordsAsync(
+            int patientId,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Patients
                 .Include(p => p.HealthRecords)
                 .FirstOrDefaultAsync(
-                    p => p.PatientId == patientId);
+                    p => p.PatientId == patientId,
+                    cancellationToken);
         }
 
-        public async Task<PagedResultDto<Patient>>
-            GetPagedAsync(
-                PaginationParams pagination)
+        public async Task<PagedResultDto<Patient>> GetPagedAsync(
+            PaginationParams pagination,
+            CancellationToken cancellationToken = default)
         {
-            IQueryable<Patient> query =
-                _context.Patients;
+            IQueryable<Patient> query = _context.Patients;
 
-            if (!string.IsNullOrWhiteSpace(
-                pagination.Search))
+            if (!string.IsNullOrWhiteSpace(pagination.Search))
             {
-                string search =
-                    pagination.Search.Trim();
+                string search = pagination.Search.Trim();
 
                 query = query.Where(p =>
                     p.FullName.Contains(search) ||
@@ -68,18 +70,13 @@ namespace HealthAxisHealth.API.Repositories.Implementations
                     p.PhoneNumber.Contains(search));
             }
 
-            int totalRecords =
-                await query.CountAsync();
+            int totalRecords = await query.CountAsync(cancellationToken);
 
-            List<Patient> patients =
-                await query
-                    .OrderBy(p => p.FullName)
-                    .Skip(
-                        (pagination.PageNumber - 1)
-                        * pagination.PageSize)
-                    .Take(
-                        pagination.PageSize)
-                    .ToListAsync();
+            List<Patient> patients = await query
+                .OrderBy(p => p.FullName)
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
+                .ToListAsync(cancellationToken);
 
             return new PagedResultDto<Patient>
             {

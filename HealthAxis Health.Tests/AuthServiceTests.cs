@@ -1,7 +1,6 @@
 ﻿using BCrypt.Net;
-using HealthAxis_Health.API.DTOs.AuthDtos;
-using HealthAxisHealth.API.DTOs.AuthDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.AuthDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -83,7 +82,6 @@ namespace HealthAxisHealth.API.Tests.Services
             await Assert.ThrowsAsync<BadRequestException>(
                 () => _service.RegisterAsync(dto));
         }
-
         [Fact]
         public async Task RegisterAsync_ShouldCreatePatientAndReturnTokens()
         {
@@ -99,17 +97,29 @@ namespace HealthAxisHealth.API.Tests.Services
             };
 
             _userRepositoryMock
-                .Setup(x => x.GetByEmailAsync(dto.Email))
+                .Setup(x => x.GetByEmailAsync(
+                    dto.Email,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((User?)null);
 
             _userRepositoryMock
-                .Setup(x => x.AddAsync(It.IsAny<User>()))
-                .Callback<User>(u => u.UserId = 1)
+                .Setup(x => x.AddAsync(
+                    It.IsAny<User>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<User, CancellationToken>(
+                    (u, _) => u.UserId = 1)
                 .Returns(Task.CompletedTask);
 
             _patientRepositoryMock
-                .Setup(x => x.AddAsync(It.IsAny<Patient>()))
+                .Setup(x => x.AddAsync(
+                    It.IsAny<Patient>(),
+                    It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
+
+            _unitOfWorkMock
+                .Setup(x => x.CommitAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(1);
 
             // Act
             RegisterResponseDto result =
@@ -129,15 +139,20 @@ namespace HealthAxisHealth.API.Tests.Services
                     result.Data.Tokens.RefreshToken));
 
             _userRepositoryMock.Verify(
-                x => x.AddAsync(It.IsAny<User>()),
+                x => x.AddAsync(
+                    It.IsAny<User>(),
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
 
             _patientRepositoryMock.Verify(
-                x => x.AddAsync(It.IsAny<Patient>()),
+                x => x.AddAsync(
+                    It.IsAny<Patient>(),
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
-                x => x.CommitAsync(),
+                x => x.CommitAsync(
+                    It.IsAny<CancellationToken>()),
                 Times.Exactly(3));
         }
 
@@ -256,7 +271,7 @@ namespace HealthAxisHealth.API.Tests.Services
                     result.RefreshToken));
 
             _userRepositoryMock.Verify(
-                x => x.Update(It.IsAny<User>()),
+                x => x.UpdateAsync(It.IsAny<User>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -358,7 +373,7 @@ namespace HealthAxisHealth.API.Tests.Services
                     result.RefreshToken));
 
             _userRepositoryMock.Verify(
-                x => x.Update(It.IsAny<User>()),
+                x => x.UpdateAsync(It.IsAny<User>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -410,7 +425,7 @@ namespace HealthAxisHealth.API.Tests.Services
             Assert.Null(user.RefreshTokenExpiryDate);
 
             _userRepositoryMock.Verify(
-                x => x.Update(It.Is<User>(u =>
+                x => x.UpdateAsync(It.Is<User>(u =>
                     u.RefreshToken == null &&
                     u.RefreshTokenExpiryDate == null)),
                 Times.Once);

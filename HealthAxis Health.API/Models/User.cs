@@ -1,5 +1,5 @@
-﻿using HealthAxisHealth.API.Enums;
-using HealthAxisHealth.API.Utilities;
+﻿using HealthAxisHealth.Shared.Enums;
+using HealthAxisHealth.Shared.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 

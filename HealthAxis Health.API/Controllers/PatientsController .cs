@@ -1,4 +1,4 @@
-﻿using HealthAxisHealth.API.DTOs.PatientDtos;
+﻿using HealthAxisHealth.Shared.DTOs.PatientDtos;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;

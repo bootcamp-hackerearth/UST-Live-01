@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.HealthRecordDtos;
-using HealthAxisHealth.API.DTOs.PatientDtos;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.HealthRecordDtos;
+using HealthAxisHealth.Shared.DTOs.PatientDtos;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -101,7 +101,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             _mapper.Map(updatePatientDto, patient);
 
-            _unitOfWork.Patients.Update(patient);
+            await _unitOfWork.Patients.UpdateAsync(patient);
 
             await _unitOfWork.CommitAsync();
         }
@@ -126,7 +126,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             _mapper.Map(updatePatientDto, patient);
 
-            _unitOfWork.Patients.Update(patient);
+            await _unitOfWork.Patients.UpdateAsync(patient);
 
             await _unitOfWork.CommitAsync();
         }
@@ -210,7 +210,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             user.Email = email;
 
-            _unitOfWork.Users.Update(user);
+            await _unitOfWork.Users.UpdateAsync(user);
         }
 
         #endregion

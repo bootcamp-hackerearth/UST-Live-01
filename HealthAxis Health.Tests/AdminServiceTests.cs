@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.DoctorDtos;
-using HealthAxisHealth.API.DTOs.UserDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.DoctorDtos;
+using HealthAxisHealth.Shared.DTOs.UserDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -282,11 +282,11 @@ namespace HealthAxisHealth.Tests.Services
                 Times.Once);
 
             _unitOfWorkMock.Verify(
-                x => x.Doctors.Update(doctor),
+                x => x.Doctors.UpdateAsync(doctor),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
-                x => x.Users.Update(user),
+                x => x.Users.UpdateAsync(user),
                 Times.Once);
 
             _unitOfWorkMock.Verify(
@@ -508,29 +508,54 @@ namespace HealthAxisHealth.Tests.Services
             };
 
             _unitOfWorkMock
-                .Setup(x => x.Users.GetByEmailAsync(dto.Email))
+                .Setup(x => x.Users.GetByEmailAsync(
+                    dto.Email,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((User?)null);
 
             _unitOfWorkMock
-                .Setup(x => x.Users.AddAsync(It.IsAny<User>()))
-                .Callback<User>(u => u.UserId = 100)
+                .Setup(x => x.Users.AddAsync(
+                    It.IsAny<User>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<User, CancellationToken>(
+                    (u, _) => u.UserId = 100)
                 .Returns(Task.CompletedTask);
 
             _unitOfWorkMock
-                .Setup(x => x.Doctors.AddAsync(It.IsAny<Doctor>()))
-                .Callback<Doctor>(d => d.DoctorId = 200)
+                .Setup(x => x.Doctors.AddAsync(
+                    It.IsAny<Doctor>(),
+                    It.IsAny<CancellationToken>()))
+                .Callback<Doctor, CancellationToken>(
+                    (d, _) => d.DoctorId = 200)
                 .Returns(Task.CompletedTask);
 
             _unitOfWorkMock
-                .Setup(x => x.CommitAsync())
+                .Setup(x => x.CommitAsync(
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(1);
 
             // Act
-            var result =
-                await _service.CreateDoctorAsync(dto);
+            var result = await _service.CreateDoctorAsync(dto);
 
             // Assert
             Assert.Equal(200, result);
+
+            _unitOfWorkMock.Verify(
+                x => x.Users.AddAsync(
+                    It.IsAny<User>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _unitOfWorkMock.Verify(
+                x => x.Doctors.AddAsync(
+                    It.IsAny<Doctor>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+
+            _unitOfWorkMock.Verify(
+                x => x.CommitAsync(
+                    It.IsAny<CancellationToken>()),
+                Times.Exactly(2));
         }
 
         [Fact]

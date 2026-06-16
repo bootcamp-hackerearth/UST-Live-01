@@ -1,5 +1,4 @@
-﻿using HealthAxis_Health.API.DTOs.AuthDtos;
-using HealthAxisHealth.API.DTOs.AuthDtos;
+﻿using HealthAxisHealth.Shared.DTOs.AuthDtos;
 
 namespace HealthAxisHealth.API.Services.Interfaces
 {

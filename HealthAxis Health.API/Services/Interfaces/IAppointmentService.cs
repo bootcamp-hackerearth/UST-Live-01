@@ -1,5 +1,5 @@
-﻿using HealthAxisHealth.API.DTOs.AppointmentDtos;
-using HealthAxisHealth.API.DTOs.CommonDtos;
+﻿using HealthAxisHealth.Shared.DTOs.AppointmentDtos;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
 using HealthAxisHealth.API.Helpers;
 
 namespace HealthAxisHealth.API.Services.Interfaces

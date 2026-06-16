@@ -1,6 +1,6 @@
 ﻿using HealthAxisHealth.API.Data;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Repositories.Interfaces;
@@ -25,74 +25,60 @@ namespace HealthAxisHealth.API.Repositories.Implementations
         #region Methods
 
         public async Task<User?> GetByEmailAsync(
-            string email)
+            string email,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Users
                 .Include(u => u.Patient)
                 .Include(u => u.Doctor)
                 .FirstOrDefaultAsync(
-                    u => u.Email == email);
+                    u => u.Email == email,
+                    cancellationToken);
         }
 
         public async Task<User?> GetByRefreshTokenAsync(
-            string refreshToken)
+            string refreshToken,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(
-                    u => u.RefreshToken == refreshToken);
+                    u => u.RefreshToken == refreshToken,
+                    cancellationToken);
         }
 
         public async Task<PagedResultDto<User>> GetPagedAsync(
             PaginationParams pagination,
-            UserRole? role = null)
+            UserRole? role = null,
+            CancellationToken cancellationToken = default)
         {
-            IQueryable<User> query =
-                _context.Users
-                    .Include(u => u.Patient)
-                    .Include(u => u.Doctor);
+            IQueryable<User> query = _context.Users
+                .Include(u => u.Patient)
+                .Include(u => u.Doctor);
 
-            // Filter by role
             if (role.HasValue)
             {
-                query = query.Where(
-                    u => u.Role == role.Value);
+                query = query.Where(u => u.Role == role.Value);
             }
 
-            // Search by email or full name
-            if (!string.IsNullOrWhiteSpace(
-                pagination.Search))
+            if (!string.IsNullOrWhiteSpace(pagination.Search))
             {
-                string search =
-                    pagination.Search
-                        .Trim()
-                        .ToLower();
+                string search = pagination.Search.Trim().ToLower();
 
                 query = query.Where(u =>
-                    u.Email.ToLower().Contains(search)
-                    ||
+                    u.Email.ToLower().Contains(search) ||
                     (u.Doctor != null &&
-                     u.Doctor.FullName
-                        .ToLower()
-                        .Contains(search))
-                    ||
+                     u.Doctor.FullName.ToLower().Contains(search)) ||
                     (u.Patient != null &&
-                     u.Patient.FullName
-                        .ToLower()
-                        .Contains(search)));
+                     u.Patient.FullName.ToLower().Contains(search)));
             }
 
-            int totalRecords =
-                await query.CountAsync();
+            int totalRecords = await query.CountAsync(cancellationToken);
 
-            List<User> users =
-                await query
-                    .OrderBy(u => u.Email)
-                    .Skip(
-                        (pagination.PageNumber - 1)
-                        * pagination.PageSize)
-                    .Take(
-                        pagination.PageSize)
-                    .ToListAsync();
+            List<User> users = await query
+                .OrderBy(u => u.Email)
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
+                .ToListAsync(cancellationToken);
 
             return new PagedResultDto<User>
             {

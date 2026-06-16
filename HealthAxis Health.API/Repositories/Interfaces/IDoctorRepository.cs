@@ -1,5 +1,5 @@
-﻿using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.Enums;
+﻿using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 
@@ -10,24 +10,24 @@ namespace HealthAxisHealth.API.Repositories.Interfaces
     {
         #region Methods
 
-        Task<IEnumerable<Doctor>>
-            GetActiveDoctorsAsync();
+        Task<IEnumerable<Doctor>> GetActiveDoctorsAsync(
+            CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Doctor>>
-            GetBySpecialisationAsync(
-                Specialisation specialisation);
+        Task<IEnumerable<Doctor>> GetBySpecialisationAsync(
+            Specialisation specialisation,
+            CancellationToken cancellationToken = default);
 
-        Task<Doctor?>
-            GetDoctorWithAppointmentsAsync(
-                int doctorId);
+        Task<Doctor?> GetDoctorWithAppointmentsAsync(
+            int doctorId,
+            CancellationToken cancellationToken = default);
 
-        Task<Doctor?>
-            GetByUserIdAsync(
-                int userId);
+        Task<Doctor?> GetByUserIdAsync(
+            int userId,
+            CancellationToken cancellationToken = default);
 
-        Task<PagedResultDto<Doctor>>
-            GetPagedAsync(
-                PaginationParams pagination);
+        Task<PagedResultDto<Doctor>> GetPagedAsync(
+            PaginationParams pagination,
+            CancellationToken cancellationToken = default);
 
         #endregion
     }

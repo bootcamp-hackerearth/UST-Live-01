@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.DoctorDtos;
-using HealthAxisHealth.API.DTOs.ReportDtos;
-using HealthAxisHealth.API.DTOs.UserDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.DoctorDtos;
+using HealthAxisHealth.Shared.DTOs.ReportDtos;
+using HealthAxisHealth.Shared.DTOs.UserDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -116,7 +116,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             _mapper.Map(dto, doctor);
 
-            _unitOfWork.Doctors.Update(doctor);
+            await _unitOfWork.Doctors.UpdateAsync(doctor);
 
             // Synchronize User.IsActive with Doctor.IsActive
             User? user =
@@ -131,7 +131,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             user.IsActive = dto.IsActive;
 
-            _unitOfWork.Users.Update(user);
+            await _unitOfWork.Users.UpdateAsync(user);
 
             await _unitOfWork.CommitAsync();
         }

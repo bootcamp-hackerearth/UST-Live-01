@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.HealthRecordDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.HealthRecordDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -400,7 +400,7 @@ namespace HealthAxisHealth.API.Tests.Services
                 Times.Once);
 
             _appointmentRepositoryMock.Verify(
-                x => x.Update(It.IsAny<Appointment>()),
+                x => x.UpdateAsync(It.IsAny<Appointment>()),
                 Times.Once);
 
             _unitOfWorkMock.Verify(

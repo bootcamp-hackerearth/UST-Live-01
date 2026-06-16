@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.AppointmentDtos;
-using HealthAxisHealth.API.DTOs.DoctorDtos;
-using HealthAxisHealth.API.DTOs.HealthRecordDtos;
-using HealthAxisHealth.API.DTOs.PatientDtos;
-using HealthAxisHealth.API.DTOs.UserDtos;
+using HealthAxisHealth.Shared.DTOs.AppointmentDtos;
+using HealthAxisHealth.Shared.DTOs.DoctorDtos;
+using HealthAxisHealth.Shared.DTOs.HealthRecordDtos;
+using HealthAxisHealth.Shared.DTOs.PatientDtos;
+using HealthAxisHealth.Shared.DTOs.UserDtos;
 using HealthAxisHealth.API.Models;
 
 namespace HealthAxisHealth.API.Mappings
@@ -14,6 +14,7 @@ namespace HealthAxisHealth.API.Mappings
         {
             // Doctor
             CreateMap<Doctor, DoctorDto>();
+            CreateMap<UpdateDoctorDto, Doctor>();
 
             // Patient
             CreateMap<Patient, PatientDto>()

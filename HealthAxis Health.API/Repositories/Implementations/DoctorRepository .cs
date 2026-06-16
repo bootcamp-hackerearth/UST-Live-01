@@ -1,6 +1,6 @@
 ﻿using HealthAxisHealth.API.Data;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Repositories.Interfaces;
@@ -24,76 +24,68 @@ namespace HealthAxisHealth.API.Repositories.Implementations
 
         #region Methods
 
-        public async Task<IEnumerable<Doctor>>
-            GetActiveDoctorsAsync()
+        public async Task<IEnumerable<Doctor>> GetActiveDoctorsAsync(
+            CancellationToken cancellationToken = default)
         {
             return await _context.Doctors
                 .Where(d => d.IsActive)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<Doctor>>
-            GetBySpecialisationAsync(
-                Specialisation specialisation)
+        public async Task<IEnumerable<Doctor>> GetBySpecialisationAsync(
+            Specialisation specialisation,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Doctors
                 .Where(d =>
                     d.Specialisation == specialisation &&
                     d.IsActive)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<Doctor?>
-            GetDoctorWithAppointmentsAsync(
-                int doctorId)
+        public async Task<Doctor?> GetDoctorWithAppointmentsAsync(
+            int doctorId,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Doctors
                 .Include(d => d.Appointments)
                 .FirstOrDefaultAsync(
-                    d => d.DoctorId == doctorId);
+                    d => d.DoctorId == doctorId,
+                    cancellationToken);
         }
 
-        public async Task<Doctor?>
-            GetByUserIdAsync(
-                int userId)
+        public async Task<Doctor?> GetByUserIdAsync(
+            int userId,
+            CancellationToken cancellationToken = default)
         {
             return await _context.Doctors
                 .FirstOrDefaultAsync(
-                    d => d.UserId == userId);
+                    d => d.UserId == userId,
+                    cancellationToken);
         }
 
-        public async Task<PagedResultDto<Doctor>>
-            GetPagedAsync(
-                PaginationParams pagination)
+        public async Task<PagedResultDto<Doctor>> GetPagedAsync(
+            PaginationParams pagination,
+            CancellationToken cancellationToken = default)
         {
-            IQueryable<Doctor> query =
-                _context.Doctors;
+            IQueryable<Doctor> query = _context.Doctors;
 
-            if (!string.IsNullOrWhiteSpace(
-                pagination.Search))
+            if (!string.IsNullOrWhiteSpace(pagination.Search))
             {
-                string search =
-                    pagination.Search.Trim();
+                string search = pagination.Search.Trim();
 
                 query = query.Where(d =>
                     d.FullName.Contains(search) ||
-                    d.Specialisation
-                        .ToString()
-                        .Contains(search));
+                    d.Specialisation.ToString().Contains(search));
             }
 
-            int totalRecords =
-                await query.CountAsync();
+            int totalRecords = await query.CountAsync(cancellationToken);
 
-            List<Doctor> doctors =
-                await query
-                    .OrderBy(d => d.FullName)
-                    .Skip(
-                        (pagination.PageNumber - 1)
-                        * pagination.PageSize)
-                    .Take(
-                        pagination.PageSize)
-                    .ToListAsync();
+            List<Doctor> doctors = await query
+                .OrderBy(d => d.FullName)
+                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                .Take(pagination.PageSize)
+                .ToListAsync(cancellationToken);
 
             return new PagedResultDto<Doctor>
             {

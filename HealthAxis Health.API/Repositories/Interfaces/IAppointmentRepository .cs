@@ -1,4 +1,4 @@
-﻿using HealthAxisHealth.API.DTOs.CommonDtos;
+﻿using HealthAxisHealth.Shared.DTOs.CommonDtos;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 
@@ -9,32 +9,32 @@ namespace HealthAxisHealth.API.Repositories.Interfaces
     {
         #region Methods
 
-        Task<IEnumerable<Appointment>>
-            GetByPatientIdAsync(
-                int patientId);
+        Task<IEnumerable<Appointment>> GetByPatientIdAsync(
+            int patientId,
+            CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Appointment>>
-            GetByDoctorIdAsync(
-                int doctorId);
+        Task<IEnumerable<Appointment>> GetByDoctorIdAsync(
+            int doctorId,
+            CancellationToken cancellationToken = default);
 
-        Task<IEnumerable<Appointment>>
-            GetDoctorAppointmentsByDateAsync(
-                int doctorId,
-                DateTime date);
+        Task<IEnumerable<Appointment>> GetDoctorAppointmentsByDateAsync(
+            int doctorId,
+            DateTime date,
+            CancellationToken cancellationToken = default);
 
-        Task<Appointment?>
-            GetAppointmentWithDetailsAsync(
-                int appointmentId);
+        Task<Appointment?> GetAppointmentWithDetailsAsync(
+            int appointmentId,
+            CancellationToken cancellationToken = default);
 
-        Task<bool>
-            IsSlotAvailableAsync(
-                int doctorId,
-                DateTime scheduledDate,
-                string timeSlot);
+        Task<bool> IsSlotAvailableAsync(
+            int doctorId,
+            DateTime scheduledDate,
+            string timeSlot,
+            CancellationToken cancellationToken = default);
 
-        Task<PagedResultDto<Appointment>>
-            GetPagedAsync(
-                PaginationParams pagination);
+        Task<PagedResultDto<Appointment>> GetPagedAsync(
+            PaginationParams pagination,
+            CancellationToken cancellationToken = default);
 
         #endregion
     }

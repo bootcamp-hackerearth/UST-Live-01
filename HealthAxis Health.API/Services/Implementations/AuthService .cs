@@ -1,7 +1,6 @@
 ﻿using BCrypt.Net;
-using HealthAxis_Health.API.DTOs.AuthDtos;
-using HealthAxisHealth.API.DTOs.AuthDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.AuthDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -82,7 +81,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                 refreshToken,
                 DateTime.UtcNow.AddDays(7));
 
-            _unitOfWork.Users.Update(user);
+            await _unitOfWork.Users.UpdateAsync(user);
 
             await _unitOfWork.CommitAsync();
 
@@ -149,7 +148,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                 refreshToken,
                 DateTime.UtcNow.AddDays(7));
 
-            _unitOfWork.Users.Update(user);
+            await _unitOfWork.Users.UpdateAsync(user);
 
             await _unitOfWork.CommitAsync();
 
@@ -195,7 +194,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                 refreshToken,
                 DateTime.UtcNow.AddDays(7));
 
-            _unitOfWork.Users.Update(user);
+            await _unitOfWork.Users.UpdateAsync(user);
 
             await _unitOfWork.CommitAsync();
 
@@ -232,7 +231,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             user.RevokeRefreshToken();
 
-            _unitOfWork.Users.Update(user);
+            await _unitOfWork.Users.UpdateAsync(user);
 
             await _unitOfWork.CommitAsync();
         }

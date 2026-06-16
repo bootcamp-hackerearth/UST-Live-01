@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.DoctorDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.DoctorDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -11,7 +11,7 @@ using HealthAxisHealth.API.UnitOfWork;
 using Moq;
 using Xunit;
 
-namespace HealthAxisHealth.API.Tests.Services
+namespace HealthAxisHealth.Shared.Tests.Services
 {
     public class DoctorServiceTests
     {
@@ -379,7 +379,7 @@ namespace HealthAxisHealth.API.Tests.Services
                 Times.Once);
 
             _doctorRepositoryMock.Verify(
-                x => x.Update(doctor),
+                x => x.UpdateAsync(doctor),
                 Times.Once);
 
             _unitOfWorkMock.Verify(

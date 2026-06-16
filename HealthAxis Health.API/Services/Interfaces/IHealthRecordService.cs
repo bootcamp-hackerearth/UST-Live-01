@@ -1,5 +1,5 @@
-﻿using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.HealthRecordDtos;
+﻿using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.HealthRecordDtos;
 using HealthAxisHealth.API.Helpers;
 
 namespace HealthAxisHealth.API.Services.Interfaces

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.DoctorDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.DoctorDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -129,7 +129,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             _mapper.Map(updateDoctorDto, doctor);
 
-            _unitOfWork.Doctors.Update(doctor);
+            await _unitOfWork.Doctors.UpdateAsync(doctor);
 
             await _unitOfWork.CommitAsync();
         }

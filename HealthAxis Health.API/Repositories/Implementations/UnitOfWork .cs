@@ -20,20 +20,15 @@ namespace HealthAxisHealth.API.UnitOfWork
         {
             _context = context;
 
-            Users =
-                new UserRepository(context);
+            Users = new UserRepository(context);
 
-            Patients =
-                new PatientRepository(context);
+            Patients = new PatientRepository(context);
 
-            Doctors =
-                new DoctorRepository(context);
+            Doctors = new DoctorRepository(context);
 
-            Appointments =
-                new AppointmentRepository(context);
+            Appointments = new AppointmentRepository(context);
 
-            HealthRecords =
-                new HealthRecordRepository(context);
+            HealthRecords = new HealthRecordRepository(context);
         }
 
         #endregion
@@ -50,15 +45,15 @@ namespace HealthAxisHealth.API.UnitOfWork
 
         public IHealthRecordRepository HealthRecords { get; }
 
-
         #endregion
 
         #region Methods
 
-        public async Task<int> CommitAsync()
+        public async Task<int> CommitAsync(
+            CancellationToken cancellationToken = default)
         {
-            return await _context
-                .SaveChangesAsync();
+            return await _context.SaveChangesAsync(
+                cancellationToken);
         }
 
         public void Dispose()

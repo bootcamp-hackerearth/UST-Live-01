@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisHealth.API.DTOs.CommonDtos;
-using HealthAxisHealth.API.DTOs.HealthRecordDtos;
-using HealthAxisHealth.API.Enums;
+using HealthAxisHealth.Shared.DTOs.CommonDtos;
+using HealthAxisHealth.Shared.DTOs.HealthRecordDtos;
+using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Exceptions;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
@@ -167,8 +167,8 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             appointment.Complete();
 
-            _unitOfWork.Appointments
-                .Update(
+            await _unitOfWork.Appointments
+                .UpdateAsync(
                     appointment);
 
             await _unitOfWork.CommitAsync();
