@@ -1,9 +1,11 @@
 ﻿using HealthApp.Api.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.Api.Data
 {
-    public class HealthAppDbContext : DbContext
+    public class HealthAppDbContext : IdentityDbContext<IdentityUser>
     {
         public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options) : base(options)
         {
