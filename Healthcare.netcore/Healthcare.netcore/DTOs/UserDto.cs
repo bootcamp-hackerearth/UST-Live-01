@@ -1,4 +1,4 @@
-﻿namespace HealthAxis.API.Dtos.UserDtos;
+﻿namespace HealthAxis.API.DTOs;
 
 public class UserDto
 {

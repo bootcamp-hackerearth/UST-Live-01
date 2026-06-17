@@ -1,8 +1,8 @@
 ﻿using HealthAxis.API.Models;
 
-namespace HealthAxis.API.Repositories.Interfaces;
-
-public interface IHealthRecordRepository : IRepository<HealthRecord>
+namespace HealthAxis.API.Repositories.Interfaces
 {
-    Task<List<HealthRecord>> GetByPatientIdAsync(int patientId);
+    public interface IHealthRecordRepository : IRepository<HealthRecord>
+    {
+    }
 }

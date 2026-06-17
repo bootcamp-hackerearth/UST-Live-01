@@ -1,32 +1,50 @@
 ﻿using AutoMapper;
+using HealthAxis.API.DTOs;
+using HealthAxis.API.DTOs;
+using HealthAxis.API.DTOs;
 using HealthAxis.API.Models;
-using HealthAxis.API.Dtos.DoctorDtos;
-using HealthAxis.API.Dtos.PatientDtos;
-using HealthAxis.API.Dtos.AppointmentDtos;
-using HealthAxis.API.Dtos.HealthRecordDtos;
 
-namespace HealthAxis.API.Mappings
+namespace HealthAxis.API.Profiles
 {
     public class MappingProfile : Profile
     {
         public MappingProfile()
         {
-            CreateMap<Doctor, DoctorDto>();
 
+            // Patient Mappings
+            CreateMap<CreatePatientDto, Patient>();
+
+            CreateMap<UpdatePatientDto, Patient>();
+
+            CreateMap<Patient, PatientDto>()
+                .ForMember(
+                    dest => dest.Age,
+                    opt => opt.MapFrom(src => src.GetAge()));
+
+            // Doctor Mappings
             CreateMap<CreateDoctorDto, Doctor>();
 
             CreateMap<UpdateDoctorDto, Doctor>();
 
+            CreateMap<Doctor, DoctorDto>()
+                .ForMember(
+                    dest => dest.UpcomingAppointmentCount,
+                    opt => opt.MapFrom(
+                        src => src.GetUpcomingAppointmentCount()));
 
-            CreateMap<Patient, PatientDto>();
+            // Appointment Mappings
+            CreateMap<CreateAppointmentDto, Appointment>();
 
-            CreateMap<UpdatePatientDto, Patient>();
-
+            CreateMap<UpdateAppointmentStatusDto, Appointment>();
 
             CreateMap<Appointment, AppointmentDto>();
 
-            CreateMap<CreateAppointmentDto, Appointment>();
+            // Health Record Mappings
+            CreateMap<CreateHealthRecordDto,
+                HealthRecord>();
 
+            CreateMap<HealthRecord,
+                HealthRecordDto>();
 
             CreateMap<HealthRecord, HealthRecordDto>();
 

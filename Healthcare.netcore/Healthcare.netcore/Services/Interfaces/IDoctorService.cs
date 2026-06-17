@@ -1,16 +1,17 @@
-﻿using HealthAxis.API.Dtos.DoctorDtos;
+﻿using HealthAxis.API.DTOs;
 
-namespace HealthAxis.API.Services.Interfaces;
-
-public interface IDoctorService
+namespace HealthAxis.API.Services.Interfaces
 {
-    Task<List<DoctorDto>> GetAllDoctorsAsync();
+    public interface IDoctorService
+    {
+        Task<IEnumerable<DoctorDto>> GetAllAsync(
+            CancellationToken ct = default);
 
-    Task<DoctorDto?> GetDoctorByIdAsync(int id);
+        Task<DoctorDto?> GetByIdAsync(
+            int id,
+            CancellationToken ct = default);
 
-    Task<DoctorDto> CreateDoctorAsync(CreateDoctorDto dto);
-
-    Task<DoctorDto?> UpdateDoctorAsync(int id, UpdateDoctorDto dto);
-
-    Task<bool> DeleteDoctorAsync(int id);
+        Task<IEnumerable<DoctorDto>>
+            GetAvailableDoctorsAsync();
+    }
 }

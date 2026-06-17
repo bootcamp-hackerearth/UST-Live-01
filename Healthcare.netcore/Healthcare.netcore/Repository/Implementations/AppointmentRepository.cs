@@ -1,27 +1,15 @@
 ﻿using HealthAxis.API.Data;
+using HealthAxis.API.Enums;
 using HealthAxis.API.Models;
+using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
-namespace HealthAxis.API.Repositories.Impl;
-
-public class AppointmentRepository : Repository<Appointment>, IAppointmentRepository
+namespace HealthAxis.API.Repositories.Implementations
 {
-    public AppointmentRepository(HealthAxisDbContext context) : base(context)
+    public class AppointmentRepository : Repository<Appointment>, IAppointmentRepository
     {
-    }
-
-    public async Task<List<Appointment>> GetByPatientIdAsync(int patientId)
-    {
-        return await _context.Appointments
-            .Where(x => x.PatientId == patientId)
-            .ToListAsync();
-    }
-
-    public async Task<List<Appointment>> GetByDoctorIdAsync(int doctorId)
-    {
-        return await _context.Appointments
-            .Where(x => x.DoctorId == doctorId)
-            .ToListAsync();
+        public AppointmentRepository(HealthAxisDbContext context) : base(context)
+        {
+        }
     }
 }

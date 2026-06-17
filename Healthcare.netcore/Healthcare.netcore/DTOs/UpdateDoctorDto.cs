@@ -1,19 +1,27 @@
 ﻿using HealthAxis.API.Enums;
+using HealthAxis.API.Utilities;
 using System.ComponentModel.DataAnnotations;
 
-namespace HealthAxis.API.Dtos.DoctorDtos
+namespace HealthAxis.API.DTOs
 {
     public class UpdateDoctorDto
     {
-        [Required]
-        public Specialization Specialisation { get; set; }
+        [Required(ErrorMessage = ValidationMessages.FullNameRequired)]
+        [StringLength(ValidationLimits.FullNameLength)]
+        [RegularExpression(RegexPatterns.FullName, ErrorMessage = ValidationMessages.InvalidFullNameFormat)]
+        public string FullName { get; set; } = string.Empty;
 
-        [Required]
-        public DateOnly PracticeStartDate { get; set; }
+        [Required(ErrorMessage = ValidationMessages.SpecialisationRequired)]
+        public Specialisation Specialisation { get; set; }
 
-        [Required]
+        [Range(ValidationLimits.MinExperience, ValidationLimits.MaxExperience,
+            ErrorMessage = ValidationMessages.InvalidExperienceRange)]
+        public int YearsOfExperience { get; set; }
+
+        [Range(typeof(decimal), ValidationLimits.MinConsultationFee, ValidationLimits.MaxConsultationFee,
+            ErrorMessage = ValidationMessages.InvalidConsultationFee)]
         public decimal ConsultationFee { get; set; }
 
-        public bool IsAvailable { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -1,55 +1,48 @@
 ﻿using HealthAxis.API.Data;
+using HealthAxis.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthAxis.API.Repositories.Impl;
-
-public class Repository<T> : IRepository<T> where T : class
+namespace HealthAxis.API.Repositories.Implementations
 {
-    protected readonly HealthAxisDbContext _context;
-    protected readonly DbSet<T> _dbSet;
-
-    public Repository(HealthAxisDbContext context)
+    public class Repository<T> : IRepository<T> where T : class
     {
-        _context = context;
-        _dbSet = context.Set<T>();
-    }
+        protected readonly HealthAxisDbContext _context;
 
-    public async Task<List<T>> GetAllAsync()
-    {
-        return await _dbSet.ToListAsync();
-    }
-
-    public async Task<T?> GetByIdAsync(int id)
-    {
-        return await _dbSet.FindAsync(id);
-    }
-
-    public async Task<T> AddAsync(T entity)
-    {
-        await _dbSet.AddAsync(entity);
-        await _context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task<T?> UpdateAsync(T entity)
-    {
-        _dbSet.Update(entity);
-        await _context.SaveChangesAsync();
-        return entity;
-    }
-
-    public async Task<T?> DeleteAsync(int id)
-    {
-        var entity = await _dbSet.FindAsync(id);
-
-        if (entity == null)
+        public Repository(HealthAxisDbContext context)
         {
-            return null;
+            _context = context;
         }
 
-        _dbSet.Remove(entity);
-        await _context.SaveChangesAsync();
+        public async Task<T?> GetByIdAsync(int id)
+        {
+            return await _context.Set<T>().FindAsync(id);
+        }
 
-        return entity;
+        public async Task<List<T>> GetAllAsync()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+
+        public async Task AddAsync(T entity)
+        {
+            await _context.Set<T>().AddAsync(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(int id, T entity, CancellationToken cancellationToken)
+        {
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                _context.Set<T>().Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }

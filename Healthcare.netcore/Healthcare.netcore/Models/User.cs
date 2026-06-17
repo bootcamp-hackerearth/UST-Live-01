@@ -1,27 +1,28 @@
 ﻿using HealthAxis.API.Enums;
+using HealthAxis.API.Utilities;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
-namespace HealthAxis.API.Models;
-
-public class User
+namespace HealthAxis.API.Models
 {
-    public int Id { get; set; }
+    public class User
+    {
+        [Key]
+        public int UserId { get; set; }
 
-    [Required]
-    public string FullName { get; set; } = string.Empty;
+        [Required]
+        [StringLength(ValidationLimits.EmailLength)]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-    [Required]
-    public string Email { get; set; } = string.Empty;
+        [Required]
+        [StringLength(25)]
+        public string PasswordHash { get; set; } = string.Empty;
 
-    [Required]
-    public string PasswordHash { get; set; } = string.Empty;
+        [Required]
+        public Role Role { get; set; }
 
-    [Required]
-    public UserRole Role { get; set; }
-
-    public bool IsActive { get; set; } = true;
-
-    public Doctor? Doctor { get; set; }
-
-    public Patient? Patient { get; set; }
+        [Required]
+        public int ReferenceId { get; set; }
+    }
 }

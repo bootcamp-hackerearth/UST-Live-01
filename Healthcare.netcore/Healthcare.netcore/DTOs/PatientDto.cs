@@ -1,18 +1,25 @@
-﻿namespace HealthAxis.API.Dtos.PatientDtos;
+﻿using HealthAxis.API.Enums;
 
-public class PatientDto
+namespace HealthAxis.API.DTOs
 {
-    public int Id { get; set; }
+    public class PatientDto
+    {
+        public int PatientId { get; set; }
 
-    public int UserId { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
-    public string FullName { get; set; } = string.Empty;
+        public DateTime DateOfBirth { get; set; }
 
-    public DateOnly DateOfBirth { get; set; }
+        public int Age { get; set; }
 
-    public string Gender { get; set; } = string.Empty;
+        public Gender Gender { get; set; }
 
-    public string PhoneNumber { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
 
-    public string Address { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+
+        public DateTime CreatedDate { get; set; }
+
+        public string? InsuranceId { get; set; }
+    }
 }

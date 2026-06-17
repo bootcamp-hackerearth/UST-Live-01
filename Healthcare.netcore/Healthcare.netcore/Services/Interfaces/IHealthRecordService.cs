@@ -1,10 +1,13 @@
-﻿using HealthAxis.API.Dtos.HealthRecordDtos;
+﻿using HealthAxis.API.DTOs;
 
-namespace HealthAxis.API.Services.Interfaces;
-
-public interface IHealthRecordService
+namespace HealthAxis.API.Services.Interfaces
 {
-    Task<List<HealthRecordDto>> GetPatientRecordsAsync(int patientId);
+    public interface IHealthRecordService
+    {
+        Task<IEnumerable<HealthRecordDto>> GetByPatientIdAsync(int patientId);
 
-    Task<HealthRecordDto> CreateHealthRecordAsync(CreateHealthRecordDto dto);
+        Task<HealthRecordDto> GetByIdAsync(int id);
+
+        Task<HealthRecordDto> AddAsync(CreateHealthRecordDto dto);
+    }
 }

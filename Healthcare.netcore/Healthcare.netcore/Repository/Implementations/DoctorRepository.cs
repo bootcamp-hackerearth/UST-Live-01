@@ -3,18 +3,17 @@ using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthAxis.API.Repositories.Impl;
-
-public class DoctorRepository : Repository<Doctor>, IDoctorRepository
+namespace HealthAxis.API.Repositories.Implementations
 {
-    public DoctorRepository(HealthAxisDbContext context) : base(context)
+    public class DoctorRepository : Repository<Doctor>, IDoctorRepository
     {
-    }
+        public DoctorRepository(HealthAxisDbContext context) : base(context) { }
 
-    public async Task<List<Doctor>> GetAvailableDoctorsAsync()
-    {
-        return await _context.Doctors
-            .Where(d => d.IsAvailable)
-            .ToListAsync();
+        public async Task<IEnumerable<Doctor>> GetAvailableDoctorsAsync()
+        {
+            return await _context.Doctors
+                .Where(d => d.IsActive)
+                .ToListAsync();
+        }
     }
 }

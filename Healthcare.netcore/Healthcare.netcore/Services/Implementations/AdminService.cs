@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthAxis.API.Dtos.DoctorDtos;
+using HealthAxis.API.DTOs;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
@@ -36,8 +36,8 @@ public class AdminService : IAdminService
     }
 
     public async Task<DoctorDto?> UpdateDoctorAsync(
-        int id,
-        UpdateDoctorDto dto)
+    int id,
+    UpdateDoctorDto dto)
     {
         var doctor = await _doctorRepository.GetByIdAsync(id);
 
@@ -46,7 +46,7 @@ public class AdminService : IAdminService
 
         _mapper.Map(dto, doctor);
 
-        await _doctorRepository.UpdateAsync(doctor);
+        await _doctorRepository.UpdateAsync(id, doctor, CancellationToken.None);
 
         return _mapper.Map<DoctorDto>(doctor);
     }

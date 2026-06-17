@@ -1,14 +1,21 @@
-﻿namespace HealthAxis.API.Dtos.AppointmentDtos;
+﻿using HealthAxis.API.Enums;
 
-public class AppointmentDto
+namespace HealthAxis.API.DTOs
 {
-    public int Id { get; set; }
+    public class AppointmentDto
+    {
+        public int AppointmentId { get; set; }
 
-    public int PatientId { get; set; }
+        public int PatientId { get; set; }
 
-    public int DoctorId { get; set; }
+        public int DoctorId { get; set; }
 
-    public DateTime AppointmentDate { get; set; }
+        public DateTime ScheduledDate { get; set; }
 
-    public string Status { get; set; } = string.Empty;
+        public string TimeSlot { get; set; } = string.Empty;
+
+        public AppointmentStatus Status { get; set; }
+
+        public string? CancellationReason { get; set; }
+    }
 }

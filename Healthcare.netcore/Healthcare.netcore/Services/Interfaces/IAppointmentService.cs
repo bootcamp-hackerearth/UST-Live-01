@@ -1,14 +1,15 @@
-﻿using HealthAxis.API.Dtos.AppointmentDtos;
+﻿using HealthAxis.API.DTOs;
 
-namespace HealthAxis.API.Services.Interfaces;
-
-public interface IAppointmentService
+namespace HealthAxis.API.Services.Interfaces
 {
-    Task<List<AppointmentDto>> GetAllAppointmentsAsync();
+    public interface IAppointmentService
+    {
+        Task<IEnumerable<AppointmentDto>> GetAllAsync();
 
-    Task<AppointmentDto?> GetAppointmentByIdAsync(int id);
+        Task<AppointmentDto> AddAsync(CreateAppointmentDto dto);
 
-    Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentDto dto);
+        Task<AppointmentDto> UpdateStatusAsync(int id, UpdateAppointmentStatusDto dto);
 
-    Task<bool> DeleteAppointmentAsync(int id);
+        Task<bool> DeleteAsync(int id);
+    }
 }

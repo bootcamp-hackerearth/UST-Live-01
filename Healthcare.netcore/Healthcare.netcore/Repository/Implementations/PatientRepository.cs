@@ -1,18 +1,14 @@
 ﻿using HealthAxis.API.Data;
 using HealthAxis.API.Models;
+using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
-namespace HealthAxis.API.Repositories.Impl;
-
-public class PatientRepository : Repository<Patient>, IPatientRepository
+namespace HealthAxis.API.Repositories.Implementations
 {
-    public PatientRepository(HealthAxisDbContext context) : base(context)
+    public class PatientRepository : Repository<Patient>, IPatientRepository
     {
-    }
-
-    public async Task<Patient?> GetByUserIdAsync(int userId)
-    {
-        return await _context.Patients.FirstOrDefaultAsync(x => x.UserId == userId);
+        public PatientRepository(HealthAxisDbContext context) : base(context)
+        {
+        }
     }
 }

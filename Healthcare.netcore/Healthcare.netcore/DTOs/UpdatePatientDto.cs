@@ -1,21 +1,38 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthAxis.API.Enums;
+using HealthAxis.API.Utilities;
+using System.ComponentModel.DataAnnotations;
 
-namespace HealthAxis.API.Dtos.PatientDtos;
-
-public class UpdatePatientDto
+namespace HealthAxis.API.DTOs
 {
-    [Required]
-    public string FullName { get; set; } = string.Empty;
+    public class UpdatePatientDto
+    {
+        [Required(ErrorMessage = ValidationMessages.FullNameRequired)]
+        [StringLength(ValidationLimits.FullNameLength)]
+        [RegularExpression(
+            RegexPatterns.FullName,
+            ErrorMessage = ValidationMessages.InvalidFullNameFormat)]
+        public string FullName { get; set; } = string.Empty;
 
-    [Required]
-    public DateOnly DateOfBirth { get; set; }
+        [Required(ErrorMessage = ValidationMessages.DateOfBirthRequired)]
+        [DataType(DataType.Date)]
+        public DateTime DateOfBirth { get; set; }
 
-    [Required]
-    public string Gender { get; set; } = string.Empty;
+        [Required(ErrorMessage = ValidationMessages.GenderRequired)]
+        public Gender Gender { get; set; }
 
-    [Required]
-    public string PhoneNumber { get; set; } = string.Empty;
+        [Required(ErrorMessage = ValidationMessages.PhoneNumberRequired)]
+        [StringLength(ValidationLimits.PhoneNumberLength)]
+        [RegularExpression(
+            RegexPatterns.PhoneNumber,
+            ErrorMessage = ValidationMessages.InvalidPhoneNumberFormat)]
+        public string PhoneNumber { get; set; } = string.Empty;
 
-    [Required]
-    public string Address { get; set; } = string.Empty;
+        [Required(ErrorMessage = ValidationMessages.EmailRequired)]
+        [EmailAddress(
+            ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+        [StringLength(ValidationLimits.EmailLength)]
+        public string Email { get; set; } = string.Empty;
+
+        public string? InsuranceId { get; set; }
+    }
 }
