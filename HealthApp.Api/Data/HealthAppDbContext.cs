@@ -1,11 +1,12 @@
 ﻿using HealthApp.Api.Model;
-using HealthApp.API.Model;
 using HospitalManagementAPI.Model;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.Api.Data
 {
-    public class HealthAppDbContext : DbContext
+    public class HealthAppDbContext : IdentityDbContext<IdentityUser>
     {
         public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options)
             : base(options)
@@ -16,7 +17,7 @@ namespace HealthApp.Api.Data
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<HealthRecord> HealthRecords { get; set; }
-        public DbSet<User> Users { get; set; }
+     
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

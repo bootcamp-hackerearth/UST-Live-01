@@ -1,16 +1,13 @@
-﻿using HospitalManagementAPI.Model;
-using System.CodeDom.Compiler;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace HealthApp.Api.Model
+namespace HealthApp.Api.Dto
 {
-    public class Patient
+    public class PatientDto
     {
-        [Key]
         public int PatientId { get; set; }
 
         [Required]
-        [Range(3,200)]
+        [Range(3, 200)]
         public string? FullName { get; set; }
 
         [Required]
@@ -32,6 +29,5 @@ namespace HealthApp.Api.Model
         public string? InsuranceId { get; set; }
 
         public DateTime? CreatedDate { get; set; }
-
     }
 }

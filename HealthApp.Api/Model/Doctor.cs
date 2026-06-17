@@ -17,9 +17,10 @@ namespace HealthApp.Api.Model
         [Required]
         [MaxLength(100)]
         public string Specialisation { get; set; }
-
+        [Required]
         public int YearsOfExperience { get; set; }
-
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
         public decimal ConsultationFee { get; set; }
 
         public bool? IsActive { get; set; }
