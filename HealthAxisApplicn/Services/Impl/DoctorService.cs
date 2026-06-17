@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxisApplicn.Dto;
 using HealthAxisApplicn.Mappings;
 using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Models.Dto;
 using HealthAxisApplicn.Repositories;
 
 namespace HealthAxisApplicn.Services.Impl
@@ -13,6 +13,13 @@ namespace HealthAxisApplicn.Services.Impl
             var doctor = mapper.Map<Doctor>(entity);
             var savedEntity = await repository.CreateAsync(doctor);
             return mapper.Map<DoctorDto>(savedEntity);
+        }
+
+        public async Task<DoctorDto> DeactivateDoctorAsync(int id)
+        {
+            var doctor = mapper.Map<Doctor>(await repository.GetByIdAsync(id));
+            doctor.IsActive = false;
+            return mapper.Map<DoctorDto>(doctor);
         }
 
         public async Task<List<DoctorDto?>> GetAllAsync()

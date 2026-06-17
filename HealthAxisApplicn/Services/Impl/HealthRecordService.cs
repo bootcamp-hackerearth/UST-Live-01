@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using HealthAxisApplicn.Dto;
 using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Models.Dto;
 using HealthAxisApplicn.Repositories;
 
 namespace HealthAxisApplicn.Services.Impl
@@ -34,6 +34,16 @@ namespace HealthAxisApplicn.Services.Impl
         public async Task<List<HealthRecordDto>> GetRecordsByDoctorIDAsync(int doctorId)
         {
             return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByDoctorIDAsync(doctorId));
+        }
+
+        public async Task<List<HealthRecordDto>> GetRecordsByDoctorNameAsync(string doctorName)
+        {
+            return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByDoctorNameAsync(doctorName));
+        }
+
+        public async Task<List<HealthRecordDto>> GetRecordsByPatientNameAsync(string patientName)
+        {
+            return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByPatientNameAsync(patientName));
         }
 
         public async Task<HealthRecordDto?> UpdatebyAsync(int id, HealthRecordDto entity)

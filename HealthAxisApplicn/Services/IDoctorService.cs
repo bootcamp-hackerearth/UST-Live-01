@@ -1,5 +1,5 @@
-﻿using HealthAxisApplicn.Dto;
-using HealthAxisApplicn.Models;
+﻿using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Models.Dto;
 
 namespace HealthAxisApplicn.Services
 {
@@ -12,5 +12,6 @@ namespace HealthAxisApplicn.Services
         Task<List<DoctorDto>> SearchDoctorByNameAsync(string name);
         Task<List<DoctorDto>> GetAvailableDoctorsAsync();
         Task<List<DoctorDto>> SearchBySpecialisationAsync(string specialisation);
+        Task<DoctorDto> DeactivateDoctorAsync(int id);
     }
 }

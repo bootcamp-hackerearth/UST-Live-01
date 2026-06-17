@@ -1,5 +1,5 @@
-﻿using HealthAxisApplicn.Dto;
-using HealthAxisApplicn.Models;
+﻿using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Models.Dto;
 
 namespace HealthAxisApplicn.Services
 {
@@ -12,5 +12,6 @@ namespace HealthAxisApplicn.Services
         Task<PatientDto?> SearchByPatientNameAsync(string name);
         Task<PatientDto?> SearchByPhoneNumberAsync(string phoneNumber);
         Task<PatientDto?> SearchByEmailAsync(string email);
+        Task<PatientDto> DeactivatePatientAsync(int id);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using HealthAxisApplicn.Dto;
 using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Models.Dto;
 using HealthAxisApplicn.Repositories;
 
 namespace HealthAxisApplicn.Services.Impl
@@ -33,6 +33,16 @@ namespace HealthAxisApplicn.Services.Impl
         public async Task<List<AppointmentDto>> GetAppointmentByPatientIdAsync(int patientId)
         {
             return mapper.Map<List<AppointmentDto>>(await repository.GetAppointmentByPatientIdAsync(patientId));
+        }
+
+        public async Task<List<AppointmentDto>> GetAppointmentsByDoctorNameAsync(string doctorName)
+        {
+            return mapper.Map<List<AppointmentDto>>(await repository.GetAppointmentsByDoctorNameAsync(doctorName));
+        }
+
+        public async Task<List<AppointmentDto>> GetAppointmentsByPatientNameAsync(string patientName)
+        {
+            return mapper.Map<List<AppointmentDto>>(await repository.GetAppointmentsByPatientNameAsync(patientName));
         }
 
         public async Task<AppointmentDto?> GetByIdAsync(int id)

@@ -1,5 +1,5 @@
-﻿using HealthAxisApplicn.Dto;
-using HealthAxisApplicn.Models;
+﻿using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Models.Dto;
 
 namespace HealthAxisApplicn.Services
 {
@@ -11,5 +11,8 @@ namespace HealthAxisApplicn.Services
         Task<HealthRecordDto?> UpdatebyAsync(int id, HealthRecordDto entity);
         Task<List<HealthRecordDto>> GetRecordByPatientIDAsync(int patientId);
         Task<List<HealthRecordDto>> GetRecordsByDoctorIDAsync(int doctorId);
+        Task<List<HealthRecordDto>> GetRecordsByPatientNameAsync(string patientName);
+        Task<List<HealthRecordDto>> GetRecordsByDoctorNameAsync(string doctorName);
+
     }
 }

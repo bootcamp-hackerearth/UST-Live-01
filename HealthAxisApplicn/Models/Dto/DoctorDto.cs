@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace HealthAxisApplicn.Dto
+namespace HealthAxisApplicn.Models.Dto
 {
     public class DoctorDto
     {

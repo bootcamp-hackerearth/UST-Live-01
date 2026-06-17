@@ -32,5 +32,17 @@ namespace HealthAxisApplicn.Repositories.Impl
             var appointments = await _context.Set<Appointment>().Where(a => a.PatientID == patientId).ToListAsync(ct);
             return appointments;
         }
+
+        public async Task<List<Appointment>> GetAppointmentsByDoctorNameAsync(string doctorName, CancellationToken ct = default)
+        {
+            var appointmentsByDoctor = await _context.Set<Appointment>().Where(a => a.Doctor.DoctorName == doctorName).ToListAsync(ct);
+            return appointmentsByDoctor;
+        }
+
+        public async Task<List<Appointment>> GetAppointmentsByPatientNameAsync(string patientName, CancellationToken ct = default)
+        {
+            var appointmentsByPatient = await _context.Set<Appointment>().Where(a => a.Patient.PatientName == patientName).ToListAsync(ct);
+            return appointmentsByPatient;
+        }
     }
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HealthAxisApplicn.Dto
+namespace HealthAxisApplicn.Models.Dto
 {
     public class AppointmentDto
     {

@@ -1,5 +1,5 @@
-﻿using HealthAxisApplicn.Dto;
-using HealthAxisApplicn.Models;
+﻿using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Models.Dto;
 
 namespace HealthAxisApplicn.Services
 {
@@ -12,5 +12,7 @@ namespace HealthAxisApplicn.Services
         Task<List<AppointmentDto>> GetAppointmentByPatientIdAsync(int patientId);
         Task<List<AppointmentDto>> GetAppointmentByDoctorIdAsync(int doctorId);
         Task<AppointmentDto?> DeleteAppointmentAsync(int appointmentId);
+        Task<List<AppointmentDto>> GetAppointmentsByPatientNameAsync(string patientName);
+        Task<List<AppointmentDto>> GetAppointmentsByDoctorNameAsync(string doctorName);
     }
 }
