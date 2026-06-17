@@ -6,7 +6,7 @@ using HealthCare.Api.Models;
 
 namespace HealthCare.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class RegisterController : ControllerBase
     {

@@ -54,9 +54,9 @@ namespace HealthCare.Api.Services.Implementations
 
             var token = await GenerateJwtToken(user);
 
-            var expirationMinutes = int.Parse(configuration.GetSection("jwt")["AcessTokenExpiration"]!);
+            var expirationMinutes = int.Parse(configuration.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
 
-            return (true, "Login Sucessfully", token, expirationMinutes * 60);
+            return (true, "Login Sucessfully", token, expirationMinutes);
         }
 
         private async Task <string>GenerateJwtToken(IdentityUser user)
