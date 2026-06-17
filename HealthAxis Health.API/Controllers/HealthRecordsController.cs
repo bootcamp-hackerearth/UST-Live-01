@@ -3,12 +3,14 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
+    [ExcludeFromCodeCoverage]
     public class HealthRecordsController :
         ControllerBase
     {

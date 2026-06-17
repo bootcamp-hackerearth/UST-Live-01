@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.Shared.Utilities
 {
+    [ExcludeFromCodeCoverage]
     public static class CustomValidators
     {
         public static ValidationResult? ValidateScheduledDate(

@@ -1,6 +1,8 @@
-﻿namespace HealthAxisHealth.Shared.DTOs.CommonDtos
-{
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace HealthAxisHealth.Shared.DTOs.CommonDtos
+{
+    [ExcludeFromCodeCoverage]
     public class PagedResultDto<T>
     {
 

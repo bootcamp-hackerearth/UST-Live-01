@@ -1,8 +1,9 @@
 ﻿using HealthAxisHealth.Shared.Enums;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.Shared.DTOs.PatientDtos
 {
-
+    [ExcludeFromCodeCoverage]
     public class PatientDto
     {
 

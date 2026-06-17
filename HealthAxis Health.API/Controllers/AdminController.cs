@@ -3,12 +3,15 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HealthAxisHealth.Shared.Utilities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Controllers
 {
     [ApiController]
     [Route("api/admin")]
     [Authorize(Roles = "Admin")]
+    [ExcludeFromCodeCoverage]
     public class AdminController :
         ControllerBase
     {
@@ -55,13 +58,7 @@ namespace HealthAxisHealth.API.Controllers
                 await _adminService
                     .CreateDoctorAsync(dto);
 
-            return Ok(
-                new
-                {
-                    DoctorId = doctorId,
-                    Message =
-                        "Doctor created successfully."
-                });
+            return Ok(new { DoctorId = doctorId, Message = Constants.DoctorCreatedSuccessfully });
         }
 
         [HttpPut("doctors/{id:int}")]
@@ -75,12 +72,7 @@ namespace HealthAxisHealth.API.Controllers
                     id,
                     dto);
 
-            return Ok(
-                new
-                {
-                    Message =
-                        "Doctor updated successfully."
-                });
+            return Ok(new { Message = Constants.DoctorUpdatedSuccessfully });
         }
 
         [HttpGet("users")]

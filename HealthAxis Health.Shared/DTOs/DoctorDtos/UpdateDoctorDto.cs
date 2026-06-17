@@ -1,9 +1,11 @@
 ﻿using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.Shared.Utilities;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.Shared.DTOs.DoctorDtos
 {
+    [ExcludeFromCodeCoverage]
     public class UpdateDoctorDto
     {
         #region Properties

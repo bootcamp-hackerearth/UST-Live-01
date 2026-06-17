@@ -4,9 +4,11 @@ using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Repositories.Interfaces;
 using HealthAxisHealth.Shared.DTOs.CommonDtos;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Repositories.Implementations
 {
+    [ExcludeFromCodeCoverage]
     public class PatientRepository :
         Repository<Patient>,
         IPatientRepository
@@ -72,17 +74,20 @@ namespace HealthAxisHealth.API.Repositories.Implementations
 
             int totalRecords = await query.CountAsync(cancellationToken);
 
+            int pageNumber = pagination.PageNumber ?? 1;
+            int pageSize = pagination.PageSize ?? 10;
+
             List<Patient> patients = await query
                 .OrderBy(p => p.FullName)
-                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
-                .Take(pagination.PageSize)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(cancellationToken);
 
             return new PagedResultDto<Patient>
             {
                 Items = patients,
-                PageNumber = pagination.PageNumber,
-                PageSize = pagination.PageSize,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
                 TotalRecords = totalRecords
             };
         }

@@ -1,9 +1,10 @@
 ﻿using HealthAxisHealth.Shared.Utilities;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.Shared.DTOs.HealthRecordDtos
 {
-
+    [ExcludeFromCodeCoverage]
     public class UpdateHealthRecordDto
     {
 

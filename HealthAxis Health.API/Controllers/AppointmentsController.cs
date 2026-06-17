@@ -4,12 +4,15 @@ using HealthAxisHealth.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using HealthAxisHealth.Shared.Utilities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
+    [ExcludeFromCodeCoverage]
     public class AppointmentsController :
         ControllerBase
     {
@@ -126,13 +129,7 @@ namespace HealthAxisHealth.API.Controllers
                         CurrentUserId,
                         dto);
 
-            return Ok(
-                new
-                {
-                    AppointmentId = appointmentId,
-                    Message =
-                        "Appointment booked successfully."
-                });
+            return Ok(new { AppointmentId = appointmentId, Message = Constants.AppointmentBookedSuccessfully });
         }
 
         [HttpPut("{id:int}/status")]
@@ -147,12 +144,7 @@ namespace HealthAxisHealth.API.Controllers
                     id,
                     dto);
 
-            return Ok(
-                new
-                {
-                    Message =
-                        "Appointment status updated successfully."
-                });
+            return Ok(new { Message = Constants.AppointmentStatusUpdatedSuccessfully });
         }
 
         [HttpDelete("{id:int}")]
@@ -164,12 +156,7 @@ namespace HealthAxisHealth.API.Controllers
             await _appointmentService
                 .DeleteAsync(id);
 
-            return Ok(
-                new
-                {
-                    Message =
-                        "Appointment deleted successfully."
-                });
+            return Ok(new { Message = Constants.AppointmentDeletedSuccessfully });
         }
 
         #endregion

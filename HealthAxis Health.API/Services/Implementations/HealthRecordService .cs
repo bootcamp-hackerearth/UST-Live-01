@@ -7,6 +7,7 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Services.Interfaces;
 using HealthAxisHealth.API.UnitOfWork;
+using HealthAxisHealth.Shared.Utilities;
 
 namespace HealthAxisHealth.API.Services.Implementations
 {
@@ -70,7 +71,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (record == null)
             {
                 throw new NotFoundException(
-                    "Health record not found.");
+                    Constants.HealthRecordNotFound);
             }
 
             return _mapper.Map<HealthRecordDto>(
@@ -113,7 +114,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (appointment == null)
             {
                 throw new NotFoundException(
-                    "Appointment not found.");
+                    Constants.AppointmentNotFound);
             }
 
             HealthRecord? existingRecord =
@@ -124,28 +125,28 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (existingRecord != null)
             {
                 throw new BadRequestException(
-                    "A health record already exists for this appointment.");
+                    Constants.HealthRecordAlreadyExists);
             }
 
             if (appointment.Status ==
                 AppointmentStatus.Cancelled)
             {
                 throw new BadRequestException(
-                    "Cannot create a health record for a cancelled appointment.");
+                    Constants.CancelledAppointmentHealthRecord);
             }
 
             if (appointment.Status !=
                 AppointmentStatus.Confirmed)
             {
                 throw new BadRequestException(
-                    "Health records can only be created for confirmed appointments.");
+                    Constants.ConfirmedAppointmentRequired);
             }
 
             if (appointment.ScheduledDate.Date >
                 DateTime.Today)
             {
                 throw new BadRequestException(
-                    "Health records can only be created on or after the appointment date.");
+                    Constants.AppointmentDateRequired);
             }
 
             HealthRecord healthRecord =

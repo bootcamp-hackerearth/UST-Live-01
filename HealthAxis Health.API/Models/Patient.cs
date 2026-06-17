@@ -1,11 +1,13 @@
 ﻿using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.Shared.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthAxisHealth.API.Models
 {
+    [ExcludeFromCodeCoverage]
     [Index(nameof(Email), IsUnique = true)]
     public class Patient
     {

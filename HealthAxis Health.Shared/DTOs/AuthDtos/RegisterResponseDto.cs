@@ -1,5 +1,8 @@
-﻿namespace HealthAxisHealth.Shared.DTOs.AuthDtos
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace HealthAxisHealth.Shared.DTOs.AuthDtos
 {
+    [ExcludeFromCodeCoverage]
     public class RegisterResponseDto
     {
         public string Status { get; set; } = "success";

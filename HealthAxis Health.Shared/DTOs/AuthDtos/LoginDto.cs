@@ -1,9 +1,10 @@
 ﻿using HealthAxisHealth.Shared.Utilities;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.Shared.DTOs.AuthDtos
 {
-
+    [ExcludeFromCodeCoverage]
     public class LoginDto
     {
 

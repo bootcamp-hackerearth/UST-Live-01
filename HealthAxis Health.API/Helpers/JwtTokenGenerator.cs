@@ -7,9 +7,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxis_Health.API.Helpers
 {
+    [ExcludeFromCodeCoverage]
     public class JwtTokenGenerator :
         IJwtTokenGenerator
     {

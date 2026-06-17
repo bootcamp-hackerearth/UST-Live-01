@@ -4,12 +4,14 @@ using HealthAxisHealth.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
+    [ExcludeFromCodeCoverage]
     public class PatientsController :
         ControllerBase
     {

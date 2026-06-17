@@ -7,6 +7,7 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Services.Interfaces;
 using HealthAxisHealth.API.UnitOfWork;
+using HealthAxisHealth.Shared.Utilities;
 
 namespace HealthAxisHealth.API.Services.Implementations
 {
@@ -43,7 +44,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (patient == null)
             {
                 throw new NotFoundException(
-                    "Patient not found.");
+                    Constants.PatientNotFound);
             }
 
             return _mapper.Map<PatientDto>(patient);
@@ -59,7 +60,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (patient == null)
             {
                 throw new NotFoundException(
-                    "Patient not found.");
+                    Constants.PatientNotFound);
             }
 
             return _mapper.Map<PatientDto>(patient);
@@ -92,7 +93,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (patient == null)
             {
                 throw new NotFoundException(
-                    "Patient not found.");
+                    Constants.PatientNotFound);
             }
 
             await ValidateAndUpdateUserEmailAsync(
@@ -117,7 +118,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (patient == null)
             {
                 throw new NotFoundException(
-                    "Patient not found.");
+                    Constants.PatientNotFound);
             }
 
             await ValidateAndUpdateUserEmailAsync(
@@ -195,7 +196,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                 existingUser.UserId != patient.UserId)
             {
                 throw new BadRequestException(
-                    "Email is already registered.");
+                    Constants.EmailAlreadyRegistered);
             }
 
             User? user =
@@ -205,7 +206,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (user == null)
             {
                 throw new NotFoundException(
-                    "User not found.");
+                    Constants.UserNotFound);
             }
 
             user.Email = email;

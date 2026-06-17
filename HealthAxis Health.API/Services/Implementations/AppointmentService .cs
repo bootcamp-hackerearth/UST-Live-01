@@ -7,6 +7,8 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Services.Interfaces;
 using HealthAxisHealth.API.UnitOfWork;
+using System.Globalization;
+using HealthAxisHealth.Shared.Utilities;
 
 namespace HealthAxisHealth.API.Services.Implementations
 {
@@ -95,7 +97,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (appointment == null)
             {
                 throw new NotFoundException(
-                    "Appointment not found.");
+                    Constants.AppointmentNotFound);
             }
 
             return _mapper.Map<AppointmentDto>(
@@ -130,14 +132,14 @@ namespace HealthAxisHealth.API.Services.Implementations
                 DateTime.Today)
             {
                 throw new BadRequestException(
-                    "Appointments cannot be booked for past dates.");
+                    Constants.AppointmentPastDate);
             }
 
             if (dto.ScheduledDate.Date >
                 DateTime.Today.AddMonths(6))
             {
                 throw new BadRequestException(
-                    "Appointments can only be booked up to 6 months in advance.");
+                    Constants.AppointmentFutureLimit);
             }
 
             if (string.IsNullOrWhiteSpace(
@@ -145,7 +147,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                 !dto.TimeSlot.Contains('-'))
             {
                 throw new BadRequestException(
-                    "Invalid time slot format.");
+                    Constants.InvalidTimeSlotFormat);
             }
 
             Patient? patient =
@@ -155,7 +157,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (patient == null)
             {
                 throw new NotFoundException(
-                    "Patient not found.");
+                    Constants.PatientNotFound);
             }
 
             Doctor? doctor =
@@ -165,13 +167,13 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (doctor == null)
             {
                 throw new NotFoundException(
-                    "Doctor not found.");
+                    Constants.DoctorNotFound);
             }
 
             if (!doctor.IsActive)
             {
                 throw new BadRequestException(
-                    "Doctor is not available for appointments.");
+                    Constants.DoctorUnavailable);
             }
 
             if (dto.ScheduledDate.Date ==
@@ -182,14 +184,15 @@ namespace HealthAxisHealth.API.Services.Implementations
                         .Split('-')[0]
                         .Trim();
 
-                TimeSpan slotTime =
-                    TimeSpan.Parse(startTime);
+                TimeSpan slotTime = TimeSpan.Parse(
+                        startTime,
+                        CultureInfo.InvariantCulture);
 
-                if (slotTime <=
+                    if (slotTime <=
                     DateTime.Now.TimeOfDay)
                 {
                     throw new BadRequestException(
-                        "The selected time slot has already passed.");
+                        Constants.TimeSlotPassed);
                 }
             }
 
@@ -203,7 +206,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (!available)
             {
                 throw new BadRequestException(
-                    "Selected time slot is not available.");
+                    Constants.TimeSlotUnavailable);
             }
 
             Appointment appointment =
@@ -237,8 +240,8 @@ namespace HealthAxisHealth.API.Services.Implementations
         #region Update Appointment Status
 
         public async Task UpdateStatusAsync(
-            int appointmentId,
-            UpdateAppointmentStatusDto dto)
+    int appointmentId,
+    UpdateAppointmentStatusDto dto)
         {
             Appointment? appointment =
                 await _unitOfWork.Appointments
@@ -247,80 +250,10 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (appointment == null)
             {
                 throw new NotFoundException(
-                    "Appointment not found.");
+                    Constants.AppointmentNotFound);
             }
 
-            // Prevent confirming an already confirmed appointment
-            if (appointment.Status == AppointmentStatus.Confirmed &&
-                dto.Status == AppointmentStatus.Confirmed)
-            {
-                throw new BadRequestException(
-                    "Appointment is already confirmed.");
-            }
-
-            // Prevent cancelling an already cancelled appointment
-            if (appointment.Status == AppointmentStatus.Cancelled &&
-                dto.Status == AppointmentStatus.Cancelled)
-            {
-                throw new BadRequestException(
-                    "Appointment is already cancelled.");
-            }
-
-            // Prevent completing an already completed appointment
-            if (appointment.Status == AppointmentStatus.Completed &&
-                dto.Status == AppointmentStatus.Completed)
-            {
-                throw new BadRequestException(
-                    "Appointment is already completed.");
-            }
-
-            // Prevent cancelling a completed appointment
-            if (appointment.Status == AppointmentStatus.Completed &&
-                dto.Status == AppointmentStatus.Cancelled)
-            {
-                throw new BadRequestException(
-                    "Completed appointments cannot be cancelled.");
-            }
-
-            // Prevent confirming a cancelled appointment
-            if (appointment.Status == AppointmentStatus.Cancelled &&
-                dto.Status == AppointmentStatus.Confirmed)
-            {
-                throw new BadRequestException(
-                    "Cancelled appointments cannot be confirmed.");
-            }
-
-            // Prevent completing a cancelled appointment
-            if (appointment.Status == AppointmentStatus.Cancelled &&
-                dto.Status == AppointmentStatus.Completed)
-            {
-                throw new BadRequestException(
-                    "Cancelled appointments cannot be completed.");
-            }
-
-            // Prevent modifying a completed appointment
-            if (appointment.Status == AppointmentStatus.Completed &&
-                dto.Status != AppointmentStatus.Completed)
-            {
-                throw new BadRequestException(
-                    "Completed appointments cannot be modified.");
-            }
-
-            // Prevent completing a pending appointment directly
-            if (appointment.Status == AppointmentStatus.Pending &&
-                dto.Status == AppointmentStatus.Completed)
-            {
-                throw new BadRequestException(
-                    "Pending appointments must be confirmed before completion.");
-            }
-
-            // Require cancellation reason
-            if (dto.Status == AppointmentStatus.Cancelled &&
-                string.IsNullOrWhiteSpace(dto.CancellationReason))
-            {
-                throw new BadRequestException(
-                    "Cancellation reason is required.");
-            }
+            ValidateStatusTransition(appointment, dto);
 
             switch (dto.Status)
             {
@@ -351,7 +284,7 @@ namespace HealthAxisHealth.API.Services.Implementations
         #region Delete Appointment
 
         public async Task DeleteAsync(
-            int appointmentId)
+    int appointmentId)
         {
             Appointment? appointment =
                 await _unitOfWork.Appointments
@@ -363,23 +296,134 @@ namespace HealthAxisHealth.API.Services.Implementations
                     "Appointment not found.");
             }
 
-            // Prevent deleting completed appointments
+            ValidateDeleteOperation(appointment);
+
+            await _unitOfWork.Appointments
+                .DeleteAsync(appointment);
+
+            await _unitOfWork.CommitAsync();
+        }
+        #endregion
+
+        #region Validation Methods
+
+        private static void ValidateStatusTransition(
+            Appointment appointment,
+            UpdateAppointmentStatusDto dto)
+        {
+            ValidateDuplicateStatus(appointment, dto);
+
+            ValidateCompletedTransitions(appointment, dto);
+
+            ValidateCancelledTransitions(appointment, dto);
+
+            ValidatePendingTransitions(appointment, dto);
+
+            ValidateCancellationReason(dto);
+        }
+
+        private static void ValidateDuplicateStatus(
+            Appointment appointment,
+            UpdateAppointmentStatusDto dto)
+        {
+            if (appointment.Status == AppointmentStatus.Confirmed &&
+                dto.Status == AppointmentStatus.Confirmed)
+            {
+                throw new BadRequestException(
+                    Constants.AppointmentAlreadyConfirmed);
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled &&
+                dto.Status == AppointmentStatus.Cancelled)
+            {
+                throw new BadRequestException(
+                    Constants.AppointmentAlreadyCancelled);
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed &&
+                dto.Status == AppointmentStatus.Completed)
+            {
+                throw new BadRequestException(
+                    Constants.AppointmentAlreadyCompleted);
+            }
+        }
+
+        private static void ValidateCompletedTransitions(
+            Appointment appointment,
+            UpdateAppointmentStatusDto dto)
+        {
+            if (appointment.Status == AppointmentStatus.Completed &&
+                dto.Status == AppointmentStatus.Cancelled)
+            {
+                throw new BadRequestException(
+                    Constants.CompletedCannotBeCancelled);
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed &&
+                dto.Status != AppointmentStatus.Completed)
+            {
+                throw new BadRequestException(
+                    Constants.CompletedCannotBeModified);
+            }
+        }
+
+        private static void ValidateCancelledTransitions(
+            Appointment appointment,
+            UpdateAppointmentStatusDto dto)
+        {
+            if (appointment.Status == AppointmentStatus.Cancelled &&
+                dto.Status == AppointmentStatus.Confirmed)
+            {
+                throw new BadRequestException(
+                    Constants.CancelledCannotBeConfirmed);
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled &&
+                dto.Status == AppointmentStatus.Completed)
+            {
+                throw new BadRequestException(
+                    Constants.CancelledCannotBeCompleted);
+            }
+        }
+
+        private static void ValidatePendingTransitions(
+            Appointment appointment,
+            UpdateAppointmentStatusDto dto)
+        {
+            if (appointment.Status == AppointmentStatus.Pending &&
+                dto.Status == AppointmentStatus.Completed)
+            {
+                throw new BadRequestException(
+                    Constants.PendingMustBeConfirmed);
+            }
+        }
+
+        private static void ValidateCancellationReason(
+            UpdateAppointmentStatusDto dto)
+        {
+            if (dto.Status == AppointmentStatus.Cancelled &&
+                string.IsNullOrWhiteSpace(
+                    dto.CancellationReason))
+            {
+                throw new BadRequestException(
+                    Constants.CancellationReasonRequired);
+            }
+        }
+
+        private static void ValidateDeleteOperation(
+            Appointment appointment)
+        {
             if (appointment.Status == AppointmentStatus.Completed)
             {
                 throw new BadRequestException(
-                    "Completed appointments cannot be deleted.");
+                    Constants.CompletedCannotBeDeleted);
             }
 
-            // Prevent deleting confirmed appointments
             if (appointment.Status == AppointmentStatus.Confirmed)
             {
                 throw new BadRequestException(
-                    "Confirmed appointments cannot be deleted.");
+                    Constants.ConfirmedCannotBeDeleted);
             }
-
-            await _unitOfWork.Appointments.DeleteAsync(appointment);
-
-            await _unitOfWork.CommitAsync();
         }
 
         #endregion

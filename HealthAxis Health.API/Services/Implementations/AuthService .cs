@@ -6,6 +6,7 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Services.Interfaces;
 using HealthAxisHealth.API.UnitOfWork;
+using HealthAxisHealth.Shared.Utilities;
 
 namespace HealthAxisHealth.API.Services.Implementations
 {
@@ -43,7 +44,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (existingUser != null)
             {
                 throw new BadRequestException(
-                    "Email already exists.");
+                    Constants.EmailAlreadyExists);
             }
 
             User user = new User
@@ -88,7 +89,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             return new RegisterResponseDto
             {
                 Status = "success",
-                Message = "User registered successfully.",
+                Message = Constants.UserRegisteredSuccessfully,
                 Data = new RegisterDataDto
                 {
                     User = new RegisterUserDto
@@ -118,7 +119,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (user == null)
             {
                 throw new UnauthorizedException(
-                    "Invalid credentials.");
+                    Constants.InvalidCredentials);
             }
 
             bool isValidPassword =
@@ -129,13 +130,13 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (!isValidPassword)
             {
                 throw new UnauthorizedException(
-                    "Invalid credentials.");
+                    Constants.InvalidCredentials);
             }
 
             if (!user.IsActive)
             {
                 throw new UnauthorizedException(
-                    "User account is inactive.");
+                    Constants.UserAccountInactive);
             }
 
             string accessToken =
@@ -181,7 +182,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                 !user.IsRefreshTokenValid())
             {
                 throw new UnauthorizedException(
-                    "Invalid refresh token.");
+                    Constants.InvalidRefreshToken);
             }
 
             string accessToken =
@@ -226,7 +227,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (user == null)
             {
                 throw new UnauthorizedException(
-                    "Invalid refresh token.");
+                    Constants.InvalidRefreshToken);
             }
 
             user.RevokeRefreshToken();

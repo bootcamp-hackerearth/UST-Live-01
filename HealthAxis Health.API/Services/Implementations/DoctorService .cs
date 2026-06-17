@@ -7,6 +7,7 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Services.Interfaces;
 using HealthAxisHealth.API.UnitOfWork;
+using HealthAxisHealth.Shared.Utilities;
 
 namespace HealthAxisHealth.API.Services.Implementations
 {
@@ -56,7 +57,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             if (doctor == null)
             {
-                throw new NotFoundException("Doctor not found.");
+                throw new NotFoundException(Constants.DoctorNotFound);
             }
 
             return _mapper.Map<DoctorDto>(doctor);
@@ -70,7 +71,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             if (doctor == null)
             {
-                throw new NotFoundException("Doctor not found.");
+                throw new NotFoundException(Constants.DoctorNotFound);
             }
 
             return _mapper.Map<DoctorDto>(doctor);
@@ -103,7 +104,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             if (doctor == null)
             {
-                throw new NotFoundException("Doctor not found.");
+                throw new NotFoundException(Constants.DoctorNotFound);
             }
 
             return doctor.Appointments
@@ -124,7 +125,7 @@ namespace HealthAxisHealth.API.Services.Implementations
 
             if (doctor == null)
             {
-                throw new NotFoundException("Doctor not found.");
+                throw new NotFoundException(Constants.DoctorNotFound);
             }
 
             _mapper.Map(updateDoctorDto, doctor);

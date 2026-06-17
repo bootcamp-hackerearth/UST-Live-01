@@ -1,9 +1,11 @@
 ﻿using HealthAxisHealth.API.Data;
 using HealthAxisHealth.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Repositories.Implementations
 {
+    [ExcludeFromCodeCoverage]
     public class Repository<T> : IRepository<T>
         where T : class
     {

@@ -9,6 +9,7 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Services.Interfaces;
 using HealthAxisHealth.API.UnitOfWork;
+using HealthAxisHealth.Shared.Utilities;
 
 namespace HealthAxisHealth.API.Services.Implementations
 {
@@ -61,7 +62,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (existingUser != null)
             {
                 throw new BadRequestException(
-                    "Email is already registered.");
+                   Constants.EmailAlreadyRegistered);
             }
 
             User user = new User
@@ -103,7 +104,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (doctor == null)
             {
                 throw new NotFoundException(
-                    "Doctor not found.");
+                    Constants.DoctorNotFound);
             }
 
             // Prevent deactivating a doctor with upcoming appointments
@@ -111,7 +112,7 @@ namespace HealthAxisHealth.API.Services.Implementations
                 doctor.GetUpcomingAppointmentCount() > 0)
             {
                 throw new BadRequestException(
-                    "Cannot deactivate a doctor with upcoming appointments.");
+                    Constants.DoctorHasUpcomingAppointments);
             }
 
             _mapper.Map(dto, doctor);
@@ -126,7 +127,7 @@ namespace HealthAxisHealth.API.Services.Implementations
             if (user == null)
             {
                 throw new NotFoundException(
-                    "Associated user not found.");
+                    Constants.AssociatedUserNotFound);
             }
 
             user.IsActive = dto.IsActive;

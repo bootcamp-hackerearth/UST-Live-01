@@ -1,5 +1,8 @@
-﻿namespace HealthAxisHealth.Shared.DTOs.ReportDtos
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace HealthAxisHealth.Shared.DTOs.ReportDtos
 {
+    [ExcludeFromCodeCoverage]
     public class AppointmentReportDto
     {
         public DateTime Date { get; set; }

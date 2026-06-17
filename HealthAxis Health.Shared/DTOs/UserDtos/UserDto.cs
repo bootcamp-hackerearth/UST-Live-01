@@ -1,8 +1,10 @@
 ﻿using HealthAxisHealth.Shared.Enums;
+using System.Diagnostics.CodeAnalysis;
 
 
 namespace HealthAxisHealth.Shared.DTOs.UserDtos
 {
+    [ExcludeFromCodeCoverage]
     public class UserDto
     {
         public int UserId { get; set; }

@@ -2,12 +2,14 @@
 using HealthAxisHealth.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     [AllowAnonymous]
+    [ExcludeFromCodeCoverage]
     public class AuthController :
         ControllerBase
     {

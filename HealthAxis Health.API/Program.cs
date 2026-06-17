@@ -1,9 +1,9 @@
 using HealthAxis_Health.API.Helpers;
 using HealthAxisHealth.API.Configurations;
 using HealthAxisHealth.API.Data;
+using HealthAxisHealth.API.Handlers;
 using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Mappings;
-using HealthAxisHealth.API.Middleware;
 using HealthAxisHealth.API.Repositories.Implementations;
 using HealthAxisHealth.API.Repositories.Interfaces;
 using HealthAxisHealth.API.Services.Implementations;
@@ -80,6 +80,7 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+
 
 #endregion
 
@@ -194,6 +195,11 @@ builder.Services.AddScoped<
     IAdminService,
     AdminService>();
 
+builder.Services.AddExceptionHandler<
+    GlobalExceptionHandler>();
+
+builder.Services.AddProblemDetails();
+
 #endregion
 
 var app = builder.Build();
@@ -213,8 +219,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<
-    GlobalExceptionMiddleware>();
+app.UseCors("AllowFrontend");
+
+app.UseExceptionHandler();
 
 app.UseAuthentication();
 
@@ -224,4 +231,4 @@ app.MapControllers();
 
 #endregion
 
-app.Run();
+await app.RunAsync();

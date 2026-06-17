@@ -1,9 +1,11 @@
 ﻿using HealthAxisHealth.Shared.Enums;
 using HealthAxisHealth.API.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Data
 {
+    [ExcludeFromCodeCoverage]
     public class ApplicationDbContext : DbContext
     {
         #region Constructor
@@ -115,20 +117,19 @@ namespace HealthAxisHealth.API.Data
 
         #region Seed Data
 
-        private static void SeedData(
-            ModelBuilder modelBuilder)
+        private static void SeedData(ModelBuilder modelBuilder)
         {
-            // IMPORTANT:
-            // Replace these hashes with BCrypt hashes generated in your environment.
             const string adminHash =
                 "$2a$12$Q2Jb3hFjwJQRUmtUYUxaiewf36VHVzeEAcBkIUwbHyUJNiAl4gMYO";
 
             const string doctorHash =
                 "$2a$12$yu4qYDDFYpEIBQv.Afx./e8.HRq.GhQ2m3x7qBS42BR7v.YgwpM8G";
 
+            DateTime seedDate =
+                new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
             modelBuilder.Entity<User>()
                 .HasData(
-
                     new User
                     {
                         UserId = 1,
@@ -136,9 +137,8 @@ namespace HealthAxisHealth.API.Data
                         PasswordHash = adminHash,
                         Role = UserRole.Admin,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new User
                     {
                         UserId = 2,
@@ -146,9 +146,8 @@ namespace HealthAxisHealth.API.Data
                         PasswordHash = doctorHash,
                         Role = UserRole.Doctor,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new User
                     {
                         UserId = 3,
@@ -156,9 +155,8 @@ namespace HealthAxisHealth.API.Data
                         PasswordHash = doctorHash,
                         Role = UserRole.Doctor,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new User
                     {
                         UserId = 4,
@@ -166,9 +164,8 @@ namespace HealthAxisHealth.API.Data
                         PasswordHash = doctorHash,
                         Role = UserRole.Doctor,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new User
                     {
                         UserId = 5,
@@ -176,9 +173,8 @@ namespace HealthAxisHealth.API.Data
                         PasswordHash = doctorHash,
                         Role = UserRole.Doctor,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new User
                     {
                         UserId = 6,
@@ -186,73 +182,66 @@ namespace HealthAxisHealth.API.Data
                         PasswordHash = doctorHash,
                         Role = UserRole.Doctor,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
-                    }
-                );
+                        CreatedDate = seedDate
+                    });
 
             modelBuilder.Entity<Doctor>()
                 .HasData(
-
                     new Doctor
                     {
                         DoctorId = 1,
                         UserId = 2,
-                        FullName = "Dr John Smith",
+                        FullName = "John Smith",
                         Specialisation = Specialisation.Cardiology,
                         YearsOfExperience = 10,
                         ConsultationFee = 800m,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new Doctor
                     {
                         DoctorId = 2,
                         UserId = 3,
-                        FullName = "Dr Emily Davis",
+                        FullName = "Emily Davis",
                         Specialisation = Specialisation.Dermatology,
                         YearsOfExperience = 8,
                         ConsultationFee = 700m,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new Doctor
                     {
                         DoctorId = 3,
                         UserId = 4,
-                        FullName = "Dr Michael Brown",
+                        FullName = "Michael Brown",
                         Specialisation = Specialisation.Neurology,
                         YearsOfExperience = 12,
                         ConsultationFee = 1000m,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new Doctor
                     {
                         DoctorId = 4,
                         UserId = 5,
-                        FullName = "Dr Sarah Wilson",
+                        FullName = "Sarah Wilson",
                         Specialisation = Specialisation.Pediatrics,
                         YearsOfExperience = 7,
                         ConsultationFee = 600m,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
+                        CreatedDate = seedDate
                     },
-
                     new Doctor
                     {
                         DoctorId = 5,
                         UserId = 6,
-                        FullName = "Dr David Johnson",
+                        FullName = "David Johnson",
                         Specialisation = Specialisation.Orthopedics,
                         YearsOfExperience = 15,
                         ConsultationFee = 900m,
                         IsActive = true,
-                        CreatedDate = new DateTime(2025, 1, 1)
-                    }
-                );
+                        CreatedDate = seedDate
+                    });
         }
 
         #endregion

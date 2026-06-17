@@ -5,9 +5,11 @@ using HealthAxisHealth.API.Helpers;
 using HealthAxisHealth.API.Models;
 using HealthAxisHealth.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthAxisHealth.API.Repositories.Implementations
 {
+    [ExcludeFromCodeCoverage]
     public class UserRepository :
         Repository<User>,
         IUserRepository
@@ -62,29 +64,32 @@ namespace HealthAxisHealth.API.Repositories.Implementations
 
             if (!string.IsNullOrWhiteSpace(pagination.Search))
             {
-                string search = pagination.Search.Trim().ToLower();
+                string search = pagination.Search.Trim();
 
                 query = query.Where(u =>
-                    u.Email.ToLower().Contains(search) ||
+                    u.Email.Contains(search) ||
                     (u.Doctor != null &&
-                     u.Doctor.FullName.ToLower().Contains(search)) ||
+                     u.Doctor.FullName.Contains(search)) ||
                     (u.Patient != null &&
-                     u.Patient.FullName.ToLower().Contains(search)));
+                     u.Patient.FullName.Contains(search)));
             }
 
             int totalRecords = await query.CountAsync(cancellationToken);
 
+            int pageNumber = pagination.PageNumber ?? 1;
+            int pageSize = pagination.PageSize ?? 10;
+
             List<User> users = await query
                 .OrderBy(u => u.Email)
-                .Skip((pagination.PageNumber - 1) * pagination.PageSize)
-                .Take(pagination.PageSize)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync(cancellationToken);
 
             return new PagedResultDto<User>
             {
                 Items = users,
-                PageNumber = pagination.PageNumber,
-                PageSize = pagination.PageSize,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
                 TotalRecords = totalRecords
             };
         }

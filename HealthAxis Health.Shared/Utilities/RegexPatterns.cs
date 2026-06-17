@@ -1,5 +1,8 @@
-﻿namespace HealthAxisHealth.Shared.Utilities
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace HealthAxisHealth.Shared.Utilities
 {
+    [ExcludeFromCodeCoverage]
     public static class RegexPatterns
     {
         #region Patient

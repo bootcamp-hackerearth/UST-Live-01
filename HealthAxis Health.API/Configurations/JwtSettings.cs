@@ -1,5 +1,8 @@
-﻿namespace HealthAxisHealth.API.Configurations
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace HealthAxisHealth.API.Configurations
 {
+    [ExcludeFromCodeCoverage]
     public class JwtSettings
     {
 
