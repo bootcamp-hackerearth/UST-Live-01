@@ -1,9 +1,11 @@
 ﻿using HealthAxisApplicn.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxisApplicn.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -14,8 +16,6 @@ namespace HealthAxisApplicn.Data
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<HealthRecord> HealthRecords { get; set; }
-        public DbSet<User> Users { get; set; }
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
