@@ -4,16 +4,16 @@ using HealthAxis.DTO.AppointmentDto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthAxis.API.Controllers
+namespace HealthAxis.API.Controller
 {
     [Route("api/appointments")]
     [ApiController]
     //[Authorize(Roles = "Patient,Doctor,Admin")]
-    public class AppointmentsController : ControllerBase
+    public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
 
-        public AppointmentsController(
+        public AppointmentController(
             IAppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
