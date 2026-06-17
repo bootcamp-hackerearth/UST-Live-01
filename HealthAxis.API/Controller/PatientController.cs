@@ -9,11 +9,11 @@ namespace HealthAxis.API.Controller
     [Route("api/[controller]")]
     [ApiController]
     //[Authorize(Roles = "Patient,Admin")]
-    public class PatientsController : ControllerBase
+    public class PatientController : ControllerBase
     {
         private readonly IPatientService _patientService;
 
-        public PatientsController(IPatientService patientService)
+        public PatientController(IPatientService patientService)
         {
             _patientService = patientService;
         }

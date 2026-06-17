@@ -1,4 +1,5 @@
-﻿using HealthAxis.DTO.AppointmentDto;
+﻿using HealthAxis.API.DTO;
+using HealthAxis.DTO.AppointmentDto;
 
 namespace HealthAxis.API.Services.Interfaces
 {
@@ -8,9 +9,10 @@ namespace HealthAxis.API.Services.Interfaces
 
         Task<AppointmentDto?> GetByIdAsync(int id);
 
-        Task<AppointmentDto> AddAsync(AppointmentDto appointmentDto);
+        Task<AppointmentDto> AddAsync(CreateAppointmentDto appointmentDto);
 
-        Task<AppointmentDto?> UpdateAsync(int id, AppointmentDto appointmentDto);
+        //Task<AppointmentDto?> UpdateAsync(int id, AppointmentDto appointmentDto);
+        Task<AppointmentDto> UpdateStatusAsync(int id, UpdateAppointmentStatusDto statusDto);
 
         Task<AppointmentDto?> DeleteAsync(int id);
     }
