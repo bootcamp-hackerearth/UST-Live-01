@@ -5,10 +5,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.Api.Repositories.Impl
 {
-    public class HealthRecordRepository : Repository<HealthRecord>, IHealthRecordRepository
+    public class HealthRecordRepository(HealthAppDbContext context) : Repository<HealthRecord>(context), IHealthRecordRepository
     {
-        public HealthRecordRepository(HealthAppDbContext context) : base(context)
+
+        public async Task<List<HealthRecord>> GetHealthRecordsAsync(
+            int? patientId = null,
+            int? appointmentId = null)
         {
+            var query = context.HealthRecords.AsQueryable();
+
+            if (patientId.HasValue)
+            {
+                query = query.Where(r => r.PatientId == patientId.Value);
+            }
+
+            if (appointmentId.HasValue)
+            {
+                query = query.Where(r => r.AppointmentId == appointmentId.Value);
+            }
+
+            return await query.ToListAsync();
         }
+
     }
 }

@@ -24,7 +24,7 @@ namespace HealthApp.Api.Models
         public Doctor? Doctor { get; set; } 
 
         [Required]
-        public DateTime ScheduledDate { get; set; }
+        public DateOnly ScheduledDate { get; set; }
 
         [Required]
         public string? TimeSlot { get; set; }
