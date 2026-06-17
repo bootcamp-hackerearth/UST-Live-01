@@ -1,10 +1,23 @@
-﻿namespace HealthApp.Api.Dtos
+﻿using System.ComponentModel.DataAnnotations;
+
+public class RegisterDto
 {
-    public class RegisterDto
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string ConfirmPassword { get; set; }
-        public string Role { get; set; }
-    }
+    [Required(ErrorMessage = "Email is required.")]
+    [EmailAddress(ErrorMessage = "Invalid email address.")]
+    [StringLength(150, ErrorMessage = "Email cannot exceed 150 characters.")]
+    public string Email { get; set; }
+
+    [Required(ErrorMessage = "Password is required.")]
+    [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+    [StringLength(100, ErrorMessage = "Password cannot exceed 100 characters.")]
+    public string Password { get; set; }
+
+    [Required(ErrorMessage = "Confirm password is required.")]
+    [Compare("Password", ErrorMessage = "Passwords do not match.")]
+    public string ConfirmPassword { get; set; }
+
+    [Required(ErrorMessage = "Role is required.")]
+    [RegularExpression("^(Doctor|Patient|Admin)$",
+        ErrorMessage = "Role must be Doctor, Patient, or Admin.")]
+    public string Role { get; set; }
 }

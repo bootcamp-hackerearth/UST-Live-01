@@ -1,6 +1,6 @@
 ﻿namespace HealthApp.Api.Dtos
 {
-    public class AuthResponseDto
+    public class AuthResponse
     {
         public string AccessToken { get; set; }
         public string Message { get; set; }
