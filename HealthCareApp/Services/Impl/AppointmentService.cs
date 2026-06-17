@@ -2,449 +2,476 @@
 using HealthCareApp.Constants;
 using HealthCareApp.Dtos;
 using HealthCareApp.Enums;
+using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
-using HealthCareApp.Services;
-
 
 namespace HealthCareApp.Services.Impl
 {
-
     public class AppointmentService(
-
         IAppointmentRepository appointmentRepository,
-
         IPatientRepository patientRepository,
-
         IDoctorRepository doctorRepository,
-
+        IHealthRecordRepository healthRecordRepository,
         IMapper mapper) : IAppointmentService
-
-{
-
-    public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
-
     {
+        public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
+        {
+            var appointments = await appointmentRepository.GetAllAsync();
 
-        var appointments = await appointmentRepository.GetAllAsync();
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
 
-        return mapper.Map<List<AppointmentDto>>(appointments);
+        public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
+        {
+            ValidateAppointmentId(appointmentId);
 
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            return mapper.Map<AppointmentDto>(appointment);
+        }
+
+        public async Task<List<AppointmentDto>> GetAppointmentsByPatientIdAsync(int patientId)
+        {
+            await ValidatePatientExistsAsync(patientId);
+
+            var appointments = await appointmentRepository.GetByPatientIdAsync(patientId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId)
+        {
+            await ValidateDoctorExistsAsync(doctorId);
+
+            var appointments = await appointmentRepository.GetByDoctorIdAsync(doctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetAppointmentsByStatusAsync(AppointmentStatus status)
+        {
+            var appointments = await appointmentRepository.GetByStatusAsync(status);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync()
+        {
+            var appointments = await appointmentRepository.GetUpcomingAppointmentsAsync();
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByPatientIdAsync(int patientId)
+        {
+            await ValidatePatientExistsAsync(patientId);
+
+            var appointments = await appointmentRepository.GetUpcomingAppointmentsByPatientIdAsync(patientId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctorIdAsync(int doctorId)
+        {
+            await ValidateDoctorExistsAsync(doctorId);
+
+            var appointments = await appointmentRepository.GetUpcomingAppointmentsByDoctorIdAsync(doctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetPendingAppointmentsByPatientIdAsync(int patientId)
+        {
+            await ValidatePatientExistsAsync(patientId);
+
+            var appointments = await appointmentRepository.GetPendingAppointmentsByPatientIdAsync(patientId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetPendingAppointmentsByDoctorIdAsync(int doctorId)
+        {
+            await ValidateDoctorExistsAsync(doctorId);
+
+            var appointments = await appointmentRepository.GetPendingAppointmentsByDoctorIdAsync(doctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetTodayConfirmedAppointmentsByDoctorIdAsync(int doctorId)
+        {
+            await ValidateDoctorExistsAsync(doctorId);
+
+            var appointments = await appointmentRepository.GetTodayConfirmedAppointmentsByDoctorIdAsync(doctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<AppointmentDto> BookAppointmentAsync(BookAppointmentDto dto)
+        {
+            if (dto is null)
+            {
+                throw new AppointmentRuleException("Appointment details are required.");
+            }
+
+            await ValidatePatientExistsAsync(dto.PatientId);
+
+            var doctor = await ValidateDoctorExistsAsync(dto.DoctorId);
+
+            ValidateDoctorAvailability(doctor);
+
+            ValidateAppointmentDate(dto.ScheduledDate);
+
+            ValidateTimeSlot(dto.TimeSlot);
+
+            var isSlotBooked = await appointmentRepository.IsSlotBookedAsync(
+                dto.DoctorId,
+                dto.ScheduledDate.Date,
+                dto.TimeSlot);
+
+            if (isSlotBooked)
+            {
+                throw new ConflictException("This time slot is already booked for the selected doctor.");
+            }
+
+            var patientHasSameSlot = await appointmentRepository.PatientHasActiveAppointmentOnDateAndSlotAsync(
+                dto.PatientId,
+                dto.ScheduledDate.Date,
+                dto.TimeSlot);
+
+            if (patientHasSameSlot)
+            {
+                throw new ConflictException("Patient already has an active appointment in this time slot.");
+            }
+
+            var patientHasAppointmentWithDoctor = await appointmentRepository.PatientHasActiveAppointmentWithDoctorOnDateAsync(
+                dto.PatientId,
+                dto.DoctorId,
+                dto.ScheduledDate.Date);
+
+            if (patientHasAppointmentWithDoctor)
+            {
+                throw new ConflictException("Patient already has an active appointment with this doctor on the selected date.");
+            }
+
+            var appointment = mapper.Map<Appointment>(dto);
+
+            appointment.ScheduledDate = dto.ScheduledDate.Date;
+            appointment.Status = AppointmentStatus.Pending;
+            appointment.CancellationReason = null;
+            appointment.CreatedDate = DateTime.Now;
+
+            var savedAppointment = await appointmentRepository.CreateAsync(appointment);
+
+            return mapper.Map<AppointmentDto>(savedAppointment);
+        }
+
+        public async Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            if (dto is null)
+            {
+                throw new AppointmentRuleException("Appointment details are required.");
+            }
+
+            var existingAppointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (existingAppointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            await ValidatePatientExistsAsync(dto.PatientId);
+
+            var doctor = await ValidateDoctorExistsAsync(dto.DoctorId);
+
+            ValidateDoctorAvailability(doctor);
+
+            ValidateAppointmentDate(dto.ScheduledDate);
+
+            ValidateTimeSlot(dto.TimeSlot);
+
+            bool slotTaken = await appointmentRepository.IsSlotBookedAsync(
+                dto.DoctorId,
+                dto.ScheduledDate.Date,
+                dto.TimeSlot);
+
+            bool sameExistingSlot =
+                existingAppointment.DoctorId == dto.DoctorId &&
+                existingAppointment.ScheduledDate.Date == dto.ScheduledDate.Date &&
+                existingAppointment.TimeSlot == dto.TimeSlot;
+
+            if (slotTaken && !sameExistingSlot)
+            {
+                throw new ConflictException("This time slot is already booked for the selected doctor.");
+            }
+
+            mapper.Map(dto, existingAppointment);
+
+            existingAppointment.AppointmentId = appointmentId;
+            existingAppointment.ScheduledDate = dto.ScheduledDate.Date;
+
+            var updatedAppointment = await appointmentRepository.UpdateAsync(
+                appointmentId,
+                existingAppointment);
+
+            if (updatedAppointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            return mapper.Map<AppointmentDto>(updatedAppointment);
+        }
+
+        public async Task<AppointmentDto> ConfirmAppointmentAsync(int appointmentId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled)
+            {
+                throw new ConflictException("Cancelled appointment cannot be confirmed.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed)
+            {
+                throw new ConflictException("Completed appointment cannot be confirmed again.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Confirmed)
+            {
+                throw new ConflictException("Appointment is already confirmed.");
+            }
+
+            appointment.Status = AppointmentStatus.Confirmed;
+            appointment.CancellationReason = null;
+
+            var updatedAppointment = await appointmentRepository.UpdateAsync(
+                appointmentId,
+                appointment);
+
+            if (updatedAppointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            return mapper.Map<AppointmentDto>(updatedAppointment);
+        }
+
+        public async Task<AppointmentDto> CompleteAppointmentAsync(int appointmentId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled)
+            {
+                throw new ConflictException("Cancelled appointment cannot be completed.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed)
+            {
+                throw new ConflictException("Appointment is already completed.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Confirmed)
+            {
+                throw new AppointmentRuleException("Only confirmed appointments can be completed.");
+            }
+
+            appointment.Status = AppointmentStatus.Completed;
+
+            var updatedAppointment = await appointmentRepository.UpdateAsync(
+                appointmentId,
+                appointment);
+
+            if (updatedAppointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            return mapper.Map<AppointmentDto>(updatedAppointment);
+        }
+
+        public async Task<AppointmentDto> CancelAppointmentAsync(CancelAppointmentDto dto)
+        {
+            if (dto is null)
+            {
+                throw new AppointmentRuleException("Cancellation details are required.");
+            }
+
+            ValidateAppointmentId(dto.AppointmentId);
+
+            ValidateCancellationReason(dto.Reason);
+
+            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed)
+            {
+                throw new ConflictException("Completed appointment cannot be cancelled.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled)
+            {
+                throw new ConflictException("Appointment is already cancelled.");
+            }
+
+            appointment.Status = AppointmentStatus.Cancelled;
+            appointment.CancellationReason = dto.Reason.Trim();
+
+            var updatedAppointment = await appointmentRepository.UpdateAsync(
+                dto.AppointmentId,
+                appointment);
+
+            if (updatedAppointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+            }
+
+            return mapper.Map<AppointmentDto>(updatedAppointment);
+        }
+
+        public async Task<AppointmentDto> DeleteAppointmentAsync(int appointmentId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            var hasHealthRecord = await healthRecordRepository.ExistsByAppointmentIdAsync(appointmentId);
+
+            if (hasHealthRecord)
+            {
+                throw new ConflictException("This appointment cannot be deleted because it has an associated health record.");
+            }
+
+            var deletedAppointment = await appointmentRepository.DeleteAsync(appointmentId);
+
+            if (deletedAppointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            return mapper.Map<AppointmentDto>(deletedAppointment);
+        }
+
+        private void ValidateAppointmentId(int appointmentId)
+        {
+            if (appointmentId <= 0)
+            {
+                throw new AppointmentRuleException("Please provide a valid appointment reference.");
+            }
+        }
+
+        private void ValidatePatientId(int patientId)
+        {
+            if (patientId <= 0)
+            {
+                throw new AppointmentRuleException("Please provide a valid patient reference.");
+            }
+        }
+
+        private void ValidateDoctorId(int doctorId)
+        {
+            if (doctorId <= 0)
+            {
+                throw new AppointmentRuleException("Please provide a valid doctor reference.");
+            }
+        }
+
+        private async Task ValidatePatientExistsAsync(int patientId)
+        {
+            ValidatePatientId(patientId);
+
+            var patient = await patientRepository.GetByIdAsync(patientId);
+
+            if (patient is null)
+            {
+                throw new EntityNotFoundException("Patient", patientId);
+            }
+        }
+
+        private async Task<Doctor> ValidateDoctorExistsAsync(int doctorId)
+        {
+            ValidateDoctorId(doctorId);
+
+            var doctor = await doctorRepository.GetByIdAsync(doctorId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException("Doctor", doctorId);
+            }
+
+            return doctor;
+        }
+
+        private void ValidateDoctorAvailability(Doctor doctor)
+        {
+            if (!doctor.IsActive)
+            {
+                throw new AppointmentRuleException("Doctor is inactive. Appointment cannot be booked.");
+            }
+        }
+
+        private void ValidateAppointmentDate(DateTime scheduledDate)
+        {
+            if (scheduledDate.Date < DateTime.Today)
+            {
+                throw new AppointmentRuleException("Appointment date cannot be in the past.");
+            }
+        }
+
+        private void ValidateTimeSlot(string timeSlot)
+        {
+            if (string.IsNullOrWhiteSpace(timeSlot))
+            {
+                throw new AppointmentRuleException("Time slot is required.");
+            }
+
+            if (!TimeSlots.Slots.Contains(timeSlot))
+            {
+                throw new AppointmentRuleException("Invalid time slot selected.");
+            }
+        }
+
+        private void ValidateCancellationReason(string reason)
+        {
+            if (string.IsNullOrWhiteSpace(reason))
+            {
+                throw new AppointmentRuleException("Cancellation reason is required.");
+            }
+
+            if (reason.Trim().Length > 200)
+            {
+                throw new AppointmentRuleException("Cancellation reason cannot exceed 200 characters.");
+            }
+        }
     }
-
-    public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
-
-    {
-
-        var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
-
-        if (appointment is null)
-
-        {
-
-            throw new Exception("Appointment not found.");
-
-        }
-
-        return mapper.Map<AppointmentDto>(appointment);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetAppointmentsByPatientIdAsync(int patientId)
-
-    {
-
-        var appointments = await appointmentRepository.GetByPatientIdAsync(patientId);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId)
-
-    {
-
-        var appointments = await appointmentRepository.GetByDoctorIdAsync(doctorId);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetAppointmentsByStatusAsync(AppointmentStatus status)
-
-    {
-
-        var appointments = await appointmentRepository.GetByStatusAsync(status);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync()
-
-    {
-
-        var appointments = await appointmentRepository.GetUpcomingAppointmentsAsync();
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByPatientIdAsync(int patientId)
-
-    {
-
-        var appointments = await appointmentRepository.GetUpcomingAppointmentsByPatientIdAsync(patientId);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctorIdAsync(int doctorId)
-
-    {
-
-        var appointments = await appointmentRepository.GetUpcomingAppointmentsByDoctorIdAsync(doctorId);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetPendingAppointmentsByPatientIdAsync(int patientId)
-
-    {
-
-        var appointments = await appointmentRepository.GetPendingAppointmentsByPatientIdAsync(patientId);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetPendingAppointmentsByDoctorIdAsync(int doctorId)
-
-    {
-
-        var appointments = await appointmentRepository.GetPendingAppointmentsByDoctorIdAsync(doctorId);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<List<AppointmentDto>> GetTodayConfirmedAppointmentsByDoctorIdAsync(int doctorId)
-
-    {
-
-        var appointments = await appointmentRepository.GetTodayConfirmedAppointmentsByDoctorIdAsync(doctorId);
-
-        return mapper.Map<List<AppointmentDto>>(appointments);
-
-    }
-
-    public async Task<AppointmentDto> BookAppointmentAsync(BookAppointmentDto dto)
-
-    {
-
-        var patient = await patientRepository.GetByIdAsync(dto.PatientId);
-
-        if (patient is null)
-
-        {
-
-            throw new Exception("Patient not found.");
-
-        }
-
-        var doctor = await doctorRepository.GetByIdAsync(dto.DoctorId);
-
-        if (doctor is null)
-
-        {
-
-            throw new Exception("Doctor not found.");
-
-        }
-
-        if (!doctor.IsActive)
-
-        {
-
-            throw new Exception("Doctor is inactive. Appointment cannot be booked.");
-
-        }
-
-        if (dto.ScheduledDate.Date < DateTime.Today)
-
-        {
-
-            throw new Exception("Appointment date cannot be in the past.");
-
-        }
-
-        if (!TimeSlots.All.Contains(dto.TimeSlot))
-
-        {
-
-            throw new Exception("Invalid time slot selected.");
-
-        }
-
-        var isSlotBooked = await appointmentRepository.IsSlotBookedAsync(
-
-            dto.DoctorId,
-
-            dto.ScheduledDate,
-
-            dto.TimeSlot);
-
-        if (isSlotBooked)
-
-        {
-
-            throw new Exception("This time slot is already booked for the selected doctor.");
-
-        }
-
-        var patientHasSameSlot = await appointmentRepository.PatientHasActiveAppointmentOnDateAndSlotAsync(
-
-            dto.PatientId,
-
-            dto.ScheduledDate,
-
-            dto.TimeSlot);
-
-        if (patientHasSameSlot)
-
-        {
-
-            throw new Exception("Patient already has an active appointment in this time slot.");
-
-        }
-
-        var patientHasAppointmentWithDoctor = await appointmentRepository.PatientHasActiveAppointmentWithDoctorOnDateAsync(
-
-            dto.PatientId,
-
-            dto.DoctorId,
-
-            dto.ScheduledDate);
-
-        if (patientHasAppointmentWithDoctor)
-
-        {
-
-            throw new Exception("Patient already has an active appointment with this doctor on the selected date.");
-
-        }
-
-        var appointment = mapper.Map<Appointment>(dto);
-
-        appointment.Status = AppointmentStatus.Pending;
-
-        appointment.CreatedDate = DateTime.Now;
-
-        var savedAppointment = await appointmentRepository.CreateAsync(appointment);
-
-        return mapper.Map<AppointmentDto>(savedAppointment);
-
-    }
-
-    public async Task<AppointmentDto> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto dto)
-
-    {
-
-        var existingAppointment = await appointmentRepository.GetByIdAsync(appointmentId);
-
-        if (existingAppointment is null)
-
-        {
-
-            throw new Exception("Appointment not found.");
-
-        }
-
-        var patient = await patientRepository.GetByIdAsync(dto.PatientId);
-
-        if (patient is null)
-
-        {
-
-            throw new Exception("Patient not found.");
-
-        }
-
-        var doctor = await doctorRepository.GetByIdAsync(dto.DoctorId);
-
-        if (doctor is null)
-
-        {
-
-            throw new Exception("Doctor not found.");
-
-        }
-
-        if (!doctor.IsActive)
-
-        {
-
-            throw new Exception("Doctor is inactive. Appointment cannot be updated.");
-
-        }
-
-        if (dto.ScheduledDate.Date < DateTime.Today)
-
-        {
-
-            throw new Exception("Appointment date cannot be in the past.");
-
-        }
-
-        if (!TimeSlots.All.Contains(dto.TimeSlot))
-
-        {
-
-            throw new Exception("Invalid time slot selected.");
-
-        }
-
-        mapper.Map(dto, existingAppointment);
-
-        existingAppointment.AppointmentId = appointmentId;
-
-        var updatedAppointment = await appointmentRepository.UpdateAsync(appointmentId, existingAppointment);
-
-        if (updatedAppointment is null)
-
-        {
-
-            throw new Exception("Appointment not found.");
-
-        }
-
-        return mapper.Map<AppointmentDto>(updatedAppointment);
-
-    }
-
-    public async Task<AppointmentDto> ConfirmAppointmentAsync(int appointmentId)
-
-    {
-
-        var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
-
-        if (appointment is null)
-
-        {
-
-            throw new Exception("Appointment not found.");
-
-        }
-
-        if (appointment.Status == AppointmentStatus.Cancelled)
-
-        {
-
-            throw new Exception("Cancelled appointment cannot be confirmed.");
-
-        }
-
-        if (appointment.Status == AppointmentStatus.Completed)
-
-        {
-
-            throw new Exception("Completed appointment cannot be confirmed again.");
-
-        }
-
-        appointment.Status = AppointmentStatus.Confirmed;
-
-        appointment.CancellationReason = null;
-
-        var updatedAppointment = await appointmentRepository.UpdateAsync(appointmentId, appointment);
-
-        return mapper.Map<AppointmentDto>(updatedAppointment);
-
-    }
-
-    public async Task<AppointmentDto> CompleteAppointmentAsync(int appointmentId)
-
-    {
-
-        var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
-
-        if (appointment is null)
-
-        {
-
-            throw new Exception("Appointment not found.");
-
-        }
-
-        if (appointment.Status == AppointmentStatus.Cancelled)
-
-        {
-
-            throw new Exception("Cancelled appointment cannot be completed.");
-
-        }
-
-        appointment.Status = AppointmentStatus.Completed;
-
-        var updatedAppointment = await appointmentRepository.UpdateAsync(appointmentId, appointment);
-
-        return mapper.Map<AppointmentDto>(updatedAppointment);
-
-    }
-
-    public async Task<AppointmentDto> CancelAppointmentAsync(CancelAppointmentDto dto)
-
-    {
-
-        var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
-
-        if (appointment is null)
-
-        {
-
-            throw new Exception("Appointment not found.");
-
-        }
-
-        if (appointment.Status == AppointmentStatus.Completed)
-
-        {
-
-            throw new Exception("Completed appointment cannot be cancelled.");
-
-        }
-
-        appointment.Status = AppointmentStatus.Cancelled;
-
-        appointment.CancellationReason = dto.Reason;
-
-        var updatedAppointment = await appointmentRepository.UpdateAsync(dto.AppointmentId, appointment);
-
-        return mapper.Map<AppointmentDto>(updatedAppointment);
-
-    }
-
-    public async Task<AppointmentDto> DeleteAppointmentAsync(int appointmentId)
-
-    {
-
-        var deletedAppointment = await appointmentRepository.DeleteAsync(appointmentId);
-
-        if (deletedAppointment is null)
-
-        {
-
-            throw new Exception("Appointment not found.");
-
-        }
-
-        return mapper.Map<AppointmentDto>(deletedAppointment);
-
-    }
-
 }
-
-}
-

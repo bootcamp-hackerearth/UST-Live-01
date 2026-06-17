@@ -4,17 +4,17 @@ namespace HealthCareApp.Models.Dtos
 {
     public class RegisterDto
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Confirm password is required")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Role is required")]
         public string Role { get; set; } = string.Empty;
     }
 }

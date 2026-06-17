@@ -1,6 +1,6 @@
 ﻿using HealthCareApp.Models.Dtos;
 
-namespace HealthCareApp.Services
+namespace HealthCareApp.Services.Interface
 {
     public interface IAuthService
     {

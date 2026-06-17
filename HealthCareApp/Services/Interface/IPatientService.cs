@@ -12,6 +12,7 @@ namespace HealthCareApp.Services
 
         Task<PatientDto> UpdatePatientAsync(int patientId, UpdatePatientDto dto);
 
-        Task<PatientDto> DeletePatientAsync(int patientId);
+
+
     }
 }

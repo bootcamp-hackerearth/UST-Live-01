@@ -1,6 +1,6 @@
 ﻿using HealthCareApp.Models;
 using HealthCareApp.Models.Dtos;
-using HealthCareApp.Services;
+using HealthCareApp.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareApp.Controllers

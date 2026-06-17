@@ -6,6 +6,7 @@ using HealthCareApp.Repository.Interface;
 
 using HealthCareApp.Services;
 using HealthCareApp.Services.Impl;
+using HealthCareApp.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

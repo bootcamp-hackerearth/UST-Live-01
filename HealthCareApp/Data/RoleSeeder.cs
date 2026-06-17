@@ -15,10 +15,5 @@ namespace HealthCareApp.Data
                 }
             }
         }
-
-        internal static async Task SeedRoleAsync(RoleManager<IdentityBuilder> roleManager)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

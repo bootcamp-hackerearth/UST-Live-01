@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.Models.Dtos;
+using HealthCareApp.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -43,13 +44,13 @@ namespace HealthCareApp.Services.Impl
         private async Task<string> GenerateToken(IdentityUser user)
         {
             var JwtSettings = config.GetSection("Jwt");
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSettings["Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSettings["Key"]!));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var roles = await userManager.GetRolesAsync(user);
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub,user.Id),
-                new Claim(JwtRegisteredClaimNames.Email,user.Email),
+                new Claim(JwtRegisteredClaimNames.Email,user.Email??String.Empty),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier,user.Id)
             };
