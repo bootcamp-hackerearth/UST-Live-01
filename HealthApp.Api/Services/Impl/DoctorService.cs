@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HealthApp.Api.Dtos;
 using HealthApp.Api.Enums;
+using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
@@ -9,59 +10,210 @@ namespace HealthApp.Api.Services.Impl
 {
     public class DoctorService : IDoctorService
     {
-        private readonly IDoctorRepository _repo;
+        private readonly IDoctorRepository _doctorRepository;
         private readonly IMapper _mapper;
 
-        public DoctorService(IDoctorRepository repo, IMapper mapper)
+        public DoctorService(
+            IDoctorRepository doctorRepository,
+            IMapper mapper)
         {
-            _repo = repo;
+            _doctorRepository = doctorRepository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<DoctorDto>> GetAllDoctorsAsync()
         {
-            var data = await _repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<DoctorDto>>(data);
+            var doctors = await _doctorRepository.GetAllAsync();
+
+            return _mapper.Map<IEnumerable<DoctorDto>>(doctors);
         }
 
-        public async Task<DoctorDto?> GetDoctorByIdAsync(int id)
+        public async Task<DoctorDto> GetDoctorByIdAsync(int id)
         {
-            var data = await _repo.GetByIdAsync(id);
-            if (data == null) return null;
+            if (id <= 0)
+            {
+                throw new InvalidRequestException("Valid doctor id is required.");
+            }
 
-            return _mapper.Map<DoctorDto>(data);
+            var doctor = await _doctorRepository.GetByIdAsync(id);
+
+            if (doctor == null)
+            {
+                throw new EntityNotFoundException("Doctor", id);
+            }
+
+            return _mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<DoctorDto> CreateDoctorAsync(DoctorCreateDto dto)
+        public async Task AddDoctorAsync(DoctorCreateDto dto)
         {
-            var entity = _mapper.Map<Doctor>(dto);
+            if (dto == null)
+            {
+                throw new InvalidRequestException("Doctor data is required.");
+            }
 
-            var result = await _repo.Add(entity);
-            return _mapper.Map<DoctorDto>(result);
+            ValidateDoctor(dto);
+
+            string email = dto.DoctorEmail.Trim();
+
+            var allDoctors = await _doctorRepository.SearchDoctorsAsync(
+                null,
+                null,
+                null);
+
+            bool emailExists = allDoctors.Any(d =>
+                string.Equals(
+                    d.DoctorEmail,
+                    email,
+                    StringComparison.OrdinalIgnoreCase));
+
+            if (emailExists)
+            {
+                throw new DuplicateEntityException(
+                    "A doctor with this email already exists.");
+            }
+
+            var doctor = _mapper.Map<Doctor>(dto);
+
+            doctor.FullName = dto.FullName.Trim();
+            doctor.DoctorPhoneNo = dto.DoctorPhoneNo.Trim();
+            doctor.DoctorEmail = email;
+            doctor.Specialisation = dto.Specialisation;
+            doctor.YearsOfExperience = dto.YearsOfExperience;
+            doctor.ConsultationFee = dto.ConsultationFee;
+            doctor.IsActive = true;
+
+            await _doctorRepository.Add(doctor);
         }
 
-        public async Task<DoctorDto?> UpdateDoctorAsync(int id, DoctorCreateDto dto)
+        public async Task UpdateDoctorAsync(int id, DoctorCreateDto dto)
         {
-            var entity = _mapper.Map<Doctor>(dto);
+            if (id <= 0)
+            {
+                throw new InvalidRequestException("Valid doctor id is required.");
+            }
 
-            var updated = await _repo.Update(id, entity);
-            if (updated == null) return null;
+            if (dto == null)
+            {
+                throw new InvalidRequestException("Doctor data is required.");
+            }
 
-            return _mapper.Map<DoctorDto>(updated);
+            ValidateDoctor(dto);
+
+            var doctor = await _doctorRepository.GetByIdAsync(id);
+
+            if (doctor == null)
+            {
+                throw new EntityNotFoundException("Doctor", id);
+            }
+
+            string email = dto.DoctorEmail.Trim();
+
+            var allDoctors = await _doctorRepository.SearchDoctorsAsync(
+                null,
+                null,
+                null);
+
+            bool emailUsedByAnotherDoctor = allDoctors.Any(d =>
+                d.DoctorId != id &&
+                string.Equals(
+                    d.DoctorEmail,
+                    email,
+                    StringComparison.OrdinalIgnoreCase));
+
+            if (emailUsedByAnotherDoctor)
+            {
+                throw new DuplicateEntityException(
+                    "Another doctor already uses this email.");
+            }
+
+            doctor.FullName = dto.FullName.Trim();
+            doctor.Specialisation = dto.Specialisation;
+            doctor.DoctorPhoneNo = dto.DoctorPhoneNo.Trim();
+            doctor.DoctorEmail = email;
+            doctor.YearsOfExperience = dto.YearsOfExperience;
+            doctor.ConsultationFee = dto.ConsultationFee;
+
+            await _doctorRepository.Update(id, doctor);
+        }
+
+        public async Task ChangeStatusAsync(int id, bool isActive)
+        {
+            if (id <= 0)
+            {
+                throw new InvalidRequestException("Valid doctor id is required.");
+            }
+
+            var doctor = await _doctorRepository.GetByIdAsync(id);
+
+            if (doctor == null)
+            {
+                throw new EntityNotFoundException("Doctor", id);
+            }
+
+            bool updated = await _doctorRepository.ChangeStatusAsync(
+                id,
+                isActive);
+
+            if (!updated)
+            {
+                throw new BusinessRuleViolationException(
+                    "Unable to update doctor status.");
+            }
+        }
+
+        public async Task<IEnumerable<DoctorDto>> GetDoctorsBySpecialisationAsync(
+            SpecialisationType specialisation)
+        {
+            var doctors = await _doctorRepository.SearchDoctorsAsync(
+                null,
+                specialisation,
+                true);
+
+            return _mapper.Map<IEnumerable<DoctorDto>>(doctors);
         }
 
         public async Task<IEnumerable<DoctorDto>> SearchDoctorsAsync(
             string? search,
-            SpecialisationType? specialization,
+            SpecialisationType? specialisation,
             bool? isActive)
         {
-            var data = await _repo.SearchDoctorsAsync(search, specialization, isActive);
-            return _mapper.Map<IEnumerable<DoctorDto>>(data);
+            var doctors = await _doctorRepository.SearchDoctorsAsync(
+                search,
+                specialisation,
+                isActive);
+
+            return _mapper.Map<IEnumerable<DoctorDto>>(doctors);
         }
 
-        public async Task<bool> ChangeDoctorStatusAsync(int id, bool isActive)
+        private static void ValidateDoctor(DoctorCreateDto dto)
         {
-            return await _repo.ChangeStatusAsync(id, isActive);
+            if (string.IsNullOrWhiteSpace(dto.FullName))
+            {
+                throw new InvalidRequestException("Doctor name is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.DoctorPhoneNo))
+            {
+                throw new InvalidRequestException("Doctor phone number is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.DoctorEmail))
+            {
+                throw new InvalidRequestException("Doctor email is required.");
+            }
+
+            if (dto.YearsOfExperience < 0 || dto.YearsOfExperience > 60)
+            {
+                throw new InvalidRequestException(
+                    "Years of experience must be between 0 and 60.");
+            }
+
+            if (dto.ConsultationFee < 0 || dto.ConsultationFee > 100000)
+            {
+                throw new InvalidRequestException(
+                    "Consultation fee must be between 0 and 100000.");
+            }
         }
     }
 }

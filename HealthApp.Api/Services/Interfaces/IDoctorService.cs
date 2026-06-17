@@ -5,13 +5,22 @@ namespace HealthApp.Api.Services.Interfaces
 {
     public interface IDoctorService
     {
-            Task<IEnumerable<DoctorDto>> GetAllDoctorsAsync();
-            Task<DoctorDto?> GetDoctorByIdAsync(int id);
-            Task<DoctorDto> CreateDoctorAsync(DoctorCreateDto dto);
-            Task<DoctorDto?> UpdateDoctorAsync(int id, DoctorCreateDto dto);
+        Task<IEnumerable<DoctorDto>> GetAllDoctorsAsync();
 
-            Task<IEnumerable<DoctorDto>> SearchDoctorsAsync(string? search, SpecialisationType? specialization, bool? isActive);
+        Task<DoctorDto> GetDoctorByIdAsync(int id);
 
-            Task<bool> ChangeDoctorStatusAsync(int id, bool isActive);
+        Task AddDoctorAsync(DoctorCreateDto dto);
+
+        Task UpdateDoctorAsync(int id, DoctorCreateDto dto);
+
+        Task ChangeStatusAsync(int id, bool isActive);
+
+        Task<IEnumerable<DoctorDto>> GetDoctorsBySpecialisationAsync(
+            SpecialisationType specialisation);
+
+        Task<IEnumerable<DoctorDto>> SearchDoctorsAsync(
+            string? search,
+            SpecialisationType? specialisation,
+            bool? isActive);
     }
 }

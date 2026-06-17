@@ -9,60 +9,184 @@ namespace HealthApp.Api.Services.Impl
 {
     public class PatientService : IPatientService
     {
-        private readonly IPatientRepository _repo;
+        private readonly IPatientRepository _patientRepository;
         private readonly IMapper _mapper;
 
-        public PatientService(IPatientRepository repo, IMapper mapper)
+        public PatientService(
+            IPatientRepository patientRepository,
+            IMapper mapper)
         {
-            _repo = repo;
+            _patientRepository = patientRepository;
             _mapper = mapper;
         }
 
         public async Task<IEnumerable<PatientDto>> GetAllPatientsAsync()
         {
-            var data = await _repo.GetAllAsync();
-            return _mapper.Map<IEnumerable<PatientDto>>(data);
+            var patients = await _patientRepository.GetAllAsync();
+
+            return _mapper.Map<IEnumerable<PatientDto>>(patients);
         }
 
-        public async Task<PatientDto?> GetPatientByIdAsync(int id)
+        public async Task<PatientDto> GetPatientByIdAsync(int id)
         {
-            var data = await _repo.GetByIdAsync(id);
-            if (data == null) return null;
+            if (id <= 0)
+            {
+                throw new InvalidRequestException("Valid patient id is required.");
+            }
 
-            return _mapper.Map<PatientDto>(data);
+            var patient = await _patientRepository.GetByIdAsync(id);
+
+            if (patient == null)
+            {
+                throw new EntityNotFoundException("Patient", id);
+            }
+
+            return _mapper.Map<PatientDto>(patient);
         }
 
-        public async Task<PatientDto> CreatePatientAsync(PatientCreateDto dto)
+        public async Task RegisterPatientAsync(PatientCreateDto dto)
         {
-            var entity = _mapper.Map<Patient>(dto);
+            if (dto == null)
+            {
+                throw new InvalidRequestException("Patient data is required.");
+            }
 
-            var isDuplicate = await _repo.IsDuplicatePatient(
-                entity.FullName!,
-                entity.DateOfBirth.ToDateTime(TimeOnly.MinValue),
-                entity.Email!
-            );
+            ValidatePatient(dto);
 
-            if (isDuplicate)
-                throw new HealthAppException("Duplicate patient");
+            if (dto.DateOfBirth > DateOnly.FromDateTime(DateTime.Today))
+            {
+                throw new BusinessRuleViolationException("Future date is not allowed.");
+            }
 
-            var result = await _repo.Add(entity);
-            return _mapper.Map<PatientDto>(result);
+            string email = dto.Email.Trim();
+
+            var patientsWithEmail = await _patientRepository.GetPatientsAsync(null, email);
+
+            bool emailExists = patientsWithEmail.Any(p =>
+                string.Equals(p.Email, email, StringComparison.OrdinalIgnoreCase));
+
+            if (emailExists)
+            {
+                throw new DuplicateEntityException(
+                    "A patient with this email already exists.");
+            }
+
+            bool duplicatePatient = await _patientRepository.IsDuplicatePatient(
+                dto.FullName.Trim(),
+                dto.DateOfBirth.ToDateTime(TimeOnly.MinValue),
+                email);
+
+            if (duplicatePatient)
+            {
+                throw new DuplicateEntityException(
+                    "A patient with same name, date of birth and email already exists.");
+            }
+
+            var patient = _mapper.Map<Patient>(dto);
+
+            patient.FullName = dto.FullName.Trim();
+            patient.DateOfBirth = dto.DateOfBirth;
+            patient.Gender = dto.Gender.Trim();
+            patient.PhoneNumber = dto.PhoneNumber.Trim();
+            patient.Email = email;
+            patient.InsuranceId = dto.InsuranceId?.Trim();
+            patient.CreatedDate = DateTime.Now;
+
+            await _patientRepository.Add(patient);
         }
 
-        public async Task<PatientDto?> UpdatePatientAsync(int id, PatientCreateDto dto)
+        public async Task UpdatePatientAsync(int id, PatientCreateDto dto)
         {
-            var entity = _mapper.Map<Patient>(dto);
+            if (id <= 0)
+            {
+                throw new InvalidRequestException("Valid patient id is required.");
+            }
 
-            var updated = await _repo.Update(id, entity);
-            if (updated == null) return null;
+            if (dto == null)
+            {
+                throw new InvalidRequestException("Patient data is required.");
+            }
 
-            return _mapper.Map<PatientDto>(updated);
+            ValidatePatient(dto);
+
+            if (dto.DateOfBirth > DateOnly.FromDateTime(DateTime.Today))
+            {
+                throw new BusinessRuleViolationException("Future date is not allowed.");
+            }
+
+            var patient = await _patientRepository.GetByIdAsync(id);
+
+            if (patient == null)
+            {
+                throw new EntityNotFoundException("Patient", id);
+            }
+
+            string email = dto.Email.Trim();
+
+            var patientsWithEmail = await _patientRepository.GetPatientsAsync(null, email);
+
+            bool emailUsedByAnotherPatient = patientsWithEmail.Any(p =>
+                p.PatientId != id &&
+                string.Equals(p.Email, email, StringComparison.OrdinalIgnoreCase));
+
+            if (emailUsedByAnotherPatient)
+            {
+                throw new DuplicateEntityException(
+                    "Another patient already uses this email.");
+            }
+
+            patient.FullName = dto.FullName.Trim();
+            patient.DateOfBirth = dto.DateOfBirth;
+            patient.Gender = dto.Gender.Trim();
+            patient.PhoneNumber = dto.PhoneNumber.Trim();
+            patient.Email = email;
+            patient.InsuranceId = dto.InsuranceId?.Trim();
+
+            await _patientRepository.Update(id, patient);
         }
 
-        public async Task<IEnumerable<PatientDto>> SearchPatientsAsync(string? name, string? email)
+        public async Task<IEnumerable<PatientDto>> SearchPatientsAsync(
+            string? name,
+            string? email)
         {
-            var data = await _repo.GetPatientsAsync(name, email);
-            return _mapper.Map<IEnumerable<PatientDto>>(data);
+            var patients = await _patientRepository.GetPatientsAsync(name, email);
+
+            return _mapper.Map<IEnumerable<PatientDto>>(patients);
+        }
+
+        private static void ValidatePatient(PatientCreateDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.FullName))
+            {
+                throw new InvalidRequestException("Patient name is required.");
+            }
+
+            if (dto.DateOfBirth == default)
+            {
+                throw new InvalidRequestException("Date of birth is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Gender))
+            {
+                throw new InvalidRequestException("Gender is required.");
+            }
+
+            string gender = dto.Gender.Trim();
+
+            if (gender != "Male" && gender != "Female" && gender != "Other")
+            {
+                throw new InvalidRequestException("Invalid gender.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
+            {
+                throw new InvalidRequestException("Phone number is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                throw new InvalidRequestException("Email is required.");
+            }
         }
     }
 }

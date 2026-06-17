@@ -8,7 +8,7 @@ namespace HealthApp.Api.Repositories.Impl
     public class HealthRecordRepository(HealthAppDbContext context) : Repository<HealthRecord>(context), IHealthRecordRepository
     {
 
-        public async Task<List<HealthRecord>> GetHealthRecordsAsync(
+        public async Task<IEnumerable<HealthRecord>> GetHealthRecordsAsync(
             int? patientId = null,
             int? appointmentId = null)
         {
