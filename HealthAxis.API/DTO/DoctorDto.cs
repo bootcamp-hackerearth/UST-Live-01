@@ -5,52 +5,16 @@ namespace HealthAxis.DTO.DoctorDto
 {
     public class DoctorDto
     {
-        public int DoctorId
-        {
-            get;
-            set;
-        }
+        public int DoctorId { get; set; }
 
-        public string FullName
-        {
-            get;
-            set;
-        }
+        public string FullName { get; set; } = string.Empty;
 
-        public Specialisation Specialisation
-        {
-            get;
-            set;
-        }
+        public Specialisation Specialisation { get; set; }
 
-        public int YearsOfExperience
-        {
-            get;
-            set;
-        }
+        public int YearsOfExperience { get; set; }
 
-        public decimal ConsultationFee
-        {
-            get;
-            set;
-        }
+        public decimal ConsultationFee { get; set; }
 
-        public string PhoneNumber
-        {
-            get;
-            set;
-        }
-
-        public bool IsActive
-        {
-            get;
-            set;
-        }
-
-        public int AppointmentCount
-        {
-            get;
-            set;
-        }
+        public bool IsActive { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthAxis.API.Models;
+using HealthAxis.API.Exceptions;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.DTO.DoctorDto;
@@ -8,34 +8,33 @@ namespace HealthAxis.API.Services.Implementation
 {
     public class DoctorService(IDoctorRepository repository, IMapper mapper) : IDoctorService
     {
-        public async Task<DoctorDto> AddAsync(DoctorDto entity)
-        {
-            var doctor = mapper.Map<Doctor>(entity);
-
-            var savedEntity = await repository.AddAsync(doctor);
-
-            return mapper.Map<DoctorDto>(savedEntity);
-        }
-
-
         public async Task<List<DoctorDto>> GetAllAsync()
         {
-            return mapper.Map<List<DoctorDto>>(
-                await repository.GetAllAsync());
+            return mapper.Map<List<DoctorDto>>(await repository.GetAllAsync());
         }
 
-        public async Task<DoctorDto?> GetByIdAsync(int id)
+        public async Task<DoctorDto> GetByIdAsync(int id)
         {
-            return mapper.Map<DoctorDto>(await repository.GetByIdAsync(id));
+            var doctor =await repository.GetByIdAsync(id);
+
+            if (doctor == null)
+            {
+                throw new NotFoundException("Doctor not found");
+            }
+
+            return mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<DoctorDto?> UpdateAsync( int id, DoctorDto entity)
+        public async Task<DoctorDto> GetAvailabilityAsync(int id)
         {
-            var doctor = mapper.Map<Doctor>(entity);
+            var doctor =await repository.GetByIdAsync(id);
 
-            var updated =await repository.UpdateAsync(id, doctor);
+            if (doctor == null)
+            {
+                throw new NotFoundException("Doctor not found");
+            }
 
-            return mapper.Map<DoctorDto>(updated);
+            return mapper.Map<DoctorDto>(doctor);
         }
     }
 }

@@ -3,7 +3,7 @@ using HealthAxis.API.Models;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthAxis.API.Controllers
+namespace HealthAxis.API.Controller
 {
         [Route("api/[controller]")]
         [ApiController]

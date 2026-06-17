@@ -1,4 +1,5 @@
-﻿using HealthAxis.DTO.PatientDto;
+﻿using HealthAxis.API.DTO;
+using HealthAxis.DTO.HealthRecordDto;
 
 namespace HealthAxis.API.Services
 {
@@ -9,8 +10,7 @@ namespace HealthAxis.API.Services
 
         Task<PatientDto?> GetByIdAsync(int id);
 
-        Task<PatientDto> AddAsync(PatientDto patientDto);
-
         Task<PatientDto?> UpdateAsync( int id, PatientDto patientDto);
+        Task<List<HealthRecordDto>> GetHealthRecordsByPatientIdAsync(int patientid);
     }
 }
