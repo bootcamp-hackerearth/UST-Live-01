@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HealthApp.Api.Dtos;
+using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
@@ -42,7 +43,7 @@ namespace HealthApp.Api.Services.Impl
             );
 
             if (isDuplicate)
-                throw new Exception("Duplicate patient");
+                throw new HealthAppException("Duplicate patient");
 
             var result = await _repo.Add(entity);
             return _mapper.Map<PatientDto>(result);
