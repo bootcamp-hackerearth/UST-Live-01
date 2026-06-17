@@ -17,25 +17,25 @@ namespace HealthApp.Api.Services.Impl
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<HealthRecordDto>> GetAllAsync(CancellationToken ct)
+        public async Task<IEnumerable<HealthRecordDto>> GetAllAsync()
         {
-            var data = await _repo.GetAllAsync(ct);
+            var data = await _repo.GetAllAsync();
             return _mapper.Map<IEnumerable<HealthRecordDto>>(data);
         }
 
-        public async Task<HealthRecordDto?> GetByIdAsync(int id, CancellationToken ct)
+        public async Task<HealthRecordDto?> GetByIdAsync(int id)
         {
-            var data = await _repo.GetByIdAsync(id, ct);
+            var data = await _repo.GetByIdAsync(id);
             if (data == null) return null;
 
             return _mapper.Map<HealthRecordDto>(data);
         }
 
-        public async Task<HealthRecordDto> CreateAsync(HealthRecordCreateDto dto, CancellationToken ct)
+        public async Task<HealthRecordDto> CreateAsync(HealthRecordCreateDto dto)
         {
             var entity = _mapper.Map<HealthRecord>(dto);
 
-            var result = await _repo.Add(entity, ct);
+            var result = await _repo.Add(entity);
             return _mapper.Map<HealthRecordDto>(result);
         }
     }

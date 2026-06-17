@@ -13,14 +13,14 @@ namespace HealthApp.Api.Models
         [Required]
         public int? PatientId { get; set; }
 
-        public Patient Patient { get; set; }
+        public Patient? Patient { get; set; }
 
         [Required]
         public int? DoctorId { get; set; }
-        public Doctor Doctor { get; set; }
+        public Doctor? Doctor { get; set; }
 
         public int? AppointmentId { get; set; }
-        public Appointment Appointment { get; set; }
+        public Appointment? Appointment { get; set; }
 
         [Required]
         public DateOnly VisitDate { get; set; }

@@ -12,7 +12,7 @@ namespace HealthApp.Api.Models
 
         [Required]
         [MinLength(3, ErrorMessage = "Full name must be at least 3 characters long.")]
-        public string FullName { get; set; }
+        public string? FullName { get; set; }
 
         [Required]
         [Column(TypeName = "date")]
@@ -20,15 +20,15 @@ namespace HealthApp.Api.Models
 
         [Required]
         [RegularExpression("^(Male|Female|Other)$", ErrorMessage = "Gender must be Male, Female, or Other.")]
-        public string Gender { get; set; }
+        public string? Gender { get; set; }
 
         [Required]
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be exactly 10 digits.")]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         [Required]
         [EmailAddress(ErrorMessage = "Invalid email address.")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [StringLength(50)]
         public string? InsuranceId { get; set; }
@@ -36,7 +36,7 @@ namespace HealthApp.Api.Models
         [Required]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        public virtual ICollection<Appointment> Appointments { get; set; }
-        public virtual ICollection<HealthRecord> HealthRecords { get; set; }
+        public virtual ICollection<Appointment>? Appointments { get; set; }
+        public virtual ICollection<HealthRecord>? HealthRecords { get; set; }
     }
 }

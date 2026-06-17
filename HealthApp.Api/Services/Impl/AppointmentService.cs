@@ -17,25 +17,25 @@ namespace HealthApp.Api.Services.Impl
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAllAppointmentsAsync(CancellationToken ct)
+        public async Task<IEnumerable<AppointmentDto>> GetAllAppointmentsAsync()
         {
-            var data = await _repo.GetAllAsync(ct);
+            var data = await _repo.GetAllAsync();
             return _mapper.Map<IEnumerable<AppointmentDto>>(data);
         }
 
-        public async Task<AppointmentDto?> GetAppointmentByIdAsync(int id, CancellationToken ct)
+        public async Task<AppointmentDto?> GetAppointmentByIdAsync(int id)
         {
-            var data = await _repo.GetByIdAsync(id, ct);
+            var data = await _repo.GetByIdAsync(id);
             if (data == null) return null;
 
             return _mapper.Map<AppointmentDto>(data);
         }
 
-        public async Task<AppointmentDto> CreateAppointmentAsync(AppointmentCreateDto dto, CancellationToken ct)
+        public async Task<AppointmentDto> CreateAppointmentAsync(AppointmentCreateDto dto)
         {
             var entity = _mapper.Map<Appointment>(dto);
 
-            var result = await _repo.Add(entity, ct);
+            var result = await _repo.Add(entity);
             return _mapper.Map<AppointmentDto>(result);
         }
     }

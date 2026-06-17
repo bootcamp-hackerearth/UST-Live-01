@@ -24,7 +24,7 @@ namespace HealthApp.Api.Repositories.Impl
             return await _context.Set<T>().ToListAsync(ct);
         }
 
-        public async Task<T> GetByIdAsync(int id, CancellationToken ct = default)
+        public async Task<T?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             var existing = await _context.Set<T>().FindAsync([id], ct);
             return existing;

@@ -62,14 +62,21 @@ namespace HealthApp.Api.Services.Impl
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var roles = await userManager.GetRolesAsync(user);
 
-            var claims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub,user.Id),
-                new Claim(JwtRegisteredClaimNames.Email,user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier,user.Id)
 
-            };
+            var claims = new List<Claim>();
+
+            if (!string.IsNullOrWhiteSpace(user.Id))
+            {
+                claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id));
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+            }
+
+            if (!string.IsNullOrWhiteSpace(user.Email))
+            {
+                claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            }
+
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
 
             foreach (var role in roles)
             {

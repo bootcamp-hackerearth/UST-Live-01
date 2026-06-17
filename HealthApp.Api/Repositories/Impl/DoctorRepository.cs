@@ -17,14 +17,14 @@ namespace HealthApp.Api.Repositories.Impl
         public async Task<bool> ChangeStatusAsync(int id, bool isActive, CancellationToken ct = default)
         {
             var doctor = await _context.Doctors
-                    .FirstOrDefaultAsync(d => d.DoctorId == id);
+                    .FirstOrDefaultAsync(d => d.DoctorId == id,ct);
 
             if (doctor == null)
                 return false;
 
             doctor.IsActive = isActive;
 
-            return await _context.SaveChangesAsync()>0;
+            return await _context.SaveChangesAsync(ct)>0;
         }
 
         //public Task<IEnumerable<string>> GetAvailableSlots()
@@ -43,7 +43,7 @@ namespace HealthApp.Api.Repositories.Impl
             if (!string.IsNullOrWhiteSpace(search))
             {
                 query = query.Where(d =>
-                    d.FullName.Contains(search));
+                    d.FullName!.Contains(search));
             }
 
             if (specialisation.HasValue)

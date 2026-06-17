@@ -15,25 +15,25 @@ namespace HealthApp.Api.Models
         public int PatientId { get; set; }
 
         [ForeignKey(nameof(PatientId))]
-        public Patient Patient { get; set; }
+        public Patient? Patient { get; set; }
 
         [Required]
         public int DoctorId { get; set; }
 
         [ForeignKey(nameof(DoctorId))]
-        public Doctor Doctor { get; set; } 
+        public Doctor? Doctor { get; set; } 
 
         [Required]
         public DateTime ScheduledDate { get; set; }
 
         [Required]
-        public string TimeSlot { get; set; }
+        public string? TimeSlot { get; set; }
 
         [Required]
         [Range(0, 3, ErrorMessage = "Invalid appointment status.")]
-        public AppointmentStatus Status { get; private set; } = AppointmentStatus.Pending;
+        public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
 
-        public string? CancellationReason { get; private set; }
+        public string? CancellationReason { get; set; }
 
     }
 }

@@ -18,33 +18,33 @@ namespace HealthApp.Api.Services.Impl
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<DoctorDto>> GetAllDoctorsAsync(CancellationToken ct)
+        public async Task<IEnumerable<DoctorDto>> GetAllDoctorsAsync()
         {
-            var data = await _repo.GetAllAsync(ct);
+            var data = await _repo.GetAllAsync();
             return _mapper.Map<IEnumerable<DoctorDto>>(data);
         }
 
-        public async Task<DoctorDto?> GetDoctorByIdAsync(int id, CancellationToken ct)
+        public async Task<DoctorDto?> GetDoctorByIdAsync(int id)
         {
-            var data = await _repo.GetByIdAsync(id, ct);
+            var data = await _repo.GetByIdAsync(id);
             if (data == null) return null;
 
             return _mapper.Map<DoctorDto>(data);
         }
 
-        public async Task<DoctorDto> CreateDoctorAsync(DoctorCreateDto dto, CancellationToken ct)
+        public async Task<DoctorDto> CreateDoctorAsync(DoctorCreateDto dto)
         {
             var entity = _mapper.Map<Doctor>(dto);
 
-            var result = await _repo.Add(entity, ct);
+            var result = await _repo.Add(entity);
             return _mapper.Map<DoctorDto>(result);
         }
 
-        public async Task<DoctorDto?> UpdateDoctorAsync(int id, DoctorCreateDto dto, CancellationToken ct)
+        public async Task<DoctorDto?> UpdateDoctorAsync(int id, DoctorCreateDto dto)
         {
             var entity = _mapper.Map<Doctor>(dto);
 
-            var updated = await _repo.Update(id, entity, ct);
+            var updated = await _repo.Update(id, entity);
             if (updated == null) return null;
 
             return _mapper.Map<DoctorDto>(updated);
@@ -53,16 +53,15 @@ namespace HealthApp.Api.Services.Impl
         public async Task<IEnumerable<DoctorDto>> SearchDoctorsAsync(
             string? search,
             SpecialisationType? specialization,
-            bool? isActive,
-            CancellationToken ct)
+            bool? isActive)
         {
-            var data = await _repo.SearchDoctorsAsync(search, specialization, isActive, ct);
+            var data = await _repo.SearchDoctorsAsync(search, specialization, isActive);
             return _mapper.Map<IEnumerable<DoctorDto>>(data);
         }
 
-        public async Task<bool> ChangeDoctorStatusAsync(int id, bool isActive, CancellationToken ct)
+        public async Task<bool> ChangeDoctorStatusAsync(int id, bool isActive)
         {
-            return await _repo.ChangeStatusAsync(id, isActive, ct);
+            return await _repo.ChangeStatusAsync(id, isActive);
         }
     }
 }

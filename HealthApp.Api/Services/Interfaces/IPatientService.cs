@@ -4,11 +4,11 @@ namespace HealthApp.Api.Services.Interfaces
 {
     public interface IPatientService
     {
-        Task<IEnumerable<PatientDto>> GetAllPatientsAsync(CancellationToken ct = default);
-        Task<PatientDto?> GetPatientByIdAsync(int id, CancellationToken ct = default);
-        Task<PatientDto> CreatePatientAsync(PatientCreateDto dto, CancellationToken ct = default);
-        Task<PatientDto?> UpdatePatientAsync(int id, PatientCreateDto dto, CancellationToken ct = default);
+        Task<IEnumerable<PatientDto>> GetAllPatientsAsync();
+        Task<PatientDto?> GetPatientByIdAsync(int id);
+        Task<PatientDto> CreatePatientAsync(PatientCreateDto dto);
+        Task<PatientDto?> UpdatePatientAsync(int id, PatientCreateDto dto);
 
-        Task<IEnumerable<PatientDto>> SearchPatientsAsync(string? name, string? email, CancellationToken ct = default);
+        Task<IEnumerable<PatientDto>> SearchPatientsAsync(string? name, string? email);
     }
 }

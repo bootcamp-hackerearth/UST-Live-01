@@ -13,21 +13,21 @@ namespace HealthApp.Api.Repositories.Impl
             _context=context;
         }
 
-        public async Task<IEnumerable<Patient>> GetPatientsAsync(string? name, string? email, CancellationToken ct = default)
+        public async Task<IEnumerable<Patient>> GetPatientsAsync(string? Name, string? email, CancellationToken ct = default)
         {
             var query = _context.Set<Patient>().AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(Name))
             {
-                query = query.Where(p => p.FullName.Contains(name));
+                query = query.Where(p => p.FullName != null && p.FullName.Contains(Name));
             }
 
             if (!string.IsNullOrWhiteSpace(email))
             {
-                query = query.Where(p => p.Email.Contains(email));
+                query = query.Where(p => p.Email != null && p.Email.Contains(email));
             }
 
-            return await query.ToListAsync();
+            return await query.ToListAsync(ct);
         }
 
         public async Task<bool> IsDuplicatePatient(string name, DateTime dob, string email, CancellationToken ct = default)
@@ -37,8 +37,7 @@ namespace HealthApp.Api.Repositories.Impl
                     .AnyAsync(p =>
                         p.FullName == name &&
                         p.DateOfBirth == dobOnly &&
-                        p.Email == email);
-
+                        p.Email == email, ct);
         }
     }
 }

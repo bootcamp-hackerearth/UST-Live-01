@@ -18,6 +18,6 @@ namespace HealthApp.Api.Dtos
         [Required(ErrorMessage = "Time slot is required.")]
         [MinLength(3, ErrorMessage = "Time slot must be at least 3 characters.")]
         [StringLength(20, ErrorMessage = "Time slot cannot exceed 20 characters.")]
-        public string TimeSlot { get; set; }
+        public string TimeSlot { get; set; } = string.Empty;
     }
 }

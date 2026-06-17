@@ -4,8 +4,8 @@ namespace HealthApp.Api.Services.Interfaces
 {
     public interface IHealthRecordService
     {
-        Task<IEnumerable<HealthRecordDto>> GetAllAsync(CancellationToken ct = default);
-        Task<HealthRecordDto?> GetByIdAsync(int id, CancellationToken ct = default);
-        Task<HealthRecordDto> CreateAsync(HealthRecordCreateDto dto, CancellationToken ct = default);
+        Task<IEnumerable<HealthRecordDto>> GetAllAsync();
+        Task<HealthRecordDto?> GetByIdAsync(int id);
+        Task<HealthRecordDto> CreateAsync(HealthRecordCreateDto dto);
     }
 }
