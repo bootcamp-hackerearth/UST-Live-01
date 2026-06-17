@@ -39,7 +39,7 @@ namespace S3_HealthAxisApi.Controllers
             }
 
             return Ok(result.Data);
-        }
+        }   
 
     }
 }

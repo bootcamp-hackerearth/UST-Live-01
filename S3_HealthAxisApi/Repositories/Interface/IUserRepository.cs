@@ -12,5 +12,6 @@ namespace S3_HealthAxisApi.Repository.Interface
         Task UpdateAsync(User user);
         Task<bool> EmailExistsAsync(string email);
         Task SaveChangesAsync();
+        Task<User?> GetByRefreshTokenAsync(string refreshToken);
     }
 }

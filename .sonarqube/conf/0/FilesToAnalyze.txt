@@ -17,8 +17,10 @@ C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\HealthRecord\Cr
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\HealthRecord\HealthRecordDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\HealthRecord\UpdateHealthRecordDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\CreatePatientDto.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\DeactivatePatientDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\PatientDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\PatientSearchResultDto.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\PatientSummaryDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\UpdatePatientDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Enums\AppointmentStatus.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Enums\DoctorSpecialization.cs
@@ -29,6 +31,8 @@ C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Enums\UserRole.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\RequestLoggingMiddleware.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260615042816_InitialCreate.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260615042816_InitialCreate.Designer.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260616051459_UsersAdded.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260616051459_UsersAdded.Designer.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\HealthAxisDbContextModelSnapshot.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Appointment.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Doctor.cs
@@ -46,6 +50,11 @@ C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repository\Interface
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repository\Interface\IHealthRecordRepository.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repository\Interface\IPatientRepository.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repository\Interface\IUserRepository.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\AppointmentService.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\DoctorService.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\HealthRecordService.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\PatientService.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\UserService.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IAppointmentService.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IDoctorService.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IHealthRecordService.cs

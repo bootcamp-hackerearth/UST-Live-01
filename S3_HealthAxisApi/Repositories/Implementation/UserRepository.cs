@@ -55,5 +55,11 @@ namespace S3_HealthAxisApi.Repository.Implementation
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<User?> GetByRefreshTokenAsync(string refreshToken)
+        {
+            return await _context.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        }
     }
 }

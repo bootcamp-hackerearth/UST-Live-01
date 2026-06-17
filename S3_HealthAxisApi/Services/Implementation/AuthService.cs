@@ -44,6 +44,11 @@ namespace S3_HealthAxisApi.Services.Implementation
                 CreatedDate = DateTime.UtcNow
             };
 
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
 
@@ -55,6 +60,7 @@ namespace S3_HealthAxisApi.Services.Implementation
                 new AuthResponseDto
                 {
                     AccessToken = accessToken,
+                    RefreshToken = refreshToken,
                     Email = user.Email,
                     Role = user.Role.ToString()
                 });
@@ -80,12 +86,21 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             var accessToken = GenerateToken(user);
 
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            await _userRepository.UpdateAsync(user);
+            await _userRepository.SaveChangesAsync();
+
             return (
                 true,
                 "Login successful.",
                 new AuthResponseDto
                 {
                     AccessToken = accessToken,
+                    RefreshToken = refreshToken,
                     Email = user.Email,
                     Role = user.Role.ToString()
                 });
@@ -94,10 +109,40 @@ namespace S3_HealthAxisApi.Services.Implementation
         public async Task<(bool Success, string Message, AuthResponseDto? Data)>
             RefreshTokenAsync(RefreshTokenDto request)
         {
+            var user = await _userRepository
+                .GetByRefreshTokenAsync(request.RefreshToken);
+
+            if (user == null)
+            {
+                return (false, "Invalid refresh token.", null);
+            }
+
+            if (!user.RefreshTokenExpiryTime.HasValue ||
+                user.RefreshTokenExpiryTime.Value <= DateTime.UtcNow)
+            {
+                return (false, "Refresh token has expired.", null);
+            }
+
+            var newAccessToken = GenerateToken(user);
+
+            var newRefreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+            await _userRepository.UpdateAsync(user);
+            await _userRepository.SaveChangesAsync();
+
             return (
-                false,
-                "Refresh token functionality not implemented.",
-                null);
+                true,
+                "Token refreshed successfully.",
+                new AuthResponseDto
+                {
+                    AccessToken = newAccessToken,
+                    RefreshToken = newRefreshToken,
+                    Email = user.Email,
+                    Role = user.Role.ToString()
+                });
         }
 
         private string GenerateToken(User user)
@@ -144,6 +189,12 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             return new JwtSecurityTokenHandler()
                 .WriteToken(token);
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            return Convert.ToBase64String(
+                RandomNumberGenerator.GetBytes(64));
         }
 
         private static string HashPassword(string password)

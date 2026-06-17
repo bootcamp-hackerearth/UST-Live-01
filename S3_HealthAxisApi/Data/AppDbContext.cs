@@ -25,7 +25,6 @@ namespace HealthAxis.API.Data
 
             // Appointment Relationships
 
-
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)

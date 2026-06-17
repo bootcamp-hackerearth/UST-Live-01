@@ -2,6 +2,7 @@ using HealthAxis.API.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using S3_HealthAxisApi.Repository.Implementation;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Implementation;
@@ -28,7 +29,22 @@ builder.Services.AddEndpointsApiExplorer();
 #region Swagger
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    // Define the Bearer scheme
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        // ... (Define Type, Scheme, BearerFormat, In, Description)
+    });
+
+    // Assign the requirement globally
+    //options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    //{
+    //    // ... (Map security scheme to requirements)
+    //});
+});
+
 
 #endregion
 //builder.Services.AddSwaggerGen(options =>
