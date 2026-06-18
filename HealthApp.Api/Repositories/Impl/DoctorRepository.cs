@@ -60,5 +60,11 @@ namespace HealthApp.Api.Repositories.Impl
             return await query.ToListAsync(ct);
         }
 
+        public async Task<bool> ExistsByEmailAsync(string email)
+        {
+            return await _context.Doctors
+                .AnyAsync(doctor => doctor.DoctorEmail == email);
+        }
+
     }
 }

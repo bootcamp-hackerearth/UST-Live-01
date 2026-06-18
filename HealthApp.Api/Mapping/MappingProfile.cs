@@ -12,22 +12,37 @@ namespace HealthApp.Api.Mapping
             // Patient mappings
             CreateMap<Patient, PatientDto>();
 
+
             CreateMap<PatientCreateDto, Patient>()
                 .ForMember(dest => dest.PatientId, opt => opt.Ignore())
-                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.CreatedDate,
+                    opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Appointments, opt => opt.Ignore())
-                .ForMember(dest => dest.HealthRecords, opt => opt.Ignore());
+                .ForMember(dest => dest.HealthRecords, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore());
+
+
+            CreateMap<RegisterPatientDto, Patient>()
+                .IncludeBase<PatientCreateDto, Patient>();
+
 
             // Doctor mappings
             CreateMap<Doctor, DoctorDto>()
                 .ForMember(dest => dest.Specialisation,
                     opt => opt.MapFrom(src => src.Specialisation.ToString()));
 
+
             CreateMap<DoctorCreateDto, Doctor>()
                 .ForMember(dest => dest.DoctorId, opt => opt.Ignore())
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.IsActive,
+                    opt => opt.MapFrom(src => true))
                 .ForMember(dest => dest.Appointments, opt => opt.Ignore())
-                .ForMember(dest => dest.HealthRecords, opt => opt.Ignore());
+                .ForMember(dest => dest.HealthRecords, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore());
+
+
+            CreateMap<RegisterDoctorDto, Doctor>()
+                .IncludeBase<DoctorCreateDto, Doctor>();
 
             // Appointment mappings
             CreateMap<Appointment, AppointmentDto>()
