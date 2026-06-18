@@ -14,8 +14,11 @@ namespace HealthCare.Api.Repositories.Interfaces
         Task<PagedResult<T>> GetAllAsync(
             int pageNumber,
             int pageSize,
-            Expression<Func<T, bool>>? predicate = null,
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
+            Expression<Func<T, bool>>? predicte = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null
+            );
+            
+
 
     }
 }

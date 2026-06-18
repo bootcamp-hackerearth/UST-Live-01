@@ -8,6 +8,7 @@ namespace HealthCare.Api.Repositories.Implementations
 {
     public class AppointmentRepository : Repository<Appointment>,IAppointmentRepository
     {
+
         public AppointmentRepository(HealthCareDbContext context) : base(context) { }
 
         public async Task<List<string>> AvailableTimeSlots(DateOnly date, int doctorId) =>
@@ -99,5 +100,20 @@ namespace HealthCare.Api.Repositories.Implementations
                 })
                 .ToListAsync();
 
-    }
+        public async Task CancelAppointmentsByDoctorDate(int doctorId, DateOnly date)
+        {
+            var appointments = await _dbSet
+                .Where(a => a.DoctorId == doctorId
+                         && a.ScheduledDate == date
+                         && a.Status != "Cancelled")
+                .ToListAsync();
+
+            foreach (var appointment in appointments)
+            {
+                appointment.Status = "Cancelled";
+                appointment.CancellationReason = "Doctor on leave";
+            }
+        }
+
+     }
 }

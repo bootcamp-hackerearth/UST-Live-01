@@ -7,7 +7,6 @@ namespace HealthCare.Api.Services.Interfaces
     {
         Task<PatientListDto> GetByIdAsync(int id);
         Task<PagedResult<PatientListDto>> GetAllAsync(PatientFilter filter);
-        //Task<IEnumerable<PatientListDto>> SearchByName(string name);
 
         Task AddAsync(CreatePatientDto dto);
 

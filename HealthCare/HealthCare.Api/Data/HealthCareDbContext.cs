@@ -43,6 +43,16 @@ namespace HealthCare.Api.Data
                  .HasIndex(hr => new { hr.PatientId, hr.VisitDate })
                  .HasDatabaseName("IX_HealthRecords_Patient_VisitDate");
 
+
+            modelBuilder.Entity<Doctor>()
+                .HasIndex(d => new { d.Specialisation, d.IsActive })
+                .HasDatabaseName("IX_Doctors_Specialisation_IsActive");
+
+            modelBuilder.Entity<DoctorLeaves>()
+                .HasIndex(l => new { l.DoctorId, l.LeaveDate })
+                .HasDatabaseName("IX_Leaves_Doctor_Date");
+
+
             modelBuilder.Entity<Patient>()
                 .HasOne(p => p.User)
                 .WithOne()

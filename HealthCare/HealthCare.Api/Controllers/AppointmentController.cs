@@ -39,12 +39,12 @@ namespace HealthCare.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto,int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _service.AddAsync(dto);
+            await _service.AddAsync(dto,id);
 
             return StatusCode(201, new
             {

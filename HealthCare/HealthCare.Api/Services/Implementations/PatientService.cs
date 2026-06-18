@@ -108,6 +108,19 @@ namespace HealthCare.Api.Services.Implementations
             };
         }
 
+        public async Task UpdateStatusAsync(int id, bool isActive)
+        {
+            var patient = await _repository.GetByIdAsync(id);
+
+            if (patient is null)
+                throw new InvalidOperationException("Patient not found.");
+
+            patient.IsActive = isActive;
+
+            await _repository.UpdateAsync(patient);
+            await _context.SaveChangesAsync();
+        }
+
 
     }
 }

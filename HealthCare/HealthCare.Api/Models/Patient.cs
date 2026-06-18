@@ -16,7 +16,7 @@ namespace HealthCare.Api.Models
         public string? PhoneNumber { get; set; }
 
         public string? InsuranceId { get; set; }
-        public bool IsActived { get; set; } = true;
+        public bool IsActive { get; set; } = true;
 
         public User? User { get; set; }
         [ForeignKey(nameof(UserId))]

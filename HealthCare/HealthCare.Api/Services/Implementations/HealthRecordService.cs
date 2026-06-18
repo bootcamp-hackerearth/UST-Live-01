@@ -14,11 +14,11 @@ namespace HealthCare.Api.Services.Implementations
 {
     public class HealthRecordService : IHealthRecordService
     {
-        private readonly IRepository<HealthRecord> _repository;
+        private readonly IHealthRecordRepository _repository;
         private readonly IMapper _mapper;
         private readonly HealthCareDbContext _context;
 
-        public HealthRecordService(IRepository<HealthRecord> repository, IMapper mapper, HealthCareDbContext context)
+        public HealthRecordService(IHealthRecordRepository repository, IMapper mapper, HealthCareDbContext context)
         {
             _repository = repository;
             _mapper = mapper;
@@ -96,6 +96,24 @@ namespace HealthCare.Api.Services.Implementations
             };
         }
 
-  
+
+
+        public async Task<List<HealthRecordListDto>> GetHealthRecordByPatient(int id)
+        {
+            var records = await _repository.GetHealthRecordByPatient(id);
+
+            return _mapper.Map<List<HealthRecordListDto>>(records);
+        }
+
+
+
+        public async Task<List<HealthRecordListDto>> GetHealthRecordByAppointment(int id)
+        {
+            var records = await _repository.GetHealthRecordByAppointment(id);
+
+            return _mapper.Map<List<HealthRecordListDto>>(records);
+        }
+
+
     }
 }

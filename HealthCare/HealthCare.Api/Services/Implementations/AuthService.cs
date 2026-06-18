@@ -39,7 +39,7 @@ namespace HealthCare.Api.Services.Implementations
             _context = context;
         }
 
-        // ✅ COMMON USER CREATION
+        //  COMMON USER CREATION
         private async Task<IdentityUser> CreateUserAsync(string email, string password, string role)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
@@ -63,14 +63,14 @@ namespace HealthCare.Api.Services.Implementations
             return user;
         }
 
-        // ✅ PATIENT REGISTRATION (SELF REGISTER)
+        //  PATIENT REGISTRATION 
         public async Task RegisterPatientAsync(CreatePatientDto dto)
         {
             var user = await CreateUserAsync(dto.Email, dto.Password, "Patient");
 
             var patient = _mapper.Map<Patient>(dto);
 
-            // ✅ Link Identity UserId
+            //  Link Identity UserId
             patient.UserId = user.Id;
 
             await _patientRepo.AddAsync(patient);
@@ -90,7 +90,7 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        // ✅ LOGIN
+        //  LOGIN
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
@@ -142,7 +142,7 @@ namespace HealthCare.Api.Services.Implementations
             };
         }
 
-        // ✅ JWT TOKEN GENERATION
+        //  JWT TOKEN GENERATION
         private string GenerateJwtToken(
             IdentityUser user,
             string role,
@@ -165,7 +165,7 @@ namespace HealthCare.Api.Services.Implementations
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            // ✅ Add optional IDs
+            //  Add optional IDs
             if (patientId.HasValue)
                 claims.Add(new Claim("PatientId", patientId.Value.ToString()));
 

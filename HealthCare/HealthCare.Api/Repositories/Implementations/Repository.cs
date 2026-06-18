@@ -70,11 +70,6 @@ namespace HealthCare.Api.Repositories.Implementations
             };
         }
 
-        public virtual async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await _dbSet.AnyAsync(predicate);
-        }
-
 
     }
 }
