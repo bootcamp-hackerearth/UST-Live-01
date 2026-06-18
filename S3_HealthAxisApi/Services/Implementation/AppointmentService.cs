@@ -152,6 +152,34 @@ namespace S3_HealthAxisApi.Services.Implementation
             await _appointmentRepository.SaveChangesAsync();
         }
 
+        public async Task UpdateStatusAsync(int id,UpdateAppointmentStatusDto dto)
+        {
+            switch ((AppointmentStatus)dto.Status)
+            {
+                case AppointmentStatus.Confirmed:
+                    await ConfirmAsync(id);
+                    break;
+
+                case AppointmentStatus.Completed:
+                    await CompleteAsync(id);
+                    break;
+
+                case AppointmentStatus.Cancelled:
+                    await CancelAsync(
+                        id,
+                        new CancelAppointmentDto
+                        {
+                            CancellationReason =
+                                dto.CancellationReason ?? "Cancelled"
+                        });
+                    break;
+
+                default:
+                    throw new ArgumentException(
+                        "Invalid appointment status.");
+            }
+        }
+
         public async Task ConfirmAsync(int id)
         {
             var appointment =
@@ -289,12 +317,7 @@ namespace S3_HealthAxisApi.Services.Implementation
             }
         }
 
-        private async Task ValidateUpdateBookingAsync(
-    int appointmentId,
-    int patientId,
-    int doctorId,
-    DateOnly date,
-    int timeSlot)
+        private async Task ValidateUpdateBookingAsync(int appointmentId,int patientId,int doctorId,DateOnly date,int timeSlot)
         {
             var patient =
                 await _patientRepository.GetByIdAsync(patientId);

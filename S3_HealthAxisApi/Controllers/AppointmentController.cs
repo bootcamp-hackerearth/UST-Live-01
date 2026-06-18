@@ -189,6 +189,16 @@ namespace S3_HealthAxisApi.Controllers
             }
         }
 
+        [HttpPut("{id}/status")]
+        [Authorize]
+        public async Task<IActionResult> UpdateStatus(int id, UpdateAppointmentStatusDto dto)
+        {
+            await _appointmentService
+                .UpdateStatusAsync(id, dto);
+
+            return NoContent();
+        }
+
         [HttpPut("{id:int}/cancel")]
         [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> Cancel(

@@ -10,6 +10,7 @@ namespace S3_HealthAxisApi.Repository.Interface
         Task AddAsync(Doctor doctor);
         Task UpdateAsync(Doctor doctor);
         Task<bool> ExistsAsync(int id);
+        Task<IEnumerable<int>> GetBookedSlotsAsync(int doctorId,DateOnly date); 
         Task SaveChangesAsync();
     }
 }

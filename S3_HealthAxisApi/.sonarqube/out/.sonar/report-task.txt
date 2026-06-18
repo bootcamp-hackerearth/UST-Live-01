@@ -2,5 +2,5 @@ projectKey=HealthAxisCore
 serverUrl=http://localhost:9000
 serverVersion=26.1.0.118079
 dashboardUrl=http://localhost:9000/dashboard?id=HealthAxisCore
-ceTaskId=51ac8276-12b9-40e8-814f-6545364aa2d7
-ceTaskUrl=http://localhost:9000/api/ce/task?id=51ac8276-12b9-40e8-814f-6545364aa2d7
+ceTaskId=e18bf498-7046-41e6-bd0e-76352034e972
+ceTaskUrl=http://localhost:9000/api/ce/task?id=e18bf498-7046-41e6-bd0e-76352034e972

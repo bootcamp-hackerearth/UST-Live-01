@@ -68,6 +68,17 @@ namespace S3_HealthAxisApi.Repository.Implementation
             return Task.CompletedTask;
         }
 
+        public async Task<IEnumerable<int>> GetBookedSlotsAsync(int doctorId,DateOnly date)
+        {
+            return await _context.Appointments
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate == date &&
+                    a.Status != AppointmentStatus.Cancelled)
+                .Select(a => (int)a.TimeSlot)
+                .ToListAsync();
+        }
+
         public async Task<bool> ExistsAsync(int id)
         {
             return await _context.Doctors.AnyAsync(d => d.DoctorId == id);

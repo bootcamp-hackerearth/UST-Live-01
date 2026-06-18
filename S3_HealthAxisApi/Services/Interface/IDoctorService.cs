@@ -13,6 +13,7 @@ namespace S3_HealthAxisApi.Services.Interface
         Task<DoctorDto> CreateAsync(CreateDoctorDto dto);
 
         Task UpdateAsync(int id, UpdateDoctorDto dto);
+        Task<IEnumerable<int>> GetAvailabilityAsync(int doctorId, DateOnly date);
 
         Task ActivateAsync(int id);
 

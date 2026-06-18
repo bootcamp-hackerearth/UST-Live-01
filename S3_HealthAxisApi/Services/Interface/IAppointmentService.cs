@@ -20,6 +20,7 @@ namespace S3_HealthAxisApi.Services.Interface
         Task<AppointmentDto> CreateAsync(CreateAppointmentDto dto);
 
         Task UpdateAsync(int id, UpdateAppointmentDto dto);
+        Task UpdateStatusAsync(int id, UpdateAppointmentStatusDto dto);
 
         Task ConfirmAsync(int id);
 

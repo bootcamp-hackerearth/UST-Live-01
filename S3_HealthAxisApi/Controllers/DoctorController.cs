@@ -104,6 +104,18 @@ namespace S3_HealthAxisApi.Controllers
             }
         }
 
+        [HttpGet("{id}/availability")]
+        [Authorize]
+        public async Task<IActionResult> GetAvailability(int id, [FromQuery] DateOnly date)
+        {
+            var slots =
+                await _doctorService.GetAvailabilityAsync(
+                    id,
+                    date);
+
+            return Ok(slots);
+        }
+
         [HttpPut("{id:int}/activate")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Activate(

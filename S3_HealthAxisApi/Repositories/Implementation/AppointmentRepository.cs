@@ -22,7 +22,7 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .OrderByDescending(a => a.ScheduledDate)
-                .ThenBy(a => a.TimeSlot)
+                .ThenBy(a => a.TimeSlot)    
                 .ToListAsync();
         }
 

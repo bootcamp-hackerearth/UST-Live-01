@@ -78,6 +78,27 @@ namespace S3_HealthAxisApi.Services.Implementation
             await _doctorRepository.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<int>> GetAvailabilityAsync(int doctorId,DateOnly date)
+        {
+            var doctor =
+                await _doctorRepository.GetByIdAsync(doctorId);
+
+            if (doctor == null)
+                throw new KeyNotFoundException(
+                    "Doctor not found.");
+
+            var bookedSlots =
+                await _doctorRepository.GetBookedSlotsAsync(
+                    doctorId,
+                    date);
+
+            var allSlots =
+                Enum.GetValues<AppointmentTimeSlot>()
+                    .Select(x => (int)x);
+
+            return allSlots.Except(bookedSlots);
+        }
+
         public async Task ActivateAsync(int id)
         {
             var doctor = await _doctorRepository.GetByIdAsync(id);

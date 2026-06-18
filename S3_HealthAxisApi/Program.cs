@@ -9,6 +9,7 @@ using S3_HealthAxisApi.Services.Implementation;
 using S3_HealthAxisApi.Services.Interface;
 using System.Text;
 using System.Text.Json;
+using S3_HealthAxisApi.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,67 +25,38 @@ builder.Services.AddControllers()
 #endregion
 
 #region Swagger
-
+// ✅ Add Swagger services
 builder.Services.AddEndpointsApiExplorer();
-#region Swagger
-
-builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(options =>
 {
-    // Define the Bearer scheme
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        // ... (Define Type, Scheme, BearerFormat, In, Description)
-    });
-
-    // Assign the requirement globally
-    //options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    //{
-    //    // ... (Map security scheme to requirements)
-    //});
+    options.SwaggerDoc(
+        "v1",
+        new OpenApiInfo
+        {
+            Title = "HealthAxis API",
+            Version = "v1",
+            Description = "Healthcare Appointment Management API"
+        });
+    options.AddSecurityDefinition(
+        "bearer",
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Enter JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIs..."
+        });
+    options.AddSecurityRequirement(document =>
+        new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference(
+                "bearer",
+                document)] = []
+        });
 });
 
-
-#endregion
-//builder.Services.AddSwaggerGen(options =>
-//{
-//    options.SwaggerDoc("v1",
-//        new OpenApiInfo
-//        {
-//            Title = "HealthAxis API",
-//            Version = "v1"
-//        });
-
-//    options.AddSecurityDefinition(
-//        "Bearer",
-//        new OpenApiSecurityScheme
-//        {
-//            Name = "Authorization",
-//            Type = SecuritySchemeType.Http,
-//            Scheme = "bearer",
-//            BearerFormat = "JWT",
-//            In = ParameterLocation.Header,
-//            Description =
-//                "Enter JWT Token. Example: Bearer eyJhbGc..."
-//        });
-
-//    options.AddSecurityRequirement(
-//        new OpenApiSecurityRequirement
-//        {
-//            {
-//                new OpenApiSecurityScheme
-//                {
-//                    Reference = new OpenApiReference
-//                    {
-//                        Type = ReferenceType.SecurityScheme,
-//                        Id = "Bearer"
-//                    }
-//                },
-//                Array.Empty<string>()
-//            }
-//        });
-//});
 
 #endregion
 
@@ -163,11 +135,13 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint(
             "/swagger/v1/swagger.json",
-            "HealthAxis API v1");
+            "HealthAxis API V1");
 
         options.RoutePrefix = string.Empty;
     });
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
