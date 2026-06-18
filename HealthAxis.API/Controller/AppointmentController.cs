@@ -8,7 +8,7 @@ namespace HealthAxis.API.Controller
 {
     [Route("api/appointments")]
     [ApiController]
-    //[Authorize(Roles = "Patient,Doctor,Admin")]
+    [Authorize(Roles = "Patient,Doctor,Admin")]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
