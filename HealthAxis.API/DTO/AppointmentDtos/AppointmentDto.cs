@@ -1,7 +1,7 @@
 ﻿using HealthAxis.API.Enums;
 using System.ComponentModel.DataAnnotations;
 
-namespace HealthAxis.DTO.AppointmentDto
+namespace HealthAxis.API.DTO.AppointmentDtos
 {
     public class AppointmentDto
     {

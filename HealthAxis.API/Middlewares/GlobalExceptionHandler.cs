@@ -1,4 +1,4 @@
-﻿using HealthAxis.API.DTO;
+﻿using HealthAxis.API.DTO.CommonDtos;
 using HealthAxis.API.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 namespace HealthAxis.API.Middlewares

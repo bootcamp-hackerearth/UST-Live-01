@@ -1,4 +1,4 @@
-﻿namespace HealthAxis.API.DTO
+﻿namespace HealthAxis.API.DTO.AppointmentDtos
 {
     public class CreateAppointmentDto
     {

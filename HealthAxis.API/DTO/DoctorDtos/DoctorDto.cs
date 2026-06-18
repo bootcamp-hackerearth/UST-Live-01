@@ -1,7 +1,7 @@
 ﻿using HealthAxis.API.Enums;
 using System;
 
-namespace HealthAxis.DTO.DoctorDto
+namespace HealthAxis.API.DTO.DoctorDtos
 {
     public class DoctorDto
     {

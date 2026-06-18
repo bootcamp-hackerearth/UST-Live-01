@@ -1,12 +1,16 @@
-﻿namespace HealthAxis.API.DTO
+﻿namespace HealthAxis.API.DTO.HealthRecordDtos
 {
-    public class CreateHealthRecordDto
+    public class HealthRecordDto
     {
+        public int RecordId { get; set; }
+
         public int AppointmentId { get; set; }
 
-        //public int PatientId { get; set; }
+        public int PatientId { get; set; }
 
-        //public int DoctorId { get; set; }
+        public int DoctorId { get; set; }
+
+        public string Specialisation { get; set; } = string.Empty;
 
         public DateTime VisitDate { get; set; }
 

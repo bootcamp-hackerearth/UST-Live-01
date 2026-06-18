@@ -1,5 +1,5 @@
-﻿using HealthAxis.API.Services.Interfaces;
-using HealthAxis.DTO.DoctorDto;
+﻿using HealthAxis.API.DTO.DoctorDtos;
+using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

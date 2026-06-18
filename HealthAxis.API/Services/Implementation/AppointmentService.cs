@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
-using HealthAxis.API.DTO;
+using HealthAxis.API.DTO.AppointmentDtos;
 using HealthAxis.API.Enums;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
-using HealthAxis.DTO.AppointmentDto;
 
 namespace HealthAxis.API.Services.Implementation
 {

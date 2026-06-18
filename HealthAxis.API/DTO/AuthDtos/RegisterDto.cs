@@ -1,4 +1,4 @@
-﻿namespace HealthAxis.API.DTO
+﻿namespace HealthAxis.API.DTO.AuthDtos
 {
     public class RegisterDto
     {

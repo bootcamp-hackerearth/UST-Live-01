@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
+using HealthAxis.API.DTO.DoctorDtos;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
-using HealthAxis.DTO.DoctorDto;
 
 namespace HealthAxis.API.Services.Implementation
 {

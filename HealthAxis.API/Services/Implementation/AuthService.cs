@@ -1,4 +1,4 @@
-﻿using HealthAxis.API.DTO;
+﻿using HealthAxis.API.DTO.AuthDtos;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;

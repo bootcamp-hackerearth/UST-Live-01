@@ -1,6 +1,6 @@
 ﻿using HealthAxis.API.Enums;
 
-namespace HealthAxis.API.DTO
+namespace HealthAxis.API.DTO.AppointmentDtos
 {
     public class UpdateAppointmentStatusDto
     {

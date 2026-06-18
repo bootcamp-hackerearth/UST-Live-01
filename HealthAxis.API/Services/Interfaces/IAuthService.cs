@@ -1,4 +1,4 @@
-﻿using HealthAxis.API.DTO;
+﻿using HealthAxis.API.DTO.AuthDtos;
 
 namespace HealthAxis.API.Services.Interfaces
 {

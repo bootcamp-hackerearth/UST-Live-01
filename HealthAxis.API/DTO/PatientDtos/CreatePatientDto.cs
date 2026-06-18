@@ -2,7 +2,7 @@
 using HealthAxis.API.Utilities;
 using System.ComponentModel.DataAnnotations;
 
-namespace HealthAxis.API.DTO
+namespace HealthAxis.API.DTO.PatientDtos
 {
     public class CreatePatientDto
     {
