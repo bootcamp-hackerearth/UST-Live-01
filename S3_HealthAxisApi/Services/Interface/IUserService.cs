@@ -1,18 +1,19 @@
-﻿using S3_HealthAxisApi.Enums;
-using S3_HealthAxisApi.Models;
+﻿using S3_HealthAxisApi.Models;
 
 namespace S3_HealthAxisApi.Services.Interface
 {
     public interface IUserService
     {
-        //Task<User?> GetUserByIdAsync(int id);
+        Task<User?> GetByEmailAsync(string email);
 
-        //Task<User?> GetUserByEmailAsync(string email);
+        Task<User?> GetByRefreshTokenAsync(string refreshToken);
 
-        //Task<IEnumerable<User>> GetUsersByRoleAsync(UserRole role);
+        Task<bool> EmailExistsAsync(string email);
 
-        //Task RegisterAsync(User user, string password);
+        Task CreateAsync(User user);
 
-        //Task<User?> LoginAsync(string email, string password);
+        Task UpdateAsync(User user);
+
+        Task SaveChangesAsync();
     }
 }

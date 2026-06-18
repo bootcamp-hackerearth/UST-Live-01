@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using S3_HealthAxisApi.DTOs.Auth;
+using S3_HealthAxisApi.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Interface;
@@ -14,17 +15,19 @@ namespace S3_HealthAxisApi.Services.Implementation
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
+        private readonly IPatientRepository _patientRepository;
 
-        public AuthService(
+        public AuthService( 
             IUserRepository userRepository,
+            IPatientRepository patientRepository,
             IConfiguration configuration)
         {
             _userRepository = userRepository;
+            _patientRepository = patientRepository;
             _configuration = configuration;
         }
 
-        public async Task<(bool Success, string Message, AuthResponseDto? Data)>
-            RegisterAsync(RegisterDto request)
+        public async Task<(bool Success, string Message, AuthResponseDto? Data)> RegisterAsync(RegisterDto request)
         {
             if (request.Password != request.ConfirmPassword)
             {
@@ -57,6 +60,68 @@ namespace S3_HealthAxisApi.Services.Implementation
             return (
                 true,
                 "User registered successfully.",
+                new AuthResponseDto
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken,
+                    Email = user.Email,
+                    Role = user.Role.ToString()
+                });
+        }
+
+        public async Task<(bool Success,string Message, AuthResponseDto? Data)>RegisterPatientAsync(RegisterPatientDto request)
+        {
+            if (request.Password != request.ConfirmPassword)
+            {
+                return (false, "Passwords do not match.", null);
+            }
+
+            if (await _userRepository.EmailExistsAsync(
+                request.Email))
+            {
+                return (false, "Email already exists.", null);
+            }
+
+            var patient = new Patient
+            {
+                FullName = request.FullName.Trim(),
+                DateOfBirth = request.DateOfBirth,
+                Gender = request.Gender,
+                PhoneNumber = request.PhoneNumber.Trim(),
+                Email = request.Email.Trim().ToLower(),
+                InsuranceNumber = request.InsuranceNumber,
+                IsActive = true
+            };
+
+            await _patientRepository.AddAsync(patient);
+            await _patientRepository.SaveChangesAsync();
+
+            var user = new User
+            {
+                Email = request.Email.Trim().ToLower(),
+                PasswordHash = HashPassword(request.Password),
+                Role = UserRole.Patient,
+                ReferenceId = patient.PatientId
+            };
+
+            await _userRepository.AddAsync(user);
+            await _userRepository.SaveChangesAsync();
+
+            var accessToken =
+                GenerateToken(user);
+
+            var refreshToken =
+                GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime =
+                DateTime.UtcNow.AddDays(7);
+
+            await _userRepository.SaveChangesAsync();
+
+            return (
+                true,
+                "Patient registered successfully.",
                 new AuthResponseDto
                 {
                     AccessToken = accessToken,

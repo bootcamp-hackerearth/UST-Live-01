@@ -6,754 +6,72 @@
       "tool": {
         "name": "Microsoft (R) Visual C# Compiler",
         "version": "5.6.0.0",
-        "fileVersion": "5.6.0-2.26230.102 (caa81fa4971f74880cdab61990cb1b11420939ec)",
+        "fileVersion": "5.6.0-2.26270.133 (96856fd726ffd058fb3dfef0851dbafc7ef3b011)",
         "semanticVersion": "5.6.0",
         "language": "en-US"
       },
       "results": [
         {
-          "ruleId": "CA1050",
-          "level": "note",
-          "message": "Declare types in namespaces",
+          "ruleId": "CS0114",
+          "level": "warning",
+          "message": "'HealthAxisDbContext.Users' hides inherited member 'IdentityUserContext<IdentityUser, string, IdentityUserClaim<string>, IdentityUserLogin<string>, IdentityUserToken<string>, IdentityUserPasskey<string>>.Users'. To make the current member override that implementation, add the override keyword. Otherwise add the new keyword.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Enums/DoctorSpecialization.cs",
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Data/AppDbContext.cs",
                 "region": {
-                  "startLine": 3,
-                  "startColumn": 13,
-                  "endLine": 3,
+                  "startLine": 20,
+                  "startColumn": 28,
+                  "endLine": 20,
                   "endColumn": 33
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 1
+            "warningLevel": 2
           }
         },
         {
-          "ruleId": "CA1050",
-          "level": "note",
-          "message": "Declare types in namespaces",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Enums/Gender.cs",
-                "region": {
-                  "startLine": 1,
-                  "startColumn": 13,
-                  "endLine": 1,
-                  "endColumn": 19
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1050",
-          "level": "note",
-          "message": "Declare types in namespaces",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/DTOs/Patient/UpdatePatientDto.cs",
-                "region": {
-                  "startLine": 3,
-                  "startColumn": 14,
-                  "endLine": 3,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S3903",
+          "ruleId": "CS8981",
           "level": "warning",
-          "message": "Move 'DoctorSpecialisation' into a named namespace.",
+          "message": "The type name 'testing' only contains lower-cased ascii characters. Such names may become reserved for the language.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Enums/DoctorSpecialization.cs",
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260617093733_testing.cs",
                 "region": {
-                  "startLine": 3,
-                  "startColumn": 13,
-                  "endLine": 3,
+                  "startLine": 9,
+                  "startColumn": 26,
+                  "endLine": 9,
                   "endColumn": 33
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 1
+            "warningLevel": 7
           }
         },
         {
-          "ruleId": "S3903",
+          "ruleId": "CS8981",
           "level": "warning",
-          "message": "Move 'Gender' into a named namespace.",
+          "message": "The type name 'testing' only contains lower-cased ascii characters. Such names may become reserved for the language.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Enums/Gender.cs",
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260617093733_testing.Designer.cs",
                 "region": {
-                  "startLine": 1,
-                  "startColumn": 13,
-                  "endLine": 1,
-                  "endColumn": 19
+                  "startLine": 16,
+                  "startColumn": 19,
+                  "endLine": 16,
+                  "endColumn": 26
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S3903",
-          "level": "warning",
-          "message": "Move 'UpdatePatientDto' into a named namespace.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/DTOs/Patient/UpdatePatientDto.cs",
-                "region": {
-                  "startLine": 3,
-                  "startColumn": 14,
-                  "endLine": 3,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1050",
-          "level": "note",
-          "message": "Declare types in namespaces",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Enums/TimeSlot.cs",
-                "region": {
-                  "startLine": 2,
-                  "startColumn": 13,
-                  "endLine": 2,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S3903",
-          "level": "warning",
-          "message": "Move 'AppointmentTimeSlot' into a named namespace.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Enums/TimeSlot.cs",
-                "region": {
-                  "startLine": 2,
-                  "startColumn": 13,
-                  "endLine": 2,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Doctors' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 23,
-                  "endLine": 17,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 72,
-                  "startColumn": 41,
-                  "endLine": 72,
-                  "endColumn": 50
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 109,
-                  "startColumn": 41,
-                  "endLine": 109,
-                  "endColumn": 50
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 121,
-                  "startColumn": 24,
-                  "endLine": 121,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 181,
-                  "startColumn": 23,
-                  "endLine": 181,
-                  "endColumn": 32
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'SqlServer:Identity' 4 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 21,
-                  "startColumn": 37,
-                  "endLine": 21,
-                  "endColumn": 57
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 38,
-                  "startColumn": 37,
-                  "endLine": 38,
-                  "endColumn": 57
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 58,
-                  "startColumn": 37,
-                  "endLine": 58,
-                  "endColumn": 57
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 88,
-                  "startColumn": 37,
-                  "endLine": 88,
-                  "endColumn": 57
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Patients' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 34,
-                  "startColumn": 23,
-                  "endLine": 34,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 78,
-                  "startColumn": 41,
-                  "endLine": 78,
-                  "endColumn": 51
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 115,
-                  "startColumn": 41,
-                  "endLine": 115,
-                  "endColumn": 51
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 130,
-                  "startColumn": 24,
-                  "endLine": 130,
-                  "endColumn": 34
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 184,
-                  "startColumn": 23,
-                  "endLine": 184,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Appointments' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 54,
-                  "startColumn": 23,
-                  "endLine": 54,
-                  "endColumn": 37
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 103,
-                  "startColumn": 41,
-                  "endLine": 103,
-                  "endColumn": 55
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 139,
-                  "startColumn": 24,
-                  "endLine": 139,
-                  "endColumn": 38
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 145,
-                  "startColumn": 24,
-                  "endLine": 145,
-                  "endColumn": 38
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 151,
-                  "startColumn": 24,
-                  "endLine": 151,
-                  "endColumn": 38
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 178,
-                  "startColumn": 23,
-                  "endLine": 178,
-                  "endColumn": 37
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'DoctorId' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 73,
-                  "startColumn": 42,
-                  "endLine": 73,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 110,
-                  "startColumn": 42,
-                  "endLine": 110,
-                  "endColumn": 52
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 122,
-                  "startColumn": 34,
-                  "endLine": 122,
-                  "endColumn": 44
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 140,
-                  "startColumn": 73,
-                  "endLine": 140,
-                  "endColumn": 83
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 146,
-                  "startColumn": 34,
-                  "endLine": 146,
-                  "endColumn": 44
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 163,
-                  "startColumn": 25,
-                  "endLine": 163,
-                  "endColumn": 35
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'PatientId' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 79,
-                  "startColumn": 42,
-                  "endLine": 79,
-                  "endColumn": 53
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 116,
-                  "startColumn": 42,
-                  "endLine": 116,
-                  "endColumn": 53
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 131,
-                  "startColumn": 34,
-                  "endLine": 131,
-                  "endColumn": 45
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 140,
-                  "startColumn": 85,
-                  "endLine": 140,
-                  "endColumn": 96
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 152,
-                  "startColumn": 25,
-                  "endLine": 152,
-                  "endColumn": 36
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 168,
-                  "startColumn": 25,
-                  "endLine": 168,
-                  "endColumn": 36
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'HealthRecords' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 84,
-                  "startColumn": 23,
-                  "endLine": 84,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 156,
-                  "startColumn": 24,
-                  "endLine": 156,
-                  "endColumn": 39
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 162,
-                  "startColumn": 24,
-                  "endLine": 162,
-                  "endColumn": 39
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 167,
-                  "startColumn": 24,
-                  "endLine": 167,
-                  "endColumn": 39
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Migrations/20260615042816_InitialCreate.cs",
-                "region": {
-                  "startLine": 175,
-                  "startColumn": 23,
-                  "endLine": 175,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S2094",
-          "level": "warning",
-          "message": "Remove this empty class, write its code or make it an \"interface\".",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Services/Implementation/UserService.cs",
-                "region": {
-                  "startLine": 3,
-                  "startColumn": 18,
-                  "endLine": 3,
-                  "endColumn": 29
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S6966",
-          "level": "warning",
-          "message": "Await RunAsync instead.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Program.cs",
-                "region": {
-                  "startLine": 24,
-                  "startColumn": 1,
-                  "endLine": 24,
-                  "endColumn": 10
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
+            "warningLevel": 7
           }
         },
         {
@@ -893,20 +211,59 @@
               "paramName": "columns"
             }
           }
+        },
+        {
+          "ruleId": "CA1850",
+          "level": "note",
+          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
+                "region": {
+                  "startLine": 271,
+                  "startColumn": 27,
+                  "endLine": 271,
+                  "endColumn": 52
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxisApi/Services/Implementation/AuthService.cs",
+                "region": {
+                  "startLine": 267,
+                  "startColumn": 23,
+                  "endLine": 267,
+                  "endColumn": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "ComputeTypePropertyKey": "ComputeHash",
+              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
+              "HashCreationIndexPropertyKey": "0",
+              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
+            }
+          }
         }
       ],
       "rules": {
-        "CA1050": {
-          "id": "CA1050",
-          "shortDescription": "Declare types in namespaces",
-          "fullDescription": "Types are declared in namespaces to prevent name collisions and as a way to organize related types in an object hierarchy.",
+        "CA1850": {
+          "id": "CA1850",
+          "shortDescription": "Prefer static 'HashData' method over 'ComputeHash'",
+          "fullDescription": "It is more efficient to use the static 'HashData' method over creating and managing a HashAlgorithm instance to call 'ComputeHash'.",
           "defaultLevel": "note",
-          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1050",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850",
           "properties": {
-            "category": "Design",
+            "category": "Performance",
             "isEnabledByDefault": true,
             "tags": [
-              "PortedFromFxCop",
               "Telemetry",
               "EnabledRuleInAggressiveMode"
             ]
@@ -942,70 +299,31 @@
             ]
           }
         },
-        "S1192": {
-          "id": "S1192",
-          "shortDescription": "String literals should not be duplicated",
-          "fullDescription": "Duplicated string literals make the process of refactoring complex and error-prone, as any change would need to be propagated on all occurrences.",
+        "CS0114": {
+          "id": "CS0114",
+          "shortDescription": "Member hides inherited member; missing override keyword",
           "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1192",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0114)",
           "properties": {
-            "category": "Minor Code Smell",
-            "isEnabledByDefault": false,
+            "category": "Compiler",
+            "isEnabledByDefault": true,
             "tags": [
-              "C#",
-              "MainSourceScope",
-              "SonarWay"
+              "Compiler",
+              "Telemetry"
             ]
           }
         },
-        "S2094": {
-          "id": "S2094",
-          "shortDescription": "Classes should not be empty",
-          "fullDescription": "There is no good excuse for an empty class. If it’s being used simply as a common extension point, it should be replaced with an interface. If it was stubbed in as a placeholder for future development it should be fleshed-out. In any other case, it should be eliminated.",
+        "CS8981": {
+          "id": "CS8981",
+          "shortDescription": "The type name only contains lower-cased ascii characters. Such names may become reserved for the language.",
           "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2094",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8981)",
           "properties": {
-            "category": "Minor Code Smell",
+            "category": "Compiler",
             "isEnabledByDefault": true,
             "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S3903": {
-          "id": "S3903",
-          "shortDescription": "Types should be defined in named namespaces",
-          "fullDescription": "Types are declared in namespaces in order to prevent name collisions and as a way to organize them into the object hierarchy. Types that are defined outside any named namespace are in a global namespace that cannot be referenced in code.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-3903",
-          "properties": {
-            "category": "Major Bug",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
-            ]
-          }
-        },
-        "S6966": {
-          "id": "S6966",
-          "shortDescription": "Awaitable method should be used",
-          "fullDescription": "In an async method, any blocking operations should be avoided.",
-          "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-6966",
-          "properties": {
-            "category": "Major Code Smell",
-            "isEnabledByDefault": true,
-            "tags": [
-              "C#",
-              "MainSourceScope",
-              "TestSourceScope",
-              "SonarWay"
+              "Compiler",
+              "Telemetry"
             ]
           }
         }

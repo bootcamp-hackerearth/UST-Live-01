@@ -2,5 +2,6 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
   </Folder>
+  <Project Path="S3_HealthAxis.Tests/S3_HealthAxis.Tests.csproj" Id="d1a1266b-b9db-48ee-b1f9-6a5ec1b92824" />
   <Project Path="S3_HealthAxisApi/S3_HealthAxisApi.csproj" />
 </Solution>

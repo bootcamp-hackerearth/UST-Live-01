@@ -152,32 +152,96 @@ namespace S3_HealthAxisApi.Services.Implementation
             await _appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task UpdateStatusAsync(int id,UpdateAppointmentStatusDto dto)
+        public async Task UpdateStatusAsync(
+    int id,
+    UpdateAppointmentStatusDto dto)
         {
-            switch ((AppointmentStatus)dto.Status)
+            var appointment =
+                await _appointmentRepository.GetByIdAsync(id);
+
+            if (appointment == null)
+                throw new KeyNotFoundException(
+                    $"Appointment {id} not found.");
+
+            if (!Enum.IsDefined(
+                    typeof(AppointmentStatus),
+                    dto.Status))
             {
+                throw new ArgumentException(
+                    "Invalid appointment status.");
+            }
+
+            var newStatus =
+                (AppointmentStatus)dto.Status;
+
+            if (appointment.Status == AppointmentStatus.Completed)
+            {
+                throw new InvalidOperationException(
+                    "Completed appointments cannot be modified.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled)
+            {
+                throw new InvalidOperationException(
+                    "Cancelled appointments cannot be modified.");
+            }
+
+            switch (newStatus)
+            {
+                case AppointmentStatus.Pending:
+                    throw new InvalidOperationException(
+                        "Cannot manually change appointment back to Pending.");
+
                 case AppointmentStatus.Confirmed:
-                    await ConfirmAsync(id);
+
+                    if (appointment.Status != AppointmentStatus.Pending)
+                    {
+                        throw new InvalidOperationException(
+                            "Only pending appointments can be confirmed.");
+                    }
+
+                    appointment.Status =
+                        AppointmentStatus.Confirmed;
                     break;
 
                 case AppointmentStatus.Completed:
-                    await CompleteAsync(id);
+
+                    if (appointment.Status != AppointmentStatus.Confirmed)
+                    {
+                        throw new InvalidOperationException(
+                            "Only confirmed appointments can be completed.");
+                    }
+
+                    appointment.Status =
+                        AppointmentStatus.Completed;
                     break;
 
                 case AppointmentStatus.Cancelled:
-                    await CancelAsync(
-                        id,
-                        new CancelAppointmentDto
-                        {
-                            CancellationReason =
-                                dto.CancellationReason ?? "Cancelled"
-                        });
+
+                    if (string.IsNullOrWhiteSpace(
+                            dto.CancellationReason))
+                    {
+                        throw new ArgumentException(
+                            "Cancellation reason is required.");
+                    }
+
+                    appointment.Status =
+                        AppointmentStatus.Cancelled;
+
+                    appointment.CancellationReason =
+                        dto.CancellationReason.Trim();
+
                     break;
 
                 default:
                     throw new ArgumentException(
                         "Invalid appointment status.");
             }
+
+            await _appointmentRepository.UpdateAsync(
+                appointment);
+
+            await _appointmentRepository.SaveChangesAsync();
         }
 
         public async Task ConfirmAsync(int id)
@@ -244,6 +308,24 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             await _appointmentRepository.UpdateAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<DoctorScheduleItemDto>> GetDoctorUpcomingScheduleAsync(int doctorId)
+        {
+            var startDate =
+                DateOnly.FromDateTime(DateTime.Today);
+
+            var endDate =
+                startDate.AddDays(7);
+
+            var appointments =
+                await _appointmentRepository
+                    .GetDoctorWeekScheduleAsync(
+                        doctorId,
+                        startDate,
+                        endDate);
+
+            return appointments.Select(MapDoctorScheduleItem);
         }
 
         private async Task ValidateBookingAsync(

@@ -81,6 +81,18 @@ namespace S3_HealthAxisApi.Controllers
             return Ok(schedule);
         }
 
+        [HttpGet("doctor/{doctorId}/upcoming")]
+        [Authorize(Roles = "Admin,Doctor")]
+        public async Task<IActionResult> GetDoctorUpcomingSchedule(int doctorId)
+        {
+            var result =
+                await _appointmentService
+                    .GetDoctorUpcomingScheduleAsync(
+                        doctorId);
+
+            return Ok(result);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> Create(

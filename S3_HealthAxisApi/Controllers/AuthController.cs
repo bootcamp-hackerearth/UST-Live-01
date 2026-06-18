@@ -28,6 +28,20 @@ namespace S3_HealthAxisApi.Controllers
             return Ok(result.Data);
         }
 
+        [HttpPost("register-patient")]
+        public async Task<IActionResult> RegisterPatient(RegisterPatientDto dto)
+        {
+            var result =
+                await _authService.RegisterPatientAsync(dto);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result.Data);
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
@@ -39,7 +53,22 @@ namespace S3_HealthAxisApi.Controllers
             }
 
             return Ok(result.Data);
-        }   
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenDto dto)
+        {
+            var result =
+                await _authService.RefreshTokenAsync(dto);
+
+            if (!result.Success)
+            {
+                return Unauthorized(result.Message);
+            }
+
+            return Ok(result.Data);
+        }
+
 
     }
 }
