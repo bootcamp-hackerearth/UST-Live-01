@@ -42,6 +42,6 @@ namespace HealthApp.Api.Models
         public bool IsActive { get; set; } = true;
         public virtual ICollection<Appointment>? Appointments { get; set; }
         public virtual ICollection<HealthRecord>? HealthRecords { get; set; }
-
+        public ApplicationUser? User { get; set; }
     }
 }

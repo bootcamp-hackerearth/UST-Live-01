@@ -38,5 +38,6 @@ namespace HealthApp.Api.Models
 
         public virtual ICollection<Appointment>? Appointments { get; set; }
         public virtual ICollection<HealthRecord>? HealthRecords { get; set; }
+        public ApplicationUser? User { get; set; }
     }
 }
