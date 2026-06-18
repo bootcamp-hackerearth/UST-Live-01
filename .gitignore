@@ -11,6 +11,8 @@
  
 *.lscache
 
+Logs/
+
 .TestResults/
 # SonarQube
 .sonar/

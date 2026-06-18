@@ -7,12 +7,28 @@ using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Serilog;
 using System.Text;
+using Microsoft.AspNetCore.Authorization.Policy;
+
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(
+        "Logs/healthapp-.log",
+        rollingInterval: RollingInterval.Day)
+    .Enrich.FromLogContext()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog();
+
 
 // Add controllers
 builder.Services.AddControllers();
@@ -20,7 +36,29 @@ builder.Services.AddControllers();
 // Swagger / OpenAPI
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "HealthApp API",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Enter JWT token only. Do not type Bearer."
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("bearer", document)] = []
+    });
+});
+
 
 // Database
 builder.Services.AddDbContext<HealthAppDbContext>(options =>
@@ -73,6 +111,11 @@ builder.Services.AddAuthorization();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddSingleton<
+    IAuthorizationMiddlewareResultHandler,
+    CustomAuthorizationMiddlewareResultHandler>();
+
+
 // CORS - enable later when frontend is connected
 // builder.Services.AddCors(options =>
 // {
@@ -100,6 +143,7 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // AutoMapper
 builder.Services.AddAutoMapper(cfg =>
@@ -139,6 +183,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseExceptionHandler();
+
+app.UseSerilogRequestLogging();
 
 // Enable later when CORS is uncommented above
 // app.UseCors("AllowFrontend");
