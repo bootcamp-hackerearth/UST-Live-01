@@ -2,6 +2,7 @@
 using HealthCareApp.Models;
 using HealthCareApp.Models.Dtos;
 using HealthCareApp.Services.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -57,7 +58,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpPost("change-password")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto request)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

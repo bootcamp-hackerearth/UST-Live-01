@@ -10,6 +10,10 @@ namespace HealthCareApp.Dtos
         [StringLength(100, ErrorMessage = "Doctor name must not exceed 100 characters.")]
         public string FullName { get; set; }
 
+        [Required(ErrorMessage = "Please enter the doctor's email address.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        public string Email { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "Please select the doctor's specialisation.")]
         public SpecialisationType Specialisation { get; set; }
 

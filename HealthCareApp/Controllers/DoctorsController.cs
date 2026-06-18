@@ -15,15 +15,7 @@ namespace HealthCareApp.Controllers
         // Doctor submits profile request.
         // No password is created here.
         // VerificationStatus = Pending, IsActive = false.
-        [HttpPost("register-request")]
-        [AllowAnonymous]
-        public async Task<IActionResult> RegisterRequest([FromBody] DoctorRegistrationRequestDto request)
-        {
-            var result = await service.SubmitDoctorRegistrationRequestAsync(request);
-
-            return Ok(result);
-        }
-
+      
         // Public endpoint:
         // Patients/public users can view active approved doctors.
         [HttpGet]

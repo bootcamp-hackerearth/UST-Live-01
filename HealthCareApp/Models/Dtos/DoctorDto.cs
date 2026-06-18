@@ -18,9 +18,6 @@ namespace HealthCareApp.Dtos
 
         public string Email { get; set; } = string.Empty;
 
-
-        public DoctorVerificationStatus VerificationStatus { get; set; }
-
         [Required(ErrorMessage = "Please enter the doctor's practice start date.")]
         public DateTime PracticeStartDate { get; set; }
 

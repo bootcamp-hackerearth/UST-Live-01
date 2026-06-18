@@ -106,7 +106,6 @@ namespace HealthCareApp.Data
                     YearsOfExperience = 10,
                     ConsultationFee = 5000,
                     IsActive = true,
-                    VerificationStatus = DoctorVerificationStatus.Approved,
                     IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 },
@@ -119,7 +118,6 @@ namespace HealthCareApp.Data
                     YearsOfExperience = 15,
                     ConsultationFee = 1000,
                     IsActive = true,
-                    VerificationStatus = DoctorVerificationStatus.Approved,
                     IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 },
@@ -132,7 +130,6 @@ namespace HealthCareApp.Data
                     YearsOfExperience = 8,
                     ConsultationFee = 700,
                     IsActive = true,
-                    VerificationStatus = DoctorVerificationStatus.Approved,
                     IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 }

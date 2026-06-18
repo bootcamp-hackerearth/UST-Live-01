@@ -46,12 +46,5 @@ namespace HealthCareApp.Repository.Impl
                 .AnyAsync(d => d.Email.ToLower() == email.ToLower(), ct);
         }
 
-
-        public async Task<List<Doctor>> GetPendingDoctorsAsync(CancellationToken ct = default)
-        {
-            return await _context.Doctors
-                .Where(d => d.VerificationStatus == DoctorVerificationStatus.Pending)
-                .ToListAsync(ct);
-        } 
     }
     }

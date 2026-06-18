@@ -1,6 +1,6 @@
 ﻿using HealthCareApp.Dtos;
-
 using HealthCareApp.Enums;
+using HealthCareApp.Models.Dtos;
 
 namespace HealthCareApp.Services
 {
@@ -16,14 +16,10 @@ namespace HealthCareApp.Services
 
         Task<List<DoctorDto>> GetActiveDoctorsBySpecialisationAsync(SpecialisationType specialisation);
 
-        Task<DoctorDto> CreateDoctorAsync(CreateDoctorDto dto);
+        Task<DoctorCreatedResponseDto> CreateDoctorByAdminAsync(CreateDoctorDto dto);
 
         Task<DoctorDto> UpdateDoctorAsync(int doctorId, UpdateDoctorDto dto);
 
         Task<DoctorDto> DeleteDoctorAsync(int doctorId);
-
-        Task<DoctorDto> SubmitDoctorRegistrationRequestAsync(DoctorRegistrationRequestDto dto);
-
-        Task<List<DoctorDto>> GetPendingDoctorsAsync();
     }
 }

@@ -30,8 +30,6 @@ namespace HealthCareApp.Models
         public int ConsultationFee { get; set; }
 
 
-        public DoctorVerificationStatus VerificationStatus { get; set; } = DoctorVerificationStatus.Pending;
-
         public string? IdentityUserId { get; set; }
 
 

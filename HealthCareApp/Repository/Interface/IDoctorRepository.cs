@@ -14,6 +14,5 @@ namespace HealthCareApp.Repository.Interface
 
         Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default);
 
-        Task<List<Doctor>> GetPendingDoctorsAsync(CancellationToken ct = default);
     }
 }

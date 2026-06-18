@@ -1,6 +1,6 @@
 ﻿namespace HealthCareApp.Dtos
 {
-    public class ApproveDoctorResponseDto
+    public class DoctorCreatedResponseDto
     {
         public int DoctorId { get; set; }
 

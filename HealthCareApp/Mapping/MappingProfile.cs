@@ -34,7 +34,6 @@ namespace HealthCareApp.Mapping
             CreateMap<UpdateDoctorDto, Doctor>()
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.FullName));
 
-            CreateMap<DoctorRegistrationRequestDto, Doctor>();
 
             // Appointment mappings
             CreateMap<Appointment, AppointmentDto>()
