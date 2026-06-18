@@ -110,12 +110,21 @@ builder.Services.AddAutoMapper(cfg =>
 var app = builder.Build();
 
 // Seed roles
+
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    await RoleSeeder.SeedRoleAsync(roleManager);
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+    await RoleSeeder.SeedRolesAndAdminAsync(
+        roleManager,
+        userManager,
+        configuration);
 }
+
 
 // Configure HTTP pipeline
 if (app.Environment.IsDevelopment())
