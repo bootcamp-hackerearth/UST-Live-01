@@ -1,5 +1,6 @@
 ﻿using HealthApp.Api.Dtos;
 using HealthApp.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +8,7 @@ namespace HealthApp.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class AuthController(IAuthService service) : ControllerBase
     {
         [HttpPost("register")]
