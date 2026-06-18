@@ -3,7 +3,6 @@ using HealthAxisCore_Api.DTOs.Patient;
 using HealthAxisCore_Api.DTOs.Doctor;
 using HealthAxisCore_Api.DTOs.Appointment;
 using HealthAxisCore_Api.DTOs.HealthRecord;
-using HealthAxisCore_Api.DTOs.User;
 using HealthAxisCore_Api.Models;
 
 namespace HealthAxisCore_Api.Mappings
@@ -12,26 +11,24 @@ namespace HealthAxisCore_Api.Mappings
     {
         public MappingProfile()
         {
-            //  Patient
+            // ✅ Patient
             CreateMap<Patient, PatientResponseDTO>();
             CreateMap<CreatePatientDTO, Patient>();
             CreateMap<UpdatePatientDTO, Patient>();
 
-            //  Doctor
+            // ✅ Doctor
             CreateMap<Doctor, DoctorResponseDTO>();
             CreateMap<CreateDoctorDTO, Doctor>();
 
-            //  Appointment
+            // ✅ Appointment
             CreateMap<Appointment, AppointmentResponseDTO>();
             CreateMap<CreateAppointmentDTO, Appointment>();
 
-            //  HealthRecord
+            // ✅ HealthRecord
             CreateMap<HealthRecord, HealthRecordResponseDTO>();
             CreateMap<CreateHealthRecordDTO, HealthRecord>();
 
-            //  User
-            CreateMap<User, UserResponseDTO>();
-            CreateMap<CreateUserDTO, User>();
+            // ❌ Removed User mappings (Identity handles users)
         }
     }
 }

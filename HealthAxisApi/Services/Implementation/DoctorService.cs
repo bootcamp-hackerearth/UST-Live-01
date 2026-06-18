@@ -4,6 +4,7 @@ using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Interfaces;
 using HealthAxisCore_Api.Enums;
+using HealthAxisCore_Api.Exceptions;
 
 namespace HealthAxisCore_Api.Services.Implementations
 {
@@ -18,25 +19,25 @@ namespace HealthAxisCore_Api.Services.Implementations
             _mapper = mapper;
         }
 
-        //  Get All Doctors
+        // ✅ Get All Doctors
         public async Task<IEnumerable<DoctorResponseDTO>> GetAllAsync()
         {
             var doctors = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
         }
 
-        //  Get Doctor By Id
+        // ✅ Get Doctor By Id
         public async Task<DoctorResponseDTO?> GetByIdAsync(int id)
         {
             var doctor = await _repository.GetByIdAsync(id);
 
             if (doctor == null)
-                return null;
+                throw new EntityNotFoundException("Doctor not found");
 
             return _mapper.Map<DoctorResponseDTO>(doctor);
         }
 
-        //  Create Doctor
+        // ✅ Create Doctor
         public async Task<DoctorResponseDTO> CreateAsync(CreateDoctorDTO dto)
         {
             var doctor = _mapper.Map<Doctor>(dto);
@@ -48,13 +49,13 @@ namespace HealthAxisCore_Api.Services.Implementations
             return _mapper.Map<DoctorResponseDTO>(doctor);
         }
 
-        //  Update Doctor
+        // ✅ Update Doctor
         public async Task<bool> UpdateAsync(int id, CreateDoctorDTO dto)
         {
             var doctor = await _repository.GetByIdAsync(id);
 
             if (doctor == null)
-                return false;
+                throw new EntityNotFoundException("Doctor not found");
 
             _mapper.Map(dto, doctor);
 
@@ -63,34 +64,37 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        //  Delete Doctor
+        // ✅ Delete Doctor
         public async Task<bool> DeleteAsync(int id)
         {
             var exists = await _repository.Exists(id);
 
             if (!exists)
-                return false;
+                throw new EntityNotFoundException("Doctor not found");
 
             await _repository.DeleteAsync(id);
 
             return true;
         }
 
-        //  Filter Doctors 
-        public async Task<IEnumerable<DoctorResponseDTO>> FilterAsync(string? name, SpecialisationType? specialization, bool? isActive)
+        // ✅ Filter Doctors
+        public async Task<IEnumerable<DoctorResponseDTO>> FilterAsync(
+            string? name,
+            SpecialisationType? specialization,
+            bool? isActive)
         {
             var doctors = await _repository.GetDoctors(name, specialization, isActive);
 
             return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
         }
 
-        //  Activate / Deactivate Doctor (Business Logic ✅)
+        // ✅ Activate / Deactivate Doctor
         public async Task<bool> SetStatusAsync(int doctorId, bool status)
         {
             var doctor = await _repository.GetByIdAsync(doctorId);
 
             if (doctor == null)
-                return false;
+                throw new EntityNotFoundException("Doctor not found");
 
             await _repository.SetStatus(doctorId, status);
 

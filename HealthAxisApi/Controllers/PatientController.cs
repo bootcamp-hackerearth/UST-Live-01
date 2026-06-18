@@ -1,0 +1,87 @@
+﻿using HealthAxisCore_Api.DTOs.Patient;
+using HealthAxisCore_Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HealthAxisCore_Api.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class PatientController : ControllerBase
+    {
+        private readonly IPatientService _service;
+
+        public PatientController(IPatientService service)
+        {
+            _service = service;
+        }
+
+        // ✅ Public endpoint
+        [HttpGet("greet")]
+        [AllowAnonymous]
+        public IActionResult Greet()
+        {
+            return Ok(new { message = "Welcome to Patient API" });
+        }
+
+        // ✅ Get All (Admin)
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _service.GetAllAsync());
+        }
+
+        // ✅ Get By Id
+        [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Doctor")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await _service.GetByIdAsync(id);
+            if (result == null) return NotFound();
+
+            return Ok(result);
+        }
+
+        // ✅ Create (Admin)
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> Create(CreatePatientDTO dto)
+        {
+            var result = await _service.CreateAsync(dto);
+
+            return CreatedAtAction(nameof(GetById), new { id = result.PatientId }, result);
+        }
+
+        // ✅ Update
+        [HttpPut("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, UpdatePatientDTO dto)
+        {
+            var updated = await _service.UpdateAsync(id, dto);
+            if (!updated) return NotFound();
+
+            return Ok("Updated successfully");
+        }
+
+        // ✅ Delete
+        [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var deleted = await _service.DeleteAsync(id);
+            if (!deleted) return NotFound();
+
+            return Ok("Deleted successfully");
+        }
+
+        // ✅ Search
+        [HttpGet("search")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Doctor")]
+        public async Task<IActionResult> Search(string? name, string? email)
+        {
+            return Ok(await _service.SearchAsync(name, email));
+        }
+    }
+}

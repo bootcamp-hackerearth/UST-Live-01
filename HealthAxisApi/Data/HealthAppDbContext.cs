@@ -1,16 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using HealthAxisCore_Api.Models;
 
 namespace HealthAxisCore_Api.Data
 {
-    public class HealthAppDbContext : DbContext
+    // ✅ IMPORTANT: Inherit from IdentityDbContext<ApplicationUser>
+    public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
     {
         public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options)
             : base(options)
         {
         }
 
-        public DbSet<User> Users { get; set; }
+        // ✅ REMOVE old User DbSet (Identity handles users)
+        // public DbSet<User> Users { get; set; }
+
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
@@ -18,7 +22,10 @@ namespace HealthAxisCore_Api.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Fix multiple cascade paths issue
+            // ✅ VERY IMPORTANT: Call Identity configuration FIRST
+            base.OnModelCreating(modelBuilder);
+
+            // ✅ Fix multiple cascade paths issue
 
             // HealthRecord → Patient
             modelBuilder.Entity<HealthRecord>()
@@ -54,8 +61,6 @@ namespace HealthAxisCore_Api.Data
                 .WithMany()
                 .HasForeignKey(a => a.DoctorId)
                 .OnDelete(DeleteBehavior.NoAction);
-
-            base.OnModelCreating(modelBuilder);
         }
     }
 }
