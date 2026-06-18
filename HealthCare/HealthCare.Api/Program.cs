@@ -1,5 +1,6 @@
 using HealthCare.Api.Data;
 using HealthCare.Api.Mapping;
+using HealthCare.Api.Middleware;
 using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Implementations;
@@ -7,22 +8,30 @@ using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
 
 //appconfig
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
+
+builder.Services.AddOpenApi();
+//Mapping
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
+
+//Exception Handler
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddControllers();
 
 //DB conn
 builder.Services.AddDbContext<HealthCareDbContext>(options =>
@@ -60,10 +69,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 
-
-
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository,DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository,AppointmentRepository>();
@@ -75,14 +81,10 @@ builder.Services.AddScoped<IAppointmentService,AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService,HealthRecordService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-
-
-builder.Services.AddOpenApi();
-
 var app = builder.Build();
+app.UseExceptionHandler();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -90,9 +92,6 @@ using (var scope = app.Services.CreateScope())
     await RoleSeeder.SeedRoleAsync(roleManager);
 
 }
-
-
-//
 
 if (app.Environment.IsDevelopment())
 {
@@ -103,6 +102,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

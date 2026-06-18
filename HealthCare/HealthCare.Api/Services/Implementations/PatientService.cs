@@ -1,9 +1,10 @@
-﻿using HealthCare.Api.Repositories.Interfaces;
-using HealthCare.Api.Services.Interfaces;
-using HealthCare.Api.Models;
+﻿using AutoMapper;
 using HealthCare.Api.Data;
 using HealthCare.Api.DTOs.Patient;
-using AutoMapper;
+using HealthCare.Api.Exceptions;
+using HealthCare.Api.Models;
+using HealthCare.Api.Repositories.Interfaces;
+using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace HealthCare.Api.Services.Implementations
@@ -32,7 +33,7 @@ namespace HealthCare.Api.Services.Implementations
         {
             var patient = await _repository.GetByIdAsync(id);
             if (patient == null)
-                return;
+                throw new PatientNotFoundException(id);
             _mapper.Map(dto,patient);
 
             await _repository.UpdateAsync(patient);
@@ -45,10 +46,10 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PatientListDto?>GetByIdAsync(int id)
+        public async Task<PatientListDto>GetByIdAsync(int id)
         {
             var patient= await _repository.GetByIdAsync(id);
-            return patient == null ? null : _mapper.Map<PatientListDto?>(patient);
+            return patient == null ? null : _mapper.Map<PatientListDto>(patient);
         }
 
         public async Task <IEnumerable<PatientListDto>>GetAllAsync()

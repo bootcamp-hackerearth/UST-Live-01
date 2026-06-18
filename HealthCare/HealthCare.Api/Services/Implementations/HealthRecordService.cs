@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
 using HealthCare.Api.DTOs.HealthRecord;
+using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
@@ -31,7 +32,8 @@ namespace HealthCare.Api.Services.Implementations
         public async Task UpdateAsync(int id,UpdateHealthRecordDto dto)
         {
             var record = await _repository.GetByIdAsync(id);
-            if (record == null) return;
+            if (record == null)
+                throw new HealthRecordNotFoundException(id);
 
             _mapper.Map(dto,record);
 
@@ -45,7 +47,7 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<HealthRecordListDto?> GetByIdAsync(int id)
+        public async Task<HealthRecordListDto> GetByIdAsync(int id)
         {
             var record = await _repository.GetByIdAsync(id);
             return record == null ? null : _mapper.Map<HealthRecordListDto?>(record);

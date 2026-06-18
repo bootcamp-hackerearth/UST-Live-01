@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
 using HealthCare.Api.DTOs.Doctor;
+using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
@@ -31,7 +32,7 @@ namespace HealthCare.Api.Services.Implementations
         {
             var doctor = await _repository.GetByIdAsync(id);
             if (doctor == null)
-                return;
+                throw new DoctorNotFoundException(id);
             _mapper.Map(dto, doctor);
 
             await _repository.UpdateAsync(doctor);

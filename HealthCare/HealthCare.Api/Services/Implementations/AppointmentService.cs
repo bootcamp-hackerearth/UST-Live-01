@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
 using HealthCare.Api.DTOs.Appointments;
+using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
@@ -31,7 +32,7 @@ namespace HealthCare.Api.Services.Implementations
         {
             var appointment = await _repository.GetByIdAsync(id);
             if (appointment == null)
-                return;
+                throw new AppointmentNotFoundException(id);
             _mapper.Map(dto, appointment);
 
             await _repository.UpdateAsync(appointment);

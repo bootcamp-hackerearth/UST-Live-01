@@ -4,12 +4,18 @@ namespace HealthCare.Api.Repositories.Interfaces
 {
     public interface IRepository<T> where T : class
     {
-        Task <T> AddAsync(T entity, CancellationToken ct = default);
-        Task  UpdateAsync(T entity, CancellationToken ct = default);
-        Task  DeleteAsync(int id);
-        Task <T?> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync(CancellationToken ct=default);
-        //Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<T> AddAsync(T entity, CancellationToken ct = default);
+        Task UpdateAsync(T entity, CancellationToken ct = default);
+        Task DeleteAsync(int id);
+        Task<T?> GetByIdAsync(int id);
+        Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default);
+
+        //Task<PagedResult<T>> GetPagedAsync(
+        //    int pageNumber,
+        //    int pageSize,
+        //    Expression<Func<T, bool>>? filter = null,
+        //    CancellationToken ct = default);
+
 
     }
 }

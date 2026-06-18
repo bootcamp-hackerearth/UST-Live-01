@@ -16,19 +16,19 @@ namespace HealthCare.Api.Mapping
             CreateMap<CreatePatientDto, Patient>();
             CreateMap<UpdatePatientDto, Patient>();
             CreateMap<PatientListDto, Patient>();
-            CreateMap<PatientDto, Patient>();
+            //CreateMap<PatientDto, Patient>();
 
             //Doctor
             CreateMap<CreateDoctorDto, Doctor>();
             CreateMap<UpdateDoctorDto, Doctor>();
             CreateMap<DoctorListDto, Doctor>();
-            CreateMap<DoctorDto, Doctor>();
+           // CreateMap<DoctorDto, Doctor>();
 
             //Appointment
             CreateMap<CreateAppointmentDto, Appointment>();
             CreateMap<UpdateAppointmentDto, Appointment>();
             CreateMap<AppointmentListDto, Appointment>();
-            CreateMap<AppointmentDto, Appointment>();
+            //CreateMap<AppointmentDto, Appointment>();
 
             //HealthRecord
             CreateMap<CreateHealthRecordDto, HealthRecord>();

@@ -52,5 +52,34 @@ namespace HealthCare.Api.Repositories.Implementations
             return await _dbSet.AnyAsync(predicate);
         }
 
+        //Pagination
+    //    public virtual async Task<PagedResult<T>> GetPagedAsync(
+    //int pageNumber,
+    //int pageSize,
+    //Expression<Func<T, bool>>? filter = null,
+    //CancellationToken ct = default)
+    //    {
+    //        IQueryable<T> query = _dbSet.AsNoTracking();
+
+    //        if (filter != null)
+    //            query = query.Where(filter);
+
+    //        var totalCount = await query.CountAsync(ct);
+
+    //        var items = await query
+    //            .Skip((pageNumber - 1) * pageSize)
+    //            .Take(pageSize)
+    //            .ToListAsync(ct);
+
+    //        return new PagedResult<T>
+    //        {
+    //            Items = items,
+    //            TotalCount = totalCount,
+    //            PageNumber = pageNumber,
+    //            PageSize = pageSize
+    //        };
+    //    }
+
+
     }
 }
