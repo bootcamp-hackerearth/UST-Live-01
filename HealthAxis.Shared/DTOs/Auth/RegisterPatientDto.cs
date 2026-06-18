@@ -6,10 +6,6 @@ namespace HealthAxis.API.DTOs.Auth
 {
     public class RegisterPatientDto
     {
-        [Required]
-        [StringLength(50)]
-        public string UserName { get; set; } = string.Empty;
-
         [Required(ErrorMessage = Helpers.FullNameRequired)]
         [StringLength(ValidationLimits.FullNameLength)]
         [RegularExpression(

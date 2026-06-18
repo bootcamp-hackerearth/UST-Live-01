@@ -46,9 +46,6 @@ namespace HealthAxis.API.Data
 
                 entity.HasIndex(patient => patient.Email)
                     .IsUnique();
-
-                entity.HasIndex(patient => patient.PhoneNumber)
-                    .IsUnique();
             });
 
             modelBuilder.Entity<Doctor>(entity =>

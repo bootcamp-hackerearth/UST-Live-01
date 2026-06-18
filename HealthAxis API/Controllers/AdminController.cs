@@ -1,5 +1,9 @@
-﻿using HealthAxis.API.DTOs.Doctors;
+﻿using HealthAxis.API.DTOs.Admin;
+using HealthAxis.API.DTOs.Doctors;
+using HealthAxis.API.DTOs.HealthRecords;
+using HealthAxis.API.DTOs.Patients;
 using HealthAxis.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,36 +11,63 @@ namespace HealthAxis.API.Controllers
 {
     [Route("api/admin")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
+    [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = "Admin")]
     public class AdminController : ControllerBase
     {
-        private readonly IDoctorService _doctorService;
-        private readonly IAppointmentService _appointmentService;
+        private readonly IAdminService _adminService;
 
         public AdminController(
-            IDoctorService doctorService,
-            IAppointmentService appointmentService)
+            IAdminService adminService)
         {
-            _doctorService = doctorService;
-            _appointmentService = appointmentService;
+            _adminService = adminService;
+        }
+
+        [HttpGet("patients")]
+        public async Task<IActionResult> GetPatients(
+            CancellationToken ct)
+        {
+            var patients =
+                await _adminService.GetPatientsAsync(ct);
+
+            return Ok(patients);
+        }
+
+        [HttpPut("patients/{id:int}")]
+        public async Task<IActionResult> UpdatePatient(
+            int id,
+            PatientUpdateDto request,
+            CancellationToken ct)
+        {
+            var patient =
+                await _adminService.UpdatePatientAsync(
+                    id,
+                    request,
+                    ct);
+
+            return Ok(patient);
         }
 
         [HttpGet("doctors")]
-        public async Task<IActionResult> GetDoctors(CancellationToken ct)
+        public async Task<IActionResult> GetDoctors(
+            CancellationToken ct)
         {
             var doctors =
-                await _doctorService.GetAllAsync(ct);
+                await _adminService.GetDoctorsAsync(ct);
 
             return Ok(doctors);
         }
 
         [HttpPost("doctors")]
         public async Task<IActionResult> CreateDoctor(
-            DoctorCreateDto request,
+            AdminDoctorCreateDto request,
             CancellationToken ct)
         {
             var doctor =
-                await _doctorService.CreateAsync(request, ct);
+                await _adminService.CreateDoctorAsync(
+                    request,
+                    ct);
 
             return Ok(doctor);
         }
@@ -48,14 +79,27 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var doctor =
-                await _doctorService.UpdateAsync(id, request, ct);
-
-            if (doctor == null)
-            {
-                return NotFound(new { message = "Doctor not found." });
-            }
+                await _adminService.UpdateDoctorAsync(
+                    id,
+                    request,
+                    ct);
 
             return Ok(doctor);
+        }
+
+        [HttpPut("health-records/{id:int}")]
+        public async Task<IActionResult> UpdateHealthRecord(
+            int id,
+            HealthRecordUpdateDto request,
+            CancellationToken ct)
+        {
+            var healthRecord =
+                await _adminService.UpdateHealthRecordAsync(
+                    id,
+                    request,
+                    ct);
+
+            return Ok(healthRecord);
         }
 
         [HttpGet("reports/appointments")]
@@ -63,7 +107,7 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var report =
-                await _appointmentService.GetAppointmentReportAsync(ct);
+                await _adminService.GetAppointmentReportAsync(ct);
 
             return Ok(report);
         }

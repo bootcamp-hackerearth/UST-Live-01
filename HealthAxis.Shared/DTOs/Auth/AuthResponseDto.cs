@@ -1,19 +1,21 @@
-﻿namespace HealthAxis.Shared.DTOs.Auth
+﻿namespace HealthAxis.API.DTOs.Auth
 {
     public class AuthResponseDto
     {
-        public int UserId { get; set; }
-
-        public string Email { get; set; } = string.Empty;
-
-        public string Message { get; set; } = string.Empty;
-
-        public string Role { get; set; } = string.Empty;
-
         public string AccessToken { get; set; } = string.Empty;
 
         public string RefreshToken { get; set; } = string.Empty;
 
+        public string Message { get; set; } = string.Empty;
+
         public int ExpiresIn { get; set; }
+
+        public string UserId { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public string Role { get; set; } = string.Empty;
+
+        public int ReferenceId { get; set; }
     }
 }

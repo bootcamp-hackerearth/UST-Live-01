@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -25,20 +26,21 @@ builder.Services.AddControllers()
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-// Register AutoMapper.
+// AutoMapper.
 builder.Services.AddAutoMapper(config =>
 {
     config.AddProfile<MappingProfile>();
 });
 
-// Register DbContext.
+// DbContext.
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
 {
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("HealthAxisDb"));
 });
 
-// Register Identity.
+// Identity.
+// Roles are not seeded because patient role is stored as ClaimTypes.Role.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
     options.User.RequireUniqueEmail = true;
@@ -51,13 +53,45 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<HealthAxisDbContext>()
 .AddDefaultTokenProviders();
 
-// Register JWT authentication.
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+// Important: prevent Identity cookie redirects for API requests.
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Events.OnRedirectToLogin = context =>
     {
-        var jwt = builder.Configuration.GetSection("Jwt");
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        return Task.CompletedTask;
+    };
 
-        options.TokenValidationParameters = new TokenValidationParameters
+    options.Events.OnRedirectToAccessDenied = context =>
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return Task.CompletedTask;
+    };
+});
+
+// JWT Authentication.
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+
+    options.DefaultChallengeScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+
+    options.DefaultScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    IConfigurationSection jwt =
+        builder.Configuration.GetSection("Jwt");
+
+    string jwtKey =
+        jwt["Key"]
+        ?? throw new InvalidOperationException("JWT Key is missing.");
+
+    options.TokenValidationParameters =
+        new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidIssuer = jwt["Issuer"],
@@ -69,13 +103,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwt["Key"]!)),
+                Encoding.UTF8.GetBytes(jwtKey)),
 
             RoleClaimType = ClaimTypes.Role,
 
             ClockSkew = TimeSpan.Zero
         };
-    });
+});
 
 builder.Services.AddAuthorization();
 
@@ -92,7 +126,50 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Register repositories.
+// Swagger.
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc(
+        "v1",
+        new OpenApiInfo
+        {
+            Title = "HealthAxis API",
+            Version = "v1",
+            Description = "API for HealthAxis Healthcare System"
+        });
+
+    options.AddSecurityDefinition(
+        "Bearer",
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Paste only the JWT token. Do not type the word Bearer manually."
+        });
+
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
+});
+
+// Repositories.
 builder.Services.AddScoped(
     typeof(IRepository<>),
     typeof(Repository<>));
@@ -113,7 +190,7 @@ builder.Services.AddScoped<
     IHealthRecordRepository,
     HealthRecordRepository>();
 
-// Register services.
+// Services.
 builder.Services.AddScoped<
     IAuthService,
     AuthService>();
@@ -134,10 +211,29 @@ builder.Services.AddScoped<
     IHealthRecordService,
     HealthRecordService>();
 
+builder.Services.AddScoped<
+    IAdminService,
+    AdminService>();
+
 var app = builder.Build();
 
 // Global exception handling.
 app.UseExceptionHandler();
+
+// Swagger middleware.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint(
+            "/swagger/v1/swagger.json",
+            "HealthAxis API v1");
+
+        options.RoutePrefix = string.Empty;
+    });
+}
 
 app.UseHttpsRedirection();
 
@@ -149,11 +245,5 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapGet("/", () => new
-{
-    Application = "HealthAxis API",
-    Status = "Running",
-    Message = "Welcome to HealthAxis API"
-});
-
 app.Run();
+

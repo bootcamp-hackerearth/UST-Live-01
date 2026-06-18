@@ -57,40 +57,37 @@ namespace HealthAxis.API.Services
             return _mapper.Map<AppointmentReadDto>(appointment);
         }
 
-        public async Task<AppointmentReportDto> GetAppointmentReportAsync(
+        public async Task<List<AppointmentReportDto>> GetAppointmentReportAsync(
             CancellationToken ct = default)
         {
-            int totalAppointments =
-                await _appointmentRepository.CountAsync(null, ct);
+            List<Appointment> appointments =
+                await _appointmentRepository.GetAllAsync(ct);
 
-            int scheduledAppointments =
-                await _appointmentRepository.CountAsync(
-                    appointment => appointment.Status == AppointmentStatus.Scheduled,
-                    ct);
+            List<AppointmentReportDto> report =
+                appointments
+                    .GroupBy(appointment => appointment.ScheduledDate.Date)
+                    .Select(group => new AppointmentReportDto
+                    {
+                        Date = group.Key,
 
-            int confirmedAppointments =
-                await _appointmentRepository.CountAsync(
-                    appointment => appointment.Status == AppointmentStatus.Confirmed,
-                    ct);
+                        TotalCount = group.Count(),
 
-            int completedAppointments =
-                await _appointmentRepository.CountAsync(
-                    appointment => appointment.Status == AppointmentStatus.Completed,
-                    ct);
+                        ScheduledCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Scheduled),
 
-            int cancelledAppointments =
-                await _appointmentRepository.CountAsync(
-                    appointment => appointment.Status == AppointmentStatus.Cancelled,
-                    ct);
+                        ConfirmedCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Confirmed),
 
-            return new AppointmentReportDto
-            {
-                TotalAppointments = totalAppointments,
-                ScheduledAppointments = scheduledAppointments,
-                ConfirmedAppointments = confirmedAppointments,
-                CompletedAppointments = completedAppointments,
-                CancelledAppointments = cancelledAppointments
-            };
+                        CancelledCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Cancelled),
+
+                        CompletedCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Completed)
+                    })
+                    .OrderBy(reportItem => reportItem.Date)
+                    .ToList();
+
+            return report;
         }
     }
 }

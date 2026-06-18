@@ -11,7 +11,7 @@ namespace HealthAxis.API.Services
             AppointmentStatusUpdateDto statusUpdateDto,
             CancellationToken ct = default);
 
-        Task<AppointmentReportDto> GetAppointmentReportAsync(
+        Task<List<AppointmentReportDto>> GetAppointmentReportAsync(
             CancellationToken ct = default);
     }
 }

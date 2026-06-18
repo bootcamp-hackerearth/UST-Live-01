@@ -1,5 +1,6 @@
 ﻿using HealthAxis.API.DTOs.Patients;
 using HealthAxis.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,9 @@ namespace HealthAxis.API.Controllers
 {
     [Route("api/patients")]
     [ApiController]
-    [Authorize(Roles = "Patient,Admin")]
+    [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = "Patient,Admin")]
     public class PatientsController : ControllerBase
     {
         private readonly IPatientService _patientService;
@@ -19,15 +22,31 @@ namespace HealthAxis.API.Controllers
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(
-            int id,
-            CancellationToken ct)
+     int id,
+     CancellationToken ct)
         {
+            bool isAdmin =
+                User.IsInRole("Admin");
+
+            string? referenceIdClaim =
+                User.FindFirst("ReferenceId")?.Value;
+
+            int.TryParse(referenceIdClaim, out int loggedInReferenceId);
+
+            if (!isAdmin && loggedInReferenceId != id)
+            {
+                return Forbid();
+            }
+
             PatientReadDto? patient =
                 await _patientService.GetByIdAsync(id, ct);
 
             if (patient == null)
             {
-                return NotFound(new { message = "Patient not found." });
+                return NotFound(new
+                {
+                    message = "Patient not found."
+                });
             }
 
             return Ok(patient);
@@ -44,7 +63,10 @@ namespace HealthAxis.API.Controllers
 
             if (patient == null)
             {
-                return NotFound(new { message = "Patient not found." });
+                return NotFound(new
+                {
+                    message = "Patient not found."
+                });
             }
 
             return Ok(patient);
