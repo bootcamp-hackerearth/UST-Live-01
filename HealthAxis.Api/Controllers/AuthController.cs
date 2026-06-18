@@ -1,56 +1,14 @@
-﻿using HealthAxisCore_Api.Models;
-using HealthAxisCore_Api.Models.DTOs;
+using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
 namespace HealthAxisCore_Api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class AuthController(IAuthService service) : ControllerBase
+    [Route("api/auth")]
+    public class AuthController(IAuthService authService) : ControllerBase
     {
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto request)
-        {
-            var (success, message, userId) = await service.Register(request);
-
-            if (!success)
-            {
-                return BadRequest(new { message });
-            }
-
-            return Ok(new { message, userId });
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto request)
-        {
-            var (success, message, token, ExpiresIn) = await service.Login(request);
-
-            if (!success)
-            {
-                return Unauthorized(new { message });
-            }
-            AuthResponse response = new AuthResponse
-            {
-                AccessToken = token,
-                Message = message,
-                ExpiresIn = ExpiresIn
-            };
-
-            return Ok(response);
-        }
-
-        [HttpDelete("users/{id}")]
-        public async Task<IActionResult> DeleteUser(string id)
-        {
-            var (success, message) = await service.DeleteUser(id);
-            if (!success)
-                return NotFound(new { message });
-
-            return Ok(new { message });
-        }
-
+        [HttpPost("register")] public async Task<ActionResult<AuthResponseDto>> Register(RegisterPatientDto request, CancellationToken ct) => Ok(await authService.RegisterPatientAsync(request, ct));
+        [HttpPost("login")] public async Task<ActionResult<AuthResponseDto>> Login(LoginDto request, CancellationToken ct) => Ok(await authService.LoginAsync(request, ct));
+        [HttpPost("refresh-token")] public async Task<ActionResult<AuthResponseDto>> RefreshToken(RefreshTokenRequestDto request, CancellationToken ct) => Ok(await authService.RefreshTokenAsync(request, ct));
     }
 }

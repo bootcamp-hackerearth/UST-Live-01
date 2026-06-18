@@ -1,36 +1,96 @@
-﻿using AutoMapper;
+using AutoMapper;
+using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
-using HealthAxisCore_Api.Models.DTOs;
-using HealthAxisCore_Api.Repositories.Interface;
+using HealthAxisCore_Api.Models.Dtos;
+using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
+using System.Security.Claims;
 
 namespace HealthAxisCore_Api.Services.Implementation
 {
-    public class HealthRecordService(IHealthRecordRepository repository, IMapper mapper) : IHealthRecordService
+    public class HealthRecordService(
+        IHealthRecordRepository healthRecordRepository,
+        IAppointmentRepository appointmentRepository,
+        IMapper mapper
+    ) : IHealthRecordService
     {
-        public async Task<HealthRecordDto> AddAsync(HealthRecordDto entity)
-        {
-            var healthRecord = mapper.Map<HealthRecord>(entity);
-            var savedEntity = await repository.CreateAsync(healthRecord);
-            return mapper.Map<HealthRecordDto>(savedEntity);
-        }
+        public async Task<List<HealthRecordDto>> GetByPatientIdAsync(
+            int patientId,
+            ClaimsPrincipal user,
+            CancellationToken ct = default
+        ) =>
+            mapper.Map<List<HealthRecordDto>>(
+                await healthRecordRepository.GetByPatientIdAsync(
+                    patientId,
+                    ct
+                )
+            );
 
-        public async Task<List<HealthRecordDto>> GetAllAsync()
-        {
-            return mapper.Map<List<HealthRecordDto>>(await  repository.GetAllAsync());
-        }
+        public async Task<HealthRecordDto> GetByIdAsync(
+            int id,
+            ClaimsPrincipal user,
+            CancellationToken ct = default
+        ) =>
+            mapper.Map<HealthRecordDto>(
+                await healthRecordRepository.GetDetailsAsync(
+                    id,
+                    ct
+                )
+                ?? throw new NotFoundException(
+                    "Health record not found"
+                )
+            );
 
-        public async Task<HealthRecordDto> GetByIdAsync(int id)
+        public async Task<HealthRecordDto> CreateAsync(
+            CreateHealthRecordDto request,
+            ClaimsPrincipal user,
+            CancellationToken ct = default
+        )
         {
-            return mapper.Map<HealthRecordDto>(await repository.GetByIdAsync(id));
-        }
+            var doctorId = Convert.ToInt32(
+                user.FindFirst("DoctorId")?.Value
+            );
 
-        public async Task<HealthRecordDto> UpdateAsync(int id, HealthRecordDto entity)
-        {
-            var healthRecord = mapper.Map<HealthRecord>(entity);
-            healthRecord.HealthRecordId = id;
-            var updated = await repository.UpdateAsync(id, healthRecord);
-            return mapper.Map<HealthRecordDto>(updated);
+            var appt =
+                await appointmentRepository.GetDetailsAsync(
+                    request.AppointmentId,
+                    ct
+                )
+                ?? throw new NotFoundException(
+                    "Appointment not found"
+                );
+
+            if (appt.DoctorId != doctorId)
+            {
+                throw new UnauthorizedException(
+                    "Cannot complete another doctor's appointment"
+                );
+            }
+
+            var record = mapper.Map<HealthRecord>(request);
+
+            record.DoctorId = doctorId;
+            record.VisitDate = DateTime.UtcNow;
+
+            appt.Status = "Completed";
+
+            await appointmentRepository.UpdateAsync(
+                appt.AppointmentId,
+                appt,
+                ct
+            );
+
+            var saved = await healthRecordRepository.CreateAsync(
+                record,
+                ct
+            );
+
+            return mapper.Map<HealthRecordDto>(
+                await healthRecordRepository.GetDetailsAsync(
+                    saved.HealthRecordId,
+                    ct
+                ) ?? saved
+            );
         }
     }
 }

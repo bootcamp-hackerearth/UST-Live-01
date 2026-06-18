@@ -1,4 +1,4 @@
-﻿namespace HealthAxisCore_Api.Models
+namespace HealthAxisCore_Api.Models
 {
     public class AuthResponse
     {

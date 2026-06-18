@@ -1,32 +1,16 @@
-﻿//using HealthAxisCore_Api.Services.Interfaces;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-
-//namespace HealthAxisCore_Api.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class PatientController(IPatientService service) : ControllerBase
-//    {
-//        [HttpGet]
-//        public async Task<IActionResult> GetAll()
-//        {
-//            var result = await service.GetAllAsync();
-//            return Ok(result);
-//        }
-//        [HttpGet]
-//        public async Task<IActionResult> GetById([FromRoute]int id)
-//        {
-//            var result = await service.GetByIdAsync(id);
-//            if(result is null)
-//            {
-//                return NotFound();
-//            }
-//            else
-//            {
-//                return Ok(result);
-//            }
-//        }
-        
-//    }
-//}
+using HealthAxisCore_Api.Models.Dtos;
+using HealthAxisCore_Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+namespace HealthAxisCore_Api.Controllers
+{
+    [ApiController]
+    [Route("api/patients")]
+    [Authorize]
+    public class PatientController(IPatientService service) : ControllerBase
+    {
+        [HttpGet("{id:int}")] public async Task<ActionResult<PatientDto>> GetById(int id, CancellationToken ct) => Ok(await service.GetByIdAsync(id, ct));
+        [HttpPut("{id:int}")] [Authorize(Roles="Patient")] public async Task<ActionResult<PatientDto>> Update(int id, UpdatePatientDto request, CancellationToken ct) => Ok(await service.UpdatePatientAsync(id, request, ct));
+        [HttpGet("{id:int}/health-records")] public async Task<ActionResult<List<HealthRecordDto>>> GetHealthRecords(int id, CancellationToken ct) => Ok(await service.GetHealthRecordsAsync(id, ct));
+    }
+}

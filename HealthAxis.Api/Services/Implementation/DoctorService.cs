@@ -1,37 +1,56 @@
-﻿using AutoMapper;
-using HealthAxisCore_Api.Models;
-using HealthAxisCore_Api.Models.DTOs;
-using HealthAxisCore_Api.Repositories.Implementation;
-using HealthAxisCore_Api.Repositories.Interface;
+using AutoMapper;
+using HealthAxisCore_Api.Exceptions;
+using HealthAxisCore_Api.Models.Dtos;
+using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
 
 namespace HealthAxisCore_Api.Services.Implementation
 {
-    public class DoctorService(IDoctorRepository repository, IMapper mapper) : IDoctorService
+    public class DoctorService(
+        IDoctorRepository repository,
+        IMapper mapper
+    ) : IDoctorService
     {
-        public async Task<DoctorDto> AddAsync(DoctorDto entity)
-        {
-            var doctor = mapper.Map<Doctor>(entity);
-            var savedEntity = await repository.CreateAsync(doctor);
-            return mapper.Map<DoctorDto>(savedEntity);
-        }
+        public async Task<List<DoctorDto>> GetDoctorsAsync(
+            string? specialisation,
+            CancellationToken ct = default
+        ) =>
+            mapper.Map<List<DoctorDto>>(
+                await repository.GetDoctorsAsync(
+                    specialisation,
+                    ct
+                )
+            );
 
-        public async Task<List<DoctorDto>> GetAllAsync()
-        {
-            return mapper.Map<List<DoctorDto>>(await repository.GetAllAsync());
-        }
+        public async Task<DoctorDto> GetByIdAsync(
+            int id,
+            CancellationToken ct = default
+        ) =>
+            mapper.Map<DoctorDto>(
+                await repository.GetByIdAsync(id, ct)
+                ?? throw new NotFoundException(
+                    "Doctor not found"
+                )
+            );
 
-        public async Task<DoctorDto> GetByIdAsync(int id)
+        public async Task<List<string>> GetAvailabilityAsync(
+            int id,
+            DateTime date,
+            CancellationToken ct = default
+        )
         {
-            return mapper.Map<DoctorDto>(await repository.GetByIdAsync(id));
-        }
+            if (date.Date < DateTime.UtcNow.Date)
+            {
+                throw new InvalidException(
+                    "Cannot check past date"
+                );
+            }
 
-        public async Task<DoctorDto> UpdateAsync(int id, DoctorDto entity)
-        {
-            var doctor = mapper.Map<Doctor>(entity);
-            doctor.DoctorId = id;
-            var updated = await repository.UpdateAsync(id, doctor);
-            return mapper.Map<DoctorDto>(updated);
+            return await repository.GetAvailableSlotsAsync(
+                id,
+                date,
+                ct
+            );
         }
     }
 }

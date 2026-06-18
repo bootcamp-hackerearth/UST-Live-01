@@ -1,12 +1,1 @@
-﻿using HealthAxisCore_Api.Models.DTOs;
-
-namespace HealthAxisCore_Api.Services.Interfaces
-{
-    public interface IPatientService
-    {
-        Task<List<PatientDto>> GetAllAsync();
-        Task<PatientDto> GetByIdAsync(int id);
-        Task<PatientDto> AddPatientAsync(PatientDto entity);
-        Task<PatientDto> UpdatePatientAsync(int id,PatientDto entity);
-    }
-}
+using HealthAxisCore_Api.Models.Dtos; namespace HealthAxisCore_Api.Services.Interfaces { public interface IPatientService { Task<List<PatientDto>> GetAllAsync(CancellationToken ct = default); Task<PatientDto> GetByIdAsync(int id, CancellationToken ct = default); Task<PatientDto> UpdatePatientAsync(int id, UpdatePatientDto request, CancellationToken ct = default); Task<List<HealthRecordDto>> GetHealthRecordsAsync(int id, CancellationToken ct = default); } }

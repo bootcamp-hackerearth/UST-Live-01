@@ -1,12 +1,1 @@
-﻿using HealthAxisCore_Api.Models.DTOs;
-
-namespace HealthAxisCore_Api.Services.Interfaces
-{
-    public interface IAuthService
-    {
-        Task<(bool Success,string Error,string UserId)> Register(RegisterDto request);
-        Task<(bool Success,string Error,string Token,int ExpiresIn)> Login(LoginDto request);
-        Task<(bool Success, string Message)> DeleteUser(string userId);
-
-    }
-}
+using HealthAxisCore_Api.Models.Dtos; namespace HealthAxisCore_Api.Services.Interfaces { public interface IAuthService { Task<AuthResponseDto> RegisterPatientAsync(RegisterPatientDto request, CancellationToken ct = default); Task<AuthResponseDto> LoginAsync(LoginDto request, CancellationToken ct = default); Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto request, CancellationToken ct = default); } }
