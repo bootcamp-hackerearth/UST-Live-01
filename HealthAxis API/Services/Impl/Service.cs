@@ -18,7 +18,8 @@ namespace HealthAxis.API.Services
             Mapper = mapper;
         }
 
-        public async Task<List<TReadDto>> GetAllAsync(CancellationToken ct = default)
+        public async Task<List<TReadDto>> GetAllAsync(
+            CancellationToken ct = default)
         {
             List<TEntity> entities = await Repository.GetAllAsync(ct);
 
@@ -55,16 +56,18 @@ namespace HealthAxis.API.Services
             TUpdateDto updateDto,
             CancellationToken ct = default)
         {
-            TEntity entity = Mapper.Map<TEntity>(updateDto);
+            TEntity? existingEntity = await Repository.GetByIdAsync(id, ct);
 
-            TEntity? updatedEntity = await Repository.UpdateAsync(id, entity, ct);
-
-            if (updatedEntity == null)
+            if (existingEntity == null)
             {
                 return default;
             }
 
-            return Mapper.Map<TReadDto>(updatedEntity);
+            Mapper.Map(updateDto, existingEntity);
+
+            await Repository.SaveChangesAsync(ct);
+
+            return Mapper.Map<TReadDto>(existingEntity);
         }
 
         public async Task<TReadDto?> DeleteAsync(

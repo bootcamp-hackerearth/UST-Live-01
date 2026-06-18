@@ -1,13 +1,10 @@
 ﻿using HealthAxis.API.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 
 namespace HealthAxis.API.Models
 {
-
     public class User
     {
-
         [Key]
         public int UserId { get; set; }
 
@@ -15,6 +12,7 @@ namespace HealthAxis.API.Models
         [StringLength(10)]
         public string UserCode { get; set; } = string.Empty;
 
+        [Required]
         [StringLength(100)]
         public string Email { get; set; } = string.Empty;
 
@@ -28,5 +26,10 @@ namespace HealthAxis.API.Models
         public int ReferenceId { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        [StringLength(500)]
+        public string RefreshToken { get; set; } = string.Empty;
+
+        public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

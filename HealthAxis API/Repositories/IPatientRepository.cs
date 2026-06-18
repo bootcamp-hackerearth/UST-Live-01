@@ -4,7 +4,5 @@ namespace HealthAxis.API.Repositories
 {
     public interface IPatientRepository : IRepository<Patient>
     {
-
     }
 }
-

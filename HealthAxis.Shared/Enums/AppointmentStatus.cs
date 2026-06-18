@@ -1,11 +1,10 @@
 ﻿namespace HealthAxis.API.Enums
-{ 
- public enum AppointmentStatus
 {
-
-    Pending = 1,
-    Confirmed,
-    Cancelled,
-    Completed
-}
+    public enum AppointmentStatus
+    {
+        Scheduled = 1,
+        Confirmed = 2,
+        Completed = 3,
+        Cancelled = 4
+    }
 }
