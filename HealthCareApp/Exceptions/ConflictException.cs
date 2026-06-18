@@ -1,4 +1,4 @@
-﻿namespace HealthCareApp.Services
+﻿namespace HealthCareApp.Exceptions
 {
     [Serializable]
     internal class ConflictException : Exception

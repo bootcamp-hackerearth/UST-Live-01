@@ -176,5 +176,72 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException("Consultation fee cannot be negative.");
             }
         }
+
+        public async Task<DoctorDto> SubmitDoctorRegistrationRequestAsync(DoctorRegistrationRequestDto dto)
+        {
+            if (dto is null)
+            {
+                throw new BusinessRuleException("Doctor registration details are required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.DoctorName))
+            {
+                throw new BusinessRuleException("Doctor name is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                throw new BusinessRuleException("Doctor email is required.");
+            }
+
+            if (dto.PracticeStartDate.Date > DateTime.Today)
+            {
+                throw new BusinessRuleException("Practice start date cannot be in the future.");
+            }
+
+            if (dto.ConsultationFee < 0)
+            {
+                throw new BusinessRuleException("Consultation fee cannot be negative.");
+            }
+
+            var emailExists = await repository.ExistsByEmailAsync(dto.Email.Trim().ToLower());
+
+            if (emailExists)
+            {
+                throw new ConflictException("A doctor registration request with this email already exists.");
+            }
+
+            var doctor = mapper.Map<Doctor>(dto);
+
+            doctor.Email = dto.Email.Trim().ToLower();
+            doctor.DoctorName = dto.DoctorName.Trim();
+            doctor.YearsOfExperience = CalculateYearsOfExperience(dto.PracticeStartDate);
+            doctor.IsActive = false;
+            doctor.VerificationStatus = DoctorVerificationStatus.Pending;
+            doctor.IdentityUserId = null;
+            doctor.CreatedDate = DateTime.Now;
+
+            var savedDoctor = await repository.CreateAsync(doctor);
+
+            return mapper.Map<DoctorDto>(savedDoctor);
+        }
+        public async Task<List<DoctorDto>> GetPendingDoctorsAsync()
+        {
+            var doctors = await repository.GetPendingDoctorsAsync();
+
+            return mapper.Map<List<DoctorDto>>(doctors);
+        }
+        private int CalculateYearsOfExperience(DateTime practiceStartDate)
+        {
+            int years = DateTime.Today.Year - practiceStartDate.Year;
+
+            if (practiceStartDate.Date > DateTime.Today.AddYears(-years))
+            {
+                years--;
+            }
+
+            return years;
+        }
+
     }
 }

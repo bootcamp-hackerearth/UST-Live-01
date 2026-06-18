@@ -38,6 +38,20 @@ namespace HealthCareApp.Repository.Impl
             return await _context.Doctors
                 .Where(d => d.IsActive && d.Specialisation == specialisation)
                 .ToListAsync(ct);
+
         }
+        public async Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default)
+        {
+            return await _context.Doctors
+                .AnyAsync(d => d.Email.ToLower() == email.ToLower(), ct);
+        }
+
+
+        public async Task<List<Doctor>> GetPendingDoctorsAsync(CancellationToken ct = default)
+        {
+            return await _context.Doctors
+                .Where(d => d.VerificationStatus == DoctorVerificationStatus.Pending)
+                .ToListAsync(ct);
+        } 
     }
-}
+    }

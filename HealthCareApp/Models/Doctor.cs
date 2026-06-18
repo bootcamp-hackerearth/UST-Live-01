@@ -15,6 +15,10 @@ namespace HealthCareApp.Models
         public string DoctorName { get; set; } = null!;
 
         [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
         public SpecialisationType Specialisation { get; set; }
 
         [Required]
@@ -24,6 +28,12 @@ namespace HealthCareApp.Models
         [Required]
         [Range(0, 100000, ErrorMessage = "Fee must be between 0 and 100000")]
         public int ConsultationFee { get; set; }
+
+
+        public DoctorVerificationStatus VerificationStatus { get; set; } = DoctorVerificationStatus.Pending;
+
+        public string? IdentityUserId { get; set; }
+
 
         [Required]
         public bool IsActive { get; set; } = true;

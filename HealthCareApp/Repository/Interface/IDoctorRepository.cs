@@ -11,5 +11,9 @@ namespace HealthCareApp.Repository.Interface
         Task<List<Doctor>> GetBySpecialisationAsync(SpecialisationType specialisation, CancellationToken ct = default);
 
         Task<List<Doctor>> GetActiveBySpecialisationAsync(SpecialisationType specialisation, CancellationToken ct = default);
+
+        Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default);
+
+        Task<List<Doctor>> GetPendingDoctorsAsync(CancellationToken ct = default);
     }
 }

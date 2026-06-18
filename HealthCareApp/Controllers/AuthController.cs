@@ -1,6 +1,8 @@
-﻿using HealthCareApp.Models;
+﻿using HealthCareApp.Dtos;
+using HealthCareApp.Models;
 using HealthCareApp.Models.Dtos;
 using HealthCareApp.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareApp.Controllers
@@ -9,10 +11,11 @@ namespace HealthCareApp.Controllers
     [ApiController]
     public class AuthController(IAuthService service) : ControllerBase
     {
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto request)
+        [HttpPost("register-patient")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterPatient(PatientRegisterDto request)
         {
-            var (success, message, userId) = await service.Register(request);
+            var (success, message, userId) = await service.RegisterPatientAsync(request);
 
             if (!success)
             {
@@ -30,6 +33,7 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto request)
         {
             var (success, message, token, expiresIn) = await service.Login(request);
@@ -50,6 +54,36 @@ namespace HealthCareApp.Controllers
             };
 
             return Ok(response);
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto request)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var (success, message) = await service.ChangePasswordAsync(userId, request);
+
+            if (!success)
+            {
+                return BadRequest(new
+                {
+                    Message = message
+                });
+            }
+
+            return Ok(new
+            {
+                Message = message
+            });
         }
     }
 }

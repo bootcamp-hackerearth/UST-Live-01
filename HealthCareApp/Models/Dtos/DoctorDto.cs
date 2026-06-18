@@ -15,6 +15,12 @@ namespace HealthCareApp.Dtos
         [Required(ErrorMessage = "Please select the doctor's specialisation.")]
         public SpecialisationType Specialisation { get; set; }
 
+
+        public string Email { get; set; } = string.Empty;
+
+
+        public DoctorVerificationStatus VerificationStatus { get; set; }
+
         [Required(ErrorMessage = "Please enter the doctor's practice start date.")]
         public DateTime PracticeStartDate { get; set; }
 

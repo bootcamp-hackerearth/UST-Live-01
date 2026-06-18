@@ -95,35 +95,45 @@ namespace HealthCareApp.Data
             );
 
             // Doctor seed data
+            // Doctor seed data
             modelBuilder.Entity<Doctor>().HasData(
                 new Doctor
                 {
                     DoctorId = 1,
                     DoctorName = "Arun Menon",
+                    Email = "arun.menon@example.com",
                     Specialisation = SpecialisationType.GeneralPractitioner,
                     YearsOfExperience = 10,
-                    ConsultationFee = 500,
+                    ConsultationFee = 5000,
                     IsActive = true,
+                    VerificationStatus = DoctorVerificationStatus.Approved,
+                    IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 },
                 new Doctor
                 {
                     DoctorId = 2,
                     DoctorName = "Meera Nair",
+                    Email = "meera.nair@example.com",
                     Specialisation = SpecialisationType.Cardiologist,
                     YearsOfExperience = 15,
                     ConsultationFee = 1000,
                     IsActive = true,
+                    VerificationStatus = DoctorVerificationStatus.Approved,
+                    IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 },
                 new Doctor
                 {
                     DoctorId = 3,
                     DoctorName = "Vikram Das",
+                    Email = "vikram.das@example.com",
                     Specialisation = SpecialisationType.Dermatologist,
                     YearsOfExperience = 8,
                     ConsultationFee = 700,
                     IsActive = true,
+                    VerificationStatus = DoctorVerificationStatus.Approved,
+                    IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 }
             );

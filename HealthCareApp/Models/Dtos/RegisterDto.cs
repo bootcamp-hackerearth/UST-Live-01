@@ -14,7 +14,5 @@ namespace HealthCareApp.Models.Dtos
         [Required(ErrorMessage = "Confirm password is required")]
         public string ConfirmPassword { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Role is required")]
-        public string Role { get; set; } = string.Empty;
     }
 }

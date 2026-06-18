@@ -4,6 +4,7 @@ using HealthCareApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCareApp.Migrations
 {
     [DbContext(typeof(HealthAxisDbContext))]
-    partial class HealthAxisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260617183838_DoctorApprovalFlowAdded")]
+    partial class DoctorApprovalFlowAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,13 +145,13 @@ namespace HealthCareApp.Migrations
                         new
                         {
                             DoctorId = 1,
-                            ConsultationFee = 5000,
+                            ConsultationFee = 500,
                             CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorName = "Arun Menon",
-                            Email = "arun.menon@example.com",
+                            Email = "",
                             IsActive = true,
                             Specialisation = 9,
-                            VerificationStatus = 2,
+                            VerificationStatus = 1,
                             YearsOfExperience = 10
                         },
                         new
@@ -157,10 +160,10 @@ namespace HealthCareApp.Migrations
                             ConsultationFee = 1000,
                             CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorName = "Meera Nair",
-                            Email = "meera.nair@example.com",
+                            Email = "",
                             IsActive = true,
                             Specialisation = 8,
-                            VerificationStatus = 2,
+                            VerificationStatus = 1,
                             YearsOfExperience = 15
                         },
                         new
@@ -169,10 +172,10 @@ namespace HealthCareApp.Migrations
                             ConsultationFee = 700,
                             CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DoctorName = "Vikram Das",
-                            Email = "vikram.das@example.com",
+                            Email = "",
                             IsActive = true,
                             Specialisation = 7,
-                            VerificationStatus = 2,
+                            VerificationStatus = 1,
                             YearsOfExperience = 8
                         });
                 });
