@@ -79,6 +79,5 @@ namespace HealthApp.Api.Repositories.Impl
                     a.Status != AppointmentStatus.Cancelled,
                     ct);
         }
-
     }
 }

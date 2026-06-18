@@ -5,6 +5,7 @@
         Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default);
         Task<T?> GetByIdAsync(int id, CancellationToken ct = default);
         Task<T> Add(T entity, CancellationToken ct = default);
-        Task<T?> Update(int id,T entity, CancellationToken ct = default);
+        Task<T?> Update(int id, T entity, CancellationToken ct = default);
+        Task<bool> DeleteAsync(int id);
     }
 }

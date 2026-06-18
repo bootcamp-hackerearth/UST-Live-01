@@ -31,29 +31,44 @@ namespace HealthApp.Api.Services.Impl
         {
             if (request.Password != request.ConfirmPassword)
             {
-                return(false, "Password Do not Match", string.Empty);
+                return (false, "Passwords do not match.", string.Empty);
             }
+
             if (request.Role != "Admin" && request.Role != "Doctor" && request.Role != "Patient")
             {
-                return(false, "Invalid Role", string.Empty);
+                return (false, "Invalid role.", string.Empty);
+            }
+
+            var existingUser = await userManager.FindByEmailAsync(request.Email);
+
+            if (existingUser != null)
+            {
+                return (false, "Email is already registered.", string.Empty);
             }
 
             var user = new IdentityUser
             {
                 UserName = request.Email,
-                Email = request.Email,
+                Email = request.Email
             };
 
             var result = await userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)
             {
-                var errors = string.Join(",", result.Errors.Select(e => e.Description));
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return (false, errors, string.Empty);
             }
 
-            await userManager.AddToRoleAsync(user, request.Role);
-            return (true, "User Registered Successfully", user.Id);
+            var roleResult = await userManager.AddToRoleAsync(user, request.Role);
+
+            if (!roleResult.Succeeded)
+            {
+                var errors = string.Join(", ", roleResult.Errors.Select(e => e.Description));
+                return (false, errors, string.Empty);
+            }
+
+            return (true, "User registered successfully.", user.Id);
         }
         private async Task<string> GenerateToken(IdentityUser user)
         {

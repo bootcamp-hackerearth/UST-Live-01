@@ -277,5 +277,34 @@ namespace HealthApp.Api.Services.Impl
             appointment.Doctor ??= await _doctorRepository.GetByIdAsync(
                 appointment.DoctorId);
         }
+
+        public async Task DeleteAppointmentAsync(int id)
+        {
+            if (id <= 0)
+            {
+                throw new InvalidRequestException("Valid appointment id is required.");
+            }
+
+            var appointment = await _appointmentRepository.GetByIdAsync(id);
+
+            if (appointment == null)
+            {
+                throw new EntityNotFoundException("Appointment", id);
+            }
+
+            if (appointment.Status != AppointmentStatus.Cancelled)
+            {
+                throw new BusinessRuleViolationException(
+                    "Only cancelled appointments can be deleted.");
+            }
+
+            bool deleted = await _appointmentRepository.DeleteAsync(id);
+
+            if (!deleted)
+            {
+                throw new BusinessRuleViolationException(
+                    "Unable to delete appointment.");
+            }
+        }
     }
 }

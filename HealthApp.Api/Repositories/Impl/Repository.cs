@@ -38,5 +38,18 @@ namespace HealthApp.Api.Repositories.Impl
             await _context.SaveChangesAsync(ct);
             return existing;
         }
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var existing = await _context.Set<T>().FindAsync(id);
+
+            if (existing == null)
+            {
+                return false;
+            }
+
+            _context.Set<T>().Remove(existing);
+
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }
