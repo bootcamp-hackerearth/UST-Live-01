@@ -8,8 +8,6 @@ namespace HealthAxis.API.Repositories
         public UserRepository(HealthAxisDbContext context)
             : base(context)
         {
-
         }
     }
 }
-

@@ -4,7 +4,7 @@
     {
 
         Admin = 1,
-        Doctor,
-        Patient
+        Doctor= 2,
+        Patient= 3
     }
 }
