@@ -136,7 +136,8 @@ namespace S3_HealthAxisApi.Services.Implementation
                 throw new InvalidOperationException(
                     "Cancelled appointments cannot be modified.");
 
-            await ValidateBookingAsync(
+            await ValidateUpdateBookingAsync(
+                appointment.AppointmentId,
                 appointment.PatientId,
                 dto.DoctorId,
                 dto.ScheduledDate,
@@ -282,6 +283,81 @@ namespace S3_HealthAxisApi.Services.Implementation
                     doctorId,
                     date,
                     timeSlot))
+            {
+                throw new InvalidOperationException(
+                    "Doctor is already booked for this time slot.");
+            }
+        }
+
+        private async Task ValidateUpdateBookingAsync(
+    int appointmentId,
+    int patientId,
+    int doctorId,
+    DateOnly date,
+    int timeSlot)
+        {
+            var patient =
+                await _patientRepository.GetByIdAsync(patientId);
+
+            if (patient == null)
+                throw new KeyNotFoundException(
+                    "Patient not found.");
+
+            if (!patient.IsActive)
+                throw new InvalidOperationException(
+                    "Inactive patients cannot book appointments.");
+
+            var doctor =
+                await _doctorRepository.GetByIdAsync(doctorId);
+
+            if (doctor == null)
+                throw new KeyNotFoundException(
+                    "Doctor not found.");
+
+            if (!doctor.IsActive)
+                throw new InvalidOperationException(
+                    "Inactive doctor.");
+
+            if (date < DateOnly.FromDateTime(DateTime.Today))
+                throw new ArgumentException(
+                    "Appointment date cannot be in the past.");
+
+            if (!Enum.IsDefined(
+                    typeof(AppointmentTimeSlot),
+                    timeSlot))
+            {
+                throw new ArgumentException(
+                    "Invalid appointment slot.");
+            }
+
+            if (await _appointmentRepository
+                .ExistsSamePatientSameDoctorSameDateAsync(
+                    patientId,
+                    doctorId,
+                    date,
+                    appointmentId))
+            {
+                throw new InvalidOperationException(
+                    "Patient already has an appointment with this doctor on the selected date.");
+            }
+
+            if (await _appointmentRepository
+                .ExistsSamePatientSameSlotSameDateAsync(
+                    patientId,
+                    date,
+                    timeSlot,
+                    appointmentId))
+            {
+                throw new InvalidOperationException(
+                    "Patient already has another appointment in this time slot.");
+            }
+
+            if (await _appointmentRepository
+                .ExistsSameDoctorSameSlotSameDateAsync(
+                    doctorId,
+                    date,
+                    timeSlot,
+                    appointmentId))
             {
                 throw new InvalidOperationException(
                     "Doctor is already booked for this time slot.");

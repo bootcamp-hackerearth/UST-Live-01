@@ -102,6 +102,36 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 a.Status != AppointmentStatus.Cancelled);
         }
 
+        public async Task<bool> ExistsSamePatientSameDoctorSameDateAsync(int patientId, int doctorId, DateOnly date, int appointmentId)
+        {
+            return await _context.Appointments.AnyAsync(a =>
+                a.AppointmentId != appointmentId &&
+                a.PatientId == patientId &&
+                a.DoctorId == doctorId &&
+                a.ScheduledDate == date &&
+                a.Status != AppointmentStatus.Cancelled);
+        }
+
+        public async Task<bool> ExistsSamePatientSameSlotSameDateAsync(int patientId, DateOnly date, int timeSlot, int appointmentId)
+        {
+            return await _context.Appointments.AnyAsync(a =>
+                a.AppointmentId != appointmentId &&
+                a.PatientId == patientId &&
+                a.ScheduledDate == date &&
+                (int)a.TimeSlot == timeSlot &&
+                a.Status != AppointmentStatus.Cancelled);
+        }
+
+        public async Task<bool> ExistsSameDoctorSameSlotSameDateAsync(int doctorId, DateOnly date, int timeSlot, int appointmentId)
+        {
+            return await _context.Appointments.AnyAsync(a =>
+                a.AppointmentId != appointmentId &&
+                a.DoctorId == doctorId &&
+                a.ScheduledDate == date &&
+                (int)a.TimeSlot == timeSlot &&
+                a.Status != AppointmentStatus.Cancelled);
+        }
+
         public async Task AddAsync(Appointment appointment)
         {
             await _context.Appointments.AddAsync(appointment);
