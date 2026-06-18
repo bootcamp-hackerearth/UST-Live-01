@@ -43,6 +43,10 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task DeleteAsync(int id)
         {
+
+            var record = await _repository.GetByIdAsync(id);
+            if (record == null)
+                throw new HealthRecordNotFoundException(id);
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
         }

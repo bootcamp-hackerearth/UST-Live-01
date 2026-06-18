@@ -41,6 +41,9 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task DeleteAsync(int id)
         {
+            var appointment = await _repository.GetByIdAsync(id);
+            if (appointment == null)
+                throw new AppointmentNotFoundException(id);
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
         }
