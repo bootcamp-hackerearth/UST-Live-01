@@ -11,6 +11,13 @@ namespace HealthAxis.API.DTOs
         [RegularExpression(RegexPatterns.FullName, ErrorMessage = ValidationMessages.InvalidFullNameFormat)]
         public string FullName { get; set; } = string.Empty;
 
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string TemporaryPassword { get; set; } = string.Empty;
+
         [Required(ErrorMessage = ValidationMessages.SpecialisationRequired)]
         public Specialisation Specialisation { get; set; }
 

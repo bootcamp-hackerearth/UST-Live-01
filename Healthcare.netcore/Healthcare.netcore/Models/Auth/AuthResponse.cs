@@ -2,8 +2,12 @@
 {
     public class AuthResponse
     {
-        public string AccessToken { get; set; }
-        public string Message { get; set; }
+        public string AccessToken { get; set; } = string.Empty;
+
+        public string Message { get; set; } = string.Empty;
+
         public int ExpiresIn { get; set; }
+
+        public bool RequiresPasswordChange { get; set; } = false;
     }
 }

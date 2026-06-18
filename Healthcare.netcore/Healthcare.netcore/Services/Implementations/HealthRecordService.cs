@@ -28,56 +28,58 @@ namespace HealthAxis.API.Services.Implementations
             _mapper = mapper;
         }
 
-        // ✅ Get by Patient
+        // ✅ GET records by patient
         public async Task<IEnumerable<HealthRecordDto>> GetByPatientIdAsync(int patientId)
         {
             var patient = await _patientRepository.GetByIdAsync(patientId);
 
             if (patient == null)
+            {
                 throw new NotFoundException("Patient not found.");
+            }
 
             var records = await _healthRecordRepository.GetByPatientIdAsync(patientId);
 
             return _mapper.Map<IEnumerable<HealthRecordDto>>(records);
         }
 
-        // ✅ Get by Doctor
-        public async Task<IEnumerable<HealthRecordDto>> GetByDoctorIdAsync(int doctorId)
-        {
-            var records = await _healthRecordRepository.GetByDoctorIdAsync(doctorId);
-
-            return _mapper.Map<IEnumerable<HealthRecordDto>>(records);
-        }
-
-        // ✅ Get by Id
+        // ✅ GET record by id
         public async Task<HealthRecordDto> GetByIdAsync(int id)
         {
             var healthRecord = await _healthRecordRepository.GetByIdAsync(id);
 
             if (healthRecord == null)
+            {
                 throw new NotFoundException("Health record not found.");
+            }
 
             return _mapper.Map<HealthRecordDto>(healthRecord);
         }
 
-        // ✅ Create Health Record
+        // ✅ POST health record — Doctor only
         public async Task<HealthRecordDto> AddAsync(CreateHealthRecordDto dto)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(dto.AppointmentId);
 
             if (appointment == null)
+            {
                 throw new NotFoundException("Appointment not found.");
+            }
 
             if (appointment.Status != AppointmentStatus.Completed)
+            {
                 throw new CustomValidationException(
                     "Health records can only be created for completed appointments.");
+            }
 
-            // ✅ Check duplicate record
-            var existingRecords = await _healthRecordRepository.GetByAppointmentIdAsync(dto.AppointmentId);
+            var existingRecords =
+                await _healthRecordRepository.GetByAppointmentIdAsync(dto.AppointmentId);
 
             if (existingRecords.Any())
+            {
                 throw new CustomValidationException(
                     "Health record already exists for this appointment.");
+            }
 
             var healthRecord = new HealthRecord
             {

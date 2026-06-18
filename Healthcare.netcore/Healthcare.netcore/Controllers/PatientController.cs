@@ -18,15 +18,7 @@ namespace HealthAxis.API.Controllers
             _service = service;
         }
 
-        // ✅ GET all patients
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var result = await _service.GetAllAsync();
-            return Ok(result);
-        }
-
-        // ✅ GET patient by id
+        // ✅ GET /api/patients/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
@@ -34,7 +26,7 @@ namespace HealthAxis.API.Controllers
             return Ok(patient);
         }
 
-        // ✅ UPDATE patient
+        // ✅ PUT /api/patients/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdatePatientDto dto)
         {
@@ -42,36 +34,12 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ GET health records of patient
+        // ✅ GET /api/patients/{id}/health-records
         [HttpGet("{id}/health-records")]
         public async Task<IActionResult> GetHealthRecords(int id)
         {
             var records = await _service.GetHealthRecordsAsync(id);
             return Ok(records);
-        }
-
-        // ✅ SEARCH patient by name
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchByName(string name)
-        {
-            var result = await _service.SearchByNameAsync(name);
-            return Ok(result);
-        }
-
-        // ✅ GET by email
-        [HttpGet("by-email")]
-        public async Task<IActionResult> GetByEmail(string email)
-        {
-            var result = await _service.GetByEmailAsync(email);
-            return Ok(result);
-        }
-
-        // ✅ GET by phone
-        [HttpGet("by-phone")]
-        public async Task<IActionResult> GetByPhone(string phone)
-        {
-            var result = await _service.GetByPhoneAsync(phone);
-            return Ok(result);
         }
     }
 }

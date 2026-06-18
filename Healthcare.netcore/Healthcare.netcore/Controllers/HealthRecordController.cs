@@ -1,8 +1,8 @@
 ﻿using HealthAxis.API.DTOs;
 using HealthAxis.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace HealthAxis.API.Controllers
 {
@@ -18,7 +18,7 @@ namespace HealthAxis.API.Controllers
             _service = service;
         }
 
-        // ✅ GET all records by patient (Patient + Doctor)
+        // ✅ GET /api/health-records/patient/{patientId}
         [Authorize(Roles = "Patient,Doctor")]
         [HttpGet("patient/{patientId}")]
         public async Task<IActionResult> GetByPatient(int patientId)
@@ -27,7 +27,7 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ GET record by id
+        // ✅ GET /api/health-records/{id}
         [Authorize(Roles = "Patient,Doctor")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -36,7 +36,7 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ CREATE health record (Doctor only)
+        // ✅ POST /api/health-records
         [Authorize(Roles = "Doctor")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateHealthRecordDto dto)

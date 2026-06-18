@@ -1,12 +1,11 @@
-﻿using HealthAxis.API.DTOs;
-using HealthAxis.API.Services.Interfaces;
+﻿using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAxis.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
     [ApiController]
     [Route("api/doctors")]
     public class DoctorController : ControllerBase
@@ -18,60 +17,28 @@ namespace HealthAxis.API.Controllers
             _service = service;
         }
 
-        // ✅ GET all doctors
+        // ✅ GET /api/doctors
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var doctors = await _service.GetAllAsync(CancellationToken.None);
+            var doctors = await _service.GetAllAsync();
             return Ok(doctors);
         }
 
-        // ✅ GET doctor by ID
+        // ✅ GET /api/doctors/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var doctor = await _service.GetByIdAsync(id, CancellationToken.None);
+            var doctor = await _service.GetByIdAsync(id);
             return Ok(doctor);
         }
 
-        // ✅ ✅ FIXED — Get ALL ACTIVE (available) doctors
-        [HttpGet("available")]
-        public async Task<IActionResult> GetAvailableDoctors()
+        // ✅ GET /api/doctors/{id}/availability
+        [HttpGet("{id}/availability")]
+        public async Task<IActionResult> GetAvailability(int id)
         {
-            var doctors = await _service.GetAvailableDoctorsAsync();
-            return Ok(doctors);
-        }
-
-        // ✅ NEW — Search by name
-        [HttpGet("search")]
-        public async Task<IActionResult> Search(string name)
-        {
-            var result = await _service.SearchByNameAsync(name);
-            return Ok(result);
-        }
-
-        // ✅ NEW — Filter by specialization
-        [HttpGet("by-specialisation")]
-        public async Task<IActionResult> BySpecialisation(string specialization)
-        {
-            var result = await _service.GetBySpecialisationAsync(specialization);
-            return Ok(result);
-        }
-
-        // ✅ ADD doctor (Admin use)
-        [HttpPost]
-        public async Task<IActionResult> Add(CreateDoctorDto dto)
-        {
-            var result = await _service.AddAsync(dto);
-            return Ok(result);
-        }
-
-        // ✅ UPDATE doctor (Admin use)
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateDoctorDto dto)
-        {
-            var result = await _service.UpdateAsync(id, dto);
-            return Ok(result);
+            var availability = await _service.GetAvailabilityAsync(id);
+            return Ok(availability);
         }
     }
 }

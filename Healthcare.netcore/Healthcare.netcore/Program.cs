@@ -1,6 +1,7 @@
 using AutoMapper;
 using HealthAxis.API.Data;
 using HealthAxis.API.Middleware;
+using HealthAxis.API.Models.Auth;
 using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementations;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi; // ✅ ONLY THIS
+using Microsoft.OpenApi;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,8 +18,13 @@ var builder = WebApplication.CreateBuilder(args);
 // ✅ Controllers
 builder.Services.AddControllers();
 
-// ✅ Swagger (FIXED ✅🔥)
+// ✅ Global Exception Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// ✅ Swagger + JWT Auth
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -27,14 +33,17 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1"
     });
 
-    // ✅ JWT AUTH SUPPORT
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
     {
-        Description = "Enter: Bearer {your token}",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Scheme = "bearer"
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Enter JWT token as: Bearer {your token}"
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("bearer", document)] = new List<string>()
     });
 });
 
@@ -44,11 +53,11 @@ builder.Services.AddDbContext<HealthAxisDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // ✅ Identity
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<HealthAxisDbContext>()
     .AddDefaultTokenProviders();
 
-// ✅ JWT AUTH
+// ✅ JWT Auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -73,7 +82,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// ✅ Generic Repo
+// ✅ Generic Repository
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // ✅ Patient
@@ -109,12 +118,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// ✅ Exception Middleware
-
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
+// ✅ Global Exception Handler
 app.UseExceptionHandler();
-
 
 // ✅ Auth
 app.UseAuthentication();
@@ -126,7 +131,10 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
     await RoleSeeder.SeedRoles(roleManager);
+    await AdminSeeder.SeedAdmin(userManager);
 }
 
 app.Run();

@@ -1,12 +1,11 @@
 ﻿using HealthAxis.API.DTOs;
 using HealthAxis.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace HealthAxis.API.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
     [ApiController]
     [Route("api/appointments")]
     public class AppointmentController : ControllerBase
@@ -18,7 +17,9 @@ namespace HealthAxis.API.Controllers
             _service = service;
         }
 
-        // ✅ GET all appointments
+        // ✅ GET /api/appointments
+        // Patient can see appointments, Doctor can see schedule, Admin can view for reports/support
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -26,15 +27,9 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ GET by id (IMPORTANT ✅)
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var result = await _service.GetAllAsync();
-            return Ok(result.FirstOrDefault(a => a.AppointmentId == id));
-        }
-
-        // ✅ CREATE appointment
+        // ✅ POST /api/appointments
+        // Patient books appointment
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateAppointmentDto dto)
         {
@@ -42,7 +37,9 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ UPDATE STATUS
+        // ✅ PUT /api/appointments/{id}/status
+        // Patient can cancel, Doctor can confirm/complete/cancel
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, UpdateAppointmentStatusDto dto)
         {
@@ -50,7 +47,9 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ DELETE appointment
+        // ✅ DELETE /api/appointments/{id}
+        // Requirement has DELETE endpoint; keep Patient only
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

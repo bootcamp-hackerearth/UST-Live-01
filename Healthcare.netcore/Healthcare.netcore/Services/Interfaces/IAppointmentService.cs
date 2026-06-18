@@ -6,8 +6,6 @@ namespace HealthAxis.API.Services.Interfaces
     {
         Task<IEnumerable<AppointmentDto>> GetAllAsync();
 
-        Task<AppointmentDto> GetByIdAsync(int id);
-
         Task<AppointmentDto> AddAsync(CreateAppointmentDto dto);
 
         Task<AppointmentDto> UpdateStatusAsync(int id, UpdateAppointmentStatusDto dto);

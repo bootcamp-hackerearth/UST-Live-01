@@ -4,8 +4,8 @@
     {
         Task<T> GetByIdAsync(int id);
         Task<List<T>> GetAllAsync();
-        Task AddAsync(T entity);
-        Task UpdateAsync(int id, T entity, CancellationToken cancellationToken);
+        Task<T> AddAsync(T entity);
+        Task<T> UpdateAsync(int id, T entity, CancellationToken cancellationToken);
         Task DeleteAsync(int id);
     }
 }

@@ -11,17 +11,12 @@ namespace HealthAxis.API.Services.Interfaces
             int id,
             CancellationToken ct = default);
 
-        Task<IEnumerable<DoctorDto>>
-            GetAvailableDoctorsAsync();
+        Task<object> GetAvailabilityAsync(int id);
 
+        // ✅ Used by AdminController
         Task<DoctorDto> AddAsync(CreateDoctorDto dto);
 
+        // ✅ Used by AdminController
         Task<DoctorDto> UpdateAsync(int id, UpdateDoctorDto dto);
-
-        Task<IEnumerable<DoctorDto>> SearchByNameAsync(string name);
-
-        Task<IEnumerable<DoctorDto>> GetBySpecialisationAsync(string specialization);
-
-
     }
 }

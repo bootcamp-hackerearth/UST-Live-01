@@ -6,7 +6,7 @@ namespace HealthAxis.API.Data
     {
         public static async Task SeedRoles(RoleManager<IdentityRole> roleManager)
         {
-            string[] roles = { "Admin", "User" };
+            string[] roles = { "Admin", "Doctor", "Patient" };
 
             foreach (var role in roles)
             {

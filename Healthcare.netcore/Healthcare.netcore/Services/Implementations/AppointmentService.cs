@@ -28,51 +28,50 @@ namespace HealthAxis.API.Services.Implementations
             _mapper = mapper;
         }
 
-        // ✅ Get All
+        // ✅ GET /api/appointments
         public async Task<IEnumerable<AppointmentDto>> GetAllAsync()
         {
             var appointments = await _appointmentRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
         }
 
-        // ✅ Get By Id
-        public async Task<AppointmentDto> GetByIdAsync(int id)
-        {
-            var appointment = await _appointmentRepository.GetByIdAsync(id);
-
-            if (appointment == null)
-                throw new NotFoundException("Appointment not found.");
-
-            return _mapper.Map<AppointmentDto>(appointment);
-        }
-
-        // ✅ CREATE Appointment (Booking)
+        // ✅ POST /api/appointments
         public async Task<AppointmentDto> AddAsync(CreateAppointmentDto dto)
         {
-            // ✅ Date validations
             if (dto.ScheduledDate.Date < DateTime.Today)
+            {
                 throw new CustomValidationException("Appointments cannot be booked for past dates.");
+            }
 
             if (dto.ScheduledDate.Date > DateTime.Today.AddMonths(6))
+            {
                 throw new CustomValidationException("Appointments can only be booked up to 6 months in advance.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.TimeSlot))
+            {
                 throw new CustomValidationException("Time slot is required.");
+            }
 
-            // ✅ Patient check
             var patient = await _patientRepository.GetByIdAsync(dto.PatientId);
-            if (patient == null)
-                throw new NotFoundException("Patient not found.");
 
-            // ✅ Doctor check
+            if (patient == null)
+            {
+                throw new NotFoundException("Patient not found.");
+            }
+
             var doctor = await _doctorRepository.GetByIdAsync(dto.DoctorId);
+
             if (doctor == null)
+            {
                 throw new NotFoundException("Doctor not found.");
+            }
 
             if (!doctor.IsActive)
+            {
                 throw new CustomValidationException("Appointments cannot be booked with inactive doctors.");
+            }
 
-            // ✅ SLOT CHECK (VERY IMPORTANT 🔥)
             var existingAppointments = await _appointmentRepository.GetAllAsync();
 
             var isSlotBooked = existingAppointments.Any(a =>
@@ -82,9 +81,10 @@ namespace HealthAxis.API.Services.Implementations
                 a.Status != AppointmentStatus.Cancelled);
 
             if (isSlotBooked)
+            {
                 throw new CustomValidationException("Selected time slot is already booked.");
+            }
 
-            // ✅ Create appointment
             var appointment = _mapper.Map<Appointment>(dto);
             appointment.Status = AppointmentStatus.Pending;
 
@@ -93,26 +93,36 @@ namespace HealthAxis.API.Services.Implementations
             return _mapper.Map<AppointmentDto>(appointment);
         }
 
-        // ✅ Update Status
+        // ✅ PUT /api/appointments/{id}/status
         public async Task<AppointmentDto> UpdateStatusAsync(int id, UpdateAppointmentStatusDto dto)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
+            {
                 throw new NotFoundException("Appointment not found.");
+            }
 
             if (appointment.Status == AppointmentStatus.Cancelled)
+            {
                 throw new CustomValidationException("Cancelled appointments cannot be modified.");
+            }
 
             if (appointment.Status == AppointmentStatus.Completed)
+            {
                 throw new CustomValidationException("Completed appointments cannot be modified.");
+            }
 
             if (appointment.Status == dto.Status)
+            {
                 throw new CustomValidationException($"Appointment is already {dto.Status}.");
+            }
 
             if (appointment.Status == AppointmentStatus.Pending &&
                 dto.Status == AppointmentStatus.Completed)
+            {
                 throw new CustomValidationException("Pending appointments must be confirmed before completion.");
+            }
 
             switch (dto.Status)
             {
@@ -129,7 +139,7 @@ namespace HealthAxis.API.Services.Implementations
                     break;
 
                 case AppointmentStatus.Pending:
-                    throw new CustomValidationException("Cannot revert to pending.");
+                    throw new CustomValidationException("Cannot revert appointment to pending.");
             }
 
             await _appointmentRepository.UpdateAsync(id, appointment, CancellationToken.None);
@@ -137,19 +147,25 @@ namespace HealthAxis.API.Services.Implementations
             return _mapper.Map<AppointmentDto>(appointment);
         }
 
-        // ✅ Delete Appointment
+        // ✅ DELETE /api/appointments/{id}
         public async Task<bool> DeleteAsync(int id)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
+            {
                 throw new NotFoundException("Appointment not found.");
+            }
 
             if (appointment.Status == AppointmentStatus.Completed)
+            {
                 throw new CustomValidationException("Completed appointments cannot be deleted.");
+            }
 
             if (appointment.Status == AppointmentStatus.Confirmed)
+            {
                 throw new CustomValidationException("Confirmed appointments cannot be deleted.");
+            }
 
             await _appointmentRepository.DeleteAsync(id);
 

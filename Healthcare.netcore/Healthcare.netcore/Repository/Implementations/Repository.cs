@@ -23,16 +23,18 @@ namespace HealthAxis.API.Repositories.Implementations
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
             await _context.SaveChangesAsync();
+            return entity;
         }
 
-        public async Task UpdateAsync(int id, T entity, CancellationToken cancellationToken)
+        public async Task<T> UpdateAsync(int id, T entity, CancellationToken cancellationToken)
         {
             _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync(cancellationToken);
+            return entity;
         }
 
         public async Task DeleteAsync(int id)
