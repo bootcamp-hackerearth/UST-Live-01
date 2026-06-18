@@ -1,13 +1,16 @@
-﻿using HealthApp.Api.Dtos;
-using HealthApp.Api.Enums;
+﻿using HealthApp.Api.Enums;
 using HealthApp.Api.Exceptions;
+using HealthApp.Api.Extensions;
 using HealthApp.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthApp.Api.Controllers
 {
     [ApiController]
     [Route("api/doctors")]
+    [Authorize]
     public class DoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
@@ -21,11 +24,48 @@ namespace HealthApp.Api.Controllers
             _appointmentService = appointmentService;
         }
 
+        [HttpGet("profile")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var doctorId = User.GetDoctorId();
+
+            if (doctorId == null)
+            {
+                throw new ForbiddenAccessException(
+                    "Doctor profile is not linked to this user.");
+            }
+
+            var doctor = await _doctorService.GetDoctorByIdAsync(doctorId.Value);
+
+            return Ok(doctor);
+        }
+
+        [HttpGet("profile/availability")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetMyAvailability([FromQuery] DateOnly date)
+        {
+            var doctorId = User.GetDoctorId();
+
+            if (doctorId == null)
+            {
+                throw new ForbiddenAccessException(
+                    "Doctor profile is not linked to this user.");
+            }
+
+            var slots = await _appointmentService.GetAvailableSlotsAsync(
+                doctorId.Value,
+                date);
+
+            return Ok(slots);
+        }
+
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> GetDoctors(
             [FromQuery] string? search,
             [FromQuery] SpecialisationType? specialisation,
-            [FromQuery] bool? isActive)
+            [FromQuery] bool? isActive = true)
         {
             var doctors = await _doctorService.SearchDoctorsAsync(
                 search,
@@ -36,6 +76,7 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> GetDoctorById(int id)
         {
             var doctor = await _doctorService.GetDoctorByIdAsync(id);
@@ -43,37 +84,8 @@ namespace HealthApp.Api.Controllers
             return Ok(doctor);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateDoctor([FromBody] DoctorCreateDto dto)
-        {
-            await _doctorService.AddDoctorAsync(dto);
-
-            return StatusCode(
-                StatusCodes.Status201Created,
-                new { message = "Doctor created successfully." });
-        }
-
-        [HttpPut("{id:int}")]
-        public async Task<IActionResult> UpdateDoctor(
-            int id,
-            [FromBody] DoctorCreateDto dto)
-        {
-            await _doctorService.UpdateDoctorAsync(id, dto);
-
-            return Ok(new { message = "Doctor updated successfully." });
-        }
-
-        [HttpPatch("{id:int}/status")]
-        public async Task<IActionResult> ChangeDoctorStatus(
-            int id,
-            [FromQuery] bool isActive)
-        {
-            await _doctorService.ChangeStatusAsync(id, isActive);
-
-            return Ok(new { message = "Doctor status updated successfully." });
-        }
-
         [HttpGet("specialisation/{specialisation}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> GetDoctorsBySpecialisation(
             string specialisation)
         {
@@ -92,6 +104,7 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpGet("{id:int}/availability")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> GetDoctorAvailability(
             int id,
             [FromQuery] DateOnly date)

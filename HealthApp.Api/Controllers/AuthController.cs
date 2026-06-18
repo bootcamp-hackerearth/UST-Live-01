@@ -1,5 +1,6 @@
 ﻿using HealthApp.Api.Dtos;
 using HealthApp.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +29,7 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpPost("register/doctor")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> RegisterDoctor(RegisterDoctorDto request)
         {
             var (success, message, userId, temporaryPassword) = await service.RegisterDoctor(request);

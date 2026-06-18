@@ -1,0 +1,249 @@
+﻿using HealthApp.Api.Dtos;
+using HealthApp.Api.Enums;
+using HealthApp.Api.Exceptions;
+using HealthApp.Api.Extensions;
+using HealthApp.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace HealthApp.Api.Controllers
+{
+    [ApiController]
+    [Route("api/appointments")]
+    [Authorize]
+    public class AppointmentsController : ControllerBase
+    {
+        private readonly IAppointmentService _appointmentService;
+        private readonly IHealthRecordService _healthRecordService;
+
+        public AppointmentsController(
+            IAppointmentService appointmentService,
+            IHealthRecordService healthRecordService)
+        {
+            _appointmentService = appointmentService;
+            _healthRecordService = healthRecordService;
+        }
+
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
+        public async Task<IActionResult> GetAppointments(
+            [FromQuery] int? doctorId,
+            [FromQuery] int? patientId,
+            [FromQuery] bool onlyUpcoming = false)
+        {
+            if (User.IsPatient())
+            {
+                patientId = User.GetPatientId();
+
+                if (patientId == null)
+                {
+                    throw new ForbiddenAccessException("Patient profile is not linked to this user.");
+                }
+
+                doctorId = null;
+            }
+            else if (User.IsDoctor())
+            {
+                doctorId = User.GetDoctorId();
+
+                if (doctorId == null)
+                {
+                    throw new ForbiddenAccessException("Doctor profile is not linked to this user.");
+                }
+
+                patientId = null;
+            }
+
+            var appointments = await _appointmentService.GetAppointmentsAsync(
+                doctorId,
+                patientId,
+                onlyUpcoming);
+
+            return Ok(appointments);
+        }
+
+        [HttpGet("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
+        public async Task<IActionResult> GetAppointmentById(int id)
+        {
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+
+            if (User.IsPatient() && appointment.PatientId != User.GetPatientId())
+            {
+                throw new ForbiddenAccessException("You cannot access another patient's appointment.");
+            }
+
+            if (User.IsDoctor() && appointment.DoctorId != User.GetDoctorId())
+            {
+                throw new ForbiddenAccessException("You cannot access another doctor's appointment.");
+            }
+
+            return Ok(appointment);
+        }
+
+        [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
+        public async Task<IActionResult> BookAppointment([FromBody] AppointmentCreateDto dto)
+        {
+            var loggedInPatientId = User.GetPatientId();
+
+            if (loggedInPatientId == null)
+            {
+                throw new ForbiddenAccessException("Patient profile is not linked to this user.");
+            }
+
+            dto.PatientId = loggedInPatientId.Value;
+
+            var appointment = await _appointmentService.BookAppointmentAsync(dto);
+
+            return StatusCode(StatusCodes.Status201Created, appointment);
+        }
+
+        [HttpPut("{id:int}/status")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
+        public async Task<IActionResult> UpdateAppointmentStatus(
+            int id,
+            [FromQuery] string status,
+            [FromQuery] string? cancellationReason)
+        {
+            if (!Enum.TryParse(status, true, out AppointmentStatus appointmentStatus))
+            {
+                throw new InvalidRequestException("Invalid appointment status.");
+            }
+
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+
+            if (User.IsPatient())
+            {
+                if (appointment.PatientId != User.GetPatientId())
+                {
+                    throw new ForbiddenAccessException("You cannot update another patient's appointment.");
+                }
+
+                if (appointmentStatus != AppointmentStatus.Cancelled)
+                {
+                    throw new ForbiddenAccessException("Patients can only cancel appointments.");
+                }
+            }
+
+            if (User.IsDoctor())
+            {
+                if (appointment.DoctorId != User.GetDoctorId())
+                {
+                    throw new ForbiddenAccessException("You cannot update another doctor's appointment.");
+                }
+
+                if (appointmentStatus == AppointmentStatus.Cancelled)
+                {
+                    throw new ForbiddenAccessException("Doctors cannot cancel patient appointments using this route.");
+                }
+            }
+
+            await _appointmentService.UpdateAppointmentStatusAsync(
+                id,
+                appointmentStatus,
+                cancellationReason);
+
+            return Ok(new { message = "Appointment status updated successfully." });
+        }
+
+        [HttpPost("{id:int}/confirm")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        public async Task<IActionResult> ConfirmAppointment(int id)
+        {
+            await EnsureDoctorOwnsAppointmentIfDoctor(id);
+
+            await _appointmentService.UpdateAppointmentStatusAsync(
+                id,
+                AppointmentStatus.Confirmed);
+
+            return Ok(new { message = "Appointment confirmed successfully." });
+        }
+
+        [HttpPost("{id:int}/cancel")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Admin")]
+        public async Task<IActionResult> CancelAppointment(
+            int id,
+            [FromBody] CancelAppointmentDto dto)
+        {
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
+
+            if (User.IsPatient() && appointment.PatientId != User.GetPatientId())
+            {
+                throw new ForbiddenAccessException("You cannot cancel another patient's appointment.");
+            }
+
+            await _appointmentService.UpdateAppointmentStatusAsync(
+                id,
+                AppointmentStatus.Cancelled,
+                dto.CancellationReason);
+
+            return Ok(new { message = "Appointment cancelled successfully." });
+        }
+
+        [HttpPost("{id:int}/complete")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        public async Task<IActionResult> CompleteAppointment(int id)
+        {
+            await EnsureDoctorOwnsAppointmentIfDoctor(id);
+
+            await _appointmentService.UpdateAppointmentStatusAsync(
+                id,
+                AppointmentStatus.Completed);
+
+            return Ok(new { message = "Appointment completed successfully." });
+        }
+
+        [HttpGet("slots")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
+        public async Task<IActionResult> GetAvailableSlots(
+            [FromQuery] int doctorId,
+            [FromQuery] DateOnly date)
+        {
+            var slots = await _appointmentService.GetAvailableSlotsAsync(
+                doctorId,
+                date);
+
+            return Ok(slots);
+        }
+
+        [HttpGet("{id:int}/healthrecord")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        public async Task<IActionResult> HealthRecordExists(int id)
+        {
+            await EnsureDoctorOwnsAppointmentIfDoctor(id);
+
+            var exists = await _healthRecordService.ExistsByAppointmentIdAsync(id);
+
+            return Ok(exists);
+        }
+
+        [HttpDelete("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> DeleteAppointment(int id)
+        {
+            await _appointmentService.DeleteAppointmentAsync(id);
+
+            return Ok(new
+            {
+                message = "Appointment deleted successfully."
+            });
+        }
+
+        private async Task EnsureDoctorOwnsAppointmentIfDoctor(int appointmentId)
+        {
+            if (!User.IsDoctor())
+            {
+                return;
+            }
+
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+
+            if (appointment.DoctorId != User.GetDoctorId())
+            {
+                throw new ForbiddenAccessException("You cannot access another doctor's appointment.");
+            }
+        }
+    }
+}
