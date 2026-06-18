@@ -1,4 +1,6 @@
-﻿using HealthCare.Api.DTOs.Appointments;
+﻿using HealthCare.Api.DTOs;
+using HealthCare.Api.DTOs.Appointment;
+using HealthCare.Api.DTOs.Appointments;
 
 namespace HealthCare.Api.Services.Interfaces
 {
@@ -11,6 +13,6 @@ namespace HealthCare.Api.Services.Interfaces
 
         Task<AppointmentListDto> GetByIdAsync(int id);
 
-        Task<IEnumerable<AppointmentListDto>> GetAllAsync();
+        Task<PagedResult<AppointmentListDto>> GetAllAsync(AppointmentFilter filter);
     }
 }

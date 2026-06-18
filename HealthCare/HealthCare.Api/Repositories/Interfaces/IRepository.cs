@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using HealthCare.Api.DTOs;
+using System.Linq.Expressions;
 
 namespace HealthCare.Api.Repositories.Interfaces
 {
@@ -7,15 +8,14 @@ namespace HealthCare.Api.Repositories.Interfaces
         Task<T> AddAsync(T entity, CancellationToken ct = default);
         Task UpdateAsync(T entity, CancellationToken ct = default);
         Task DeleteAsync(int id);
-        Task<T?> GetByIdAsync(int id);
-        Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default);
+        Task<T> GetByIdAsync(int id);
+        //Task<IEnumerable<T>> GetAllAsync(CancellationToken ct = default);
 
-        //Task<PagedResult<T>> GetPagedAsync(
-        //    int pageNumber,
-        //    int pageSize,
-        //    Expression<Func<T, bool>>? filter = null,
-        //    CancellationToken ct = default);
-
+        Task<PagedResult<T>> GetAllAsync(
+            int pageNumber,
+            int pageSize,
+            Expression<Func<T, bool>>? predicate = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
 
     }
 }

@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
+using HealthCare.Api.DTOs;
+using HealthCare.Api.DTOs.Appointment;
 using HealthCare.Api.DTOs.Appointments;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
+using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -54,11 +57,46 @@ namespace HealthCare.Api.Services.Implementations
             return appointment == null ? null : _mapper.Map<AppointmentListDto?>(appointment);
         }
 
-        public async Task<IEnumerable<AppointmentListDto>> GetAllAsync()
+        public async Task<PagedResult<AppointmentListDto>> GetAllAsync(AppointmentFilter filter)
         {
-            var appointments = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<AppointmentListDto>>(appointments);
+            // Build predicate (filtering)
+            Expression<Func<Appointment, bool>>? predicate = null;
 
+            if (!string.IsNullOrWhiteSpace(filter.Status) && filter.ScheduledDate.HasValue)
+            {
+                predicate = a =>
+                    a.Status == filter.Status &&
+                    a.ScheduledDate == filter.ScheduledDate.Value;
+            }
+            else if (!string.IsNullOrWhiteSpace(filter.Status))
+            {
+                predicate = a => a.Status == filter.Status;
+            }
+            else if (filter.ScheduledDate.HasValue)
+            {
+                predicate = a => a.ScheduledDate == filter.ScheduledDate.Value;
+            }
+
+            // Ordering (by scheduled date)
+            Func<IQueryable<Appointment>, IOrderedQueryable<Appointment>> orderBy =
+                q => q.OrderBy(a => a.ScheduledDate);
+
+            // Call repository
+            var pagedResult = await _repository.GetAllAsync(
+                filter.PageNumber,
+                filter.PageSize,
+                predicate,
+                orderBy
+            );
+
+            // Map result
+            return new PagedResult<AppointmentListDto>
+            {
+                Items = _mapper.Map<IEnumerable<AppointmentListDto>>(pagedResult.Items),
+                PageNumber = pagedResult.PageNumber,
+                PageSize = pagedResult.PageSize,
+                TotalCount = pagedResult.TotalCount
+            };
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿using HealthCare.Api.DTOs.Appointments;
+﻿using HealthCare.Api.DTOs.Appointment;
+using HealthCare.Api.DTOs.Appointments;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCare.Api.Controllers
 {
+    
     [Route("api/appointments")]
     [ApiController]
     public class AppointmentController : ControllerBase
@@ -18,9 +20,9 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(AppointmentFilter filter)
         {
-            var appointments = await _service.GetAllAsync();
+            var appointments = await _service.GetAllAsync( filter);
             return Ok(appointments);
         }
 

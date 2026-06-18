@@ -1,100 +1,188 @@
-﻿using System.Text;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using AutoMapper;
+using HealthCare.Api.Data;
 using HealthCare.Api.DTOs.Authentication;
+using HealthCare.Api.DTOs.Patient;
+using HealthCare.Api.DTOs.Doctor;
+using HealthCare.Api.Models;
+using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace HealthCare.Api.Services.Implementations
 {
-    public class AuthService(UserManager<IdentityUser>userManager,IConfiguration configuration) :IAuthService
+    public class AuthService : IAuthService
     {
-        public async Task<(bool Success, string message, string UserId)> Register(RegisterDto request)
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IMapper _mapper;
+        private readonly IPatientRepository _patientRepo;
+        private readonly IDoctorRepository _doctorRepo;
+        private readonly IConfiguration _configuration;
+        private readonly HealthCareDbContext _context;
+
+        public AuthService(
+            UserManager<IdentityUser> userManager,
+            IMapper mapper,
+            IPatientRepository patientRepo,
+            IDoctorRepository doctorRepo,
+            IConfiguration configuration,
+            HealthCareDbContext context)
         {
-            if (request.Password != request.ConfirmePassword)
-                return (false, "Password do not match",string.Empty);
+            _userManager = userManager;
+            _mapper = mapper;
+            _patientRepo = patientRepo;
+            _doctorRepo = doctorRepo;
+            _configuration = configuration;
+            _context = context;
+        }
 
-            // var validRoles = new List<string> { "Admin", "Patient", "Doctor" };
+        // ✅ COMMON USER CREATION
+        private async Task<IdentityUser> CreateUserAsync(string email, string password, string role)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(email);
 
-            if (request.Role != "Patient" && request.Role != "Admin" && request.Role != "Doctor")
-
-                return (false, "Invalid Role,must be Patient OR Doctor OR Admin",string.Empty);
+            if (existingUser != null)
+                throw new Exception("Email already exists");
 
             var user = new IdentityUser
             {
-                UserName = request.Email,
-                Email = request.Email
+                UserName = email,
+                Email = email
             };
 
-            var result = await userManager.CreateAsync(user,request.Password);
+            var result = await _userManager.CreateAsync(user, password);
 
-            if(!result.Succeeded)
+            if (!result.Succeeded)
+                throw new Exception(string.Join(", ", result.Errors.Select(e => e.Description)));
+
+            await _userManager.AddToRoleAsync(user, role);
+
+            return user;
+        }
+
+        // ✅ PATIENT REGISTRATION (SELF REGISTER)
+        public async Task RegisterPatientAsync(CreatePatientDto dto)
+        {
+            var user = await CreateUserAsync(dto.Email, dto.Password, "Patient");
+
+            var patient = _mapper.Map<Patient>(dto);
+
+            // ✅ Link Identity UserId
+            patient.UserId = user.Id;
+
+            await _patientRepo.AddAsync(patient);
+            await _context.SaveChangesAsync();
+        }
+
+        // ✅ DOCTOR CREATION (ADMIN ONLY)
+        public async Task RegisterDoctorAsync(CreateDoctorDto dto)
+        {
+            var user = await CreateUserAsync(dto.Email, dto.Password, "Doctor");
+
+            var doctor = _mapper.Map<Doctor>(dto);
+
+            doctor.UserId = user.Id;
+
+            await _doctorRepo.AddAsync(doctor);
+            await _context.SaveChangesAsync();
+        }
+
+        // ✅ LOGIN
+        public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user == null)
+                throw new Exception("Invalid email or password");
+
+            var validPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
+
+            if (!validPassword)
+                throw new Exception("Invalid email or password");
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (!roles.Any())
+                throw new Exception("User has no role assigned");
+
+            var role = roles.First();
+
+            string token;
+
+            if (role == "Patient")
             {
-                var errors= string.Join(",",result.Errors.Select(e=>e.Description));
-                return (false, errors,string.Empty);
+                var patient = await _patientRepo.GetByUserIdAsync(user.Id);
 
+                if (patient == null)
+                    throw new Exception("Patient record not found");
+
+                token = GenerateJwtToken(user, role, patientId: patient.PatientId);
             }
-            await userManager.AddToRoleAsync(user,request.Role);
+            else if (role == "Doctor")
+            {
+                var doctor = await _doctorRepo.GetByUserIdAsync(user.Id);
 
-            return (true,"User Registered Sucessfully",user.Id);
+                if (doctor == null)
+                    throw new Exception("Doctor record not found");
+
+                token = GenerateJwtToken(user, role, doctorId: doctor.DoctorId);
+            }
+            else
+            {
+                token = GenerateJwtToken(user, role);
+            }
+
+            return new AuthResponseDto
+            {
+                AccessToken = token,
+                Role = role
+            };
         }
 
-        public async Task<(bool Success, string message, string token, int expiresIn)> Login(LoginDto request)
+        // ✅ JWT TOKEN GENERATION
+        private string GenerateJwtToken(
+            IdentityUser user,
+            string role,
+            int? patientId = null,
+            int? doctorId = null)
         {
-            var user = await userManager.FindByEmailAsync(request.Email);
+            var jwtSettings = _configuration.GetSection("Jwt");
 
-            if(user is null)
-                return (false,"Invail Email or Password",string.Empty,0);
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings["Key"]!)
+            );
 
-            var passwordValid = await userManager.CheckPasswordAsync(user,request.Password);
-
-            if(!passwordValid)
-                return (false,"Invalid Email or Password",string.Empty,0) ;
-
-            var token = await GenerateJwtToken(user);
-
-            var expirationMinutes = int.Parse(configuration.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
-
-            return (true, "Login Sucessfully", token, expirationMinutes);
-        }
-
-        private async Task <string>GenerateJwtToken(IdentityUser user)
-        {
-            var jwtSetting = configuration.GetSection("jwt");
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSetting["key"]!));
-               
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var roles = await userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Email, user.Email!),
+                new Claim(ClaimTypes.Role, role),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-                //  Add roles to token
-                foreach (var role in roles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
+            // ✅ Add optional IDs
+            if (patientId.HasValue)
+                claims.Add(new Claim("PatientId", patientId.Value.ToString()));
 
-                var expirationMinutes = int.Parse(jwtSetting["AccessTokenExpirationMinutes"]!);
+            if (doctorId.HasValue)
+                claims.Add(new Claim("DoctorId", doctorId.Value.ToString()));
 
-                var token = new JwtSecurityToken(
-                    issuer: jwtSetting["Issuer"],
-                    audience: jwtSetting["Audience"],
-                    claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
-                    signingCredentials: credentials
-                );
+            var expiryMinutes = int.Parse(jwtSettings["AccessTokenExpirationMinutes"]!);
 
-                return new JwtSecurityTokenHandler().WriteToken(token);
-            }
+            var token = new JwtSecurityToken(
+                issuer: jwtSettings["Issuer"],
+                audience: jwtSettings["Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(expiryMinutes),
+                signingCredentials: credentials
+            );
 
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
+}

@@ -4,16 +4,14 @@ namespace HealthCare.Api.Models
 {
     public class Patient
     {
-
+        public string? UserId { get; set; }
         public int PatientId { get; set; }
 
-        public int UserId { get; set; }
-        
-        public string? FullName { get; set; } = null!;
+        public string FullName { get; set; } = null!;
 
         public DateOnly DateOfBirth { get; set; }
 
-        public string? Gender { get; set; } = null!;
+        public string Gender { get; set; } = null!;
 
         public string? PhoneNumber { get; set; }
 

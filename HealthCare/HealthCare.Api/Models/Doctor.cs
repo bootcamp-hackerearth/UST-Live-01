@@ -11,7 +11,7 @@ namespace HealthCare.Api.Models
         public int DoctorId { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string? UserId { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -38,7 +38,6 @@ namespace HealthCare.Api.Models
         public ICollection<Appointment> Appointments { get; set; } = [];
         public ICollection<AvailableSlots> AvailableSlots { get; set; } = [];
         public ICollection<DoctorLeaves> DoctorLeaves { get; set; } = [];
-
         public ICollection<HealthRecord> HealthRecords { get; set; } = [];
 
     }

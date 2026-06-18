@@ -1,4 +1,5 @@
 ﻿using HealthCare.Api.DTOs.HealthRecord;
+using HealthCare.Api.DTOs.Patient;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -31,9 +32,9 @@ namespace HealthCare.Api.Controllers
 
         // ✅ GET ALL Health Records
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(HealthRecordFilter filter)
         {
-            var records = await _healthRecordService.GetAllAsync();
+            var records = await _healthRecordService.GetAllAsync(filter);
             return Ok(records);
         }
 

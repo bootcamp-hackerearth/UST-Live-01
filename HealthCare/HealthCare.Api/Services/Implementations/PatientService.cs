@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
+using HealthCare.Api.DTOs;
 using HealthCare.Api.DTOs.Patient;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -21,10 +23,9 @@ namespace HealthCare.Api.Services.Implementations
             _context = context;
             _mapper = mapper;
         }
-
         public async Task AddAsync(CreatePatientDto dto)
         {
-            var patient=_mapper.Map<Patient>(dto);
+            var patient = _mapper.Map<Patient>(dto);
             await _repository.AddAsync(patient);
             await _context.SaveChangesAsync();
         }
@@ -49,17 +50,64 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task<PatientListDto>GetByIdAsync(int id)
+
+        public async Task<PatientListDto> GetByIdAsync(int id)
         {
-            var patient= await _repository.GetByIdAsync(id);
-            return patient == null ? null : _mapper.Map<PatientListDto>(patient);
+            var patient = await _repository.GetByIdAsync(id);
+
+            if (patient == null)
+                throw new PatientNotFoundException(id);
+
+            return _mapper.Map<PatientListDto>(patient);
         }
 
-        public async Task <IEnumerable<PatientListDto>>GetAllAsync()
+
+
+        public async Task<IEnumerable<PatientListDto>> SearchByNameAsync(string name)
         {
-            var patients = await _repository.GetAllAsync();
+            var patients = await _context.Patients
+                .Where(p => p.FullName.ToLower().Contains(name.ToLower()))
+                .ToListAsync();
+
             return _mapper.Map<IEnumerable<PatientListDto>>(patients);
-
         }
+
+        public async Task<PagedResult<PatientListDto>> GetAllAsync(PatientFilter filter)
+        {
+            IQueryable<Patient> query = _context.Patients.AsQueryable();
+
+            //  Filter by Insurance
+            if (filter.HasInsurance.HasValue)
+            {
+                if (filter.HasInsurance.Value)
+                    query = query.Where(p => p.InsuranceId != null);
+                else
+                    query = query.Where(p => p.InsuranceId == null);
+            }
+
+            //  Filter by Name
+            if (!string.IsNullOrWhiteSpace(filter.FullName))
+            {
+                query = query.Where(p => p.FullName.Contains(filter.FullName));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Apply pagination
+            var items = await query
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync();
+
+            return new PagedResult<PatientListDto>
+            {
+                Items = _mapper.Map<IEnumerable<PatientListDto>>(items),
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
+        }
+
+
     }
 }

@@ -17,5 +17,15 @@ namespace HealthCare.Api.DTOs.Doctor
 
         [Range(0.01, 100000)]
         public decimal ConsultationFee { get; set; }
+
+        [Required]
+        [MaxLength(100)]
+        [EmailAddress]
+        public string Email { get; set; } = null!;
+
+        [Required]
+        public string Password { get; set; } = null!;
+
+
     }
 }

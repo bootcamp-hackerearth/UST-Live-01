@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
+using HealthCare.Api.DTOs;
 using HealthCare.Api.DTOs.Doctor;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
+using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -54,11 +56,45 @@ namespace HealthCare.Api.Services.Implementations
             return doctor == null ? null : _mapper.Map<DoctorListDto?>(doctor);
         }
 
-        public async Task<IEnumerable<DoctorListDto>> GetAllAsync()
+        public async Task<PagedResult<DoctorListDto>> GetAllAsync(DoctorFilter filter)
         {
-            var doctors = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<DoctorListDto>>(doctors);
+            // Build predicate (filtering)
+            Expression<Func<Doctor, bool>>? predicate = null;
 
+            if (!string.IsNullOrWhiteSpace(filter.Specialisation) && filter.MinExperience.HasValue)
+            {
+                predicate = d => d.Specialisation == filter.Specialisation
+                              && d.YearsOfExperience >= filter.MinExperience.Value;
+            }
+            else if (!string.IsNullOrWhiteSpace(filter.Specialisation))
+            {
+                predicate = d => d.Specialisation == filter.Specialisation;
+            }
+            else if (filter.MinExperience.HasValue)
+            {
+                predicate = d => d.YearsOfExperience >= filter.MinExperience.Value;
+            }
+
+            // Ordering (by experience)
+            Func<IQueryable<Doctor>, IOrderedQueryable<Doctor>> orderBy =
+                q => q.OrderByDescending(d => d.YearsOfExperience);
+
+            // Call repository
+            var pagedResult = await _repository.GetAllAsync(
+                filter.PageNumber,
+                filter.PageSize,
+                predicate,
+                orderBy
+            );
+
+            // Map result
+            return new PagedResult<DoctorListDto>
+            {
+                Items = _mapper.Map<IEnumerable<DoctorListDto>>(pagedResult.Items),
+                PageNumber = pagedResult.PageNumber,
+                PageSize = pagedResult.PageSize,
+                TotalCount = pagedResult.TotalCount
+            };
         }
 
 

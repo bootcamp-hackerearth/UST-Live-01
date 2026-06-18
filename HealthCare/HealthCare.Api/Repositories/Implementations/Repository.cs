@@ -1,4 +1,5 @@
 ﻿using HealthCare.Api.Data;
+using HealthCare.Api.DTOs;
 using HealthCare.Api.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -7,7 +8,7 @@ namespace HealthCare.Api.Repositories.Implementations
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        protected readonly DbContext _context;
+        protected readonly HealthCareDbContext _context;
         protected readonly DbSet<T> _dbSet;
 
         public Repository(HealthCareDbContext context)
@@ -36,49 +37,43 @@ namespace HealthCare.Api.Repositories.Implementations
                 _dbSet.Remove(entity);
         }
 
-        public  async Task<T?>GetByIdAsync(int id)=>
+        public  async Task<T>GetByIdAsync(int id)=>
              await _dbSet.FindAsync(id);
-       
 
-
-        public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken ct=default)
+        public async Task<PagedResult<T>> GetAllAsync(
+             int pageNumber,
+             int pageSize,
+             Expression<Func<T, bool>> predicate = null,
+             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
         {
-            return await _dbSet.AsNoTracking().ToListAsync();
-        }
+            IQueryable<T> query = _dbSet;
 
+            if (predicate != null)
+                query = query.Where(predicate);
+
+            if (orderBy != null)
+                query = orderBy(query);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<T>
+            {
+                Items = items,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+        }
 
         public virtual async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate)
         {
             return await _dbSet.AnyAsync(predicate);
         }
-
-        //Pagination
-    //    public virtual async Task<PagedResult<T>> GetPagedAsync(
-    //int pageNumber,
-    //int pageSize,
-    //Expression<Func<T, bool>>? filter = null,
-    //CancellationToken ct = default)
-    //    {
-    //        IQueryable<T> query = _dbSet.AsNoTracking();
-
-    //        if (filter != null)
-    //            query = query.Where(filter);
-
-    //        var totalCount = await query.CountAsync(ct);
-
-    //        var items = await query
-    //            .Skip((pageNumber - 1) * pageSize)
-    //            .Take(pageSize)
-    //            .ToListAsync(ct);
-
-    //        return new PagedResult<T>
-    //        {
-    //            Items = items,
-    //            TotalCount = totalCount,
-    //            PageNumber = pageNumber,
-    //            PageSize = pageSize
-    //        };
-    //    }
 
 
     }

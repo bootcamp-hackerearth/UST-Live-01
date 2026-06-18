@@ -1,12 +1,16 @@
 ﻿using HealthCare.Api.DTOs.Authentication;
+using HealthCare.Api.DTOs.Doctor;
+using HealthCare.Api.DTOs.Patient;
 
 namespace HealthCare.Api.Services.Interfaces
 {
     public interface IAuthService
     {
 
-        Task<(bool Success, string message, string UserId)> Register(RegisterDto request);
+        Task RegisterPatientAsync(CreatePatientDto dto);
 
-        Task<(bool Success, string message,string token,int expiresIn)>Login(LoginDto request);
+        Task RegisterDoctorAsync(CreateDoctorDto dto);
+
+        Task<AuthResponseDto> LoginAsync(LoginDto dto);
     }
 }

@@ -7,16 +7,14 @@ namespace HealthCare.Api.Repositories.Implementations
 {
     public class PatientRepository : Repository<Patient>,IPatientRepository
     {
+  
         public PatientRepository(HealthCareDbContext context) : base(context) { }
+        public async Task<Patient?> GetByUserIdAsync(string userId)
+        {
+            return await _context.Patients
+                .FirstOrDefaultAsync(p => p.UserId == userId);
+        }
 
-        //public async Task<bool> EmailExistsAsync(string email)
-        //{
-        //    if (email == null)
-        //        return false;
-
-        //    return await _context.Set<Patient>().AnyAsync(p => p.Email.ToLower() == email.ToLower());
-
-        //}
 
     }
 }
