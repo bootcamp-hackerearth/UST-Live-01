@@ -42,11 +42,19 @@ namespace HealthAxis.API.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(
-            LoginDto request,
-            CancellationToken ct)
+     LoginDto request,
+     CancellationToken ct)
         {
-            var (success, message, accessToken, refreshToken, expiresIn) =
-                await _service.LoginAsync(request, ct);
+            var (
+                success,
+                message,
+                accessToken,
+                refreshToken,
+                expiresIn,
+                userId,
+                email,
+                role,
+                referenceId) = await _service.LoginAsync(request, ct);
 
             if (!success)
             {
@@ -61,7 +69,11 @@ namespace HealthAxis.API.Controllers
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
                 Message = message,
-                ExpiresIn = expiresIn
+                ExpiresIn = expiresIn,
+                UserId = userId,
+                Email = email,
+                Role = role,
+                ReferenceId = referenceId
             };
 
             return Ok(response);
