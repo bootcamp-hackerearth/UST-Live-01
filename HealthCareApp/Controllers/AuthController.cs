@@ -16,8 +16,7 @@ namespace HealthCareApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> RegisterPatient(PatientRegisterDto request)
         {
-            var (success, message, userId) = await service.RegisterPatientAsync(request);
-
+            var (success, message, patientId) = await service.RegisterPatientAsync(request);
             if (!success)
             {
                 return BadRequest(new
@@ -29,8 +28,9 @@ namespace HealthCareApp.Controllers
             return Ok(new
             {
                 Message = message,
-                UserId = userId
+                PatientId = patientId
             });
+
         }
 
         [HttpPost("login")]

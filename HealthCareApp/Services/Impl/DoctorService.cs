@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HealthCareApp.Constants;
 using HealthCareApp.Dtos;
 using HealthCareApp.Enums;
 using HealthCareApp.Exceptions;
@@ -266,6 +267,25 @@ namespace HealthCareApp.Services
                 char.ToUpper(cleanedName[0]) + cleanedName.Substring(1).ToLower();
 
             return $"{formattedName}@{DateTime.Today.Year}";
+        }
+
+        public async Task<List<string>> GetDoctorAvailabilityAsync(int doctorId)
+        {
+            ValidateDoctorId(doctorId);
+
+            var doctor = await repository.GetByIdAsync(doctorId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException("Doctor", doctorId);
+            }
+
+            if (!doctor.IsActive)
+            {
+                throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
+            }
+
+            return TimeSlots.Slots;
         }
     }
 }

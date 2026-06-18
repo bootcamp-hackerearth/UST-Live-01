@@ -18,23 +18,23 @@ namespace HealthCareApp.Services.Impl
         IMapper mapper,
         IConfiguration config) : IAuthService
     {
-        public async Task<(bool Success, string Message, string UserId)> RegisterPatientAsync(PatientRegisterDto request)
+        public async Task<(bool Success, string Message, int PatientId)> RegisterPatientAsync(PatientRegisterDto request)
         {
             if (request.Password != request.ConfirmPassword)
             {
-                return (false, "Password and Confirm Password do not match.", string.Empty);
+                return (false, "Password and Confirm Password do not match.", 0);
             }
 
             if (request.DateOfBirth.Date > DateTime.Today)
             {
-                return (false, "Date of birth cannot be a future date.", string.Empty);
+                return (false, "Date of birth cannot be a future date.", 0);
             }
 
             var existingUser = await userManager.FindByEmailAsync(request.Email);
 
             if (existingUser != null)
             {
-                return (false, "Email is already registered.", string.Empty);
+                return (false, "Email is already registered.", 0);
             }
 
             var identityUser = new IdentityUser
@@ -49,15 +49,17 @@ namespace HealthCareApp.Services.Impl
             if (!createUserResult.Succeeded)
             {
                 var errors = string.Join(",", createUserResult.Errors.Select(e => e.Description));
-                return (false, errors, string.Empty);
+                return (false, errors, 0);
             }
 
             var roleResult = await userManager.AddToRoleAsync(identityUser, "Patient");
 
             if (!roleResult.Succeeded)
             {
+                await userManager.DeleteAsync(identityUser);
+
                 var errors = string.Join(",", roleResult.Errors.Select(e => e.Description));
-                return (false, errors, string.Empty);
+                return (false, errors, 0);
             }
 
             var patient = new Patient
@@ -71,9 +73,9 @@ namespace HealthCareApp.Services.Impl
                 CreatedDate = DateTime.Now
             };
 
-            await patientRepository.CreateAsync(patient);
+            var savedPatient = await patientRepository.CreateAsync(patient);
 
-            return (true, "Patient registered successfully.", identityUser.Id);
+            return (true, "Patient registered successfully.", savedPatient.PatientId);
         }
 
         public async Task<(bool Success, string Message, string Token, int ExpiresIn)> Login(LoginDto request)
@@ -101,6 +103,11 @@ namespace HealthCareApp.Services.Impl
 
         public async Task<(bool Success, string Message)> ChangePasswordAsync(string userId, ChangePasswordDto request)
         {
+            if (string.Equals(request.CurrentPassword, request.NewPassword, StringComparison.Ordinal))
+            {
+                return (false, "New password cannot be the same as current password.");
+            }
+
             if (request.NewPassword != request.ConfirmNewPassword)
             {
                 return (false, "New Password and Confirm New Password do not match.");

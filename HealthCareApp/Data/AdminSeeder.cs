@@ -6,13 +6,21 @@ namespace HealthCareApp.Data
     {
         public static async Task SeedAdminAsync(
             UserManager<IdentityUser> userManager,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration)
         {
             string adminRole = "Admin";
 
-            string adminEmail = "admin@healthcare.com";
+            string? adminEmail = configuration["SeedAdmin:Email"];
 
-            string adminPassword = "Admin@123";
+            string? adminPassword = configuration["SeedAdmin:Password"];
+
+            if (string.IsNullOrWhiteSpace(adminEmail) ||
+                string.IsNullOrWhiteSpace(adminPassword))
+            {
+                throw new InvalidOperationException(
+                    "Seed admin credentials are missing. Please configure SeedAdmin:Email and SeedAdmin:Password.");
+            }
 
             if (!await roleManager.RoleExistsAsync(adminRole))
             {
@@ -35,6 +43,13 @@ namespace HealthCareApp.Data
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, adminRole);
+                }
+                else
+                {
+                    var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
+                    throw new InvalidOperationException(
+                        $"Failed to seed admin user: {errors}");
                 }
             }
         }

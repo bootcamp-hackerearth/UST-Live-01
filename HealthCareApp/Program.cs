@@ -88,6 +88,8 @@ builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 // Register services.
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
@@ -113,9 +115,8 @@ using (var scope = app.Services.CreateScope())
 
     await RoleSeeder.SeedRoleAsync(roleManager);
 
-    await AdminSeeder.SeedAdminAsync(userManager, roleManager);
+    await AdminSeeder.SeedAdminAsync(userManager, roleManager, builder.Configuration);
 }
-
 // Global exception handler middleware.
 app.UseExceptionHandler();
 

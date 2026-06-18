@@ -21,5 +21,6 @@ namespace HealthCareApp.Services
         Task<DoctorDto> UpdateDoctorAsync(int doctorId, UpdateDoctorDto dto);
 
         Task<DoctorDto> DeleteDoctorAsync(int doctorId);
+        Task<List<string>> GetDoctorAvailabilityAsync(int doctorId);
     }
 }
