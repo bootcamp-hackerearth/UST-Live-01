@@ -23,8 +23,7 @@ namespace HealthAxis.API.Services.Implementation
 
         public async Task<AppointmentDto?> GetByIdAsync(int id)
         {
-            var appointment =
-                await appointmentRepository.GetByIdAsync(id);
+            var appointment = await appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
             {
@@ -37,16 +36,16 @@ namespace HealthAxis.API.Services.Implementation
         public async Task<AppointmentDto> AddAsync(
             CreateAppointmentDto appointmentDto)
         {
-            var patient =
-                await patientRepository.GetByIdAsync(appointmentDto.PatientId);
+            var patient = await patientRepository.GetByIdAsync(
+                appointmentDto.PatientId);
 
             if (patient == null)
             {
                 throw new NotFoundException("Patient not found");
             }
 
-            var doctor =
-                await doctorRepository.GetByIdAsync(appointmentDto.DoctorId);
+            var doctor = await doctorRepository.GetByIdAsync(
+                appointmentDto.DoctorId);
 
             if (doctor == null)
             {
@@ -81,8 +80,7 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationException("Time slot is required");
             }
 
-            var appointments =
-                await appointmentRepository.GetAllAsync();
+            var appointments = await appointmentRepository.GetAllAsync();
 
             bool doctorAlreadyBooked = appointments.Any(a =>
                 a.DoctorId == appointmentDto.DoctorId &&
@@ -108,13 +106,17 @@ namespace HealthAxis.API.Services.Implementation
                     "Patient already has an appointment for this date and time slot");
             }
 
-            var appointment =
-                mapper.Map<Appointment>(appointmentDto);
+            var appointment = new Appointment
+            {
+                PatientId = appointmentDto.PatientId,
+                DoctorId = appointmentDto.DoctorId,
+                ScheduledDate = appointmentDto.ScheduledDate,
+                TimeSlot = appointmentDto.TimeSlot,
+                Status = AppointmentStatus.Pending,
+                CancellationReason = null
+            };
 
-            appointment.Status = AppointmentStatus.Pending;
-
-            var saved =
-                await appointmentRepository.AddAsync(appointment);
+            var saved = await appointmentRepository.AddAsync(appointment);
 
             return mapper.Map<AppointmentDto>(saved);
         }
@@ -123,32 +125,74 @@ namespace HealthAxis.API.Services.Implementation
             int id,
             UpdateAppointmentStatusDto statusDto)
         {
-            var appointment =
-                await appointmentRepository.GetByIdAsync(id);
+            var appointment = await appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
             {
                 throw new NotFoundException("Appointment not found");
             }
 
+            if (!Enum.IsDefined(typeof(AppointmentStatus), statusDto.Status))
+            {
+                throw new ValidationException("Invalid appointment status");
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed &&
+                statusDto.Status != AppointmentStatus.Completed)
+            {
+                throw new BusinessRuleException(
+                    "Completed appointment status cannot be changed");
+            }
+
+            if (appointment.Status == AppointmentStatus.Cancelled &&
+                statusDto.Status != AppointmentStatus.Cancelled)
+            {
+                throw new BusinessRuleException(
+                    "Cancelled appointment cannot be completed or confirmed");
+            }
+
+            if (statusDto.Status == AppointmentStatus.Cancelled &&
+                appointment.Status != AppointmentStatus.Pending)
+            {
+                throw new BusinessRuleException(
+                    "Only pending appointments can be cancelled");
+            }
+
+            if (appointment.Status == AppointmentStatus.Pending &&
+                statusDto.Status == AppointmentStatus.Completed)
+            {
+                throw new BusinessRuleException(
+                    "Pending appointment cannot directly be completed. First confirm it, then complete it");
+            }
+
+            if (appointment.Status == AppointmentStatus.Confirmed &&
+                statusDto.Status == AppointmentStatus.Cancelled)
+            {
+                throw new BusinessRuleException(
+                    "Confirmed appointment cannot be cancelled");
+            }
+
             appointment.Status = statusDto.Status;
 
             if (statusDto.Status == AppointmentStatus.Cancelled)
             {
-                appointment.CancellationReason =
-                    statusDto.CancellationReason;
+                appointment.CancellationReason = statusDto.CancellationReason;
+            }
+            else
+            {
+                appointment.CancellationReason = null;
             }
 
-            var updated =
-                await appointmentRepository.UpdateAsync(id, appointment);
+            var updated = await appointmentRepository.UpdateAsync(
+                id,
+                appointment);
 
             return mapper.Map<AppointmentDto>(updated);
         }
 
         public async Task<AppointmentDto> DeleteAsync(int id)
         {
-            var deleted =
-                await appointmentRepository.DeleteAsync(id);
+            var deleted = await appointmentRepository.DeleteAsync(id);
 
             if (deleted == null)
             {

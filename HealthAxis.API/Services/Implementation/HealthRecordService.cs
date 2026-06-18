@@ -13,6 +13,7 @@ namespace HealthAxis.API.Services.Implementation
         IHealthRecordRepository healthRecordRepository,
         IPatientRepository patientRepository,
         IAppointmentRepository appointmentRepository,
+        IDoctorRepository doctorRepository,
         IMapper mapper) : IHealthRecordService
     {
         public async Task<List<HealthRecordDto>> GetByPatientIdAsync(int patientId)
@@ -30,7 +31,27 @@ namespace HealthAxis.API.Services.Implementation
                 .Where(record => record.PatientId == patientId)
                 .ToList();
 
-            return mapper.Map<List<HealthRecordDto>>(patientRecords);
+            var result = new List<HealthRecordDto>();
+
+            foreach (var record in patientRecords)
+            {
+                var doctor = await doctorRepository.GetByIdAsync(record.DoctorId);
+
+                result.Add(new HealthRecordDto
+                {
+                    RecordId = record.RecordId,
+                    AppointmentId = record.AppointmentId,
+                    PatientId = record.PatientId,
+                    DoctorId = record.DoctorId,
+                    Specialisation = doctor?.Specialisation.ToString() ?? string.Empty,
+                    VisitDate = record.VisitDate,
+                    Diagnosis = record.Diagnosis,
+                    Prescription = record.Prescription,
+                    Notes = record.Notes
+                });
+            }
+
+            return result;
         }
 
         public async Task<HealthRecordDto> GetByIdAsync(int id)
@@ -42,33 +63,53 @@ namespace HealthAxis.API.Services.Implementation
                 throw new NotFoundException("Health record not found");
             }
 
-            return mapper.Map<HealthRecordDto>(record);
+            var doctor = await doctorRepository.GetByIdAsync(record.DoctorId);
+
+            return new HealthRecordDto
+            {
+                RecordId = record.RecordId,
+                AppointmentId = record.AppointmentId,
+                PatientId = record.PatientId,
+                DoctorId = record.DoctorId,
+                Specialisation = doctor?.Specialisation.ToString() ?? string.Empty,
+                VisitDate = record.VisitDate,
+                Diagnosis = record.Diagnosis,
+                Prescription = record.Prescription,
+                Notes = record.Notes
+            };
         }
 
-        public async Task<HealthRecordDto> AddAsync(CreateHealthRecordDto healthRecordDto)
+        public async Task<HealthRecordDto> AddAsync(
+            CreateHealthRecordDto healthRecordDto)
         {
-            var patient = await patientRepository.GetByIdAsync(healthRecordDto.PatientId);
-
-            if (patient == null)
-            {
-                throw new NotFoundException("Patient not found");
-            }
-
-            var appointment = await appointmentRepository.GetByIdAsync(healthRecordDto.AppointmentId);
+            var appointment = await appointmentRepository.GetByIdAsync(
+                healthRecordDto.AppointmentId);
 
             if (appointment == null)
             {
                 throw new NotFoundException("Appointment not found");
             }
 
-            if (appointment.PatientId != healthRecordDto.PatientId)
+            var patient = await patientRepository.GetByIdAsync(
+                appointment.PatientId);
+
+            if (patient == null)
             {
-                throw new BusinessRuleException("Appointment does not belong to this patient");
+                throw new NotFoundException("Patient not found");
+            }
+
+            var doctor = await doctorRepository.GetByIdAsync(
+                appointment.DoctorId);
+
+            if (doctor == null)
+            {
+                throw new NotFoundException("Doctor not found");
             }
 
             if (appointment.Status != AppointmentStatus.Completed)
             {
-                throw new BusinessRuleException( "Health record can be added only for completed appointments");
+                throw new BusinessRuleException(
+                    "Health record can be added only for completed appointments");
             }
 
             if (healthRecordDto.VisitDate == default)
@@ -78,7 +119,8 @@ namespace HealthAxis.API.Services.Implementation
 
             if (healthRecordDto.VisitDate.Date > DateTime.Today)
             {
-                throw new ValidationException( "Visit date cannot be in the future");
+                throw new ValidationException(
+                    "Visit date cannot be in the future");
             }
 
             if (string.IsNullOrWhiteSpace(healthRecordDto.Diagnosis))
@@ -94,7 +136,7 @@ namespace HealthAxis.API.Services.Implementation
             var healthRecord = new HealthRecord
             {
                 AppointmentId = healthRecordDto.AppointmentId,
-                PatientId = healthRecordDto.PatientId,
+                PatientId = appointment.PatientId,
                 DoctorId = appointment.DoctorId,
                 VisitDate = healthRecordDto.VisitDate,
                 Diagnosis = healthRecordDto.Diagnosis,
@@ -102,9 +144,21 @@ namespace HealthAxis.API.Services.Implementation
                 Notes = healthRecordDto.Notes
             };
 
-            var savedRecord =await healthRecordRepository.AddAsync(healthRecord);
+            var savedRecord =
+                await healthRecordRepository.AddAsync(healthRecord);
 
-            return mapper.Map<HealthRecordDto>(savedRecord);
+            return new HealthRecordDto
+            {
+                RecordId = savedRecord.RecordId,
+                AppointmentId = savedRecord.AppointmentId,
+                PatientId = savedRecord.PatientId,
+                DoctorId = savedRecord.DoctorId,
+                Specialisation = doctor.Specialisation.ToString(),
+                VisitDate = savedRecord.VisitDate,
+                Diagnosis = savedRecord.Diagnosis,
+                Prescription = savedRecord.Prescription,
+                Notes = savedRecord.Notes
+            };
         }
     }
 }
