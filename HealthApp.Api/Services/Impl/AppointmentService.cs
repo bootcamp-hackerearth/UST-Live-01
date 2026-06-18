@@ -5,24 +5,12 @@ using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
+using HealthApp.Api.Constants;
 
 namespace HealthApp.Api.Services.Impl
 {
     public class AppointmentService : IAppointmentService
     {
-        private static readonly IEnumerable<string> DefaultSlots = new[]
-        {
-            "09:00-09:30",
-            "09:30-10:00",
-            "10:00-10:30",
-            "10:30-11:00",
-            "11:00-11:30",
-            "11:30-12:00",
-            "14:00-14:30",
-            "14:30-15:00",
-            "15:00-15:30",
-            "15:30-16:00"
-        };
 
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IPatientRepository _patientRepository;
@@ -253,7 +241,7 @@ namespace HealthApp.Api.Services.Impl
 
             var availableSlots = new List<string>();
 
-            foreach (var slot in DefaultSlots)
+            foreach (var slot in TimeSlots.Slots)
             {
                 bool isBooked = await _appointmentRepository.IsDoctorSlotBookedAsync(
                     doctorId,

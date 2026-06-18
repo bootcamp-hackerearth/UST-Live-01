@@ -8,10 +8,16 @@ namespace HealthApp.Api.Repositories.Impl
 {
     public class AppointmentRepository(HealthAppDbContext context) : Repository<Appointment>(context), IAppointmentRepository
     {
-        public async Task<IEnumerable<Appointment>> GetAppointmentsAsync(int? doctorId = null, int? patientId = null, bool onlyUpcoming = false, CancellationToken ct = default)
+        public async Task<IEnumerable<Appointment>> GetAppointmentsAsync(
+            int? doctorId = null,
+            int? patientId = null,
+            bool onlyUpcoming = false,
+            CancellationToken ct = default)
         {
-
-            var query = context.Appointments.AsQueryable();
+            var query = context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .AsQueryable();
 
             if (doctorId.HasValue)
             {
@@ -28,8 +34,10 @@ namespace HealthApp.Api.Repositories.Impl
                 query = query.Where(a => a.ScheduledDate >= DateOnly.FromDateTime(DateTime.Today));
             }
 
-            return await query.ToListAsync();
-
+            return await query
+                .OrderBy(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot)
+                .ToListAsync(ct);
         }
 
 
