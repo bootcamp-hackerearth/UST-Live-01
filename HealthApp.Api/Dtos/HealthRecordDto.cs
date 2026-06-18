@@ -8,6 +8,14 @@ namespace HealthApp.Api.Dtos
         public int RecordId { get; set; }
 
         [Required]
+        public int PatientId { get; set; }
+
+        [Required]
+        public int DoctorId { get; set; }
+
+        public int? AppointmentId { get; set; }
+
+        [Required]
         [MinLength(3, ErrorMessage = "Patient name must be at least 3 characters long.")]
         [StringLength(50, ErrorMessage = "Patient name cannot exceed 50 characters.")]
         public string PatientName { get; set; } = string.Empty;
