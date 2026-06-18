@@ -13,5 +13,15 @@ namespace HealthAxis.API.Services.Interfaces
 
         Task<IEnumerable<DoctorDto>>
             GetAvailableDoctorsAsync();
+
+        Task<DoctorDto> AddAsync(CreateDoctorDto dto);
+
+        Task<DoctorDto> UpdateAsync(int id, UpdateDoctorDto dto);
+
+        Task<IEnumerable<DoctorDto>> SearchByNameAsync(string name);
+
+        Task<IEnumerable<DoctorDto>> GetBySpecialisationAsync(string specialization);
+
+
     }
 }

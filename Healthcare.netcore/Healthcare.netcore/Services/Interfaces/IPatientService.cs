@@ -11,5 +11,12 @@ namespace HealthAxis.API.Services.Interfaces
         Task<PatientDto> UpdateAsync(int id, UpdatePatientDto dto);
 
         Task<IEnumerable<HealthRecordDto>> GetHealthRecordsAsync(int patientId);
+
+        Task<IEnumerable<PatientDto>> SearchByNameAsync(string name);
+
+        Task<PatientDto?> GetByEmailAsync(string email);
+
+        Task<PatientDto?> GetByPhoneAsync(string phone);
+
     }
 }

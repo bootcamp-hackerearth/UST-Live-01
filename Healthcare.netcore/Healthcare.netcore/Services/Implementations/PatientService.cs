@@ -4,7 +4,6 @@ using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
-using CustomValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Services.Implementations
 {
@@ -27,66 +26,92 @@ namespace HealthAxis.API.Services.Implementations
             _mapper = mapper;
         }
 
+        // ✅ Get All
         public async Task<IEnumerable<PatientDto>> GetAllAsync()
         {
             var patients = await _patientRepository.GetAllAsync();
-
             return _mapper.Map<IEnumerable<PatientDto>>(patients);
         }
 
+        // ✅ Get By Id
         public async Task<PatientDto?> GetByIdAsync(int id)
         {
             var patient = await _patientRepository.GetByIdAsync(id);
 
             if (patient == null)
-            {
-                throw new NotFoundException("Patient not found.");
-            }
+                throw new NotFoundException("Patient not found");
 
             return _mapper.Map<PatientDto>(patient);
         }
 
+        // ✅ Update
         public async Task<PatientDto> UpdateAsync(int id, UpdatePatientDto dto)
         {
-            var existingPatient = await _patientRepository.GetByIdAsync(id);
+            var patient = await _patientRepository.GetByIdAsync(id);
 
-            if (existingPatient == null)
-            {
-                throw new NotFoundException("Patient not found.");
-            }
+            if (patient == null)
+                throw new NotFoundException("Patient not found");
 
-            _mapper.Map(dto, existingPatient);
+            _mapper.Map(dto, patient);
 
-            await _patientRepository.UpdateAsync(
-                id,
-                existingPatient,
-                CancellationToken.None);
+            await _patientRepository.UpdateAsync(id, patient, CancellationToken.None);
 
-            return _mapper.Map<PatientDto>(existingPatient);
+            return _mapper.Map<PatientDto>(patient);
         }
 
+        // ✅ Get Health Records
         public async Task<IEnumerable<HealthRecordDto>> GetHealthRecordsAsync(int patientId)
         {
             var patient = await _patientRepository.GetByIdAsync(patientId);
 
             if (patient == null)
-            {
-                throw new NotFoundException("Patient not found.");
-            }
+                throw new NotFoundException("Patient not found");
 
-            var appointments = await _appointmentRepository.GetAllAsync();
+            var records = await _healthRecordRepository.GetAllAsync();
 
-            var appointmentIds = appointments
-                .Where(a => a.PatientId == patientId)
-                .Select(a => a.AppointmentId)
-                .ToHashSet();
+            var patientRecords = records
+                .Where(r => r.PatientId == patientId);
 
-            var healthRecords = await _healthRecordRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<HealthRecordDto>>(patientRecords);
+        }
 
-            var patientHealthRecords = healthRecords
-                .Where(hr => appointmentIds.Contains(hr.AppointmentId));
+        // ✅ SEARCH BY NAME (done in service ✅)
+        public async Task<IEnumerable<PatientDto>> SearchByNameAsync(string name)
+        {
+            var patients = await _patientRepository.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<HealthRecordDto>>(patientHealthRecords);
+            var result = patients
+                .Where(p => p.FullName.Contains(name, StringComparison.OrdinalIgnoreCase));
+
+            return _mapper.Map<IEnumerable<PatientDto>>(result);
+        }
+
+        // ✅ GET BY EMAIL
+        public async Task<PatientDto?> GetByEmailAsync(string email)
+        {
+            var patients = await _patientRepository.GetAllAsync();
+
+            var patient = patients
+                .FirstOrDefault(p => p.Email == email);
+
+            if (patient == null)
+                throw new NotFoundException("Patient not found");
+
+            return _mapper.Map<PatientDto>(patient);
+        }
+
+        // ✅ GET BY PHONE
+        public async Task<PatientDto?> GetByPhoneAsync(string phone)
+        {
+            var patients = await _patientRepository.GetAllAsync();
+
+            var patient = patients
+                .FirstOrDefault(p => p.PhoneNumber == phone);
+
+            if (patient == null)
+                throw new NotFoundException("Patient not found");
+
+            return _mapper.Map<PatientDto>(patient);
         }
     }
 }

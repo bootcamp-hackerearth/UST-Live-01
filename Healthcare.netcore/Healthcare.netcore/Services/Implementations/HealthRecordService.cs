@@ -11,13 +11,13 @@ namespace HealthAxis.API.Services.Implementations
 {
     public class HealthRecordService : IHealthRecordService
     {
-        private readonly IRepository<HealthRecord> _healthRecordRepository;
+        private readonly IHealthRecordRepository _healthRecordRepository;
         private readonly IRepository<Appointment> _appointmentRepository;
         private readonly IRepository<Patient> _patientRepository;
         private readonly IMapper _mapper;
 
         public HealthRecordService(
-            IRepository<HealthRecord> healthRecordRepository,
+            IHealthRecordRepository healthRecordRepository,
             IRepository<Appointment> appointmentRepository,
             IRepository<Patient> patientRepository,
             IMapper mapper)
@@ -28,66 +28,56 @@ namespace HealthAxis.API.Services.Implementations
             _mapper = mapper;
         }
 
+        // ✅ Get by Patient
         public async Task<IEnumerable<HealthRecordDto>> GetByPatientIdAsync(int patientId)
         {
             var patient = await _patientRepository.GetByIdAsync(patientId);
 
             if (patient == null)
-            {
                 throw new NotFoundException("Patient not found.");
-            }
 
-            var appointments = await _appointmentRepository.GetAllAsync();
-
-            var patientAppointmentIds = appointments
-                .Where(a => a.PatientId == patientId)
-                .Select(a => a.AppointmentId)
-                .ToHashSet();
-
-            var healthRecords = await _healthRecordRepository.GetAllAsync();
-
-            var records = healthRecords
-                .Where(hr => patientAppointmentIds.Contains(hr.AppointmentId));
+            var records = await _healthRecordRepository.GetByPatientIdAsync(patientId);
 
             return _mapper.Map<IEnumerable<HealthRecordDto>>(records);
         }
 
+        // ✅ Get by Doctor
+        public async Task<IEnumerable<HealthRecordDto>> GetByDoctorIdAsync(int doctorId)
+        {
+            var records = await _healthRecordRepository.GetByDoctorIdAsync(doctorId);
+
+            return _mapper.Map<IEnumerable<HealthRecordDto>>(records);
+        }
+
+        // ✅ Get by Id
         public async Task<HealthRecordDto> GetByIdAsync(int id)
         {
             var healthRecord = await _healthRecordRepository.GetByIdAsync(id);
 
             if (healthRecord == null)
-            {
                 throw new NotFoundException("Health record not found.");
-            }
 
             return _mapper.Map<HealthRecordDto>(healthRecord);
         }
 
+        // ✅ Create Health Record
         public async Task<HealthRecordDto> AddAsync(CreateHealthRecordDto dto)
         {
             var appointment = await _appointmentRepository.GetByIdAsync(dto.AppointmentId);
 
             if (appointment == null)
-            {
                 throw new NotFoundException("Appointment not found.");
-            }
 
             if (appointment.Status != AppointmentStatus.Completed)
-            {
                 throw new CustomValidationException(
                     "Health records can only be created for completed appointments.");
-            }
 
-            var records = await _healthRecordRepository.GetAllAsync();
+            // ✅ Check duplicate record
+            var existingRecords = await _healthRecordRepository.GetByAppointmentIdAsync(dto.AppointmentId);
 
-            bool exists = records.Any(hr => hr.AppointmentId == dto.AppointmentId);
-
-            if (exists)
-            {
+            if (existingRecords.Any())
                 throw new CustomValidationException(
                     "Health record already exists for this appointment.");
-            }
 
             var healthRecord = new HealthRecord
             {

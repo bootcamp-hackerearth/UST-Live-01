@@ -1,6 +1,7 @@
 ﻿using HealthAxis.API.Models.Auth;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace HealthAxis.API.Controllers
 {

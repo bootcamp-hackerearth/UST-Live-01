@@ -1,4 +1,6 @@
+using AutoMapper;
 using HealthAxis.API.Data;
+using HealthAxis.API.Middleware;
 using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementations;
@@ -7,19 +9,36 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi; // ✅ ONLY THIS
 using System.Text;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers
+// ✅ Controllers
 builder.Services.AddControllers();
 
-// Swagger
+// ✅ Swagger (FIXED ✅🔥)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "HealthAxis API",
+        Version = "v1"
+    });
 
-// DbContext
+    // ✅ JWT AUTH SUPPORT
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Enter: Bearer {your token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+    });
+});
+
+// ✅ DbContext
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -29,7 +48,7 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<HealthAxisDbContext>()
     .AddDefaultTokenProviders();
 
-// ✅ JWT
+// ✅ JWT AUTH
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -54,30 +73,34 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Repositories + Services
+// ✅ Generic Repo
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+// ✅ Patient
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 
+// ✅ Doctor
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
+// ✅ Appointment
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
+// ✅ HealthRecord
+builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 
-// ✅ AUTH SERVICE (FIXED)
+// ✅ Auth
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// ✅ FIX AutoMapper
-builder.Services.AddAutoMapper(
-
-    cfg => { },
-
-    AppDomain.CurrentDomain.GetAssemblies());
+// ✅ AutoMapper
+builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 
+// ✅ Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -86,10 +109,20 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// ✅ Exception Middleware
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+app.UseExceptionHandler();
+
+
+// ✅ Auth
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// ✅ Role Seeder
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
