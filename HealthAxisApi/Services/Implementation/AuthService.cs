@@ -6,6 +6,7 @@ using HealthAxisCore_Api.DTOs.User;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Services.Interfaces;
 using HealthAxisCore_Api.Exceptions;
+using HealthAxisCore_Api.Repositories;
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -16,42 +17,51 @@ namespace HealthAxisCore_Api.Services.Implementations
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IPatientRepository _patientRepository;
 
-        public AuthService(UserManager<ApplicationUser> userManager,
-                           IConfiguration configuration)
+        public AuthService(
+            UserManager<ApplicationUser> userManager,
+            IConfiguration configuration,
+            IPatientRepository patientRepository)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _patientRepository = patientRepository;
         }
 
-        // ✅ REGISTER
-        public async Task<(bool Success, string Message, string AccessToken, int ExpiryInSeconds)>
-            RegisterAsync(RegisterDTO request)
+        // ✅ REGISTER (ONLY PATIENT)
+        public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO request)
         {
-            // ✅ Password validation
             if (request.Password != request.ConfirmPassword)
                 throw new BusinessRuleException("Passwords do not match");
 
-            // ✅ Role validation
-            if (request.Role != "Admin" &&
-                request.Role != "Doctor" &&
-                request.Role != "Patient")
-            {
-                throw new BusinessRuleException("Invalid role");
-            }
+            if (request.Role != "Patient")
+                throw new BusinessRuleException("Only patients can register themselves");
 
-            // ✅ Check existing user
             var existingUser = await _userManager.FindByEmailAsync(request.Email);
             if (existingUser != null)
                 throw new BusinessRuleException("User already exists");
 
-            // ✅ Create user
+            var patient = new Patient
+            {
+                PatientName = request.PatientName,
+                DateOfBirth = request.DateOfBirth,
+                Gender = request.Gender,
+                PhoneNumber = request.PhoneNumber,
+                Email = request.Email,
+                CreatedDate = DateTime.Now
+            };
+
+            await _patientRepository.AddAsync(patient);
+
             var user = new ApplicationUser
             {
                 UserName = request.Email,
                 Email = request.Email,
-                Role = request.Role,
-                ReferenceId = request.ReferenceId
+                Role = "Patient",
+                ReferenceId = patient.PatientId,
+                IsFirstLogin = false,
+                TemporaryPassword = null
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -62,20 +72,22 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new BusinessRuleException(errors);
             }
 
-            // ✅ Assign role
-            await _userManager.AddToRoleAsync(user, request.Role);
+            await _userManager.AddToRoleAsync(user, "Patient");
 
-            // ✅ Generate token
             var token = await GenerateJwtToken(user);
 
-            int expiryMinutes = int.Parse(_configuration["Jwt:DurationInMinutes"]!);
-
-            return (true, "User registered successfully", token, expiryMinutes * 60);
+            return new AuthResponseDTO
+            {
+                Token = token,
+                Email = user.Email!,
+                Role = "Patient",
+                ReferenceId = user.ReferenceId,
+                IsFirstLogin = user.IsFirstLogin
+            };
         }
 
         // ✅ LOGIN
-        public async Task<(bool Success, string Message, string AccessToken, int ExpiryInSeconds)>
-            LoginAsync(LoginDTO request)
+        public async Task<AuthResponseDTO> LoginAsync(LoginDTO request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
@@ -87,14 +99,50 @@ namespace HealthAxisCore_Api.Services.Implementations
             if (!isPasswordValid)
                 throw new UnauthorizedException("Invalid email or password");
 
+            var roles = await _userManager.GetRolesAsync(user);
+
             var token = await GenerateJwtToken(user);
 
-            int expiryMinutes = int.Parse(_configuration["Jwt:DurationInMinutes"]!);
-
-            return (true, "Login successful", token, expiryMinutes * 60);
+            return new AuthResponseDTO
+            {
+                Token = token,
+                Email = user.Email!,
+                Role = roles.FirstOrDefault() ?? "User",
+                ReferenceId = user.ReferenceId,
+                IsFirstLogin = user.IsFirstLogin
+            };
         }
 
-        // ✅ JWT TOKEN
+        // ✅ CHANGE PASSWORD
+        public async Task ChangePasswordAsync(ChangePasswordDTO request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user == null)
+                throw new EntityNotFoundException("User not found");
+
+            if (request.NewPassword == user.TemporaryPassword)
+                throw new BusinessRuleException("New password cannot be same as temporary password");
+
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                request.OldPassword,
+                request.NewPassword
+            );
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new BusinessRuleException(errors);
+            }
+
+            user.IsFirstLogin = false;
+            user.TemporaryPassword = null;
+
+            await _userManager.UpdateAsync(user);
+        }
+
+        // ✅ JWT TOKEN GENERATION
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("Jwt");

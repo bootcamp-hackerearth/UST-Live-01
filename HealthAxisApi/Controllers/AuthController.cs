@@ -1,5 +1,6 @@
 ﻿using HealthAxisCore_Api.DTOs.User;
 using HealthAxisCore_Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAxisCore_Api.Controllers
@@ -15,58 +16,45 @@ namespace HealthAxisCore_Api.Controllers
             _authService = authService;
         }
 
-        // ✅ REGISTER
+        // ✅ REGISTER (Public - Patient only)
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDTO request)
         {
-            // ✅ Model validation
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var result = await _authService.RegisterAsync(request);
 
-            if (!result.Success)
-            {
-                return BadRequest(new
-                {
-                    result.Message
-                });
-            }
-
-            return Ok(new
-            {
-                result.Message,
-                result.AccessToken,
-                result.ExpiryInSeconds
-            });
+            return Ok(result);
         }
 
-        // ✅ LOGIN
+        // ✅ LOGIN (Public)
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDTO request)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var result = await _authService.LoginAsync(request);
 
-            if (!result.Success)
-            {
-                return Unauthorized(new
-                {
-                    result.Message
-                });
-            }
+            return Ok(result);
+        }
+
+        // ✅ ✅ CHANGE PASSWORD (NEW 🔥)
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _authService.ChangePasswordAsync(request);
 
             return Ok(new
             {
-                result.Message,
-                result.AccessToken,
-                result.ExpiryInSeconds
+                Message = "Password changed successfully"
             });
         }
     }

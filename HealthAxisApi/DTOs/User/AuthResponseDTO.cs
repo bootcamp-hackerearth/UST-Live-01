@@ -9,5 +9,7 @@
         public string Role { get; set; } = null!;
 
         public int? ReferenceId { get; set; }
+
+        public bool IsFirstLogin { get; set; }
     }
 }

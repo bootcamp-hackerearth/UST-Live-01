@@ -6,17 +6,24 @@ using HealthAxisCore_Api.Services.Interfaces;
 using HealthAxisCore_Api.Enums;
 using HealthAxisCore_Api.Exceptions;
 
+using Microsoft.AspNetCore.Identity;
+
 namespace HealthAxisCore_Api.Services.Implementations
 {
     public class DoctorService : IDoctorService
     {
         private readonly IDoctorRepository _repository;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DoctorService(IDoctorRepository repository, IMapper mapper)
+        public DoctorService(
+            IDoctorRepository repository,
+            IMapper mapper,
+            UserManager<ApplicationUser> userManager)
         {
             _repository = repository;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         // ✅ Get All Doctors
@@ -37,14 +44,44 @@ namespace HealthAxisCore_Api.Services.Implementations
             return _mapper.Map<DoctorResponseDTO>(doctor);
         }
 
-        // ✅ Create Doctor
+        // ✅ ✅ CREATE DOCTOR (UPDATED 🔥)
         public async Task<DoctorResponseDTO> CreateAsync(CreateDoctorDTO dto)
         {
+            // ✅ Step 1: Create Doctor entity
             var doctor = _mapper.Map<Doctor>(dto);
-
             doctor.CreatedDate = DateTime.Now;
 
             await _repository.AddAsync(doctor);
+
+            // ✅ Step 2: Generate temporary password
+            var tempPassword = "Temp@" + new Random().Next(1000, 9999);
+
+            // ✅ Step 3: Create ApplicationUser
+            var user = new ApplicationUser
+            {
+                UserName = doctor.Email,
+                Email = doctor.Email,
+                Role = "Doctor",
+                ReferenceId = doctor.DoctorId,
+                IsFirstLogin = true, // ✅ important
+                TemporaryPassword = tempPassword
+            };
+
+            var result = await _userManager.CreateAsync(user, tempPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new BusinessRuleException(errors);
+            }
+
+            // ✅ Step 4: Assign role
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            // ✅ IMPORTANT (for now testing only)
+            Console.WriteLine($"Doctor Temporary Password: {tempPassword}");
+
+            // 👉 In real apps → send via Email/SMS
 
             return _mapper.Map<DoctorResponseDTO>(doctor);
         }

@@ -29,9 +29,9 @@ namespace HealthAxisCore_Api.Models
         public required string PhoneNumber { get; set; }
 
         public string? InsuranceID { get; set; }
-
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; internal set; }
+    }
     }
 
     
-}
+

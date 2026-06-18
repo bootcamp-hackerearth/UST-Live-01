@@ -1,13 +1,10 @@
 ﻿using HealthAxisCore_Api.DTOs.User;
 
-namespace HealthAxisCore_Api.Services.Interfaces
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<(bool Success, string Message, string AccessToken, int ExpiryInSeconds)>
-            RegisterAsync(RegisterDTO request);
+    Task<AuthResponseDTO> RegisterAsync(RegisterDTO request);
 
-        Task<(bool Success, string Message, string AccessToken, int ExpiryInSeconds)>
-            LoginAsync(LoginDTO request);
-    }
+    Task<AuthResponseDTO> LoginAsync(LoginDTO request);
+
+    Task ChangePasswordAsync(ChangePasswordDTO request); // ✅ NEW
 }
