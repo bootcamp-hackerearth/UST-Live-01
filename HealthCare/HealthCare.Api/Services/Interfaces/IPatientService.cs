@@ -14,5 +14,9 @@ namespace HealthCare.Api.Services.Interfaces
         Task DeleteAsync(int id);
 
         Task<IEnumerable<PatientListDto>> SearchByNameAsync(string name);
+
+        Task<PatientListDto?> GetByUserIdAsync(string userId);
+        Task UpdateStatusAsync(int id, bool isActive);
+        Task UpdateByUserIdAsync(string userId, UpdatePatientDto dto);
     }
 }

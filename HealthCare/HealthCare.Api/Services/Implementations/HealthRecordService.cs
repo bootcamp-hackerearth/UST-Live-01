@@ -7,6 +7,8 @@ using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 
 
@@ -32,6 +34,10 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
+
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "Doctor")]
+
         public async Task UpdateAsync(int id,UpdateHealthRecordDto dto)
         {
             var record = await _repository.GetByIdAsync(id);
@@ -43,6 +49,10 @@ namespace HealthCare.Api.Services.Implementations
             await _repository.UpdateAsync(record);
             await _context.SaveChangesAsync();
         }
+
+
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
 
         public async Task DeleteAsync(int id)
         {
@@ -60,7 +70,8 @@ namespace HealthCare.Api.Services.Implementations
             return record == null ? null : _mapper.Map<HealthRecordListDto?>(record);
         }
 
-
+        [HttpGet]
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<PagedResult<HealthRecordListDto>> GetAllAsync(HealthRecordFilter filter)
         {
             // Build predicate (date filtering)
@@ -97,7 +108,9 @@ namespace HealthCare.Api.Services.Implementations
         }
 
 
-
+        [HttpGet("patient/{patientId:int}")]
+        [Authorize(Roles = "Admin,Doctor")]
+        
         public async Task<List<HealthRecordListDto>> GetHealthRecordByPatient(int id)
         {
             var records = await _repository.GetHealthRecordByPatient(id);
@@ -106,7 +119,8 @@ namespace HealthCare.Api.Services.Implementations
         }
 
 
-
+        [HttpGet("appointment/{appointmentId:int}")]
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<List<HealthRecordListDto>> GetHealthRecordByAppointment(int id)
         {
             var records = await _repository.GetHealthRecordByAppointment(id);

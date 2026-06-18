@@ -4,7 +4,6 @@ using HealthCare.Api.DTOs;
 using HealthCare.Api.DTOs.Doctor;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
-using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using System.Linq.Expressions;
@@ -14,17 +13,15 @@ namespace HealthCare.Api.Services.Implementations
     public class DoctorService : IDoctorService
     {
         private readonly IDoctorRepository _repository;
-        private readonly IAppointmentService _appointmentService;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
 
-        public DoctorService(IDoctorRepository repository, HealthCareDbContext context, IMapper mapper, IAppointmentService appointmentService, IAppointmentRepository appointmentRepository)
+        public DoctorService(IDoctorRepository repository, HealthCareDbContext context, IMapper mapper, IAppointmentRepository appointmentRepository)
         {
             _repository = repository;
             _context = context;
             _mapper = mapper;
-            _appointmentService = appointmentService;
             _appointmentRepository = appointmentRepository;
         }
 
@@ -159,9 +156,10 @@ namespace HealthCare.Api.Services.Implementations
 
                 if (availableSlots.Count != allSlots.Count)
                 {
-                    // Doctor has confirmed/pending appointments that day — cancel them and proceed
-                    await _appointmentService.CancelAppointmentsByDoctorDate(id, leave.LeaveDate);
-                    result.CreatedWithCancelledAppointments.Add(leave.LeaveDate);
+
+                    await _appointmentRepository.CancelAppointmentsByDoctorDate(id, leave.LeaveDate);
+                    await _context.SaveChangesAsync();
+
                 }
 
                 leavesToCreate.Add(leave);

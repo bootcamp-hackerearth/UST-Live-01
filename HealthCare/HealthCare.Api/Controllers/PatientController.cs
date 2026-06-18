@@ -29,7 +29,7 @@ namespace HealthCare.Api.Controllers
         }
 
 
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -83,22 +83,46 @@ namespace HealthCare.Api.Controllers
         }
 
         //Get Profile
-        //[HttpGet("me")]
-        //[Authorize(Roles = "Patient")]
-        //public async Task<IActionResult> GetMyProfile()
-        //{
-        //    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-        //    if (userId == null)
-        //        return Unauthorized();
+        [HttpGet("me")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-        //    var patient = await _service.GetByIdAsync(userId);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
 
-        //    if (patient == null)
-        //        return NotFound();
+            // 👉 You need this method in service
+            var patient = await _service.GetByUserIdAsync(userId);
 
-        //    return Ok(patient);
-        //}
+            return Ok(patient);
+        }
+
+
+        [HttpPut("me")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> UpdateMyProfile(UpdatePatientDto dto)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            await _service.UpdateByUserIdAsync(userId, dto);
+
+            return NoContent();
+        }
+
+
+        [HttpPatch("{id:int}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateStatus(int id, bool isActive)
+        {
+            await _service.UpdateStatusAsync(id, isActive);
+            return NoContent();
+        }
+
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HealthCare.Api.DTOs.Appointment;
 using HealthCare.Api.DTOs.Appointments;
 using HealthCare.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll(AppointmentFilter filter)
         {
             var appointments = await _service.GetAllAsync( filter);
@@ -28,6 +30,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             var appointment = await _service.GetByIdAsync(id);
@@ -39,6 +42,7 @@ namespace HealthCare.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto,int id)
         {
             if (!ModelState.IsValid)
@@ -54,6 +58,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Admin,Doctor")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentDto dto)
         {
             if (!ModelState.IsValid)
@@ -66,12 +71,108 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
 
             return NoContent();
         }
+
+
+        [HttpPatch("{id:int}/status")]
+        [Authorize(Roles = "Admin,Doctor")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAppointmentDto dto)
+        {
+            await _service.UpdateStatusAsync(id, dto);
+            return NoContent();
+        }
+
+
+        [HttpGet("available-slots")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetAvailableSlots(
+                    [FromQuery] int doctorId,
+                    [FromQuery] DateOnly date)
+        {
+            var slots = await _service.AvailableTimeSlots(date, doctorId);
+            return Ok(slots);
+        }
+
+
+        [HttpGet("check-availability")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> CheckAvailability(int doctorId, DateOnly date, string timeSlot)
+        {
+            var result = await _service.IsAvailable(date, doctorId, timeSlot);
+            return Ok(new { available = result });
+        }
+
+
+        [HttpGet("report/daily")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetDailyReport()
+        {
+            var report = await _service.GetDailyReport();
+            return Ok(report);
+        }
+
+
+        [HttpGet("doctor/{doctorId:int}/schedule")]
+        [Authorize(Roles = "Doctor,Admin")]
+        public async Task<IActionResult> GetDoctorSchedule(int doctorId, DateOnly date)
+        {
+            var result = await _service.GetDoctorSchedule(date, doctorId);
+            return Ok(result);
+        }
+
+
+        [HttpGet("my-schedule")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetMySchedule([FromQuery] DateOnly date)
+        {
+            var patientIdClaim = User.FindFirst("PatientId")?.Value;
+
+            if (string.IsNullOrEmpty(patientIdClaim))
+                return Unauthorized();
+
+            var patientId = int.Parse(patientIdClaim);
+
+            var result = await _service.GetPatientSchedule(date, patientId);
+            return Ok(result);
+        }
+
+
+        [HttpGet("my")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetMyAppointments()
+        {
+            var patientIdClaim = User.FindFirst("PatientId")?.Value;
+
+            if (string.IsNullOrEmpty(patientIdClaim))
+                return Unauthorized();
+
+            var patientId = int.Parse(patientIdClaim);
+
+            var result = await _service.GetAppointmentByPatient(patientId);
+            return Ok(result);
+        }
+
+
+        [HttpGet("doctor/{doctorId:int}")]
+        [Authorize(Roles = "Doctor,Admin")]
+        public async Task<IActionResult> GetDoctorAppointments(int doctorId)
+        {
+            var result = await _service.GetAppointmentByDoctor(doctorId);
+            return Ok(result);
+        }
+
+
+
+
+
+
+
 
     }
 }
