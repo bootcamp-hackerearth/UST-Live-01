@@ -11,12 +11,15 @@ namespace HealthApp.Api.Model
         public int DoctorId { get; set; }
 
         [Required]
-        [MaxLength(200)]
+        [StringLength(200, MinimumLength = 3)]
         public string FullName { get; set; }
 
         [Required]
         [MaxLength(100)]
         public string Specialisation { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
         [Required]
         public int YearsOfExperience { get; set; }
         [Required]

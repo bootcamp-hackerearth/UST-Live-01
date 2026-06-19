@@ -8,6 +8,8 @@ namespace HealthApp.Api.Service.Interface
 
         Task<List<HealthRecordDto>> GetAllRecordsAsync();
 
+        Task<HealthRecordDto?> GetRecordByIdAsync(int id);
+
         Task<List<HealthRecordDto>?> GetHealthRecordsByDoctorAsync(int? doctorId, int? patientId);
     }
 }

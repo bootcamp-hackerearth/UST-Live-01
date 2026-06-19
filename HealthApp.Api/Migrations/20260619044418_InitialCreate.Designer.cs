@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthApp.Api.Migrations
 {
     [DbContext(typeof(HealthAppDbContext))]
-    [Migration("20260616112005_identityadded")]
-    partial class identityadded
+    [Migration("20260619044418_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,34 +25,6 @@ namespace HealthApp.Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("HealthApp.API.Model.User", b =>
-                {
-                    b.Property<int>("UserId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ReferenceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("UserId");
-
-                    b.ToTable("Users");
-                });
-
             modelBuilder.Entity("HealthApp.Api.Model.Doctor", b =>
                 {
                     b.Property<int>("DoctorId")
@@ -63,6 +35,10 @@ namespace HealthApp.Api.Migrations
 
                     b.Property<decimal>("ConsultationFee")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -82,6 +58,9 @@ namespace HealthApp.Api.Migrations
 
                     b.HasKey("DoctorId");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Doctors");
 
                     b.HasData(
@@ -89,6 +68,7 @@ namespace HealthApp.Api.Migrations
                         {
                             DoctorId = 1,
                             ConsultationFee = 1500m,
+                            Email = "Vignesh@gmail.com",
                             FullName = "Vignesh Kumar",
                             IsActive = true,
                             Specialisation = "Orthopedic",
@@ -98,6 +78,7 @@ namespace HealthApp.Api.Migrations
                         {
                             DoctorId = 2,
                             ConsultationFee = 1800m,
+                            Email = "paul@gmail.com",
                             FullName = "Sneha Paul",
                             IsActive = true,
                             Specialisation = "Gynecologist",
@@ -107,6 +88,7 @@ namespace HealthApp.Api.Migrations
                         {
                             DoctorId = 3,
                             ConsultationFee = 900m,
+                            Email = "hari@gmail.com",
                             FullName = "Hari Narayanan",
                             IsActive = true,
                             Specialisation = "ENT",
@@ -116,6 +98,7 @@ namespace HealthApp.Api.Migrations
                         {
                             DoctorId = 4,
                             ConsultationFee = 2000m,
+                            Email = "smith@gmail.com",
                             FullName = "Martin Smith",
                             IsActive = false,
                             Specialisation = "Psychiatrist",
@@ -125,6 +108,7 @@ namespace HealthApp.Api.Migrations
                         {
                             DoctorId = 5,
                             ConsultationFee = 3000m,
+                            Email = "raj@gmail.com",
                             FullName = "Bharath Raj",
                             IsActive = true,
                             Specialisation = "Cardiologist",
@@ -183,7 +167,8 @@ namespace HealthApp.Api.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -203,6 +188,9 @@ namespace HealthApp.Api.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.HasKey("PatientId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Patients");
 
@@ -388,7 +376,8 @@ namespace HealthApp.Api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -444,10 +433,12 @@ namespace HealthApp.Api.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -461,6 +452,23 @@ namespace HealthApp.Api.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("AspNetUserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserPasskey<string>", b =>
+                {
+                    b.Property<byte[]>("CredentialId")
+                        .HasMaxLength(1024)
+                        .HasColumnType("varbinary(1024)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("CredentialId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AspNetUserPasskeys", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -484,10 +492,12 @@ namespace HealthApp.Api.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -559,6 +569,57 @@ namespace HealthApp.Api.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserPasskey<string>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Microsoft.AspNetCore.Identity.IdentityPasskeyData", "Data", b1 =>
+                        {
+                            b1.Property<byte[]>("IdentityUserPasskeyCredentialId");
+
+                            b1.Property<byte[]>("AttestationObject")
+                                .IsRequired();
+
+                            b1.Property<byte[]>("ClientDataJson")
+                                .IsRequired();
+
+                            b1.Property<DateTimeOffset>("CreatedAt");
+
+                            b1.Property<bool>("IsBackedUp");
+
+                            b1.Property<bool>("IsBackupEligible");
+
+                            b1.Property<bool>("IsUserVerified");
+
+                            b1.Property<string>("Name");
+
+                            b1.Property<byte[]>("PublicKey")
+                                .IsRequired();
+
+                            b1.Property<long>("SignCount");
+
+                            b1.PrimitiveCollection<string>("Transports");
+
+                            b1.HasKey("IdentityUserPasskeyCredentialId");
+
+                            b1.ToTable("AspNetUserPasskeys");
+
+                            b1
+                                .ToJson("Data")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.WithOwner()
+                                .HasForeignKey("IdentityUserPasskeyCredentialId");
+                        });
+
+                    b.Navigation("Data")
                         .IsRequired();
                 });
 

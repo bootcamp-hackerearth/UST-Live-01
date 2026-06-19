@@ -20,10 +20,15 @@ namespace HealthApp.Api.Data
      
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Patient>()
-                .HasData(
-                    new Patient
+                .HasIndex(p => p.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<Patient>()
+                .HasData(new Patient
                     {
                         PatientId = 1,
                         FullName = "John Mathew",
@@ -78,6 +83,11 @@ namespace HealthApp.Api.Data
                     }
                 );
 
+
+            modelBuilder.Entity<Doctor>()
+                .HasIndex(d => d.Email)
+                .IsUnique();
+
             modelBuilder.Entity<Doctor>()
                 .HasData(
                     new Doctor
@@ -86,6 +96,7 @@ namespace HealthApp.Api.Data
                         FullName = "Vignesh Kumar",
                         Specialisation = "Orthopedic",
                         YearsOfExperience = 14,
+                        Email = "Vignesh@gmail.com",
                         ConsultationFee = 1500,
                         IsActive = true
                     },
@@ -96,6 +107,7 @@ namespace HealthApp.Api.Data
                         FullName = "Sneha Paul",
                         Specialisation = "Gynecologist",
                         YearsOfExperience = 20,
+                        Email = "paul@gmail.com",
                         ConsultationFee = 1800,
                         IsActive = true
                     },
@@ -106,6 +118,7 @@ namespace HealthApp.Api.Data
                         FullName = "Hari Narayanan",
                         Specialisation = "ENT",
                         YearsOfExperience = 9,
+                        Email = "hari@gmail.com",
                         ConsultationFee = 900,
                         IsActive = true
                     },
@@ -116,6 +129,7 @@ namespace HealthApp.Api.Data
                         FullName = "Martin Smith",
                         Specialisation = "Psychiatrist",
                         YearsOfExperience = 11,
+                        Email = "smith@gmail.com",
                         ConsultationFee = 2000,
                         IsActive = false
                     },
@@ -126,6 +140,7 @@ namespace HealthApp.Api.Data
                         FullName = "Bharath Raj",
                         Specialisation = "Cardiologist",
                         YearsOfExperience = 25,
+                        Email = "raj@gmail.com",
                         ConsultationFee = 3000,
                         IsActive = true
                     }

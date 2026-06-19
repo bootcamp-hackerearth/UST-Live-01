@@ -6,6 +6,8 @@ namespace HealthApp.Api.Service.Interface
     {
         Task<DoctorDto> AddDoctorAsync(DoctorDto dto);
 
+        Task<List<DoctorDto>> GetAllActiveDoctorAsync();
+
         Task<List<DoctorDto>> GetAllDoctorsAsync();
 
         Task<DoctorDto> GetDoctorByIdAsync(int id);

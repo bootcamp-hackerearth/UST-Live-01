@@ -13,25 +13,23 @@ namespace HealthApp.Api.Repository.Impl
             _context=context;
         }
 
-        public async Task<HealthRecord?> GetHealthRecordsByDoctorAndPatientAsync(int? doctorId, int? patientId)
+        public async Task<List<HealthRecord?>> GetHealthRecordsByDoctorAndPatientAsync(int? doctorId, int? patientId)
         {
-            if (doctorId.HasValue && patientId.HasValue)
+            var query = _context.Set<HealthRecord>().AsQueryable();
+
+            if (doctorId.HasValue)
             {
-                return await _context.Set<HealthRecord>().FirstAsync
-                    (d => d.DoctorId == doctorId.Value && d.PatientId == patientId.Value);
+                query = query.Where(d => d.DoctorId == doctorId.Value);
             }
-            if(doctorId.HasValue)
+
+            if (patientId.HasValue)
             {
-                return await _context.Set<HealthRecord>().FirstAsync
-                    (d => d.DoctorId == doctorId.Value);
+                query = query.Where(d => d.PatientId == patientId.Value);
             }
-            if(patientId.HasValue)
-            {
-                return await _context.Set<HealthRecord>().FirstAsync
-                    (d => d.PatientId == patientId.Value);
-            }
-            return null;
+
+            return await query.ToListAsync();
         }
 
+       
     }
 }

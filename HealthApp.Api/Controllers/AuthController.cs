@@ -1,8 +1,6 @@
 ﻿using HealthApp.Api.Dto;
 using HealthApp.Api.Model;
-using HealthApp.Api.Service.Impl;
 using HealthApp.Api.Service.Interface;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthApp.Api.Controllers

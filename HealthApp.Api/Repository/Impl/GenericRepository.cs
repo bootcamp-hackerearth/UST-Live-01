@@ -13,7 +13,7 @@ namespace HealthApp.Api.Repository.Impl
         {
             _context = context;
         }
-        public async Task<T> addasync(T entity, CancellationToken cd = default)
+        public async Task<T> addAsync(T entity, CancellationToken cd = default)
         {
             await _context.Set<T>().AddAsync(entity, cd);
             await _context.SaveChangesAsync(cd);
@@ -21,27 +21,27 @@ namespace HealthApp.Api.Repository.Impl
         }
 
 
-        public async Task<List<T>?> getallasync(CancellationToken cd = default)
+        public async Task<List<T>?> getallAsync(CancellationToken cd = default)
         {
             var exiting = await _context.Set<T>().ToListAsync(cd);
             if (exiting == null) return null;
             return exiting;
         }
 
-        public async Task<T?> getbyidasync(int id, CancellationToken cd = default)
+        public async Task<T?> getbyidAsync(int id, CancellationToken cd = default)
         {
             var exiting= await _context.Set<T>().FindAsync([id], cd);
             if(exiting == null) return null;
             return exiting;
         }
 
-        public async Task<T?> getbynameasync(string name, CancellationToken cd = default)
+        public async Task<T?> getbynameAsync(string name, CancellationToken cd = default)
         {
             var exiting = await _context.Set<T>().FindAsync([name], cd);
             if (exiting == null) return null;
             return exiting;
         }       
-        public async Task<T?> updateasync(int id, T entity, CancellationToken cd = default)
+        public async Task<T?> updateAsync(int id, T entity, CancellationToken cd = default)
         {
             var exiting = await _context.Set<T>().FindAsync([id], cd);
             if (exiting == null) return null;

@@ -4,7 +4,7 @@ namespace HealthApp.Api.Repository.Interface
 {
     public interface IHealthRecordRepository : IGenericRepository<HealthRecord>
     {
-        Task<HealthRecord?> GetHealthRecordsByDoctorAndPatientAsync(int? doctorId, int? patientId);
+        Task<List<HealthRecord?>> GetHealthRecordsByDoctorAndPatientAsync(int? doctorId, int? patientId);
 
 
     }

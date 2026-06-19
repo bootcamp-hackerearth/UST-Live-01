@@ -25,7 +25,9 @@ namespace HealthApp.Api.Model
         public string? PhoneNumber { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z]+@[a-zA-Z0-9]+\.[a-zA-Z]$", ErrorMessage = "Invalid email format.")]
+
+        [MaxLength(450)]
+        [EmailAddress]
         public string? Email { get; set; }
 
         [MaxLength(100)]

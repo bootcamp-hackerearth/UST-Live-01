@@ -10,7 +10,7 @@ namespace HealthApp.Api.Dto
         public int DoctorId { get; set; }
 
         [Required]
-        [Range(3, 200)]
+        [StringLength(200, MinimumLength = 3)]
         public string? FullName { get; set; }
 
         [Required]
@@ -21,6 +21,10 @@ namespace HealthApp.Api.Dto
         [Required]
         [Range(0, 10000000 ,ErrorMessage = "Invalid consultation fee specified.")]
         public decimal ConsultationFee { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
         public bool? IsActive { get; set; }
     }

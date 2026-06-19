@@ -12,7 +12,7 @@ namespace HealthApp.Api.Service.Impl
     {
         public async Task<(bool success, string message, string token, int ExpiresIn)> Login(LoginDto register)
         {
-            var user = userManager.FindByEmailAsync(register.Email).Result;
+            var user =await userManager.FindByEmailAsync(register.Email);
             if (user is null) 
             {
                 return (false, "Invalid credentials",string.Empty, 0);
@@ -47,7 +47,7 @@ namespace HealthApp.Api.Service.Impl
             {
                 return (false, "Passwords do not match", string.Empty);
             }
-            if (register.Role != "Admin" && register.Role != "User")
+            if (register.Role != "Admin" && register.Role != "User" && register.Role!= "Doctor")
             {
                 return (false, "Invalid role", string.Empty);
             }

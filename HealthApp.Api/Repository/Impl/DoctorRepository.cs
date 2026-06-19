@@ -14,6 +14,13 @@ namespace HealthApp.Api.Repository.Impl
             _context=context;
         }
 
+        public async Task<List<Doctor>> getAllActiveAsync()
+        {
+            var exiting = await _context.Set<Doctor>().Where(a => a.IsActive == true).ToListAsync();
+            return exiting;
+            
+        }
+
         public async Task<Doctor?> searchbyspecialisationAsync(string specialisation)
         {
             var exiting = await _context.Set<Doctor>().FirstOrDefaultAsync

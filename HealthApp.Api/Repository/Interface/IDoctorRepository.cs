@@ -5,5 +5,7 @@ namespace HealthApp.Api.Repository.Interface
     public interface IDoctorRepository : IGenericRepository<Doctor>
     {
         Task<Doctor?> searchbyspecialisationAsync(string specialisation);
+
+        Task<List<Doctor>> getAllActiveAsync();
     }
 }

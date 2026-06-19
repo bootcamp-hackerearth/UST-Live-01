@@ -15,13 +15,6 @@ namespace HealthApp.Api.Repository.Impl
             _context=context; 
         }
 
-        public async Task<Appointment?> GetDoctorByIdAsync(int doctorId)
-        {
-            var exiting = await _context.Set<Appointment>()
-                                        .FirstOrDefaultAsync(a => a.DoctorId == doctorId);
-            if (exiting == null) return null;
-            return exiting;
-        }
 
         public async Task<bool> IsSlotBookedAsync(int doctorId, DateTime date, string timeSlot)
         {
@@ -32,14 +25,6 @@ namespace HealthApp.Api.Repository.Impl
             return true;
         }
 
-        public async Task<List<Appointment>?> GetByPatientAsync(int patientId)
-        {
-            var existing = await _context.Set<Appointment>()
-                .Where(a => a.PatientId == patientId)
-                .ToListAsync();
-            if (existing == null) return null;
-            return existing;
-        }
 
         public async Task<List<Appointment>?> GetUpcomingByDoctorAsync(int doctorId, DateTime from, DateTime to)
         {
@@ -82,5 +67,30 @@ namespace HealthApp.Api.Repository.Impl
             return existing;
 
         }
+
+
+        public async Task<List<Appointment>?> GetByPatientAndDoctor(int? patientId, int? doctorId)
+        {
+            if (patientId.HasValue && doctorId.HasValue)
+            {
+
+                return await _context.Set<Appointment>().Where
+                            (a => a.PatientId == patientId.Value && a.DoctorId == doctorId.Value).ToListAsync();
+            }
+            else if (patientId.HasValue)
+            {
+                return await _context.Set<Appointment>().Where(a => a.PatientId == patientId.Value).ToListAsync();
+
+            }
+            else if (doctorId.HasValue)
+            {
+                return await _context.Set<Appointment>().Where(a => a.DoctorId == doctorId.Value).ToListAsync();
+
+            }
+            return new List<Appointment>();
+
+
+        }
     }
+    
 }
