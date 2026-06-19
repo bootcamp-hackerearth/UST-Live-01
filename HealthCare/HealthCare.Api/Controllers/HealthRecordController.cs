@@ -18,7 +18,7 @@ namespace HealthCare.Api.Controllers
             _healthRecordService = healthRecordService;
         }
 
-
+        //Create
         [HttpPost]
         public async Task<IActionResult> Add([FromBody] CreateHealthRecordDto dto)
         {
@@ -30,7 +30,7 @@ namespace HealthCare.Api.Controllers
             return Ok(new { message = "Health record created successfully" });
         }
 
-        // ✅ GET ALL Health Records
+        //  GET ALL Health Records
         [HttpGet]
         public async Task<IActionResult> GetAll(HealthRecordFilter filter)
         {
@@ -38,7 +38,7 @@ namespace HealthCare.Api.Controllers
             return Ok(records);
         }
 
-        // ✅ GET Health Record By ID
+        //  GET Health Record By ID
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -50,7 +50,7 @@ namespace HealthCare.Api.Controllers
             return Ok(record);
         }
 
-        // ✅ UPDATE Health Record
+        //  UPDATE Health Record
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateHealthRecordDto dto)
         {
@@ -62,7 +62,7 @@ namespace HealthCare.Api.Controllers
             return Ok(new { message = "Health record updated successfully" });
         }
 
-        // ✅ DELETE Health Record
+        //  DELETE Health Record
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
