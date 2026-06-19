@@ -10,7 +10,7 @@ namespace HealthAxisApplicn.Services
         Task<DoctorDto> CreateAsync(CreateDoctorDto entity);
         Task<DoctorDto?> UpdateAsync(int id, UpdateDoctorDto entity);
         Task<List<DoctorDto>> SearchByNameAsync(string name);
-        Task<List<DoctorDto>> GetAvailableDoctorsAsync();
+        Task<List<DoctorDto>> GetActiveDoctorsAsync();
         Task<List<DoctorDto>> SearchBySpecialisationAsync(string specialisation);
         Task<DoctorDto> DeactivateDoctorAsync(int id);
     }

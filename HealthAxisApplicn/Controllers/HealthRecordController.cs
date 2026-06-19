@@ -5,13 +5,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAxisApplicn.Controllers
 {
-    [Route("api/healthrecord")]
+    [Route("api/healthrecords")]
     [ApiController]
     public class HealthRecordController(IHealthRecordService service) : ControllerBase
     {
-        
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await service.GetAllAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var result = await service.GetByIdAsync(id);
@@ -20,7 +26,7 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] HealthRecordDto entity)
+        public async Task<IActionResult> Create([FromBody] CreateHealthRecordDto entity)
         {
             if (!ModelState.IsValid)
             {
@@ -34,33 +40,29 @@ namespace HealthAxisApplicn.Controllers
         [HttpGet("patient/id/{id:int}")]
         public async Task<IActionResult> GetByPatientId([FromRoute] int id)
         {
-            var result = await service.GetRecordByPatientIDAsync(id);
-            if (result is null) return NotFound();
-            return Ok(result);
+            var result = await service.GetRecordsByPatientIdAsync(id);
+            return result.Count == 0 ? NotFound() : Ok(result);
         }
 
         [HttpGet("doctor/id/{id:int}")]
         public async Task<IActionResult> GetByDoctorId([FromRoute] int id)
         {
-            var result = await service.GetRecordsByDoctorIDAsync(id);
-            if (result is null) return NotFound();
-            return Ok(result);
+            var result = await service.GetRecordsByDoctorIdAsync(id);
+            return result.Count == 0 ? NotFound() : Ok(result);
         }
 
         [HttpGet("patient/name/{name}")]
         public async Task<IActionResult> GetByPatientName([FromRoute] string name)
         {
             var result = await service.GetRecordsByPatientNameAsync(name);
-            if (result is null) return NotFound();
-            return Ok(result);
+            return result.Count == 0 ? NotFound() : Ok(result);
         }
 
         [HttpGet("doctor/name/{name}")]
         public async Task<IActionResult> GetByDoctorName([FromRoute] string name)
         {
             var result = await service.GetRecordsByDoctorNameAsync(name);
-            if (result is null) return NotFound();
-            return Ok(result);
+            return result.Count == 0 ? NotFound() : Ok(result);
         }
     }
 }

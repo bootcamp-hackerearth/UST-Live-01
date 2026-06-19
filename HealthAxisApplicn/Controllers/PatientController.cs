@@ -16,7 +16,7 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
-        [HttpGet("id/{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var result = await service.GetByIdAsync(id);
@@ -24,7 +24,8 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
-        public async Task<IActionResult> Create([FromBody] PatientDto entity)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreatePatientDto entity)
         {
             if(!ModelState.IsValid)
             {
@@ -36,13 +37,13 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] PatientDto entity)
+        public async Task<IActionResult> Update(int id, [FromBody] CreatePatientDto entity)
         {
             if(!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var result = await service.UpdatebyAsync(id, entity);
+            var result = await service.UpdateAsync(id, entity);
             if (result is null) return NotFound();
             return Ok(result);
         }
@@ -63,7 +64,7 @@ namespace HealthAxisApplicn.Controllers
         public async Task<IActionResult> GetByPatientName(string name)
         {
             var result = await service.SearchByPatientNameAsync(name);
-            if (result is null) return NotFound();
+            if (result.Count == 0) return NotFound();
             return Ok(result);
         }
 

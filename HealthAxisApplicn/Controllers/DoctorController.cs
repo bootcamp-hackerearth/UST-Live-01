@@ -16,7 +16,7 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var result = await service.GetByIdAsync(id);
@@ -24,7 +24,8 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
-        public async Task<IActionResult> Create([FromBody] DoctorDto entity)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateDoctorDto entity)
         {
             if (!ModelState.IsValid)
             {
@@ -36,15 +37,35 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] DoctorDto entity)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateDoctorDto entity)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var result = await service.UpdatebyAsync(id, entity);
+            var result = await service.UpdateAsync(id, entity);
             if (result is null) return NotFound();
             return Ok(result);
+        }
+
+        [HttpGet("active")]
+        public async Task<IActionResult> GetActiveDoctors()
+        {
+            return Ok(await service.GetActiveDoctorsAsync());
+        }
+
+        [HttpGet("name/{name}")]
+        public async Task<IActionResult> SearchByName(string name)
+        {
+            var result = await service.SearchByNameAsync(name);
+            return result.Count == 0 ? NotFound() : Ok(result);
+        }
+
+        [HttpGet("specialisation/{specialisation}")]
+        public async Task<IActionResult> SearchBySpecialisation(string specialisation)
+        {
+            var result = await service.SearchBySpecialisationAsync(specialisation);
+            return result.Count == 0 ? NotFound() : Ok(result);
         }
     }
 }

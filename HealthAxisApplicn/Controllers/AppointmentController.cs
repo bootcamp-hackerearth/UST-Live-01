@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAxisApplicn.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/appointments")]
     [ApiController]
     public class AppointmentController(IAppointmentService service) : ControllerBase
     {
@@ -16,7 +16,7 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var result = await service.GetByIdAsync(id);
@@ -24,7 +24,8 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
-        public async Task<IActionResult> Create([FromBody] AppointmentDto entity)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateAppointmentDto entity)
         {
             if (!ModelState.IsValid)
             {
@@ -32,19 +33,33 @@ namespace HealthAxisApplicn.Controllers
             }
             var result = await service.CreateAsync(entity);
             if (result is null) return NotFound();
-            return CreatedAtAction("GetById", new { id = result.AppointmentID }, result);
+            return CreatedAtAction("GetById", new { id = result.AppointmentId }, result);
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] AppointmentDto entity)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentStatusDto entity)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
-            var result = await service.UpdatebyAsync(id, entity);
+            var result = await service.UpdateAsync(id, entity);
             if (result is null) return NotFound();
             return Ok(result);
+        }
+
+        [HttpGet("patient/{patientId:int}")]
+        public async Task<IActionResult> GetByPatient(int patientId)
+        {
+            var result = await service.GetAppointmentsByPatientIdAsync(patientId);
+            return result.Count == 0 ? NotFound() : Ok(result);
+        }
+
+        [HttpGet("doctor/{doctorId:int}")]
+        public async Task<IActionResult> GetByDoctor(int doctorId)
+        {
+            var result = await service.GetAppointmentsByDoctorIdAsync(doctorId);
+            return result.Count == 0 ? NotFound() : Ok(result);
         }
     }
 }
