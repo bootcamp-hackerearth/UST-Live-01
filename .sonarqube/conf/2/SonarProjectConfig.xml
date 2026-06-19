@@ -4,6 +4,6 @@
   <ProjectPath>C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\S3_HealthAxisApi.csproj</ProjectPath>
   <FilesToAnalyzePath>C:\Users\287766\source\repos\S3_HealthAxis\.sonarqube\conf\2\FilesToAnalyze.txt</FilesToAnalyzePath>
   <OutPath>C:\Users\287766\source\repos\S3_HealthAxis\.sonarqube\out\2</OutPath>
-  <ProjectType>Test</ProjectType>
+  <ProjectType>Product</ProjectType>
   <TargetFramework>net10.0</TargetFramework>
 </SonarProjectConfig>

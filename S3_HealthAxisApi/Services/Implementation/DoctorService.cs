@@ -9,10 +9,14 @@ namespace S3_HealthAxisApi.Services.Implementation
     public class DoctorService : IDoctorService
     {
         private readonly IDoctorRepository _doctorRepository;
+        private readonly IUserService _userService;
 
-        public DoctorService(IDoctorRepository doctorRepository)
+        public DoctorService(
+            IDoctorRepository doctorRepository,
+            IUserService userService)
         {
             _doctorRepository = doctorRepository;
+            _userService = userService;
         }
 
         public async Task<IEnumerable<DoctorDto>> GetAllAsync(string? sortBy, int? specialisation)
@@ -99,6 +103,59 @@ namespace S3_HealthAxisApi.Services.Implementation
             return allSlots.Except(bookedSlots);
         }
 
+        public async Task<DoctorCreationResultDto>
+    CreateDoctorWithAccountAsync(
+        CreateDoctorDto dto)
+        {
+            ValidateDoctor(dto);
+
+            if (await _userService.EmailExistsAsync(dto.Email))
+            {
+                throw new ArgumentException(
+                    "Email already exists.");
+            }
+
+            var doctor = new Doctor
+            {
+                FullName = dto.FullName.Trim(),
+                Email = dto.Email.Trim().ToLower(),
+                Specialisation =
+                    (DoctorSpecialisation)dto.Specialisation,
+                YearsOfExperience =
+                    dto.YearsOfExperience,
+                ConsultationFee =
+                    dto.ConsultationFee,
+                IsActive = true
+            };
+
+            await _doctorRepository.AddAsync(doctor);
+            await _doctorRepository.SaveChangesAsync();
+
+            var temporaryPassword =
+                GenerateTemporaryPassword();
+
+            var user = new User
+            {
+                Email = doctor.Email,
+                PasswordHash =
+                    HashPassword(temporaryPassword),
+                Role = UserRole.Doctor,
+                ReferenceId = doctor.DoctorId,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            await _userService.CreateAsync(user);
+            await _userService.SaveChangesAsync();
+
+            return new DoctorCreationResultDto
+            {
+                DoctorId = doctor.DoctorId,
+                FullName = doctor.FullName,
+                Email = doctor.Email,
+                TemporaryPassword = temporaryPassword
+            };
+        }
+
         public async Task ActivateAsync(int id)
         {
             var doctor = await _doctorRepository.GetByIdAsync(id);
@@ -138,6 +195,10 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             if (dto.ConsultationFee <= 0)
                 throw new ArgumentException("Consultation fee must be greater than zero.");
+            if (string.IsNullOrWhiteSpace(dto.Email))
+            {
+                throw new ArgumentException("Email is required.");
+            }
         }
 
         private static void ValidateDoctor(UpdateDoctorDto dto)
@@ -153,6 +214,26 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             if (dto.ConsultationFee <= 0)
                 throw new ArgumentException("Consultation fee must be greater than zero.");
+        }
+
+        private static string GenerateTemporaryPassword()
+        {
+            return $"Doc@{Random.Shared.Next(100000, 999999)}";
+        }
+
+        private static string HashPassword(
+    string password)
+        {
+            using var sha256 =
+                System.Security.Cryptography.SHA256.Create();
+
+            var bytes =
+                System.Text.Encoding.UTF8.GetBytes(password);
+
+            var hash =
+                sha256.ComputeHash(bytes);
+
+            return Convert.ToBase64String(hash);
         }
 
         private static DoctorDto MapToDoctorDto(Doctor doctor)

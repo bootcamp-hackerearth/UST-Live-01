@@ -24,6 +24,7 @@ C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\RegisterDt
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\RegisterPatientDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\UserDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Doctor\CreateDoctorDto.cs
+C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Doctor\DoctorCreationResultDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Doctor\DoctorDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Doctor\UpdateDoctorDto.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\HealthRecord\CreateHealthRecordDto.cs
@@ -83,6 +84,4 @@ C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\obj\Debug\net10.0\S3
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\obj\Debug\net10.0\S3_HealthAxisApi.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\appsettings.Development.json
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\appsettings.json
-C:\Users\287766\.nuget\packages\xunit.runner.visualstudio\3.1.5\build\net8.0\xunit.abstractions.dll
-C:\Users\287766\.nuget\packages\xunit.runner.visualstudio\3.1.5\build\net8.0\xunit.runner.visualstudio.testadapter.dll
 C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Properties\launchSettings.json

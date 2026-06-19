@@ -12,7 +12,8 @@ namespace S3_HealthAxisApi.Controllers
     {
         private readonly IDoctorService _doctorService;
 
-        public DoctorsController(IDoctorService doctorService)
+        public DoctorsController(
+            IDoctorService doctorService)
         {
             _doctorService = doctorService;
         }
@@ -22,16 +23,20 @@ namespace S3_HealthAxisApi.Controllers
             [FromQuery] string? sortBy,
             [FromQuery] int? specialisation)
         {
-            var doctors = await _doctorService
-                .GetAllAsync(sortBy, specialisation);
+            var doctors =
+                await _doctorService.GetAllAsync(
+                    sortBy,
+                    specialisation);
 
             return Ok(doctors);
         }
 
         [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(
+            int id)
         {
-            var doctor = await _doctorService.GetByIdAsync(id);
+            var doctor =
+                await _doctorService.GetByIdAsync(id);
 
             if (doctor == null)
             {
@@ -43,75 +48,57 @@ namespace S3_HealthAxisApi.Controllers
         }
 
         [HttpGet("specialisation/{specialisation:int}")]
-        public async Task<IActionResult> GetBySpecialisation(
-            int specialisation)
+        public async Task<IActionResult>
+            GetBySpecialisation(
+                int specialisation)
         {
-            try
-            {
-                var doctors =
-                    await _doctorService
-                        .GetActiveBySpecialisationAsync(
-                            specialisation);
+            var doctors =
+                await _doctorService
+                    .GetActiveBySpecialisationAsync(
+                        specialisation);
 
-                return Ok(doctors);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(doctors);
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(
-            CreateDoctorDto dto)
+            [FromBody] CreateDoctorDto dto)
         {
-            try
-            {
-                var doctor =
-                    await _doctorService.CreateAsync(dto);
+            var doctor =
+                await _doctorService
+                    .CreateDoctorWithAccountAsync(dto);
 
-                return CreatedAtAction(
-                    nameof(GetById),
-                    new { id = doctor.DoctorId },
-                    doctor);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = doctor.DoctorId },
+                doctor);
         }
 
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(
             int id,
-            UpdateDoctorDto dto)
+            [FromBody] UpdateDoctorDto dto)
         {
-            try
-            {
-                await _doctorService.UpdateAsync(id, dto);
+            await _doctorService.UpdateAsync(
+                id,
+                dto);
 
-                return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return NoContent();
         }
 
-        [HttpGet("{id}/availability")]
-        [Authorize]
-        public async Task<IActionResult> GetAvailability(int id, [FromQuery] DateOnly date)
+        [HttpGet("{id:int}/availability")]
+        public async Task<IActionResult>
+            GetAvailability(
+                int id,
+                [FromQuery] DateOnly date)
         {
             var slots =
-                await _doctorService.GetAvailabilityAsync(
-                    id,
-                    date);
+                await _doctorService
+                    .GetAvailabilityAsync(
+                        id,
+                        date);
 
             return Ok(slots);
         }
@@ -121,16 +108,9 @@ namespace S3_HealthAxisApi.Controllers
         public async Task<IActionResult> Activate(
             int id)
         {
-            try
-            {
-                await _doctorService.ActivateAsync(id);
+            await _doctorService.ActivateAsync(id);
 
-                return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            return NoContent();
         }
 
         [HttpPut("{id:int}/deactivate")]
@@ -138,16 +118,10 @@ namespace S3_HealthAxisApi.Controllers
         public async Task<IActionResult> Deactivate(
             int id)
         {
-            try
-            {
-                await _doctorService.DeactivateAsync(id);
+            await _doctorService.DeactivateAsync(id);
 
-                return NoContent();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            return NoContent();
         }
     }
-}   
+
+}

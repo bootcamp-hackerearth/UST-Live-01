@@ -1,10 +1,13 @@
-﻿using FluentAssertions;
+﻿using System.Security.Cryptography;
+using System.Text;
+using FluentAssertions;
 using Moq;
 using S3_HealthAxisApi.DTOs.Doctor;
 using S3_HealthAxisApi.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Implementation;
+using S3_HealthAxisApi.Services.Interface;
 using Xunit;
 
 namespace S3_HealthAxis.Tests.Services
@@ -12,12 +15,17 @@ namespace S3_HealthAxis.Tests.Services
     public class DoctorServiceTests
     {
         private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
+        private readonly Mock<IUserService> _userServiceMock;
         private readonly DoctorService _service;
 
         public DoctorServiceTests()
         {
             _doctorRepositoryMock = new Mock<IDoctorRepository>();
-            _service = new DoctorService(_doctorRepositoryMock.Object);
+            _userServiceMock = new Mock<IUserService>();
+
+            _service = new DoctorService(
+                _doctorRepositoryMock.Object,
+                _userServiceMock.Object);
         }
 
         [Fact]
@@ -29,6 +37,7 @@ namespace S3_HealthAxis.Tests.Services
                 CreateDoctor(
                     doctorId: 1,
                     fullName: "Dr. A",
+                    email: "a@test.com",
                     specialisation: DoctorSpecialisation.Cardiologist,
                     yearsOfExperience: 10,
                     consultationFee: 500,
@@ -37,6 +46,7 @@ namespace S3_HealthAxis.Tests.Services
                 CreateDoctor(
                     doctorId: 2,
                     fullName: "Dr. B",
+                    email: "b@test.com",
                     specialisation: DoctorSpecialisation.Neurologist,
                     yearsOfExperience: 12,
                     consultationFee: 800,
@@ -72,6 +82,7 @@ namespace S3_HealthAxis.Tests.Services
                 Times.Once);
 
             _doctorRepositoryMock.VerifyNoOtherCalls();
+            _userServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -91,6 +102,7 @@ namespace S3_HealthAxis.Tests.Services
 
             _doctorRepositoryMock.Verify(x => x.GetAllAsync(null, null), Times.Once);
             _doctorRepositoryMock.VerifyNoOtherCalls();
+            _userServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -109,6 +121,7 @@ namespace S3_HealthAxis.Tests.Services
             _doctorRepositoryMock.Verify(
                 x => x.GetActiveBySpecialisationAsync(It.IsAny<int>()),
                 Times.Never);
+            _userServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -122,6 +135,7 @@ namespace S3_HealthAxis.Tests.Services
                 CreateDoctor(
                     doctorId: 1,
                     fullName: "Dr. A",
+                    email: "a@test.com",
                     specialisation: DoctorSpecialisation.Cardiologist,
                     yearsOfExperience: 8,
                     consultationFee: 700,
@@ -130,6 +144,7 @@ namespace S3_HealthAxis.Tests.Services
                 CreateDoctor(
                     doctorId: 2,
                     fullName: "Dr. B",
+                    email: "b@test.com",
                     specialisation: DoctorSpecialisation.Cardiologist,
                     yearsOfExperience: 15,
                     consultationFee: 1000,
@@ -150,6 +165,7 @@ namespace S3_HealthAxis.Tests.Services
 
             _doctorRepositoryMock.Verify(x => x.GetActiveBySpecialisationAsync(specialisation), Times.Once);
             _doctorRepositoryMock.VerifyNoOtherCalls();
+            _userServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -168,6 +184,7 @@ namespace S3_HealthAxis.Tests.Services
 
             _doctorRepositoryMock.Verify(x => x.GetByIdAsync(99), Times.Once);
             _doctorRepositoryMock.VerifyNoOtherCalls();
+            _userServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -177,6 +194,7 @@ namespace S3_HealthAxis.Tests.Services
             var doctor = CreateDoctor(
                 doctorId: 10,
                 fullName: "Dr. Meera",
+                email: "meera@test.com",
                 specialisation: DoctorSpecialisation.Dermatologist,
                 yearsOfExperience: 6,
                 consultationFee: 900,
@@ -200,6 +218,7 @@ namespace S3_HealthAxis.Tests.Services
 
             _doctorRepositoryMock.Verify(x => x.GetByIdAsync(10), Times.Once);
             _doctorRepositoryMock.VerifyNoOtherCalls();
+            _userServiceMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -209,6 +228,7 @@ namespace S3_HealthAxis.Tests.Services
             var dto = new CreateDoctorDto
             {
                 FullName = "   ",
+                Email = "doctor@test.com",
                 Specialisation = (int)DoctorSpecialisation.Cardiologist,
                 YearsOfExperience = 10,
                 ConsultationFee = 600
@@ -232,6 +252,7 @@ namespace S3_HealthAxis.Tests.Services
             var dto = new CreateDoctorDto
             {
                 FullName = "Dr. Test",
+                Email = "doctor@test.com",
                 Specialisation = 999,
                 YearsOfExperience = 10,
                 ConsultationFee = 600
@@ -255,6 +276,7 @@ namespace S3_HealthAxis.Tests.Services
             var dto = new CreateDoctorDto
             {
                 FullName = "Dr. Test",
+                Email = "doctor@test.com",
                 Specialisation = (int)DoctorSpecialisation.Cardiologist,
                 YearsOfExperience = -1,
                 ConsultationFee = 600
@@ -275,6 +297,7 @@ namespace S3_HealthAxis.Tests.Services
             var dto = new CreateDoctorDto
             {
                 FullName = "Dr. Test",
+                Email = "doctor@test.com",
                 Specialisation = (int)DoctorSpecialisation.Cardiologist,
                 YearsOfExperience = 61,
                 ConsultationFee = 600
@@ -295,6 +318,7 @@ namespace S3_HealthAxis.Tests.Services
             var dto = new CreateDoctorDto
             {
                 FullName = "Dr. Test",
+                Email = "doctor@test.com",
                 Specialisation = (int)DoctorSpecialisation.Cardiologist,
                 YearsOfExperience = 10,
                 ConsultationFee = 0
@@ -309,12 +333,34 @@ namespace S3_HealthAxis.Tests.Services
         }
 
         [Fact]
+        public async Task CreateAsync_ShouldThrowArgumentException_WhenEmailIsMissing()
+        {
+            // Arrange
+            var dto = new CreateDoctorDto
+            {
+                FullName = "Dr. Test",
+                Email = "   ",
+                Specialisation = (int)DoctorSpecialisation.Cardiologist,
+                YearsOfExperience = 10,
+                ConsultationFee = 600
+            };
+
+            // Act
+            Func<Task> act = async () => await _service.CreateAsync(dto);
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("*Email is required*");
+        }
+
+        [Fact]
         public async Task CreateAsync_ShouldCreateDoctor_WhenRequestIsValid()
         {
             // Arrange
             var dto = new CreateDoctorDto
             {
                 FullName = "  Dr. New Doctor  ",
+                Email = "  doctor@test.com  ",
                 Specialisation = (int)DoctorSpecialisation.Pediatrician,
                 YearsOfExperience = 9,
                 ConsultationFee = 1200
@@ -327,7 +373,7 @@ namespace S3_HealthAxis.Tests.Services
                 .Callback<Doctor>(doctor =>
                 {
                     capturedDoctor = doctor;
-                    doctor.DoctorId = 101; // simulate DB-generated id
+                    doctor.DoctorId = 101;
                 })
                 .Returns(Task.CompletedTask);
 
@@ -346,6 +392,9 @@ namespace S3_HealthAxis.Tests.Services
             capturedDoctor.ConsultationFee.Should().Be(1200);
             capturedDoctor.IsActive.Should().BeTrue();
 
+            // Note: CreateAsync does NOT store Email in entity in your code
+            // It only validates Email. So we do not assert doctor.Email here.
+
             result.Should().NotBeNull();
             result.DoctorId.Should().Be(101);
             result.FullName.Should().Be("Dr. New Doctor");
@@ -356,6 +405,113 @@ namespace S3_HealthAxis.Tests.Services
 
             _doctorRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Doctor>()), Times.Once);
             _doctorRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+            _userServiceMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task CreateDoctorWithAccountAsync_ShouldThrowArgumentException_WhenEmailAlreadyExists()
+        {
+            // Arrange
+            var dto = new CreateDoctorDto
+            {
+                FullName = "Dr. Account Test",
+                Email = "doctor@test.com",
+                Specialisation = (int)DoctorSpecialisation.Cardiologist,
+                YearsOfExperience = 10,
+                ConsultationFee = 1000
+            };
+
+            _userServiceMock
+                .Setup(x => x.EmailExistsAsync(dto.Email))
+                .ReturnsAsync(true);
+
+            // Act
+            Func<Task> act = async () => await _service.CreateDoctorWithAccountAsync(dto);
+
+            // Assert
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("*Email already exists*");
+
+            _userServiceMock.Verify(x => x.EmailExistsAsync(dto.Email), Times.Once);
+            _doctorRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Doctor>()), Times.Never);
+            _userServiceMock.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task CreateDoctorWithAccountAsync_ShouldCreateDoctorAndUser_WhenRequestIsValid()
+        {
+            // Arrange
+            var dto = new CreateDoctorDto
+            {
+                FullName = "  Dr. Account Doctor  ",
+                Email = "  DOCTOR@TEST.COM  ",
+                Specialisation = (int)DoctorSpecialisation.Neurologist,
+                YearsOfExperience = 12,
+                ConsultationFee = 1800
+            };
+
+            Doctor? capturedDoctor = null;
+            User? capturedUser = null;
+
+            _userServiceMock
+                .Setup(x => x.EmailExistsAsync(dto.Email))
+                .ReturnsAsync(false);
+
+            _doctorRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Doctor>()))
+                .Callback<Doctor>(doctor =>
+                {
+                    capturedDoctor = doctor;
+                    doctor.DoctorId = 501;
+                })
+                .Returns(Task.CompletedTask);
+
+            _doctorRepositoryMock
+                .Setup(x => x.SaveChangesAsync())
+                .Returns(Task.CompletedTask);
+
+            _userServiceMock
+                .Setup(x => x.CreateAsync(It.IsAny<User>()))
+                .Callback<User>(user => capturedUser = user)
+                .Returns(Task.CompletedTask);
+
+            _userServiceMock
+                .Setup(x => x.SaveChangesAsync())
+                .Returns(Task.CompletedTask);
+
+            // Act
+            var result = await _service.CreateDoctorWithAccountAsync(dto);
+
+            // Assert
+            capturedDoctor.Should().NotBeNull();
+            capturedDoctor!.DoctorId.Should().Be(501);
+            capturedDoctor.FullName.Should().Be("Dr. Account Doctor");
+            capturedDoctor.Email.Should().Be("doctor@test.com");
+            capturedDoctor.Specialisation.Should().Be(DoctorSpecialisation.Neurologist);
+            capturedDoctor.YearsOfExperience.Should().Be(12);
+            capturedDoctor.ConsultationFee.Should().Be(1800);
+            capturedDoctor.IsActive.Should().BeTrue();
+
+            capturedUser.Should().NotBeNull();
+            capturedUser!.Email.Should().Be("doctor@test.com");
+            capturedUser.Role.Should().Be(UserRole.Doctor);
+            capturedUser.ReferenceId.Should().Be(501);
+            capturedUser.CreatedDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+
+            result.Should().NotBeNull();
+            result.DoctorId.Should().Be(501);
+            result.FullName.Should().Be("Dr. Account Doctor");
+            result.Email.Should().Be("doctor@test.com");
+            result.TemporaryPassword.Should().NotBeNullOrWhiteSpace();
+            result.TemporaryPassword.Should().MatchRegex(@"^Doc@\d{6}$");
+
+            capturedUser.PasswordHash.Should().Be(ComputeSha256Base64(result.TemporaryPassword));
+
+            _userServiceMock.Verify(x => x.EmailExistsAsync(dto.Email), Times.Once);
+            _doctorRepositoryMock.Verify(x => x.AddAsync(It.IsAny<Doctor>()), Times.Once);
+            _doctorRepositoryMock.Verify(x => x.SaveChangesAsync(), Times.Once);
+            _userServiceMock.Verify(x => x.CreateAsync(It.IsAny<User>()), Times.Once);
+            _userServiceMock.Verify(x => x.SaveChangesAsync(), Times.Once);
         }
 
         [Fact]
@@ -481,6 +637,7 @@ namespace S3_HealthAxis.Tests.Services
             var existingDoctor = CreateDoctor(
                 doctorId: 10,
                 fullName: "Dr. Old",
+                email: "old@test.com",
                 specialisation: DoctorSpecialisation.Cardiologist,
                 yearsOfExperience: 5,
                 consultationFee: 500,
@@ -554,6 +711,7 @@ namespace S3_HealthAxis.Tests.Services
                 .ReturnsAsync(CreateDoctor(
                     doctorId: doctorId,
                     fullName: "Dr. Available",
+                    email: "available@test.com",
                     specialisation: DoctorSpecialisation.Cardiologist,
                     yearsOfExperience: 10,
                     consultationFee: 700,
@@ -595,6 +753,7 @@ namespace S3_HealthAxis.Tests.Services
                 .ReturnsAsync(CreateDoctor(
                     doctorId: doctorId,
                     fullName: "Dr. Busy",
+                    email: "busy@test.com",
                     specialisation: DoctorSpecialisation.Neurologist,
                     yearsOfExperience: 12,
                     consultationFee: 1500,
@@ -611,10 +770,6 @@ namespace S3_HealthAxis.Tests.Services
             result.Should().NotContain((int)AppointmentTimeSlot.TenAM);
             result.Should().NotContain((int)AppointmentTimeSlot.ElevenAM);
             result.Should().NotContain((int)AppointmentTimeSlot.ThreePM);
-
-            result.Should().Contain((int)AppointmentTimeSlot.TenThirtyAM);
-            result.Should().Contain((int)AppointmentTimeSlot.TwelvePM);
-            result.Should().Contain((int)AppointmentTimeSlot.TwoPM);
 
             var allSlots = Enum.GetValues<AppointmentTimeSlot>().Select(x => (int)x).ToList();
             var expectedAvailable = allSlots.Except(bookedSlots).ToList();
@@ -652,6 +807,7 @@ namespace S3_HealthAxis.Tests.Services
             var doctor = CreateDoctor(
                 doctorId: 77,
                 fullName: "Dr. Inactive",
+                email: "inactive@test.com",
                 specialisation: DoctorSpecialisation.Cardiologist,
                 yearsOfExperience: 10,
                 consultationFee: 1000,
@@ -707,6 +863,7 @@ namespace S3_HealthAxis.Tests.Services
             var doctor = CreateDoctor(
                 doctorId: 88,
                 fullName: "Dr. Active",
+                email: "active@test.com",
                 specialisation: DoctorSpecialisation.Cardiologist,
                 yearsOfExperience: 10,
                 consultationFee: 1000,
@@ -738,6 +895,7 @@ namespace S3_HealthAxis.Tests.Services
         private static Doctor CreateDoctor(
             int doctorId,
             string fullName,
+            string email,
             DoctorSpecialisation specialisation,
             int yearsOfExperience,
             decimal consultationFee,
@@ -747,11 +905,20 @@ namespace S3_HealthAxis.Tests.Services
             {
                 DoctorId = doctorId,
                 FullName = fullName,
+                Email = email,
                 Specialisation = specialisation,
                 YearsOfExperience = yearsOfExperience,
                 ConsultationFee = consultationFee,
                 IsActive = isActive
             };
+        }
+
+        private static string ComputeSha256Base64(string input)
+        {
+            using var sha256 = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(input);
+            var hash = sha256.ComputeHash(bytes);
+            return Convert.ToBase64String(hash);
         }
     }
 }
