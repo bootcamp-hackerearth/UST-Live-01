@@ -1,17 +1,17 @@
-﻿using HealthAxisApplicn.Models;
-using HealthAxisApplicn.Models.Dto;
+﻿using HealthAxisApplicn.Dto.Appointments;
+using HealthAxisApplicn.Models;
 
 namespace HealthAxisApplicn.Services
 {
     public interface IAppointmentService
     {
-        Task<List<AppointmentDto?>> GetAllAsync();
+        Task<List<AppointmentDto>> GetAllAsync();
         Task<AppointmentDto?> GetByIdAsync(int id);
-        Task<AppointmentDto> CreateAsync(AppointmentDto entity);
-        Task<AppointmentDto?> UpdatebyAsync(int id, AppointmentDto entity);
-        Task<List<AppointmentDto>> GetAppointmentByPatientIdAsync(int patientId);
-        Task<List<AppointmentDto>> GetAppointmentByDoctorIdAsync(int doctorId);
-        Task<AppointmentDto?> DeleteAppointmentAsync(int appointmentId);
+        Task<AppointmentDto> CreateAsync(CreateAppointmentDto entity);
+        Task<AppointmentDto?> UpdateAsync(int id, UpdateAppointmentStatusDto entity);
+        Task<List<AppointmentDto>> GetAppointmentsByPatientIdAsync(int patientId);
+        Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId);
+        Task<bool> DeleteAppointmentAsync(int appointmentId);
         Task<List<AppointmentDto>> GetAppointmentsByPatientNameAsync(string patientName);
         Task<List<AppointmentDto>> GetAppointmentsByDoctorNameAsync(string doctorName);
     }

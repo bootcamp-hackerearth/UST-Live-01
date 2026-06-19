@@ -11,13 +11,13 @@ namespace HealthAxisApplicn.Repositories.Impl
         {
             _context = context;
         }
-        public async Task<List<HealthRecord>> GetRecordByPatientIDAsync(int patientId, CancellationToken ct = default)
+        public async Task<List<HealthRecord>> GetRecordsByPatientIdAsync(int patientId, CancellationToken ct = default)
         {
             var recordsByPatientID = await _context.Set<HealthRecord>().Where(h => h.PatientId == patientId).ToListAsync(ct);
             return recordsByPatientID;
         }
 
-        public async Task<List<HealthRecord>> GetRecordsByDoctorIDAsync(int doctorId, CancellationToken ct = default)
+        public async Task<List<HealthRecord>> GetRecordsByDoctorIdAsync(int doctorId, CancellationToken ct = default)
         {
             var recordsByDoctorID = await _context.Set<HealthRecord>().Where(h => h.DoctorId == doctorId).ToListAsync(ct);
             return recordsByDoctorID;
@@ -25,14 +25,17 @@ namespace HealthAxisApplicn.Repositories.Impl
 
         public async Task<List<HealthRecord>> GetRecordsByDoctorNameAsync(string doctorName, CancellationToken ct = default)
         {
-            var recordsByDoctor = await _context.Set<HealthRecord>().Where(h => h.Doctor.DoctorName == doctorName).ToListAsync(ct);
-            return recordsByDoctor;
+            return await _context.Set<HealthRecord>()
+                .Include(h => h.Doctor)
+                .Where(h => h.Doctor.DoctorName.ToLower() == doctorName.ToLower())
+                .ToListAsync(ct);
         }
 
         public async Task<List<HealthRecord>> GetRecordsByPatientNameAsync(string patientName, CancellationToken ct = default)
         {
-            var recordsByPatient = await  _context.Set<HealthRecord>().Where(h => h.Patient.PatientName == patientName).ToListAsync(ct);
-            return recordsByPatient;
+            return await _context.Set<HealthRecord>()
+                .Include(h => h.Patient)
+                .Where(h => h.Patient.PatientName.ToLower() == patientName.ToLower()).ToListAsync(ct);
         }
     }
 }

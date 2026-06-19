@@ -1,4 +1,4 @@
-﻿using HealthAxisApplicn.Dto;
+﻿using HealthAxisApplicn.Dto.Auth;
 
 namespace HealthAxisApplicn.Services
 {

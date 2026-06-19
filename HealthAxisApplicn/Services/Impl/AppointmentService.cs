@@ -1,38 +1,38 @@
 ﻿using AutoMapper;
+using HealthAxisApplicn.Dto.Appointments;
 using HealthAxisApplicn.Models;
-using HealthAxisApplicn.Models.Dto;
 using HealthAxisApplicn.Repositories;
 
 namespace HealthAxisApplicn.Services.Impl
 {
     public class AppointmentService(IAppointmentRepository repository, IMapper mapper) : IAppointmentService
     {
-        public async Task<AppointmentDto> CreateAsync(AppointmentDto entity)
+        public async Task<AppointmentDto> CreateAsync(CreateAppointmentDto entity)
         {
             var appointment = mapper.Map<Appointment>(entity);
             var savedEntity = await repository.CreateAsync(appointment);
             return mapper.Map<AppointmentDto>(savedEntity);
         }
 
-        public async Task<AppointmentDto?> DeleteAppointmentAsync(int appointmentId)
+        public async Task<bool> DeleteAppointmentAsync(int appointmentId)
         {
-            var appointment = await repository.DeleteAppointmentAsync(appointmentId);
-            return mapper.Map<AppointmentDto>(appointment);
+            var deleted = await repository.DeleteAsync(appointmentId);
+            return deleted;
         }
 
-        public async Task<List<AppointmentDto?>> GetAllAsync()
+        public async Task<List<AppointmentDto>> GetAllAsync()
         {
-            return mapper.Map<List<AppointmentDto?>>(await repository.GetAllAsync());
+            return mapper.Map<List<AppointmentDto>>(await repository.GetAllAsync());
         }
 
-        public async Task<List<AppointmentDto>> GetAppointmentByDoctorIdAsync(int doctorId)
+        public async Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId)
         {
-            return mapper.Map<List<AppointmentDto>>(await repository.GetAppointmentByDoctorIdAsync(doctorId));
+            return mapper.Map<List<AppointmentDto>>(await repository.GetAppointmentsByDoctorIdAsync(doctorId));
         }
 
-        public async Task<List<AppointmentDto>> GetAppointmentByPatientIdAsync(int patientId)
+        public async Task<List<AppointmentDto>> GetAppointmentsByPatientIdAsync(int patientId)
         {
-            return mapper.Map<List<AppointmentDto>>(await repository.GetAppointmentByPatientIdAsync(patientId));
+            return mapper.Map<List<AppointmentDto>>(await repository.GetAppointmentsByPatientIdAsync(patientId));
         }
 
         public async Task<List<AppointmentDto>> GetAppointmentsByDoctorNameAsync(string doctorName)
@@ -51,11 +51,26 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<AppointmentDto?>(appointment);
         }
 
-        public async Task<AppointmentDto?> UpdatebyAsync(int id, AppointmentDto entity)
+        public async Task<AppointmentDto?> UpdateAsync(int id, UpdateAppointmentStatusDto entity)
         {
-            var appointment = mapper.Map<Appointment>(entity);
-            var updatedAppointment = await repository.UpdatebyAsync(id, appointment);
-            return mapper.Map<AppointmentDto?>(updatedAppointment);
+
+            var existing = await repository.GetByIdAsync(id);
+
+            if (existing == null)
+                return null;
+
+            if (existing.Status == "Completed")
+                throw new Exception("Completed appointment cannot be modified");
+
+            if (entity.Status == "Cancelled" && string.IsNullOrWhiteSpace(entity.CancellationReason))
+                throw new Exception("Cancellation reason is required");
+
+            existing.Status = entity.Status;
+            existing.CancellationReason = entity.CancellationReason;
+
+            var updated = await repository.UpdateAsync(id, existing);
+
+            return mapper.Map<AppointmentDto?>(updated);
         }
     }
 }

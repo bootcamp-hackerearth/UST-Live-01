@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
+using HealthAxisApplicn.Dto.Doctors;
 using HealthAxisApplicn.Mappings;
 using HealthAxisApplicn.Models;
-using HealthAxisApplicn.Models.Dto;
 using HealthAxisApplicn.Repositories;
 
 namespace HealthAxisApplicn.Services.Impl
 {
     public class DoctorService(IDoctorRepository repository, IMapper mapper) : IDoctorService
     {
-        public async Task<DoctorDto> CreateAsync(DoctorDto entity)
+        public async Task<DoctorDto> CreateAsync(CreateDoctorDto entity)
         {
             var doctor = mapper.Map<Doctor>(entity);
             var savedEntity = await repository.CreateAsync(doctor);
@@ -17,19 +17,27 @@ namespace HealthAxisApplicn.Services.Impl
 
         public async Task<DoctorDto> DeactivateDoctorAsync(int id)
         {
-            var doctor = mapper.Map<Doctor>(await repository.GetByIdAsync(id));
-            doctor.IsActive = false;
-            return mapper.Map<DoctorDto>(doctor);
+
+            var existing = await repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new Exception("Doctor Not Found");
+
+            existing.IsActive = false;
+
+            var updated = await repository.UpdateAsync(id, existing);
+
+            return mapper.Map<DoctorDto>(updated);
+
         }
 
-        public async Task<List<DoctorDto?>> GetAllAsync()
+        public async Task<List<DoctorDto>> GetAllAsync()
         {
-            return mapper.Map<List<DoctorDto?>>(await repository.GetAllAsync());
+            return mapper.Map<List<DoctorDto>>(await repository.GetAllAsync());
         }
 
-        public async Task<List<DoctorDto>> GetAvailableDoctorsAsync()
+        public async Task<List<DoctorDto>> GetActiveDoctorsAsync()
         {
-            return mapper.Map<List<DoctorDto>>(await repository.GetAvailableDoctorsAsync());
+            return mapper.Map<List<DoctorDto>>(await repository.GetActiveDoctorsAsync());
         }
 
         public async Task<DoctorDto?> GetByIdAsync(int id)
@@ -44,17 +52,29 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
-        public async Task<List<DoctorDto>> SearchDoctorByNameAsync(string name)
+        public async Task<List<DoctorDto>> SearchByNameAsync(string name)
         {
-            var doctors = await repository.SearchDoctorByNameAsync(name);
+            var doctors = await repository.SearchByNameAsync(name);
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
-        public async Task<DoctorDto?> UpdatebyAsync(int id, DoctorDto entity)
+        public async Task<DoctorDto?> UpdateAsync(int id, UpdateDoctorDto entity)
         {
-            var doctor = mapper.Map<Doctor>(entity);
-            var updatedDoctor = await repository.UpdatebyAsync(id, doctor);
-            return mapper.Map<DoctorDto?>(updatedDoctor);
+
+            var existing = await repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new Exception("Doctor Not Found");
+
+            existing.DoctorName = entity.DoctorName;
+            existing.Specialisation = entity.Specialisation;
+            existing.YearsOfExperience = entity.YearsOfExperience;
+            existing.ConsultationFee = entity.ConsultationFee;
+            existing.IsActive = entity.IsActive;
+
+            var updated = await repository.UpdateAsync(id, existing);
+
+            return mapper.Map<DoctorDto?>(updated);
+
         }
     }
 }

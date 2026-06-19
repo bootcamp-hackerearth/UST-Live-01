@@ -17,9 +17,9 @@ namespace HealthAxisApplicn.Repositories.Impl
             return existing;
         }
 
-        public async Task<Patient?> SearchByPatientNameAsync(string name, CancellationToken ct = default)
+        public async Task<List<Patient>> SearchByNameAsync(string name, CancellationToken ct = default)
         {
-            var existing = await _context.Set<Patient>().FirstOrDefaultAsync(p => p.PatientName == name, ct);
+            var existing = await _context.Set<Patient>().Where(p => p.PatientName.ToLower().Contains(name.ToLower())).ToListAsync(ct);
             return existing;
         }
 

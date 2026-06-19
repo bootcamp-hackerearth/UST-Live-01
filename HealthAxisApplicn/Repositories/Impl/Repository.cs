@@ -18,7 +18,16 @@ namespace HealthAxisApplicn.Repositories.Impl
             return entity;
         }
 
-        public async Task<List<T?>> GetAllAsync(CancellationToken ct = default)
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+        {
+            var existing = await _context.Set<T>().FindAsync([id], ct);
+            if (existing is null) return false;
+            _context.Set<T>().Remove(existing);
+            await _context.SaveChangesAsync(ct);
+            return true;
+        }
+
+        public async Task<List<T>> GetAllAsync(CancellationToken ct = default)
         {
             return await _context.Set<T>().ToListAsync(ct);
         }
@@ -29,7 +38,7 @@ namespace HealthAxisApplicn.Repositories.Impl
             return existing;      
         }
 
-        public async Task<T?> UpdatebyAsync(int id, T entity, CancellationToken ct = default)
+        public async Task<T?> UpdateAsync(int id, T entity, CancellationToken ct = default)
         {
             var existing = await _context.Set<T>().FindAsync([id], ct);
             if (existing is null) return null;

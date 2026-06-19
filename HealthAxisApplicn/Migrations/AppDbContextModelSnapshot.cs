@@ -24,21 +24,20 @@ namespace HealthAxisApplicn.Migrations
 
             modelBuilder.Entity("HealthAxisApplicn.Models.Appointment", b =>
                 {
-                    b.Property<int>("AppointmentID")
+                    b.Property<int>("AppointmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
                     b.Property<string>("CancellationReason")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<int>("DoctorID")
+                    b.Property<int>("DoctorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PatientID")
+                    b.Property<int>("PatientId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ScheduledDate")
@@ -52,11 +51,11 @@ namespace HealthAxisApplicn.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AppointmentID");
+                    b.HasKey("AppointmentId");
 
-                    b.HasIndex("DoctorID");
+                    b.HasIndex("DoctorId");
 
-                    b.HasIndex("PatientID");
+                    b.HasIndex("PatientId");
 
                     b.ToTable("Appointments");
                 });
@@ -129,9 +128,6 @@ namespace HealthAxisApplicn.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HealthRecordId"));
 
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Diagnosis")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -153,8 +149,6 @@ namespace HealthAxisApplicn.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("HealthRecordId");
-
-                    b.HasIndex("AppointmentId");
 
                     b.HasIndex("DoctorId");
 
@@ -435,13 +429,13 @@ namespace HealthAxisApplicn.Migrations
                 {
                     b.HasOne("HealthAxisApplicn.Models.Doctor", "Doctor")
                         .WithMany()
-                        .HasForeignKey("DoctorID")
+                        .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("HealthAxisApplicn.Models.Patient", "Patient")
                         .WithMany()
-                        .HasForeignKey("PatientID")
+                        .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -452,12 +446,6 @@ namespace HealthAxisApplicn.Migrations
 
             modelBuilder.Entity("HealthAxisApplicn.Models.HealthRecord", b =>
                 {
-                    b.HasOne("HealthAxisApplicn.Models.Appointment", "Appointment")
-                        .WithMany()
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HealthAxisApplicn.Models.Doctor", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId")
@@ -469,8 +457,6 @@ namespace HealthAxisApplicn.Migrations
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Appointment");
 
                     b.Navigation("Doctor");
 

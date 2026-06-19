@@ -11,21 +11,22 @@ namespace HealthAxisApplicn.Repositories.Impl
         {
             _context = context;
         }
-        public async Task<List<Doctor>> GetAvailableDoctorsAsync(CancellationToken ct = default)
+        public async Task<List<Doctor>> GetActiveDoctorsAsync(CancellationToken ct = default)
         {
-            var availableDoctors = await _context.Set<Doctor>().Where(d => d.IsActive == true).ToListAsync(ct);
+            var availableDoctors = await _context.Set<Doctor>().Where(d => d.IsActive).ToListAsync(ct);
             return availableDoctors;
         }
 
         public async Task<List<Doctor>> SearchBySpecialisationAsync(string specialisation, CancellationToken ct = default)
         {
-            var existing = await _context.Set<Doctor>().Where(d => d.Specialisation == specialisation).ToListAsync(ct);
+            specialisation = specialisation.Trim().ToLower();
+            var existing = await _context.Set<Doctor>().Where(d => d.Specialisation.ToLower() == specialisation).ToListAsync(ct);
             return existing;
         }
 
-        public async Task<List<Doctor>> SearchDoctorByNameAsync(string name, CancellationToken ct = default)
+        public async Task<List<Doctor>> SearchByNameAsync(string name, CancellationToken ct = default)
         {
-            var existing = await _context.Set<Doctor>().Where(d => d.DoctorName == name).ToListAsync(ct);
+            var existing = await _context.Set<Doctor>().Where(d => d.DoctorName.ToLower().Contains(name.ToLower())).ToListAsync(ct);
             return existing;
         }
     }

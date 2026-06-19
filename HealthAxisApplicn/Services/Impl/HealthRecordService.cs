@@ -1,23 +1,46 @@
 ﻿using AutoMapper;
+using HealthAxisApplicn.Dto.HealthRecords;
 using HealthAxisApplicn.Models;
-using HealthAxisApplicn.Models.Dto;
 using HealthAxisApplicn.Repositories;
 
 namespace HealthAxisApplicn.Services.Impl
 {
-    public class HealthRecordService(IHealthRecordRepository repository, IMapper mapper) : IHealthRecordService
+    public class HealthRecordService(IHealthRecordRepository repository, IAppointmentRepository appointmentRepository, IMapper mapper) : IHealthRecordService
     {
-        public async Task<HealthRecordDto> CreateAsync(HealthRecordDto entity)
+        public async Task<HealthRecordDto> CreateAsync(CreateHealthRecordDto dto)
         {
-            var healthRecord = mapper.Map<HealthRecord>(entity);
-            var savedEntity = await repository.CreateAsync(healthRecord);
-            return mapper.Map<HealthRecordDto>(savedEntity);
+            if (string.IsNullOrWhiteSpace(dto.Diagnosis))
+                throw new Exception("Diagnosis is required");
 
+            if (string.IsNullOrWhiteSpace(dto.Prescription))
+                throw new Exception("Prescription is required");
+
+            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
+
+            if (appointment == null)
+                throw new Exception("Invalid Appointment");
+
+            if (appointment.Status != "Completed")
+                throw new Exception("Health record can only be created after appointment is completed");
+
+            var record = new HealthRecord
+            {
+                PatientId = appointment.PatientId,
+                DoctorId = appointment.DoctorId,
+                VisitDate = dto.VisitDate,
+                Diagnosis = dto.Diagnosis,
+                Prescription = dto.Prescription,
+                Notes = dto.Notes
+            };
+
+            var saved = await repository.CreateAsync(record);
+
+            return mapper.Map<HealthRecordDto>(saved);
         }
 
-        public async Task<List<HealthRecordDto?>> GetAllAsync()
+        public async Task<List<HealthRecordDto>> GetAllAsync()
         {
-            return mapper.Map<List<HealthRecordDto?>>(await repository.GetAllAsync());
+            return mapper.Map<List<HealthRecordDto>>(await repository.GetAllAsync());
         }
 
         public async Task<HealthRecordDto?> GetByIdAsync(int id)
@@ -26,14 +49,14 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<HealthRecordDto?>(healthRecord);
         }
 
-        public async Task<List<HealthRecordDto>> GetRecordByPatientIDAsync(int patientId)
+        public async Task<List<HealthRecordDto>> GetRecordsByPatientIdAsync(int patientId)
         {
-            return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordByPatientIDAsync(patientId));
+            return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByPatientIdAsync(patientId));
         }
 
-        public async Task<List<HealthRecordDto>> GetRecordsByDoctorIDAsync(int doctorId)
+        public async Task<List<HealthRecordDto>> GetRecordsByDoctorIdAsync(int doctorId)
         {
-            return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByDoctorIDAsync(doctorId));
+            return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByDoctorIdAsync(doctorId));
         }
 
         public async Task<List<HealthRecordDto>> GetRecordsByDoctorNameAsync(string doctorName)
@@ -46,11 +69,5 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByPatientNameAsync(patientName));
         }
 
-        public async Task<HealthRecordDto?> UpdatebyAsync(int id, HealthRecordDto entity)
-        {
-            var healthRecord = mapper.Map<HealthRecord>(entity);
-            var updatedHealthRecord = await repository.UpdatebyAsync(id, healthRecord);
-            return mapper.Map<HealthRecordDto?>(updatedHealthRecord);
-        }
     }
 }

@@ -6,20 +6,20 @@ namespace HealthAxisApplicn.Models
     public class Appointment
     {
         [Key]
-        public int AppointmentID { get; set; }
-        [ForeignKey("PatientID")]
-        public int PatientID { get; set; }
-        public required Patient Patient { get; set; }
-        [ForeignKey("DoctorID")]
-        public int DoctorID { get; set; }
-        public required Doctor Doctor { get; set; }
+        public int AppointmentId { get; set; }
+        public int PatientId { get; set; }
+        [ForeignKey(nameof(PatientId))]
+        public Patient Patient { get; set; } = null!;
+        public int DoctorId { get; set; }
+        [ForeignKey(nameof(DoctorId))]
+        public Doctor Doctor { get; set; } = null!;
         [Required]
         public DateTime ScheduledDate { get; set; }
         [Required]
-        public string TimeSlot { get; set; }
-        [RegularExpression("(Pending|Confirmed|Completed|CAncelled)")]
-        public string Status { get; set; }
+        public string TimeSlot { get; set; } = string.Empty;
+        [RegularExpression("(Pending|Confirmed|Completed|Cancelled)")]
+        public string Status { get; set; } = "Pending";
         [MaxLength(200)]
-        public string CancellationReason { get; set; }
+        public string? CancellationReason { get; set; }
     }
 }

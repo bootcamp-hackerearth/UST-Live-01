@@ -1,15 +1,15 @@
-﻿using HealthAxisApplicn.Models;
-using HealthAxisApplicn.Models.Dto;
+﻿using HealthAxisApplicn.Dto.Doctors;
+using HealthAxisApplicn.Models;
 
 namespace HealthAxisApplicn.Services
 {
     public interface IDoctorService
     {
-        Task<List<DoctorDto?>> GetAllAsync();
+        Task<List<DoctorDto>> GetAllAsync();
         Task<DoctorDto?> GetByIdAsync(int id);
-        Task<DoctorDto> CreateAsync(DoctorDto entity);
-        Task<DoctorDto?> UpdatebyAsync(int id, DoctorDto entity);
-        Task<List<DoctorDto>> SearchDoctorByNameAsync(string name);
+        Task<DoctorDto> CreateAsync(CreateDoctorDto entity);
+        Task<DoctorDto?> UpdateAsync(int id, UpdateDoctorDto entity);
+        Task<List<DoctorDto>> SearchByNameAsync(string name);
         Task<List<DoctorDto>> GetAvailableDoctorsAsync();
         Task<List<DoctorDto>> SearchBySpecialisationAsync(string specialisation);
         Task<DoctorDto> DeactivateDoctorAsync(int id);

@@ -23,7 +23,6 @@
   <ItemGroup>
 	<Compile Update="Migrations\**\*.cs"> 
 	<SonarQubeExclude>true</SonarQubeExclude></Compile>
-    <Folder Include="MiddleWare\" />
   </ItemGroup>
 
 </Project>

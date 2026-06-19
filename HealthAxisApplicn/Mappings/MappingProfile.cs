@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
+using HealthAxisApplicn.Dto.Patients;
 using HealthAxisApplicn.Models;
-using HealthAxisApplicn.Models.Dto;
 
 namespace HealthAxisApplicn.Mappings
 {

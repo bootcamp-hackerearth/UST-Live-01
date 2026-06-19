@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HealthAxisApplicn.Dto
+namespace HealthAxisApplicn.Dto.Auth
 {
     public class LoginDto
     {

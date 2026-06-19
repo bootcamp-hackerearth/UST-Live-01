@@ -1,11 +1,11 @@
-﻿using HealthAxisApplicn.Dto;
+﻿using HealthAxisApplicn.Dto.Auth;
 using HealthAxisApplicn.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAxisApplicn.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController(IAuthService authService) : ControllerBase
     {

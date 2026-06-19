@@ -7,20 +7,17 @@ namespace HealthAxisApplicn.Models
     {
         [Key]
         public int HealthRecordId { get; set; }
-        [ForeignKey("PatientId")]
         public int PatientId { get; set; }
-        public required Patient Patient { get; set; }
-        [ForeignKey("DoctorId")]
+        [ForeignKey(nameof(PatientId))]
+        public Patient Patient { get; set; } = null!;
         public int DoctorId { get; set; }
-        public required Doctor Doctor { get; set; }
-        [ForeignKey("AppointmentId")]
-        public int AppointmentId { get; set; }
-        public required Appointment Appointment { get; set; }
+        [ForeignKey(nameof(DoctorId))]
+        public Doctor Doctor { get; set; } = null!;
         public DateTime VisitDate { get; set; }
         [Required]
-        public string Diagnosis { get; set; }
+        public string Diagnosis { get; set; } = string.Empty;
         [Required]
-        public string Prescription { get; set; }
+        public string Prescription { get; set; } = string.Empty;
         public string? Notes { get; set; }
     }
 }
