@@ -172,5 +172,63 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException("Phone number is required.");
             }
         }
+
+        public async Task<PatientDto> GetMyProfileAsync(string identityUserId)
+{
+    if (string.IsNullOrWhiteSpace(identityUserId))
+    {
+        throw new BusinessRuleException("Invalid logged-in user.");
+    }
+
+    var patient = await repository.GetByIdentityUserIdAsync(identityUserId);
+
+    if (patient is null)
+    {
+        throw new EntityNotFoundException("Patient profile for logged-in user", 0);
+    }
+
+    return mapper.Map<PatientDto>(patient);
+}
+
+public async Task<PatientDto> UpdateMyProfileAsync(string identityUserId, UpdatePatientDto dto)
+{
+    if (string.IsNullOrWhiteSpace(identityUserId))
+    {
+        throw new BusinessRuleException("Invalid logged-in user.");
+    }
+
+    if (dto is null)
+    {
+        throw new BusinessRuleException("Patient details are required.");
+    }
+
+    if (dto.DateOfBirth.Date > DateTime.Today)
+    {
+        throw new BusinessRuleException("Date of birth cannot be a future date.");
+    }
+
+    var existingPatient = await repository.GetByIdentityUserIdAsync(identityUserId);
+
+    if (existingPatient is null)
+    {
+        throw new EntityNotFoundException("Patient profile for logged-in user", 0);
+    }
+
+    var patient = mapper.Map<Patient>(dto);
+
+    patient.PatientId = existingPatient.PatientId;
+    patient.IdentityUserId = existingPatient.IdentityUserId;
+    patient.Email = existingPatient.Email;
+    patient.CreatedDate = existingPatient.CreatedDate;
+
+    var updatedPatient = await repository.UpdateAsync(existingPatient.PatientId, patient);
+
+    if (updatedPatient is null)
+    {
+        throw new EntityNotFoundException("Patient", existingPatient.PatientId);
+    }
+
+    return mapper.Map<PatientDto>(updatedPatient);
+}
     }
 }

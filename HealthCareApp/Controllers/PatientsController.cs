@@ -3,6 +3,7 @@ using HealthCareApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -21,8 +22,7 @@ namespace HealthCareApp.Controllers
             _healthRecordService = healthRecordService;
         }
 
-        // Admin only.
-        // Not in company requirement, but useful for admin portal.
+        // Admin only: view all patients.
         [HttpGet]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -34,12 +34,83 @@ namespace HealthCareApp.Controllers
             return Ok(patients);
         }
 
-        // Admin and Patient can access patient profile.
-        // Later we should add ownership check so Patient can access only own profile.
+        // Patient only: view own profile.
+        // Uses logged-in user's IdentityUserId from JWT token.
+        [HttpGet("me")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Patient")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var patient = await _patientService.GetMyProfileAsync(identityUserId);
+
+            return Ok(patient);
+        }
+
+        // Patient only: update own profile.
+        // Uses logged-in user's IdentityUserId from JWT token.
+        [HttpPut("me")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Patient")]
+        public async Task<IActionResult> UpdateMyProfile([FromBody] UpdatePatientDto request)
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var patient = await _patientService.UpdateMyProfileAsync(identityUserId, request);
+
+            return Ok(patient);
+        }
+
+        // Patient only: view own health records.
+        // Patient cannot change patientId in URL here.
+        [HttpGet("me/health-records")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Patient")]
+        public async Task<IActionResult> GetMyHealthRecords()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var patient = await _patientService.GetMyProfileAsync(identityUserId);
+
+            var records = await _healthRecordService.GetHealthRecordsByPatientIdAsync(patient.PatientId);
+
+            return Ok(records);
+        }
+
+        // Admin only: view patient by id.
+        // Patient should not use this anymore.
         [HttpGet("{patientId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Patient")]
+            Roles = "Admin")]
         public async Task<IActionResult> GetPatientById([FromRoute] int patientId)
         {
             var patient = await _patientService.GetPatientByIdAsync(patientId);
@@ -47,29 +118,27 @@ namespace HealthCareApp.Controllers
             return Ok(patient);
         }
 
-        // Admin and Patient can update patient profile.
-        // Later we should add ownership check so Patient can update only own profile.
+        // Admin only: update patient by id.
+        // Patient should use PUT /api/Patients/me instead.
         [HttpPut("{patientId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Patient")]
+            Roles = "Admin")]
         public async Task<IActionResult> UpdatePatient(
             [FromRoute] int patientId,
-            [FromBody] UpdatePatientDto dto)
+            [FromBody] UpdatePatientDto request)
         {
-            var patient = await _patientService.UpdatePatientAsync(patientId, dto);
+            var patient = await _patientService.UpdatePatientAsync(patientId, request);
 
             return Ok(patient);
         }
 
-        // Admin, Patient, and Doctor can view patient health records.
-        // Later:
-        // Patient should see only own records.
-        // Doctor should see only records related to assigned appointments/patients.
+        // Admin and Doctor: view patient health records by patient id.
+        // Patient should use GET /api/Patients/me/health-records instead.
         [HttpGet("{patientId:int}/health-records")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Patient,Doctor")]
+            Roles = "Admin,Doctor")]
         public async Task<IActionResult> GetPatientHealthRecords([FromRoute] int patientId)
         {
             var records = await _healthRecordService.GetHealthRecordsByPatientIdAsync(patientId);

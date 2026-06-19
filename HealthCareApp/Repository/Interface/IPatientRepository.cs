@@ -11,5 +11,7 @@ namespace HealthCareApp.Repository.Interface
             DateTime dateOfBirth,
             int? excludePatientId = null,
             CancellationToken ct = default);
+
+        Task<Patient?> GetByIdentityUserIdAsync(string identityUserId, CancellationToken ct = default);
     }
 }

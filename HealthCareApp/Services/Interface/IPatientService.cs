@@ -12,7 +12,9 @@ namespace HealthCareApp.Services
 
         Task<PatientDto> UpdatePatientAsync(int patientId, UpdatePatientDto dto);
 
+        Task<PatientDto> GetMyProfileAsync(string identityUserId);
 
+        Task<PatientDto> UpdateMyProfileAsync(string identityUserId, UpdatePatientDto dto);
 
     }
 }

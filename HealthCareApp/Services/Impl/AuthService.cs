@@ -70,6 +70,7 @@ namespace HealthCareApp.Services.Impl
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 InsuranceID = request.InsuranceId,
+                IdentityUserId = identityUser.Id,
                 CreatedDate = DateTime.Now
             };
 

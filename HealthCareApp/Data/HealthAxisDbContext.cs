@@ -25,6 +25,12 @@ namespace HealthCareApp.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Patient to IdentityUser relationship
+            modelBuilder.Entity<Patient>()
+                .HasOne(p => p.IdentityUser)
+                .WithOne()
+                .HasForeignKey<Patient>(p => p.IdentityUserId)
+                .OnDelete(DeleteBehavior.NoAction);
             // Appointment relationships
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Patient)
@@ -59,17 +65,18 @@ namespace HealthCareApp.Data
 
             // Patient seed data
             modelBuilder.Entity<Patient>().HasData(
-                new Patient
-                {
-                    PatientId = 1,
-                    PatientName = "Ravi Kumar",
-                    DateOfBirth = new DateTime(1998, 5, 12),
-                    Gender = GenderType.Male,
-                    Email = "ravi.kumar@example.com",
-                    PhoneNumber = "9876543210",
-                    InsuranceID = "INS1001",
-                    CreatedDate = new DateTime(2026, 6, 15)
-                },
+               new Patient
+               {
+                   PatientId = 1,
+                   PatientName = "Ravi Kumar",
+                   DateOfBirth = new DateTime(1998, 5, 12),
+                   Gender = GenderType.Male,
+                   Email = "ravi.kumar@example.com",
+                   PhoneNumber = "9876543210",
+                   InsuranceID = "INS1001",
+                   IdentityUserId = null,
+                   CreatedDate = new DateTime(2026, 6, 15)
+               },
                 new Patient
                 {
                     PatientId = 2,
@@ -79,6 +86,7 @@ namespace HealthCareApp.Data
                     Email = "anjali.nair@example.com",
                     PhoneNumber = "8765432109",
                     InsuranceID = "INS1002",
+                    IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 },
                 new Patient
@@ -90,6 +98,7 @@ namespace HealthCareApp.Data
                     Email = "kiran.das@example.com",
                     PhoneNumber = "7654321098",
                     InsuranceID = null,
+                    IdentityUserId = null,
                     CreatedDate = new DateTime(2026, 6, 15)
                 }
             );

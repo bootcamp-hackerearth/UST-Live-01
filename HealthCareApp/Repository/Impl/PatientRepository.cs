@@ -31,5 +31,13 @@ namespace HealthCareApp.Repository.Impl
                 && (!excludePatientId.HasValue || patient.PatientId != excludePatientId.Value),
                 ct);
         }
+
+        public async Task<Patient?> GetByIdentityUserIdAsync(
+    string identityUserId,
+    CancellationToken ct = default)
+        {
+            return await _context.Patients
+                .FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId, ct);
+        }
     }
 }

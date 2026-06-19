@@ -1,5 +1,7 @@
 ﻿using HealthCareApp.Enums;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthCareApp.Models
 {
@@ -30,10 +32,15 @@ namespace HealthCareApp.Models
 
         public string? InsuranceID { get; set; }
 
+        public string? IdentityUserId { get; set; }
+
+        [ForeignKey(nameof(IdentityUserId))]
+        public IdentityUser? IdentityUser { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        public ICollection<Appointment>? Appointments { get; set; }
+        public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
-        public ICollection<HealthRecord>? HealthRecords { get; set; }
+        public ICollection<HealthRecord> HealthRecords { get; set; } = new List<HealthRecord>();
     }
 }
