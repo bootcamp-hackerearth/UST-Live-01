@@ -138,6 +138,7 @@ builder.Services.AddOpenApi();
 // Dependency Injection
 builder.Services.AddScoped<IAdminService, AdminService>();
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 
@@ -182,4 +183,18 @@ using (var scope = app.Services.CreateScope())
     await RoleSeeder.SeedRolesAsync(roleManager);
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager =
+        scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    var userManager =
+        scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+    await RoleSeeder.SeedRolesAsync(roleManager);
+
+    await AdminSeeder.SeedAdminAsync(
+        userManager,
+        roleManager);
+}
 await app.RunAsync();

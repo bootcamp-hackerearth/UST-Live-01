@@ -30,6 +30,8 @@ namespace HealthAxis.API.Data
 
             modelBuilder.Entity<Patient>().HasIndex(p => p.Email).IsUnique();
 
+            modelBuilder.Entity<Patient>() .HasOne(p => p.User) .WithOne() .HasForeignKey<Patient>(p => p.UserId) .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Patient>() .Property(p => p.Gender).HasConversion<string>().HasMaxLength(10);
 
             modelBuilder.Entity<Doctor>() .Property(d => d.Specialisation).HasConversion<string>() .HasMaxLength(50);
@@ -110,30 +112,30 @@ namespace HealthAxis.API.Data
                     }
                 );
 
-            modelBuilder.Entity<Patient>() .HasData(
+            //modelBuilder.Entity<Patient>() .HasData(
 
-                new Patient
-                {
-                    PatientId = 1,
-                    FullName = "Anu",
-                    DateOfBirth = new DateTime(1998, 5, 12),
-                    Gender = Gender.Female,
-                    PhoneNumber = "9876543210",
-                    Email = "anu@example.com",
-                    CreatedDate = new DateTime(2026, 1, 1)
-                },
+            //    new Patient
+            //    {
+            //        PatientId = 1,
+            //        FullName = "Anu",
+            //        DateOfBirth = new DateTime(1998, 5, 12),
+            //        Gender = Gender.Female,
+            //        PhoneNumber = "9876543210",
+            //        Email = "anu@example.com",
+            //        CreatedDate = new DateTime(2026, 1, 1)
+            //    },
 
-                new Patient
-                {
-                    PatientId = 2,
-                    FullName = "Rajit",
-                    DateOfBirth = new DateTime(1992, 9, 25),
-                    Gender = Gender.Male,
-                    PhoneNumber = "9876543211",
-                    Email = "rajit@example.com", 
-                    CreatedDate = new DateTime(2026, 1, 1)
-                }
-            );
+            //    new Patient
+            //    {
+            //        PatientId = 2,
+            //        FullName = "Rajit",
+            //        DateOfBirth = new DateTime(1992, 9, 25),
+            //        Gender = Gender.Male,
+            //        PhoneNumber = "9876543211",
+            //        Email = "rajit@example.com", 
+            //        CreatedDate = new DateTime(2026, 1, 1)
+            //    }
+            //);
         }
     }
 }

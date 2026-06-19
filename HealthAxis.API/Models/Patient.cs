@@ -1,5 +1,6 @@
 ﻿using HealthAxis.API.Enums;
 using HealthAxis.API.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations;
@@ -37,7 +38,15 @@ namespace HealthAxis.API.Models
         [StringLength(ValidationLimits.EmailLength)]
         public string Email { get; set; } = string.Empty;
 
+        [Required]
+        public string UserId { get; set; } = string.Empty;
+
+        public virtual IdentityUser? User { get; set; }
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+
+
+
 
         // Navigation Properties
         

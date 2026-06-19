@@ -7,7 +7,6 @@ namespace HealthAxis.API.Controller
 {
     [Route("api/health-records")]
     [ApiController]
-    [Authorize(Roles = "Patient,Doctor,Admin")]
     public class HealthRecordController : ControllerBase
     {
         private readonly IHealthRecordService _healthRecordService;
@@ -19,6 +18,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpGet("patient/{patientId}")]
+        [Authorize(Roles = "Patient,Doctor")]
         public async Task<IActionResult> GetByPatientId(int patientId)
         {
             var records =
@@ -28,7 +28,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpPost]
-        //[Authorize(Roles = "Doctor,Admin")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> CreateHealthRecord(
             [FromBody] CreateHealthRecordDto healthRecordDto)
         {
@@ -39,6 +39,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Patient,Doctor")]
         public async Task<IActionResult> GetById(int id)
         {
             var record =

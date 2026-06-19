@@ -7,9 +7,9 @@ namespace HealthAxis.API.Services.Interfaces
     {
         Task<List<DoctorDto>> GetAllDoctorsAsync();
 
-        Task<DoctorDto> AddDoctorAsync(DoctorDto doctorDto);
+        Task<DoctorCreatedDto> AddDoctorAsync(CreateDoctorDto doctorDto);
 
-        Task<DoctorDto> UpdateDoctorAsync(int id, DoctorDto doctorDto);
+        Task<DoctorDto> UpdateDoctorAsync(int id, UpdateDoctorDto doctorDto);
 
         Task<List<AdminDto>> GetAppointmentReportsAsync();
     }

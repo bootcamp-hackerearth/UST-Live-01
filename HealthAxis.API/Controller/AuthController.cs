@@ -12,7 +12,7 @@ namespace HealthAxis.API.Controller
             [HttpPost("register")]
             public async Task<IActionResult> Register(RegisterDto request)
             {
-                var (success, message, userId) = await service.Register(request);
+                var (success, message, userId, StatusCode) = await service.Register(request);
 
                 if (!success)
                 {

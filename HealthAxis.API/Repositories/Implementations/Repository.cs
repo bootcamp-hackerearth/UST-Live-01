@@ -1,15 +1,16 @@
-﻿using HealthAxis.API.Repositories.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using HealthAxis.API.Data;
+using HealthAxis.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace HealthAxis.API.Repositories.Implementations
 {
     public class Repository<T> : IRepository<T> where T : class
 
     {
-        private readonly DbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public Repository(DbContext context)
+        public Repository(ApplicationDbContext context)
         {
             _context = context;
         }

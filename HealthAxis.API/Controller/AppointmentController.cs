@@ -7,7 +7,7 @@ namespace HealthAxis.API.Controller
 {
     [Route("api/appointments")]
     [ApiController]
-    [Authorize(Roles = "Patient,Doctor,Admin")]
+    //[Authorize(Roles = "Patient,Doctor,Admin")]
     public class AppointmentController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
@@ -19,6 +19,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpGet]
+        [Authorize(Roles = "Doctor,Admin")]
         public async Task<IActionResult> GetAllAppointments()
         {
             var appointments =
@@ -28,6 +29,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpPost]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> CreateAppointment(
             [FromBody] CreateAppointmentDto appointmentDto)
         {
@@ -38,6 +40,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpPut("{id}/status")]
+        [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> UpdateAppointmentStatus(
             int id,
             [FromBody] UpdateAppointmentStatusDto statusDto)
@@ -51,6 +54,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
             var appointment =
