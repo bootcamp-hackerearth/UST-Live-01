@@ -11,7 +11,7 @@ namespace HealthApp.Api.Controllers
 {
     [ApiController]
     [Route("api/appointments")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
@@ -26,33 +26,48 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
-        public async Task<IActionResult> GetAppointments(
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetAppointmentsForAdmin(
             [FromQuery] int? doctorId,
             [FromQuery] int? patientId,
             [FromQuery] bool onlyUpcoming = false)
         {
+            var appointments = await _appointmentService.GetAppointmentsAsync(
+                doctorId,
+                patientId,
+                onlyUpcoming);
+
+            return Ok(appointments);
+        }
+
+        [HttpGet("my")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
+        public async Task<IActionResult> GetMyAppointments(
+            [FromQuery] bool onlyUpcoming = false)
+        {
+            int? patientId = null;
+            int? doctorId = null;
+
             if (User.IsPatient())
             {
                 patientId = User.GetPatientId();
 
                 if (patientId == null)
                 {
-                    throw new ForbiddenAccessException("Patient profile is not linked to this user.");
+                    throw new ForbiddenAccessException(
+                        "Patient profile is not linked to this user.");
                 }
-
-                doctorId = null;
             }
-            else if (User.IsDoctor())
+
+            if (User.IsDoctor())
             {
                 doctorId = User.GetDoctorId();
 
                 if (doctorId == null)
                 {
-                    throw new ForbiddenAccessException("Doctor profile is not linked to this user.");
+                    throw new ForbiddenAccessException(
+                        "Doctor profile is not linked to this user.");
                 }
-
-                patientId = null;
             }
 
             var appointments = await _appointmentService.GetAppointmentsAsync(
@@ -63,20 +78,61 @@ namespace HealthApp.Api.Controllers
             return Ok(appointments);
         }
 
+        [HttpGet("my/upcoming")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
+        public async Task<IActionResult> GetMyUpcomingAppointments()
+        {
+            int? patientId = null;
+            int? doctorId = null;
+
+            if (User.IsPatient())
+            {
+                patientId = User.GetPatientId();
+
+                if (patientId == null)
+                {
+                    throw new ForbiddenAccessException(
+                        "Patient profile is not linked to this user.");
+                }
+            }
+
+            if (User.IsDoctor())
+            {
+                doctorId = User.GetDoctorId();
+
+                if (doctorId == null)
+                {
+                    throw new ForbiddenAccessException(
+                        "Doctor profile is not linked to this user.");
+                }
+            }
+
+            var appointments = await _appointmentService.GetAppointmentsAsync(
+                doctorId,
+                patientId,
+                true);
+
+            return Ok(appointments);
+        }
+
         [HttpGet("{id:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> GetAppointmentById(int id)
         {
             var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
 
-            if (User.IsPatient() && appointment.PatientId != User.GetPatientId())
+            if (User.IsPatient() &&
+                appointment.PatientId != User.GetPatientId())
             {
-                throw new ForbiddenAccessException("You cannot access another patient's appointment.");
+                throw new ForbiddenAccessException(
+                    "You cannot access another patient's appointment.");
             }
 
-            if (User.IsDoctor() && appointment.DoctorId != User.GetDoctorId())
+            if (User.IsDoctor() &&
+                appointment.DoctorId != User.GetDoctorId())
             {
-                throw new ForbiddenAccessException("You cannot access another doctor's appointment.");
+                throw new ForbiddenAccessException(
+                    "You cannot access another doctor's appointment.");
             }
 
             return Ok(appointment);
@@ -84,20 +140,31 @@ namespace HealthApp.Api.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> BookAppointment([FromBody] AppointmentCreateDto dto)
+        public async Task<IActionResult> BookAppointment(
+            [FromBody] AppointmentBookingDto dto)
         {
             var loggedInPatientId = User.GetPatientId();
 
             if (loggedInPatientId == null)
             {
-                throw new ForbiddenAccessException("Patient profile is not linked to this user.");
+                throw new ForbiddenAccessException(
+                    "Patient profile is not linked to this user.");
             }
 
-            dto.PatientId = loggedInPatientId.Value;
+            var appointmentCreateDto = new AppointmentCreateDto
+            {
+                PatientId = loggedInPatientId.Value,
+                DoctorId = dto.DoctorId,
+                ScheduledDate = dto.ScheduledDate,
+                TimeSlot = dto.TimeSlot
+            };
 
-            var appointment = await _appointmentService.BookAppointmentAsync(dto);
+            var appointment = await _appointmentService.BookAppointmentAsync(
+                appointmentCreateDto);
 
-            return StatusCode(StatusCodes.Status201Created, appointment);
+            return StatusCode(
+                StatusCodes.Status201Created,
+                appointment);
         }
 
         [HttpPut("{id:int}/status")]
@@ -107,7 +174,10 @@ namespace HealthApp.Api.Controllers
             [FromQuery] string status,
             [FromQuery] string? cancellationReason)
         {
-            if (!Enum.TryParse(status, true, out AppointmentStatus appointmentStatus))
+            if (!Enum.TryParse(
+                    status,
+                    true,
+                    out AppointmentStatus appointmentStatus))
             {
                 throw new InvalidRequestException("Invalid appointment status.");
             }
@@ -116,27 +186,47 @@ namespace HealthApp.Api.Controllers
 
             if (User.IsPatient())
             {
-                if (appointment.PatientId != User.GetPatientId())
+                var loggedInPatientId = User.GetPatientId();
+
+                if (loggedInPatientId == null)
                 {
-                    throw new ForbiddenAccessException("You cannot update another patient's appointment.");
+                    throw new ForbiddenAccessException(
+                        "Patient profile is not linked to this user.");
+                }
+
+                if (appointment.PatientId != loggedInPatientId.Value)
+                {
+                    throw new ForbiddenAccessException(
+                        "You cannot update another patient's appointment.");
                 }
 
                 if (appointmentStatus != AppointmentStatus.Cancelled)
                 {
-                    throw new ForbiddenAccessException("Patients can only cancel appointments.");
+                    throw new ForbiddenAccessException(
+                        "Patients can only cancel appointments.");
                 }
             }
 
             if (User.IsDoctor())
             {
-                if (appointment.DoctorId != User.GetDoctorId())
+                var loggedInDoctorId = User.GetDoctorId();
+
+                if (loggedInDoctorId == null)
                 {
-                    throw new ForbiddenAccessException("You cannot update another doctor's appointment.");
+                    throw new ForbiddenAccessException(
+                        "Doctor profile is not linked to this user.");
+                }
+
+                if (appointment.DoctorId != loggedInDoctorId.Value)
+                {
+                    throw new ForbiddenAccessException(
+                        "You cannot update another doctor's appointment.");
                 }
 
                 if (appointmentStatus == AppointmentStatus.Cancelled)
                 {
-                    throw new ForbiddenAccessException("Doctors cannot cancel patient appointments using this route.");
+                    throw new ForbiddenAccessException(
+                        "Doctors cannot cancel patient appointments.");
                 }
             }
 
@@ -145,7 +235,10 @@ namespace HealthApp.Api.Controllers
                 appointmentStatus,
                 cancellationReason);
 
-            return Ok(new { message = "Appointment status updated successfully." });
+            return Ok(new
+            {
+                message = "Appointment status updated successfully."
+            });
         }
 
         [HttpPost("{id:int}/confirm")]
@@ -158,7 +251,10 @@ namespace HealthApp.Api.Controllers
                 id,
                 AppointmentStatus.Confirmed);
 
-            return Ok(new { message = "Appointment confirmed successfully." });
+            return Ok(new
+            {
+                message = "Appointment confirmed successfully."
+            });
         }
 
         [HttpPost("{id:int}/cancel")]
@@ -169,9 +265,21 @@ namespace HealthApp.Api.Controllers
         {
             var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
 
-            if (User.IsPatient() && appointment.PatientId != User.GetPatientId())
+            if (User.IsPatient())
             {
-                throw new ForbiddenAccessException("You cannot cancel another patient's appointment.");
+                var loggedInPatientId = User.GetPatientId();
+
+                if (loggedInPatientId == null)
+                {
+                    throw new ForbiddenAccessException(
+                        "Patient profile is not linked to this user.");
+                }
+
+                if (appointment.PatientId != loggedInPatientId.Value)
+                {
+                    throw new ForbiddenAccessException(
+                        "You cannot cancel another patient's appointment.");
+                }
             }
 
             await _appointmentService.UpdateAppointmentStatusAsync(
@@ -179,7 +287,10 @@ namespace HealthApp.Api.Controllers
                 AppointmentStatus.Cancelled,
                 dto.CancellationReason);
 
-            return Ok(new { message = "Appointment cancelled successfully." });
+            return Ok(new
+            {
+                message = "Appointment cancelled successfully."
+            });
         }
 
         [HttpPost("{id:int}/complete")]
@@ -192,7 +303,10 @@ namespace HealthApp.Api.Controllers
                 id,
                 AppointmentStatus.Completed);
 
-            return Ok(new { message = "Appointment completed successfully." });
+            return Ok(new
+            {
+                message = "Appointment completed successfully."
+            });
         }
 
         [HttpGet("slots")]
@@ -238,11 +352,21 @@ namespace HealthApp.Api.Controllers
                 return;
             }
 
-            var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+            var loggedInDoctorId = User.GetDoctorId();
 
-            if (appointment.DoctorId != User.GetDoctorId())
+            if (loggedInDoctorId == null)
             {
-                throw new ForbiddenAccessException("You cannot access another doctor's appointment.");
+                throw new ForbiddenAccessException(
+                    "Doctor profile is not linked to this user.");
+            }
+
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(
+                appointmentId);
+
+            if (appointment.DoctorId != loggedInDoctorId.Value)
+            {
+                throw new ForbiddenAccessException(
+                    "You cannot access another doctor's appointment.");
             }
         }
     }
