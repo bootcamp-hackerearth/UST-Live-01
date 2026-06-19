@@ -1,4 +1,6 @@
 ﻿using HealthApp.Api.Dtos;
+using HealthApp.Api.Exceptions;
+using HealthApp.Api.Extensions;
 using HealthApp.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -67,5 +69,25 @@ namespace HealthApp.Api.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("change-password")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto request)
+        {
+            var userId = User.GetUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new UnauthorizedAccessAppException("Please login to continue.");
+            }
+
+            await service.ChangePasswordAsync(userId, request);
+
+            return Ok(new
+            {
+                message = "Password changed successfully."
+            });
+        }
+
     }
 }

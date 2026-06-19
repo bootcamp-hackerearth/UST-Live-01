@@ -190,6 +190,50 @@ namespace HealthApp.Api.Services.Impl
             return (true, "User logged in successfully.", token, expiry);
         }
 
+        public async Task ChangePasswordAsync(string userId, ChangePasswordDto request)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new UnauthorizedAccessAppException("Please login to continue.");
+            }
+
+            if (request == null)
+            {
+                throw new InvalidRequestException("Password details are required.");
+            }
+
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                throw new InvalidRequestException("New password and confirm password do not match.");
+            }
+
+            if (request.CurrentPassword == request.NewPassword)
+            {
+                throw new InvalidRequestException("New password must be different from current password.");
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new EntityNotFoundException("User", userId);
+            }
+
+            var result = await userManager.ChangePasswordAsync(
+                user,
+                request.CurrentPassword,
+                request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(" ",
+                    result.Errors.Select(error => error.Description));
+
+                throw new InvalidRequestException(errors);
+            }
+        }
+
+
         private async Task<string> GenerateToken(ApplicationUser user)
         {
             var jwtSettings = config.GetSection("Jwt");

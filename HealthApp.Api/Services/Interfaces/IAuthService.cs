@@ -12,5 +12,7 @@ namespace HealthApp.Api.Services.Interfaces
 
         Task<(bool success, string message, string token, int expiresIn)> Login(
             LoginDto request);
+
+        Task ChangePasswordAsync(string userId, ChangePasswordDto request);
     }
 }
