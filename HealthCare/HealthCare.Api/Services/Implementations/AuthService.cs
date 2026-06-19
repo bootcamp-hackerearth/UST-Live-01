@@ -4,8 +4,6 @@ using System.Text;
 using AutoMapper;
 using HealthCare.Api.Data;
 using HealthCare.Api.DTOs.Authentication;
-using HealthCare.Api.DTOs.Patient;
-using HealthCare.Api.DTOs.Doctor;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
@@ -64,7 +62,7 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         //  PATIENT REGISTRATION 
-        public async Task RegisterPatientAsync(CreatePatientDto dto)
+        public async Task RegisterPatientAsync(PatientRegisterDto dto)
         {
             var user = await CreateUserAsync(dto.Email, dto.Password, "Patient");
 
@@ -77,16 +75,18 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        // ✅ DOCTOR CREATION (ADMIN ONLY)
-        public async Task RegisterDoctorAsync(CreateDoctorDto dto)
+        //  DOCTOR CREATION (ADMIN ONLY)
+        public async Task RegisterDoctorAsync(DoctorRegisterDto dto)
         {
             var user = await CreateUserAsync(dto.Email, dto.Password, "Doctor");
 
             var doctor = _mapper.Map<Doctor>(dto);
 
             doctor.UserId = user.Id;
-
             await _doctorRepo.AddAsync(doctor);
+            await _context.SaveChangesAsync();
+
+            await _doctorRepo.CreateSlots(doctor.DoctorId, dto.TimeSlots);
             await _context.SaveChangesAsync();
         }
 
@@ -108,6 +108,7 @@ namespace HealthCare.Api.Services.Implementations
             if (!roles.Any())
                 throw new Exception("User has no role assigned");
 
+
             var role = roles.First();
 
             string token;
@@ -124,15 +125,23 @@ namespace HealthCare.Api.Services.Implementations
             else if (role == "Doctor")
             {
                 var doctor = await _doctorRepo.GetByUserIdAsync(user.Id);
+                await _context.SaveChangesAsync();
+
+                await _context.SaveChangesAsync();
 
                 if (doctor == null)
                     throw new Exception("Doctor record not found");
 
                 token = GenerateJwtToken(user, role, doctorId: doctor.DoctorId);
             }
+            else if (role == "Admin")
+            {
+                // Generate JWT
+                token = GenerateJwtToken(user, role); 
+            }
             else
             {
-                token = GenerateJwtToken(user, role);
+                throw new Exception("Doctor record not found");
             }
 
             return new AuthResponseDto

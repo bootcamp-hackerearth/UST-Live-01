@@ -1,6 +1,8 @@
 ﻿using HealthCare.Api.DTOs.HealthRecord;
 using HealthCare.Api.DTOs.Patient;
 using HealthCare.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +22,8 @@ namespace HealthCare.Api.Controllers
 
         //Create
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles ="Doctor")]
         public async Task<IActionResult> Add([FromBody] CreateHealthRecordDto dto)
         {
             if (!ModelState.IsValid)
@@ -40,6 +44,7 @@ namespace HealthCare.Api.Controllers
 
         //  GET Health Record By ID
         [HttpGet("{id:int}")]
+
         public async Task<IActionResult> GetById(int id)
         {
             var record = await _healthRecordService.GetByIdAsync(id);

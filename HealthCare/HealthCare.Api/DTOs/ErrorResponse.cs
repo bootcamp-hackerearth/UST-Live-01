@@ -1,4 +1,4 @@
-﻿namespace HealthCare.Api.Models
+﻿namespace HealthCare.Api.DTOs
 {
     public class ErrorResponse
     {

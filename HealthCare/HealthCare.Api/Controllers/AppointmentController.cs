@@ -1,6 +1,7 @@
 ﻿using HealthCare.Api.DTOs.Appointment;
 using HealthCare.Api.DTOs.Appointments;
 using HealthCare.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,29 +21,9 @@ namespace HealthCare.Api.Controllers
         }
 
 
-        [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAll(AppointmentFilter filter)
-        {
-            var appointments = await _service.GetAllAsync( filter);
-            return Ok(appointments);
-        }
-
-
-        [HttpGet("{id:int}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var appointment = await _service.GetByIdAsync(id);
-
-            if (appointment is null)
-                return NotFound();
-
-            return Ok(appointment);
-        }
-
         [HttpPost]
-        [Authorize(Roles = "Patient,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto,int id)
         {
             if (!ModelState.IsValid)
@@ -58,7 +39,8 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPut("{id:int}")]
-        [Authorize(Roles = "Admin,Doctor")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentDto dto)
         {
             if (!ModelState.IsValid)
@@ -70,18 +52,9 @@ namespace HealthCare.Api.Controllers
         }
 
 
-        [HttpDelete("{id:int}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _service.DeleteAsync(id);
-
-            return NoContent();
-        }
-
-
         [HttpPatch("{id:int}/status")]
-        [Authorize(Roles = "Admin,Doctor")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAppointmentDto dto)
         {
             await _service.UpdateStatusAsync(id, dto);
@@ -90,6 +63,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("available-slots")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> GetAvailableSlots(
                     [FromQuery] int doctorId,
@@ -101,6 +75,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("check-availability")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> CheckAvailability(int doctorId, DateOnly date, string timeSlot)
         {
@@ -108,18 +83,9 @@ namespace HealthCare.Api.Controllers
             return Ok(new { available = result });
         }
 
-
-        [HttpGet("report/daily")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetDailyReport()
-        {
-            var report = await _service.GetDailyReport();
-            return Ok(report);
-        }
-
-
         [HttpGet("doctor/{doctorId:int}/schedule")]
-        [Authorize(Roles = "Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetDoctorSchedule(int doctorId, DateOnly date)
         {
             var result = await _service.GetDoctorSchedule(date, doctorId);
@@ -128,6 +94,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("my-schedule")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> GetMySchedule([FromQuery] DateOnly date)
         {
@@ -142,8 +109,8 @@ namespace HealthCare.Api.Controllers
             return Ok(result);
         }
 
-
         [HttpGet("my")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Patient")]
         public async Task<IActionResult> GetMyAppointments()
         {
@@ -160,19 +127,13 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("doctor/{doctorId:int}")]
-        [Authorize(Roles = "Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetDoctorAppointments(int doctorId)
         {
             var result = await _service.GetAppointmentByDoctor(doctorId);
             return Ok(result);
         }
-
-
-
-
-
-
-
 
     }
 }

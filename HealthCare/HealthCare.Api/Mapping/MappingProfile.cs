@@ -2,6 +2,7 @@
 using HealthCare.Api.DTOs.Doctor;
 using HealthCare.Api.DTOs.Appointments;
 using HealthCare.Api.DTOs.HealthRecord;
+using HealthCare.Api.DTOs.Authentication;
 using HealthCare.Api.Models;
 using AutoMapper;
 
@@ -13,13 +14,13 @@ namespace HealthCare.Api.Mapping
        {
         
             //patient
-            CreateMap<CreatePatientDto, Patient>();
+            CreateMap<PatientRegisterDto, Patient>();
             CreateMap<UpdatePatientDto, Patient>();
             CreateMap<PatientListDto, Patient>();
             //CreateMap<PatientDto, Patient>();
 
             //Doctor
-            CreateMap<CreateDoctorDto, Doctor>();
+            CreateMap<DoctorRegisterDto, Doctor>();
             CreateMap<UpdateDoctorDto, Doctor>();
             CreateMap<DoctorListDto, Doctor>();
            // CreateMap<DoctorDto, Doctor>();

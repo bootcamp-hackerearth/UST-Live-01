@@ -8,7 +8,6 @@ namespace HealthCare.Api.Repositories.Implementations
 {
     public class DoctorRepository : Repository<Doctor>, IDoctorRepository
     {
-        public readonly HealthCareDbContext _context;
         public DoctorRepository(HealthCareDbContext context) : base(context) { }
 
         public async Task<Doctor?> GetByUserIdAsync(string userId)

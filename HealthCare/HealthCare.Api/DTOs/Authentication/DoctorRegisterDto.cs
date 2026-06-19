@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
-namespace HealthCare.Api.DTOs.Doctor
+namespace HealthCare.Api.DTOs.Authentication
 {
-    public class CreateDoctorDto
+    public class DoctorRegisterDto
     {
         [Required]
         [MaxLength(100)]
@@ -26,6 +27,8 @@ namespace HealthCare.Api.DTOs.Doctor
         [Required]
         public string Password { get; set; } = null!;
 
+        [Required]
+        public List<string> TimeSlots { get; set; }
 
     }
 }

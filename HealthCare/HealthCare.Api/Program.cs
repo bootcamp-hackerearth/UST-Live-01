@@ -36,11 +36,12 @@ public partial class Program
                 Version = "v1"
             });
 
-            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.Http,
                 Scheme = "bearer",
                 BearerFormat = "JWT",
+                In = ParameterLocation.Header,
                 Description = "Enter JWT token only. Do not type Bearer."
             });
 
@@ -115,7 +116,7 @@ public partial class Program
             var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             await RoleSeeder.SeedRoleAsync(roleManager);
-            await UserSeeder.SeedAdminAsync(userManager, roleManager);
+            await AdminSeeder.SeedAdminAsync(userManager, roleManager);
         }
 
         if (app.Environment.IsDevelopment())

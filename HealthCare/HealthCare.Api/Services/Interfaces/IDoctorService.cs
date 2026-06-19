@@ -1,6 +1,6 @@
 ﻿using HealthCare.Api.DTOs;
 using HealthCare.Api.DTOs.Doctor;
-
+using HealthCare.Api.DTOs.Authentication;
 
 namespace HealthCare.Api.Services.Interfaces
 {
@@ -9,7 +9,7 @@ namespace HealthCare.Api.Services.Interfaces
         Task<DoctorListDto?> GetByIdAsync(int id);
         Task<PagedResult<DoctorListDto>> GetAllAsync(DoctorFilter filter);
 
-        Task AddAsync(CreateDoctorDto dto);
+        Task AddAsync(DoctorRegisterDto dto);
 
         Task UpdateAsync(int id, UpdateDoctorDto dto);
         Task DeleteAsync(int id);

@@ -1,7 +1,6 @@
 ﻿using HealthCare.Api.DTOs.Authentication;
-using HealthCare.Api.DTOs.Patient;
-using HealthCare.Api.DTOs.Doctor;
 using HealthCare.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,19 +8,20 @@ namespace HealthCare.Api.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class RegisterController : ControllerBase
     {
         private readonly IAuthService _authService;
 
-        public AuthController(IAuthService authService)
+        public RegisterController(IAuthService authService)
         {
             _authService = authService;
         }
 
         //  PATIENT SELF-REGISTRATION
         [AllowAnonymous]
+
         [HttpPost("register-patient")]
-        public async Task<IActionResult> RegisterPatient([FromBody] CreatePatientDto dto)
+        public async Task<IActionResult> RegisterPatient([FromBody] PatientRegisterDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -32,9 +32,10 @@ namespace HealthCare.Api.Controllers
         }
 
         //  ADMIN CREATES DOCTOR
-        [Authorize(Roles = "Admin")]
         [HttpPost("register-doctor")]
-        public async Task<IActionResult> RegisterDoctor([FromBody] CreateDoctorDto dto)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> RegisterDoctor([FromBody] DoctorRegisterDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -59,6 +60,7 @@ namespace HealthCare.Api.Controllers
 
         //  GET CURRENT USER INFO (FROM TOKEN)
         [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("me")]
         public IActionResult GetCurrentUser()
         {

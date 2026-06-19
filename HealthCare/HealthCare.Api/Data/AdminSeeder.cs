@@ -2,7 +2,7 @@
 
 namespace HealthCare.Api.Data
 {
-    public class UserSeeder
+    public class AdminSeeder
     {
 
         public static async Task SeedAdminAsync(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)

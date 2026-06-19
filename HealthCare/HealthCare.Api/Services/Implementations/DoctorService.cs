@@ -6,6 +6,7 @@ using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
+using HealthCare.Api.DTOs.Authentication;
 using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations
@@ -25,7 +26,7 @@ namespace HealthCare.Api.Services.Implementations
             _appointmentRepository = appointmentRepository;
         }
 
-        public async Task AddAsync(CreateDoctorDto dto)
+        public async Task AddAsync(DoctorRegisterDto dto)
         {
             var doctor = _mapper.Map<Doctor>(dto);
             await _repository.AddAsync(doctor);
@@ -176,7 +177,6 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date) =>
             await _repository.AvailableDoctors(specialisation, date);
-
 
 
     }

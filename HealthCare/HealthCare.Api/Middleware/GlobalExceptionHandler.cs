@@ -1,5 +1,5 @@
 ﻿using HealthCare.Api.Exceptions;
-using HealthCare.Api.Models;
+using HealthCare.Api.DTOs;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace HealthCare.Api.Middleware

@@ -1,6 +1,7 @@
 ﻿using HealthCare.Api.DTOs.Doctor;
 using HealthCare.Api.DTOs.Patient;
 using HealthCare.Api.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ namespace HealthCare.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll(DoctorFilter filter)
         {
@@ -27,6 +29,7 @@ namespace HealthCare.Api.Controllers
         }
 
         [HttpGet("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -38,21 +41,9 @@ namespace HealthCare.Api.Controllers
             return Ok(doctor);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateDoctorDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            await _service.AddAsync(dto);
-
-            return StatusCode(201, new
-            {
-                message = "Doctor created successfully"
-            });
-        }
 
         [HttpPut("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin,Doctor")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateDoctorDto dto)
         {
@@ -66,6 +57,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpDelete("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -76,6 +68,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPatch("{id:int}/status")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStatus(int id, [FromQuery] bool isActive)
         {
@@ -85,6 +78,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPost("{id:int}/slots")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin,Doctor")]
         public async Task<IActionResult> CreateSlots(int id, [FromBody] List<string> timeSlots)
         {
@@ -98,6 +92,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("{id:int}/slots")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin,Doctor")]
         public async Task<IActionResult> GetSlots(int id)
         {
@@ -107,6 +102,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("{id:int}/available-slots")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> AvailableSlots(int id, [FromQuery] DateOnly date)
         {
@@ -116,6 +112,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPost("{id:int}/leaves")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateLeave(int id, [FromBody] List<CreateLeaveDto> leaves)
         {
