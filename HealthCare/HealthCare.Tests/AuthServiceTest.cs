@@ -1,10 +1,199 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Xunit;
+using Moq;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using HealthCare.Api.Services.Implementations;
+using HealthCare.Api.Repositories.Interfaces;
+using HealthCare.Api.Data;
+using HealthCare.Api.DTOs.Authentication;
+using HealthCare.Api.Models;
+using Microsoft.EntityFrameworkCore;
 
-namespace HealthCare.Tests
+namespace HealthCare.Api.Tests
 {
-    internal class AuthServiceTest
+    public class AuthServiceTests
     {
+        private readonly Mock<UserManager<IdentityUser>> _userManagerMock;
+        private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IPatientRepository> _patientRepoMock;
+        private readonly Mock<IDoctorRepository> _doctorRepoMock;
+        private readonly Mock<IConfiguration> _configMock;
+        private readonly HealthCareDbContext _context;
+        private readonly AuthService _service;
+
+        public AuthServiceTests()
+        {
+            _userManagerMock = GetUserManagerMock();
+            _mapperMock = new Mock<IMapper>();
+            _patientRepoMock = new Mock<IPatientRepository>();
+            _doctorRepoMock = new Mock<IDoctorRepository>();
+            _configMock = new Mock<IConfiguration>();
+
+            //  JWT config setup
+
+            var configMock = new Mock<IConfiguration>();
+            var sectionMock = new Mock<IConfigurationSection>();
+
+            sectionMock.Setup(s => s["Key"]).Returns("THIS_IS_A_SECRET_KEY_1234567891234");
+            sectionMock.Setup(s => s["Issuer"]).Returns("TestIssuer");
+            sectionMock.Setup(s => s["Audience"]).Returns("TestAudience");
+            sectionMock.Setup(s => s["AccessTokenExpirationMinutes"]).Returns("60");
+
+            configMock.Setup(c => c.GetSection("Jwt"))
+                      .Returns(sectionMock.Object);
+
+            _configMock = configMock;
+
+
+            var options = new DbContextOptionsBuilder<HealthCareDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            _context = new HealthCareDbContext(options);
+
+            _service = new AuthService(
+                _userManagerMock.Object,
+                _mapperMock.Object,
+                _patientRepoMock.Object,
+                _doctorRepoMock.Object,
+                _configMock.Object,
+                _context
+            );
+        }
+
+        private Mock<UserManager<IdentityUser>> GetUserManagerMock()
+        {
+            var store = new Mock<IUserStore<IdentityUser>>();
+
+            return new Mock<UserManager<IdentityUser>>(
+                store.Object,
+                null, null, null, null, null, null, null, null
+            );
+        }
+
+        //  Login Success (Patient)
+        [Fact]
+        public async Task LoginAsync_ShouldReturnToken_ForPatient()
+        {
+            var user = new IdentityUser { Id = "1", Email = "test@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(true);
+
+            _userManagerMock.Setup(u => u.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Patient" });
+
+            _patientRepoMock.Setup(p => p.GetByUserIdAsync(user.Id))
+                .ReturnsAsync(new Patient { PatientId = 10 });
+
+            var result = await _service.LoginAsync(new LoginDto
+            {
+                Email = user.Email,
+                Password = "123"
+            });
+
+            Assert.NotNull(result);
+            Assert.Equal("Patient", result.Role);
+            Assert.False(string.IsNullOrEmpty(result.AccessToken));
+        }
+
+        //  Login Invalid Password
+        [Fact]
+        public async Task LoginAsync_ShouldThrow_WhenPasswordInvalid()
+        {
+            var user = new IdentityUser { Email = "test@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(false);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.LoginAsync(new LoginDto
+                {
+                    Email = user.Email,
+                    Password = "123"
+                }));
+        }
+
+        //  Register Patient Success
+        [Fact]
+        public async Task RegisterPatientAsync_ShouldCreatePatient()
+        {
+            var dto = new PatientRegisterDto
+            {
+                Email = "test@test.com",
+                Password = "123",
+                ConfirmPassword = "123"
+            };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((IdentityUser)null);
+
+            _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>(), dto.Password))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock.Setup(u => u.AddToRoleAsync(It.IsAny<IdentityUser>(), "Patient"))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var patient = new Patient();
+
+            _mapperMock.Setup(m => m.Map<Patient>(dto)).Returns(patient);
+
+            await _service.RegisterPatientAsync(dto);
+
+            _patientRepoMock.Verify(r => r.AddAsync(patient), Times.Once);
+        }
+
+        //  Register Password Mismatch
+        [Fact]
+        public async Task RegisterPatientAsync_ShouldThrow_WhenPasswordMismatch()
+        {
+            var dto = new PatientRegisterDto
+            {
+                Email = "test@test.com",
+                Password = "123",
+                ConfirmPassword = "456"
+            };
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.RegisterPatientAsync(dto));
+        }
+
+        //  Register Doctor
+        [Fact]
+        public async Task RegisterDoctorAsync_ShouldCreateDoctor()
+        {
+            var dto = new DoctorRegisterDto
+            {
+                Email = "doc@test.com",
+                Password = "123",
+                ConfirmPassword = "123",
+                TimeSlots = new List<string> { "10" }
+            };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(dto.Email))
+                .ReturnsAsync((IdentityUser)null);
+
+            _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>(), dto.Password))
+                .ReturnsAsync(IdentityResult.Success);
+
+            _userManagerMock.Setup(u => u.AddToRoleAsync(It.IsAny<IdentityUser>(), "Doctor"))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var doctor = new Doctor { DoctorId = 1 };
+
+            _mapperMock.Setup(m => m.Map<Doctor>(dto)).Returns(doctor);
+
+            await _service.RegisterDoctorAsync(dto);
+
+            _doctorRepoMock.Verify(r => r.AddAsync(doctor), Times.Once);
+            _doctorRepoMock.Verify(r => r.CreateSlots(doctor.DoctorId, dto.TimeSlots), Times.Once);
+        }
     }
 }
