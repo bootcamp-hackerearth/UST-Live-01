@@ -1,0 +1,46 @@
+﻿@inherits LayoutComponentBase
+@inject TokenService TokenService
+@inject NavigationManager NavigationManager
+
+@if (isChecking)
+{
+    <div class="loading-screen">
+        Checking admin session...
+    </div>
+}
+else
+{
+    <div class="app-shell">
+        <Sidebar />
+
+        <main class="main-content">
+            @Body
+        </main>
+    </div>
+}
+
+@code {
+    private bool isChecking = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var token = await TokenService.GetTokenAsync();
+
+        var role = await TokenService.GetRoleAsync();
+
+        if (string.IsNullOrWhiteSpace(token) || role != "Admin")
+        {
+            NavigationManager.NavigateTo("/login", true);
+            return;
+        }
+
+        isChecking = false;
+
+        StateHasChanged();
+    }
+}

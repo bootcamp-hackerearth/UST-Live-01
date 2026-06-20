@@ -1,0 +1,46 @@
+﻿@page "/dashboard"
+@inject DoctorAdminService DoctorService
+@inject UserAdminService UserService
+@inject ReportService ReportService
+
+<h1 class="page-title">Admin Dashboard</h1>
+
+<div class="card-grid">
+    <div class="stat-card glass">
+        <div class="stat-label">Doctors</div>
+        <div class="stat-value">@doctorCount</div>
+    </div>
+
+    <div class="stat-card glass">
+        <div class="stat-label">Users</div>
+        <div class="stat-value">@userCount</div>
+    </div>
+
+    <div class="stat-card glass">
+        <div class="stat-label">Completed Appointments</div>
+        <div class="stat-value">@completedCount</div>
+    </div>
+</div>
+
+@code {
+    private int doctorCount;
+
+    private int userCount;
+
+    private int completedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var doctors = await DoctorService.GetDoctorsAsync();
+
+        var users = await UserService.GetUsersAsync();
+
+        var reports = await ReportService.GetAppointmentReportsAsync();
+
+        doctorCount = doctors.Count;
+
+        userCount = users.Count;
+
+        completedCount = reports.Sum(r => r.Completed);
+    }
+}

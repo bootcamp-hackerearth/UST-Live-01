@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@inject NavigationManager NavigationManager
+@inject HealthAxisCore_Admin.Services.AuthService AuthService
+
+<aside class="sidebar glass">
+    <div class="sidebar-title">
+        HealthAxis Admin
+    </div>
+
+    <nav>
+        <NavLink href="/dashboard"
+                 class="sidebar-link"
+                 activeClass="active">
+            Dashboard
+        </NavLink>
+
+        <NavLink href="/doctors"
+                 class="sidebar-link"
+                 activeClass="active">
+            Doctors
+        </NavLink>
+
+        <NavLink href="/users"
+                 class="sidebar-link"
+                 activeClass="active">
+            Users
+        </NavLink>
+
+        <NavLink href="/reports"
+                 class="sidebar-link"
+                 activeClass="active">
+            Reports
+        </NavLink>
+    </nav>
+
+    <button class="sidebar-link logout-link"
+            @onclick="LogoutAsync">
+        Logout
+    </button>
+</aside>
+
+@code {
+    private async Task LogoutAsync()
+    {
+        await AuthService.LogoutAsync();
+
+        NavigationManager.NavigateTo("/login", true);
+    }
+}

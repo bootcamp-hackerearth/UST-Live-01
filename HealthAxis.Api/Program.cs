@@ -91,6 +91,16 @@ builder.Services.AddAuthentication(options =>
         NameClaimType = ClaimTypes.NameIdentifier
     };
 });
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAdminClient", policy =>
+    {
+        policy
+            .WithOrigins("https://localhost:7050")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -111,6 +121,7 @@ var app = builder.Build();
 app.UseExceptionHandler();
 if (app.Environment.IsDevelopment()) { app.MapOpenApi(); app.UseSwagger(); app.UseSwaggerUI(); }
 app.UseHttpsRedirection();
+app.UseCors("AllowAdminClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
