@@ -1,5 +1,6 @@
 ﻿using HealthAxis.API.Enums;
 using HealthAxis.API.Utilities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.VisualBasic;
 using System.ComponentModel.DataAnnotations;
 
@@ -29,6 +30,9 @@ namespace HealthAxis.API.Models
         public decimal ConsultationFee { get; set; }
 
         public bool IsActive { get; set; } = true;
+        public string? UserId { get; set; }
+
+        public virtual IdentityUser? User { get; set; }
 
         // Navigation Properties
         public virtual ICollection<Appointment> Appointments { get; set; }  = new List<Appointment>();

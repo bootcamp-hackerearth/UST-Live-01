@@ -37,6 +37,7 @@ namespace HealthAxis.API.Data
             modelBuilder.Entity<Doctor>() .Property(d => d.Specialisation).HasConversion<string>() .HasMaxLength(50);
 
             modelBuilder.Entity<Appointment>() .Property(a => a.Status) .HasConversion<string>().HasMaxLength(20);
+            modelBuilder.Entity<Doctor>().HasOne(d => d.User) .WithOne().HasForeignKey<Doctor>(d => d.UserId) .OnDelete(DeleteBehavior.SetNull);
 
             SeedData(modelBuilder);
         }
