@@ -11,24 +11,23 @@ namespace HealthAxisCore_Api.Mappings
     {
         public MappingProfile()
         {
-            // ✅ Patient
+          
             CreateMap<Patient, PatientResponseDTO>();
             CreateMap<CreatePatientDTO, Patient>();
             CreateMap<UpdatePatientDTO, Patient>();
 
-            // ✅ Doctor
+           
             CreateMap<Doctor, DoctorResponseDTO>();
             CreateMap<CreateDoctorDTO, Doctor>();
 
-            // ✅ Appointment
+          
             CreateMap<Appointment, AppointmentResponseDTO>();
             CreateMap<CreateAppointmentDTO, Appointment>();
 
-            // ✅ HealthRecord
             CreateMap<HealthRecord, HealthRecordResponseDTO>();
             CreateMap<CreateHealthRecordDTO, HealthRecord>();
 
-            // ❌ Removed User mappings (Identity handles users)
+            
         }
     }
 }

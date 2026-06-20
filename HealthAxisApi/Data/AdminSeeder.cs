@@ -10,7 +10,7 @@ namespace HealthAxisCore_Api.Data
             var adminEmail = "admin@healthaxis.com";
             var adminPassword = "Admin@123";
 
-            // ✅ Check if admin already exists to prevent duplicate seeding
+            
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
             if (adminUser == null)
@@ -34,7 +34,7 @@ namespace HealthAxisCore_Api.Data
                 }
             }
 
-            // ✅ Ensure admin role is assigned
+            
             if (!await userManager.IsInRoleAsync(adminUser, "Admin"))
             {
                 await userManager.AddToRoleAsync(adminUser, "Admin");

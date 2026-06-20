@@ -16,7 +16,7 @@ namespace HealthAxisCore_Api.Controllers
             _authService = authService;
         }
 
-        // ✅ REGISTER (Public - Patient only)
+       
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDTO request)
@@ -29,7 +29,7 @@ namespace HealthAxisCore_Api.Controllers
             return Ok(result);
         }
 
-        // ✅ LOGIN (Public)
+        
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDTO request)
@@ -42,7 +42,7 @@ namespace HealthAxisCore_Api.Controllers
             return Ok(result);
         }
 
-        // ✅ ✅ CHANGE PASSWORD (NEW 🔥)
+        
         [HttpPost("change-password")]
         [Authorize]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDTO request)

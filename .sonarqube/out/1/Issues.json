@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "5.6.0.0",
+        "fileVersion": "5.6.0-2.26230.102 (caa81fa4971f74880cdab61990cb1b11420939ec)",
+        "semanticVersion": "5.6.0",
+        "language": "en-US"
+      },
+      "results": [
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IHealthRecordRepository, Task<IEnumerable<HealthRecord>>>' cannot be used for parameter 'mock' of type 'IReturns<IHealthRecordRepository, Task<IEnumerable<HealthRecord>?>>' in 'IReturnsResult<IHealthRecordRepository> ReturnsExtensions.ReturnsAsync<IHealthRecordRepository, IEnumerable<HealthRecord>?>(IReturns<IHealthRecordRepository, Task<IEnumerable<HealthRecord>?>> mock, IEnumerable<HealthRecord>? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/287802/source/repos/HealthAxisApi/HealthAxisCore_Api.Tests/Services/HealthRecordServiceTest.cs",
+                "region": {
+                  "startLine": 274,
+                  "startColumn": 13,
+                  "endLine": 275,
+                  "endColumn": 53
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "CS8620": {
+          "id": "CS8620",
+          "shortDescription": "Argument cannot be used for parameter due to differences in the nullability of reference types.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8620)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

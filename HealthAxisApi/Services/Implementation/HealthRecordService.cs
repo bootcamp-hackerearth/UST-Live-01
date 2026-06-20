@@ -20,14 +20,14 @@ namespace HealthAxisCore_Api.Services.Implementations
             _mapper = mapper;
         }
 
-        // ✅ Get All Records
+      
         public async Task<IEnumerable<HealthRecordResponseDTO>> GetAllAsync()
         {
             var records = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<HealthRecordResponseDTO>>(records);
         }
 
-        // ✅ Get By Id
+       
         public async Task<HealthRecordResponseDTO?> GetByIdAsync(int id)
         {
             var record = await _repository.GetByIdAsync(id);
@@ -38,7 +38,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return _mapper.Map<HealthRecordResponseDTO>(record);
         }
 
-        // ✅ Create Health Record
+        
         public async Task<HealthRecordResponseDTO> CreateAsync(CreateHealthRecordDTO dto)
         {
             var record = _mapper.Map<HealthRecord>(dto);
@@ -50,7 +50,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return _mapper.Map<HealthRecordResponseDTO>(record);
         }
 
-        // ✅ Delete Record
+        
         public async Task<bool> DeleteAsync(int id)
         {
             var exists = await _repository.Exists(id);
@@ -63,7 +63,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        // ✅ Get Records By Patient
+       
         public async Task<IEnumerable<HealthRecordResponseDTO>> GetByPatientAsync(int patientId)
         {
             var records = await _repository.GetByPatient(patientId);

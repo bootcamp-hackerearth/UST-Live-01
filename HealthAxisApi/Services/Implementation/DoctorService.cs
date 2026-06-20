@@ -26,14 +26,14 @@ namespace HealthAxisCore_Api.Services.Implementations
             _userManager = userManager;
         }
 
-        // ✅ Get All Doctors
+       
         public async Task<IEnumerable<DoctorResponseDTO>> GetAllAsync()
         {
             var doctors = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
         }
 
-        // ✅ Get Doctor By Id
+        
         public async Task<DoctorResponseDTO?> GetByIdAsync(int id)
         {
             var doctor = await _repository.GetByIdAsync(id);
@@ -44,26 +44,26 @@ namespace HealthAxisCore_Api.Services.Implementations
             return _mapper.Map<DoctorResponseDTO>(doctor);
         }
 
-        // ✅ ✅ CREATE DOCTOR (UPDATED 🔥)
+        
         public async Task<DoctorResponseDTO> CreateAsync(CreateDoctorDTO dto)
         {
-            // ✅ Step 1: Create Doctor entity
+            
             var doctor = _mapper.Map<Doctor>(dto);
             doctor.CreatedDate = DateTime.Now;
 
             await _repository.AddAsync(doctor);
 
-            // ✅ Step 2: Generate temporary password
+            
             var tempPassword = "Temp@" + new Random().Next(1000, 9999);
 
-            // ✅ Step 3: Create ApplicationUser
+            
             var user = new ApplicationUser
             {
                 UserName = doctor.Email,
                 Email = doctor.Email,
                 Role = "Doctor",
                 ReferenceId = doctor.DoctorId,
-                IsFirstLogin = true, // ✅ important
+                IsFirstLogin = true, 
                 TemporaryPassword = tempPassword
             };
 
@@ -75,18 +75,18 @@ namespace HealthAxisCore_Api.Services.Implementations
                 throw new BusinessRuleException(errors);
             }
 
-            // ✅ Step 4: Assign role
+            
             await _userManager.AddToRoleAsync(user, "Doctor");
 
-            // ✅ IMPORTANT (for now testing only)
+            
             Console.WriteLine($"Doctor Temporary Password: {tempPassword}");
 
-            // 👉 In real apps → send via Email/SMS
+            
 
             return _mapper.Map<DoctorResponseDTO>(doctor);
         }
 
-        // ✅ Update Doctor
+        
         public async Task<bool> UpdateAsync(int id, CreateDoctorDTO dto)
         {
             var doctor = await _repository.GetByIdAsync(id);
@@ -101,7 +101,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        // ✅ Delete Doctor
+        
         public async Task<bool> DeleteAsync(int id)
         {
             var exists = await _repository.Exists(id);
@@ -114,7 +114,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        // ✅ Filter Doctors
+        
         public async Task<IEnumerable<DoctorResponseDTO>> FilterAsync(
             string? name,
             SpecialisationType? specialization,
@@ -125,7 +125,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
         }
 
-        // ✅ Activate / Deactivate Doctor
+        
         public async Task<bool> SetStatusAsync(int doctorId, bool status)
         {
             var doctor = await _repository.GetByIdAsync(doctorId);

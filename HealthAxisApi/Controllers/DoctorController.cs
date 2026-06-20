@@ -18,7 +18,7 @@ namespace HealthAxisCore_Api.Controllers
             _service = service;
         }
 
-        // ✅ Get All (Admin)
+       
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAll()
@@ -26,7 +26,7 @@ namespace HealthAxisCore_Api.Controllers
             return Ok(await _service.GetAllAsync());
         }
 
-        // ✅ Get By Id
+        
         [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Doctor")]
         public async Task<IActionResult> GetById(int id)
@@ -37,7 +37,7 @@ namespace HealthAxisCore_Api.Controllers
             return Ok(result);
         }
 
-        // ✅ Create (Admin)
+        
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> Create(CreateDoctorDTO dto)
@@ -47,7 +47,7 @@ namespace HealthAxisCore_Api.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.DoctorId }, result);
         }
 
-        // ✅ Update
+        
         [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> Update(int id, CreateDoctorDTO dto)
@@ -58,7 +58,7 @@ namespace HealthAxisCore_Api.Controllers
             return Ok("Updated successfully");
         }
 
-        // ✅ Delete
+        
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -69,7 +69,7 @@ namespace HealthAxisCore_Api.Controllers
             return Ok("Deleted successfully");
         }
 
-        // ✅ Filter
+       
         [HttpGet("filter")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Doctor")]
         public async Task<IActionResult> Filter(string? name, SpecialisationType? specialization, bool? isActive)
@@ -77,7 +77,7 @@ namespace HealthAxisCore_Api.Controllers
             return Ok(await _service.FilterAsync(name, specialization, isActive));
         }
 
-        // ✅ Set Status
+        
         [HttpPatch("status/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> SetStatus(int id, bool status)
