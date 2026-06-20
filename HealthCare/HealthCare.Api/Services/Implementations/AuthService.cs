@@ -64,6 +64,11 @@ namespace HealthCare.Api.Services.Implementations
         //  PATIENT REGISTRATION 
         public async Task RegisterPatientAsync(PatientRegisterDto dto)
         {
+
+            if (dto.Password != dto.ConfirmPassword)
+                throw new Exception("Passwords do not match");
+
+
             var user = await CreateUserAsync(dto.Email, dto.Password, "Patient");
 
             var patient = _mapper.Map<Patient>(dto);
@@ -78,6 +83,11 @@ namespace HealthCare.Api.Services.Implementations
         //  DOCTOR CREATION (ADMIN ONLY)
         public async Task RegisterDoctorAsync(DoctorRegisterDto dto)
         {
+
+            if (dto.Password != dto.ConfirmPassword)
+                throw new Exception("Passwords do not match");
+
+
             var user = await CreateUserAsync(dto.Email, dto.Password, "Doctor");
 
             var doctor = _mapper.Map<Doctor>(dto);
