@@ -10,7 +10,7 @@ namespace HealthAxis.API.Services
 
         Task<PatientDto?> GetByIdAsync(int id);
 
-        Task<PatientDto?> UpdateAsync( int id, PatientDto patientDto);
+        Task<PatientDto?> UpdateAsync( int id, UpdatePatientDto patientDto);
         Task<List<HealthRecordDto>> GetHealthRecordsByPatientIdAsync(int patientid);
     }
 }

@@ -30,7 +30,7 @@ namespace HealthAxis.API.Services.Implementation
             return mapper.Map<PatientDto>(patient);
         }
 
-        public async Task<PatientDto?> UpdateAsync(int id,PatientDto patientDto)
+        public async Task<PatientDto?> UpdateAsync(int id, UpdatePatientDto patientDto)
         {
             var existingPatient = await patientRepository.GetByIdAsync(id);
 
@@ -39,14 +39,36 @@ namespace HealthAxis.API.Services.Implementation
                 throw new NotFoundException("Patient not found");
             }
 
-            var patient = mapper.Map<Patient>(patientDto);
-            patient.PatientId = id;
+            var patients = await patientRepository.GetAllAsync();
 
-            var updated =await patientRepository.UpdateAsync(id, patient);
+            var emailExists = patients.Any(p =>
+                p.PatientId != id &&
+                p.Email.Equals(patientDto.Email, StringComparison.OrdinalIgnoreCase));
+
+            if (emailExists)
+            {
+                throw new ValidationException("Email already registered");
+            }
+
+            var phoneExists = patients.Any(p =>
+                p.PatientId != id &&
+                p.PhoneNumber == patientDto.PhoneNumber);
+
+            if (phoneExists)
+            {
+                throw new ValidationException("Phone number already registered");
+            }
+
+            existingPatient.FullName = patientDto.FullName;
+            existingPatient.DateOfBirth = patientDto.DateOfBirth;
+            existingPatient.Gender = patientDto.Gender;
+            existingPatient.PhoneNumber = patientDto.PhoneNumber;
+            existingPatient.Email = patientDto.Email;
+
+            var updated = await patientRepository.UpdateAsync(id, existingPatient);
 
             return mapper.Map<PatientDto>(updated);
         }
-
         public async Task<List<HealthRecordDto>> GetHealthRecordsByPatientIdAsync(int patientId)
         {
             var patient =await patientRepository.GetByIdAsync(patientId);

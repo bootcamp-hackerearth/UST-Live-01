@@ -27,12 +27,18 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePatient(int id, [FromBody] PatientDto patientDto)
+        public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDto patientDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var updatedPatient = await _patientService.UpdateAsync(id, patientDto);
 
             return Ok(updatedPatient);
         }
+
 
         [HttpGet("{id}/health-records")]
         public async Task<IActionResult> GetPatientHealthRecords(int id)

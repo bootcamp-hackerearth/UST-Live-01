@@ -1,6 +1,7 @@
 ﻿using HealthAxis.API.DTO.AuthDtos;
-using HealthAxis.API.Models;
+using HealthAxis.API.DTO.DoctorDtos;
 using HealthAxis.API.Enums;
+using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -99,6 +100,37 @@ namespace HealthAxis.API.Services.Implementation
             await patientRepository.AddAsync(patient);
 
             return (true, "Patient registered successfully", identityUser.Id, 200);
+        }
+
+        public async Task<(bool Success, string Message, int StatusCode)> ChangePassword(string userId, ChangePasswordDto request)
+        {
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                return (false, "New password and confirm password do not match", 400);
+            }
+
+            if (request.CurrentPassword == request.NewPassword)
+            {
+                return (false, "New password cannot be same as current password", 400);
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user is null)
+            {
+                return (false, "User not found", 404);
+            }
+
+            var result = await userManager.ChangePasswordAsync( user, request.CurrentPassword, request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
+                return (false, errors, 400);
+            }
+
+            return (true, "Password changed successfully", 200);
         }
 
         private async Task<string> GenerateToken(IdentityUser user)

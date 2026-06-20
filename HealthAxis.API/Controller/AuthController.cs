@@ -1,7 +1,10 @@
 ﻿using HealthAxis.API.DTO.AuthDtos;
+using HealthAxis.API.DTO.DoctorDtos;
 using HealthAxis.API.Models;
 using HealthAxis.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthAxis.API.Controller
 {
@@ -40,6 +43,41 @@ namespace HealthAxis.API.Controller
 
                 return Ok(response);
             }
+
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var result = await service.ChangePassword(userId, request);
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, new
+                {
+                    message = result.Message
+                });
+            }
+
+            return Ok(new
+            {
+                message = result.Message
+            });
         }
+    }
 }
 
