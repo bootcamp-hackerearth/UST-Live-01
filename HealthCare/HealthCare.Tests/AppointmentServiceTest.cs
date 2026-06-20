@@ -231,6 +231,126 @@ namespace HealthCare.Api.Tests
             Assert.Empty(result);
         }
 
+        //Get Doctor Schedule
+        [Fact]
+        public async Task GetDoctorSchedule_ShouldReturnSchedule_WhenExists()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            var data = new List<AppointmentListDto>
+             {
+             new AppointmentListDto()
+             };
+
+            _repoMock.Setup(r => r.GetDoctorSchedule(date, 1))
+                .ReturnsAsync(data);
+
+            var result = await _service.GetDoctorSchedule(date, 1);
+
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task GetDoctorSchedule_ShouldReturnEmpty_WhenNoData()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            _repoMock.Setup(r => r.GetDoctorSchedule(date, 1))
+                .ReturnsAsync(new List<AppointmentListDto>());
+
+            var result = await _service.GetDoctorSchedule(date, 1);
+
+            Assert.Empty(result);
+        }
+
+        //Patient Schedule
+        [Fact]
+        public async Task GetPatientSchedule_ShouldReturnSchedule_WhenExists()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            var data = new List<AppointmentListDto>
+            {
+            new AppointmentListDto()
+             };
+
+            _repoMock.Setup(r => r.GetPatientSchedule(date, 1))
+                .ReturnsAsync(data);
+
+            var result = await _service.GetPatientSchedule(date, 1);
+
+            Assert.Single(result);
+        }
+
+        //Get Appointment By patient Id
+        [Fact]
+        public async Task GetAppointmentByPatient_ShouldReturnAppointments_WhenExists()
+        {
+            var data = new List<AppointmentListDto>
+    {
+        new AppointmentListDto()
+    };
+
+            _repoMock.Setup(r => r.GetAppointmentByPatient(1))
+                .ReturnsAsync(data);
+
+            var result = await _service.GetAppointmentByPatient(1);
+
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task GetAppointmentByPatient_ShouldReturnEmpty_WhenNoData()
+        {
+            _repoMock.Setup(r => r.GetAppointmentByPatient(1))
+                .ReturnsAsync(new List<AppointmentListDto>());
+
+            var result = await _service.GetAppointmentByPatient(1);
+
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public async Task GetPatientSchedule_ShouldReturnEmpty_WhenNoData()
+        {
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            _repoMock.Setup(r => r.GetPatientSchedule(date, 1))
+                .ReturnsAsync(new List<AppointmentListDto>());
+
+            var result = await _service.GetPatientSchedule(date, 1);
+
+            Assert.Empty(result);
+        }
+
+        //Get Appointment By Doctor
+        [Fact]
+        public async Task GetAppointmentByDoctor_ShouldReturnAppointments_WhenExists()
+        {
+            var data = new List<AppointmentListDto>
+    {
+        new AppointmentListDto()
+    };
+
+            _repoMock.Setup(r => r.GetAppointmentByDoctor(1))
+                .ReturnsAsync(data);
+
+            var result = await _service.GetAppointmentByDoctor(1);
+
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task GetAppointmentByDoctor_ShouldReturnEmpty_WhenNoData()
+        {
+            _repoMock.Setup(r => r.GetAppointmentByDoctor(1))
+                .ReturnsAsync(new List<AppointmentListDto>());
+
+            var result = await _service.GetAppointmentByDoctor(1);
+
+            Assert.Empty(result);
+        }
+
         //  CancelAppointmentsByDoctorDate
         [Fact]
         public async Task CancelAppointmentsByDoctorDate_ShouldCallRepository()

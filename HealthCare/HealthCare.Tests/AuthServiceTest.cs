@@ -195,5 +195,173 @@ namespace HealthCare.Api.Tests
             _doctorRepoMock.Verify(r => r.AddAsync(doctor), Times.Once);
             _doctorRepoMock.Verify(r => r.CreateSlots(doctor.DoctorId, dto.TimeSlots), Times.Once);
         }
+
+        //User Mismatch
+        [Fact]
+        public async Task LoginAsync_ShouldThrow_WhenUserNotFound()
+        {
+            _userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync((IdentityUser)null);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.LoginAsync(new LoginDto
+                {
+                    Email = "invalid@test.com",
+                    Password = "123"
+                }));
+        }
+
+        //No Roles Assigned
+
+        [Fact]
+        public async Task LoginAsync_ShouldThrow_WhenNoRoles()
+        {
+            var user = new IdentityUser { Id = "1", Email = "test@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(true);
+
+            _userManagerMock.Setup(u => u.GetRolesAsync(user))
+                .ReturnsAsync(new List<string>()); // no roles
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.LoginAsync(new LoginDto
+                {
+                    Email = user.Email,
+                    Password = "123"
+                }));
+        }
+
+        //Patient Not Found
+
+        [Fact]
+        public async Task LoginAsync_ShouldThrow_WhenPatientNotFound()
+        {
+            var user = new IdentityUser { Id = "1", Email = "test@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(true);
+
+            _userManagerMock.Setup(u => u.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Patient" });
+
+            _patientRepoMock.Setup(p => p.GetByUserIdAsync(user.Id))
+                .ReturnsAsync((Patient)null);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.LoginAsync(new LoginDto
+                {
+                    Email = user.Email,
+                    Password = "123"
+                }));
+        }
+
+        //Doctor Role-Sucess
+        [Fact]
+        public async Task LoginAsync_ShouldReturnToken_ForDoctor()
+        {
+            var user = new IdentityUser { Id = "2", Email = "doc@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(true);
+
+            _userManagerMock.Setup(u => u.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Doctor" });
+
+            _doctorRepoMock.Setup(d => d.GetByUserIdAsync(user.Id))
+                .ReturnsAsync(new Doctor { DoctorId = 20 });
+
+            var result = await _service.LoginAsync(new LoginDto
+            {
+                Email = user.Email,
+                Password = "123"
+            });
+
+            Assert.Equal("Doctor", result.Role);
+            Assert.False(string.IsNullOrEmpty(result.AccessToken));
+        }
+
+        //Doctor Role Not found
+        [Fact]
+        public async Task LoginAsync_ShouldThrow_WhenDoctorNotFound()
+        {
+            var user = new IdentityUser { Id = "2", Email = "doc@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(true);
+
+            _userManagerMock.Setup(u => u.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Doctor" });
+
+            _doctorRepoMock.Setup(d => d.GetByUserIdAsync(user.Id))
+                .ReturnsAsync((Doctor)null);
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.LoginAsync(new LoginDto
+                {
+                    Email = user.Email,
+                    Password = "123"
+                }));
+        }
+
+        //Admin Role
+        [Fact]
+        public async Task LoginAsync_ShouldReturnToken_ForAdmin()
+        {
+            var user = new IdentityUser { Id = "3", Email = "admin@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(true);
+
+            _userManagerMock.Setup(u => u.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Admin" });
+
+            var result = await _service.LoginAsync(new LoginDto
+            {
+                Email = user.Email,
+                Password = "123"
+            });
+
+            Assert.Equal("Admin", result.Role);
+            Assert.False(string.IsNullOrEmpty(result.AccessToken));
+        }
+        //Unknown roles
+        [Fact]
+        public async Task LoginAsync_ShouldThrow_ForUnknownRole()
+        {
+            var user = new IdentityUser { Id = "4", Email = "unknown@test.com" };
+
+            _userManagerMock.Setup(u => u.FindByEmailAsync(user.Email))
+                .ReturnsAsync(user);
+
+            _userManagerMock.Setup(u => u.CheckPasswordAsync(user, "123"))
+                .ReturnsAsync(true);
+
+            _userManagerMock.Setup(u => u.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "Other" });
+
+            await Assert.ThrowsAsync<Exception>(() =>
+                _service.LoginAsync(new LoginDto
+                {
+                    Email = user.Email,
+                    Password = "123"
+                }));
+        }
+
     }
 }

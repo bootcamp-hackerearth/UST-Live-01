@@ -1,0 +1,148 @@
+{
+  "scannerProperties": [
+    {
+      "key": "sonar.scanner.app",
+      "value": "ScannerMSBuild"
+    },
+    {
+      "key": "sonar.scanner.appVersion",
+      "value": "11.2.1"
+    },
+    {
+      "key": "sonar.scanner.bootstrapStartTime",
+      "value": "1781948221000"
+    },
+    {
+      "key": "sonar.projectKey",
+      "value": "HealthCare-APP"
+    },
+    {
+      "key": "sonar.working.directory",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\.sonar"
+    },
+    {
+      "key": "sonar.projectBaseDir",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare"
+    },
+    {
+      "key": "sonar.pullrequest.cache.basepath",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare"
+    },
+    {
+      "key": "sonar.sources",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.vs\\HealthCare.slnx\\config\\applicationhost.config,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.vs\\HealthCare.slnx\\v18\\DocumentLayout.backup.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.vs\\HealthCare.slnx\\v18\\DocumentLayout.json"
+    },
+    {
+      "key": "sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "sonar.modules",
+      "value": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A,8F4755F7-C31C-4783-98C1-AB8FA90E55DC"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.projectKey",
+      "value": "HealthCare-APP:8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.projectName",
+      "value": "HealthCare.Api"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.projectBaseDir",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.working.directory",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\.sonar\\mod0"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.tests",
+      "value": ""
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.sources",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\AdminAppointmentController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\AdminDoctorController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\AdminHealthRecordController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\AdminPatientController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\AppointmentController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\DoctorController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\HealthRecordController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\PatientController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Controllers\\RegisterController.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Data\\AdminSeeder.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Data\\HealthCareDbContext.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Data\\RoleSeeder.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Appointment\\AppointmentFilter.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Appointment\\AppointmentListDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Appointment\\AppointmentReportDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Appointment\\CreateAppointmentDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Appointment\\UpdateAppointmentDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Authentication\\AuthResponseDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Authentication\\ChangePasswordDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Authentication\\DoctorRegisterDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Authentication\\LoginDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Authentication\\PatientRegisterDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Doctor\\CreateLeaveDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Doctor\\CreateLeaveResultDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Doctor\\DoctorFilter.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Doctor\\DoctorListDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Doctor\\UpdateDoctorDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\ErrorResponse.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\HealthRecord\\CreateHealthRecordDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\HealthRecord\\HealthRecordFilter.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\HealthRecord\\HealthRecordListDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\HealthRecord\\UpdateHealthRecordDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\PagedResult.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\PaginationParam.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Patient\\CreatePatientDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Patient\\PatientDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Patient\\PatientFilter.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Patient\\PatientListDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\DTOs\\Patient\\UpdatePatientDto.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Exceptions\\AppointmentNotFoundException.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Exceptions\\DoctorNotFoundException.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Exceptions\\HealthRecordNotFoundException.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Exceptions\\InvalidDataException.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Exceptions\\PatientNotFoundException.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Mapping\\MappingProfile.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Middleware\\GlobalExceptionHandler.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260615143933_InitialWithAllNavigationSet.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260615143933_InitialWithAllNavigationSet.Designer.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260615150623_SeedingForUsers.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260615150623_SeedingForUsers.Designer.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260615151516_SeedingForPATandDOCT.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260615151516_SeedingForPATandDOCT.Designer.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260616095529_IdentityAddedInDbContext.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260616095529_IdentityAddedInDbContext.Designer.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260617032518_RolesSeeded.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260617032518_RolesSeeded.Designer.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260618170822_Removesedding.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260618170822_Removesedding.Designer.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260619034707_AdminSeeded.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\20260619034707_AdminSeeded.Designer.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Migrations\\HealthCareDbContextModelSnapshot.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\Appointment.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\AuthorResponse.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\AvailableSlots.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\Doctor.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\DoctorLeaves.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\HealthRecord.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\Patient.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Models\\User.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Program.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Implementations\\AppointmentRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Implementations\\DoctorRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Implementations\\HealthRecordRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Implementations\\PatientRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Implementations\\Repository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Interfaces\\IAppointmentRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Interfaces\\IDoctorRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Interfaces\\IHealthRecordRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Interfaces\\IPatientRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Repositories\\Interfaces\\IRepository.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Implementations\\AppointmentService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Implementations\\AuthService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Implementations\\DoctorService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Implementations\\HealthRecordService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Implementations\\PatientService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Interfaces\\IAppointmentService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Interfaces\\IAuthService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Interfaces\\IDoctorService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Interfaces\\IHealthRecordService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Services\\Interfaces\\IPatientService.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\HealthCare.Api.GlobalUsings.g.cs,\"C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\.NETCoreApp,Version=v10.0.AssemblyAttributes.cs\",C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\HealthCare.Api.AssemblyInfo.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\HealthCare.Api.MvcApplicationPartsAssemblyInfo.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\appsettings.Development.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\appsettings.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\HealthCare.Api.http,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\Properties\\launchSettings.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\HealthCare.Api.csproj.nuget.dgspec.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\project.assets.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\bin\\Debug\\net10.0\\appsettings.Development.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\bin\\Debug\\net10.0\\HealthCare.Api.deps.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\bin\\Debug\\net10.0\\HealthCare.Api.runtimeconfig.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\bin\\Debug\\net10.0\\HealthCare.Api.staticwebassets.endpoints.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\ApiEndpoints.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\HealthCare.Api.sourcelink.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\rjsmcshtml.dswa.cache.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\rjsmrazor.dswa.cache.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\rpswa.dswa.cache.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\staticwebassets.build.endpoints.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\staticwebassets.build.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\bin\\Debug\\net10.0\\BuildHost-net472\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.exe.config,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\bin\\Debug\\net10.0\\BuildHost-netcore\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.deps.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\bin\\Debug\\net10.0\\BuildHost-netcore\\Microsoft.CodeAnalysis.Workspaces.MSBuild.BuildHost.runtimeconfig.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Api\\obj\\Debug\\net10.0\\EndpointInfo\\HealthCare.Api.json"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\0"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\0\\Issues.json"
+    },
+    {
+      "key": "8C953D2D-3E48-3EE0-CFCD-1B5DF03C371A.sonar.cs.scanner.telemetry",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\0\\Telemetry.json"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.projectKey",
+      "value": "HealthCare-APP:8F4755F7-C31C-4783-98C1-AB8FA90E55DC"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.projectName",
+      "value": "HealthCare.Tests"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.projectBaseDir",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.working.directory",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\.sonar\\mod1"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.sourceEncoding",
+      "value": "utf-8"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.sources",
+      "value": ""
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.tests",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\obj\\HealthCare.Tests.csproj.nuget.dgspec.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\obj\\project.assets.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\bin\\Debug\\net10.0\\appsettings.Development.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\bin\\Debug\\net10.0\\HealthCare.Api.deps.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\bin\\Debug\\net10.0\\HealthCare.Api.runtimeconfig.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\bin\\Debug\\net10.0\\HealthCare.Api.staticwebassets.endpoints.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\bin\\Debug\\net10.0\\HealthCare.Tests.deps.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\bin\\Debug\\net10.0\\HealthCare.Tests.runtimeconfig.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\obj\\Debug\\net10.0\\HealthCare.Tests.sourcelink.json,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\AppointmentServiceTest.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\AuthServiceTest.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\DoctorServiceTest.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\HealthRecordServiceTest.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\PatientServiceTest.cs,C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\HealthCare.Tests\\UnitTest1.cs"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.cs.analyzer.projectOutPaths",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\1"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.cs.roslyn.reportFilePaths",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\1\\Issues.json"
+    },
+    {
+      "key": "8F4755F7-C31C-4783-98C1-AB8FA90E55DC.sonar.cs.scanner.telemetry",
+      "value": "C:\\Users\\310521\\source\\repos\\UST-Live-01\\HealthCare\\.sonarqube\\out\\1\\Telemetry.json"
+    },
+    {
+      "key": "sonar.login",
+      "value": "***"
+    },
+    {
+      "key": "sonar.host.url",
+      "value": "http://localhost:9000"
+    },
+    {
+      "key": "sonar.coverage.exclusions",
+      "value": "**/bin/**,**/obj/**,**/Migrations/**,**/Controllers/**,**/Data/**,**/DTOs/**,**/Mapping/**,**/Models/**,**/Properties/**,**/Repositories/**,**/Program.cs,**/Exceptions/**,**/Middleware/**"
+    },
+    {
+      "key": "sonar.cs.opencover.reportsPaths",
+      "value": "TestResults/**/coverage.opencover.xml"
+    },
+    {
+      "key": "sonar.exclusions",
+      "value": "**/bin/**,**/obj/**,**/Migrations/**,TestResults/**/coverage.opencover.xml"
+    },
+    {
+      "key": "sonar.visualstudio.enable",
+      "value": "false"
+    }
+  ]
+}

@@ -214,5 +214,99 @@ namespace HealthCare.Api.Tests
             Assert.Single(result);
             Assert.Contains("10", result);
         }
+
+        //Available Doctors
+        [Fact]
+        public async Task AvailableDoctors_ShouldReturnDoctors()
+        {
+            var doctors = new List<DoctorListDto>
+        {
+        new DoctorListDto { FullName = "Dr. A" }
+        };
+
+            _repoMock.Setup(r => r.AvailableDoctors("Cardiology", It.IsAny<DateOnly>()))
+                .ReturnsAsync(doctors);
+
+            var result = await _service.AvailableDoctors("Cardiology", DateOnly.FromDateTime(DateTime.Now));
+
+            Assert.Single(result);
+        }
+
+        [Fact]
+        public async Task CreateLeave_ShouldSkipDuplicateDates()
+        {
+            var doctorId = 1;
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            _repoMock.Setup(r => r.GetLeavesByDoctorId(doctorId))
+                .ReturnsAsync(new List<DoctorLeaves>
+                {
+            new DoctorLeaves { LeaveDate = date }
+                });
+
+            var leaves = new List<CreateLeaveDto>
+           {
+            new CreateLeaveDto { LeaveDate = date }
+             };
+
+            var result = await _service.CreateLeave(doctorId, leaves);
+
+            Assert.Single(result.SkippedDates);
+            _repoMock.Verify(r => r.CreateLeaves(It.IsAny<int>(), It.IsAny<List<CreateLeaveDto>>()), Times.Never);
+        }
+
+        //Cancel Leave if doctor is in leave
+        [Fact]
+        public async Task CreateLeave_ShouldCancelAppointments_WhenSlotsNotFullyAvailable()
+        {
+            var doctorId = 1;
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            _repoMock.Setup(r => r.GetLeavesByDoctorId(doctorId))
+                .ReturnsAsync(new List<DoctorLeaves>());
+
+            // Mock slots
+            _repoMock.Setup(r => r.GetSlots(doctorId))
+                .ReturnsAsync(new List<string> { "10", "11" });
+
+            _appointmentRepoMock.Setup(a => a.AvailableTimeSlots(date, doctorId))
+                .ReturnsAsync(new List<string> { "10" }); // missing → triggers cancel
+
+            var leaves = new List<CreateLeaveDto>
+            {
+             new CreateLeaveDto { LeaveDate = date }
+             };
+
+            await _service.CreateLeave(doctorId, leaves);
+
+            _appointmentRepoMock.Verify(a =>
+                a.CancelAppointmentsByDoctorDate(doctorId, date), Times.Once);
+        }
+        //Apply Leave
+        [Fact]
+        public async Task CreateLeave_ShouldCreateLeaves_WhenValid()
+        {
+            var doctorId = 1;
+            var date = DateOnly.FromDateTime(DateTime.Now);
+
+            _repoMock.Setup(r => r.GetLeavesByDoctorId(doctorId))
+                .ReturnsAsync(new List<DoctorLeaves>());
+
+            _repoMock.Setup(r => r.GetSlots(doctorId))
+                .ReturnsAsync(new List<string> { "10" });
+
+            _appointmentRepoMock.Setup(a => a.AvailableTimeSlots(date, doctorId))
+                .ReturnsAsync(new List<string> { "10" });
+
+            var leaves = new List<CreateLeaveDto>
+    {
+        new CreateLeaveDto { LeaveDate = date }
+    };
+
+            await _service.CreateLeave(doctorId, leaves);
+
+            _repoMock.Verify(r =>
+                r.CreateLeaves(doctorId, It.IsAny<List<CreateLeaveDto>>()), Times.Once);
+        }
     }
 }

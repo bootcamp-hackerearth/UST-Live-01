@@ -1,0 +1,11 @@
+‚
+wC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\obj\Debug\net10.0\HealthCare.Tests.AssemblyInfo.csutf-8’
+†C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8„
+yC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\obj\Debug\net10.0\HealthCare.Tests.GlobalUsings.g.csutf-8x
+mC:\Users\310521\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.csutf-8Z
+QC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\UnitTest1.csutf-8c
+ZC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\PatientServiceTest.csutf-8h
+_C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\HealthRecordServiceTest.csutf-8b
+YC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\DoctorServiceTest.csutf-8`
+WC:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\AuthServiceTest.csutf-8g
+^C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\AppointmentServiceTest.csutf-8
