@@ -25,14 +25,12 @@ namespace HealthAxis.API.Services.Implementations
             _mapper = mapper;
         }
 
-        // ✅ GET /api/doctors
         public async Task<IEnumerable<DoctorDto>> GetAllAsync(CancellationToken ct = default)
         {
             var doctors = await _doctorRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<DoctorDto>>(doctors);
         }
 
-        // ✅ GET /api/doctors/{id}
         public async Task<DoctorDto?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             var doctor = await _doctorRepository.GetByIdAsync(id);
@@ -45,7 +43,6 @@ namespace HealthAxis.API.Services.Implementations
             return _mapper.Map<DoctorDto>(doctor);
         }
 
-        // ✅ GET /api/doctors/{id}/availability
         public async Task<object> GetAvailabilityAsync(int id)
         {
             var doctor = await _doctorRepository.GetByIdAsync(id);
@@ -73,7 +70,6 @@ namespace HealthAxis.API.Services.Implementations
             };
         }
 
-        // ✅ Admin creates Doctor login + Doctor profile
         public async Task<DoctorDto> AddAsync(CreateDoctorDto dto)
         {
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
@@ -111,6 +107,7 @@ namespace HealthAxis.API.Services.Implementations
 
             var doctor = new Doctor
             {
+                UserId = doctorUser.Id,
                 FullName = dto.FullName,
                 Specialisation = dto.Specialisation,
                 YearsOfExperience = dto.YearsOfExperience,
@@ -123,7 +120,6 @@ namespace HealthAxis.API.Services.Implementations
             return _mapper.Map<DoctorDto>(doctor);
         }
 
-        // ✅ Admin updates Doctor profile
         public async Task<DoctorDto> UpdateAsync(int id, UpdateDoctorDto dto)
         {
             var doctor = await _doctorRepository.GetByIdAsync(id);

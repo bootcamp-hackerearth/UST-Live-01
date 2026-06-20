@@ -4,6 +4,7 @@ using HealthAxis.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Healthcare.netcore.Migrations
 {
     [DbContext(typeof(HealthAxisDbContext))]
-    partial class HealthAxisDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260620070046_AddUserIdToPatientAndDoctor")]
+    partial class AddUserIdToPatientAndDoctor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

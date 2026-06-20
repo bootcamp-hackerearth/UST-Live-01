@@ -15,6 +15,7 @@ namespace HealthAxis.API.Models
         [RegularExpression(
             RegexPatterns.FullName,
             ErrorMessage = ValidationMessages.InvalidFullNameFormat)]
+        public string? UserId { get; set; }
         public string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = ValidationMessages.SpecialisationRequired)]

@@ -1,11 +1,14 @@
-﻿using HealthAxis.API.Models;
+﻿using HealthAxis.API.Data;
+using HealthAxis.API.Models;
 using HealthAxis.API.Models.Auth;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace HealthAxis.API.Services.Implementations
@@ -14,15 +17,18 @@ namespace HealthAxis.API.Services.Implementations
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IRepository<Patient> _patientRepository;
+        private readonly HealthAxisDbContext _context;
         private readonly IConfiguration _config;
 
         public AuthService(
             UserManager<ApplicationUser> userManager,
             IRepository<Patient> patientRepository,
+            HealthAxisDbContext context,
             IConfiguration config)
         {
             _userManager = userManager;
             _patientRepository = patientRepository;
+            _context = context;
             _config = config;
         }
 
@@ -58,6 +64,7 @@ namespace HealthAxis.API.Services.Implementations
 
             var patient = new Patient
             {
+                UserId = user.Id,
                 FullName = request.FullName,
                 DateOfBirth = request.DateOfBirth,
                 Gender = request.Gender,
@@ -72,33 +79,36 @@ namespace HealthAxis.API.Services.Implementations
             return (true, "Patient registered successfully", user.Id);
         }
 
-        public async Task<(bool Success, string Message, string Token, int ExpiresIn, bool RequiresPasswordChange)> Login(LoginDto request)
+        public async Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn, bool RequiresPasswordChange)> Login(LoginDto request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
             if (user == null)
             {
-                return (false, "Invalid credentials", string.Empty, 0, false);
+                return (false, "Invalid credentials", string.Empty, string.Empty, 0, false);
             }
 
             var isPasswordValid = await _userManager.CheckPasswordAsync(user, request.Password);
 
             if (!isPasswordValid)
             {
-                return (false, "Invalid credentials", string.Empty, 0, false);
+                return (false, "Invalid credentials", string.Empty, string.Empty, 0, false);
             }
 
             if (user.MustChangePassword)
             {
-                return (true, "Password change required", string.Empty, 0, true);
+                return (true, "Password change required", string.Empty, string.Empty, 0, true);
             }
 
-            var token = await GenerateToken(user);
+            var accessToken = await GenerateAccessToken(user);
+            var refreshToken = GenerateRefreshToken();
+
+            await SaveRefreshToken(user.Id, refreshToken);
 
             var expiresIn = int.Parse(
                 _config.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
 
-            return (true, "Login successful", token, expiresIn, false);
+            return (true, "Login successful", accessToken, refreshToken, expiresIn, false);
         }
 
         public async Task<(bool Success, string Message)> ChangePassword(ChangePasswordDto request)
@@ -133,7 +143,49 @@ namespace HealthAxis.API.Services.Implementations
             return (true, "Password changed successfully");
         }
 
-        private async Task<string> GenerateToken(ApplicationUser user)
+        public async Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn)> RefreshToken(RefreshTokenRequestDto request)
+        {
+            var storedToken = await _context.RefreshTokens
+                .FirstOrDefaultAsync(x => x.Token == request.RefreshToken);
+
+            if (storedToken == null)
+            {
+                return (false, "Invalid refresh token", string.Empty, string.Empty, 0);
+            }
+
+            if (storedToken.IsRevoked)
+            {
+                return (false, "Refresh token is revoked", string.Empty, string.Empty, 0);
+            }
+
+            if (storedToken.ExpiresAt < DateTime.UtcNow)
+            {
+                return (false, "Refresh token expired", string.Empty, string.Empty, 0);
+            }
+
+            var user = await _userManager.FindByIdAsync(storedToken.UserId);
+
+            if (user == null)
+            {
+                return (false, "User not found", string.Empty, string.Empty, 0);
+            }
+
+            storedToken.IsRevoked = true;
+
+            var newAccessToken = await GenerateAccessToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            await SaveRefreshToken(user.Id, newRefreshToken);
+
+            await _context.SaveChangesAsync();
+
+            var expiresIn = int.Parse(
+                _config.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
+
+            return (true, "Token refreshed successfully", newAccessToken, newRefreshToken, expiresIn);
+        }
+
+        private async Task<string> GenerateAccessToken(ApplicationUser user)
         {
             var jwt = _config.GetSection("Jwt");
 
@@ -168,6 +220,39 @@ namespace HealthAxis.API.Services.Implementations
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+
+            using var rng = RandomNumberGenerator.Create();
+
+            rng.GetBytes(randomBytes);
+
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        private async Task SaveRefreshToken(string userId, string token)
+        {
+            var refreshTokenExpirationDays =
+                int.TryParse(
+                    _config.GetSection("Jwt")["RefreshTokenExpirationDays"],
+                    out var days)
+                    ? days
+                    : 7;
+
+            var refreshToken = new RefreshToken
+            {
+                UserId = userId,
+                Token = token,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(refreshTokenExpirationDays),
+                IsRevoked = false
+            };
+
+            await _context.RefreshTokens.AddAsync(refreshToken);
+            await _context.SaveChangesAsync();
         }
     }
 }

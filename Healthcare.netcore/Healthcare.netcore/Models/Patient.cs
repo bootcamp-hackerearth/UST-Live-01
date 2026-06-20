@@ -11,10 +11,12 @@ namespace HealthAxis.API.Models
     {
         [Key]
         public int PatientId { get; set; }
+      
 
         [Required(ErrorMessage = ValidationMessages.FullNameRequired)]
         [StringLength(ValidationLimits.FullNameLength)]
         [RegularExpression(RegexPatterns.FullName, ErrorMessage = ValidationMessages.InvalidFullNameFormat)]
+        public string? UserId { get; set; }
         public string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = ValidationMessages.DateOfBirthRequired)]

@@ -4,19 +4,18 @@ namespace HealthAxis.API.Services.Interfaces
 {
     public interface IPatientService
     {
-        Task<IEnumerable<PatientDto>> GetAllAsync();
+        Task<PagedResponse<PatientDto>> GetPagedAsync(PaginationParams paginationParams);
+
+        Task<PagedResponse<PatientDto>> GetDoctorPatientsAsync(
+            string doctorUserId,
+            PaginationParams paginationParams);
+
+        Task<bool> IsPatientOwnerAsync(int patientId, string userId);
 
         Task<PatientDto?> GetByIdAsync(int id);
 
         Task<PatientDto> UpdateAsync(int id, UpdatePatientDto dto);
 
         Task<IEnumerable<HealthRecordDto>> GetHealthRecordsAsync(int patientId);
-
-        Task<IEnumerable<PatientDto>> SearchByNameAsync(string name);
-
-        Task<PatientDto?> GetByEmailAsync(string email);
-
-        Task<PatientDto?> GetByPhoneAsync(string phone);
-
     }
 }

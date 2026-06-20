@@ -15,7 +15,6 @@ namespace HealthAxis.API.Controllers
             _service = service;
         }
 
-        // ✅ REGISTER
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegisterDto request)
         {
@@ -23,10 +22,7 @@ namespace HealthAxis.API.Controllers
 
             if (!result.Success)
             {
-                return BadRequest(new
-                {
-                    message = result.Message
-                });
+                return BadRequest(new { message = result.Message });
             }
 
             return Ok(new
@@ -36,7 +32,6 @@ namespace HealthAxis.API.Controllers
             });
         }
 
-        // ✅ LOGIN
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto request)
         {
@@ -44,22 +39,19 @@ namespace HealthAxis.API.Controllers
 
             if (!result.Success)
             {
-                return Unauthorized(new
-                {
-                    message = result.Message
-                });
+                return Unauthorized(new { message = result.Message });
             }
 
             return Ok(new AuthResponse
             {
-                AccessToken = result.Token,
+                AccessToken = result.AccessToken,
+                RefreshToken = result.RefreshToken,
                 Message = result.Message,
                 ExpiresIn = result.ExpiresIn,
                 RequiresPasswordChange = result.RequiresPasswordChange
             });
         }
 
-        // ✅ CHANGE PASSWORD
         [HttpPost("change-password")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto request)
         {
@@ -67,15 +59,29 @@ namespace HealthAxis.API.Controllers
 
             if (!result.Success)
             {
-                return BadRequest(new
-                {
-                    message = result.Message
-                });
+                return BadRequest(new { message = result.Message });
             }
 
-            return Ok(new
+            return Ok(new { message = result.Message });
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequestDto request)
+        {
+            var result = await _service.RefreshToken(request);
+
+            if (!result.Success)
             {
-                message = result.Message
+                return Unauthorized(new { message = result.Message });
+            }
+
+            return Ok(new AuthResponse
+            {
+                AccessToken = result.AccessToken,
+                RefreshToken = result.RefreshToken,
+                Message = result.Message,
+                ExpiresIn = result.ExpiresIn,
+                RequiresPasswordChange = false
             });
         }
     }
