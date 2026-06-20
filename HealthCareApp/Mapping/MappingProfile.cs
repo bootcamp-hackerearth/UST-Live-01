@@ -11,7 +11,9 @@ namespace HealthCareApp.Mapping
         public MappingProfile()
         {
             // Patient mappings
-            CreateMap<Patient, PatientDto>();
+            CreateMap<Patient, PatientDto>()
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.PatientName))
+                .ForMember(dest => dest.InsuranceId, opt => opt.MapFrom(src => src.InsuranceID));
 
             CreateMap<CreatePatientDto, Patient>()
                 .ForMember(dest => dest.PatientName, opt => opt.MapFrom(src => src.FullName))
@@ -28,12 +30,12 @@ namespace HealthCareApp.Mapping
             // Doctor mappings
             CreateMap<Doctor, DoctorDto>()
                 .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.DoctorName));
+
             CreateMap<CreateDoctorDto, Doctor>()
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.FullName));
 
             CreateMap<UpdateDoctorDto, Doctor>()
                 .ForMember(dest => dest.DoctorName, opt => opt.MapFrom(src => src.FullName));
-
 
             // Appointment mappings
             CreateMap<Appointment, AppointmentDto>()
