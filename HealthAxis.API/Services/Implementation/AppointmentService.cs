@@ -32,6 +32,24 @@ namespace HealthAxis.API.Services.Implementation
             return mapper.Map<AppointmentDto>(appointment);
         }
 
+        public async Task<List<AppointmentDto>> GetByPatientIdAsync(int patientId)
+        {
+            var patient = await patientRepository.GetByIdAsync(patientId);
+
+            if (patient == null)
+            {
+                throw new NotFoundException("Patient not found");
+            }
+
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            var patientAppointments = appointments
+                .Where(a => a.PatientId == patientId)
+                .ToList();
+
+            return mapper.Map<List<AppointmentDto>>(patientAppointments);
+        }
+
         public async Task<AppointmentDto> AddAsync(
             CreateAppointmentDto appointmentDto)
         {

@@ -29,6 +29,19 @@ namespace HealthAxis.API.Services.Implementation
 
             return mapper.Map<PatientDto>(patient);
         }
+        public async Task<PatientDto?> GetByUserIdAsync(string userId)
+        {
+            var patients = await patientRepository.GetAllAsync();
+
+            var patient = patients.FirstOrDefault(p => p.UserId == userId);
+
+            if (patient == null)
+            {
+                throw new NotFoundException("Patient profile not found");
+            }
+
+            return mapper.Map<PatientDto>(patient);
+        }
 
         public async Task<PatientDto?> UpdateAsync(int id, UpdatePatientDto patientDto)
         {

@@ -8,6 +8,8 @@ namespace HealthAxis.API.Services.Interfaces
 
         Task<AppointmentDto?> GetByIdAsync(int id);
 
+        Task<List<AppointmentDto>> GetByPatientIdAsync(int patientId);
+
         Task<AppointmentDto> AddAsync(CreateAppointmentDto appointmentDto);
 
         //Task<AppointmentDto?> UpdateAsync(int id, AppointmentDto appointmentDto);
