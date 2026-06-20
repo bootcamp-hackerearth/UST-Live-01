@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using System.Text;
 using System.Text.Json;
 
@@ -42,7 +43,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(option =>
     {
         var jwt = builder.Configuration.GetSection("Jwt");
-        option.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        option.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
             ValidIssuer = jwt["Issuer"],
@@ -55,6 +56,39 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         };
     });
+builder.Services.AddAuthorization();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc(
+        "v1",
+        new OpenApiInfo
+        {
+            Title = "HealthAxis API",
+            Version = "v1",
+            Description = "Healthcare Appointment Management API"
+        });
+
+    options.AddSecurityDefinition(
+        "bearer",
+        new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            Description = "Enter JWT token.\n\nExample: Bearer eyJhbGciOiJIUzI1NiIs..."
+        });
+
+    options.AddSecurityRequirement(document =>
+        new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference(
+                "bearer",
+                document)] = []
+        });
+});
+
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
@@ -71,16 +105,24 @@ builder.Services.AddAutoMapper(cfg =>
 });
 
 var app = builder.Build();
-using(var scope = app.Services.CreateScope())
+using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var services = scope.ServiceProvider;
+
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+
     await RoleSeeder.SeedRoleAsync(roleManager);
+    await RoleSeeder.SeedAdminAsync(userManager, roleManager);
 }
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

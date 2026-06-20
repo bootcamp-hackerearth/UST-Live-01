@@ -25,7 +25,7 @@ namespace HealthAxisApplicn.Services.Impl
             }
 
             var token = await GenerateJwtToken(user);
-            var expiry = int.Parse(configuration.GetSection("jwt")["AccessTokenExpirationMinutes"]);
+            var expiry = int.Parse(configuration.GetSection("Jwt")["AccessTokenExpirationMinutes"]);
 
             return (true, "Login successful", token, expiry);
 

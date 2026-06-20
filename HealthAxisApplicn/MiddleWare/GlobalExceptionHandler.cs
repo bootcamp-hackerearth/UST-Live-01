@@ -43,7 +43,7 @@ namespace HealthAxisApplicn.MiddleWare
             {
                 StatusCode = statusCode,
                 Message = message,
-                TimeStamp = DateTime.UtcNow,
+                Timestamp = DateTime.UtcNow,
                 Path = httpContext.Request.Path
             };
 
