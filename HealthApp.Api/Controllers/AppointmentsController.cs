@@ -15,14 +15,13 @@ namespace HealthApp.Api.Controllers
     public class AppointmentsController : ControllerBase
     {
         private readonly IAppointmentService _appointmentService;
-        private readonly IHealthRecordService _healthRecordService;
 
-        public AppointmentsController(
-            IAppointmentService appointmentService,
-            IHealthRecordService healthRecordService)
+        private readonly string PatientNotLinked = "Patient profile is not linked to this user.";
+        private readonly string DoctorNotLinked = "Doctor profile is not linked to this user.";
+
+        public AppointmentsController(IAppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
-            _healthRecordService = healthRecordService;
         }
 
         [HttpGet]
@@ -42,8 +41,7 @@ namespace HealthApp.Api.Controllers
 
         [HttpGet("my")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
-        public async Task<IActionResult> GetMyAppointments(
-            [FromQuery] bool onlyUpcoming = false)
+        public async Task<IActionResult> GetMyAppointments([FromQuery] bool onlyUpcoming = false)
         {
             int? patientId = null;
             int? doctorId = null;
@@ -54,8 +52,7 @@ namespace HealthApp.Api.Controllers
 
                 if (patientId == null)
                 {
-                    throw new ForbiddenAccessException(
-                        "Patient profile is not linked to this user.");
+                    throw new ForbiddenAccessException(PatientNotLinked);
                 }
             }
 
@@ -65,8 +62,7 @@ namespace HealthApp.Api.Controllers
 
                 if (doctorId == null)
                 {
-                    throw new ForbiddenAccessException(
-                        "Doctor profile is not linked to this user.");
+                    throw new ForbiddenAccessException(DoctorNotLinked);
                 }
             }
 
@@ -91,8 +87,7 @@ namespace HealthApp.Api.Controllers
 
                 if (patientId == null)
                 {
-                    throw new ForbiddenAccessException(
-                        "Patient profile is not linked to this user.");
+                    throw new ForbiddenAccessException(PatientNotLinked);
                 }
             }
 
@@ -102,8 +97,7 @@ namespace HealthApp.Api.Controllers
 
                 if (doctorId == null)
                 {
-                    throw new ForbiddenAccessException(
-                        "Doctor profile is not linked to this user.");
+                    throw new ForbiddenAccessException(DoctorNotLinked);
                 }
             }
 
@@ -121,15 +115,13 @@ namespace HealthApp.Api.Controllers
         {
             var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
 
-            if (User.IsPatient() &&
-                appointment.PatientId != User.GetPatientId())
+            if (User.IsPatient() && appointment.PatientId != User.GetPatientId())
             {
                 throw new ForbiddenAccessException(
                     "You cannot access another patient's appointment.");
             }
 
-            if (User.IsDoctor() &&
-                appointment.DoctorId != User.GetDoctorId())
+            if (User.IsDoctor() && appointment.DoctorId != User.GetDoctorId())
             {
                 throw new ForbiddenAccessException(
                     "You cannot access another doctor's appointment.");
@@ -140,22 +132,20 @@ namespace HealthApp.Api.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> BookAppointment(
-            [FromBody] AppointmentBookingDto dto)
+        public async Task<IActionResult> BookAppointment([FromBody] AppointmentBookingDto dto)
         {
             var loggedInPatientId = User.GetPatientId();
 
             if (loggedInPatientId == null)
             {
-                throw new ForbiddenAccessException(
-                    "Patient profile is not linked to this user.");
+                throw new ForbiddenAccessException(PatientNotLinked);
             }
 
             var appointmentCreateDto = new AppointmentCreateDto
             {
                 PatientId = loggedInPatientId.Value,
                 DoctorId = dto.DoctorId,
-                ScheduledDate = dto.ScheduledDate,
+                ScheduledDate = (DateTime)dto.ScheduledDate!,
                 TimeSlot = dto.TimeSlot
             };
 
@@ -190,8 +180,7 @@ namespace HealthApp.Api.Controllers
 
                 if (loggedInPatientId == null)
                 {
-                    throw new ForbiddenAccessException(
-                        "Patient profile is not linked to this user.");
+                    throw new ForbiddenAccessException(PatientNotLinked);
                 }
 
                 if (appointment.PatientId != loggedInPatientId.Value)
@@ -213,8 +202,7 @@ namespace HealthApp.Api.Controllers
 
                 if (loggedInDoctorId == null)
                 {
-                    throw new ForbiddenAccessException(
-                        "Doctor profile is not linked to this user.");
+                    throw new ForbiddenAccessException(DoctorNotLinked);
                 }
 
                 if (appointment.DoctorId != loggedInDoctorId.Value)
@@ -271,8 +259,7 @@ namespace HealthApp.Api.Controllers
 
                 if (loggedInPatientId == null)
                 {
-                    throw new ForbiddenAccessException(
-                        "Patient profile is not linked to this user.");
+                    throw new ForbiddenAccessException(PatientNotLinked);
                 }
 
                 if (appointment.PatientId != loggedInPatientId.Value)
@@ -322,17 +309,6 @@ namespace HealthApp.Api.Controllers
             return Ok(slots);
         }
 
-        [HttpGet("{id:int}/healthrecord")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
-        public async Task<IActionResult> HealthRecordExists(int id)
-        {
-            await EnsureDoctorOwnsAppointmentIfDoctor(id);
-
-            var exists = await _healthRecordService.ExistsByAppointmentIdAsync(id);
-
-            return Ok(exists);
-        }
-
         [HttpDelete("{id:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> DeleteAppointment(int id)
@@ -356,8 +332,7 @@ namespace HealthApp.Api.Controllers
 
             if (loggedInDoctorId == null)
             {
-                throw new ForbiddenAccessException(
-                    "Doctor profile is not linked to this user.");
+                throw new ForbiddenAccessException(DoctorNotLinked);
             }
 
             var appointment = await _appointmentService.GetAppointmentByIdAsync(

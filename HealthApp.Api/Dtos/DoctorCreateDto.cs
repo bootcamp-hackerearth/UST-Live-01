@@ -15,7 +15,7 @@ namespace HealthApp.Api.Dtos
         public string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Specialisation is required.")]
-        public SpecialisationType Specialisation { get; set; }
+        public SpecialisationType? Specialisation { get; set; }
 
         [Required(ErrorMessage = "Phone number is required.")]
         [RegularExpression(@"^\d{10}$",

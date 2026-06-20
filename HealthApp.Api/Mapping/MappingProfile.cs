@@ -40,10 +40,6 @@ namespace HealthApp.Api.Mapping
                 .ForMember(dest => dest.HealthRecords, opt => opt.Ignore())
                 .ForMember(dest => dest.User, opt => opt.Ignore());
 
-
-            CreateMap<RegisterDoctorDto, Doctor>()
-                .IncludeBase<DoctorCreateDto, Doctor>();
-
             // Appointment mappings
 
             CreateMap<Appointment, AppointmentDto>()

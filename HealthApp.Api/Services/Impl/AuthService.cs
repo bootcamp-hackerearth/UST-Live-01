@@ -83,8 +83,7 @@ namespace HealthApp.Api.Services.Impl
             return (true, "Patient registered successfully.", user.Id);
         }
 
-        public async Task<(bool success, string message, string userId, string temporaryPassword)> RegisterDoctor(
-    RegisterDoctorDto request)
+        public async Task<(bool success, string message, string userId, string temporaryPassword)> RegisterDoctor(DoctorCreateDto request)
         {
             var existingIdentityUser = await userManager.FindByEmailAsync(request.DoctorEmail);
 

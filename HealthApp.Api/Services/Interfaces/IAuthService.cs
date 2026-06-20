@@ -8,7 +8,7 @@ namespace HealthApp.Api.Services.Interfaces
             RegisterPatientDto request);
 
         Task<(bool success, string message, string userId, string temporaryPassword)> RegisterDoctor(
-            RegisterDoctorDto request);
+            DoctorCreateDto request);
 
         Task<(bool success, string message, string token, int expiresIn)> Login(
             LoginDto request);

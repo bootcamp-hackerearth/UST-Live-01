@@ -73,7 +73,7 @@ namespace HealthApp.Api.Services.Impl
 
             bool duplicatePatient = await _patientRepository.IsDuplicatePatient(
                 dto.FullName.Trim(),
-                dto.DateOfBirth.ToDateTime(TimeOnly.MinValue),
+                dto.DateOfBirth!.Value.ToDateTime(TimeOnly.MinValue),
                 email);
 
             if (duplicatePatient)
@@ -85,7 +85,7 @@ namespace HealthApp.Api.Services.Impl
             var patient = _mapper.Map<Patient>(dto);
 
             patient.FullName = dto.FullName.Trim();
-            patient.DateOfBirth = dto.DateOfBirth;
+            patient.DateOfBirth = (DateOnly)dto.DateOfBirth!;
             patient.Gender = dto.Gender.Trim();
             patient.PhoneNumber = dto.PhoneNumber.Trim();
             patient.Email = email;
@@ -136,7 +136,7 @@ namespace HealthApp.Api.Services.Impl
             }
 
             patient.FullName = dto.FullName.Trim();
-            patient.DateOfBirth = dto.DateOfBirth;
+            patient.DateOfBirth = (DateOnly)dto.DateOfBirth!;
             patient.Gender = dto.Gender.Trim();
             patient.PhoneNumber = dto.PhoneNumber.Trim();
             patient.Email = email;

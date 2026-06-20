@@ -9,7 +9,7 @@ namespace HealthApp.Api.Dtos
         public int DoctorId { get; set; }
 
         [Required(ErrorMessage = "Scheduled date is required.")]
-        public DateTime ScheduledDate { get; set; }
+        public DateTime? ScheduledDate { get; set; }
 
         [Required(ErrorMessage = "Time slot is required.")]
         [MinLength(3, ErrorMessage = "Time slot must be at least 3 characters.")]

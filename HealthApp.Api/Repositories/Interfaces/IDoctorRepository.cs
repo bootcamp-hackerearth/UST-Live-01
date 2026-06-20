@@ -14,7 +14,6 @@ namespace HealthApp.Api.Repositories.Interfaces
             CancellationToken ct=default);
         Task<bool> ChangeStatusAsync(int id, bool isActive, CancellationToken ct = default);
         Task<bool> ExistsByEmailAsync(string email);
-        //Task<IEnumerable<string>> GetAvailableSlots();
 
     }
 }

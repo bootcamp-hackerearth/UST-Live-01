@@ -27,11 +27,6 @@ namespace HealthApp.Api.Repositories.Impl
             return await _context.SaveChangesAsync(ct)>0;
         }
 
-        //public Task<IEnumerable<string>> GetAvailableSlots()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         public async Task<IEnumerable<Doctor>> SearchDoctorsAsync(
             string? search,
             SpecialisationType? specialisation,

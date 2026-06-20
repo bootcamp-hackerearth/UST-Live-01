@@ -9,7 +9,7 @@ namespace HealthApp.Api.Dtos
         public string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Date of birth is required.")]
-        public DateOnly DateOfBirth { get; set; }
+        public DateOnly? DateOfBirth { get; set; }
 
         [Required(ErrorMessage = "Gender is required.")]
         [RegularExpression("^(Male|Female|Other)$",

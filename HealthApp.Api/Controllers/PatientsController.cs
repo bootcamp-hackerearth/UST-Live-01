@@ -1,6 +1,4 @@
 ﻿using HealthApp.Api.Dtos;
-using HealthApp.Api.Exceptions;
-using HealthApp.Api.Extensions;
 using HealthApp.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -10,72 +8,14 @@ namespace HealthApp.Api.Controllers
 {
     [ApiController]
     [Route("api/patients")]
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class PatientsController : ControllerBase
     {
         private readonly IPatientService _patientService;
-        private readonly IHealthRecordService _healthRecordService;
 
-        public PatientsController(
-            IPatientService patientService,
-            IHealthRecordService healthRecordService)
+        public PatientsController(IPatientService patientService)
         {
             _patientService = patientService;
-            _healthRecordService = healthRecordService;
-        }
-
-        [HttpGet("profile")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> GetMyProfile()
-        {
-            var patientId = User.GetPatientId();
-
-            if (patientId == null)
-            {
-                throw new ForbiddenAccessException(
-                    "Patient profile is not linked to this user.");
-            }
-
-            var patient = await _patientService.GetPatientByIdAsync(patientId.Value);
-
-            return Ok(patient);
-        }
-
-        [HttpPut("profile")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> UpdateMyProfile([FromBody] PatientCreateDto dto)
-        {
-            var patientId = User.GetPatientId();
-
-            if (patientId == null)
-            {
-                throw new ForbiddenAccessException(
-                    "Patient profile is not linked to this user.");
-            }
-
-            await _patientService.UpdatePatientAsync(patientId.Value, dto);
-
-            return Ok(new
-            {
-                message = "Patient profile updated successfully."
-            });
-        }
-
-        [HttpGet("profile/health-records")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> GetMyHealthRecords()
-        {
-            var patientId = User.GetPatientId();
-
-            if (patientId == null)
-            {
-                throw new ForbiddenAccessException(
-                    "Patient profile is not linked to this user.");
-            }
-
-            var records = await _healthRecordService.GetPatientHistoryAsync(patientId.Value);
-
-            return Ok(records);
         }
 
         [HttpGet]
@@ -110,22 +50,15 @@ namespace HealthApp.Api.Controllers
             });
         }
 
-        [HttpGet("{id:int}/health-records")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
-        public async Task<IActionResult> GetPatientHealthRecords(int id)
-        {
-            var records = await _healthRecordService.GetPatientHistoryAsync(id);
-
-            return Ok(records);
-        }
-
         [HttpGet("search")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
         public async Task<IActionResult> SearchPatients(
             [FromQuery] string? name,
             [FromQuery] string? email)
         {
-            var patients = await _patientService.SearchPatientsAsync(name, email);
+            var patients = await _patientService.SearchPatientsAsync(
+                name,
+                email);
 
             return Ok(patients);
         }

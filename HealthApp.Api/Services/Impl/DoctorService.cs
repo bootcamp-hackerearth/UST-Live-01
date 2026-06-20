@@ -78,7 +78,7 @@ namespace HealthApp.Api.Services.Impl
             doctor.FullName = dto.FullName.Trim();
             doctor.DoctorPhoneNo = dto.DoctorPhoneNo.Trim();
             doctor.DoctorEmail = email;
-            doctor.Specialisation = dto.Specialisation;
+            doctor.Specialisation = (SpecialisationType)dto.Specialisation!;
             doctor.YearsOfExperience = dto.YearsOfExperience;
             doctor.ConsultationFee = dto.ConsultationFee;
             doctor.IsActive = true;
@@ -128,7 +128,7 @@ namespace HealthApp.Api.Services.Impl
             }
 
             doctor.FullName = dto.FullName.Trim();
-            doctor.Specialisation = dto.Specialisation;
+            doctor.Specialisation = (SpecialisationType)dto.Specialisation!;
             doctor.DoctorPhoneNo = dto.DoctorPhoneNo.Trim();
             doctor.DoctorEmail = email;
             doctor.YearsOfExperience = dto.YearsOfExperience;

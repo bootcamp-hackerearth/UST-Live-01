@@ -16,7 +16,7 @@ namespace HealthApp.Api.Dtos
         public int? AppointmentId { get; set; }
 
         [Required(ErrorMessage = "Visit date is required.")]
-        public DateOnly VisitDate { get; set; }
+        public DateOnly? VisitDate { get; set; }
 
         [Required(ErrorMessage = "Diagnosis is required.")]
         [MinLength(3, ErrorMessage = "Diagnosis must be at least 3 characters long.")]

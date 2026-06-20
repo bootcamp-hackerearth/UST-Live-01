@@ -32,7 +32,7 @@ namespace HealthApp.Api.Controllers
 
         [HttpPost("register/doctor")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> RegisterDoctor(RegisterDoctorDto request)
+        public async Task<IActionResult> RegisterDoctor(DoctorCreateDto request)
         {
             var (success, message, userId, temporaryPassword) = await service.RegisterDoctor(request);
 

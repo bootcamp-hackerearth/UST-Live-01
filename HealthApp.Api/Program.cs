@@ -116,21 +116,6 @@ builder.Services.AddSingleton<
     CustomAuthorizationMiddlewareResultHandler>();
 
 
-// CORS - enable later when frontend is connected
-// builder.Services.AddCors(options =>
-// {
-//     options.AddPolicy("AllowFrontend", policy =>
-//     {
-//         policy
-//             .WithOrigins(
-//                 "http://localhost:4200",
-//                 "http://localhost:4201",
-//                 "https://localhost:5001")
-//             .AllowAnyHeader()
-//             .AllowAnyMethod();
-//     });
-// });
-
 // Repository registrations
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
@@ -185,9 +170,6 @@ app.UseHttpsRedirection();
 app.UseExceptionHandler();
 
 app.UseSerilogRequestLogging();
-
-// Enable later when CORS is uncommented above
-// app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 
