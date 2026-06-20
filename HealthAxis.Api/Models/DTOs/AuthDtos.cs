@@ -47,4 +47,34 @@ namespace HealthAxisCore_Api.Models.Dtos
         public string RefreshToken { get; set; } = string.Empty;
         public int ExpiresIn { get; set; }
     }
+
+
+
+    public class ForgotPasswordDto
+    {
+        [Required]
+        [EmailAddress]
+        public required string Email { get; set; }
+    }
+
+    public class ForgotPasswordResponseDto
+    {
+        public string Message { get; set; } = string.Empty;
+
+        public string ResetToken { get; set; } = string.Empty;
+    }
+
+    public class ResetPasswordDto
+    {
+        [Required]
+        [EmailAddress]
+        public required string Email { get; set; }
+
+        [Required]
+        public required string Token { get; set; }
+
+        [Required]
+        [MinLength(8)]
+        public required string NewPassword { get; set; }
+    }
 }

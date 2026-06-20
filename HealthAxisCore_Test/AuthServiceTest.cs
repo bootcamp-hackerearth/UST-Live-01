@@ -903,9 +903,15 @@ namespace HealthAxisCore_Api.Tests.Services
                 .Setup(x => x.GetRolesAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)))
                 .ReturnsAsync(new List<string>());
 
+            var jwtServiceMock = new Mock<IJwtService>();
+            jwtServiceMock
+                .Setup(x => x.GenerateRefreshToken())
+                .Returns("new-refresh-token");
+
             var service = CreateService(
                 context,
-                userManagerMock: userManagerMock);
+                userManagerMock: userManagerMock,
+                jwtServiceMock: jwtServiceMock);
 
             var exception = await Assert.ThrowsAsync<InvalidException>(
                 () => service.RefreshTokenAsync(request));

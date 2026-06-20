@@ -5,8 +5,23 @@ namespace HealthAxisCore_Api.Repositories.Interfaces
 {
     public interface IAppointmentRepository : IRepository<Appointment>
     {
-        Task<List<Appointment>> GetAppointmentsAsync(int? patientId, int? doctorId, DateTime? date, CancellationToken ct = default);
-        Task<Appointment?> GetDetailsAsync(int appointmentId, CancellationToken ct = default);
-        Task<List<AppointmentReportDto>> GetAppointmentReportAsync(CancellationToken ct = default);
+        Task<List<Appointment>> GetAppointmentsAsync(
+            int? patientId,
+            int? doctorId,
+            DateTime? date,
+            CancellationToken ct = default);
+
+        Task<Appointment?> GetDetailsAsync(
+            int appointmentId,
+            CancellationToken ct = default);
+
+        Task<List<AppointmentReportDto>> GetAppointmentReportAsync(
+            CancellationToken ct = default);
+
+        Task<bool> DoctorHasAppointmentAtSlotAsync(
+            int doctorId,
+            DateTime scheduledDate,
+            string timeSlot,
+            CancellationToken ct = default);
     }
 }

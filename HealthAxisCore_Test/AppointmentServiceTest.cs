@@ -686,16 +686,13 @@ namespace HealthAxisCore_Api.Tests.Services
             var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
 
             appointmentRepositoryMock
-                .Setup(x => x.GetDetailsAsync(3, ct))
-                .ReturnsAsync(appointment);
-
-            appointmentRepositoryMock
-                .Setup(x => x.UpdateAsync(3, appointment, ct))
-                .ReturnsAsync(updatedAppointment);
-
-            appointmentRepositoryMock
-                .Setup(x => x.GetDetailsAsync(updatedAppointment.AppointmentId, ct))
+                .SetupSequence(x => x.GetDetailsAsync(3, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointment)
                 .ReturnsAsync(detailedAppointment);
+
+            appointmentRepositoryMock
+                .Setup(x => x.UpdateAsync(3, It.IsAny<Appointment>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(updatedAppointment);
 
             var mapperMock = new Mock<IMapper>();
 
@@ -714,9 +711,9 @@ namespace HealthAxisCore_Api.Tests.Services
             Assert.Equal("Completed", appointment.Status);
             Assert.Equal("Completed consultation", appointment.CancellationReason);
 
-            appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(3, ct), Times.Once);
-            appointmentRepositoryMock.Verify(x => x.UpdateAsync(3, appointment, ct), Times.Once);
-            appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(updatedAppointment.AppointmentId, ct), Times.Once);
+            appointmentRepositoryMock.Verify(x => x.GetDetailsAsync(3, It.IsAny<CancellationToken>()), Times.Exactly(2));
+            appointmentRepositoryMock.Verify(x => x.UpdateAsync(3, It.IsAny<Appointment>(), It.IsAny<CancellationToken>()), Times.Once);
+            // combined verification for GetDetailsAsync above covers both calls
             mapperMock.Verify(x => x.Map<AppointmentDto>(detailedAppointment), Times.Once);
         }
 
@@ -753,16 +750,13 @@ namespace HealthAxisCore_Api.Tests.Services
             var appointmentRepositoryMock = new Mock<IAppointmentRepository>();
 
             appointmentRepositoryMock
-                .Setup(x => x.GetDetailsAsync(4, ct))
-                .ReturnsAsync(appointment);
-
-            appointmentRepositoryMock
-                .Setup(x => x.UpdateAsync(4, appointment, ct))
-                .ReturnsAsync(updatedAppointment);
-
-            appointmentRepositoryMock
-                .Setup(x => x.GetDetailsAsync(updatedAppointment.AppointmentId, ct))
+                .SetupSequence(x => x.GetDetailsAsync(4, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointment)
                 .ReturnsAsync((Appointment?)null);
+
+            appointmentRepositoryMock
+                .Setup(x => x.UpdateAsync(4, It.IsAny<Appointment>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(updatedAppointment);
 
             var mapperMock = new Mock<IMapper>();
 
@@ -782,6 +776,7 @@ namespace HealthAxisCore_Api.Tests.Services
             Assert.Equal(string.Empty, appointment.CancellationReason);
 
             mapperMock.Verify(x => x.Map<AppointmentDto>(updatedAppointment), Times.Once);
+            appointmentRepositoryMock.Verify(x => x.UpdateAsync(4, It.IsAny<Appointment>(), It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Fact]

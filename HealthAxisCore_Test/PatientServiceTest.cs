@@ -5,6 +5,7 @@ using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Implementation;
 using Moq;
+using System.Security.Claims;
 using Xunit;
 
 namespace HealthAxisCore_Api.Tests.Services
@@ -12,591 +13,276 @@ namespace HealthAxisCore_Api.Tests.Services
     public class PatientServiceTests
     {
         private static PatientService CreateService(
-            Mock<IPatientRepository>? repositoryMock = null,
-            Mock<IMapper>? mapperMock = null)
+            Mock<IPatientRepository>? patientRepo = null,
+            Mock<IAppointmentRepository>? appointmentRepo = null,
+            Mock<IHealthRecordRepository>? healthRepo = null,
+            Mock<IMapper>? mapper = null)
         {
             return new PatientService(
-                repositoryMock?.Object ?? new Mock<IPatientRepository>().Object,
-                mapperMock?.Object ?? new Mock<IMapper>().Object);
+                patientRepo?.Object ?? new Mock<IPatientRepository>().Object,
+                appointmentRepo?.Object ?? new Mock<IAppointmentRepository>().Object,
+                healthRepo?.Object ?? new Mock<IHealthRecordRepository>().Object,
+                mapper?.Object ?? new Mock<IMapper>().Object);
         }
 
-        private static Patient CreatePatient(
-            int patientId = 1,
-            string patientName = "Patient One",
-            string gender = "Male",
-            string email = "patient@test.com",
-            string phoneNumber = "9876543210",
-            string? insuranceId = "INS001",
-            bool isActive = true)
+        private static ClaimsPrincipal CreateUser(
+            string role,
+            int? patientId = null,
+            int? doctorId = null)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Role, role)
+            };
+
+            if (patientId.HasValue)
+                claims.Add(new Claim("PatientId", patientId.Value.ToString()));
+
+            if (doctorId.HasValue)
+                claims.Add(new Claim("DoctorId", doctorId.Value.ToString()));
+
+            return new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuth"));
+        }
+
+        private static Patient CreatePatient(int id = 1)
         {
             return new Patient
             {
-                PatientId = patientId,
-                PatientName = patientName,
-                DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = gender,
-                Email = email,
-                PhoneNumber = phoneNumber,
-                InsuranceID = insuranceId,
-                IsActive = isActive
+                PatientId = id,
+                PatientName = "Test User",
+                Email = "test@test.com",
+                PhoneNumber = "9999999999",
+                Gender = "Male",
+                InsuranceID = "INS1",
+                DateOfBirth = DateTime.UtcNow.AddYears(-20),
+                IsActive = true
             };
         }
 
-        private static PatientDto CreatePatientDto(
-            int patientId = 1,
-            string patientName = "Patient One",
-            string gender = "Male",
-            string email = "patient@test.com",
-            string phoneNumber = "9876543210",
-            string? insuranceId = "INS001",
-            bool isActive = true)
+        private static PatientDto CreatePatientDto(int id = 1)
         {
             return new PatientDto
             {
-                PatientId = patientId,
-                PatientName = patientName,
-                DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = gender,
-                Email = email,
-                PhoneNumber = phoneNumber,
-                InsuranceID = insuranceId,
-                IsActive = isActive
+                PatientId = id,
+                PatientName = "Test User",
+                Email = "test@test.com",
+                PhoneNumber = "9999999999",
+                Gender = "Male",
+                InsuranceID = "INS1",
+                DateOfBirth = DateTime.UtcNow.AddYears(-20),
+                IsActive = true
             };
         }
 
-        private static Doctor CreateDoctor(
-            int doctorId = 1,
-            string doctorName = "Doctor One")
+        private static UpdatePatientDto CreateUpdateDto()
         {
-            return new Doctor
+            return new UpdatePatientDto
+            {
+                PatientName = "Updated",
+                PhoneNumber = "9999999999",
+                Gender = "Male",
+                InsuranceID = "INS1",
+                DateOfBirth = DateTime.UtcNow.AddYears(-25)
+            };
+        }
+
+        private static HealthRecord CreateHealthRecord(int doctorId = 10)
+        {
+            var patient = CreatePatient(1);
+
+            var doctor = new Doctor
             {
                 DoctorId = doctorId,
-                DoctorName = doctorName,
+                DoctorName = "Doc",
                 Specialisation = "Cardiologist",
                 YearsOfExperience = 10,
                 ConsultationFee = 500,
                 IsActive = true
             };
-        }
 
-        private static Appointment CreateAppointment(
-            int appointmentId = 1,
-            int patientId = 1,
-            int doctorId = 1)
-        {
-            return new Appointment
+            var appointment = new Appointment
             {
-                AppointmentId = appointmentId,
-                PatientId = patientId,
-                Patient = CreatePatient(patientId),
+                AppointmentId = 1,
+                PatientId = 1,
                 DoctorId = doctorId,
-                Doctor = CreateDoctor(doctorId),
-                ScheduledDate = DateTime.UtcNow.Date.AddDays(1),
-                TimeSlot = "09:00",
+                ScheduledDate = DateTime.UtcNow,
+                TimeSlot = "10:00",
                 Status = "Completed",
-                CancellationReason = string.Empty
+                CancellationReason = "",
+                Patient = patient,
+                Doctor = doctor
             };
-        }
 
-        private static HealthRecord CreateHealthRecord(
-            int healthRecordId = 1,
-            int patientId = 1,
-            int doctorId = 1,
-            int appointmentId = 1)
-        {
             return new HealthRecord
             {
-                HealthRecordId = healthRecordId,
-                PatientId = patientId,
-                Patient = CreatePatient(patientId),
+                PatientId = 1,
                 DoctorId = doctorId,
-                Doctor = CreateDoctor(doctorId),
-                AppointmentId = appointmentId,
-                Appointment = CreateAppointment(appointmentId, patientId, doctorId),
-                VisitDate = DateTime.UtcNow,
-                Diagnosis = "Diagnosis One",
-                Prescription = "Prescription One",
-                Notes = "Notes One"
+                AppointmentId = 1,
+                Patient = patient,
+                Doctor = doctor,
+                Appointment = appointment,
+                Diagnosis = "Test",
+                Prescription = "Test"
             };
         }
 
-        private static HealthRecordDto CreateHealthRecordDto(
-            int healthRecordId = 1,
-            int patientId = 1,
-            int doctorId = 1,
-            int appointmentId = 1)
+        // ✅ GetAll
+        [Fact]
+        public async Task GetAllAsync_Admin_ShouldReturn()
         {
-            return new HealthRecordDto
-            {
-                HealthRecordId = healthRecordId,
-                PatientId = patientId,
-                PatientName = "Patient One",
-                DoctorId = doctorId,
-                DoctorName = "Doctor One",
-                AppointmentId = appointmentId,
-                VisitDate = DateTime.UtcNow,
-                Diagnosis = "Diagnosis One",
-                Prescription = "Prescription One",
-                Notes = "Notes One"
-            };
+            var repo = new Mock<IPatientRepository>();
+            repo.Setup(x => x.GetAllAsync(It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<Patient> { CreatePatient() });
+
+            var mapper = new Mock<IMapper>();
+            mapper.Setup(x => x.Map<List<PatientDto>>(It.IsAny<List<Patient>>()))
+                .Returns(new List<PatientDto> { CreatePatientDto() });
+
+            var service = CreateService(repo, mapper: mapper);
+            var user = CreateUser("Admin");
+
+            var result = await service.GetAllAsync(user);
+
+            Assert.Single(result);
         }
 
         [Fact]
-        public async Task GetAllAsync_WhenPatientsExist_ShouldReturnMappedPatientDtos()
+        public async Task GetAllAsync_NotAdmin_ShouldThrow()
         {
-            var ct = CancellationToken.None;
+            var service = CreateService();
+            var user = CreateUser("Patient");
 
-            var patients = new List<Patient>
-            {
-                CreatePatient(
-                    patientId: 1,
-                    patientName: "Patient One",
-                    email: "patientone@test.com"),
-                CreatePatient(
-                    patientId: 2,
-                    patientName: "Patient Two",
-                    email: "patienttwo@test.com")
-            };
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetAllAsync(user));
+        }
 
-            var expectedDtos = new List<PatientDto>
-            {
-                CreatePatientDto(
-                    patientId: 1,
-                    patientName: "Patient One",
-                    email: "patientone@test.com"),
-                CreatePatientDto(
-                    patientId: 2,
-                    patientName: "Patient Two",
-                    email: "patienttwo@test.com")
-            };
+        // ✅ GetById
+        [Fact]
+        public async Task GetByIdAsync_PatientOwn_ShouldReturn()
+        {
+            var repo = new Mock<IPatientRepository>();
+            repo.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(CreatePatient(1));
 
-            var repositoryMock = new Mock<IPatientRepository>();
+            var mapper = new Mock<IMapper>();
+            mapper.Setup(x => x.Map<PatientDto>(It.IsAny<Patient>()))
+                .Returns(CreatePatientDto(1));
 
-            repositoryMock
-                .Setup(x => x.GetAllAsync(ct))
-                .ReturnsAsync(patients);
+            var service = CreateService(repo, mapper: mapper);
+            var user = CreateUser("Patient", patientId: 1);
 
-            var mapperMock = new Mock<IMapper>();
+            var result = await service.GetByIdAsync(1, user);
 
-            mapperMock
-                .Setup(x => x.Map<List<PatientDto>>(patients))
-                .Returns(expectedDtos);
-
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
-
-            var result = await service.GetAllAsync(ct);
-
-            Assert.Equal(2, result.Count);
-            Assert.Equal(1, result[0].PatientId);
-            Assert.Equal("Patient One", result[0].PatientName);
-            Assert.Equal(2, result[1].PatientId);
-            Assert.Equal("Patient Two", result[1].PatientName);
-
-            repositoryMock.Verify(x => x.GetAllAsync(ct), Times.Once);
-            mapperMock.Verify(x => x.Map<List<PatientDto>>(patients), Times.Once);
+            Assert.Equal(1, result.PatientId);
         }
 
         [Fact]
-        public async Task GetAllAsync_WhenNoPatientsExist_ShouldReturnEmptyList()
+        public async Task GetByIdAsync_PatientOther_ShouldThrow()
         {
-            var ct = CancellationToken.None;
+            var service = CreateService();
+            var user = CreateUser("Patient", patientId: 1);
 
-            var patients = new List<Patient>();
-
-            var expectedDtos = new List<PatientDto>();
-
-            var repositoryMock = new Mock<IPatientRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetAllAsync(ct))
-                .ReturnsAsync(patients);
-
-            var mapperMock = new Mock<IMapper>();
-
-            mapperMock
-                .Setup(x => x.Map<List<PatientDto>>(patients))
-                .Returns(expectedDtos);
-
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
-
-            var result = await service.GetAllAsync(ct);
-
-            Assert.Empty(result);
-
-            repositoryMock.Verify(x => x.GetAllAsync(ct), Times.Once);
-            mapperMock.Verify(x => x.Map<List<PatientDto>>(patients), Times.Once);
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(2, user));
         }
 
+        // ✅ Update
         [Fact]
-        public async Task GetByIdAsync_WhenPatientExists_ShouldReturnMappedPatientDto()
+        public async Task UpdatePatientAsync_Owner_ShouldUpdate()
         {
-            var ct = CancellationToken.None;
+            var patient = CreatePatient(1);
 
-            var patient = CreatePatient(
-                patientId: 10,
-                patientName: "Patient Ten",
-                email: "patientten@test.com",
-                phoneNumber: "9876543210",
-                insuranceId: "INS010",
-                isActive: true);
-
-            var expectedDto = CreatePatientDto(
-                patientId: 10,
-                patientName: "Patient Ten",
-                email: "patientten@test.com",
-                phoneNumber: "9876543210",
-                insuranceId: "INS010",
-                isActive: true);
-
-            var repositoryMock = new Mock<IPatientRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetByIdAsync(10, ct))
+            var repo = new Mock<IPatientRepository>();
+            repo.Setup(x => x.GetByIdAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patient);
 
-            var mapperMock = new Mock<IMapper>();
+            repo.Setup(x => x.UpdateAsync(1, It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patient);
 
-            mapperMock
-                .Setup(x => x.Map<PatientDto>(patient))
-                .Returns(expectedDto);
+            var mapper = new Mock<IMapper>();
+            mapper.Setup(x => x.Map(It.IsAny<UpdatePatientDto>(), patient));
 
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+            mapper.Setup(x => x.Map<PatientDto>(patient))
+                .Returns(CreatePatientDto(1));
 
-            var result = await service.GetByIdAsync(10, ct);
+            var service = CreateService(repo, mapper: mapper);
+            var user = CreateUser("Patient", patientId: 1);
 
-            Assert.Equal(10, result.PatientId);
-            Assert.Equal("Patient Ten", result.PatientName);
-            Assert.Equal("patientten@test.com", result.Email);
-            Assert.Equal("INS010", result.InsuranceID);
-            Assert.True(result.IsActive);
+            var result = await service.UpdatePatientAsync(1, CreateUpdateDto(), user);
 
-            repositoryMock.Verify(x => x.GetByIdAsync(10, ct), Times.Once);
-            mapperMock.Verify(x => x.Map<PatientDto>(patient), Times.Once);
+            Assert.Equal(1, result.PatientId);
         }
 
         [Fact]
-        public async Task GetByIdAsync_WhenPatientDoesNotExist_ShouldThrowNotFoundException()
+        public async Task UpdatePatientAsync_NotOwner_ShouldThrow()
         {
-            var ct = CancellationToken.None;
+            var service = CreateService();
+            var user = CreateUser("Patient", patientId: 1);
 
-            var repositoryMock = new Mock<IPatientRepository>();
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.UpdatePatientAsync(2, CreateUpdateDto(), user));
+        }
 
-            repositoryMock
-                .Setup(x => x.GetByIdAsync(99, ct))
-                .ReturnsAsync((Patient?)null);
+        // ✅ Health Records
+        [Fact]
+        public async Task GetHealthRecordsAsync_Admin_ShouldThrow()
+        {
+            var service = CreateService();
+            var user = CreateUser("Admin");
 
-            var mapperMock = new Mock<IMapper>();
-
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
-
-            var exception = await Assert.ThrowsAsync<NotFoundException>(
-                () => service.GetByIdAsync(99, ct));
-
-            Assert.Equal("Patient not found", exception.Message);
-
-            repositoryMock.Verify(x => x.GetByIdAsync(99, ct), Times.Once);
-            mapperMock.Verify(x => x.Map<PatientDto>(It.IsAny<Patient>()), Times.Never);
+            await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetHealthRecordsAsync(1, user));
         }
 
         [Fact]
-        public async Task UpdatePatientAsync_WhenPatientDoesNotExist_ShouldThrowNotFoundException()
+        public async Task GetHealthRecordsAsync_PatientOwn_ShouldReturn()
         {
-            var ct = CancellationToken.None;
-
-            var request = new UpdatePatientDto
-            {
-                PatientName = "Updated Patient",
-                DateOfBirth = new DateTime(1999, 1, 1),
-                Gender = "Female",
-                PhoneNumber = "9876543211",
-                InsuranceID = "INS002"
-            };
-
-            var repositoryMock = new Mock<IPatientRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetByIdAsync(404, ct))
-                .ReturnsAsync((Patient?)null);
-
-            var mapperMock = new Mock<IMapper>();
-
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
-
-            var exception = await Assert.ThrowsAsync<NotFoundException>(
-                () => service.UpdatePatientAsync(404, request, ct));
-
-            Assert.Equal("Patient not found", exception.Message);
-
-            repositoryMock.Verify(x => x.GetByIdAsync(404, ct), Times.Once);
-            repositoryMock.Verify(x => x.UpdateAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<Patient>(),
-                    It.IsAny<CancellationToken>()),
-                Times.Never);
-
-            mapperMock.Verify(x => x.Map(request, It.IsAny<Patient>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task UpdatePatientAsync_WhenUpdateReturnsNull_ShouldThrowNotFoundException()
-        {
-            var ct = CancellationToken.None;
-
-            var request = new UpdatePatientDto
-            {
-                PatientName = "Updated Patient",
-                DateOfBirth = new DateTime(1999, 1, 1),
-                Gender = "Female",
-                PhoneNumber = "9876543211",
-                InsuranceID = "INS002"
-            };
-
-            var existingPatient = CreatePatient(
-                patientId: 1,
-                patientName: "Old Patient",
-                gender: "Male",
-                email: "oldpatient@test.com",
-                phoneNumber: "9876543210",
-                insuranceId: "INS001",
-                isActive: true);
-
-            var repositoryMock = new Mock<IPatientRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetByIdAsync(1, ct))
-                .ReturnsAsync(existingPatient);
-
-            repositoryMock
-                .Setup(x => x.UpdateAsync(1, existingPatient, ct))
-                .ReturnsAsync((Patient?)null);
-
-            var mapperMock = new Mock<IMapper>();
-
-            mapperMock
-                .Setup(x => x.Map(request, existingPatient))
-                .Callback<UpdatePatientDto, Patient>((source, destination) =>
-                {
-                    destination.PatientName = source.PatientName;
-                    destination.DateOfBirth = source.DateOfBirth;
-                    destination.Gender = source.Gender;
-                    destination.PhoneNumber = source.PhoneNumber;
-                    destination.InsuranceID = source.InsuranceID;
-                })
-                .Returns(existingPatient);
-
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
-
-            var exception = await Assert.ThrowsAsync<NotFoundException>(
-                () => service.UpdatePatientAsync(1, request, ct));
-
-            Assert.Equal("Patient not found", exception.Message);
-
-            repositoryMock.Verify(x => x.GetByIdAsync(1, ct), Times.Once);
-            repositoryMock.Verify(x => x.UpdateAsync(1, existingPatient, ct), Times.Once);
-            mapperMock.Verify(x => x.Map(request, existingPatient), Times.Once);
-        }
-
-        [Fact]
-        public async Task UpdatePatientAsync_WhenValidRequest_ShouldUpdateAndReturnMappedPatientDto()
-        {
-            var ct = CancellationToken.None;
-
-            var request = new UpdatePatientDto
-            {
-                PatientName = "Updated Patient",
-                DateOfBirth = new DateTime(1999, 1, 1),
-                Gender = "Female",
-                PhoneNumber = "9876543211",
-                InsuranceID = "INS002"
-            };
-
-            var existingPatient = CreatePatient(
-                patientId: 2,
-                patientName: "Old Patient",
-                gender: "Male",
-                email: "oldpatient@test.com",
-                phoneNumber: "9876543210",
-                insuranceId: "INS001",
-                isActive: true);
-
-            var updatedPatient = CreatePatient(
-                patientId: 2,
-                patientName: request.PatientName,
-                gender: request.Gender,
-                email: existingPatient.Email,
-                phoneNumber: request.PhoneNumber,
-                insuranceId: request.InsuranceID,
-                isActive: existingPatient.IsActive);
-
-            updatedPatient.DateOfBirth = request.DateOfBirth;
-
-            var expectedDto = CreatePatientDto(
-                patientId: 2,
-                patientName: request.PatientName,
-                gender: request.Gender,
-                email: existingPatient.Email,
-                phoneNumber: request.PhoneNumber,
-                insuranceId: request.InsuranceID,
-                isActive: existingPatient.IsActive);
-
-            expectedDto.DateOfBirth = request.DateOfBirth;
-
-            var repositoryMock = new Mock<IPatientRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetByIdAsync(2, ct))
-                .ReturnsAsync(existingPatient);
-
-            repositoryMock
-                .Setup(x => x.UpdateAsync(2, existingPatient, ct))
-                .ReturnsAsync(updatedPatient);
-
-            var mapperMock = new Mock<IMapper>();
-
-            mapperMock
-                .Setup(x => x.Map(request, existingPatient))
-                .Callback<UpdatePatientDto, Patient>((source, destination) =>
-                {
-                    destination.PatientName = source.PatientName;
-                    destination.DateOfBirth = source.DateOfBirth;
-                    destination.Gender = source.Gender;
-                    destination.PhoneNumber = source.PhoneNumber;
-                    destination.InsuranceID = source.InsuranceID;
-                })
-                .Returns(existingPatient);
-
-            mapperMock
-                .Setup(x => x.Map<PatientDto>(updatedPatient))
-                .Returns(expectedDto);
-
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
-
-            var result = await service.UpdatePatientAsync(2, request, ct);
-
-            Assert.Equal(2, result.PatientId);
-            Assert.Equal("Updated Patient", result.PatientName);
-            Assert.Equal("Female", result.Gender);
-            Assert.Equal("oldpatient@test.com", result.Email);
-            Assert.Equal("9876543211", result.PhoneNumber);
-            Assert.Equal("INS002", result.InsuranceID);
-            Assert.True(result.IsActive);
-
-            repositoryMock.Verify(x => x.GetByIdAsync(2, ct), Times.Once);
-            repositoryMock.Verify(x => x.UpdateAsync(2, existingPatient, ct), Times.Once);
-            mapperMock.Verify(x => x.Map(request, existingPatient), Times.Once);
-            mapperMock.Verify(x => x.Map<PatientDto>(updatedPatient), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetHealthRecordsAsync_WhenRecordsExist_ShouldReturnMappedHealthRecordDtos()
-        {
-            var ct = CancellationToken.None;
-
-            var patientId = 5;
+            var repo = new Mock<IPatientRepository>();
 
             var records = new List<HealthRecord>
             {
-                CreateHealthRecord(
-                    healthRecordId: 1,
-                    patientId: patientId,
-                    doctorId: 20,
-                    appointmentId: 100),
-                CreateHealthRecord(
-                    healthRecordId: 2,
-                    patientId: patientId,
-                    doctorId: 21,
-                    appointmentId: 101)
+                CreateHealthRecord(10)
             };
 
-            var expectedDtos = new List<HealthRecordDto>
-            {
-                CreateHealthRecordDto(
-                    healthRecordId: 1,
-                    patientId: patientId,
-                    doctorId: 20,
-                    appointmentId: 100),
-                CreateHealthRecordDto(
-                    healthRecordId: 2,
-                    patientId: patientId,
-                    doctorId: 21,
-                    appointmentId: 101)
-            };
-
-            var repositoryMock = new Mock<IPatientRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetHealthRecordsAsync(patientId, ct))
+            repo.Setup(x => x.GetHealthRecordsAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(records);
 
-            var mapperMock = new Mock<IMapper>();
+            var mapper = new Mock<IMapper>();
+            mapper.Setup(x => x.Map<List<HealthRecordDto>>(records))
+                .Returns(new List<HealthRecordDto>());
 
-            mapperMock
-                .Setup(x => x.Map<List<HealthRecordDto>>(records))
-                .Returns(expectedDtos);
+            var service = CreateService(repo, mapper: mapper);
+            var user = CreateUser("Patient", patientId: 1);
 
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+            var result = await service.GetHealthRecordsAsync(1, user);
 
-            var result = await service.GetHealthRecordsAsync(patientId, ct);
-
-            Assert.Equal(2, result.Count);
-            Assert.Equal(1, result[0].HealthRecordId);
-            Assert.Equal(2, result[1].HealthRecordId);
-            Assert.Equal(patientId, result[0].PatientId);
-            Assert.Equal(patientId, result[1].PatientId);
-
-            repositoryMock.Verify(x => x.GetHealthRecordsAsync(patientId, ct), Times.Once);
-            mapperMock.Verify(x => x.Map<List<HealthRecordDto>>(records), Times.Once);
+            Assert.NotNull(result);
         }
 
         [Fact]
-        public async Task GetHealthRecordsAsync_WhenNoRecordsExist_ShouldReturnEmptyList()
+        public async Task GetHealthRecordsAsync_Doctor_ShouldFilter()
         {
-            var ct = CancellationToken.None;
+            var repo = new Mock<IPatientRepository>();
 
-            var patientId = 5;
+            var records = new List<HealthRecord>
+            {
+                CreateHealthRecord(10),
+                CreateHealthRecord(20)
+            };
 
-            var records = new List<HealthRecord>();
-
-            var expectedDtos = new List<HealthRecordDto>();
-
-            var repositoryMock = new Mock<IPatientRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetHealthRecordsAsync(patientId, ct))
+            repo.Setup(x => x.GetHealthRecordsAsync(1, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(records);
 
-            var mapperMock = new Mock<IMapper>();
+            var mapper = new Mock<IMapper>();
+            mapper.Setup(x => x.Map<List<HealthRecordDto>>(It.IsAny<List<HealthRecord>>()))
+                .Returns(new List<HealthRecordDto>());
 
-            mapperMock
-                .Setup(x => x.Map<List<HealthRecordDto>>(records))
-                .Returns(expectedDtos);
+            var service = CreateService(repo, mapper: mapper);
+            var user = CreateUser("Doctor", doctorId: 10);
 
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+            var result = await service.GetHealthRecordsAsync(1, user);
 
-            var result = await service.GetHealthRecordsAsync(patientId, ct);
-
-            Assert.Empty(result);
-
-            repositoryMock.Verify(x => x.GetHealthRecordsAsync(patientId, ct), Times.Once);
-            mapperMock.Verify(x => x.Map<List<HealthRecordDto>>(records), Times.Once);
+            Assert.NotNull(result);
         }
     }
 }

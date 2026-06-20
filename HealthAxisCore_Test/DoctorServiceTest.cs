@@ -5,6 +5,7 @@ using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Implementation;
 using Moq;
+using System.Security.Claims;
 using Xunit;
 
 namespace HealthAxisCore_Api.Tests.Services
@@ -18,6 +19,30 @@ namespace HealthAxisCore_Api.Tests.Services
             return new DoctorService(
                 repositoryMock?.Object ?? new Mock<IDoctorRepository>().Object,
                 mapperMock?.Object ?? new Mock<IMapper>().Object);
+        }
+
+        private static ClaimsPrincipal CreateUser(
+            string role,
+            int? doctorId = null,
+            int? patientId = null)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Role, role)
+            };
+
+            if (doctorId.HasValue)
+            {
+                claims.Add(new Claim("DoctorId", doctorId.Value.ToString()));
+            }
+
+            if (patientId.HasValue)
+            {
+                claims.Add(new Claim("PatientId", patientId.Value.ToString()));
+            }
+
+            return new ClaimsPrincipal(
+                new ClaimsIdentity(claims, "TestAuth"));
         }
 
         private static Doctor CreateDoctor(
@@ -59,32 +84,115 @@ namespace HealthAxisCore_Api.Tests.Services
         }
 
         [Fact]
-        public async Task GetDoctorsAsync_WhenSpecialisationIsNull_ShouldReturnMappedDoctors()
+        public async Task GetDoctorsAsync_WhenUserIsDoctorAndDoctorExists_ShouldReturnOnlyOwnDoctor()
         {
             var ct = CancellationToken.None;
 
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 10);
+
+            var doctor = CreateDoctor(
+                doctorId: 10,
+                doctorName: "Doctor Ten");
+
+            var doctorDto = CreateDoctorDto(
+                doctorId: 10,
+                doctorName: "Doctor Ten");
+
+            var repositoryMock = new Mock<IDoctorRepository>();
+
+            repositoryMock
+                .Setup(x => x.GetByIdAsync(10, ct))
+                .ReturnsAsync(doctor);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<DoctorDto>(doctor))
+                .Returns(doctorDto);
+
+            var service = CreateService(
+                repositoryMock,
+                mapperMock);
+
+            var result = await service.GetDoctorsAsync(
+                specialisation: "Cardiologist",
+                user: user,
+                ct: ct);
+
+            Assert.Single(result);
+            Assert.Equal(10, result[0].DoctorId);
+            Assert.Equal("Doctor Ten", result[0].DoctorName);
+
+            repositoryMock.Verify(x => x.GetByIdAsync(10, ct), Times.Once);
+            repositoryMock.Verify(x => x.GetDoctorsAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+
+            mapperMock.Verify(x => x.Map<DoctorDto>(doctor), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenDoctorIdClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser("Doctor");
+
+            var service = CreateService();
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetDoctorsAsync(null, user, ct));
+
+            Assert.Equal("DoctorId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenUserIsDoctorAndDoctorNotFound_ShouldThrowNotFoundException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 99);
+
+            var repositoryMock = new Mock<IDoctorRepository>();
+
+            repositoryMock
+                .Setup(x => x.GetByIdAsync(99, ct))
+                .ReturnsAsync((Doctor?)null);
+
+            var service = CreateService(repositoryMock);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.GetDoctorsAsync(null, user, ct));
+
+            Assert.Equal("Doctor not found", exception.Message);
+
+            repositoryMock.Verify(x => x.GetByIdAsync(99, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenUserIsPatient_ShouldReturnMappedDoctors()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(
+                role: "Patient",
+                patientId: 1);
+
             var doctors = new List<Doctor>
             {
-                CreateDoctor(
-                    doctorId: 1,
-                    doctorName: "Doctor One",
-                    specialisation: "Cardiologist"),
-                CreateDoctor(
-                    doctorId: 2,
-                    doctorName: "Doctor Two",
-                    specialisation: "Neurologist")
+                CreateDoctor(doctorId: 1, doctorName: "Doctor One"),
+                CreateDoctor(doctorId: 2, doctorName: "Doctor Two", specialisation: "Neurologist")
             };
 
             var expectedDtos = new List<DoctorDto>
             {
-                CreateDoctorDto(
-                    doctorId: 1,
-                    doctorName: "Doctor One",
-                    specialisation: "Cardiologist"),
-                CreateDoctorDto(
-                    doctorId: 2,
-                    doctorName: "Doctor Two",
-                    specialisation: "Neurologist")
+                CreateDoctorDto(doctorId: 1, doctorName: "Doctor One"),
+                CreateDoctorDto(doctorId: 2, doctorName: "Doctor Two", specialisation: "Neurologist")
             };
 
             var repositoryMock = new Mock<IDoctorRepository>();
@@ -100,44 +208,36 @@ namespace HealthAxisCore_Api.Tests.Services
                 .Returns(expectedDtos);
 
             var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+                repositoryMock,
+                mapperMock);
 
-            var result = await service.GetDoctorsAsync(null, ct);
+            var result = await service.GetDoctorsAsync(null, user, ct);
 
             Assert.Equal(2, result.Count);
             Assert.Equal(1, result[0].DoctorId);
-            Assert.Equal("Doctor One", result[0].DoctorName);
-            Assert.Equal("Cardiologist", result[0].Specialisation);
             Assert.Equal(2, result[1].DoctorId);
-            Assert.Equal("Doctor Two", result[1].DoctorName);
-            Assert.Equal("Neurologist", result[1].Specialisation);
 
             repositoryMock.Verify(x => x.GetDoctorsAsync(null, ct), Times.Once);
             mapperMock.Verify(x => x.Map<List<DoctorDto>>(doctors), Times.Once);
         }
 
         [Fact]
-        public async Task GetDoctorsAsync_WhenSpecialisationIsProvided_ShouldReturnMappedDoctors()
+        public async Task GetDoctorsAsync_WhenUserIsAdminAndSpecialisationProvided_ShouldReturnFilteredMappedDoctors()
         {
             var ct = CancellationToken.None;
+
+            var user = CreateUser("Admin");
 
             var specialisation = "Cardiologist";
 
             var doctors = new List<Doctor>
             {
-                CreateDoctor(
-                    doctorId: 1,
-                    doctorName: "Doctor One",
-                    specialisation: specialisation)
+                CreateDoctor(doctorId: 1, specialisation: specialisation)
             };
 
             var expectedDtos = new List<DoctorDto>
             {
-                CreateDoctorDto(
-                    doctorId: 1,
-                    doctorName: "Doctor One",
-                    specialisation: specialisation)
+                CreateDoctorDto(doctorId: 1, specialisation: specialisation)
             };
 
             var repositoryMock = new Mock<IDoctorRepository>();
@@ -152,107 +252,148 @@ namespace HealthAxisCore_Api.Tests.Services
                 .Setup(x => x.Map<List<DoctorDto>>(doctors))
                 .Returns(expectedDtos);
 
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+            var service = CreateService(repositoryMock, mapperMock);
 
-            var result = await service.GetDoctorsAsync(specialisation, ct);
+            var result = await service.GetDoctorsAsync(specialisation, user, ct);
 
             Assert.Single(result);
-            Assert.Equal(1, result[0].DoctorId);
             Assert.Equal("Cardiologist", result[0].Specialisation);
 
             repositoryMock.Verify(x => x.GetDoctorsAsync(specialisation, ct), Times.Once);
-            mapperMock.Verify(x => x.Map<List<DoctorDto>>(doctors), Times.Once);
         }
 
         [Fact]
-        public async Task GetDoctorsAsync_WhenRepositoryReturnsEmptyList_ShouldReturnEmptyList()
+        public async Task GetPagedAsync_WhenPageNumberAndPageSizeAreInvalid_ShouldNormalizeValues()
         {
             var ct = CancellationToken.None;
 
-            var doctors = new List<Doctor>();
+            var user = CreateUser("Admin");
 
-            var expectedDtos = new List<DoctorDto>();
+            var doctors = new List<Doctor>
+            {
+                CreateDoctor(doctorId: 1)
+            };
+
+            var doctorDtos = new List<DoctorDto>
+            {
+                CreateDoctorDto(doctorId: 1)
+            };
 
             var repositoryMock = new Mock<IDoctorRepository>();
 
             repositoryMock
-                .Setup(x => x.GetDoctorsAsync("Cardiologist", ct))
+                .Setup(x => x.CountDoctorsAsync(null, ct))
+                .ReturnsAsync(1);
+
+            repositoryMock
+                .Setup(x => x.GetPagedDoctorsAsync(null, 1, 10, ct))
                 .ReturnsAsync(doctors);
 
             var mapperMock = new Mock<IMapper>();
 
             mapperMock
                 .Setup(x => x.Map<List<DoctorDto>>(doctors))
-                .Returns(expectedDtos);
+                .Returns(doctorDtos);
 
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+            var service = CreateService(repositoryMock, mapperMock);
 
-            var result = await service.GetDoctorsAsync("Cardiologist", ct);
+            var result = await service.GetPagedAsync(
+                specialisation: null,
+                user: user,
+                pageNumber: 0,
+                pageSize: 0,
+                ct: ct);
 
-            Assert.Empty(result);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(10, result.PageSize);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(1, result.TotalPages);
+            Assert.Single(result.Items);
 
-            repositoryMock.Verify(x => x.GetDoctorsAsync("Cardiologist", ct), Times.Once);
-            mapperMock.Verify(x => x.Map<List<DoctorDto>>(doctors), Times.Once);
+            repositoryMock.Verify(x => x.GetPagedDoctorsAsync(null, 1, 10, ct), Times.Once);
         }
 
         [Fact]
-        public async Task GetByIdAsync_WhenDoctorExists_ShouldReturnMappedDoctorDto()
+        public async Task GetPagedAsync_WhenUserIsDoctorAndDoctorExists_ShouldReturnOwnDoctorPagedResult()
         {
             var ct = CancellationToken.None;
 
-            var doctor = CreateDoctor(
-                doctorId: 10,
-                doctorName: "Doctor Ten",
-                specialisation: "Dermatologist",
-                yearsOfExperience: 7,
-                consultationFee: 750,
-                isActive: true);
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 5);
 
-            var expectedDto = CreateDoctorDto(
-                doctorId: 10,
-                doctorName: "Doctor Ten",
-                specialisation: "Dermatologist",
-                yearsOfExperience: 7,
-                consultationFee: 750,
-                isActive: true);
+            var doctor = CreateDoctor(
+                doctorId: 5,
+                doctorName: "Doctor Five");
+
+            var doctorDto = CreateDoctorDto(
+                doctorId: 5,
+                doctorName: "Doctor Five");
 
             var repositoryMock = new Mock<IDoctorRepository>();
 
             repositoryMock
-                .Setup(x => x.GetByIdAsync(10, ct))
+                .Setup(x => x.GetByIdAsync(5, ct))
                 .ReturnsAsync(doctor);
 
             var mapperMock = new Mock<IMapper>();
 
             mapperMock
                 .Setup(x => x.Map<DoctorDto>(doctor))
-                .Returns(expectedDto);
+                .Returns(doctorDto);
 
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+            var service = CreateService(repositoryMock, mapperMock);
 
-            var result = await service.GetByIdAsync(10, ct);
+            var result = await service.GetPagedAsync(
+                specialisation: "Cardiologist",
+                user: user,
+                pageNumber: 3,
+                pageSize: 20,
+                ct: ct);
 
-            Assert.Equal(10, result.DoctorId);
-            Assert.Equal("Doctor Ten", result.DoctorName);
-            Assert.Equal("Dermatologist", result.Specialisation);
-            Assert.Equal(7, result.YearsOfExperience);
-            Assert.Equal(750, result.ConsultationFee);
-            Assert.True(result.IsActive);
+            Assert.Single(result.Items);
+            Assert.Equal(5, result.Items[0].DoctorId);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(1, result.PageSize);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(1, result.TotalPages);
 
-            repositoryMock.Verify(x => x.GetByIdAsync(10, ct), Times.Once);
-            mapperMock.Verify(x => x.Map<DoctorDto>(doctor), Times.Once);
+            repositoryMock.Verify(x => x.GetByIdAsync(5, ct), Times.Once);
+            repositoryMock.Verify(x => x.CountDoctorsAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+            repositoryMock.Verify(x => x.GetPagedDoctorsAsync(
+                    It.IsAny<string?>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
         }
 
         [Fact]
-        public async Task GetByIdAsync_WhenDoctorDoesNotExist_ShouldThrowNotFoundException()
+        public async Task GetPagedAsync_WhenDoctorIdClaimMissing_ShouldThrowUnauthorizedException()
         {
             var ct = CancellationToken.None;
+
+            var user = CreateUser("Doctor");
+
+            var service = CreateService();
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetPagedAsync(null, user, 1, 10, ct));
+
+            Assert.Equal("DoctorId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_WhenUserIsDoctorAndDoctorNotFound_ShouldThrowNotFoundException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 99);
 
             var repositoryMock = new Mock<IDoctorRepository>();
 
@@ -260,19 +401,246 @@ namespace HealthAxisCore_Api.Tests.Services
                 .Setup(x => x.GetByIdAsync(99, ct))
                 .ReturnsAsync((Doctor?)null);
 
-            var mapperMock = new Mock<IMapper>();
-
-            var service = CreateService(
-                repositoryMock: repositoryMock,
-                mapperMock: mapperMock);
+            var service = CreateService(repositoryMock);
 
             var exception = await Assert.ThrowsAsync<NotFoundException>(
-                () => service.GetByIdAsync(99, ct));
+                () => service.GetPagedAsync(null, user, 1, 10, ct));
+
+            Assert.Equal("Doctor not found", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_WhenUserIsAdmin_ShouldReturnPagedDoctorResult()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser("Admin");
+
+            var specialisation = "Neurologist";
+
+            var doctors = new List<Doctor>
+            {
+                CreateDoctor(doctorId: 1, specialisation: specialisation),
+                CreateDoctor(doctorId: 2, doctorName: "Doctor Two", specialisation: specialisation)
+            };
+
+            var doctorDtos = new List<DoctorDto>
+            {
+                CreateDoctorDto(doctorId: 1, specialisation: specialisation),
+                CreateDoctorDto(doctorId: 2, doctorName: "Doctor Two", specialisation: specialisation)
+            };
+
+            var repositoryMock = new Mock<IDoctorRepository>();
+
+            repositoryMock
+                .Setup(x => x.CountDoctorsAsync(specialisation, ct))
+                .ReturnsAsync(12);
+
+            repositoryMock
+                .Setup(x => x.GetPagedDoctorsAsync(specialisation, 2, 5, ct))
+                .ReturnsAsync(doctors);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<List<DoctorDto>>(doctors))
+                .Returns(doctorDtos);
+
+            var service = CreateService(repositoryMock, mapperMock);
+
+            var result = await service.GetPagedAsync(
+                specialisation,
+                user,
+                pageNumber: 2,
+                pageSize: 5,
+                ct);
+
+            Assert.Equal(2, result.PageNumber);
+            Assert.Equal(5, result.PageSize);
+            Assert.Equal(12, result.TotalCount);
+            Assert.Equal(3, result.TotalPages);
+            Assert.Equal(2, result.Items.Count);
+            Assert.Equal("Neurologist", result.Items[0].Specialisation);
+
+            repositoryMock.Verify(x => x.CountDoctorsAsync(specialisation, ct), Times.Once);
+            repositoryMock.Verify(x => x.GetPagedDoctorsAsync(specialisation, 2, 5, ct), Times.Once);
+            mapperMock.Verify(x => x.Map<List<DoctorDto>>(doctors), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetPagedAsync_WhenNoDoctorsFound_ShouldReturnEmptyPagedResult()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser("Patient", patientId: 1);
+
+            var doctors = new List<Doctor>();
+
+            var doctorDtos = new List<DoctorDto>();
+
+            var repositoryMock = new Mock<IDoctorRepository>();
+
+            repositoryMock
+                .Setup(x => x.CountDoctorsAsync("Cardiologist", ct))
+                .ReturnsAsync(0);
+
+            repositoryMock
+                .Setup(x => x.GetPagedDoctorsAsync("Cardiologist", 1, 10, ct))
+                .ReturnsAsync(doctors);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<List<DoctorDto>>(doctors))
+                .Returns(doctorDtos);
+
+            var service = CreateService(repositoryMock, mapperMock);
+
+            var result = await service.GetPagedAsync(
+                "Cardiologist",
+                user,
+                1,
+                10,
+                ct);
+
+            Assert.Empty(result.Items);
+            Assert.Equal(0, result.TotalCount);
+            Assert.Equal(0, result.TotalPages);
+
+            repositoryMock.Verify(x => x.CountDoctorsAsync("Cardiologist", ct), Times.Once);
+            repositoryMock.Verify(x => x.GetPagedDoctorsAsync("Cardiologist", 1, 10, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenDoctorUserViewsOwnProfile_ShouldReturnDoctorDto()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 7);
+
+            var doctor = CreateDoctor(
+                doctorId: 7,
+                doctorName: "Doctor Seven");
+
+            var doctorDto = CreateDoctorDto(
+                doctorId: 7,
+                doctorName: "Doctor Seven");
+
+            var repositoryMock = new Mock<IDoctorRepository>();
+
+            repositoryMock
+                .Setup(x => x.GetByIdAsync(7, ct))
+                .ReturnsAsync(doctor);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<DoctorDto>(doctor))
+                .Returns(doctorDto);
+
+            var service = CreateService(repositoryMock, mapperMock);
+
+            var result = await service.GetByIdAsync(7, user, ct);
+
+            Assert.Equal(7, result.DoctorId);
+            Assert.Equal("Doctor Seven", result.DoctorName);
+
+            repositoryMock.Verify(x => x.GetByIdAsync(7, ct), Times.Once);
+            mapperMock.Verify(x => x.Map<DoctorDto>(doctor), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenDoctorIdClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser("Doctor");
+
+            var service = CreateService();
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(7, user, ct));
+
+            Assert.Equal("DoctorId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenDoctorUserViewsAnotherDoctorProfile_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(
+                role: "Doctor",
+                doctorId: 7);
+
+            var service = CreateService();
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(8, user, ct));
+
+            Assert.Equal("You can view only your own doctor profile", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenUserIsAdminAndDoctorExists_ShouldReturnDoctorDto()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser("Admin");
+
+            var doctor = CreateDoctor(
+                doctorId: 8,
+                doctorName: "Doctor Eight");
+
+            var doctorDto = CreateDoctorDto(
+                doctorId: 8,
+                doctorName: "Doctor Eight");
+
+            var repositoryMock = new Mock<IDoctorRepository>();
+
+            repositoryMock
+                .Setup(x => x.GetByIdAsync(8, ct))
+                .ReturnsAsync(doctor);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<DoctorDto>(doctor))
+                .Returns(doctorDto);
+
+            var service = CreateService(repositoryMock, mapperMock);
+
+            var result = await service.GetByIdAsync(8, user, ct);
+
+            Assert.Equal(8, result.DoctorId);
+            Assert.Equal("Doctor Eight", result.DoctorName);
+
+            repositoryMock.Verify(x => x.GetByIdAsync(8, ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenDoctorDoesNotExist_ShouldThrowNotFoundException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser("Patient", patientId: 1);
+
+            var repositoryMock = new Mock<IDoctorRepository>();
+
+            repositoryMock
+                .Setup(x => x.GetByIdAsync(99, ct))
+                .ReturnsAsync((Doctor?)null);
+
+            var service = CreateService(repositoryMock);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.GetByIdAsync(99, user, ct));
 
             Assert.Equal("Doctor not found", exception.Message);
 
             repositoryMock.Verify(x => x.GetByIdAsync(99, ct), Times.Once);
-            mapperMock.Verify(x => x.Map<DoctorDto>(It.IsAny<Doctor>()), Times.Never);
         }
 
         [Fact]
@@ -280,9 +648,7 @@ namespace HealthAxisCore_Api.Tests.Services
         {
             var ct = CancellationToken.None;
 
-            var repositoryMock = new Mock<IDoctorRepository>();
-
-            var service = CreateService(repositoryMock: repositoryMock);
+            var service = CreateService();
 
             var pastDate = DateTime.UtcNow.Date.AddDays(-1);
 
@@ -290,20 +656,12 @@ namespace HealthAxisCore_Api.Tests.Services
                 () => service.GetAvailabilityAsync(1, pastDate, ct));
 
             Assert.Equal("Cannot check past date", exception.Message);
-
-            repositoryMock.Verify(x => x.GetAvailableSlotsAsync(
-                    It.IsAny<int>(),
-                    It.IsAny<DateTime>(),
-                    It.IsAny<CancellationToken>()),
-                Times.Never);
         }
 
         [Fact]
         public async Task GetAvailabilityAsync_WhenDateIsToday_ShouldReturnAvailableSlots()
         {
             var ct = CancellationToken.None;
-
-            var doctorId = 5;
 
             var today = DateTime.UtcNow.Date;
 
@@ -317,27 +675,25 @@ namespace HealthAxisCore_Api.Tests.Services
             var repositoryMock = new Mock<IDoctorRepository>();
 
             repositoryMock
-                .Setup(x => x.GetAvailableSlotsAsync(doctorId, today, ct))
+                .Setup(x => x.GetAvailableSlotsAsync(1, today, ct))
                 .ReturnsAsync(slots);
 
-            var service = CreateService(repositoryMock: repositoryMock);
+            var service = CreateService(repositoryMock);
 
-            var result = await service.GetAvailabilityAsync(doctorId, today, ct);
+            var result = await service.GetAvailabilityAsync(1, today, ct);
 
             Assert.Equal(3, result.Count);
             Assert.Contains("09:00", result);
             Assert.Contains("10:00", result);
             Assert.Contains("11:00", result);
 
-            repositoryMock.Verify(x => x.GetAvailableSlotsAsync(doctorId, today, ct), Times.Once);
+            repositoryMock.Verify(x => x.GetAvailableSlotsAsync(1, today, ct), Times.Once);
         }
 
         [Fact]
         public async Task GetAvailabilityAsync_WhenDateIsFuture_ShouldReturnAvailableSlots()
         {
             var ct = CancellationToken.None;
-
-            var doctorId = 6;
 
             var futureDate = DateTime.UtcNow.Date.AddDays(2);
 
@@ -350,44 +706,18 @@ namespace HealthAxisCore_Api.Tests.Services
             var repositoryMock = new Mock<IDoctorRepository>();
 
             repositoryMock
-                .Setup(x => x.GetAvailableSlotsAsync(doctorId, futureDate, ct))
+                .Setup(x => x.GetAvailableSlotsAsync(2, futureDate, ct))
                 .ReturnsAsync(slots);
 
-            var service = CreateService(repositoryMock: repositoryMock);
+            var service = CreateService(repositoryMock);
 
-            var result = await service.GetAvailabilityAsync(doctorId, futureDate, ct);
+            var result = await service.GetAvailabilityAsync(2, futureDate, ct);
 
             Assert.Equal(2, result.Count);
             Assert.Contains("14:00", result);
             Assert.Contains("15:00", result);
 
-            repositoryMock.Verify(x => x.GetAvailableSlotsAsync(doctorId, futureDate, ct), Times.Once);
-        }
-
-        [Fact]
-        public async Task GetAvailabilityAsync_WhenRepositoryReturnsEmptyList_ShouldReturnEmptyList()
-        {
-            var ct = CancellationToken.None;
-
-            var doctorId = 7;
-
-            var futureDate = DateTime.UtcNow.Date.AddDays(3);
-
-            var slots = new List<string>();
-
-            var repositoryMock = new Mock<IDoctorRepository>();
-
-            repositoryMock
-                .Setup(x => x.GetAvailableSlotsAsync(doctorId, futureDate, ct))
-                .ReturnsAsync(slots);
-
-            var service = CreateService(repositoryMock: repositoryMock);
-
-            var result = await service.GetAvailabilityAsync(doctorId, futureDate, ct);
-
-            Assert.Empty(result);
-
-            repositoryMock.Verify(x => x.GetAvailableSlotsAsync(doctorId, futureDate, ct), Times.Once);
+            repositoryMock.Verify(x => x.GetAvailableSlotsAsync(2, futureDate, ct), Times.Once);
         }
     }
 }

@@ -131,19 +131,58 @@ namespace HealthAxisCore_Api.Services.Implementation
             await appointmentRepository.GetAppointmentReportAsync(ct);
 
         public async Task UpdatePatientStatusAsync(
-            int patientId,
-            bool isActive,
-            CancellationToken ct = default
-        )
+     int patientId,
+     bool isActive,
+     CancellationToken ct = default)
         {
-            var patient = await patientRepository.GetByIdAsync(
-                patientId,
-                ct
-            ) ?? throw new NotFoundException("Patient not found");
+            var patient = await patientRepository.GetByIdAsync(patientId, ct)
+                ?? throw new NotFoundException("Patient not found");
 
             patient.IsActive = isActive;
 
+            var user = userManager.Users.FirstOrDefault(u => u.PatientId == patientId);
+
+            if (user != null)
+            {
+                user.IsActive = isActive;
+
+                var result = await userManager.UpdateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    throw new InvalidException(
+                        string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+
             await patientRepository.SaveChangesAsync(ct);
+        }
+        public async Task UpdateDoctorStatusAsync(
+    int doctorId,
+    bool isActive,
+    CancellationToken ct = default)
+        {
+            var doctor = await doctorRepository.GetByIdAsync(doctorId, ct)
+                ?? throw new NotFoundException("Doctor not found");
+
+            doctor.IsActive = isActive;
+
+            var user = userManager.Users.FirstOrDefault(u => u.DoctorId == doctorId);
+
+            if (user != null)
+            {
+                user.IsActive = isActive;
+
+                var result = await userManager.UpdateAsync(user);
+
+                if (!result.Succeeded)
+                {
+                    throw new InvalidException(
+                        string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+
+            await doctorRepository.SaveChangesAsync(ct);
         }
     }
 }

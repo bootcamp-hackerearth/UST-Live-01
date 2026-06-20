@@ -1,8 +1,10 @@
 using AutoMapper;
 using HealthAxisCore_Api.Exceptions;
+using HealthAxisCore_Api.Extensions;
 using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
+using System.Security.Claims;
 
 namespace HealthAxisCore_Api.Services.Implementation
 {
@@ -13,44 +15,118 @@ namespace HealthAxisCore_Api.Services.Implementation
     {
         public async Task<List<DoctorDto>> GetDoctorsAsync(
             string? specialisation,
-            CancellationToken ct = default
-        ) =>
-            mapper.Map<List<DoctorDto>>(
-                await repository.GetDoctorsAsync(
-                    specialisation,
-                    ct
-                )
-            );
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
+        {
+            if (user.IsDoctor())
+            {
+                var doctorId = user.GetDoctorId()
+                    ?? throw new UnauthorizedException("DoctorId claim missing");
+
+                var doctor = await repository.GetByIdAsync(doctorId, ct)
+                    ?? throw new NotFoundException("Doctor not found");
+
+                return new List<DoctorDto>
+                {
+                    mapper.Map<DoctorDto>(doctor)
+                };
+            }
+
+            return mapper.Map<List<DoctorDto>>(
+                await repository.GetDoctorsAsync(specialisation, ct));
+        }
+
+        public async Task<PagedResultDto<DoctorDto>> GetPagedAsync(
+            string? specialisation,
+            ClaimsPrincipal user,
+            int pageNumber,
+            int pageSize,
+            CancellationToken ct = default)
+        {
+            if (pageNumber < 1)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize < 1)
+            {
+                pageSize = 10;
+            }
+
+            if (user.IsDoctor())
+            {
+                var doctorId = user.GetDoctorId()
+                    ?? throw new UnauthorizedException("DoctorId claim missing");
+
+                var doctor = await repository.GetByIdAsync(doctorId, ct)
+                    ?? throw new NotFoundException("Doctor not found");
+
+                return new PagedResultDto<DoctorDto>
+                {
+                    Items = new List<DoctorDto>
+                    {
+                        mapper.Map<DoctorDto>(doctor)
+                    },
+                    PageNumber = 1,
+                    PageSize = 1,
+                    TotalCount = 1,
+                    TotalPages = 1
+                };
+            }
+
+            var totalCount = await repository.CountDoctorsAsync(
+                specialisation,
+                ct);
+
+            var doctors = await repository.GetPagedDoctorsAsync(
+                specialisation,
+                pageNumber,
+                pageSize,
+                ct);
+
+            return new PagedResultDto<DoctorDto>
+            {
+                Items = mapper.Map<List<DoctorDto>>(doctors),
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            };
+        }
 
         public async Task<DoctorDto> GetByIdAsync(
             int id,
-            CancellationToken ct = default
-        ) =>
-            mapper.Map<DoctorDto>(
-                await repository.GetByIdAsync(id, ct)
-                ?? throw new NotFoundException(
-                    "Doctor not found"
-                )
-            );
+            ClaimsPrincipal user,
+            CancellationToken ct = default)
+        {
+            if (user.IsDoctor())
+            {
+                var doctorId = user.GetDoctorId()
+                    ?? throw new UnauthorizedException("DoctorId claim missing");
+
+                if (doctorId != id)
+                {
+                    throw new UnauthorizedException("You can view only your own doctor profile");
+                }
+            }
+
+            var doctor = await repository.GetByIdAsync(id, ct)
+                ?? throw new NotFoundException("Doctor not found");
+
+            return mapper.Map<DoctorDto>(doctor);
+        }
 
         public async Task<List<string>> GetAvailabilityAsync(
             int id,
             DateTime date,
-            CancellationToken ct = default
-        )
+            CancellationToken ct = default)
         {
             if (date.Date < DateTime.UtcNow.Date)
             {
-                throw new InvalidException(
-                    "Cannot check past date"
-                );
+                throw new InvalidException("Cannot check past date");
             }
 
-            return await repository.GetAvailableSlotsAsync(
-                id,
-                date,
-                ct
-            );
+            return await repository.GetAvailableSlotsAsync(id, date, ct);
         }
     }
 }

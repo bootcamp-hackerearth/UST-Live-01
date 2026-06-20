@@ -250,5 +250,39 @@ namespace HealthAxisCore_Api.Services.Implementation
                         configuration["Jwt:AccessTokenExpirationMinutes"]
                     ) * 60
             };
+        public async Task<ForgotPasswordResponseDto> ForgotPasswordAsync(
+    ForgotPasswordDto request)
+        {
+            var user = await userManager.FindByEmailAsync(request.Email)
+                ?? throw new NotFoundException("User not found");
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+            return new ForgotPasswordResponseDto
+            {
+                Message = "Password reset token generated successfully",
+                ResetToken = token
+            };
+        }
+
+        public async Task<string> ResetPasswordAsync(
+            ResetPasswordDto request)
+        {
+            var user = await userManager.FindByEmailAsync(request.Email)
+                ?? throw new NotFoundException("User not found");
+
+            var result = await userManager.ResetPasswordAsync(
+                user,
+                request.Token,
+                request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidException(
+                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
+
+            return "Password reset successfully";
+        }
     }
 }
