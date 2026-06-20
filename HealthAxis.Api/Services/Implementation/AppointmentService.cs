@@ -5,6 +5,7 @@ using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Interfaces;
+using System.Globalization;
 using System.Security.Claims;
 
 namespace HealthAxisCore_Api.Services.Implementation
@@ -203,14 +204,20 @@ namespace HealthAxisCore_Api.Services.Implementation
                 .AddMinutes(slot.Minute);
         }
 
+
         private static TimeOnly ParseTimeSlot(string timeSlot)
         {
-            if (!TimeOnly.TryParse(timeSlot, out var parsedTime))
+            if (!TimeOnly.TryParse(
+                    timeSlot,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out var parsedTime))
             {
-                throw new InvalidException("Invalid time slot format");
+                throw new FormatException("Invalid time slot format");
             }
 
             return parsedTime;
         }
+
     }
 }

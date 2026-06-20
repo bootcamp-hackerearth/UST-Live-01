@@ -16,24 +16,11 @@
             <div class="loading-logo">
                 <img src="HealthAxisAdminLogo.png" alt="HealthAxis Logo" class="login-logo-image" />
             </div>
-
-            <!--<div class="loading-text">
-                Loading HealthAxis Admin
-                <span class="loading-dots">
-                    <span>.</span>
-                    <span>.</span>
-                    <span>.</span>
-                </span>
-            </div>
-
-            <div class="loading-bar">
-                <div class="loading-bar-fill"></div>
-            </div>-->
         </div>
 
     </div>
     <script>
-        window.healthAxisScrollToElement = function (elementId) {
+        globalThis.healthAxisScrollToElement = function (elementId) {
             const element = document.getElementById(elementId);
 
             if (element) {
