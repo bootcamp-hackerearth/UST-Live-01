@@ -22,6 +22,64 @@ namespace HealthCareApp.Services
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
+        public async Task<PagedResponse<DoctorDto>> GetAllDoctorsPagedAsync(DoctorPaginationQueryDto query)
+        {
+            if (query is null)
+            {
+                query = new DoctorPaginationQueryDto();
+            }
+
+            int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
+
+            int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+
+            pageSize = pageSize > 100 ? 100 : pageSize;
+
+            var doctors = await repository.GetAllAsync();
+
+            var filteredDoctors = doctors.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                string searchTerm = query.SearchTerm.Trim();
+
+                filteredDoctors = filteredDoctors.Where(d =>
+                    d.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    d.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (query.Specialisation is not null)
+            {
+                filteredDoctors = filteredDoctors.Where(d =>
+                    d.Specialisation == query.Specialisation.Value);
+            }
+
+            if (query.IsActive is not null)
+            {
+                filteredDoctors = filteredDoctors.Where(d =>
+                    d.IsActive == query.IsActive.Value);
+            }
+
+            int totalRecords = filteredDoctors.Count();
+
+            var pagedDoctors = filteredDoctors
+                .OrderBy(d => d.DoctorId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var mappedDoctors = mapper.Map<List<DoctorDto>>(pagedDoctors);
+
+            return new PagedResponse<DoctorDto>
+            {
+                Items = mappedDoctors,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+        }
+
         public async Task<List<DoctorDto>> GetAllActiveDoctorsAsync()
         {
             var doctors = await repository.GetAllActiveAsync();
@@ -174,6 +232,7 @@ namespace HealthCareApp.Services
 
             return mapper.Map<DoctorDto>(deletedDoctor);
         }
+
         public async Task<DoctorDto> GetMyProfileAsync(string identityUserId)
         {
             if (string.IsNullOrWhiteSpace(identityUserId))
@@ -189,6 +248,25 @@ namespace HealthCareApp.Services
             }
 
             return mapper.Map<DoctorDto>(doctor);
+        }
+
+        public async Task<List<string>> GetDoctorAvailabilityAsync(int doctorId)
+        {
+            ValidateDoctorId(doctorId);
+
+            var doctor = await repository.GetByIdAsync(doctorId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException("Doctor", doctorId);
+            }
+
+            if (!doctor.IsActive)
+            {
+                throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
+            }
+
+            return TimeSlots.Slots;
         }
 
         private void ValidateDoctorId(int doctorId)
@@ -283,25 +361,6 @@ namespace HealthCareApp.Services
                 char.ToUpper(cleanedName[0]) + cleanedName.Substring(1).ToLower();
 
             return $"{formattedName}@{DateTime.Today.Year}";
-        }
-
-        public async Task<List<string>> GetDoctorAvailabilityAsync(int doctorId)
-        {
-            ValidateDoctorId(doctorId);
-
-            var doctor = await repository.GetByIdAsync(doctorId);
-
-            if (doctor is null)
-            {
-                throw new EntityNotFoundException("Doctor", doctorId);
-            }
-
-            if (!doctor.IsActive)
-            {
-                throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
-            }
-
-            return TimeSlots.Slots;
         }
     }
 }

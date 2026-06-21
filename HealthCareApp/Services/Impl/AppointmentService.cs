@@ -22,6 +22,90 @@ namespace HealthCareApp.Services.Impl
             return mapper.Map<List<AppointmentDto>>(appointments);
         }
 
+        public async Task<PagedResponse<AppointmentDto>> GetAllAppointmentsPagedAsync(AppointmentPaginationQueryDto query)
+        {
+            if (query is null)
+            {
+                query = new AppointmentPaginationQueryDto();
+            }
+
+            int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
+
+            int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+
+            pageSize = pageSize > 100 ? 100 : pageSize;
+
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            var filteredAppointments = appointments.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                string searchTerm = query.SearchTerm.Trim();
+
+                filteredAppointments = filteredAppointments.Where(a =>
+                    (a.Patient != null &&
+                     a.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (a.Doctor != null &&
+                     a.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
+                     a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (query.PatientId is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.PatientId == query.PatientId.Value);
+            }
+
+            if (query.DoctorId is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.DoctorId == query.DoctorId.Value);
+            }
+
+            if (query.Status is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.Status == query.Status.Value);
+            }
+
+            if (query.ScheduledDate is not null)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.ScheduledDate.Date == query.ScheduledDate.Value.Date);
+            }
+
+            if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
+            {
+                filteredAppointments = filteredAppointments.Where(a =>
+                    a.ScheduledDate.Date >= DateTime.Today &&
+                    a.Status != AppointmentStatus.Cancelled &&
+                    a.Status != AppointmentStatus.Completed);
+            }
+
+            int totalRecords = filteredAppointments.Count();
+
+            var pagedAppointments = filteredAppointments
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedAppointments);
+
+            return new PagedResponse<AppointmentDto>
+            {
+                Items = mappedAppointments,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+        }
+
         public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
         {
             ValidateAppointmentId(appointmentId);

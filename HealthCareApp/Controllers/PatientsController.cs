@@ -25,11 +25,11 @@ namespace HealthCareApp.Controllers
         // Admin only: view all patients.
         [HttpGet]
         [Authorize(
-            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin")]
-        public async Task<IActionResult> GetAllPatients()
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = "Admin")]
+        public async Task<IActionResult> GetAllPatients([FromQuery] PatientPaginationQueryDto query)
         {
-            var patients = await _patientService.GetAllPatientsAsync();
+            var patients = await _patientService.GetAllPatientsPagedAsync(query);
 
             return Ok(patients);
         }

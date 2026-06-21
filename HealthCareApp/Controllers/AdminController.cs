@@ -22,9 +22,9 @@ namespace HealthCareApp.Controllers
         }
 
         [HttpGet("doctors")]
-        public async Task<IActionResult> GetAllDoctors()
+        public async Task<IActionResult> GetAllDoctors([FromQuery] DoctorPaginationQueryDto query)
         {
-            var result = await doctorService.GetAllDoctorsAsync();
+            var result = await doctorService.GetAllDoctorsPagedAsync(query);
 
             return Ok(result);
         }

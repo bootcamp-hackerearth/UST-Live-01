@@ -6,6 +6,9 @@ namespace HealthCareApp.Services
     {
         Task<List<PatientDto>> GetAllPatientsAsync();
 
+        Task<PagedResponse<PatientDto>> GetAllPatientsPagedAsync(PatientPaginationQueryDto query);
+
+
         Task<PatientDto> GetPatientByIdAsync(int patientId);
 
         Task<PatientDto> RegisterPatientAsync(CreatePatientDto dto);
@@ -15,6 +18,7 @@ namespace HealthCareApp.Services
         Task<PatientDto> GetMyProfileAsync(string identityUserId);
 
         Task<PatientDto> UpdateMyProfileAsync(string identityUserId, UpdatePatientDto dto);
+
 
     }
 }

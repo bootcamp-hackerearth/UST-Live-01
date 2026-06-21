@@ -15,6 +15,74 @@ namespace HealthCareApp.Services
             return mapper.Map<List<PatientDto>>(patients);
         }
 
+        public async Task<PagedResponse<PatientDto>> GetAllPatientsPagedAsync(PatientPaginationQueryDto query)
+        {
+            if (query is null)
+            {
+                query = new PatientPaginationQueryDto();
+            }
+
+            int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
+
+            int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+
+            pageSize = pageSize > 100 ? 100 : pageSize;
+
+            var patients = await repository.GetAllAsync();
+
+            var filteredPatients = patients.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                string searchTerm = query.SearchTerm.Trim();
+
+                filteredPatients = filteredPatients.Where(p =>
+                    p.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    p.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    p.PhoneNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(p.InsuranceID) &&
+                     p.InsuranceID.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (query.Gender is not null)
+            {
+                filteredPatients = filteredPatients.Where(p =>
+                    p.Gender == query.Gender.Value);
+            }
+
+            if (query.HasInsurance is not null)
+            {
+                if (query.HasInsurance.Value)
+                {
+                    filteredPatients = filteredPatients.Where(p =>
+                        !string.IsNullOrWhiteSpace(p.InsuranceID));
+                }
+                else
+                {
+                    filteredPatients = filteredPatients.Where(p =>
+                        string.IsNullOrWhiteSpace(p.InsuranceID));
+                }
+            }
+
+            int totalRecords = filteredPatients.Count();
+
+            var pagedPatients = filteredPatients
+                .OrderBy(p => p.PatientId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var mappedPatients = mapper.Map<List<PatientDto>>(pagedPatients);
+
+            return new PagedResponse<PatientDto>
+            {
+                Items = mappedPatients,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+        }
         public async Task<PatientDto> GetPatientByIdAsync(int patientId)
         {
             ValidatePatientId(patientId);

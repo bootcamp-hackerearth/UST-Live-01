@@ -15,11 +15,11 @@ namespace HealthCareApp.Controllers
         // Admin only: View all appointments
         [HttpGet]
         [Authorize(
-            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin")]
-        public async Task<IActionResult> GetAllAppointments()
+     AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+     Roles = "Admin")]
+        public async Task<IActionResult> GetAllAppointments([FromQuery] AppointmentPaginationQueryDto query)
         {
-            var appointments = await service.GetAllAppointmentsAsync();
+            var appointments = await service.GetAllAppointmentsPagedAsync(query);
 
             return Ok(appointments);
         }

@@ -24,5 +24,7 @@ namespace HealthCareApp.Services
         Task<List<string>> GetDoctorAvailabilityAsync(int doctorId);
 
         Task<DoctorDto> GetMyProfileAsync(string identityUserId);
+
+        Task<PagedResponse<DoctorDto>> GetAllDoctorsPagedAsync(DoctorPaginationQueryDto query);
     }
 }
