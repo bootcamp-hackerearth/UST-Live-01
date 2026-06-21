@@ -1,5 +1,7 @@
 ﻿using HealthAxisApplicn.Dto.Doctors;
 using HealthAxisApplicn.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,9 +9,11 @@ namespace HealthAxisApplicn.Controllers
 {
     [Route("api/doctors")]
     [ApiController]
+    [Authorize]
     public class DoctorController(IDoctorService service) : ControllerBase
     {
         [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]    
         public async Task<IActionResult> GetAll()
         {
             var result = await service.GetAllAsync();
@@ -25,6 +29,7 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateDoctorDto entity)
         {
             if (!ModelState.IsValid)
@@ -37,6 +42,7 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateDoctorDto entity)
         {
             if (!ModelState.IsValid)

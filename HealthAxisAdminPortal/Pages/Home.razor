@@ -1,0 +1,54 @@
+﻿@page "/"
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h3 class="fw-bold">Admin Dashboard</h3>
+        <p class="text-muted">Overview of Patients, Doctors, and Appointments</p>
+    </div>
+
+    <div class="row g-3">
+
+        <!-- Patients -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Patients</h6>
+                    <h2 class="fw-bold text-primary">@PatientCount</h2>
+                    <small class="text-muted">Total registered patients</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctors -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Doctors</h6>
+                    <h2 class="fw-bold text-success">@DoctorCount</h2>
+                    <small class="text-muted">Active doctors in system</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments -->
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h6 class="text-muted">Completed Appointments</h6>
+                    <h2 class="fw-bold text-info">@CompletedAppointments</h2>
+                    <small class="text-muted">Appointments completed</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@code {
+    int PatientCount = 150;
+    int DoctorCount = 25;
+    int CompletedAppointments = 320;
+}

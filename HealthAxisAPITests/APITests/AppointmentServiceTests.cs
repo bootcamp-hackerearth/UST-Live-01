@@ -1,0 +1,163 @@
+﻿using Xunit;
+using Moq;
+using FluentAssertions;
+using AutoMapper;
+using HealthAxisApplicn.Services.Impl;
+using HealthAxisApplicn.Repositories;
+using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Dto.Appointments;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+public class AppointmentServiceTests
+{
+    private readonly Mock<IAppointmentRepository> _repoMock;
+    private readonly Mock<IMapper> _mapperMock;
+    private readonly AppointmentService _service;
+
+    public AppointmentServiceTests()
+    {
+        _repoMock = new Mock<IAppointmentRepository>();
+        _mapperMock = new Mock<IMapper>();
+        _service = new AppointmentService(_repoMock.Object, _mapperMock.Object);
+    }
+
+    [Fact]
+    public async Task CreateAsync_Should_Create_Appointment()
+    {
+        var dto = new CreateAppointmentDto();
+        var appointment = new Appointment();
+        var resultDto = new AppointmentDto();
+
+        _mapperMock.Setup(m => m.Map<Appointment>(dto)).Returns(appointment);
+        _repoMock.Setup(r => r.CreateAsync(appointment, default)).ReturnsAsync(appointment);
+        _mapperMock.Setup(m => m.Map<AppointmentDto>(appointment)).Returns(resultDto);
+
+        var result = await _service.CreateAsync(dto);
+
+        result.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task GetAllAsync_Should_Return_List()
+    {
+        var list = new List<Appointment> { new Appointment { AppointmentId = 1 } };
+        var dtos = new List<AppointmentDto> { new AppointmentDto { AppointmentId = 1 } };
+
+        _repoMock.Setup(r => r.GetAllAsync(default)).ReturnsAsync(list);
+        _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(list)).Returns(dtos);
+
+        var result = await _service.GetAllAsync();
+
+        result.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_Should_Return_Appointment()
+    {
+        var appointment = new Appointment { AppointmentId = 1 };
+        var dto = new AppointmentDto { AppointmentId = 1 };
+
+        _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync(appointment);
+        _mapperMock.Setup(m => m.Map<AppointmentDto?>(appointment)).Returns(dto);
+
+        var result = await _service.GetByIdAsync(1);
+
+        result.Should().NotBeNull();
+        result.AppointmentId.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task DeleteAppointmentAsync_Should_Return_True_When_Deleted()
+    {
+        _repoMock.Setup(r => r.DeleteAsync(1, default)).ReturnsAsync(true);
+
+        var result = await _service.DeleteAppointmentAsync(1);
+
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetAppointmentsByDoctorIdAsync_Should_Return_List()
+    {
+        var list = new List<Appointment> { new Appointment() };
+        var dtos = new List<AppointmentDto> { new AppointmentDto() };
+
+        _repoMock.Setup(r => r.GetAppointmentsByDoctorIdAsync(1, default)).ReturnsAsync(list);
+        _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(list)).Returns(dtos);
+
+        var result = await _service.GetAppointmentsByDoctorIdAsync(1);
+
+        result.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetAppointmentsByPatientIdAsync_Should_Return_List()
+    {
+        var list = new List<Appointment> { new Appointment() };
+        var dtos = new List<AppointmentDto> { new AppointmentDto() };
+
+        _repoMock.Setup(r => r.GetAppointmentsByPatientIdAsync(1, default)).ReturnsAsync(list);
+        _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(list)).Returns(dtos);
+
+        var result = await _service.GetAppointmentsByPatientIdAsync(1);
+
+        result.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Return_Null_When_NotFound()
+    {
+        _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync((Appointment?)null);
+
+        var result = await _service.UpdateAsync(1, new UpdateAppointmentStatusDto());
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Throw_When_Completed()
+    {
+        var existing = new Appointment { AppointmentId = 1, Status = "Completed" };
+
+        _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync(existing);
+
+        await Assert.ThrowsAsync<System.Exception>(() =>
+            _service.UpdateAsync(1, new UpdateAppointmentStatusDto { Status = "Cancelled" }));
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Throw_When_Cancelled_Without_Reason()
+    {
+        var existing = new Appointment { AppointmentId = 1, Status = "Scheduled" };
+
+        _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync(existing);
+
+        await Assert.ThrowsAsync<System.Exception>(() =>
+            _service.UpdateAsync(1, new UpdateAppointmentStatusDto
+            {
+                Status = "Cancelled",
+                CancellationReason = ""
+            }));
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Update_When_Valid()
+    {
+        var existing = new Appointment { AppointmentId = 1, Status = "Scheduled" };
+        var updated = new Appointment { AppointmentId = 1, Status = "Cancelled" };
+        var dto = new AppointmentDto { AppointmentId = 1, Status = "Cancelled" };
+
+        _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync(existing);
+        _repoMock.Setup(r => r.UpdateAsync(1, existing, default)).ReturnsAsync(updated);
+        _mapperMock.Setup(m => m.Map<AppointmentDto?>(updated)).Returns(dto);
+
+        var result = await _service.UpdateAsync(1, new UpdateAppointmentStatusDto
+        {
+            Status = "Cancelled",
+            CancellationReason = "Patient request"
+        });
+
+        result.Status.Should().Be("Cancelled");
+    }
+}

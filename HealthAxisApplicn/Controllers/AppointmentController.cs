@@ -1,5 +1,7 @@
 ﻿using HealthAxisApplicn.Dto.Appointments;
 using HealthAxisApplicn.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,6 +9,7 @@ namespace HealthAxisApplicn.Controllers
 {
     [Route("api/appointments")]
     [ApiController]
+    [Authorize]
     public class AppointmentController(IAppointmentService service) : ControllerBase
     {
         [HttpGet]
@@ -25,6 +28,7 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentDto entity)
         {
             if (!ModelState.IsValid)
@@ -49,6 +53,7 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpGet("patient/{patientId:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetByPatient(int patientId)
         {
             var result = await service.GetAppointmentsByPatientIdAsync(patientId);
@@ -56,10 +61,18 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpGet("doctor/{doctorId:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetByDoctor(int doctorId)
         {
             var result = await service.GetAppointmentsByDoctorIdAsync(doctorId);
             return result.Count == 0 ? NotFound() : Ok(result);
+        }
+        [HttpDelete("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        { 
+            await service.DeleteAppointmentAsync(id); 
+            return NoContent(); 
         }
     }
 }
