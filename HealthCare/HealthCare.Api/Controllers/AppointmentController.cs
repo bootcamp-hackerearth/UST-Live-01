@@ -1,5 +1,6 @@
 ﻿using HealthCare.Api.DTOs.Appointment;
 using HealthCare.Api.DTOs.Appointments;
+using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -22,14 +23,14 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto,int id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _service.AddAsync(dto,id);
+            var patientId = GetPatientIdFromClaims();
+            await _service.AddAsync(dto,patientId);
 
             return StatusCode(201, new
             {
@@ -39,8 +40,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPut("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentDto dto)
         {
             if (!ModelState.IsValid)
@@ -53,8 +53,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpPatch("{id:int}/status")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Doctor")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateAppointmentDto dto)
         {
             await _service.UpdateStatusAsync(id, dto);
@@ -63,11 +62,8 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("available-slots")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient")]
-        public async Task<IActionResult> GetAvailableSlots(
-                    [FromQuery] int doctorId,
-                    [FromQuery] DateOnly date)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
+        public async Task<IActionResult> GetAvailableSlots( [FromQuery] int doctorId,[FromQuery] DateOnly date)
         {
             var slots = await _service.AvailableTimeSlots(date, doctorId);
             return Ok(slots);
@@ -75,8 +71,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("check-availability")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         public async Task<IActionResult> CheckAvailability(int doctorId, DateOnly date, string timeSlot)
         {
             var result = await _service.IsAvailable(date, doctorId, timeSlot);
@@ -84,43 +79,29 @@ namespace HealthCare.Api.Controllers
         }
 
         [HttpGet("doctor/{doctorId:int}/schedule")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Doctor")]
-        public async Task<IActionResult> GetDoctorSchedule(int doctorId, DateOnly date)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetDoctorSchedule( DateOnly date)
         {
+            var doctorId = GetDoctorIdFromClaims();
             var result = await _service.GetDoctorSchedule(date, doctorId);
             return Ok(result);
         }
 
 
         [HttpGet("my-schedule")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         public async Task<IActionResult> GetMySchedule([FromQuery] DateOnly date)
         {
-            var patientIdClaim = User.FindFirst("PatientId")?.Value;
-
-            if (string.IsNullOrEmpty(patientIdClaim))
-                return Unauthorized();
-
-            var patientId = int.Parse(patientIdClaim);
-
+            var patientId = GetPatientIdFromClaims();
             var result = await _service.GetPatientSchedule(date, patientId);
             return Ok(result);
         }
 
         [HttpGet("my")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         public async Task<IActionResult> GetMyAppointments()
         {
-            var patientIdClaim = User.FindFirst("PatientId")?.Value;
-
-            if (string.IsNullOrEmpty(patientIdClaim))
-                return Unauthorized();
-
-            var patientId = int.Parse(patientIdClaim);
-
+            var patientId = GetPatientIdFromClaims();
             var result = await _service.GetAppointmentByPatient(patientId);
             return Ok(result);
         }
@@ -129,10 +110,27 @@ namespace HealthCare.Api.Controllers
         [HttpGet("doctor/{doctorId:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Doctor")]
-        public async Task<IActionResult> GetDoctorAppointments(int doctorId)
+        public async Task<IActionResult> GetDoctorAppointments()
         {
+            var doctorId = GetDoctorIdFromClaims();
             var result = await _service.GetAppointmentByDoctor(doctorId);
             return Ok(result);
+        }
+
+        private int GetPatientIdFromClaims()
+        {
+            var claim = User.FindFirst("PatientId")
+                ?? throw new InvalidOperationException("PatientId claim not found in token.");
+
+            return int.Parse(claim.Value);
+        }
+
+        private int GetDoctorIdFromClaims()
+        {
+            var claim = User.FindFirst("DoctorId")
+                ?? throw new InvalidOperationException("DoctorId claim not found in token.");
+
+            return int.Parse(claim.Value);
         }
 
     }

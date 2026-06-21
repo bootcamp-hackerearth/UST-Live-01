@@ -19,8 +19,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpDelete("/records/{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> DeleteHealthRecord(int id)
         {
             await _healthRecordService.DeleteAsync(id);

@@ -121,33 +121,5 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-
-        public async Task<PatientListDto?> GetByUserIdAsync(string userId)
-        {
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(p => p.UserId == userId);
-
-            if (patient == null)
-                throw new InvalidOperationException("Patient not found.");
-
-            return _mapper.Map<PatientListDto>(patient);
-        }
-
-        public async Task UpdateByUserIdAsync(string userId, UpdatePatientDto dto)
-        {
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(p => p.UserId == userId);
-
-            if (patient == null)
-                throw new InvalidOperationException("Patient not found.");
-
-            _mapper.Map(dto, patient);
-
-            await _context.SaveChangesAsync();
-        }
-
-
-
-
     }
 }

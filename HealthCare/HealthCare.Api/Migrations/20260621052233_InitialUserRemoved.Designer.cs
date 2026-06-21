@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare.Api.Migrations
 {
     [DbContext(typeof(HealthCareDbContext))]
-    [Migration("20260619034707_AdminSeeded")]
-    partial class AdminSeeded
+    [Migration("20260621052233_InitialUserRemoved")]
+    partial class InitialUserRemoved
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

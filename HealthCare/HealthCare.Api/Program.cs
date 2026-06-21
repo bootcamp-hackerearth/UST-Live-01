@@ -26,41 +26,18 @@ public partial class Program
             cfg.AddProfile<MappingProfile>();
         });
 
-        //swagger
-
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "HealthApp API",
-                Version = "v1"
-            });
-
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "Enter JWT token only. Do not type Bearer."
-            });
-
-            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-            {
-                [new OpenApiSecuritySchemeReference("bearer", document)] = []
-            });
-        });
-
-
         //Exception Handler
         builder.Services.AddProblemDetails();
         builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
         builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
 
         //DB conn
         builder.Services.AddDbContext<HealthCareDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("Dbconn"))
         );
+
         builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
             options.User.RequireUniqueEmail = true;
@@ -69,7 +46,7 @@ public partial class Program
             options.Password.RequireNonAlphanumeric = true;
             options.Password.RequiredLength = 8;
         })
-            .AddEntityFrameworkStores<HealthCareDbContext>().AddDefaultTokenProviders();
+           .AddEntityFrameworkStores<HealthCareDbContext>().AddDefaultTokenProviders();
 
         // JWT Auth
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -85,27 +62,61 @@ public partial class Program
                 ValidAudience = jwt["Audience"],
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(jwt["Key"]!)
-                ),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt["Key"]!)),
                 RoleClaimType = ClaimTypes.Role,
+                NameClaimType = ClaimTypes.NameIdentifier,
                 ClockSkew = TimeSpan.Zero
             };
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    // Set a breakpoint here in Visual Studio
+                    Console.WriteLine($"JWT Error: {context.Exception.Message}");
+                    return Task.CompletedTask;
+                }
+            };
         });
-
+       
+        builder.Services.AddAuthorization();
         builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         builder.Services.AddScoped<IPatientRepository, PatientRepository>();
         builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
         builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
         builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
+        builder.Services.AddSwaggerGen();
+        builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IPatientService, PatientService>();
         builder.Services.AddScoped<IDoctorService, DoctorService>();
         builder.Services.AddScoped<IAppointmentService, AppointmentService>();
         builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
-        builder.Services.AddScoped<IAuthService, AuthService>();
+
+
+        //swagger
+
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "HealthApp API",
+                Version = "v1"
+            });
+
+            options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+            {
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "Enter JWT token only. Do not type Bearer."
+            });
+
+            options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference("bearer", document)] = []
+            });
+        });
 
         var app = builder.Build();
         app.UseExceptionHandler();
@@ -113,8 +124,8 @@ public partial class Program
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
-            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
             await RoleSeeder.SeedRoleAsync(roleManager);
             await AdminSeeder.SeedAdminAsync(userManager, roleManager);
         }
@@ -128,6 +139,7 @@ public partial class Program
         }
 
         app.UseHttpsRedirection();
+        app.UseRouting();
 
         app.UseAuthentication();
 

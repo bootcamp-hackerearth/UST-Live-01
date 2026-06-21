@@ -75,7 +75,7 @@ namespace HealthCare.Api.Tests
         public async Task UpdateAsync_ShouldThrow_WhenNotFound()
         {
             _repoMock.Setup(r => r.GetByIdAsync(1))
-                .ReturnsAsync((Appointment)null);
+                .ReturnsAsync((Appointment?)null);
 
             await Assert.ThrowsAsync<AppointmentNotFoundException>(() =>
                 _service.UpdateAsync(1, new UpdateAppointmentDto()));
@@ -99,7 +99,7 @@ namespace HealthCare.Api.Tests
         public async Task DeleteAsync_ShouldThrow_WhenNotFound()
         {
             _repoMock.Setup(r => r.GetByIdAsync(1))
-                .ReturnsAsync((Appointment)null);
+                .ReturnsAsync((Appointment?)null);
 
             await Assert.ThrowsAsync<AppointmentNotFoundException>(() =>
                 _service.DeleteAsync(1));

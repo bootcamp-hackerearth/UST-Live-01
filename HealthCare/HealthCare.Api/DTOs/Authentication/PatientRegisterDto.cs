@@ -27,7 +27,7 @@ namespace HealthCare.Api.DTOs.Authentication
         public string Password { get; set; } = null!;
 
         [Required]
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
 
 
         [MaxLength(50)]

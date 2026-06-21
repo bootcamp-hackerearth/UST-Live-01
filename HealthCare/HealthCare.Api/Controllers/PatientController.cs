@@ -5,6 +5,7 @@ using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCare.Api.Controllers
@@ -20,115 +21,39 @@ namespace HealthCare.Api.Controllers
             _service = service;
         }
 
+        //Get Profile
 
-        [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAll(PatientFilter filter)
+        [HttpGet("Profile")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
+        public async Task<IActionResult> GetMyProfile()
         {
-            var patients = await _service.GetAllAsync(filter);
-            return Ok(patients);
-        }
+            var patientId = GetPatientIdFromClaims();
 
-
-        [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var patient = await _service.GetByIdAsync(id);
-
-            if (patient is null)
-                return NotFound();
+            var patient = await _service.GetByIdAsync(patientId);
 
             return Ok(patient);
         }
 
-
-        [HttpPut]
+        [HttpPut("Profile")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Patient,Admin")]
-        public async Task<IActionResult> Update(int id,  UpdatePatientDto dto)
+        public async Task<IActionResult> Update( UpdatePatientDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (id == null)
-                return Unauthorized();
-
-
-            await _service.UpdateAsync(id, dto);
-
-            return NoContent();
+            var patientId = GetPatientIdFromClaims();
+            await _service.UpdateAsync(patientId, dto);
+            return Ok(new { message = "Patient profile updated successfully" });
         }
 
-        [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int id)
+      
+        private int GetPatientIdFromClaims()
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
-        }
+            var claim = User.FindFirst("PatientId")
+                ?? throw new InvalidOperationException("PatientId claim not found in token.");
 
-
-        //Serach by name 
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchByName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return BadRequest("Name is required");
-
-            var result = await _service.SearchByNameAsync(name);
-
-            if (!result.Any())
-                return NotFound($"No patients found with name '{name}'");
-
-            return Ok(result);
-        }
-
-        //Get Profile
-
-        [HttpGet("me")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient")]
-        public async Task<IActionResult> GetMyProfile()
-        {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            // 👉 You need this method in service
-            var patient = await _service.GetByUserIdAsync(userId);
-
-            return Ok(patient);
-        }
-
-
-        [HttpPut("me")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient")]
-        public async Task<IActionResult> UpdateMyProfile(UpdatePatientDto dto)
-        {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            await _service.UpdateByUserIdAsync(userId, dto);
-
-            return NoContent();
-        }
-
-
-        [HttpPatch("{id:int}/status")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateStatus(int id, bool isActive)
-        {
-            await _service.UpdateStatusAsync(id, isActive);
-            return NoContent();
+            return int.Parse(claim.Value);
         }
 
 

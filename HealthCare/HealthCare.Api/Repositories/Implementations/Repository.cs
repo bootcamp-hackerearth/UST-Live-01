@@ -38,13 +38,14 @@ namespace HealthCare.Api.Repositories.Implementations
         }
 
         public  async Task<T>GetByIdAsync(int id)=>
+
              await _dbSet.FindAsync(id);
 
         public async Task<PagedResult<T>> GetAllAsync(
              int pageNumber,
              int pageSize,
-             Expression<Func<T, bool>> predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null)
+             Expression<Func<T, bool>>? predicate = null,
+             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
         {
             IQueryable<T> query = _dbSet;
 

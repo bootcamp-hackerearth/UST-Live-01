@@ -22,8 +22,7 @@ namespace HealthCare.Api.Controllers
 
         //Create
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles ="Doctor")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Add([FromBody] CreateHealthRecordDto dto)
         {
             if (!ModelState.IsValid)
@@ -67,13 +66,31 @@ namespace HealthCare.Api.Controllers
             return Ok(new { message = "Health record updated successfully" });
         }
 
-        //  DELETE Health Record
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _healthRecordService.DeleteAsync(id);
 
-            return NoContent(); // 204
+        [HttpGet("my-records")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetHealthRecordByPatient()
+        {
+            var patientId = GetPatientIdFromClaims();
+            var result = await _healthRecordService.GetHealthRecordByPatient(patientId);
+            return Ok(result);
+        }
+
+        private int GetPatientIdFromClaims()
+        {
+            var claim = User.FindFirst("PatientId")
+                ?? throw new InvalidOperationException("PatientId claim not found in token.");
+
+            return int.Parse(claim.Value);
+        }
+
+        private int GetDoctorIdFromClaims()
+        {
+            var claim = User.FindFirst("DoctorId")
+                ?? throw new InvalidOperationException("DoctorId claim not found in token.");
+
+            return int.Parse(claim.Value);
         }
 
 

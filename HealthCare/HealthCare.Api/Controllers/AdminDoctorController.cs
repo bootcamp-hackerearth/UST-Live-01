@@ -8,6 +8,7 @@ namespace HealthCare.Api.Controllers
 {
     [Route("api/admin")]
     [ApiController]
+    [Authorize]
     public class AdminDoctorController : ControllerBase
     {
 
@@ -21,18 +22,19 @@ namespace HealthCare.Api.Controllers
 
         }
 
-        [HttpGet("/doctors/{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+        [HttpGet("doctors/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetDoctorById(int id)
         {
             var result = await _doctorService.GetByIdAsync(id);
+            if (result == null)
+                throw new Exception("Doctor Not Found");
+
             return Ok(result);
         }
 
-        [HttpGet("/doctors")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+        [HttpGet("doctors")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAllDoctor([FromQuery] DoctorFilter filter)
         {
             if (!ModelState.IsValid)
@@ -42,9 +44,9 @@ namespace HealthCare.Api.Controllers
             return Ok(result);
         }
 
-        [HttpPut("/doctors/{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+
+        [HttpPut("doctors/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorDto dto)
         {
             if (!ModelState.IsValid)
@@ -54,18 +56,16 @@ namespace HealthCare.Api.Controllers
             return Ok();
         }
 
-        [HttpPatch("/doctors/{id}/status")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+        [HttpPatch("doctors/{id}/status")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> UpdateDoctorStatus(int id, [FromBody] bool isActive)
         {
             await _doctorService.UpdateStatusAsync(id, isActive);
             return Ok();
         }
 
-        [HttpDelete("/doctors/{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+        [HttpDelete("doctors/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> DeleteDoctor(int id)
         {
             await _doctorService.DeleteAsync(id);

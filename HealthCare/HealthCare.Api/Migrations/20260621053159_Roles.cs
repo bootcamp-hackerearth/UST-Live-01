@@ -5,7 +5,7 @@
 namespace HealthCare.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class RolesSeeded : Migration
+    public partial class Roles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

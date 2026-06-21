@@ -20,8 +20,7 @@ namespace HealthCare.Api.Controllers
         }
 
         [HttpGet("/appointments")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAllAppointment([FromQuery] AppointmentFilter filter)
         {
             if (!ModelState.IsValid)

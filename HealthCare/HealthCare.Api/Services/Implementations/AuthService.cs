@@ -65,6 +65,13 @@ namespace HealthCare.Api.Services.Implementations
         public async Task RegisterPatientAsync(PatientRegisterDto dto)
         {
 
+
+            if (string.IsNullOrEmpty(dto.Email))
+            {
+                throw new ArgumentException("Email is required");
+            }
+
+
             if (dto.Password != dto.ConfirmPassword)
                 throw new Exception("Passwords do not match");
 
@@ -147,7 +154,7 @@ namespace HealthCare.Api.Services.Implementations
             else if (role == "Admin")
             {
                 // Generate JWT
-                token = GenerateJwtToken(user, role); 
+                token = GenerateJwtToken(user, role);
             }
             else
             {
@@ -159,6 +166,27 @@ namespace HealthCare.Api.Services.Implementations
                 AccessToken = token,
                 Role = role
             };
+        }
+
+
+        //Chnage Password
+        public async Task ChangePasswordAsync(string userId, ChangePasswordDto dto)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                throw new InvalidOperationException("User not found");
+
+            var result = await _userManager.ChangePasswordAsync(
+                user,
+                dto.CurrentPassword,
+                dto.NewPassword
+            );
+
+            if (!result.Succeeded)
+                throw new InvalidOperationException(
+                    string.Join(", ", result.Errors.Select(e => e.Description))
+                );
         }
 
         //  JWT TOKEN GENERATION

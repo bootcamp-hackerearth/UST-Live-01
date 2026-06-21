@@ -3,24 +3,24 @@ using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthCare.Api.Controllers
 {
-    [Route("api/auth")]
     [ApiController]
-    public class RegisterController : ControllerBase
+    [Route("api/auth")]
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
 
-        public RegisterController(IAuthService authService)
+        public AuthController(IAuthService authService)
         {
             _authService = authService;
         }
 
         //  PATIENT SELF-REGISTRATION
-        [AllowAnonymous]
-
         [HttpPost("register-patient")]
+        [AllowAnonymous]
         public async Task<IActionResult> RegisterPatient([FromBody] PatientRegisterDto dto)
         {
             if (!ModelState.IsValid)
@@ -33,8 +33,7 @@ namespace HealthCare.Api.Controllers
 
         //  ADMIN CREATES DOCTOR
         [HttpPost("register-doctor")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> RegisterDoctor([FromBody] DoctorRegisterDto dto)
         {
             if (!ModelState.IsValid)
@@ -58,27 +57,18 @@ namespace HealthCare.Api.Controllers
             return Ok(response);
         }
 
-        //  GET CURRENT USER INFO (FROM TOKEN)
-        [Authorize]
+        [HttpPost("change-password")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpGet("me")]
-        public IActionResult GetCurrentUser()
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var patientId = User.FindFirst("PatientId")?.Value;
-            var doctorId = User.FindFirst("DoctorId")?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            return Ok(new
-            {
-                userId,
-                email,
-                role,
-                patientId,
-                doctorId
-            });
+            await _authService.ChangePasswordAsync(userId!, dto);
+
+            return Ok("Password changed successfully");
         }
     }
 }
