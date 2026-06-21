@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SharedClasses.Dtos;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -23,29 +24,81 @@ namespace HealthCareApp.Controllers
             return Ok(records);
         }
 
+        // Patient only: view logged-in patient's health records
+        [HttpGet("my")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Patient")]
+        public async Task<IActionResult> GetMyHealthRecords()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var records = await service.GetMyHealthRecordsForPatientAsync(identityUserId);
+
+            return Ok(records);
+        }
+
         // Admin, Doctor, Patient: view health record by id
-        // Later ownership check:
-        // Patient should view only own record.
-        // Doctor should view only related record.
+        // Patient ownership is checked here.
+        // Doctor ownership will be handled later.
         [HttpGet("{healthRecordId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,Doctor,Patient")]
         public async Task<IActionResult> GetHealthRecordById([FromRoute] int healthRecordId)
         {
-            var record = await service.GetHealthRecordByIdAsync(healthRecordId);
+            if (User.IsInRole("Admin"))
+            {
+                var record = await service.GetHealthRecordByIdAsync(healthRecordId);
 
-            return Ok(record);
+                return Ok(record);
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrWhiteSpace(identityUserId))
+                {
+                    return Unauthorized(new
+                    {
+                        Message = "Invalid user token."
+                    });
+                }
+
+                var record = await service.GetHealthRecordByIdForPatientAsync(
+                    healthRecordId,
+                    identityUserId);
+
+                return Ok(record);
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                // Doctor ownership will be handled later.
+                var record = await service.GetHealthRecordByIdAsync(healthRecordId);
+
+                return Ok(record);
+            }
+
+            return Forbid();
         }
 
-        // Admin, Patient, Doctor: view records by patient
-        // Later:
-        // Patient should access only own patientId.
-        // Doctor should access only patients linked to their appointments.
+        // Admin and Doctor: view records by patient id
+        // Patient should use GET /api/HealthRecords/my
+        // Doctor ownership will be handled later.
         [HttpGet("patient/{patientId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Patient,Doctor")]
+            Roles = "Admin,Doctor")]
         public async Task<IActionResult> GetHealthRecordsByPatientId([FromRoute] int patientId)
         {
             var records = await service.GetHealthRecordsByPatientIdAsync(patientId);
@@ -53,9 +106,8 @@ namespace HealthCareApp.Controllers
             return Ok(records);
         }
 
-        // Admin, Doctor: view records by doctor
-        // Later:
-        // Doctor should access only own doctorId.
+        // Admin and Doctor: view records by doctor id
+        // Doctor ownership will be handled later.
         [HttpGet("doctor/{doctorId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -67,9 +119,8 @@ namespace HealthCareApp.Controllers
             return Ok(records);
         }
 
-        // Admin, Doctor: view records by appointment
-        // Later:
-        // Doctor should access only appointment assigned to them.
+        // Admin and Doctor: view records by appointment
+        // Doctor ownership will be handled later.
         [HttpGet("appointment/{appointmentId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -82,6 +133,7 @@ namespace HealthCareApp.Controllers
         }
 
         // Doctor only: add health record
+        // Doctor ownership will be handled later.
         [HttpPost]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -97,6 +149,7 @@ namespace HealthCareApp.Controllers
         }
 
         // Doctor only: update health record
+        // Doctor ownership will be handled later.
         [HttpPut("{healthRecordId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,

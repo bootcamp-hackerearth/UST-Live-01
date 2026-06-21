@@ -20,5 +20,9 @@ namespace HealthCareApp.Services
         Task<HealthRecordDto> UpdateHealthRecordAsync(int healthRecordId, UpdateHealthRecordDto dto);
 
         Task<HealthRecordDto> DeleteHealthRecordAsync(int healthRecordId);
+
+        Task<List<HealthRecordDto>> GetMyHealthRecordsForPatientAsync(string identityUserId);
+
+        Task<HealthRecordDto> GetHealthRecordByIdForPatientAsync(int healthRecordId,string identityUserId);
     }
 }

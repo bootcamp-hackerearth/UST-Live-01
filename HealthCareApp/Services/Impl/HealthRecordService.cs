@@ -202,6 +202,59 @@ namespace HealthCareApp.Services
             return mapper.Map<HealthRecordDto>(deletedHealthRecord);
         }
 
+        // ---------------- Patient ownership methods ----------------
+
+        public async Task<List<HealthRecordDto>> GetMyHealthRecordsForPatientAsync(string identityUserId)
+        {
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            var healthRecords = await healthRecordRepository.GetByPatientIdAsync(patient.PatientId);
+
+            return mapper.Map<List<HealthRecordDto>>(healthRecords);
+        }
+
+        public async Task<HealthRecordDto> GetHealthRecordByIdForPatientAsync(
+            int healthRecordId,
+            string identityUserId)
+        {
+            ValidateHealthRecordId(healthRecordId);
+
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            var healthRecord = await healthRecordRepository.GetByIdAsync(healthRecordId);
+
+            if (healthRecord is null)
+            {
+                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+            }
+
+            if (healthRecord.PatientId != patient.PatientId)
+            {
+                throw new ForbiddenAccessException("Patients can access only their own health records.");
+            }
+
+            return mapper.Map<HealthRecordDto>(healthRecord);
+        }
+
+        // ---------------- Private helper methods ----------------
+
+        private async Task<Patient> GetLoggedInPatientAsync(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid logged-in user.");
+            }
+
+            var patient = await patientRepository.GetByIdentityUserIdAsync(identityUserId);
+
+            if (patient is null)
+            {
+                throw new EntityNotFoundException("Patient profile for logged-in user", 0);
+            }
+
+            return patient;
+        }
+
         private async Task<Appointment> GetAppointmentEntityByIdAsync(int appointmentId)
         {
             ValidateAppointmentId(appointmentId);
