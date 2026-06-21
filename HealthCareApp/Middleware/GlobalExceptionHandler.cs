@@ -37,7 +37,8 @@ namespace HealthCareApp.Middleware
 
                 HealthRecordRuleException ex =>
                     (StatusCodes.Status400BadRequest, ex.Message),
-
+                ForbiddenAccessException ex =>
+                    (StatusCodes.Status403Forbidden, ex.Message),
                 BusinessRuleException ex =>
                     (StatusCodes.Status400BadRequest, ex.Message),
 

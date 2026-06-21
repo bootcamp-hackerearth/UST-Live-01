@@ -4,6 +4,7 @@ using HealthCareApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -23,24 +24,124 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
+        // Patient only: View logged-in patient's appointments
+        [HttpGet("my")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Patient")]
+        public async Task<IActionResult> GetMyAppointments()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var appointments = await service.GetMyAppointmentsForPatientAsync(identityUserId);
+
+            return Ok(appointments);
+        }
+
+        // Patient only: View logged-in patient's upcoming appointments
+        [HttpGet("my/upcoming")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Patient")]
+        public async Task<IActionResult> GetMyUpcomingAppointments()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var appointments = await service.GetMyUpcomingAppointmentsForPatientAsync(identityUserId);
+
+            return Ok(appointments);
+        }
+
+        // Patient only: View logged-in patient's pending appointments
+        [HttpGet("my/pending")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Patient")]
+        public async Task<IActionResult> GetMyPendingAppointments()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var appointments = await service.GetMyPendingAppointmentsForPatientAsync(identityUserId);
+
+            return Ok(appointments);
+        }
+
         // Admin, Patient, Doctor: View appointment by id
+        // Patient ownership is checked here.
+        // Doctor ownership will be handled later.
         [HttpGet("{appointmentId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,Patient,Doctor")]
         public async Task<IActionResult> GetAppointmentById([FromRoute] int appointmentId)
         {
-            var appointment = await service.GetAppointmentByIdAsync(appointmentId);
+            if (User.IsInRole("Admin"))
+            {
+                var appointment = await service.GetAppointmentByIdAsync(appointmentId);
 
-            return Ok(appointment);
+                return Ok(appointment);
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrWhiteSpace(identityUserId))
+                {
+                    return Unauthorized(new
+                    {
+                        Message = "Invalid user token."
+                    });
+                }
+
+                var appointment = await service.GetAppointmentByIdForPatientAsync(
+                    appointmentId,
+                    identityUserId);
+
+                return Ok(appointment);
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                // Doctor ownership will be handled later.
+                var appointment = await service.GetAppointmentByIdAsync(appointmentId);
+
+                return Ok(appointment);
+            }
+
+            return Forbid();
         }
 
-        // Admin, Patient: Get appointments by patient
-        // Later: patient should access only own patientId
+        // Admin only: Get appointments by patient id
+        // Patient should use GET /api/Appointments/my
         [HttpGet("patient/{patientId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Patient")]
+            Roles = "Admin")]
         public async Task<IActionResult> GetAppointmentsByPatientId([FromRoute] int patientId)
         {
             var appointments = await service.GetAppointmentsByPatientIdAsync(patientId);
@@ -48,8 +149,8 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
-        // Admin, Doctor: Get appointments by doctor
-        // Later: doctor should access only own doctorId
+        // Admin, Doctor: Get appointments by doctor id
+        // Doctor ownership will be handled later.
         [HttpGet("doctor/{doctorId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -85,11 +186,12 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
-        // Admin, Patient: Upcoming appointments by patient
+        // Admin only: Upcoming appointments by patient id
+        // Patient should use GET /api/Appointments/my/upcoming
         [HttpGet("patient/{patientId:int}/upcoming")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Patient")]
+            Roles = "Admin")]
         public async Task<IActionResult> GetUpcomingAppointmentsByPatientId([FromRoute] int patientId)
         {
             var appointments = await service.GetUpcomingAppointmentsByPatientIdAsync(patientId);
@@ -97,7 +199,8 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
-        // Admin, Doctor: Upcoming appointments by doctor
+        // Admin, Doctor: Upcoming appointments by doctor id
+        // Doctor ownership will be handled later.
         [HttpGet("doctor/{doctorId:int}/upcoming")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -109,11 +212,12 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
-        // Admin, Patient: Pending appointments by patient
+        // Admin only: Pending appointments by patient id
+        // Patient should use GET /api/Appointments/my/pending
         [HttpGet("patient/{patientId:int}/pending")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Patient")]
+            Roles = "Admin")]
         public async Task<IActionResult> GetPendingAppointmentsByPatientId([FromRoute] int patientId)
         {
             var appointments = await service.GetPendingAppointmentsByPatientIdAsync(patientId);
@@ -121,7 +225,8 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
-        // Admin, Doctor: Pending appointments by doctor
+        // Admin, Doctor: Pending appointments by doctor id
+        // Doctor ownership will be handled later.
         [HttpGet("doctor/{doctorId:int}/pending")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -133,7 +238,8 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
-        // Doctor, Admin: Today's confirmed appointments for doctor
+        // Admin, Doctor: Today's confirmed appointments for doctor
+        // Doctor ownership will be handled later.
         [HttpGet("doctor/{doctorId:int}/today-confirmed")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -146,13 +252,26 @@ namespace HealthCareApp.Controllers
         }
 
         // Patient only: Book appointment
+        // PatientId from body is ignored and replaced with logged-in PatientId in service.
         [HttpPost]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Patient")]
         public async Task<IActionResult> BookAppointment([FromBody] BookAppointmentDto request)
         {
-            var appointment = await service.BookAppointmentAsync(request);
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var appointment = await service.BookAppointmentForPatientAsync(
+                request,
+                identityUserId);
 
             return CreatedAtAction(
                 nameof(GetAppointmentById),
@@ -175,6 +294,7 @@ namespace HealthCareApp.Controllers
         }
 
         // Doctor only: Confirm appointment
+        // Doctor ownership will be handled later.
         [HttpPut("{appointmentId:int}/confirm")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -187,6 +307,7 @@ namespace HealthCareApp.Controllers
         }
 
         // Doctor only: Complete appointment
+        // Doctor ownership will be handled later.
         [HttpPut("{appointmentId:int}/complete")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -199,16 +320,49 @@ namespace HealthCareApp.Controllers
         }
 
         // Admin, Patient, Doctor: Cancel appointment
-        // CancelAppointmentDto should contain AppointmentId and Reason based on your service.
+        // Patient ownership is checked here.
+        // Doctor ownership will be handled later.
         [HttpPut("cancel")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,Patient,Doctor")]
         public async Task<IActionResult> CancelAppointment([FromBody] CancelAppointmentDto request)
         {
-            var appointment = await service.CancelAppointmentAsync(request);
+            if (User.IsInRole("Admin"))
+            {
+                var appointment = await service.CancelAppointmentAsync(request);
 
-            return Ok(appointment);
+                return Ok(appointment);
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrWhiteSpace(identityUserId))
+                {
+                    return Unauthorized(new
+                    {
+                        Message = "Invalid user token."
+                    });
+                }
+
+                var appointment = await service.CancelAppointmentForPatientAsync(
+                    request,
+                    identityUserId);
+
+                return Ok(appointment);
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                // Doctor ownership will be handled later.
+                var appointment = await service.CancelAppointmentAsync(request);
+
+                return Ok(appointment);
+            }
+
+            return Forbid();
         }
 
         // Admin only: Delete appointment

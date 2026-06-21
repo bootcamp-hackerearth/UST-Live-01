@@ -382,6 +382,118 @@ namespace HealthCareApp.Services.Impl
             return mapper.Map<AppointmentDto>(deletedAppointment);
         }
 
+        public async Task<List<AppointmentDto>> GetMyAppointmentsForPatientAsync(string identityUserId)
+        {
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            var appointments = await appointmentRepository.GetByPatientIdAsync(patient.PatientId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetMyUpcomingAppointmentsForPatientAsync(string identityUserId)
+        {
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            var appointments = await appointmentRepository.GetUpcomingAppointmentsByPatientIdAsync(patient.PatientId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetMyPendingAppointmentsForPatientAsync(string identityUserId)
+        {
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            var appointments = await appointmentRepository.GetPendingAppointmentsByPatientIdAsync(patient.PatientId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<AppointmentDto> GetAppointmentByIdForPatientAsync(
+            int appointmentId,
+            string identityUserId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            if (appointment.PatientId != patient.PatientId)
+            {
+                throw new ForbiddenAccessException("Patients can access only their own appointments.");
+            }
+
+            return mapper.Map<AppointmentDto>(appointment);
+        }
+
+        public async Task<AppointmentDto> BookAppointmentForPatientAsync(
+            BookAppointmentDto dto,
+            string identityUserId)
+        {
+            if (dto is null)
+            {
+                throw new AppointmentRuleException("Appointment details are required.");
+            }
+
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            // Important ownership fix:
+            // Ignore any patientId sent from body and force logged-in patient's PatientId.
+            dto.PatientId = patient.PatientId;
+
+            return await BookAppointmentAsync(dto);
+        }
+
+        public async Task<AppointmentDto> CancelAppointmentForPatientAsync(
+            CancelAppointmentDto dto,
+            string identityUserId)
+        {
+            if (dto is null)
+            {
+                throw new AppointmentRuleException("Cancellation details are required.");
+            }
+
+            ValidateAppointmentId(dto.AppointmentId);
+
+            var patient = await GetLoggedInPatientAsync(identityUserId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+            }
+
+            if (appointment.PatientId != patient.PatientId)
+            {
+                throw new ForbiddenAccessException("Patients can cancel only their own appointments.");
+            }
+
+            return await CancelAppointmentAsync(dto);
+        }
+
+        private async Task<Patient> GetLoggedInPatientAsync(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid logged-in user.");
+            }
+
+            var patient = await patientRepository.GetByIdentityUserIdAsync(identityUserId);
+
+            if (patient is null)
+            {
+                throw new EntityNotFoundException("Patient profile for logged-in user", 0);
+            }
+
+            return patient;
+        }
         private void ValidateAppointmentId(int appointmentId)
         {
             if (appointmentId <= 0)
