@@ -16,6 +16,21 @@ namespace HealthApp.Api.Controllers
         private readonly IHealthRecordService _healthRecordService;
         private readonly IAppointmentService _appointmentService;
 
+        private const string DoctorProfileNotLinkedMessage =
+            "Doctor profile is not linked to this user.";
+
+        private const string PatientProfileNotLinkedMessage =
+            "Patient profile is not linked to this user.";
+
+        private const string OnlyOwnHealthRecordsMessage =
+            "You can view only your own health records.";
+
+        private const string OnlyAssignedAppointmentsMessage =
+            "You can access only appointments assigned to you.";
+
+        private const string OnlyTreatingPatientsMessage =
+            "You can view health records only for patients you treat.";
+
         public HealthRecordsController(
             IHealthRecordService healthRecordService,
             IAppointmentService appointmentService)
@@ -24,31 +39,39 @@ namespace HealthApp.Api.Controllers
             _appointmentService = appointmentService;
         }
 
-        [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> GetAllHealthRecords()
-        {
-            var records = await _healthRecordService.GetAllAsync();
-
-            return Ok(records);
-        }
-
         [HttpGet("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
         public async Task<IActionResult> GetHealthRecordById(int id)
         {
             var record = await _healthRecordService.GetByIdAsync(id);
 
-            if (User.IsPatient() && record.PatientId != User.GetPatientId())
+            if (User.IsPatient())
             {
-                throw new ForbiddenAccessException(
-                    "You cannot access another patient's health record.");
+                var loggedInPatientId = User.GetPatientId();
+
+                if (loggedInPatientId == null)
+                {
+                    throw new ForbiddenAccessException(PatientProfileNotLinkedMessage);
+                }
+
+                if (record.PatientId != loggedInPatientId.Value)
+                {
+                    throw new ForbiddenAccessException(OnlyOwnHealthRecordsMessage);
+                }
             }
 
-            if (User.IsDoctor() && record.DoctorId != User.GetDoctorId())
+            if (User.IsDoctor())
             {
-                throw new ForbiddenAccessException(
-                    "You cannot access another doctor's health record.");
+                var loggedInDoctorId = User.GetDoctorId();
+
+                if (loggedInDoctorId == null)
+                {
+                    throw new ForbiddenAccessException(DoctorProfileNotLinkedMessage);
+                }
+
+                await EnsureDoctorTreatsPatientAsync(
+                    loggedInDoctorId.Value,
+                    record.PatientId);
             }
 
             return Ok(record);
@@ -62,42 +85,85 @@ namespace HealthApp.Api.Controllers
 
             if (loggedInDoctorId == null)
             {
-                throw new ForbiddenAccessException(
-                    "Doctor profile is not linked to this user.");
+                throw new ForbiddenAccessException(DoctorProfileNotLinkedMessage);
             }
 
             dto.DoctorId = loggedInDoctorId.Value;
 
+            if (dto.AppointmentId.HasValue)
+            {
+                await EnsureDoctorOwnsAppointmentAsync(
+                    loggedInDoctorId.Value,
+                    dto.AppointmentId.Value);
+            }
+            else
+            {
+                await EnsureDoctorTreatsPatientAsync(
+                    loggedInDoctorId.Value,
+                    dto.PatientId);
+            }
+
             await _healthRecordService.AddAsync(dto);
 
-            return StatusCode(
-                StatusCodes.Status201Created,
-                new
-                {
-                    message = "Health record added successfully."
-                });
+            return StatusCode(StatusCodes.Status201Created, new
+            {
+                message = "Health record added successfully."
+            });
         }
 
         [HttpGet("patient/{patientId:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
         public async Task<IActionResult> GetHealthRecordsByPatient(int patientId)
         {
-            if (User.IsPatient() && User.GetPatientId() != patientId)
+            if (User.IsPatient())
             {
-                throw new ForbiddenAccessException(
-                    "You cannot access another patient's health records.");
+                var loggedInPatientId = User.GetPatientId();
+
+                if (loggedInPatientId == null)
+                {
+                    throw new ForbiddenAccessException(PatientProfileNotLinkedMessage);
+                }
+
+                if (loggedInPatientId.Value != patientId)
+                {
+                    throw new ForbiddenAccessException(OnlyOwnHealthRecordsMessage);
+                }
             }
 
-            var records = await _healthRecordService.GetPatientHistoryAsync(
-                patientId);
+            if (User.IsDoctor())
+            {
+                var loggedInDoctorId = User.GetDoctorId();
+
+                if (loggedInDoctorId == null)
+                {
+                    throw new ForbiddenAccessException(DoctorProfileNotLinkedMessage);
+                }
+
+                await EnsureDoctorTreatsPatientAsync(
+                    loggedInDoctorId.Value,
+                    patientId);
+            }
+
+            var records = await _healthRecordService.GetPatientHistoryAsync(patientId);
 
             return Ok(records);
         }
 
         [HttpGet("~/api/patients/{id:int}/health-records")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> GetPatientHealthRecords(int id)
         {
+            var loggedInDoctorId = User.GetDoctorId();
+
+            if (loggedInDoctorId == null)
+            {
+                throw new ForbiddenAccessException(DoctorProfileNotLinkedMessage);
+            }
+
+            await EnsureDoctorTreatsPatientAsync(
+                loggedInDoctorId.Value,
+                id);
+
             var records = await _healthRecordService.GetPatientHistoryAsync(id);
 
             return Ok(records);
@@ -111,49 +177,58 @@ namespace HealthApp.Api.Controllers
 
             if (patientId == null)
             {
-                throw new ForbiddenAccessException(
-                    "Patient profile is not linked to this user.");
+                throw new ForbiddenAccessException(PatientProfileNotLinkedMessage);
             }
 
-            var records = await _healthRecordService.GetPatientHistoryAsync(
-                patientId.Value);
+            var records = await _healthRecordService.GetPatientHistoryAsync(patientId.Value);
 
             return Ok(records);
         }
 
         [HttpGet("~/api/appointments/{id:int}/healthrecord")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> HealthRecordExists(int id)
         {
-            await EnsureDoctorOwnsAppointmentIfDoctor(id);
+            var loggedInDoctorId = User.GetDoctorId();
+
+            if (loggedInDoctorId == null)
+            {
+                throw new ForbiddenAccessException(DoctorProfileNotLinkedMessage);
+            }
+
+            await EnsureDoctorOwnsAppointmentAsync(
+                loggedInDoctorId.Value,
+                id);
 
             var exists = await _healthRecordService.ExistsByAppointmentIdAsync(id);
 
             return Ok(exists);
         }
 
-        private async Task EnsureDoctorOwnsAppointmentIfDoctor(int appointmentId)
+        private async Task EnsureDoctorOwnsAppointmentAsync(int doctorId, int appointmentId)
         {
-            if (!User.IsDoctor())
+            var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);
+
+            if (appointment.DoctorId != doctorId)
             {
-                return;
+                throw new ForbiddenAccessException(OnlyAssignedAppointmentsMessage);
             }
+        }
 
-            var loggedInDoctorId = User.GetDoctorId();
+        private async Task EnsureDoctorTreatsPatientAsync(int doctorId, int patientId)
+        {
+            var appointments = await _appointmentService.GetAppointmentsAsync(
+                doctorId,
+                patientId,
+                false);
 
-            if (loggedInDoctorId == null)
+            var hasTreatmentRelationship = appointments.Any(appointment =>
+                appointment.Status == "Confirmed" ||
+                appointment.Status == "Completed");
+
+            if (!hasTreatmentRelationship)
             {
-                throw new ForbiddenAccessException(
-                    "Doctor profile is not linked to this user.");
-            }
-
-            var appointment = await _appointmentService.GetAppointmentByIdAsync(
-                appointmentId);
-
-            if (appointment.DoctorId != loggedInDoctorId.Value)
-            {
-                throw new ForbiddenAccessException(
-                    "You cannot access another doctor's appointment.");
+                throw new ForbiddenAccessException(OnlyTreatingPatientsMessage);
             }
         }
     }

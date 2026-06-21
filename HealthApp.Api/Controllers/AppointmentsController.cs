@@ -16,8 +16,8 @@ namespace HealthApp.Api.Controllers
     {
         private readonly IAppointmentService _appointmentService;
 
-        private readonly string PatientNotLinked = "Patient profile is not linked to this user.";
-        private readonly string DoctorNotLinked = "Doctor profile is not linked to this user.";
+        private const string PatientNotLinked = "Patient profile is not linked to this user.";
+        private const string DoctorNotLinked = "Doctor profile is not linked to this user.";
 
         public AppointmentsController(IAppointmentService appointmentService)
         {

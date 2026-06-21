@@ -69,21 +69,23 @@ namespace HealthApp.Api.Mapping
             // HealthRecord mappings
 
 
+
             CreateMap<HealthRecord, HealthRecordDto>()
                 .ForMember(dest => dest.PatientId,
-                    opt => opt.MapFrom(src => src.PatientId))
+                    opt => opt.MapFrom(src => src.PatientId ?? 0))
                 .ForMember(dest => dest.DoctorId,
-                    opt => opt.MapFrom(src => src.DoctorId))
+                    opt => opt.MapFrom(src => src.DoctorId ?? 0))
                 .ForMember(dest => dest.AppointmentId,
                     opt => opt.MapFrom(src => src.AppointmentId))
                 .ForMember(dest => dest.PatientName,
-                    opt => opt.MapFrom(src => src.Patient != null ? src.Patient.FullName : string.Empty))
+                    opt => opt.MapFrom(src =>
+                        src.Patient != null ? src.Patient.FullName : string.Empty))
                 .ForMember(dest => dest.DoctorName,
-                    opt => opt.MapFrom(src => src.Doctor != null ? src.Doctor.FullName : string.Empty))
+                    opt => opt.MapFrom(src =>
+                        src.Doctor != null ? src.Doctor.FullName : string.Empty))
                 .ForMember(dest => dest.VisitDate,
-                    opt => opt.MapFrom(src => src.VisitDate.ToDateTime(TimeOnly.MinValue)));
-
-
+                    opt => opt.MapFrom(src =>
+                        src.VisitDate.ToDateTime(TimeOnly.MinValue)));
 
             CreateMap<HealthRecordCreateDto, HealthRecord>()
                 .ForMember(dest => dest.RecordId, opt => opt.Ignore())
