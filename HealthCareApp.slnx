@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="HealthCareApp.AdminBlazor/HealthCareApp.AdminBlazor.csproj" Id="9e991e8b-b1c5-4e91-a827-36fb0dc1bc08" />
   <Project Path="HealthCareApp/HealthCareApp.csproj" />
 </Solution>

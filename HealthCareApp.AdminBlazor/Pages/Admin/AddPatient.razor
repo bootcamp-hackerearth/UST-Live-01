@@ -1,0 +1,162 @@
+﻿@page "/admin/patients/add"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Patients
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IPatientAdminService PatientService
+@inject NavigationManager Navigation
+
+<PageTitle>Add Patient | HealthCareApp Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Add Patient</h1>
+        <p>Create a new patient profile and maintain patient demographic details.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToPatients">
+        Back to Patients
+    </button>
+</div>
+
+<section class="hc-form-shell">
+    <div class="hc-form-card">
+        <div class="hc-form-card-header">
+            <div class="hc-form-icon">◉</div>
+            <div>
+                <h3>Patient Registration</h3>
+                <p>Enter patient information carefully. API connection will be added later.</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="hc-alert-error">
+                @errorMessage
+            </div>
+        }
+
+        <EditForm Model="patient" OnValidSubmit="SavePatient">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="hc-form-grid">
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Full Name</label>
+                    <InputText class="hc-form-control"
+                               placeholder="Enter patient full name"
+                               @bind-Value="patient.FullName" />
+                    <ValidationMessage For="@(() => patient.FullName)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Date Of Birth</label>
+                    <InputDate class="hc-form-control"
+                               @bind-Value="patient.DateOfBirth" />
+                    <ValidationMessage For="@(() => patient.DateOfBirth)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Gender</label>
+                    <InputSelect class="hc-form-control"
+                                 @bind-Value="patient.Gender">
+                        <option value="">-- Select Gender --</option>
+                        @foreach (var gender in genders)
+                        {
+                            <option value="@gender">@gender</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => patient.Gender)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Email Address</label>
+                    <InputText class="hc-form-control"
+                               placeholder="patient@example.com"
+                               @bind-Value="patient.Email" />
+                    <ValidationMessage For="@(() => patient.Email)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Phone Number</label>
+                    <InputText class="hc-form-control"
+                               placeholder="9876543210"
+                               @bind-Value="patient.PhoneNumber" />
+                    <ValidationMessage For="@(() => patient.PhoneNumber)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Insurance ID</label>
+                    <InputText class="hc-form-control"
+                               placeholder="Optional insurance reference"
+                               @bind-Value="patient.InsuranceId" />
+                    <ValidationMessage For="@(() => patient.InsuranceId)" />
+                </div>
+            </div>
+
+            <div class="hc-form-actions">
+                <button type="submit" class="hc-page-primary-btn">
+                    Save Patient
+                </button>
+
+                <button type="button" class="hc-secondary-btn" @onclick="BackToPatients">
+                    Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private CreatePatientDto patient = new()
+    {
+        DateOfBirth = DateTime.Today.AddYears(-18)
+    };
+
+    private string? errorMessage;
+
+    private readonly List<string> genders = new()
+    {
+        "Male",
+        "Female",
+        "Other"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    private async Task SavePatient()
+    {
+        try
+        {
+            errorMessage = null;
+
+            if (patient.DateOfBirth.Date > DateTime.Today)
+            {
+                errorMessage = "Date of birth cannot be a future date.";
+                return;
+            }
+
+            await PatientService.CreatePatientAsync(patient);
+
+            Navigation.NavigateTo("/admin/patients");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Unable to add patient. {ex.Message}";
+        }
+    }
+
+    private void BackToPatients()
+    {
+        Navigation.NavigateTo("/admin/patients");
+    }
+}

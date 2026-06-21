@@ -1,0 +1,283 @@
+﻿@page "/admin/patients"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Patients
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IPatientAdminService PatientService
+@inject NavigationManager Navigation
+
+<PageTitle>Patients | HealthCareApp Admin</PageTitle>
+
+@if (patients is null)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading patients...</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="hc-page-heading">
+        <div>
+            <h1>Patients</h1>
+            <p>View, add, update, and manage patient profile information.</p>
+        </div>
+
+        <button class="hc-page-primary-btn" @onclick="GoToAddPatient">
+            + Add Patient
+        </button>
+    </div>
+
+    <div class="hc-doctor-stat-grid">
+        <div class="hc-doctor-stat-card blue">
+            <span>Total Patients</span>
+            <strong>@patients.Count</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card green">
+            <span>With Insurance</span>
+            <strong>@patients.Count(p => !string.IsNullOrWhiteSpace(p.InsuranceId))</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card red">
+            <span>Without Insurance</span>
+            <strong>@patients.Count(p => string.IsNullOrWhiteSpace(p.InsuranceId))</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card purple">
+            <span>Added Today</span>
+            <strong>@patients.Count(p => p.CreatedDate.Date == DateTime.Today)</strong>
+        </div>
+    </div>
+
+    <section class="hc-list-panel">
+        <div class="hc-list-toolbar">
+            <div class="hc-search-box">
+                <span>⌕</span>
+                <input placeholder="Search patient by name, email, phone, or insurance ID..."
+                       @bind="searchTerm"
+                       @bind:event="oninput" />
+            </div>
+
+            <select class="hc-filter-select" @bind="selectedGender">
+                <option value="">All Gender</option>
+                @foreach (var gender in genders)
+                {
+                    <option value="@gender">@gender</option>
+                }
+            </select>
+
+            <select class="hc-filter-select" @bind="selectedInsuranceStatus">
+                <option value="">All Insurance</option>
+                <option value="insured">With Insurance</option>
+                <option value="not-insured">Without Insurance</option>
+            </select>
+        </div>
+
+        @if (!FilteredPatients.Any())
+        {
+            <div class="hc-empty-state">
+                <div class="hc-empty-icon">◉</div>
+                <h3>No patients found</h3>
+                <p>Try changing the search text or filters.</p>
+            </div>
+        }
+        else
+        {
+            <div class="hc-table-wrapper">
+                <table class="hc-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Gender</th>
+                            <th>Date Of Birth</th>
+                            <th>Phone</th>
+                            <th>Insurance</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var patient in FilteredPatients)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="hc-doctor-cell">
+                                        <div class="hc-patient-avatar">
+                                            @GetInitials(patient.FullName)
+                                        </div>
+
+                                        <div>
+                                            <strong>@patient.FullName</strong>
+                                            <span>@patient.Email</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="hc-specialisation-pill">
+                                        @patient.Gender
+                                    </span>
+                                </td>
+
+                                <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
+
+                                <td>@patient.PhoneNumber</td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(patient.InsuranceId))
+                                    {
+                                        <span class="hc-status-badge active">@patient.InsuranceId</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="hc-status-badge inactive">Not Available</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="hc-table-actions">
+                                        <button class="hc-action-btn view"
+                                                @onclick="() => GoToPatientDetails(patient.PatientId)">
+                                            View
+                                        </button>
+
+                                        <button class="hc-action-btn edit"
+                                                @onclick="() => GoToEditPatient(patient.PatientId)">
+                                            Edit
+                                        </button>
+
+                                      
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private List<PatientDto>? patients;
+
+    private string searchTerm = string.Empty;
+
+    private string selectedGender = string.Empty;
+
+    private string selectedInsuranceStatus = string.Empty;
+
+    private List<string> genders = new();
+
+    private IEnumerable<PatientDto> FilteredPatients
+    {
+        get
+        {
+            if (patients is null)
+            {
+                return Enumerable.Empty<PatientDto>();
+            }
+
+            var query = patients.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p =>
+                    p.FullName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    p.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    p.PhoneNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(p.InsuranceId) &&
+                     p.InsuranceId.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedGender))
+            {
+                query = query.Where(p =>
+                    p.Gender.Equals(selectedGender, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (selectedInsuranceStatus == "insured")
+            {
+                query = query.Where(p => !string.IsNullOrWhiteSpace(p.InsuranceId));
+            }
+            else if (selectedInsuranceStatus == "not-insured")
+            {
+                query = query.Where(p => string.IsNullOrWhiteSpace(p.InsuranceId));
+            }
+
+            return query.OrderBy(p => p.PatientId);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        patients = await PatientService.GetAllPatientsAsync();
+
+        genders = patients
+            .Select(p => p.Gender)
+            .Distinct()
+            .OrderBy(g => g)
+            .ToList();
+    }
+
+    private void GoToAddPatient()
+    {
+        Navigation.NavigateTo("/admin/patients/add");
+    }
+
+    private void GoToEditPatient(int patientId)
+    {
+        Navigation.NavigateTo($"/admin/patients/edit/{patientId}");
+    }
+
+    private void GoToPatientDetails(int patientId)
+    {
+        Navigation.NavigateTo($"/admin/patients/details/{patientId}");
+    }
+
+    private async Task DeletePatient(int patientId)
+    {
+        var deleted = await PatientService.DeletePatientAsync(patientId);
+
+        if (deleted)
+        {
+            await LoadPatients();
+        }
+    }
+
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "PT";
+        }
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length >= 2
+                ? parts[0][..2].ToUpper()
+                : parts[0].ToUpper();
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+}

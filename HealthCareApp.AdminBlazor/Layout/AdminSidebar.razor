@@ -1,0 +1,42 @@
+﻿@inject NavigationManager Navigation
+
+<aside class="hc-sidebar">
+    <div class="hc-sidebar-brand">
+        <div class="hc-sidebar-logo">HC</div>
+        <div>
+            <div class="hc-sidebar-title">HealthCareApp</div>
+            <div class="hc-sidebar-subtitle">Admin Portal</div>
+        </div>
+    </div>
+
+    <nav class="hc-sidebar-nav">
+        <NavLink href="/admin/dashboard" class="hc-nav-link" Match="NavLinkMatch.All">
+            <span>▣</span>
+            Dashboard
+        </NavLink>
+
+        <NavLink href="/admin/doctors" class="hc-nav-link">
+            <span>✚</span>
+            Doctors
+        </NavLink>
+
+        <NavLink href="/admin/patients" class="hc-nav-link">
+            <span>◉</span>
+            Patients
+        </NavLink>
+
+        <NavLink href="/admin/appointments" class="hc-nav-link">
+            <span>◷</span>
+            Appointments
+        </NavLink>
+
+     
+    </nav>
+
+    <div class="hc-sidebar-footer">
+        <div class="hc-sidebar-footer-card">
+            <div class="hc-footer-label">System</div>
+            <div class="hc-footer-text">Admin workspace active</div>
+        </div>
+    </div>
+</aside>

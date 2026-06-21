@@ -1,0 +1,239 @@
+﻿@page "/admin/appointments/edit/{appointmentId:int}"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Appointments
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IAppointmentAdminService AppointmentService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Appointment | HealthCareApp Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Edit Appointment</h1>
+        <p>Update appointment schedule, doctor, patient, status, and cancellation details.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToAppointments">
+        Back to Appointments
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading appointment details...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+
+    <button class="hc-secondary-btn mt-3" @onclick="BackToAppointments">
+        Back to Appointments
+    </button>
+}
+else
+{
+    <section class="hc-form-shell">
+        <div class="hc-form-card">
+            <div class="hc-form-card-header">
+                <div class="hc-form-icon">✎</div>
+                <div>
+                    <h3>Update Appointment</h3>
+                    <p>Modify appointment details from the admin workspace.</p>
+                </div>
+            </div>
+
+            <EditForm Model="appointment" OnValidSubmit="UpdateAppointment">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="hc-form-grid">
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Patient</label>
+                        <InputSelect class="hc-form-control" @bind-Value="appointment.PatientId">
+                            <option value="0">-- Select Patient --</option>
+                            <option value="1">Ravi Kumar</option>
+                            <option value="2">Anjali Nair</option>
+                            <option value="3">Kiran Das</option>
+                            <option value="4">Ownership Patient</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => appointment.PatientId)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Doctor</label>
+                        <InputSelect class="hc-form-control" @bind-Value="appointment.DoctorId">
+                            <option value="0">-- Select Doctor --</option>
+                            <option value="1">Arun Menon</option>
+                            <option value="2">Meera Nair</option>
+                            <option value="3">Vikram Das</option>
+                            <option value="4">Rishi Doctor</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => appointment.DoctorId)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Scheduled Date</label>
+                        <InputDate class="hc-form-control" @bind-Value="appointment.ScheduledDate" />
+                        <ValidationMessage For="@(() => appointment.ScheduledDate)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Time Slot</label>
+                        <InputSelect class="hc-form-control" @bind-Value="appointment.TimeSlot">
+                            <option value="">-- Select Time Slot --</option>
+                            @foreach (var slot in timeSlots)
+                            {
+                                <option value="@slot">@slot</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => appointment.TimeSlot)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Status</label>
+                        <InputSelect class="hc-form-control" @bind-Value="appointment.Status">
+                            <option value="@AppointmentStatusDto.Pending">Pending</option>
+                            <option value="@AppointmentStatusDto.Confirmed">Confirmed</option>
+                            <option value="@AppointmentStatusDto.Completed">Completed</option>
+                            <option value="@AppointmentStatusDto.Cancelled">Cancelled</option>
+                        </InputSelect>
+                    </div>
+
+                    @if (appointment.Status == AppointmentStatusDto.Cancelled)
+                    {
+                        <div class="hc-form-group">
+                            <label class="hc-form-label">Cancellation Reason</label>
+                            <InputText class="hc-form-control"
+                                       placeholder="Enter cancellation reason"
+                                       @bind-Value="appointment.CancellationReason" />
+                            <ValidationMessage For="@(() => appointment.CancellationReason)" />
+                        </div>
+                    }
+                </div>
+
+                <div class="hc-form-actions">
+                    <button type="submit" class="hc-page-primary-btn">
+                        Update Appointment
+                    </button>
+
+                    <button type="button" class="hc-secondary-btn" @onclick="BackToAppointments">
+                        Cancel
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int appointmentId { get; set; }
+
+    private UpdateAppointmentDto appointment = new();
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    private readonly List<string> timeSlots = new()
+    {
+        "09:00 AM - 09:30 AM",
+        "10:00 AM - 10:30 AM",
+        "11:00 AM - 11:30 AM",
+        "12:00 PM - 12:30 PM",
+        "02:00 PM - 02:30 PM",
+        "03:00 PM - 03:30 PM",
+        "04:00 PM - 04:30 PM"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadAppointment();
+    }
+
+    private async Task LoadAppointment()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        var existingAppointment = await AppointmentService.GetAppointmentByIdAsync(appointmentId);
+
+        if (existingAppointment is null)
+        {
+            errorMessage = "Appointment was not found.";
+            isLoading = false;
+            return;
+        }
+
+        appointment = new UpdateAppointmentDto
+        {
+            PatientId = existingAppointment.PatientId,
+            DoctorId = existingAppointment.DoctorId,
+            ScheduledDate = existingAppointment.ScheduledDate,
+            TimeSlot = existingAppointment.TimeSlot,
+            Status = existingAppointment.Status,
+            CancellationReason = existingAppointment.CancellationReason
+        };
+
+        isLoading = false;
+    }
+
+    private async Task UpdateAppointment()
+    {
+        errorMessage = null;
+
+        if (appointment.ScheduledDate.Date < DateTime.Today &&
+            appointment.Status != AppointmentStatusDto.Completed &&
+            appointment.Status != AppointmentStatusDto.Cancelled)
+        {
+            errorMessage = "Only completed or cancelled appointments can remain in the past.";
+            return;
+        }
+
+        if (appointment.Status == AppointmentStatusDto.Cancelled &&
+            string.IsNullOrWhiteSpace(appointment.CancellationReason))
+        {
+            errorMessage = "Cancellation reason is required when appointment is cancelled.";
+            return;
+        }
+
+        if (appointment.Status != AppointmentStatusDto.Cancelled)
+        {
+            appointment.CancellationReason = null;
+        }
+
+        var updatedAppointment = await AppointmentService.UpdateAppointmentAsync(
+            appointmentId,
+            appointment);
+
+        if (updatedAppointment is null)
+        {
+            errorMessage = "Unable to update appointment. Appointment was not found.";
+            return;
+        }
+
+        Navigation.NavigateTo("/admin/appointments");
+    }
+
+    private void BackToAppointments()
+    {
+        Navigation.NavigateTo("/admin/appointments");
+    }
+}

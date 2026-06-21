@@ -1,0 +1,207 @@
+﻿@page "/admin/doctors/edit/{doctorId:int}"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Doctors
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IDoctorAdminService DoctorService
+@inject NavigationManager Navigation
+
+<PageTitle>Edit Doctor | HealthCareApp Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Edit Doctor</h1>
+        <p>Update doctor profile, specialisation, consultation fee, and status.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToDoctors">
+        Back to Doctors
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading doctor details...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+
+    <button class="hc-secondary-btn mt-3" @onclick="BackToDoctors">
+        Back to Doctors
+    </button>
+}
+else
+{
+    <section class="hc-form-shell">
+        <div class="hc-form-card">
+            <div class="hc-form-card-header">
+                <div class="hc-form-icon">✎</div>
+                <div>
+                    <h3>Update Doctor Profile</h3>
+                    <p>Changes made here will update the selected doctor profile in the admin workspace.</p>
+                </div>
+            </div>
+
+            <EditForm Model="doctor" OnValidSubmit="UpdateDoctor">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="hc-form-grid">
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Full Name</label>
+                        <InputText class="hc-form-control"
+                                   placeholder="Enter doctor full name"
+                                   @bind-Value="doctor.FullName" />
+                        <ValidationMessage For="@(() => doctor.FullName)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Email Address</label>
+                        <InputText class="hc-form-control"
+                                   placeholder="doctor@example.com"
+                                   @bind-Value="doctor.Email" />
+                        <ValidationMessage For="@(() => doctor.Email)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Specialisation</label>
+                        <InputSelect class="hc-form-control"
+                                     @bind-Value="doctor.Specialisation">
+                            <option value="">-- Select Specialisation --</option>
+                            @foreach (var specialisation in specialisations)
+                            {
+                                <option value="@specialisation">@specialisation</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => doctor.Specialisation)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Years Of Experience</label>
+                        <InputNumber class="hc-form-control"
+                                     @bind-Value="doctor.YearsOfExperience" />
+                        <ValidationMessage For="@(() => doctor.YearsOfExperience)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Consultation Fee</label>
+                        <InputNumber class="hc-form-control"
+                                     @bind-Value="doctor.ConsultationFee" />
+                        <ValidationMessage For="@(() => doctor.ConsultationFee)" />
+                    </div>
+
+                    <div class="hc-form-group">
+                        <label class="hc-form-label">Status</label>
+
+                        <label class="hc-switch-row">
+                            <InputCheckbox @bind-Value="doctor.IsActive" />
+                            <span>@(doctor.IsActive ? "Active doctor" : "Inactive doctor")</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="hc-form-actions">
+                    <button type="submit" class="hc-page-primary-btn">
+                        Update Doctor
+                    </button>
+
+                    <button type="button" class="hc-secondary-btn" @onclick="BackToDoctors">
+                        Cancel
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int doctorId { get; set; }
+
+    private UpdateDoctorDto doctor = new();
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    private readonly List<string> specialisations = new()
+    {
+        "General Practitioner",
+        "Cardiologist",
+        "Dermatologist",
+        "Neurologist",
+        "Orthopedic",
+        "Pediatrician",
+        "Psychiatrist",
+        "ENT Specialist"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadDoctor();
+    }
+
+    private async Task LoadDoctor()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        var existingDoctor = await DoctorService.GetDoctorByIdAsync(doctorId);
+
+        if (existingDoctor is null)
+        {
+            errorMessage = "Doctor profile was not found.";
+            isLoading = false;
+            return;
+        }
+
+        doctor = new UpdateDoctorDto
+        {
+            FullName = existingDoctor.FullName,
+            Email = existingDoctor.Email,
+            Specialisation = existingDoctor.Specialisation,
+            YearsOfExperience = existingDoctor.YearsOfExperience,
+            ConsultationFee = existingDoctor.ConsultationFee,
+            IsActive = existingDoctor.IsActive
+        };
+
+        isLoading = false;
+    }
+
+    private async Task UpdateDoctor()
+    {
+        errorMessage = null;
+
+        var updatedDoctor = await DoctorService.UpdateDoctorAsync(doctorId, doctor);
+
+        if (updatedDoctor is null)
+        {
+            errorMessage = "Unable to update doctor. Doctor profile was not found.";
+            return;
+        }
+
+        Navigation.NavigateTo("/admin/doctors");
+    }
+
+    private void BackToDoctors()
+    {
+        Navigation.NavigateTo("/admin/doctors");
+    }
+}

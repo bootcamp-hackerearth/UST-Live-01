@@ -1,0 +1,45 @@
+﻿@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<header class="hc-topbar">
+    <div>
+        <div class="hc-topbar-kicker">Admin Console</div>
+        <h2 class="hc-topbar-title">Healthcare Management Dashboard</h2>
+    </div>
+
+    <div class="hc-topbar-actions">
+        <div class="hc-admin-chip">
+            <div class="hc-admin-avatar">A</div>
+            <div>
+                <div class="hc-admin-name">@adminEmail</div>
+                <div class="hc-admin-role">Administrator</div>
+            </div>
+        </div>
+
+        <button class="hc-topbar-logout" @onclick="Logout">
+            Logout
+        </button>
+    </div>
+</header>
+
+@code {
+    private string adminEmail = "admin@healthcare.com";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var email = await AuthService.GetCurrentUserEmailAsync();
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            adminEmail = email;
+        }
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+
+        Navigation.NavigateTo("/login");
+    }
+}

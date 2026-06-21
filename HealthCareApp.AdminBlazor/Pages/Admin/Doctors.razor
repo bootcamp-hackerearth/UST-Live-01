@@ -1,0 +1,281 @@
+﻿@page "/admin/doctors"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Doctors
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IDoctorAdminService DoctorService
+@inject NavigationManager Navigation
+
+<PageTitle>Doctors | HealthCareApp Admin</PageTitle>
+
+@if (doctors is null)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading doctors...</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="hc-page-heading">
+        <div>
+            <h1>Doctors</h1>
+            <p>Register, update, and manage doctor profiles from one place.</p>
+        </div>
+
+        <button class="hc-page-primary-btn" @onclick="GoToAddDoctor">
+            + Add Doctor
+        </button>
+    </div>
+
+    <div class="hc-doctor-stat-grid">
+        <div class="hc-doctor-stat-card blue">
+            <span>Total Doctors</span>
+            <strong>@doctors.Count</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card green">
+            <span>Active Doctors</span>
+            <strong>@doctors.Count(d => d.IsActive)</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card red">
+            <span>Inactive Doctors</span>
+            <strong>@doctors.Count(d => !d.IsActive)</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card purple">
+            <span>Specialisations</span>
+            <strong>@doctors.Select(d => d.Specialisation).Distinct().Count()</strong>
+        </div>
+    </div>
+
+    <section class="hc-list-panel">
+        <div class="hc-list-toolbar">
+            <div class="hc-search-box">
+                <span>⌕</span>
+                <input placeholder="Search doctor by name, email, or specialisation..."
+                       @bind="searchTerm"
+                       @bind:event="oninput" />
+            </div>
+
+            <select class="hc-filter-select" @bind="selectedSpecialisation">
+                <option value="">All Specialisations</option>
+                @foreach (var specialisation in specialisations)
+                {
+                    <option value="@specialisation">@specialisation</option>
+                }
+            </select>
+
+            <select class="hc-filter-select" @bind="selectedStatus">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
+        </div>
+
+        @if (!FilteredDoctors.Any())
+        {
+            <div class="hc-empty-state">
+                <div class="hc-empty-icon">✚</div>
+                <h3>No doctors found</h3>
+                <p>Try changing the search text or filters.</p>
+            </div>
+        }
+        else
+        {
+            <div class="hc-table-wrapper">
+                <table class="hc-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Consultation Fee</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var doctor in FilteredDoctors)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="hc-doctor-cell">
+                                        <div class="hc-doctor-avatar">
+                                            @GetInitials(doctor.FullName)
+                                        </div>
+
+                                        <div>
+                                            <strong>@doctor.FullName</strong>
+                                            <span>@doctor.Email</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="hc-specialisation-pill">
+                                        @doctor.Specialisation
+                                    </span>
+                                </td>
+
+                                <td>@doctor.YearsOfExperience years</td>
+
+                                <td>₹@doctor.ConsultationFee</td>
+
+                                <td>
+                                    @if (doctor.IsActive)
+                                    {
+                                        <span class="hc-status-badge active">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="hc-status-badge inactive">Inactive</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="hc-table-actions">
+                                        <button class="hc-action-btn edit"
+                                                @onclick="() => GoToEditDoctor(doctor.DoctorId)">
+                                            Edit
+                                        </button>
+
+                                        <button class="@GetToggleButtonClass(doctor.IsActive)"
+                                                @onclick="() => ToggleDoctorStatus(doctor.DoctorId)">
+                                            @(doctor.IsActive ? "Deactivate" : "Activate")
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private List<DoctorDto>? doctors;
+
+    private string searchTerm = string.Empty;
+
+    private string selectedSpecialisation = string.Empty;
+
+    private string selectedStatus = string.Empty;
+
+    private List<string> specialisations = new();
+
+    private IEnumerable<DoctorDto> FilteredDoctors
+    {
+        get
+        {
+            if (doctors is null)
+            {
+                return Enumerable.Empty<DoctorDto>();
+            }
+
+            var query = doctors.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(d =>
+                    d.FullName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    d.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    d.Specialisation.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedSpecialisation))
+            {
+                query = query.Where(d =>
+                    d.Specialisation.Equals(selectedSpecialisation, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (selectedStatus == "active")
+            {
+                query = query.Where(d => d.IsActive);
+            }
+            else if (selectedStatus == "inactive")
+            {
+                query = query.Where(d => !d.IsActive);
+            }
+
+            return query.OrderBy(d => d.DoctorId);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadDoctors();
+    }
+
+    private async Task LoadDoctors()
+    {
+        doctors = await DoctorService.GetAllDoctorsAsync();
+
+        specialisations = doctors
+            .Select(d => d.Specialisation)
+            .Distinct()
+            .OrderBy(s => s)
+            .ToList();
+    }
+
+    private void GoToAddDoctor()
+    {
+        Navigation.NavigateTo("/admin/doctors/add");
+    }
+
+    private void GoToEditDoctor(int doctorId)
+    {
+        Navigation.NavigateTo($"/admin/doctors/edit/{doctorId}");
+    }
+
+    private async Task ToggleDoctorStatus(int doctorId)
+    {
+        var updatedDoctor = await DoctorService.ToggleDoctorStatusAsync(doctorId);
+
+        if (updatedDoctor is not null)
+        {
+            await LoadDoctors();
+        }
+    }
+
+    private string GetToggleButtonClass(bool isActive)
+    {
+        return isActive
+            ? "hc-action-btn deactivate"
+            : "hc-action-btn activate";
+    }
+
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "DR";
+        }
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length >= 2
+                ? parts[0][..2].ToUpper()
+                : parts[0].ToUpper();
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+}

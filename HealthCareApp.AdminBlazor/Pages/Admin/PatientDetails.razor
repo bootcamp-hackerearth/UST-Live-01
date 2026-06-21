@@ -1,0 +1,178 @@
+﻿@page "/admin/patients/details/{patientId:int}"
+@layout AdminLayout
+
+HealthCareApp.AdminBlazor.Services.Interfaces@using HealthCareApp.AdminBlazor.Dtos.Patients
+@inject IAuthService AuthService
+@inject IPatientAdminService PatientService
+@inject NavigationManager Navigation
+
+<PageTitle>Patient Details | HealthCareApp Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Patient Details</h1>
+        <p>Review patient demographic, contact, and insurance information.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToPatients">
+        Back to Patients
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading patient details...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+
+    <button class="hc-secondary-btn mt-3" @onclick="BackToPatients">
+        Back to Patients
+    </button>
+}
+else if (patient is not null)
+{
+    <section class="hc-details-shell">
+        <div class="hc-details-hero">
+            <div class="hc-details-avatar">
+                @GetInitials(patient.FullName)
+            </div>
+
+            <div>
+                <h2>@patient.FullName</h2>
+                <p>@patient.Email</p>
+
+                <div class="hc-details-badge-row">
+                    <span class="hc-status-badge active">@patient.Gender</span>
+
+                    @if (!string.IsNullOrWhiteSpace(patient.InsuranceId))
+                    {
+                        <span class="hc-status-badge active">Insured</span>
+                    }
+                    else
+                    {
+                        <span class="hc-status-badge inactive">No Insurance</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="hc-details-grid">
+            <div class="hc-details-card">
+                <span>Patient ID</span>
+                <strong>@patient.PatientId</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Date Of Birth</span>
+                <strong>@patient.DateOfBirth.ToString("dd MMM yyyy")</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Phone Number</span>
+                <strong>@patient.PhoneNumber</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Insurance ID</span>
+                <strong>@(string.IsNullOrWhiteSpace(patient.InsuranceId) ? "Not Available" : patient.InsuranceId)</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Created Date</span>
+                <strong>@patient.CreatedDate.ToString("dd MMM yyyy")</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Profile Status</span>
+                <strong>Active</strong>
+            </div>
+        </div>
+
+        <div class="hc-details-actions">
+            <button class="hc-page-primary-btn" @onclick="EditPatient">
+                Edit Patient
+            </button>
+
+            <button class="hc-secondary-btn" @onclick="BackToPatients">
+                Back
+            </button>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int patientId { get; set; }
+
+    private PatientDto? patient;
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadPatient();
+    }
+
+    private async Task LoadPatient()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        patient = await PatientService.GetPatientByIdAsync(patientId);
+
+        if (patient is null)
+        {
+            errorMessage = "Patient profile was not found.";
+        }
+
+        isLoading = false;
+    }
+
+    private void EditPatient()
+    {
+        Navigation.NavigateTo($"/admin/patients/edit/{patientId}");
+    }
+
+    private void BackToPatients()
+    {
+        Navigation.NavigateTo("/admin/patients");
+    }
+
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "PT";
+        }
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length >= 2
+                ? parts[0][..2].ToUpper()
+                : parts[0].ToUpper();
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+}

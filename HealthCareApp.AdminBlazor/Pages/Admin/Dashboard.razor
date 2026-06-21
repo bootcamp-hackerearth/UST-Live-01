@@ -1,0 +1,175 @@
+﻿@page "/admin"
+@page "/admin/dashboard"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Dashboard
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IAdminDashboardService DashboardService
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Dashboard | HealthCareApp</PageTitle>
+
+@if (dashboardReport is null)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading dashboard report...</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="hc-page-heading">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Monitor today’s healthcare operations and manage system activity.</p>
+        </div>
+
+        <div class="hc-dashboard-date-card">
+            <span>Today</span>
+            <strong>@DateTime.Today.ToString("dd MMM yyyy")</strong>
+        </div>
+    </div>
+
+    <div class="hc-report-grid">
+        <div class="hc-report-card hc-report-blue">
+            <div class="hc-report-icon">✚</div>
+            <div>
+                <p>Total Doctors</p>
+                <h2>@dashboardReport.TotalDoctors</h2>
+            </div>
+        </div>
+
+        <div class="hc-report-card hc-report-teal">
+            <div class="hc-report-icon">◉</div>
+            <div>
+                <p>Total Patients</p>
+                <h2>@dashboardReport.TotalPatients</h2>
+            </div>
+        </div>
+
+        <div class="hc-report-card hc-report-purple">
+            <div class="hc-report-icon">◷</div>
+            <div>
+                <p>Total Appointments</p>
+                <h2>@dashboardReport.TotalAppointments</h2>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <div class="hc-section-grid">
+        <section class="hc-dashboard-section">
+            <div class="hc-section-header">
+                <div>
+                    <h3>Today’s Overview</h3>
+                    <p>Live operational summary for today.</p>
+                </div>
+            </div>
+
+            <div class="hc-mini-report-grid">
+                <div class="hc-mini-card">
+                    <span class="hc-mini-label">Today’s Appointments</span>
+                    <strong>@dashboardReport.TodaysAppointments</strong>
+                </div>
+
+                <div class="hc-mini-card">
+                    <span class="hc-mini-label">Today’s Patients</span>
+                    <strong>@dashboardReport.TodaysPatients</strong>
+                </div>
+
+                <div class="hc-mini-card success">
+                    <span class="hc-mini-label">Completed Today</span>
+                    <strong>@dashboardReport.CompletedToday</strong>
+                </div>
+
+                <div class="hc-mini-card warning">
+                    <span class="hc-mini-label">Pending Today</span>
+                    <strong>@dashboardReport.PendingToday</strong>
+                </div>
+
+                <div class="hc-mini-card danger">
+                    <span class="hc-mini-label">Cancelled Today</span>
+                    <strong>@dashboardReport.CancelledToday</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="hc-dashboard-section">
+            <div class="hc-section-header">
+                <div>
+                    <h3>Quick Actions</h3>
+                    <p>Jump into frequent admin tasks.</p>
+                </div>
+            </div>
+
+            <div class="hc-quick-actions">
+                <button class="hc-action-card" @onclick="GoToDoctors">
+                    <span>✚</span>
+                    <div>
+                        <strong>Register Doctor</strong>
+                        <p>Add and manage doctor profiles.</p>
+                    </div>
+                </button>
+
+                <button class="hc-action-card" @onclick="GoToPatients">
+                    <span>◉</span>
+                    <div>
+                        <strong>Manage Patients</strong>
+                        <p>View, add, and update patient details.</p>
+                    </div>
+                </button>
+
+                <button class="hc-action-card" @onclick="GoToAppointments">
+                    <span>◷</span>
+                    <div>
+                        <strong>Create Appointment</strong>
+                        <p>Manage schedules and appointment status.</p>
+                    </div>
+                </button>
+
+           
+            </div>
+        </section>
+    </div>
+}
+
+@code {
+    private AdminDashboardReportDto? dashboardReport;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        dashboardReport = await DashboardService.GetDashboardReportAsync();
+    }
+
+    private void GoToDoctors()
+    {
+        Navigation.NavigateTo("/admin/doctors");
+    }
+
+    private void GoToPatients()
+    {
+        Navigation.NavigateTo("/admin/patients");
+    }
+
+    private void GoToAppointments()
+    {
+        Navigation.NavigateTo("/admin/appointments");
+    }
+
+    private void GoToHealthRecords()
+    {
+        Navigation.NavigateTo("/admin/health-records");
+    }
+}

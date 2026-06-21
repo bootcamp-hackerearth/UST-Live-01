@@ -1,0 +1,335 @@
+﻿@page "/admin/appointments"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Appointments
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IAppointmentAdminService AppointmentService
+@inject NavigationManager Navigation
+
+<PageTitle>Appointments | HealthCareApp Admin</PageTitle>
+
+@if (appointments is null)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading appointments...</p>
+        </div>
+    </div>
+}
+else
+{
+    <div class="hc-page-heading">
+        <div>
+            <h1>Appointments</h1>
+            <p>View, create, update, delete, and filter appointment schedules.</p>
+        </div>
+
+        <button class="hc-page-primary-btn" @onclick="GoToAddAppointment">
+            + Create Appointment
+        </button>
+    </div>
+
+    <div class="hc-doctor-stat-grid">
+        <div class="hc-doctor-stat-card blue">
+            <span>Total Appointments</span>
+            <strong>@TotalAppointments</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card green">
+            <span>Today</span>
+            <strong>@TodayAppointments</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card purple">
+            <span>Upcoming</span>
+            <strong>@UpcomingAppointments</strong>
+        </div>
+
+        <div class="hc-doctor-stat-card red">
+            <span>Cancelled</span>
+            <strong>@CancelledAppointments</strong>
+        </div>
+    </div>
+
+    <section class="hc-list-panel">
+        <div class="hc-list-toolbar">
+            <div class="hc-search-box">
+                <span>⌕</span>
+                <input placeholder="Search by patient, doctor, time slot, or reason..."
+                       @bind="searchTerm"
+                       @bind:event="oninput" />
+            </div>
+
+            <select class="hc-filter-select" @bind="selectedStatusFilter">
+                <option value="all">All</option>
+                <option value="today">Today</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="pending">Pending</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+            </select>
+
+            <select class="hc-filter-select" @bind="selectedDoctor">
+                <option value="">All Doctors</option>
+                @foreach (var doctor in doctors)
+                {
+                    <option value="@doctor">@doctor</option>
+                }
+            </select>
+        </div>
+
+        @if (!FilteredAppointments.Any())
+        {
+            <div class="hc-empty-state">
+                <div class="hc-empty-icon">◷</div>
+                <h3>No appointments found</h3>
+                <p>Try changing the search text or filters.</p>
+            </div>
+        }
+        else
+        {
+            <div class="hc-table-wrapper">
+                <table class="hc-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in FilteredAppointments)
+                        {
+                            <tr>
+                                <td>
+                                    <strong>#@appointment.AppointmentId</strong>
+                                    <div class="hc-table-subtext">
+                                        Created @appointment.CreatedDate.ToString("dd MMM yyyy")
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="hc-doctor-cell">
+                                        <div class="hc-patient-avatar">
+                                            @GetInitials(appointment.PatientName)
+                                        </div>
+
+                                        <div>
+                                            <strong>@appointment.PatientName</strong>
+                                            <span>Patient ID: @appointment.PatientId</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div>
+                                        <strong>@appointment.DoctorName</strong>
+                                        <div class="hc-table-subtext">
+                                            Doctor ID: @appointment.DoctorId
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
+
+                                <td>
+                                    <span class="hc-specialisation-pill">
+                                        @appointment.TimeSlot
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="@GetStatusBadgeClass(appointment.Status)">
+                                        @appointment.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="hc-table-actions">
+                                        <button class="hc-action-btn view"
+                                                @onclick="() => GoToAppointmentDetails(appointment.AppointmentId)">
+                                            View
+                                        </button>
+
+                                        <button class="hc-action-btn edit"
+                                                @onclick="() => GoToEditAppointment(appointment.AppointmentId)">
+                                            Edit
+                                        </button>
+
+                                       
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+}
+@code {
+    private List<AppointmentDto>? appointments;
+
+    private string searchTerm = string.Empty;
+
+    private string selectedStatusFilter = "all";
+
+    private string selectedDoctor = string.Empty;
+
+    private List<string> doctors = new();
+
+    private int TotalAppointments
+    {
+        get
+        {
+            return appointments?.Count ?? 0;
+        }
+    }
+
+    private int TodayAppointments
+    {
+        get
+        {
+            return appointments?.Count(a => a.ScheduledDate.Date == DateTime.Today) ?? 0;
+        }
+    }
+
+    private int UpcomingAppointments
+    {
+        get
+        {
+            return appointments?.Count(a => a.ScheduledDate.Date > DateTime.Today) ?? 0;
+        }
+    }
+
+    private int CancelledAppointments
+    {
+        get
+        {
+            return appointments?.Count(a => a.Status == AppointmentStatusDto.Cancelled) ?? 0;
+        }
+    }
+
+    private IEnumerable<AppointmentDto> FilteredAppointments
+    {
+        get
+        {
+            if (appointments is null)
+            {
+                return Enumerable.Empty<AppointmentDto>();
+            }
+
+            var query = appointments.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(a =>
+                    a.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    a.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
+                     a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedDoctor))
+            {
+                query = query.Where(a =>
+                    a.DoctorName.Equals(selectedDoctor, StringComparison.OrdinalIgnoreCase));
+            }
+
+            query = selectedStatusFilter switch
+            {
+                "today" => query.Where(a => a.ScheduledDate.Date == DateTime.Today),
+                "upcoming" => query.Where(a => a.ScheduledDate.Date > DateTime.Today),
+                "pending" => query.Where(a => a.Status == AppointmentStatusDto.Pending),
+                "confirmed" => query.Where(a => a.Status == AppointmentStatusDto.Confirmed),
+                "completed" => query.Where(a => a.Status == AppointmentStatusDto.Completed),
+                "cancelled" => query.Where(a => a.Status == AppointmentStatusDto.Cancelled),
+                _ => query
+            };
+
+            return query
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot);
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadAppointments();
+    }
+
+    private async Task LoadAppointments()
+    {
+        appointments = await AppointmentService.GetAllAppointmentsAsync();
+
+        doctors = appointments
+            .Select(a => a.DoctorName)
+            .Distinct()
+            .OrderBy(d => d)
+            .ToList();
+    }
+
+    private void GoToAddAppointment()
+    {
+        Navigation.NavigateTo("/admin/appointments/add");
+    }
+
+    private void GoToEditAppointment(int appointmentId)
+    {
+        Navigation.NavigateTo($"/admin/appointments/edit/{appointmentId}");
+    }
+
+    private void GoToAppointmentDetails(int appointmentId)
+    {
+        Navigation.NavigateTo($"/admin/appointments/details/{appointmentId}");
+    }
+
+    
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return "PT";
+        }
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length >= 2
+                ? parts[0][..2].ToUpper()
+                : parts[0].ToUpper();
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+
+    private string GetStatusBadgeClass(AppointmentStatusDto status)
+    {
+        return status switch
+        {
+            AppointmentStatusDto.Pending => "hc-status-badge pending",
+            AppointmentStatusDto.Confirmed => "hc-status-badge confirmed",
+            AppointmentStatusDto.Completed => "hc-status-badge completed",
+            AppointmentStatusDto.Cancelled => "hc-status-badge cancelled",
+            _ => "hc-status-badge"
+        };
+    }
+}

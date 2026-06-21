@@ -1,0 +1,160 @@
+﻿@page "/admin/appointments/add"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Appointments
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IAppointmentAdminService AppointmentService
+@inject NavigationManager Navigation
+
+<PageTitle>Create Appointment | HealthCareApp Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Create Appointment</h1>
+        <p>Schedule a new appointment by selecting patient, doctor, date, and time slot.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToAppointments">
+        Back to Appointments
+    </button>
+</div>
+
+<section class="hc-form-shell">
+    <div class="hc-form-card">
+        <div class="hc-form-card-header">
+            <div class="hc-form-icon">◷</div>
+            <div>
+                <h3>Appointment Details</h3>
+                <p>Create and manage appointment schedules from the admin workspace.</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="hc-alert-error">
+                @errorMessage
+            </div>
+        }
+
+        <EditForm Model="appointment" OnValidSubmit="SaveAppointment">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="hc-form-grid">
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Patient</label>
+                    <InputSelect class="hc-form-control" @bind-Value="appointment.PatientId">
+                        <option value="0">-- Select Patient --</option>
+                        <option value="1">Ravi Kumar</option>
+                        <option value="2">Anjali Nair</option>
+                        <option value="3">Kiran Das</option>
+                        <option value="4">Ownership Patient</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => appointment.PatientId)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Doctor</label>
+                    <InputSelect class="hc-form-control" @bind-Value="appointment.DoctorId">
+                        <option value="0">-- Select Doctor --</option>
+                        <option value="1">Arun Menon</option>
+                        <option value="2">Meera Nair</option>
+                        <option value="3">Vikram Das</option>
+                        <option value="4">Rishi Doctor</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => appointment.DoctorId)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Scheduled Date</label>
+                    <InputDate class="hc-form-control" @bind-Value="appointment.ScheduledDate" />
+                    <ValidationMessage For="@(() => appointment.ScheduledDate)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Time Slot</label>
+                    <InputSelect class="hc-form-control" @bind-Value="appointment.TimeSlot">
+                        <option value="">-- Select Time Slot --</option>
+                        @foreach (var slot in timeSlots)
+                        {
+                            <option value="@slot">@slot</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="@(() => appointment.TimeSlot)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Status</label>
+                    <InputSelect class="hc-form-control" @bind-Value="appointment.Status">
+                        <option value="@AppointmentStatusDto.Pending">Pending</option>
+                        <option value="@AppointmentStatusDto.Confirmed">Confirmed</option>
+                        <option value="@AppointmentStatusDto.Completed">Completed</option>
+                        <option value="@AppointmentStatusDto.Cancelled">Cancelled</option>
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="hc-form-actions">
+                <button type="submit" class="hc-page-primary-btn">
+                    Save Appointment
+                </button>
+
+                <button type="button" class="hc-secondary-btn" @onclick="BackToAppointments">
+                    Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private CreateAppointmentDto appointment = new()
+    {
+        ScheduledDate = DateTime.Today,
+        Status = AppointmentStatusDto.Pending
+    };
+
+    private string? errorMessage;
+
+    private readonly List<string> timeSlots = new()
+    {
+        "09:00 AM - 09:30 AM",
+        "10:00 AM - 10:30 AM",
+        "11:00 AM - 11:30 AM",
+        "12:00 PM - 12:30 PM",
+        "02:00 PM - 02:30 PM",
+        "03:00 PM - 03:30 PM",
+        "04:00 PM - 04:30 PM"
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    private async Task SaveAppointment()
+    {
+        errorMessage = null;
+
+        if (appointment.ScheduledDate.Date < DateTime.Today)
+        {
+            errorMessage = "Appointment date cannot be in the past.";
+            return;
+        }
+
+        await AppointmentService.CreateAppointmentAsync(appointment);
+
+        Navigation.NavigateTo("/admin/appointments");
+    }
+
+    private void BackToAppointments()
+    {
+        Navigation.NavigateTo("/admin/appointments");
+    }
+}

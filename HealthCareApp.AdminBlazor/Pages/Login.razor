@@ -1,0 +1,121 @@
+﻿@page "/login"
+
+@using HealthCareApp.AdminBlazor.Dtos.Auth
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Login | HealthCareApp</PageTitle>
+
+<div class="hc-login-page">
+    <section class="hc-login-hero">
+        <div class="hc-brand-badge">
+            HealthCareApp Admin Portal
+        </div>
+
+        <h1 class="hc-login-title">
+            Manage healthcare with <span>clarity</span>.
+        </h1>
+
+        <p class="hc-login-subtitle">
+            A secure and focused admin workspace to manage doctors, patients,
+            appointments, and health records from one modern healthcare dashboard.
+        </p>
+
+        <div class="hc-hero-stats">
+            <div class="hc-stat-card">
+                <div class="hc-stat-number">Admin</div>
+                <div class="hc-stat-label">Access only</div>
+            </div>
+
+            <div class="hc-stat-card">
+                <div class="hc-stat-number">4</div>
+                <div class="hc-stat-label">Core modules</div>
+            </div>
+
+            <div class="hc-stat-card">
+                <div class="hc-stat-number">API</div>
+                <div class="hc-stat-label">Ready architecture</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hc-login-panel">
+        <div class="hc-login-card">
+            <div class="hc-login-card-header">
+                <h2 class="hc-login-card-title">Welcome back</h2>
+                <p class="hc-login-card-subtitle">
+                    Sign in as Admin to continue to the management dashboard.
+                </p>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="hc-alert-error">
+                    @errorMessage
+                </div>
+            }
+
+            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Email address</label>
+                    <InputText class="hc-form-control"
+                               placeholder="Enter Your Mail"
+                               @bind-Value="loginModel.Email" />
+                    <ValidationMessage For="@(() => loginModel.Email)" />
+                </div>
+
+                <div class="hc-form-group">
+                    <label class="hc-form-label">Password</label>
+                    <InputText class="hc-form-control"
+                               type="password"
+                               placeholder="Enter admin password"
+                               @bind-Value="loginModel.Password" />
+                    <ValidationMessage For="@(() => loginModel.Password)" />
+                </div>
+
+                <div class="hc-login-actions">
+                    <label>
+                        <InputCheckbox @bind-Value="loginModel.RememberMe" />
+                        Remember me
+                    </label>
+
+                    <span>Admin access only</span>
+                </div>
+
+                <button type="submit" class="hc-btn-primary">
+                    Sign in to Dashboard
+                </button>
+            </EditForm>
+
+            <div class="hc-demo-note">
+                <strong>Temporary demo login</strong><br />
+                Email: admin@healthcare.com<br />
+                Password: Admin@123
+            </div>
+        </div>
+    </section>
+</div>
+
+@code {
+    private LoginDto loginModel = new();
+
+    private string? errorMessage;
+
+    private async Task HandleLogin()
+    {
+        errorMessage = null;
+
+        var response = await AuthService.LoginAsync(loginModel);
+
+        if (!response.IsSuccess)
+        {
+            errorMessage = response.Message;
+            return;
+        }
+
+        Navigation.NavigateTo("/admin");
+    }
+}

@@ -1,0 +1,205 @@
+﻿@page "/admin/appointments/details/{appointmentId:int}"
+@layout AdminLayout
+
+@using HealthCareApp.AdminBlazor.Dtos.Appointments
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@inject IAuthService AuthService
+@inject IAppointmentAdminService AppointmentService
+@inject NavigationManager Navigation
+
+<PageTitle>Appointment Details | HealthCareApp Admin</PageTitle>
+
+<div class="hc-page-heading">
+    <div>
+        <h1>Appointment Details</h1>
+        <p>Review appointment schedule, patient, doctor, status, and cancellation information.</p>
+    </div>
+
+    <button class="hc-secondary-btn" @onclick="BackToAppointments">
+        Back to Appointments
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <div class="hc-page-loading">
+        <div class="hc-loading-card">
+            <div class="hc-loading-spinner"></div>
+            <p>Loading appointment details...</p>
+        </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+
+    <button class="hc-secondary-btn mt-3" @onclick="BackToAppointments">
+        Back to Appointments
+    </button>
+}
+else if (appointment is not null)
+{
+    <section class="hc-details-shell">
+        <div class="hc-details-hero">
+            <div class="hc-details-avatar appointment">
+                ◷
+            </div>
+
+            <div>
+                <h2>Appointment #@appointment.AppointmentId</h2>
+                <p>@appointment.PatientName with @appointment.DoctorName</p>
+
+                <div class="hc-details-badge-row">
+                    <span class="@GetStatusBadgeClass(appointment.Status)">
+                        @appointment.Status
+                    </span>
+
+                    @if (appointment.ScheduledDate.Date == DateTime.Today)
+                    {
+                        <span class="hc-status-badge confirmed">Today</span>
+                    }
+                    else if (appointment.ScheduledDate.Date > DateTime.Today)
+                    {
+                        <span class="hc-status-badge pending">Upcoming</span>
+                    }
+                    else
+                    {
+                        <span class="hc-status-badge completed">Past</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="hc-details-grid">
+            <div class="hc-details-card">
+                <span>Appointment ID</span>
+                <strong>@appointment.AppointmentId</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Patient</span>
+                <strong>@appointment.PatientName</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Patient ID</span>
+                <strong>@appointment.PatientId</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Doctor</span>
+                <strong>@appointment.DoctorName</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Doctor ID</span>
+                <strong>@appointment.DoctorId</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Scheduled Date</span>
+                <strong>@appointment.ScheduledDate.ToString("dd MMM yyyy")</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Time Slot</span>
+                <strong>@appointment.TimeSlot</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Status</span>
+                <strong>@appointment.Status</strong>
+            </div>
+
+            <div class="hc-details-card">
+                <span>Created Date</span>
+                <strong>@appointment.CreatedDate.ToString("dd MMM yyyy")</strong>
+            </div>
+        </div>
+
+        @if (appointment.Status == AppointmentStatusDto.Cancelled)
+        {
+            <div class="hc-details-note">
+                <span>Cancellation Reason</span>
+                <p>
+                    @(string.IsNullOrWhiteSpace(appointment.CancellationReason)
+                        ? "No cancellation reason provided."
+                        : appointment.CancellationReason)
+                </p>
+            </div>
+        }
+
+        <div class="hc-details-actions">
+            <button class="hc-page-primary-btn" @onclick="EditAppointment">
+                Edit Appointment
+            </button>
+
+            <button class="hc-secondary-btn" @onclick="BackToAppointments">
+                Back
+            </button>
+        </div>
+    </section>
+}
+
+@code {
+    [Parameter]
+    public int appointmentId { get; set; }
+
+    private AppointmentDto? appointment;
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+        if (!isAuthenticated)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadAppointment();
+    }
+
+    private async Task LoadAppointment()
+    {
+        isLoading = true;
+        errorMessage = null;
+
+        appointment = await AppointmentService.GetAppointmentByIdAsync(appointmentId);
+
+        if (appointment is null)
+        {
+            errorMessage = "Appointment was not found.";
+        }
+
+        isLoading = false;
+    }
+
+    private void EditAppointment()
+    {
+        Navigation.NavigateTo($"/admin/appointments/edit/{appointmentId}");
+    }
+
+    private void BackToAppointments()
+    {
+        Navigation.NavigateTo("/admin/appointments");
+    }
+
+    private string GetStatusBadgeClass(AppointmentStatusDto status)
+    {
+        return status switch
+        {
+            AppointmentStatusDto.Pending => "hc-status-badge pending",
+            AppointmentStatusDto.Confirmed => "hc-status-badge confirmed",
+            AppointmentStatusDto.Completed => "hc-status-badge completed",
+            AppointmentStatusDto.Cancelled => "hc-status-badge cancelled",
+            _ => "hc-status-badge"
+        };
+    }
+}
