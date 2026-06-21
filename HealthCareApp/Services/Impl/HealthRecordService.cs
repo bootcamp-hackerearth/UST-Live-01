@@ -119,6 +119,26 @@ namespace HealthCareApp.Services
                 throw new HealthRecordRuleException("Health record cannot be added for a pending appointment.");
             }
 
+            if (appointment.Status == AppointmentStatus.Completed)
+            {
+                throw new HealthRecordRuleException("Health record already exists or appointment is already completed.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Confirmed)
+            {
+                throw new HealthRecordRuleException("Health record can be added only for confirmed appointments.");
+            }
+
+            if (appointment.ScheduledDate.Date > DateTime.Today)
+            {
+                throw new HealthRecordRuleException("Health record cannot be added before the appointment date.");
+            }
+
+            if (dto.VisitDate.Date != appointment.ScheduledDate.Date)
+            {
+                throw new HealthRecordRuleException("Visit date must match the appointment scheduled date.");
+            }
+
             var healthRecordExists = await healthRecordRepository.ExistsByAppointmentIdAsync(dto.AppointmentId);
 
             if (healthRecordExists)
@@ -127,11 +147,6 @@ namespace HealthCareApp.Services
             }
 
             ValidateHealthRecordText(dto.Diagnosis, dto.Prescription, dto.Notes);
-
-            if (dto.VisitDate.Date > DateTime.Today)
-            {
-                throw new HealthRecordRuleException("Visit date cannot be a future date.");
-            }
 
             var healthRecord = mapper.Map<HealthRecord>(dto);
 
@@ -165,12 +180,24 @@ namespace HealthCareApp.Services
                 throw new EntityNotFoundException("HealthRecord", healthRecordId);
             }
 
-            ValidateHealthRecordText(dto.Diagnosis, dto.Prescription, dto.Notes);
+            var appointment = await appointmentRepository.GetByIdAsync(existingHealthRecord.AppointmentId);
 
-            if (dto.VisitDate.Date > DateTime.Today)
+            if (appointment is null)
             {
-                throw new HealthRecordRuleException("Visit date cannot be a future date.");
+                throw new EntityNotFoundException("Appointment", existingHealthRecord.AppointmentId);
             }
+
+            if (appointment.ScheduledDate.Date > DateTime.Today)
+            {
+                throw new HealthRecordRuleException("Health record cannot be updated before the appointment date.");
+            }
+
+            if (dto.VisitDate.Date != appointment.ScheduledDate.Date)
+            {
+                throw new HealthRecordRuleException("Visit date must match the appointment scheduled date.");
+            }
+
+            ValidateHealthRecordText(dto.Diagnosis, dto.Prescription, dto.Notes);
 
             mapper.Map(dto, existingHealthRecord);
 
@@ -235,6 +262,7 @@ namespace HealthCareApp.Services
 
             return mapper.Map<HealthRecordDto>(healthRecord);
         }
+
         // ---------------- Doctor ownership methods ----------------
 
         public async Task<List<HealthRecordDto>> GetMyHealthRecordsForDoctorAsync(string identityUserId)
@@ -398,6 +426,7 @@ namespace HealthCareApp.Services
 
             return doctor;
         }
+
         private async Task<Appointment> GetAppointmentEntityByIdAsync(int appointmentId)
         {
             ValidateAppointmentId(appointmentId);
@@ -411,7 +440,6 @@ namespace HealthCareApp.Services
 
             return appointment;
         }
-
 
         private async Task ValidatePatientExistsAsync(int patientId)
         {

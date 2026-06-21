@@ -18,6 +18,7 @@ namespace HealthCareApp.Dtos
         public SpecialisationType Specialisation { get; set; }
 
         [Required(ErrorMessage = "Please enter the doctor's practice start date.")]
+        [DataType(DataType.Date)]
         public DateTime PracticeStartDate { get; set; }
 
         [Required(ErrorMessage = "Please enter the consultation fee.")]

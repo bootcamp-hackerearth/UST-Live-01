@@ -1,24 +1,25 @@
 ﻿using HealthCareApp.Enums;
-using System;
 
 namespace HealthCareApp.Dtos
 {
     public class AppointmentDto
     {
-        public string? PatientName { get; set; }
-
-        public string? DoctorName { get; set; }
         public int AppointmentId { get; set; }
 
         public int PatientId { get; set; }
 
+        public string? PatientName { get; set; }
+
         public int DoctorId { get; set; }
 
-        public DateTime ScheduledDate { get; set; }
+        public string? DoctorName { get; set; }
+
+        public string ScheduledDate { get; set; } = string.Empty;
 
         public string TimeSlot { get; set; } = string.Empty;
+
         public AppointmentStatus Status { get; set; }
 
-        public string CancellationReason { get; set; }
+        public string? CancellationReason { get; set; }
     }
 }
