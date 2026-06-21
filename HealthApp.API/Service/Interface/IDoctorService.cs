@@ -1,12 +1,18 @@
-﻿using HealthApp.API.Models.DTOs;
+using HealthApp.API.Enums;
+using HealthApp.API.Models.DTOs;
 
-namespace HealthApp.API.Service.Interface
+namespace HealthApp.API.Service.Interface;
+
+public interface IDoctorService
 {
-    public interface IDoctorService
-    {
-        Task<List<DoctorDto>> GetAllAsync();
-        Task<DoctorDto> GetByIdAsync(int id);
-        Task<DoctorDto> AddAsync(DoctorDto entity);
-        Task<DoctorDto> UpdateAsync(int id, DoctorDto entity);
-    }
+    Task<List<DoctorDto>> GetAllDoctorsAsync();
+
+    Task<DoctorDto> GetDoctorByIdAsync(int doctorId);
+
+    Task<List<DoctorDto>> GetDoctorsBySpecialisationAsync(
+        SpecialisationType specialisation);
+
+    Task<DoctorAvailabilityDto> GetDoctorAvailabilityAsync(
+        int doctorId,
+        DateTime date);
 }

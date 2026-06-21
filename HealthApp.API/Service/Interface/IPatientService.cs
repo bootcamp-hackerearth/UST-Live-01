@@ -1,12 +1,16 @@
-﻿using HealthApp.API.Models.DTOs;
+using HealthApp.API.Models.DTOs;
 
-namespace HealthApp.API.Service.Interface
+namespace HealthApp.API.Service.Interface;
+
+public interface IPatientService
 {
-    public interface IPatientService
-    {
-        Task<List<PatientDto>> GetAllAsync();
-        Task<PatientDto> GetByIdAsync(int id);
-        Task<PatientDto> AddPatientAsync(PatientDto entity);
-        Task<PatientDto> UpdatePatientAsync(int id, PatientDto entity);
-    }
+    Task<List<PatientDto>> GetAllPatientsAsync();
+
+    Task<PatientDto> GetPatientByIdAsync(int patientId);
+
+    Task<PatientDto> RegisterPatientAsync(CreatePatientDto dto);
+
+    Task<PatientDto> UpdatePatientAsync(
+        int patientId,
+        UpdatePatientDto dto);
 }

@@ -1,36 +1,79 @@
-﻿using AutoMapper;
-using HealthApp.API.Models;
+using AutoMapper;
+using HealthApp.API.Constants;
+using HealthApp.API.Enums;
+using HealthApp.API.Exceptions;
 using HealthApp.API.Models.DTOs;
-using HealthApp.API.Repository.Impl;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
-namespace HealthApp.API.Service.Impl
+
+namespace HealthApp.API.Service.Impl;
+
+public class DoctorService(
+    IDoctorRepository doctorRepository,
+    IAppointmentRepository appointmentRepository,
+    IMapper mapper) : IDoctorService
 {
-    public class DoctorService(IDoctorRepository repository, IMapper mapper) : IDoctorService
+    public async Task<List<DoctorDto>> GetAllDoctorsAsync()
+        => mapper.Map<List<DoctorDto>>(
+            await doctorRepository.GetAllActiveAsync());
+
+    public async Task<DoctorDto> GetDoctorByIdAsync(int doctorId)
     {
-        public async Task<DoctorDto> AddAsync(DoctorDto entity)
-        {
-            var doctor = mapper.Map<Doctor>(entity);
-            var savedEntity = await repository.AddAsync(doctor);
-            return mapper.Map<DoctorDto>(savedEntity);
-        }
+        ValidateDoctorId(doctorId);
 
-        public async Task<List<DoctorDto>> GetAllAsync()
-        {
-            return mapper.Map<List<DoctorDto>>(await repository.GetAllAsync());
-        }
+        var d = await doctorRepository.GetByIdAsync(doctorId)
+            ?? throw new EntityNotFoundException("Doctor", doctorId);
 
-        public async Task<DoctorDto> GetByIdAsync(int id)
-        {
-            return mapper.Map<DoctorDto>(await repository.GetByIdAsync(id));
-        }
+        if (!d.IsActive)
+            throw new EntityNotFoundException("Doctor", doctorId);
 
-        public async Task<DoctorDto> UpdateAsync(int id, DoctorDto entity)
+        return mapper.Map<DoctorDto>(d);
+    }
+
+    public async Task<List<DoctorDto>> GetDoctorsBySpecialisationAsync(
+        SpecialisationType specialisation)
+        => mapper.Map<List<DoctorDto>>(
+            await doctorRepository.GetActiveBySpecialisationAsync(specialisation));
+
+    public async Task<DoctorAvailabilityDto> GetDoctorAvailabilityAsync(
+        int doctorId,
+        DateTime date)
+    {
+        ValidateDoctorId(doctorId);
+
+        var d = await doctorRepository.GetByIdAsync(doctorId)
+            ?? throw new EntityNotFoundException("Doctor", doctorId);
+
+        if (!d.IsActive)
+            throw new BusinessRuleException("Doctor is inactive.");
+
+        if (date.Date < DateTime.Today)
+            throw new BusinessRuleException(
+                "Cannot check availability for past dates.");
+
+        var appointments = await appointmentRepository.GetByDoctorIdAsync(doctorId);
+
+        var booked = appointments
+            .Where(a =>
+                a.ScheduledDate.Date == date.Date &&
+                a.Status != AppointmentStatus.Cancelled.ToString())
+            .Select(a => a.TimeSlots)
+            .ToList();
+
+        return new DoctorAvailabilityDto
         {
-            var doctor = mapper.Map<Doctor>(entity);
-            doctor.DoctorId = id;
-            var updated = await repository.UpdateAsync(id, doctor);
-            return mapper.Map<DoctorDto>(updated);
-        }
+            DoctorId = doctorId,
+            Date = date.Date,
+            AvailableSlots = TimeSlots.Slots
+                .Where(s => !booked.Contains(s))
+                .ToList()
+        };
+    }
+
+    private static void ValidateDoctorId(int id)
+    {
+        if (id <= 0)
+            throw new BusinessRuleException(
+                "Please provide a valid doctor reference.");
     }
 }

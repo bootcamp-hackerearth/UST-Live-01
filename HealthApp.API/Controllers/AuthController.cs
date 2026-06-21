@@ -1,46 +1,44 @@
-﻿using HealthApp.API.Models;
 using HealthApp.API.Models.DTOs;
-using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthApp.API.Controllers
+namespace HealthApp.API.Controllers;
+
+[ApiController]
+[Route("api/auth")]
+public class AuthController(IAuthService authService) : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController(IAuthService service) : ControllerBase
+    [HttpPost("register")]
+    public async Task<ActionResult<AuthResponseDto>> Register(RegisterRequestDto dto)
     {
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(RegisterDto request)
+        var response = await authService.RegisterAsync(dto);
+        response.Message = "Registered successfully.";
+        return Ok(response);
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthResponseDto>> Login(LoginRequestDto dto)
+    {
+        var response = await authService.LoginAsync(dto);
+        response.Message = "Login successful.";
+        return Ok(response);
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<ActionResult<AuthResponseDto>> Refresh(RefreshTokenRequestDto dto)
+    {
+        var response = await authService.RefreshTokenAsync(dto);
+        response.Message = "Token refreshed successfully.";
+        return Ok(response);
+    }
+
+    [HttpPost("change-password")]
+    public async Task<ActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+        await authService.ChangePasswordAsync(dto);
+        return Ok(new
         {
-            var (success, message, userId) = await service.Register(request);
-
-            if (!success)
-            {
-                return BadRequest(new { message });
-            }
-
-            return Ok(new { message, userId });
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginDto request)
-        {
-            var (success, message, token, ExpiresIn) = await service.Login(request);
-
-            if (!success)
-            {
-                return Unauthorized(new { message });
-            }
-            AuthResponse response = new AuthResponse
-            {
-                AccessToken = token,
-                Message = message,
-                ExpiresIn = ExpiresIn
-            };
-
-            return Ok(response);
-        }
+            message = "Password changed successfully. Please login again."
+        });
     }
 }

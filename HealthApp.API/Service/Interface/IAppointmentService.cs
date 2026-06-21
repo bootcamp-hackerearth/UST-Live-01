@@ -1,12 +1,28 @@
-﻿using HealthApp.API.Models.DTOs;
+using HealthApp.API.Enums;
+using HealthApp.API.Models.DTOs;
 
-namespace HealthApp.API.Service.Interface
+namespace HealthApp.API.Service.Interface;
+
+public interface IAppointmentService
 {
-    public interface IAppointmentService
-    {
-        Task<List<AppointmentDto>> GetAllAsync();
-        Task<AppointmentDto> GetByIdAsync(int id);
-        Task<AppointmentDto> AddAsync(AppointmentDto entity);
-        Task<AppointmentDto> UpdateAsync(int id, AppointmentDto entity);
-    }
+    Task<List<AppointmentDto>> GetAllAppointmentsAsync();
+
+    Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId);
+
+    Task<List<AppointmentDto>> GetAppointmentsByPatientIdAsync(int patientId);
+
+    Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId);
+
+    Task<List<AppointmentDto>> GetAppointmentsByStatusAsync(
+        AppointmentStatus status);
+
+    Task<AppointmentDto> BookAppointmentAsync(BookAppointmentDto dto);
+
+    Task<AppointmentDto> ChangeAppointmentStatusAsync(
+        int appointmentId,
+        UpdateAppointmentStatusDto dto);
+
+    Task<AppointmentDto> CancelAppointmentAsync(
+        int appointmentId,
+        string? reason);
 }

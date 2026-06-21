@@ -1,134 +1,47 @@
-﻿using HealthApp.API.Models;
-using Microsoft.AspNetCore.Identity;
+using HealthApp.API.Identity;
+using HealthApp.API.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthApp.API.Data
+namespace HealthApp.API.Data;
+
+public class HealthAppDbContext : IdentityDbContext<ApplicationUser>
 {
-    public class HealthAppDbContext : IdentityDbContext<IdentityUser>
+    public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options) : base(options) { }
+
+    public DbSet<Patient> Patients => Set<Patient>();
+    public DbSet<Doctor> Doctors => Set<Doctor>();
+    public DbSet<Appointment> Appointments => Set<Appointment>();
+    public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        public HealthAppDbContext(DbContextOptions<HealthAppDbContext> options) : base(options)
-        {
-                     
-        }
+        base.OnModelCreating(modelBuilder);
 
-        public DbSet<Patient> Patients{ get; set; }
-        public DbSet<Doctor> Doctors { get; set; }
-        public DbSet<Appointment> Appointments { get; set; }
-        public DbSet<HealthRecord> HealthRecords { get; set; }
-        
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Patient>()
-                .HasData(
-                    new Patient
-                    {
-                        PatientId = 1,
-                        PatientName = "John Mathew",
-                        DateOfBirth = new DateTime(1990, 1, 1),
-                        Gender = "Male",
-                        Email = "johnmathew@gmail.com",
-                        PhoneNumber = "8796534521",
-                        InsuranceId = "INS001"
-                    },
-                    new Patient
-                    {
-                        PatientId = 2,
-                        PatientName = "Ramesh Kumar",
-                        DateOfBirth = new DateTime(1985, 4, 12),
-                        Gender = "Male",
-                        Email = "rameshk@gmail.com",
-                        PhoneNumber = "9876543210",
-                        InsuranceId = "INS1002"
-                    },
+        modelBuilder.Entity<Appointment>()
+            .HasOne(a => a.Patient).WithMany(p => p.Appointments).HasForeignKey(a => a.PatientId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-                    new Patient
-                    {
-                        PatientId = 3,
-                        PatientName = "Priya Sharma",
-                        DateOfBirth = new DateTime(1992, 9, 25),
-                        Gender = "Female",
-                        Email = "priya@gmail.com",
-                        PhoneNumber = "8765432109",
-                        InsuranceId = "INS1003"
-                    },
+        modelBuilder.Entity<Appointment>()
+            .HasOne(a => a.Doctor).WithMany(d => d.Appointments).HasForeignKey(a => a.DoctorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-                    new Patient
-                    {
-                        PatientId = 4,
-                        PatientName = "Arun Raj",
-                        DateOfBirth = new DateTime(2000, 1, 8),
-                        Gender = "Male",
-                        Email = "arunraj@gmail.com",
-                        PhoneNumber = "7654321098",
-                        InsuranceId = "INS1004"
-                    },
+        modelBuilder.Entity<HealthRecord>()
+            .HasOne(h => h.Patient).WithMany(p => p.HealthRecords).HasForeignKey(h => h.PatientId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-                    new Patient
-                    {
-                        PatientId = 5,
-                        PatientName = "Meena Devi",
-                        DateOfBirth = new DateTime(2001, 11, 30),
-                        Gender = "Female",
-                        Email = "meenu@gmail.com",
-                        PhoneNumber = "6543210987",
-                        InsuranceId = "INS1005"
-                    }
-                );
+        modelBuilder.Entity<HealthRecord>()
+            .HasOne(h => h.Doctor).WithMany(d => d.HealthRecords).HasForeignKey(h => h.DoctorId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Doctor>()
-                .HasData(
-                    new Doctor
-                    {
-                        DoctorId = 1,
-                        DoctorName = "Vignesh Kumar",
-                        Specialisation = "Orthopedic",
-                        YearsOfExperience = 14,
-                        ConsultationFee = 1500,
-                        IsActive = true
-                    },
+        modelBuilder.Entity<HealthRecord>()
+            .HasOne(h => h.Appointment).WithOne(a => a.HealthRecord).HasForeignKey<HealthRecord>(h => h.AppointmentId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-                    new Doctor
-                    {
-                        DoctorId = 2,
-                        DoctorName = "Sneha Paul",
-                        Specialisation = "Gynecologist",
-                        YearsOfExperience = 20,
-                        ConsultationFee = 1800,
-                        IsActive = true
-                    },
-
-                    new Doctor
-                    {
-                        DoctorId = 3,
-                        DoctorName = "Hari Narayanan",
-                        Specialisation = "ENT",
-                        YearsOfExperience = 9,
-                        ConsultationFee = 900,
-                        IsActive = true
-                    },
-
-                    new Doctor
-                    {
-                        DoctorId = 4,
-                        DoctorName = "Martin Smith",
-                        Specialisation = "Psychiatrist",
-                        YearsOfExperience = 11,
-                        ConsultationFee = 2000,
-                        IsActive = false
-                    },
-
-                    new Doctor
-                    {
-                        DoctorId = 5,
-                        DoctorName = "Bharath Raj",
-                        Specialisation = "Cardiologist",
-                        YearsOfExperience = 25,
-                        ConsultationFee = 3000,
-                        IsActive = true
-                    }
-                );
-        }
+        modelBuilder.Entity<Patient>().Property(p => p.CreatedDate).HasDefaultValueSql("GETDATE()");
+        modelBuilder.Entity<Doctor>().Property(d => d.CreatedDate).HasDefaultValueSql("GETDATE()");
+        modelBuilder.Entity<Appointment>().Property(a => a.CreatedDate).HasDefaultValueSql("GETDATE()");
+        modelBuilder.Entity<HealthRecord>().Property(h => h.CreatedDate).HasDefaultValueSql("GETDATE()");
     }
 }

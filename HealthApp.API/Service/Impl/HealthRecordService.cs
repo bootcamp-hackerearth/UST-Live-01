@@ -1,35 +1,86 @@
-﻿using AutoMapper;
+using AutoMapper;
+using HealthApp.API.Enums;
+using HealthApp.API.Exceptions;
 using HealthApp.API.Models;
 using HealthApp.API.Models.DTOs;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
-namespace HealthApp.API.Service.Impl
+
+namespace HealthApp.API.Service.Impl;
+
+public class HealthRecordService(
+    IHealthRecordRepository healthRecordRepository,
+    IPatientRepository patientRepository,
+    IDoctorRepository doctorRepository,
+    IAppointmentRepository appointmentRepository,
+    IMapper mapper) : IHealthRecordService
 {
-    public class HealthRecordService(IHealthRecordRepository repository, IMapper mapper) : IHealthRecordService
+    public async Task<List<HealthRecordDto>> GetAllHealthRecordsAsync()
+        => mapper.Map<List<HealthRecordDto>>(
+            await healthRecordRepository.GetAllAsync());
+
+    public async Task<HealthRecordDto> GetHealthRecordByIdAsync(int id)
     {
-        public async Task<HealthRecordDto> AddAsync(HealthRecordDto entity)
+        if (id <= 0)
+            throw new HealthRecordRuleException("Invalid health record.");
+
+        var h = await healthRecordRepository.GetByIdAsync(id)
+            ?? throw new EntityNotFoundException("HealthRecord", id);
+
+        return mapper.Map<HealthRecordDto>(h);
+    }
+
+    public async Task<List<HealthRecordDto>> GetHealthRecordsByPatientIdAsync(
+        int patientId)
+    {
+        if (await patientRepository.GetByIdAsync(patientId) is null)
+            throw new EntityNotFoundException("Patient", patientId);
+
+        return mapper.Map<List<HealthRecordDto>>(
+            await healthRecordRepository.GetByPatientIdAsync(patientId));
+    }
+
+    public async Task<HealthRecordDto> AddHealthRecordAsync(
+        AddHealthRecordDto dto)
+    {
+        if (dto is null)
+            throw new HealthRecordRuleException(
+                "Health record details are required.");
+
+        var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId)
+            ?? throw new EntityNotFoundException(
+                "Appointment",
+                dto.AppointmentId);
+
+        if (appointment.PatientId != dto.PatientId)
+            throw new HealthRecordRuleException(
+                "Appointment does not belong to selected patient.");
+
+        if (appointment.Status == AppointmentStatus.Cancelled.ToString() ||
+            appointment.Status == AppointmentStatus.Pending.ToString())
         {
-            var healthRecord = mapper.Map<HealthRecord>(entity);
-            var savedEntity = await repository.AddAsync(healthRecord);
-            return mapper.Map<HealthRecordDto>(savedEntity);
+            throw new HealthRecordRuleException(
+                "Health record can be added only after consultation.");
         }
 
-        public async Task<List<HealthRecordDto>> GetAllAsync()
-        {
-            return mapper.Map<List<HealthRecordDto>>(await repository.GetAllAsync());
-        }
+        if (await healthRecordRepository.ExistsByAppointmentIdAsync(dto.AppointmentId))
+            throw new ConflictException(
+                "Health record already exists for this appointment.");
 
-        public async Task<HealthRecordDto> GetByIdAsync(int id)
-        {
-            return mapper.Map<HealthRecordDto>(await repository.GetByIdAsync(id));
-        }
+        var h = mapper.Map<HealthRecord>(dto);
+        h.PatientId = appointment.PatientId;
+        h.DoctorId = appointment.DoctorId;
+        h.AppointmentId = appointment.AppointmentId;
+        h.CreatedDate = DateTime.Now;
 
-        public async Task<HealthRecordDto> UpdateAsync(int id, HealthRecordDto entity)
-        {
-            var healthRecord = mapper.Map<HealthRecord>(entity);
-            healthRecord.HealthRecordId = id;
-            var updated = await repository.UpdateAsync(id, healthRecord);
-            return mapper.Map<HealthRecordDto>(updated);
-        }
+        var saved = await healthRecordRepository.AddAsync(h);
+
+        appointment.Status = AppointmentStatus.Completed.ToString();
+
+        await appointmentRepository.UpdateAsync(
+            appointment.AppointmentId,
+            appointment);
+
+        return mapper.Map<HealthRecordDto>(saved);
     }
 }

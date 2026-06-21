@@ -1,10 +1,14 @@
-﻿using HealthApp.API.Models.DTOs;
+using HealthApp.API.Models.DTOs;
 
-namespace HealthApp.API.Service.Interface
+namespace HealthApp.API.Service.Interface;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<(bool Success, string Error, string UserId)> Register(RegisterDto request);
-        Task<(bool Success, string Error, string Token, int ExpiresIn)> Login(LoginDto request);
-    }
+    Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto);
+
+    Task<AuthResponseDto> LoginAsync(LoginRequestDto dto);
+
+    Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto dto);
+
+    Task ChangePasswordAsync(ChangePasswordDto dto);
 }
