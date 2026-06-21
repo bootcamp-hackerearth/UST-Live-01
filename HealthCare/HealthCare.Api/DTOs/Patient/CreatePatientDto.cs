@@ -27,6 +27,9 @@ namespace HealthCare.Api.DTOs.Patient
         [Required]
         public string Password { get; set; } = null!;
 
+        [Required]
+        public string? ConfirmPassword { get; set; }
+
 
         [MaxLength(50)]
         public string? InsuranceId { get; set; }

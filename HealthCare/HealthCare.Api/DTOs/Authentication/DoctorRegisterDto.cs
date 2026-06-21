@@ -28,10 +28,10 @@ namespace HealthCare.Api.DTOs.Authentication
         public string Password { get; set; } = null!;
 
         [Required]
-        public string ConfirmPassword { get; set; }
+        public string ?ConfirmPassword { get; set; }
 
         [Required]
-        public List<string> TimeSlots { get; set; }
+        public List<string> ?TimeSlots { get; set; }
 
     }
 }

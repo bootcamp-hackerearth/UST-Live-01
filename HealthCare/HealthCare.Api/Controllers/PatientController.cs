@@ -35,8 +35,7 @@ namespace HealthCare.Api.Controllers
         }
 
         [HttpPut("Profile")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [Authorize(Roles = "Patient,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
         public async Task<IActionResult> Update( UpdatePatientDto dto)
         {
             if (!ModelState.IsValid)

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+[Route("api/patients")]
 public class AdminPatientController : ControllerBase
 {
     private readonly IPatientService _patientService;
@@ -17,7 +18,7 @@ public class AdminPatientController : ControllerBase
 
     // Get patient by id
 
-    [HttpGet("/patients/{id}")]
+    [HttpGet("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> GetPatientById(int id)
     {
@@ -27,9 +28,9 @@ public class AdminPatientController : ControllerBase
     }
 
     //Get All pat
-    [HttpGet("/patients")]
+    [HttpGet]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> GetAllPatient([FromQuery] PatientFilter filter)
+    public async Task<IActionResult> GetAllPatient(PatientFilter filter)
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
@@ -39,7 +40,7 @@ public class AdminPatientController : ControllerBase
     }
 
     //update patient
-    [HttpPut("/patients/{id}")]
+    [HttpPut("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> UpdatePatient(int id, [FromBody] UpdatePatientDto dto)
     {
@@ -51,7 +52,7 @@ public class AdminPatientController : ControllerBase
     }
 
     //Update status
-    [HttpPatch("/patients/{id}/status")]
+    [HttpPatch("{id}/status")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> UpdatePatientStatus(int id, [FromBody] bool isActive)
     {
@@ -60,7 +61,7 @@ public class AdminPatientController : ControllerBase
     }
 
     //delete patient
-    [HttpDelete("/patients/{id}")]
+    [HttpDelete("{id}")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> DeletePatient(int id)
     {
@@ -69,9 +70,8 @@ public class AdminPatientController : ControllerBase
     }
 
     //register
-    [HttpPost("register/patient")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [Authorize(Roles = "Admin")]
+    [HttpPost("register")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> RegisterPatient(PatientRegisterDto dto)
     {
         await _authService.RegisterPatientAsync(dto);
@@ -94,4 +94,4 @@ public class AdminPatientController : ControllerBase
         return Ok(result);
     }
 
-}}
+}
