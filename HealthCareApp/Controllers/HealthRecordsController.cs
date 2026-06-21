@@ -24,11 +24,11 @@ namespace HealthCareApp.Controllers
             return Ok(records);
         }
 
-        // Patient only: view logged-in patient's health records
+        // Patient/Doctor: view logged-in user's health records
         [HttpGet("my")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Patient")]
+            Roles = "Patient,Doctor")]
         public async Task<IActionResult> GetMyHealthRecords()
         {
             var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -41,14 +41,25 @@ namespace HealthCareApp.Controllers
                 });
             }
 
-            var records = await service.GetMyHealthRecordsForPatientAsync(identityUserId);
+            if (User.IsInRole("Patient"))
+            {
+                var records = await service.GetMyHealthRecordsForPatientAsync(identityUserId);
 
-            return Ok(records);
+                return Ok(records);
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                var records = await service.GetMyHealthRecordsForDoctorAsync(identityUserId);
+
+                return Ok(records);
+            }
+
+            return Forbid();
         }
 
         // Admin, Doctor, Patient: view health record by id
-        // Patient ownership is checked here.
-        // Doctor ownership will be handled later.
+        // Patient and Doctor ownership are checked here.
         [HttpGet("{healthRecordId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -62,18 +73,18 @@ namespace HealthCareApp.Controllers
                 return Ok(record);
             }
 
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
             if (User.IsInRole("Patient"))
             {
-                var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (string.IsNullOrWhiteSpace(identityUserId))
-                {
-                    return Unauthorized(new
-                    {
-                        Message = "Invalid user token."
-                    });
-                }
-
                 var record = await service.GetHealthRecordByIdForPatientAsync(
                     healthRecordId,
                     identityUserId);
@@ -83,8 +94,9 @@ namespace HealthCareApp.Controllers
 
             if (User.IsInRole("Doctor"))
             {
-                // Doctor ownership will be handled later.
-                var record = await service.GetHealthRecordByIdAsync(healthRecordId);
+                var record = await service.GetHealthRecordByIdForDoctorAsync(
+                    healthRecordId,
+                    identityUserId);
 
                 return Ok(record);
             }
@@ -92,13 +104,13 @@ namespace HealthCareApp.Controllers
             return Forbid();
         }
 
-        // Admin and Doctor: view records by patient id
+        // Admin only: view records by patient id
         // Patient should use GET /api/HealthRecords/my
-        // Doctor ownership will be handled later.
+        // Doctor should also not use random patientId route.
         [HttpGet("patient/{patientId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Doctor")]
+            Roles = "Admin")]
         public async Task<IActionResult> GetHealthRecordsByPatientId([FromRoute] int patientId)
         {
             var records = await service.GetHealthRecordsByPatientIdAsync(patientId);
@@ -106,12 +118,12 @@ namespace HealthCareApp.Controllers
             return Ok(records);
         }
 
-        // Admin and Doctor: view records by doctor id
-        // Doctor ownership will be handled later.
+        // Admin only: view records by doctor id
+        // Doctor should use GET /api/HealthRecords/my
         [HttpGet("doctor/{doctorId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Doctor")]
+            Roles = "Admin")]
         public async Task<IActionResult> GetHealthRecordsByDoctorId([FromRoute] int doctorId)
         {
             var records = await service.GetHealthRecordsByDoctorIdAsync(doctorId);
@@ -119,28 +131,59 @@ namespace HealthCareApp.Controllers
             return Ok(records);
         }
 
-        // Admin and Doctor: view records by appointment
-        // Doctor ownership will be handled later.
+        // Admin/Doctor: view records by appointment
+        // Doctor ownership is checked here.
         [HttpGet("appointment/{appointmentId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Admin,Doctor")]
         public async Task<IActionResult> GetHealthRecordsByAppointmentId([FromRoute] int appointmentId)
         {
-            var records = await service.GetHealthRecordsByAppointmentIdAsync(appointmentId);
+            if (User.IsInRole("Admin"))
+            {
+                var records = await service.GetHealthRecordsByAppointmentIdAsync(appointmentId);
 
-            return Ok(records);
+                return Ok(records);
+            }
+
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var doctorRecords = await service.GetHealthRecordsByAppointmentIdForDoctorAsync(
+                appointmentId,
+                identityUserId);
+
+            return Ok(doctorRecords);
         }
 
         // Doctor only: add health record
-        // Doctor ownership will be handled later.
+        // Doctor ownership is checked inside service.
         [HttpPost]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Doctor")]
         public async Task<IActionResult> AddHealthRecord([FromBody] AddHealthRecordDto request)
         {
-            var record = await service.AddHealthRecordAsync(request);
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var record = await service.AddHealthRecordForDoctorAsync(
+                request,
+                identityUserId);
 
             return CreatedAtAction(
                 nameof(GetHealthRecordById),
@@ -149,7 +192,7 @@ namespace HealthCareApp.Controllers
         }
 
         // Doctor only: update health record
-        // Doctor ownership will be handled later.
+        // Doctor ownership is checked inside service.
         [HttpPut("{healthRecordId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -158,7 +201,20 @@ namespace HealthCareApp.Controllers
             [FromRoute] int healthRecordId,
             [FromBody] UpdateHealthRecordDto request)
         {
-            var record = await service.UpdateHealthRecordAsync(healthRecordId, request);
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var record = await service.UpdateHealthRecordForDoctorAsync(
+                healthRecordId,
+                request,
+                identityUserId);
 
             return Ok(record);
         }

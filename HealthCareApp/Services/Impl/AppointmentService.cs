@@ -477,7 +477,153 @@ namespace HealthCareApp.Services.Impl
 
             return await CancelAppointmentAsync(dto);
         }
+        public async Task<List<AppointmentDto>> GetMyAppointmentsForDoctorAsync(string identityUserId)
+        {
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
 
+            var appointments = await appointmentRepository.GetByDoctorIdAsync(doctor.DoctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+        public async Task<List<AppointmentDto>> GetMyUpcomingAppointmentsForDoctorAsync(string identityUserId)
+        {
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointments = await appointmentRepository.GetUpcomingAppointmentsByDoctorIdAsync(doctor.DoctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetMyPendingAppointmentsForDoctorAsync(string identityUserId)
+        {
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointments = await appointmentRepository.GetPendingAppointmentsByDoctorIdAsync(doctor.DoctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<List<AppointmentDto>> GetMyTodayConfirmedAppointmentsForDoctorAsync(string identityUserId)
+        {
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointments = await appointmentRepository.GetTodayConfirmedAppointmentsByDoctorIdAsync(doctor.DoctorId);
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        public async Task<AppointmentDto> GetAppointmentByIdForDoctorAsync(
+    int appointmentId,
+    string identityUserId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can access only their own appointments.");
+            }
+
+            return mapper.Map<AppointmentDto>(appointment);
+        }
+
+        public async Task<AppointmentDto> ConfirmAppointmentForDoctorAsync(
+    int appointmentId,
+    string identityUserId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can confirm only their own appointments.");
+            }
+
+            return await ConfirmAppointmentAsync(appointmentId);
+        }
+
+        public async Task<AppointmentDto> CompleteAppointmentForDoctorAsync(
+    int appointmentId,
+    string identityUserId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can complete only their own appointments.");
+            }
+
+            return await CompleteAppointmentAsync(appointmentId);
+        }
+
+        public async Task<AppointmentDto> CancelAppointmentForDoctorAsync(
+    CancelAppointmentDto dto,
+    string identityUserId)
+        {
+            if (dto is null)
+            {
+                throw new AppointmentRuleException("Cancellation details are required.");
+            }
+
+            ValidateAppointmentId(dto.AppointmentId);
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can cancel only their own appointments.");
+            }
+
+            return await CancelAppointmentAsync(dto);
+        }
+        private async Task<Doctor> GetLoggedInDoctorAsync(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid logged-in user.");
+            }
+
+            var doctor = await doctorRepository.GetByIdentityUserIdAsync(identityUserId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException("Doctor profile for logged-in user", 0);
+            }
+
+            return doctor;
+        }
         private async Task<Patient> GetLoggedInPatientAsync(string identityUserId)
         {
             if (string.IsNullOrWhiteSpace(identityUserId))

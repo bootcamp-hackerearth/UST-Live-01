@@ -174,6 +174,22 @@ namespace HealthCareApp.Services
 
             return mapper.Map<DoctorDto>(deletedDoctor);
         }
+        public async Task<DoctorDto> GetMyProfileAsync(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid logged-in user.");
+            }
+
+            var doctor = await repository.GetByIdentityUserIdAsync(identityUserId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException("Doctor profile for logged-in user", 0);
+            }
+
+            return mapper.Map<DoctorDto>(doctor);
+        }
 
         private void ValidateDoctorId(int doctorId)
         {

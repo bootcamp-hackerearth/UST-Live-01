@@ -45,6 +45,13 @@ namespace HealthCareApp.Repository.Impl
             return await _context.Doctors
                 .AnyAsync(d => d.Email.ToLower() == email.ToLower(), ct);
         }
+        public async Task<Doctor?> GetByIdentityUserIdAsync(
+    string identityUserId,
+    CancellationToken ct = default)
+        {
+            return await _context.Doctors
+                .FirstOrDefaultAsync(d => d.IdentityUserId == identityUserId, ct);
+        }
 
     }
     }

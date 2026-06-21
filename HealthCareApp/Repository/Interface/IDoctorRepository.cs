@@ -14,5 +14,8 @@ namespace HealthCareApp.Repository.Interface
 
         Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default);
 
+        Task<Doctor?> GetByIdentityUserIdAsync(string identityUserId, CancellationToken ct = default);
+
+
     }
 }

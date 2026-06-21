@@ -235,6 +235,133 @@ namespace HealthCareApp.Services
 
             return mapper.Map<HealthRecordDto>(healthRecord);
         }
+        // ---------------- Doctor ownership methods ----------------
+
+        public async Task<List<HealthRecordDto>> GetMyHealthRecordsForDoctorAsync(string identityUserId)
+        {
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var healthRecords = await healthRecordRepository.GetByDoctorIdAsync(doctor.DoctorId);
+
+            return mapper.Map<List<HealthRecordDto>>(healthRecords);
+        }
+
+        public async Task<HealthRecordDto> GetHealthRecordByIdForDoctorAsync(
+            int healthRecordId,
+            string identityUserId)
+        {
+            ValidateHealthRecordId(healthRecordId);
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var healthRecord = await healthRecordRepository.GetByIdAsync(healthRecordId);
+
+            if (healthRecord is null)
+            {
+                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+            }
+
+            if (healthRecord.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can access only their own health records.");
+            }
+
+            return mapper.Map<HealthRecordDto>(healthRecord);
+        }
+
+        public async Task<List<HealthRecordDto>> GetHealthRecordsByAppointmentIdForDoctorAsync(
+            int appointmentId,
+            string identityUserId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", appointmentId);
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can access health records only for their own appointments.");
+            }
+
+            var healthRecords = await healthRecordRepository.GetByAppointmentIdAsync(appointmentId);
+
+            return mapper.Map<List<HealthRecordDto>>(healthRecords);
+        }
+
+        public async Task<HealthRecordDto> AddHealthRecordForDoctorAsync(
+            AddHealthRecordDto dto,
+            string identityUserId)
+        {
+            if (dto is null)
+            {
+                throw new HealthRecordRuleException("Health record details are required.");
+            }
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            ValidateAppointmentId(dto.AppointmentId);
+
+            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can add health records only for their own appointments.");
+            }
+
+            if (dto.PatientId != appointment.PatientId)
+            {
+                throw new HealthRecordRuleException("Health record patient must match the appointment patient.");
+            }
+
+            if (dto.DoctorId is not null && dto.DoctorId.Value != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Health record doctor must match the logged-in doctor.");
+            }
+
+            dto.DoctorId = doctor.DoctorId;
+
+            return await AddHealthRecordAsync(dto);
+        }
+
+        public async Task<HealthRecordDto> UpdateHealthRecordForDoctorAsync(
+            int healthRecordId,
+            UpdateHealthRecordDto dto,
+            string identityUserId)
+        {
+            ValidateHealthRecordId(healthRecordId);
+
+            if (dto is null)
+            {
+                throw new HealthRecordRuleException("Health record details are required.");
+            }
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var healthRecord = await healthRecordRepository.GetByIdAsync(healthRecordId);
+
+            if (healthRecord is null)
+            {
+                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+            }
+
+            if (healthRecord.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException("Doctors can update only their own health records.");
+            }
+
+            return await UpdateHealthRecordAsync(healthRecordId, dto);
+        }
 
         // ---------------- Private helper methods ----------------
 
@@ -255,6 +382,22 @@ namespace HealthCareApp.Services
             return patient;
         }
 
+        private async Task<Doctor> GetLoggedInDoctorAsync(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid logged-in user.");
+            }
+
+            var doctor = await doctorRepository.GetByIdentityUserIdAsync(identityUserId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException("Doctor profile for logged-in user", 0);
+            }
+
+            return doctor;
+        }
         private async Task<Appointment> GetAppointmentEntityByIdAsync(int appointmentId)
         {
             ValidateAppointmentId(appointmentId);
@@ -268,6 +411,7 @@ namespace HealthCareApp.Services
 
             return appointment;
         }
+
 
         private async Task ValidatePatientExistsAsync(int patientId)
         {

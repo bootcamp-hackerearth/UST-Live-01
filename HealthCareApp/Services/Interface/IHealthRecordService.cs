@@ -24,5 +24,15 @@ namespace HealthCareApp.Services
         Task<List<HealthRecordDto>> GetMyHealthRecordsForPatientAsync(string identityUserId);
 
         Task<HealthRecordDto> GetHealthRecordByIdForPatientAsync(int healthRecordId,string identityUserId);
+
+        Task<List<HealthRecordDto>> GetMyHealthRecordsForDoctorAsync(string identityUserId);
+
+        Task<HealthRecordDto> GetHealthRecordByIdForDoctorAsync(int healthRecordId,string identityUserId);
+
+        Task<List<HealthRecordDto>> GetHealthRecordsByAppointmentIdForDoctorAsync(int appointmentId,string identityUserId);
+
+        Task<HealthRecordDto> AddHealthRecordForDoctorAsync(AddHealthRecordDto dto,string identityUserId);
+
+        Task<HealthRecordDto> UpdateHealthRecordForDoctorAsync(int healthRecordId, UpdateHealthRecordDto dto,string identityUserId);
     }
 }

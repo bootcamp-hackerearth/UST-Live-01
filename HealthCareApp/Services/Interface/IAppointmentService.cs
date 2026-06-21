@@ -50,5 +50,21 @@ namespace HealthCareApp.Services
         Task<AppointmentDto> BookAppointmentForPatientAsync(BookAppointmentDto dto, string identityUserId);
 
         Task<AppointmentDto> CancelAppointmentForPatientAsync(CancelAppointmentDto dto, string identityUserId);
+
+        Task<List<AppointmentDto>> GetMyAppointmentsForDoctorAsync(string identityUserId);
+
+        Task<List<AppointmentDto>> GetMyUpcomingAppointmentsForDoctorAsync(string identityUserId);
+
+        Task<List<AppointmentDto>> GetMyPendingAppointmentsForDoctorAsync(string identityUserId);
+
+        Task<List<AppointmentDto>> GetMyTodayConfirmedAppointmentsForDoctorAsync(string identityUserId);
+
+        Task<AppointmentDto> GetAppointmentByIdForDoctorAsync(int appointmentId, string identityUserId);
+
+        Task<AppointmentDto> ConfirmAppointmentForDoctorAsync(int appointmentId, string identityUserId);
+
+        Task<AppointmentDto> CompleteAppointmentForDoctorAsync(int appointmentId, string identityUserId);
+
+        Task<AppointmentDto> CancelAppointmentForDoctorAsync(CancelAppointmentDto dto,string identityUserId);
     }
 }

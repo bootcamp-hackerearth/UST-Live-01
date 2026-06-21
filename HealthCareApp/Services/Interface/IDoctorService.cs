@@ -22,5 +22,7 @@ namespace HealthCareApp.Services
 
         Task<DoctorDto> DeleteDoctorAsync(int doctorId);
         Task<List<string>> GetDoctorAvailabilityAsync(int doctorId);
+
+        Task<DoctorDto> GetMyProfileAsync(string identityUserId);
     }
 }

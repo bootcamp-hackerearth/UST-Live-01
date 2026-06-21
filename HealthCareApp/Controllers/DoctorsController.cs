@@ -3,6 +3,7 @@ using HealthCareApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
 {
@@ -10,6 +11,28 @@ namespace HealthCareApp.Controllers
     [ApiController]
     public class DoctorsController(IDoctorService service) : ControllerBase
     {
+        // Doctor only: View logged-in doctor's own profile.
+        [HttpGet("me")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Doctor")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var result = await service.GetMyProfileAsync(identityUserId);
+
+            return Ok(result);
+        }
+
         // Patients need this to view active doctors before booking.
         // Admin can also view.
         [HttpGet]
