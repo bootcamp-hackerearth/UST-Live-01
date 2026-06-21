@@ -121,6 +121,7 @@ builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 // Service registrations
 builder.Services.AddScoped<IDoctorService, DoctorService>();
