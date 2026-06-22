@@ -26,7 +26,7 @@ namespace HealthAxis.API.Services.Implementation
 
             if (appointment == null)
             {
-                throw new NotFoundException("Appointment not found");
+                return null;
             }
 
             return mapper.Map<AppointmentDto>(appointment);
@@ -50,19 +50,16 @@ namespace HealthAxis.API.Services.Implementation
             return mapper.Map<List<AppointmentDto>>(patientAppointments);
         }
 
-        public async Task<AppointmentDto> AddAsync(
-            CreateAppointmentDto appointmentDto)
+        public async Task<AppointmentDto> AddAsync(CreateAppointmentDto appointmentDto)
         {
-            var patient = await patientRepository.GetByIdAsync(
-                appointmentDto.PatientId);
+            var patient = await patientRepository.GetByIdAsync(appointmentDto.PatientId);
 
             if (patient == null)
             {
                 throw new NotFoundException("Patient not found");
             }
 
-            var doctor = await doctorRepository.GetByIdAsync(
-                appointmentDto.DoctorId);
+            var doctor = await doctorRepository.GetByIdAsync(appointmentDto.DoctorId);
 
             if (doctor == null)
             {
@@ -72,12 +69,7 @@ namespace HealthAxis.API.Services.Implementation
             if (!doctor.IsActive)
             {
                 throw new BusinessRuleException(
-                    "Doctor is inactive. Appointment cannot be booked");
-            }
-
-            if (appointmentDto.ScheduledDate == default)
-            {
-                throw new ValidationException("Appointment date is required");
+                    "Doctor is not available for appointment");
             }
 
             if (appointmentDto.ScheduledDate.Date < DateTime.Today)
@@ -88,8 +80,8 @@ namespace HealthAxis.API.Services.Implementation
 
             if (appointmentDto.ScheduledDate.Date > DateTime.Today.AddMonths(6))
             {
-                throw new BusinessRuleException(
-                    "Appointments can only be booked up to 6 months in advance");
+                throw new ValidationException(
+                    "Appointment date cannot be more than 6 months ahead");
             }
 
             if (string.IsNullOrWhiteSpace(appointmentDto.TimeSlot))
@@ -99,48 +91,55 @@ namespace HealthAxis.API.Services.Implementation
 
             var appointments = await appointmentRepository.GetAllAsync();
 
-            bool doctorAlreadyBooked = appointments.Any(a =>
+            var activeStatuses = new[]
+            {
+        AppointmentStatus.Pending,
+        AppointmentStatus.Confirmed
+    };
+
+            var normalizedTimeSlot = appointmentDto.TimeSlot.Trim().ToLower();
+
+            var doctorAlreadyBooked = appointments.Any(a =>
                 a.DoctorId == appointmentDto.DoctorId &&
                 a.ScheduledDate.Date == appointmentDto.ScheduledDate.Date &&
-                a.TimeSlot == appointmentDto.TimeSlot &&
-                a.Status != AppointmentStatus.Cancelled);
+                a.TimeSlot.Trim().ToLower() == normalizedTimeSlot &&
+                activeStatuses.Contains(a.Status));
 
             if (doctorAlreadyBooked)
             {
                 throw new BusinessRuleException(
-                    "Doctor is already booked for this date and time slot");
+                    "This doctor already has an appointment at this time");
             }
 
-            bool patientAlreadyBooked = appointments.Any(a =>
+            var patientAlreadyBooked = appointments.Any(a =>
                 a.PatientId == appointmentDto.PatientId &&
                 a.ScheduledDate.Date == appointmentDto.ScheduledDate.Date &&
-                a.TimeSlot == appointmentDto.TimeSlot &&
-                a.Status != AppointmentStatus.Cancelled);
+                a.TimeSlot.Trim().ToLower() == normalizedTimeSlot &&
+                activeStatuses.Contains(a.Status));
 
             if (patientAlreadyBooked)
             {
                 throw new BusinessRuleException(
-                    "Patient already has an appointment for this date and time slot");
+                    "You already have an appointment at this time");
             }
 
             var appointment = new Appointment
             {
                 PatientId = appointmentDto.PatientId,
                 DoctorId = appointmentDto.DoctorId,
-                ScheduledDate = appointmentDto.ScheduledDate,
-                TimeSlot = appointmentDto.TimeSlot,
-                Status = AppointmentStatus.Pending,
-                CancellationReason = null
+                ScheduledDate = appointmentDto.ScheduledDate.Date,
+                TimeSlot = appointmentDto.TimeSlot.Trim(),
+                Status = AppointmentStatus.Pending
             };
 
-            var saved = await appointmentRepository.AddAsync(appointment);
+            var savedAppointment = await appointmentRepository.AddAsync(appointment);
 
-            return mapper.Map<AppointmentDto>(saved);
+            return mapper.Map<AppointmentDto>(savedAppointment);
         }
 
         public async Task<AppointmentDto> UpdateStatusAsync(
-            int id,
-            UpdateAppointmentStatusDto statusDto)
+     int id,
+     UpdateAppointmentStatusDto statusDto)
         {
             var appointment = await appointmentRepository.GetByIdAsync(id);
 
@@ -154,39 +153,32 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationException("Invalid appointment status");
             }
 
-            if (appointment.Status == AppointmentStatus.Completed &&
-                statusDto.Status != AppointmentStatus.Completed)
+            if (appointment.Status == AppointmentStatus.Completed ||
+                appointment.Status == AppointmentStatus.Cancelled)
             {
                 throw new BusinessRuleException(
-                    "Completed appointment status cannot be changed");
-            }
-
-            if (appointment.Status == AppointmentStatus.Cancelled &&
-                statusDto.Status != AppointmentStatus.Cancelled)
-            {
-                throw new BusinessRuleException(
-                    "Cancelled appointment cannot be completed or confirmed");
-            }
-
-            if (statusDto.Status == AppointmentStatus.Cancelled &&
-                appointment.Status != AppointmentStatus.Pending)
-            {
-                throw new BusinessRuleException(
-                    "Only pending appointments can be cancelled");
+                    "Completed or cancelled appointment cannot be changed");
             }
 
             if (appointment.Status == AppointmentStatus.Pending &&
-                statusDto.Status == AppointmentStatus.Completed)
+                statusDto.Status != AppointmentStatus.Confirmed &&
+                statusDto.Status != AppointmentStatus.Cancelled)
             {
                 throw new BusinessRuleException(
-                    "Pending appointment cannot directly be completed. First confirm it, then complete it");
+                    "Pending appointment can only be confirmed or cancelled");
             }
 
             if (appointment.Status == AppointmentStatus.Confirmed &&
-                statusDto.Status == AppointmentStatus.Cancelled)
+                statusDto.Status != AppointmentStatus.Completed)
             {
                 throw new BusinessRuleException(
-                    "Confirmed appointment cannot be cancelled");
+                    "Confirmed appointment can only be completed");
+            }
+
+            if (statusDto.Status == AppointmentStatus.Cancelled &&
+                string.IsNullOrWhiteSpace(statusDto.CancellationReason))
+            {
+                throw new ValidationException("Cancellation reason is required");
             }
 
             appointment.Status = statusDto.Status;
@@ -207,7 +199,7 @@ namespace HealthAxis.API.Services.Implementation
             return mapper.Map<AppointmentDto>(updated);
         }
 
-        public async Task<AppointmentDto> DeleteAsync(int id)
+        public async Task<AppointmentDto?> DeleteAsync(int id)
         {
             var deleted = await appointmentRepository.DeleteAsync(id);
 

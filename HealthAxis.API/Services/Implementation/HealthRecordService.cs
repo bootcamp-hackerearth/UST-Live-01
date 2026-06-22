@@ -79,7 +79,8 @@ namespace HealthAxis.API.Services.Implementation
         }
 
         public async Task<HealthRecordDto> AddAsync(
-            CreateHealthRecordDto healthRecordDto)
+     CreateHealthRecordDto healthRecordDto,
+     int loggedInDoctorId)
         {
             var appointment = await appointmentRepository.GetByIdAsync(
                 healthRecordDto.AppointmentId);
@@ -87,6 +88,12 @@ namespace HealthAxis.API.Services.Implementation
             if (appointment == null)
             {
                 throw new NotFoundException("Appointment not found");
+            }
+
+            if (appointment.DoctorId != loggedInDoctorId)
+            {
+                throw new BusinessRuleException(
+                    "You cannot add health record for another doctor's appointment");
             }
 
             var patient = await patientRepository.GetByIdAsync(
@@ -105,10 +112,21 @@ namespace HealthAxis.API.Services.Implementation
                 throw new NotFoundException("Doctor not found");
             }
 
-            if (appointment.Status != AppointmentStatus.Completed)
+            if (appointment.Status != AppointmentStatus.Confirmed)
             {
                 throw new BusinessRuleException(
-                    "Health record can be added only for completed appointments");
+                    "Health record can be added only for confirmed appointments");
+            }
+
+            var existingRecords = await healthRecordRepository.GetAllAsync();
+
+            var recordAlreadyExists = existingRecords.Any(record =>
+                record.AppointmentId == healthRecordDto.AppointmentId);
+
+            if (recordAlreadyExists)
+            {
+                throw new BusinessRuleException(
+                    "Health record already exists for this appointment");
             }
 
             if (healthRecordDto.VisitDate == default)
@@ -143,8 +161,13 @@ namespace HealthAxis.API.Services.Implementation
                 Notes = healthRecordDto.Notes
             };
 
-            var savedRecord =
-                await healthRecordRepository.AddAsync(healthRecord);
+            var savedRecord = await healthRecordRepository.AddAsync(healthRecord);
+
+            appointment.Status = AppointmentStatus.Completed;
+
+            await appointmentRepository.UpdateAsync(
+                appointment.AppointmentId,
+                appointment);
 
             return new HealthRecordDto
             {

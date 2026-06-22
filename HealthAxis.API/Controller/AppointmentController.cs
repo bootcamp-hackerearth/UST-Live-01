@@ -14,13 +14,16 @@ namespace HealthAxis.API.Controller
     {
         private readonly IAppointmentService _appointmentService;
         private readonly IPatientService _patientService;
+        private readonly IDoctorService _doctorService;
 
         public AppointmentController(
             IAppointmentService appointmentService,
-            IPatientService patientService)
+            IPatientService patientService,
+            IDoctorService doctorService)
         {
             _appointmentService = appointmentService;
             _patientService = patientService;
+            _doctorService = doctorService;
         }
 
         private string? GetLoggedInUserId()
@@ -29,7 +32,7 @@ namespace HealthAxis.API.Controller
         }
 
         [HttpGet]
-        [Authorize(Roles = "Doctor,Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllAppointments()
         {
             var appointments = await _appointmentService.GetAllAsync();
@@ -81,18 +84,18 @@ namespace HealthAxis.API.Controller
                 });
             }
 
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
             if (User.IsInRole("Patient"))
             {
-                var userId = GetLoggedInUserId();
-
-                if (string.IsNullOrWhiteSpace(userId))
-                {
-                    return Unauthorized(new
-                    {
-                        message = "Invalid token"
-                    });
-                }
-
                 var patient = await _patientService.GetByUserIdAsync(userId);
 
                 if (patient == null)
@@ -108,6 +111,27 @@ namespace HealthAxis.API.Controller
                     return StatusCode(403, new
                     {
                         message = "You are not allowed to access another patient's appointment"
+                    });
+                }
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+                if (doctor == null)
+                {
+                    return NotFound(new
+                    {
+                        message = "Doctor profile not found"
+                    });
+                }
+
+                if (appointment.DoctorId != doctor.DoctorId)
+                {
+                    return StatusCode(403, new
+                    {
+                        message = "You are not allowed to access another doctor's appointment"
                     });
                 }
             }
@@ -173,18 +197,27 @@ namespace HealthAxis.API.Controller
                 });
             }
 
+            if (appointment.Status == AppointmentStatus.Completed ||
+                appointment.Status == AppointmentStatus.Cancelled)
+            {
+                return BadRequest(new
+                {
+                    message = "Completed or cancelled appointment cannot be changed"
+                });
+            }
+
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
             if (User.IsInRole("Patient"))
             {
-                var userId = GetLoggedInUserId();
-
-                if (string.IsNullOrWhiteSpace(userId))
-                {
-                    return Unauthorized(new
-                    {
-                        message = "Invalid token"
-                    });
-                }
-
                 var patient = await _patientService.GetByUserIdAsync(userId);
 
                 if (patient == null)
@@ -216,6 +249,35 @@ namespace HealthAxis.API.Controller
                     return BadRequest(new
                     {
                         message = "Cancellation reason is required"
+                    });
+                }
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+                if (doctor == null)
+                {
+                    return NotFound(new
+                    {
+                        message = "Doctor profile not found"
+                    });
+                }
+
+                if (appointment.DoctorId != doctor.DoctorId)
+                {
+                    return StatusCode(403, new
+                    {
+                        message = "You cannot update another doctor's appointment"
+                    });
+                }
+
+                if (statusDto.Status != AppointmentStatus.Confirmed)
+                {
+                    return StatusCode(403, new
+                    {
+                        message = "Doctor can only confirm appointment here. Completion happens after adding health record"
                     });
                 }
             }

@@ -26,17 +26,14 @@ namespace HealthAxis.API.Services.Implementation
             return mapper.Map<List<DoctorDto>>(doctors);
         }
 
-        public async Task<DoctorCreatedDto> AddDoctorAsync(
-    CreateDoctorDto doctorDto)
+        public async Task<DoctorCreatedDto> AddDoctorAsync(CreateDoctorDto doctorDto)
         {
             if (string.IsNullOrWhiteSpace(doctorDto.FullName))
             {
                 throw new ValidationException("Doctor name is required");
             }
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(
-                    doctorDto.FullName,
-                    @"^[A-Za-z ]+$"))
+            if (!System.Text.RegularExpressions.Regex.IsMatch( doctorDto.FullName, @"^[A-Za-z ]+$"))
             {
                 throw new ValidationException(
                     "Doctor name should contain only alphabets and spaces");
@@ -47,16 +44,13 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationException("Doctor email is required");
             }
 
-            if (!doctorDto.Email.EndsWith(
-                    "@gmail.com",
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                throw new ValidationException("Only Gmail address is allowed");
-            }
+            //if (!doctorDto.Email.EndsWith( "@gmail.com",
+            //        StringComparison.OrdinalIgnoreCase))
+            //{
+            //    throw new ValidationException("Only Gmail address is allowed");
+            //}
 
-            if (!Enum.IsDefined(
-                    typeof(Specialisation),
-                    doctorDto.Specialisation))
+            if (!Enum.IsDefined( typeof(Specialisation), doctorDto.Specialisation))
             {
                 throw new ValidationException("Invalid specialisation");
             }
@@ -80,30 +74,15 @@ namespace HealthAxis.API.Services.Implementation
 
             if (existingUser != null)
             {
-                throw new BusinessRuleException(
-                    "Doctor email already exists");
+                throw new BusinessRuleException("Doctor email already exists");
             }
 
             if (!await roleManager.RoleExistsAsync("Doctor"))
             {
-                await roleManager.CreateAsync(
-                    new IdentityRole("Doctor"));
+                await roleManager.CreateAsync(new IdentityRole("Doctor"));
             }
 
-            var doctor = new Doctor
-            {
-                FullName = doctorDto.FullName,
-                Specialisation = doctorDto.Specialisation,
-                YearsOfExperience = doctorDto.YearsOfExperience,
-                ConsultationFee = doctorDto.ConsultationFee,
-                IsActive = doctorDto.IsActive
-            };
-
-            var savedDoctor =
-                await doctorRepository.AddAsync(doctor);
-
-            var temporaryPassword =
-                GenerateTemporaryPassword();
+            var temporaryPassword = GenerateTemporaryPassword();
 
             var user = new IdentityUser
             {
@@ -112,27 +91,30 @@ namespace HealthAxis.API.Services.Implementation
                 EmailConfirmed = true
             };
 
-            var result =
-                await userManager.CreateAsync(
-                    user,
-                    temporaryPassword);
+            var result = await userManager.CreateAsync(user, temporaryPassword);
 
             if (!result.Succeeded)
             {
-                var errors = string.Join(
-                    ", ",
-                    result.Errors.Select(error => error.Description));
+                var errors = string.Join(", ",  result.Errors.Select(error => error.Description));
 
                 throw new ValidationException(errors);
             }
 
             await userManager.AddToRoleAsync(user, "Doctor");
 
-            await userManager.AddClaimAsync(
-                user,
-                new System.Security.Claims.Claim(
-                    "DoctorId",
-                    savedDoctor.DoctorId.ToString()));
+            var doctor = new Doctor
+            {
+                FullName = doctorDto.FullName,
+                Specialisation = doctorDto.Specialisation,
+                YearsOfExperience = doctorDto.YearsOfExperience,
+                ConsultationFee = doctorDto.ConsultationFee,
+                IsActive = doctorDto.IsActive,
+                UserId = user.Id
+            };
+
+            var savedDoctor = await doctorRepository.AddAsync(doctor);
+
+            await userManager.AddClaimAsync(user, new Claim("DoctorId", savedDoctor.DoctorId.ToString()));
 
             return new DoctorCreatedDto
             {
@@ -146,7 +128,6 @@ namespace HealthAxis.API.Services.Implementation
                 TemporaryPassword = temporaryPassword
             };
         }
-
 
         public async Task<DoctorDto> UpdateDoctorAsync( int id, UpdateDoctorDto doctorDto)
         {

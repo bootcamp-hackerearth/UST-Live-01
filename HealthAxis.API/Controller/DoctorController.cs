@@ -1,4 +1,5 @@
-﻿using HealthAxis.API.Services.Interfaces;
+﻿using HealthAxis.API.Services;
+using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -10,10 +11,12 @@ namespace HealthAxis.API.Controller
     public class DoctorController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
+        private readonly IPatientService _patientService;
 
-        public DoctorController(IDoctorService doctorService)
+        public DoctorController(IDoctorService doctorService,IPatientService patientService)
         {
             _doctorService = doctorService;
+            _patientService = patientService;
         }
 
         private string? GetLoggedInUserId()
@@ -21,8 +24,79 @@ namespace HealthAxis.API.Controller
             return User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
+        [HttpGet("me/patients")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetMyPatients()
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found"
+                });
+            }
+
+            var patients = await _patientService.GetPatientsForDoctorAsync(
+                doctor.DoctorId);
+
+            return Ok(patients);
+        }
+
+        [HttpGet("me/patients/{patientId}")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetMyPatientById(int patientId)
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found"
+                });
+            }
+
+            var patient = await _patientService.GetPatientForDoctorAsync(
+                doctor.DoctorId,
+                patientId);
+
+            if (patient == null)
+            {
+                return StatusCode(403, new
+                {
+                    message = "You are not allowed to access this patient's details"
+                });
+            }
+
+            return Ok(patient);
+        }
+
+
+
         [HttpGet]
-        [Authorize(Roles = "Patient,Admin,Doctor")]
+        [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> GetAllDoctors()
         {
             var doctors = await _doctorService.GetAllAsync();

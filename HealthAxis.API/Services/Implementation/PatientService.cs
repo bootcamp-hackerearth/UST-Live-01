@@ -8,9 +8,10 @@ using HealthAxis.API.Repositories.Interfaces;
 namespace HealthAxis.API.Services.Implementation
 {
     public class PatientService(
-        IPatientRepository patientRepository,
-        IHealthRecordRepository healthRecordRepository,
-        IMapper mapper) : IPatientService
+     IPatientRepository patientRepository,
+     IHealthRecordRepository healthRecordRepository,
+     IAppointmentRepository appointmentRepository,
+     IMapper mapper) : IPatientService
     {
         public async Task<List<PatientDto>> GetAllAsync()
         {
@@ -96,6 +97,46 @@ namespace HealthAxis.API.Services.Implementation
             var patientHealthRecords =healthRecords .Where(record => record.PatientId == patientId) .ToList();
 
             return mapper.Map<List<HealthRecordDto>>(patientHealthRecords);
+        }
+        public async Task<List<PatientDto>> GetPatientsForDoctorAsync(int doctorId)
+        {
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            var patientIds = appointments
+                .Where(a => a.DoctorId == doctorId)
+                .Select(a => a.PatientId)
+                .Distinct()
+                .ToList();
+
+            var patients = await patientRepository.GetAllAsync();
+
+            var doctorPatients = patients
+                .Where(p => patientIds.Contains(p.PatientId))
+                .ToList();
+
+            return mapper.Map<List<PatientDto>>(doctorPatients);
+        }
+        public async Task<PatientDto?> GetPatientForDoctorAsync(int doctorId, int patientId)
+        {
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            var hasAppointmentWithDoctor = appointments.Any(a =>
+                a.DoctorId == doctorId &&
+                a.PatientId == patientId);
+
+            if (!hasAppointmentWithDoctor)
+            {
+                return null;
+            }
+
+            var patient = await patientRepository.GetByIdAsync(patientId);
+
+            if (patient == null)
+            {
+                return null;
+            }
+
+            return mapper.Map<PatientDto>(patient);
         }
     }
 }
