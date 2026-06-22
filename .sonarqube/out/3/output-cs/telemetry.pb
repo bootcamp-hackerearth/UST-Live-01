@@ -1,1 +1,0 @@
-…RnC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\HealthCareApp.AdminBlazor.csproj¢net10.0òCSharp14

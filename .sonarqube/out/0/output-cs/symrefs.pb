@@ -2138,37 +2138,31 @@ _C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Im
 JJ. 0NN> @
 JJ4 :XX= C
 JJN PNNC EZZ, .(
-NN PP XX #\\ Î
-eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\DoctorRepository.cs
+NN PP XX #\\ ê
+fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\PatientRepository.cs
 
- !F
-- 5  ! !&& !// !66 !
-4 ;D K 
+ "(
+
+
+- 5  ** !
+5 <  
 
-( 9
-L N 
-  
+  7
+ # .
+  "
+   " -
+ !!' 2
+	 "" ""? O
+ ## 
+
+  ) >
+ & 5<
+, 3     !! ""* 1
 
-( @
-T b  0 >
-v x!! 
-      
-
-$$( F
-$$Z h''> L
-$$| ~(( 
-'' '' ''* +
-
-++  2
-++: ?--% *
-++S U00E G
--- "004 C
-00 00  
-
-22# ;
-33 77> L
-44 77N P
-77% &77* +Å
+&&$ <
+'' ++> L
+(( ++N P
+++% &++* +Å
 kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\HealthRecordRepository.cs
 
  '<
@@ -2206,31 +2200,7 @@ kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Im
 11  :
 11? L444 A
 11` b44C E
-44 44  "ê
-fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\PatientRepository.cs
-
- "(
-
-
-- 5  ** !
-5 <  
-
-  7
- # .
-  "
-   " -
- !!' 2
-	 "" ""? O
- ## 
-
-  ) >
- & 5<
-, 3     !! ""* 1
-
-&&$ <
-'' ++> L
-(( ++N P
-++% &++* +’
+44 44  "’
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\AppointmentRepository.cs
 
 		 &¥
@@ -2433,7 +2403,37 @@ jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Im
 ¬¬" #
 √√" #
 ƒƒ" #
-≈≈" #≠
+≈≈" #Î
+eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\DoctorRepository.cs
+
+ !F
+- 5  ! !&& !// !66 !
+4 ;D K 
+
+( 9
+L N 
+  
+
+( @
+T b  0 >
+v x!! 
+      
+
+$$( F
+$$Z h''> L
+$$| ~(( 
+'' '' ''* +
+
+++  2
+++: ?--% *
+++S U00E G
+-- "004 C
+00 00  
+
+22# ;
+33 77> L
+44 77N P
+77% &77* +≠
 LC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Program.csÚ
       -- 00 EE \\ __ bb ee kk nn oo pp qq ss vv ww xx yy || }} ÄÄ ÅÅ 
 ÉÉ
@@ -2539,7 +2539,20 @@ fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\U
 
  $
 
- !«
+ !™
+`C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\UpdateDoctorDto.cs
+
+  
+
+ '
+
+" 0
+
+ )
+
+ &
+
+ «
 eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\UpdateAppointmentDto.cs
 
  %
@@ -2556,20 +2569,7 @@ eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\U
 
  %
 
- ™
-`C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\UpdateDoctorDto.cs
-
-  
-
- '
-
-" 0
-
- )
-
- &
-
- é
+ é
 \C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\RegisterDto.cs
 
  
@@ -2599,14 +2599,26 @@ cC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\P
 
 !! 
 
-$$ %
-YC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\LoginDto.cs
+$$ %…
+[C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\PatientDto.cs
 
- 
+ 
 
-		 
+ 
 
- ß
+ 
+
+ !
+
+  
+
+ !
+
+ 
+
+ !
+
+ !ß
 uC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\Pagination\PatientPaginationQueryDto.cs
 
  *
@@ -2660,26 +2672,14 @@ yC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\P
 
  &
 
- !…
-[C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\PatientDto.cs
+ !
+YC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\LoginDto.cs
 
- 
+ 
 
- 
+		 
 
- 
-
- !
-
-  
-
- !
-
- 
-
- !
-
- !Ê
+ Ê
 `C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\HealthRecordDto.cs
 
   
@@ -2713,7 +2713,24 @@ yC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\P
 
 		 !
 
- ≥
+ º
+ZC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\DoctorDto.cs
+
+ 
+
+ 
+
+ 
+
+" 0
+
+ 
+
+ $
+
+ &
+
+ ≥
 iC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\DoctorCreatedResponseDto.cs
 
  )
@@ -2754,24 +2771,7 @@ aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\C
 
  )
 
- &º
-ZC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\DoctorDto.cs
-
- 
-
- 
-
- 
-
-" 0
-
- 
-
- $
-
- &
-
- Ä
+ &Ä
 fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\ConfirmAppointmentDto.cs
 
  &
@@ -3034,7 +3034,22 @@ rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20
 ”” 
 ÷÷ 
 ŸŸ 
-‹‹ –
+‹‹ Ø
+sC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615045634_AddHealthRecordTable.cs
+
+ -
+
+  "d
+4 D   ;; EE KK PP UU \\ d
+ % *  % $  $ )!!  %""  %### ($$ !%%" '2
+'' ")) ** // 44 
+))9 :))> ?
+,,  !,,% &
+11  !11% &
+66  !66% &
+
+ee  $<
+ee6 Fgg kk oo rr zz –
 lC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260616114249_DropUserTable.cs
 
  &
@@ -3058,22 +3073,7 @@ kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20
 1 26 7
 
 44  $
-446 F66 Ø
-sC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615045634_AddHealthRecordTable.cs
-
- -
-
-  "d
-4 D   ;; EE KK PP UU \\ d
- % *  % $  $ )!!  %""  %### ($$ !%%" '2
-'' ")) ** // 44 
-))9 :))> ?
-,,  !,,% &
-11  !11% &
-66  !66% &
-
-ee  $<
-ee6 Fgg kk oo rr zz ™
+446 F66 ™
 rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615044709_AddAppointmentTable.cs
 
  ,
@@ -3087,7 +3087,16 @@ rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20
 ))  !))% &
 
 EE  $
-EE6 FGG ”
+EE6 FGG ‘
+nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615043705_SeedPatientData.cs
+
+ (
+
+  "
+4 D 
+
+  $(
+6 F ## (( ”
 mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615044341_SeedDoctorData.cs
 
  '
@@ -3108,16 +3117,7 @@ mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20
 3 48 9
 
 ""  $
-""6 F$$ ‘
-nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615043705_SeedPatientData.cs
-
- (
-
-  "
-4 D 
-
-  $(
-6 F ## (( Ã
+""6 F$$ Ã
 rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615043550_initialPatientTable.cs
 
 		 ,
@@ -3242,7 +3242,11 @@ gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\En
    #
 		> F
 
-+ 3 ±
++ 3 â
+eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\BusinessRuleException.cs
+
+ &
+, 3 ±
 aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\ConflictException.cs
 
  "
@@ -3252,11 +3256,7 @@ aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\Co
 
 9 @
 ) 0T [
-= K] kâ
-eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\BusinessRuleException.cs
-
- &
-, 3 å
+= K] kå
 hC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\AppointmentRuleException.cs
 
  )

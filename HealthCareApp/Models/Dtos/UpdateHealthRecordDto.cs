@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SharedClasses.Dtos
+namespace HealthCareApp.Dtos
 {
     public class UpdateHealthRecordDto
     {

@@ -6781,7 +6781,7 @@ $GetHealthRecordsByAppointmentIdAsync991 U
 ‘‘ 	
 }
 ’’ 
-}““ œø
+}““ åø
 `C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Services\Impl\DoctorService.cs
 	namespace
 
@@ -8756,8 +8756,16 @@ repository
 ‘‘ 
 Slots
 ‘‘ "
+.
+‘‘" #
+ToList
+‘‘# )
+(
+‘‘) *
+)
+‘‘* +
 ;
-‘‘" #
+‘‘+ ,
 }
 ’’ 	
 private
@@ -18037,274 +18045,230 @@ Repository 
 ;\\ 
 }^^ 	
 }`` 
-}bb ³&
-eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\DoctorRepository.cs
-	namespace 	
-HealthCareApp
+}bb î
+fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\PatientRepository.cs
+	namespace 	
+HealthCareApp
  
-. 
+. 
 
-Repository "
-." #
-Impl# '
-{ 
-public 
+Repository "
+." #
+Impl# '
+{ 
+public 
 
-class 
-DoctorRepository !
-:" #
+class 
+PatientRepository "
+:# $
 
-Repository$ .
-<. /
-Doctor/ 5
->5 6
-,6 7
-IDoctorRepository8 I
-{ 
-private 
-readonly 
-HealthAxisDbContext ,
-_context- 5
-;5 6
-public 
-DoctorRepository 
-(  
-HealthAxisDbContext  3
-context4 ;
-); <
-:= >
-base? C
-(C D
-contextD K
-)K L
-{ 	
-_context 
-= 
-context 
-; 
-} 	
-public 
-async 
-Task 
-< 
-List 
-< 
-Doctor %
->% &
->& '
-GetAllActiveAsync( 9
-(9 :
-CancellationToken: K
-ctL N
-=O P
-defaultQ X
-)X Y
-{ 	
-return 
-await 
-_context !
-.! "
-Doctors" )
-. 
-Where 
-( 
-d 
-=> 
-d 
-. 
-IsActive &
-)& '
-. 
-ToListAsync 
-( 
-ct 
-)  
-;  !
-} 	
-public 
-async 
-Task 
-< 
-List 
-< 
-Doctor %
->% &
->& '$
-GetBySpecialisationAsync( @
-(@ A
-SpecialisationTypeA S
-specialisationT b
-,b c
-CancellationTokend u
-ctv x
-=y z
-default	{ ‚
-)
-‚ ƒ
-{ 	
-return 
-await 
-_context !
-.! "
-Doctors" )
-.   
-Where   
-(   
-d   
-=>   
-d   
-.   
-Specialisation   ,
-==  - /
-specialisation  0 >
-)  > ?
-.!! 
-ToListAsync!! 
-(!! 
-ct!! 
-)!!  
-;!!  !
-}"" 	
-public$$ 
-async$$ 
-Task$$ 
-<$$ 
-List$$ 
-<$$ 
-Doctor$$ %
->$$% &
->$$& '*
-GetActiveBySpecialisationAsync$$( F
-($$F G
-SpecialisationType$$G Y
-specialisation$$Z h
-,$$h i
-CancellationToken$$j {
-ct$$| ~
-=	$$ €
-default
-$$ ˆ
-)
-$$ˆ ‰
-{%% 	
-return&& 
-await&& 
-_context&& !
-.&&! "
-Doctors&&" )
-.'' 
-Where'' 
-('' 
-d'' 
-=>'' 
-d'' 
-.'' 
-IsActive'' &
-&&''' )
-d''* +
-.''+ ,
-Specialisation'', :
-==''; =
-specialisation''> L
-)''L M
-.(( 
-ToListAsync(( 
-((( 
-ct(( 
-)((  
-;((  !
-}** 	
-public++ 
-async++ 
-Task++ 
-<++ 
-bool++ 
->++ 
-ExistsByEmailAsync++  2
-(++2 3
-string++3 9
-email++: ?
-,++? @
-CancellationToken++A R
-ct++S U
-=++V W
-default++X _
-)++_ `
-{,, 	
-string-- 
-normalizedEmail-- "
-=--# $
-email--% *
-.--* +
-ToUpperInvariant--+ ;
-(--; <
-)--< =
-;--= >
-return// 
-await// 
-_context// !
-.//! "
-Doctors//" )
-.00 
-AnyAsync00 
-(00 
-d00 
-=>00 
-d00  
-.00  !
-Email00! &
-.00& '
-ToUpper00' .
-(00. /
-)00/ 0
-==001 3
-normalizedEmail004 C
-,00C D
-ct00E G
-)00G H
-;00H I
-}11 	
-public22 
-async22 
-Task22 
-<22 
-Doctor22  
-?22  !
->22! "$
-GetByIdentityUserIdAsync22# ;
-(22; <
-string33 
+Repository% /
+</ 0
+Patient0 7
+>7 8
+,8 9
+IPatientRepository: L
+{		 
+private
+
+ 
+readonly
+
+ 
+HealthAxisDbContext
+
+ ,
+_context
+
+- 5
+;
+
+5 6
+public 
+PatientRepository  
+(  !
+HealthAxisDbContext! 4
+context5 <
+)< =
+: 
+base 
+( 
+context 
+) 
+{ 	
+_context 
+= 
+context 
+; 
+} 	
+public 
+async 
+Task 
+< 
+bool 
+> #
+IsDuplicatePatientAsync  7
+(7 8
+string 
+
+patientName 
+, 
+string 
+
+email 
+, 
+string 
+
+phoneNumber 
+, 
+DateTime 
+dateOfBirth 
+, 
+int 
+? 
+excludePatientId	 
+= 
+null  
+,  !
+CancellationToken 
+ct 
+= 
+default "
+)" #
+{ 
+string 
+!
+normalizedPatientName  
+=! "
+patientName# .
+.. /
+ToUpperInvariant/ ?
+(? @
+)@ A
+;A B
+string 
+
+normalizedEmail 
+= 
+email "
+." #
+ToUpperInvariant# 3
+(3 4
+)4 5
+;5 6
+return 
+
+await 
+_context 
+. 
+Patients "
+." #
+AnyAsync# +
+(+ ,
+patient, 3
+=>4 6
+patient 
+. 
+PatientName 
+. 
+ToUpper #
+(# $
+)$ %
+==& (!
+normalizedPatientName) >
+&& 
+
+patient 
+. 
+Email 
+. 
+ToUpper  
+(  !
+)! "
+==# %
+normalizedEmail& 5
+&&   
+
+patient   
+.   
+PhoneNumber   
+==   !
+phoneNumber  " -
+&&!! 
+
+patient!! 
+.!! 
+DateOfBirth!! 
+.!! 
+Date!! #
+==!!$ &
+dateOfBirth!!' 2
+.!!2 3
+Date!!3 7
+&&"" 
+
+("" 
+!"" 
+excludePatientId"" 
+."" 
+HasValue"" &
+||""' )
+patient""* 1
+.""1 2
+	PatientId""2 ;
+!=""< >
+excludePatientId""? O
+.""O P
+Value""P U
+)""U V
+,""V W
+ct## 
+
+)##
+ 
+;## 
+}$$ 
+public&& 
+async&& 
+Task&& 
+<&& 
+Patient&& !
+?&&! "
+>&&" #$
+GetByIdentityUserIdAsync&&$ <
+(&&< =
+string'' 
 
-identityUserId33 
-,33 
-CancellationToken44 
-ct44 
-=44 
-default44 "
-)44" #
-{55 	
-return66 
-await66 
-_context66 !
-.66! "
-Doctors66" )
-.77 
-FirstOrDefaultAsync77 $
-(77$ %
-d77% &
-=>77' )
-d77* +
-.77+ ,
-IdentityUserId77, :
-==77; =
-identityUserId77> L
-,77L M
-ct77N P
-)77P Q
-;77Q R
-}88 	
-}:: 
-};; ½,
+identityUserId'' 
+,'' 
+CancellationToken(( 
+ct(( 
+=(( 
+default(( "
+)((" #
+{)) 	
+return** 
+await** 
+_context** !
+.**! "
+Patients**" *
+.++ 
+FirstOrDefaultAsync++ $
+(++$ %
+p++% &
+=>++' )
+p++* +
+.+++ ,
+IdentityUserId++, :
+==++; =
+identityUserId++> L
+,++L M
+ct++N P
+)++P Q
+;++Q R
+},, 	
+}-- 
+}.. ½,
 kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\HealthRecordRepository.cs
 	namespace 	
 HealthCareApp
@@ -18626,230 +18590,7 @@ Repository* 4
 ;44F G
 }55 	
 }66 
-}77 î
-fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\PatientRepository.cs
-	namespace 	
-HealthCareApp
- 
-. 
-
-Repository "
-." #
-Impl# '
-{ 
-public 
-
-class 
-PatientRepository "
-:# $
-
-Repository% /
-</ 0
-Patient0 7
->7 8
-,8 9
-IPatientRepository: L
-{		 
-private
-
- 
-readonly
-
- 
-HealthAxisDbContext
-
- ,
-_context
-
-- 5
-;
-
-5 6
-public 
-PatientRepository  
-(  !
-HealthAxisDbContext! 4
-context5 <
-)< =
-: 
-base 
-( 
-context 
-) 
-{ 	
-_context 
-= 
-context 
-; 
-} 	
-public 
-async 
-Task 
-< 
-bool 
-> #
-IsDuplicatePatientAsync  7
-(7 8
-string 
-
-patientName 
-, 
-string 
-
-email 
-, 
-string 
-
-phoneNumber 
-, 
-DateTime 
-dateOfBirth 
-, 
-int 
-? 
-excludePatientId	 
-= 
-null  
-,  !
-CancellationToken 
-ct 
-= 
-default "
-)" #
-{ 
-string 
-!
-normalizedPatientName  
-=! "
-patientName# .
-.. /
-ToUpperInvariant/ ?
-(? @
-)@ A
-;A B
-string 
-
-normalizedEmail 
-= 
-email "
-." #
-ToUpperInvariant# 3
-(3 4
-)4 5
-;5 6
-return 
-
-await 
-_context 
-. 
-Patients "
-." #
-AnyAsync# +
-(+ ,
-patient, 3
-=>4 6
-patient 
-. 
-PatientName 
-. 
-ToUpper #
-(# $
-)$ %
-==& (!
-normalizedPatientName) >
-&& 
-
-patient 
-. 
-Email 
-. 
-ToUpper  
-(  !
-)! "
-==# %
-normalizedEmail& 5
-&&   
-
-patient   
-.   
-PhoneNumber   
-==   !
-phoneNumber  " -
-&&!! 
-
-patient!! 
-.!! 
-DateOfBirth!! 
-.!! 
-Date!! #
-==!!$ &
-dateOfBirth!!' 2
-.!!2 3
-Date!!3 7
-&&"" 
-
-("" 
-!"" 
-excludePatientId"" 
-."" 
-HasValue"" &
-||""' )
-patient""* 1
-.""1 2
-	PatientId""2 ;
-!=""< >
-excludePatientId""? O
-.""O P
-Value""P U
-)""U V
-,""V W
-ct## 
-
-)##
- 
-;## 
-}$$ 
-public&& 
-async&& 
-Task&& 
-<&& 
-Patient&& !
-?&&! "
->&&" #$
-GetByIdentityUserIdAsync&&$ <
-(&&< =
-string'' 
-
-identityUserId'' 
-,'' 
-CancellationToken(( 
-ct(( 
-=(( 
-default(( "
-)((" #
-{)) 	
-return** 
-await** 
-_context** !
-.**! "
-Patients**" *
-.++ 
-FirstOrDefaultAsync++ $
-(++$ %
-p++% &
-=>++' )
-p++* +
-.+++ ,
-IdentityUserId++, :
-==++; =
-identityUserId++> L
-,++L M
-ct++N P
-)++P Q
-;++Q R
-},, 	
-}-- 
-}.. ˜·
+}77 ˜·
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\AppointmentRepository.cs
 	namespace 	
 HealthCareApp
@@ -20497,7 +20238,274 @@ CountAsync
 ÇÇ 	
 }
 ÈÈ 
-}ÉÉ Èf
+}ÉÉ ³&
+eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\DoctorRepository.cs
+	namespace 	
+HealthCareApp
+ 
+. 
+
+Repository "
+." #
+Impl# '
+{ 
+public 
+
+class 
+DoctorRepository !
+:" #
+
+Repository$ .
+<. /
+Doctor/ 5
+>5 6
+,6 7
+IDoctorRepository8 I
+{ 
+private 
+readonly 
+HealthAxisDbContext ,
+_context- 5
+;5 6
+public 
+DoctorRepository 
+(  
+HealthAxisDbContext  3
+context4 ;
+); <
+:= >
+base? C
+(C D
+contextD K
+)K L
+{ 	
+_context 
+= 
+context 
+; 
+} 	
+public 
+async 
+Task 
+< 
+List 
+< 
+Doctor %
+>% &
+>& '
+GetAllActiveAsync( 9
+(9 :
+CancellationToken: K
+ctL N
+=O P
+defaultQ X
+)X Y
+{ 	
+return 
+await 
+_context !
+.! "
+Doctors" )
+. 
+Where 
+( 
+d 
+=> 
+d 
+. 
+IsActive &
+)& '
+. 
+ToListAsync 
+( 
+ct 
+)  
+;  !
+} 	
+public 
+async 
+Task 
+< 
+List 
+< 
+Doctor %
+>% &
+>& '$
+GetBySpecialisationAsync( @
+(@ A
+SpecialisationTypeA S
+specialisationT b
+,b c
+CancellationTokend u
+ctv x
+=y z
+default	{ ‚
+)
+‚ ƒ
+{ 	
+return 
+await 
+_context !
+.! "
+Doctors" )
+.   
+Where   
+(   
+d   
+=>   
+d   
+.   
+Specialisation   ,
+==  - /
+specialisation  0 >
+)  > ?
+.!! 
+ToListAsync!! 
+(!! 
+ct!! 
+)!!  
+;!!  !
+}"" 	
+public$$ 
+async$$ 
+Task$$ 
+<$$ 
+List$$ 
+<$$ 
+Doctor$$ %
+>$$% &
+>$$& '*
+GetActiveBySpecialisationAsync$$( F
+($$F G
+SpecialisationType$$G Y
+specialisation$$Z h
+,$$h i
+CancellationToken$$j {
+ct$$| ~
+=	$$ €
+default
+$$ ˆ
+)
+$$ˆ ‰
+{%% 	
+return&& 
+await&& 
+_context&& !
+.&&! "
+Doctors&&" )
+.'' 
+Where'' 
+('' 
+d'' 
+=>'' 
+d'' 
+.'' 
+IsActive'' &
+&&''' )
+d''* +
+.''+ ,
+Specialisation'', :
+==''; =
+specialisation''> L
+)''L M
+.(( 
+ToListAsync(( 
+((( 
+ct(( 
+)((  
+;((  !
+}** 	
+public++ 
+async++ 
+Task++ 
+<++ 
+bool++ 
+>++ 
+ExistsByEmailAsync++  2
+(++2 3
+string++3 9
+email++: ?
+,++? @
+CancellationToken++A R
+ct++S U
+=++V W
+default++X _
+)++_ `
+{,, 	
+string-- 
+normalizedEmail-- "
+=--# $
+email--% *
+.--* +
+ToUpperInvariant--+ ;
+(--; <
+)--< =
+;--= >
+return// 
+await// 
+_context// !
+.//! "
+Doctors//" )
+.00 
+AnyAsync00 
+(00 
+d00 
+=>00 
+d00  
+.00  !
+Email00! &
+.00& '
+ToUpper00' .
+(00. /
+)00/ 0
+==001 3
+normalizedEmail004 C
+,00C D
+ct00E G
+)00G H
+;00H I
+}11 	
+public22 
+async22 
+Task22 
+<22 
+Doctor22  
+?22  !
+>22! "$
+GetByIdentityUserIdAsync22# ;
+(22; <
+string33 
+
+identityUserId33 
+,33 
+CancellationToken44 
+ct44 
+=44 
+default44 "
+)44" #
+{55 	
+return66 
+await66 
+_context66 !
+.66! "
+Doctors66" )
+.77 
+FirstOrDefaultAsync77 $
+(77$ %
+d77% &
+=>77' )
+d77* +
+.77+ ,
+IdentityUserId77, :
+==77; =
+identityUserId77> L
+,77L M
+ct77N P
+)77P Q
+;77Q R
+}88 	
+}:: 
+};; Èf
 LC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Program.cs
 var 
 builder 
@@ -22069,7 +22077,149 @@ fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\U
 ;, -
 }. /
 } 
-} Þ
+} ¯
+`C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\UpdateDoctorDto.cs
+	namespace 	
+HealthCareApp
+ 
+. 
+Dtos 
+{ 
+public 
+
+class 
+UpdateDoctorDto  
+{ 
+[		 	
+Required			 
+(		 
+ErrorMessage		 
+=		  
+$str		! G
+)		G H
+]		H I
+[
+
+ 	
+StringLength
+
+	 
+(
+
+ 
+$num
+
+ 
+,
+
+ 
+ErrorMessage
+
+ '
+=
+
+( )
+$str
+
+* W
+)
+
+W X
+]
+
+X Y
+public 
+required 
+string 
+FullName '
+{( )
+get* -
+;- .
+set/ 2
+;2 3
+}4 5
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! M
+)M N
+]N O
+public 
+SpecialisationType !
+Specialisation" 0
+{1 2
+get3 6
+;6 7
+set8 ;
+;; <
+}= >
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! Q
+)Q R
+]R S
+[ 	
+DataType	 
+( 
+DataType 
+. 
+Date 
+)  
+]  !
+public 
+DateTime 
+PracticeStartDate )
+{* +
+get, /
+;/ 0
+set1 4
+;4 5
+}6 7
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! E
+)E F
+]F G
+[ 	
+Range	 
+( 
+$num 
+, 
+$num 
+, 
+ErrorMessage &
+=' (
+$str) Z
+)Z [
+][ \
+public 
+decimal 
+ConsultationFee &
+{' (
+get) ,
+;, -
+set. 1
+;1 2
+}3 4
+public 
+bool 
+IsActive 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
+} 
+} Þ
 eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\UpdateAppointmentDto.cs
 	namespace 	
 HealthCareApp
@@ -22219,149 +22369,7 @@ DoctorName !
 Empty6 ;
 ;; <
 } 
-}   ¯
-`C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\UpdateDoctorDto.cs
-	namespace 	
-HealthCareApp
- 
-. 
-Dtos 
-{ 
-public 
-
-class 
-UpdateDoctorDto  
-{ 
-[		 	
-Required			 
-(		 
-ErrorMessage		 
-=		  
-$str		! G
-)		G H
-]		H I
-[
-
- 	
-StringLength
-
-	 
-(
-
- 
-$num
-
- 
-,
-
- 
-ErrorMessage
-
- '
-=
-
-( )
-$str
-
-* W
-)
-
-W X
-]
-
-X Y
-public 
-required 
-string 
-FullName '
-{( )
-get* -
-;- .
-set/ 2
-;2 3
-}4 5
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! M
-)M N
-]N O
-public 
-SpecialisationType !
-Specialisation" 0
-{1 2
-get3 6
-;6 7
-set8 ;
-;; <
-}= >
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! Q
-)Q R
-]R S
-[ 	
-DataType	 
-( 
-DataType 
-. 
-Date 
-)  
-]  !
-public 
-DateTime 
-PracticeStartDate )
-{* +
-get, /
-;/ 0
-set1 4
-;4 5
-}6 7
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! E
-)E F
-]F G
-[ 	
-Range	 
-( 
-$num 
-, 
-$num 
-, 
-ErrorMessage &
-=' (
-$str) Z
-)Z [
-][ \
-public 
-decimal 
-ConsultationFee &
-{' (
-get) ,
-;, -
-set. 1
-;1 2
-}3 4
-public 
-bool 
-IsActive 
-{ 
-get "
-;" #
-set$ '
-;' (
-}) *
-} 
-} Ö
+}   Ö
 \C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Dtos\RegisterDto.cs
 	namespace 	
 HealthCareApp
@@ -32781,7 +32789,39 @@ entityName #
 ;  
 } 	
 } 
-} ÷
+} ã
+eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\BusinessRuleException.cs
+	namespace 	
+HealthCareApp
+ 
+. 
+
+Exceptions "
+{ 
+public 
+
+class !
+BusinessRuleException &
+:' ("
+HealthcareAppException) ?
+{ 
+public !
+BusinessRuleException $
+($ %
+string% +
+message, 3
+)3 4
+: 
+base 
+( 
+message 
+) 
+{ 	
+} 	
+}		 
+}
+
+ ÷
 aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\ConflictException.cs
 	namespace 	
 HealthCareApp
@@ -32865,39 +32905,7 @@ Exceptions "
 { 	
 } 	
 } 
-} ã
-eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\BusinessRuleException.cs
-	namespace 	
-HealthCareApp
- 
-. 
-
-Exceptions "
-{ 
-public 
-
-class !
-BusinessRuleException &
-:' ("
-HealthcareAppException) ?
-{ 
-public !
-BusinessRuleException $
-($ %
-string% +
-message, 3
-)3 4
-: 
-base 
-( 
-message 
-) 
-{ 	
-} 	
-}		 
-}
-
- ë
+} ë
 hC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\AppointmentRuleException.cs
 	namespace 	
 HealthCareApp

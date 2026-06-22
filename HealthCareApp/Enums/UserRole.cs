@@ -5,5 +5,5 @@
         Admin,
         Patient,
         Doctor
-    }//e
+    }
 }

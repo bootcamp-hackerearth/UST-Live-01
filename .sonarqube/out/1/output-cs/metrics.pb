@@ -6,13 +6,13 @@ eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\L
 j
 bC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\NotFound.razor8r˜
 _C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Login.razor 8
-r4579;BCKLQgiklmoqrstuwxx‚47BCKLQmoqstwx
+r4579;BCKLQgiklmoqrstuwxx‚47BCKLQmoqstwr
+^C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Home.razor 8r	‚x
 aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Counter.razor 8r	‚à
 hC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\Patients.razor0 8"rø%*/4=ACDEFIPQWXYhinrsz~€ƒ„…†‡ˆŠ•¡£¦¨ª¬®°±²³´µ¶·¹»¼½¾¿ÀÁÂÃÅÆÇÈÉËÌÍÎÏĞÑÒÔÕÖØÙÚÜİŞßàâãåæçéêëìíîğñòóõö÷øúûüıÿ€ƒ„…†‡‰Š‹Œ’“”•–—™šx‚p%*/4CEPhnrsz~€ƒ…•¨ª¬´¶¹»½¾¿ÀÁÂÅÇÈËÍÏÑÔÚÜŞßâçéêìò÷üƒ…‹’”•–™­
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\PatientDetails.razor! 8rz "%()*.23689;<=?GLQV[einqrtvxz{|~€‚„…‡ˆ‰ŠŒ‘“”–—˜™›œ ¡¢£¤¥§©ª«¬­®°±x‚6").2368GLQV[|~€„‰ŠŒ“˜¢¤§©«¬­°ê
 kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\EditPatient.razor 8r¢ !#&)*+6?@FGMOPQRT[\cdklu|€‚„†ˆ‰Š‹Œ‘“”•–—™šœŸ¡£¤¥¦§¨ª«¬­®¯°±²´µ·¸¹»¼½¾¿ÁÃÄÅÆÇÉÊÌÍÎÏx‚M #?@FGMOQT[\cdkl‘“•–™Ÿ¡£¥¦§ª¬­®¯°±´¹»½¾ÁÃÅÆÉÎã
-jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\EditDoctor.razor 8r¢ !#&)*+6?@GHNPQRSU[\bcjku|€‚„†ˆ‰Š‹Œ‘’”•–˜™š›œŸ¡¢£¤¦¨©ª«¬­¯°±²³´µ¶·¹º¼½¾ÀÂÃÄÅÆÈÉËÌÍÎx‚G #?@GHNPRU[\bcjk–˜š›£¤¦¨ª«¬¯±²³´µ¶¹¾ÀÂÄÅÈÍr
-^C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Home.razor 8r	‚®
+jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\EditDoctor.razor 8r¢ !#&)*+6?@GHNPQRSU[\bcjku|€‚„†ˆ‰Š‹Œ‘’”•–˜™š›œŸ¡¢£¤¦¨©ª«¬­¯°±²³´µ¶·¹º¼½¾ÀÂÃÄÅÆÈÉËÌÍÎx‚G #?@GHNPRU[\bcjk–˜š›£¤¦¨ª«¬¯±²³´µ¶¹¾ÀÂÄÅÈÍ®
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\EditAppoinment.razor# 8$rÏ !#&)*+6=DIPUV[]^_`bghijkopuvx€‡Š‹‘“”•–—˜™š›œŸ ¢£¤¥¦¨©«¬­®°²³´µ¶·¹º»¼½¾¿ÀÁÃÄÆÇÈÊËÌÍÎÏĞÒÓÔÕÖ×ÙÚÛÜŞßàâãäåæèéëìíîx‚a #=DIPUV[]_bghijkouv ¢¤¥¨­®°²´µ¶¹»¼½¾¿ÀÃÈÊËÌÎÏÒÓÕÖÙÛŞâäåèíß
 gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\Doctors.razor0 8"rú%*/4=ACDEFIPQWXYhinrsz~€ƒ„†‡ˆŠ”•–›Ÿ¡¤¦¨ª¬®¯°±²³´µ·¹º»¼½¾¿ÁÂÃÄÅÇÈÉÊËÌÍÎĞÑÒÔÕÖØÙÚÛÜŞßáâãåæçèéêìíîïñòóôö÷øúûüış€‚ƒ„…‡ˆ‰Š‹Œ‘’“”•—˜x ‚n%*/4CEPhnrsz~€ƒ”•–¦¨ª²´·¹»¼½¾ÁÃÄÇÉËÍĞÖØÚÛŞãåæèîóøúü‚‰‹’“”—å
 iC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\Dashboard.razor 8rQ	 )19LQV[`nv~Š‘“”•–—™šœŸ¡¢£¤¦§¨©«¬­®x‚ )19LQV[`‘“•–™£¨­Î
@@ -20,13 +20,13 @@ rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\P
 mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\Appointements.razor1 86rº%*/4=AKMNOPTU[\]mnqsz~†ˆ‘–—£«¯±³µ·¹»½¾¿ÀÁÂÃÅÆÇÈÉÊËÍÎÏĞÑÒÓÕÖ×ØÙÚÛİŞßàáâãäæèéêëìíîïğòóôõöøùúûüışÿ€ƒ„…†‡‰Š‹‘“”–—˜š›œŸ¡¢£¤¦§¨©«¬­®±²³´µ¶¸º»¼½¾¿ÁÂÄÅÆÇÈÉÊËÌÍÎx‚Š%*/4MOTmqsz~†ˆ‘–—£µ¹ÁÉÑÙáãæèêëìíîïòôõøúûüışÿƒ„…‹“˜š›£¨­³µ¸º¼½¾ÁÆÈÉÊËƒ
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\AddPatient.razor 	8rc!"$&(1289?ABCDFMNUV]^gpqrsuwxyz{|~€‚ƒ„…†ˆ‰Š‹Œ‘’”–—˜™š›œŸ ¡x‚'!$1289?ACFMNUV]^r€‚„Œ‘”–š ú
 iC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\AddDoctor.razor 	8rb!"$&(129:@BCDEGMNTU\]gpqrsuwxyz{|}~€ƒ„…‡ˆ‰Š‹‘“•–—˜™š›Ÿ x
-‚ !$129:@BDGMNTU\]…‡‰‘“•™Ÿt
+‚ !$129:@BDGMNTU\]…‡‰‘“•™Ÿƒ
+nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\AddAppointment.razor 	8r_!"$&(/6;BGHMOPQRTYZ[\]gpqrstvxyz{|}~€ƒ„…‡ˆ‰Š‹‘’“”•—™šœŸx‚'!$/6;BGHMOQTYZ[\]rs…‡‰‘“”—™
+fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminTopbar.razor 8r!"#$%'()+,x‚!#)+u
+gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminSidebar.razor 8r‚t
 fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminLayout.razor8r
 ‚
-
-fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminTopbar.razor 8r!"#$%'()+,x‚!#)+u
-gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminSidebar.razor 8r‚ƒ
-nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\AddAppointment.razor 	8r_!"$&(/6;BGHMOPQRTYZ[\]gpqrstvxyz{|}~€ƒ„…‡ˆ‰Š‹‘’“”•—™šœŸx‚'!$/6;BGHMOQTYZ[\]rs…‡‰‘“”—™d
+d
 WC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\App.razor8r‚‹
 yC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Services\Interfaces\IPatientAdminService.csr	‹
 xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Services\Interfaces\IDoctorAdminService.csr	ƒ
@@ -52,14 +52,15 @@ mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\D
 gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Doctors\DoctorDto.cs 8r	‚	‘
 mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Doctors\CreateDoctorDto.cs 8r	‚	
 wC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Dashboard\AdminDashboardReportDto.cs 8r	
-cC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Auth\LoginDto.cs 8r	‚	š
-xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\CreateAppointementDto.cs 
-8
-r	‚†
+cC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Auth\LoginDto.cs 8r	‚	†
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Auth\AuthResponseDto.cs 
 8
 r	‚	˜
-wC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\UpdateAppointmentDto.cs 8r	‚‘
-qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointmentDto.cs 8r	‚	†
+wC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\UpdateAppointmentDto.cs 8r	‚š
+xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\CreateAppointementDto.cs 
+8
+r	‚†
 xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointementStatusDto.csr
 	
+‘
+qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointmentDto.cs 8r	‚	

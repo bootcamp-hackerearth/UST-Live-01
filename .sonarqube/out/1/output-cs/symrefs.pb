@@ -16,7 +16,11 @@ _C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\P
 kk ";;8 C
 oo qq ss #
  $ww 
-  oo (™
+  oo (‚
+^C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Home.razor
+
+ )
+ $ ™
 aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Counter.razor
  ! - 
  		* 8’
@@ -296,11 +300,7 @@ jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\P
 ¦¦# 0
 ÀÀ" /
   
-––$ /‚
-^C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Home.razor
-
- )
- $ Á
+––$ /Á
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\EditAppoinment.razor$
 
 ‹‹ 
@@ -759,16 +759,7 @@ iC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\P
  )
 ““ 
   
-……$ /h
-fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminLayout.razor€
-fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminTopbar.razor
- , 6## 
-
-" 4
- !!' ,## 
-'' 3 9
- $++ 
-   %)) ‰
+……$ /‰
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Pages\Admin\AddAppointment.razor†
 pp! ,(( $//F Q664 ?;;F QBB4 ?GGD OHH4 ?MMF QTT4 ?YYF Q
 ‘‘ 
@@ -793,10 +784,19 @@ nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\P
 ! 3
 ——  
   
-……$ /u
+……$ /€
+fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminTopbar.razor
+ , 6## 
+
+" 4
+ !!' ,## 
+'' 3 9
+ $++ 
+   %)) u
 gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminSidebar.razor
 
- $Y
+ $h
+fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Layout\AdminLayout.razorY
 WC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\App.razorÿ
 yC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Services\Interfaces\IPatientAdminService.cs
 
@@ -1184,20 +1184,7 @@ cC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\D
 
  
 
- Â
-xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\CreateAppointementDto.cs
-
- %
-
-		 
-
- 
-
- %
-
- 
-
-$ *´
+ ´
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Auth\AuthResponseDto.cs
 
   
@@ -1225,7 +1212,23 @@ wC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\D
 
 $ *
 
- )÷
+ )Â
+xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\CreateAppointementDto.cs
+
+ %
+
+		 
+
+ 
+
+ %
+
+ 
+
+$ *†
+xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointementStatusDto.cs
+
+ $÷
 qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointmentDto.cs
 
  
@@ -1248,7 +1251,4 @@ qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\D
 
  )
 
- #†
-xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointementStatusDto.cs
-
- $
+ #

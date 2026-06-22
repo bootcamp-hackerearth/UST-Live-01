@@ -202,24 +202,6 @@
           }
         },
         {
-          "ruleId": "CS0266",
-          "level": "error",
-          "message": "Cannot implicitly convert type 'System.Collections.Generic.IReadOnlyList<string>' to 'System.Collections.Generic.List<string>'. An explicit conversion exists (are you missing a cast?)",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 273,
-                  "startColumn": 20,
-                  "endLine": 273,
-                  "endColumn": 35
-                }
-              }
-            }
-          ]
-        },
-        {
           "ruleId": "S2068",
           "level": "warning",
           "message": "\"password\" detected here, make sure this is not a hard-coded credential.",
@@ -591,67 +573,6 @@
               "1": null,
               "2": null,
               "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Users' 4 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 23,
-                  "endLine": 17,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
-                "region": {
-                  "startLine": 35,
-                  "startColumn": 24,
-                  "endLine": 35,
-                  "endColumn": 31
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
-                "region": {
-                  "startLine": 46,
-                  "startColumn": 24,
-                  "endLine": 46,
-                  "endColumn": 31
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
-                "region": {
-                  "startLine": 55,
-                  "startColumn": 23,
-                  "endLine": 55,
-                  "endColumn": 30
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null
             }
           }
         },
@@ -1184,6 +1105,67 @@
           "locations": [
             {
               "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 23,
+                  "endLine": 17,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 24,
+                  "endLine": 35,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 24,
+                  "endLine": 46,
+                  "endColumn": 31
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
+                "region": {
+                  "startLine": 55,
+                  "startColumn": 23,
+                  "endLine": 55,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Users' 4 times.",
+          "locations": [
+            {
+              "resultFile": {
                 "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260616114249_DropUserTable.cs",
                 "region": {
                   "startLine": 17,
@@ -1235,346 +1217,6 @@
               "0": null,
               "1": null,
               "2": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Doctors' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 14,
-                  "startColumn": 24,
-                  "endLine": 14,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 21,
-                  "startColumn": 24,
-                  "endLine": 21,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 28,
-                  "startColumn": 24,
-                  "endLine": 28,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 39,
-                  "startColumn": 24,
-                  "endLine": 39,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 46,
-                  "startColumn": 24,
-                  "endLine": 46,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 53,
-                  "startColumn": 24,
-                  "endLine": 53,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'DoctorId' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 15,
-                  "startColumn": 28,
-                  "endLine": 15,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 22,
-                  "startColumn": 28,
-                  "endLine": 22,
-                  "endColumn": 38
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 29,
-                  "startColumn": 28,
-                  "endLine": 29,
-                  "endColumn": 38
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 40,
-                  "startColumn": 28,
-                  "endLine": 40,
-                  "endColumn": 38
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 47,
-                  "startColumn": 28,
-                  "endLine": 47,
-                  "endColumn": 38
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 54,
-                  "startColumn": 28,
-                  "endLine": 54,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Email' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 53,
-                  "endLine": 17,
-                  "endColumn": 60
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 24,
-                  "startColumn": 34,
-                  "endLine": 24,
-                  "endColumn": 41
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 31,
-                  "startColumn": 34,
-                  "endLine": 31,
-                  "endColumn": 41
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 42,
-                  "startColumn": 53,
-                  "endLine": 42,
-                  "endColumn": 60
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 49,
-                  "startColumn": 34,
-                  "endLine": 49,
-                  "endColumn": 41
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 56,
-                  "startColumn": 34,
-                  "endLine": 56,
-                  "endColumn": 41
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'VerificationStatus' 6 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 62,
-                  "endLine": 17,
-                  "endColumn": 82
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 24,
-                  "startColumn": 43,
-                  "endLine": 24,
-                  "endColumn": 63
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 31,
-                  "startColumn": 43,
-                  "endLine": 31,
-                  "endColumn": 63
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 42,
-                  "startColumn": 62,
-                  "endLine": 42,
-                  "endColumn": 82
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 49,
-                  "startColumn": 43,
-                  "endLine": 49,
-                  "endColumn": 63
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
-                "region": {
-                  "startLine": 56,
-                  "startColumn": 43,
-                  "endLine": 56,
-                  "endColumn": 63
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null
             }
           }
         },
@@ -2150,79 +1792,6 @@
         {
           "ruleId": "S1192",
           "level": "warning",
-          "message": "Define a constant instead of using this literal 'VerificationStatus' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 14,
-                  "startColumn": 23,
-                  "endLine": 14,
-                  "endColumn": 43
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 22,
-                  "startColumn": 23,
-                  "endLine": 22,
-                  "endColumn": 43
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 32,
-                  "startColumn": 25,
-                  "endLine": 32,
-                  "endColumn": 45
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 39,
-                  "startColumn": 25,
-                  "endLine": 39,
-                  "endColumn": 45
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 46,
-                  "startColumn": 25,
-                  "endLine": 46,
-                  "endColumn": 45
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
           "message": "Define a constant instead of using this literal 'Email' 5 times.",
           "locations": [
             {
@@ -2279,79 +1848,6 @@
                   "startColumn": 23,
                   "endLine": 59,
                   "endColumn": 30
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Doctors' 5 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 15,
-                  "startColumn": 24,
-                  "endLine": 15,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 23,
-                  "startColumn": 24,
-                  "endLine": 23,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 29,
-                  "startColumn": 24,
-                  "endLine": 29,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 36,
-                  "startColumn": 24,
-                  "endLine": 36,
-                  "endColumn": 33
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
-                "region": {
-                  "startLine": 43,
-                  "startColumn": 24,
-                  "endLine": 43,
-                  "endColumn": 33
                 }
               }
             }
@@ -2636,6 +2132,492 @@
         {
           "ruleId": "S1192",
           "level": "warning",
+          "message": "Define a constant instead of using this literal 'Doctors' 6 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 24,
+                  "endLine": 14,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 24,
+                  "endLine": 21,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 28,
+                  "startColumn": 24,
+                  "endLine": 28,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 24,
+                  "endLine": 39,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 24,
+                  "endLine": 46,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 53,
+                  "startColumn": 24,
+                  "endLine": 53,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'DoctorId' 6 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 28,
+                  "endLine": 15,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 28,
+                  "endLine": 22,
+                  "endColumn": 38
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 28,
+                  "endLine": 29,
+                  "endColumn": 38
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 40,
+                  "startColumn": 28,
+                  "endLine": 40,
+                  "endColumn": 38
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 28,
+                  "endLine": 47,
+                  "endColumn": 38
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 54,
+                  "startColumn": 28,
+                  "endLine": 54,
+                  "endColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Email' 6 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 53,
+                  "endLine": 17,
+                  "endColumn": 60
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 34,
+                  "endLine": 24,
+                  "endColumn": 41
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 31,
+                  "startColumn": 34,
+                  "endLine": 31,
+                  "endColumn": 41
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 53,
+                  "endLine": 42,
+                  "endColumn": 60
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 49,
+                  "startColumn": 34,
+                  "endLine": 49,
+                  "endColumn": 41
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 56,
+                  "startColumn": 34,
+                  "endLine": 56,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'VerificationStatus' 6 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 62,
+                  "endLine": 17,
+                  "endColumn": 82
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 43,
+                  "endLine": 24,
+                  "endColumn": 63
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 31,
+                  "startColumn": 43,
+                  "endLine": 31,
+                  "endColumn": 63
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 62,
+                  "endLine": 42,
+                  "endColumn": 82
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 49,
+                  "startColumn": 43,
+                  "endLine": 49,
+                  "endColumn": 63
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260617184259_DoctorApprovalFlowUpdated.cs",
+                "region": {
+                  "startLine": 56,
+                  "startColumn": 43,
+                  "endLine": 56,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'VerificationStatus' 5 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 23,
+                  "endLine": 14,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 23,
+                  "endLine": 22,
+                  "endColumn": 43
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 25,
+                  "endLine": 32,
+                  "endColumn": 45
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 25,
+                  "endLine": 39,
+                  "endColumn": 45
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 46,
+                  "startColumn": 25,
+                  "endLine": 46,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Doctors' 5 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 24,
+                  "endLine": 15,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 24,
+                  "endLine": 23,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 24,
+                  "endLine": 29,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 24,
+                  "endLine": 36,
+                  "endColumn": 33
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618085527_RemoveDoctorVerificationFlow.cs",
+                "region": {
+                  "startLine": 43,
+                  "startColumn": 24,
+                  "endLine": 43,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
           "message": "Define a constant instead of using this literal 'IdentityUserId' 7 times.",
           "locations": [
             {
@@ -2833,6 +2815,344 @@
                   "startColumn": 24,
                   "endLine": 68,
                   "endColumn": 34
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Appointment' 17 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 54,
+                  "endLine": 18,
+                  "endColumn": 67
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 270,
+                  "startColumn": 51,
+                  "endLine": 270,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 309,
+                  "startColumn": 51,
+                  "endLine": 309,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 323,
+                  "startColumn": 51,
+                  "endLine": 323,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 350,
+                  "startColumn": 51,
+                  "endLine": 350,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 364,
+                  "startColumn": 51,
+                  "endLine": 364,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 390,
+                  "startColumn": 51,
+                  "endLine": 390,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 411,
+                  "startColumn": 51,
+                  "endLine": 411,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 433,
+                  "startColumn": 51,
+                  "endLine": 433,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 447,
+                  "startColumn": 51,
+                  "endLine": 447,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 461,
+                  "startColumn": 51,
+                  "endLine": 461,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 506,
+                  "startColumn": 51,
+                  "endLine": 506,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 552,
+                  "startColumn": 51,
+                  "endLine": 552,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 609,
+                  "startColumn": 51,
+                  "endLine": 609,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 632,
+                  "startColumn": 51,
+                  "endLine": 632,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 655,
+                  "startColumn": 51,
+                  "endLine": 655,
+                  "endColumn": 64
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
+                "region": {
+                  "startLine": 683,
+                  "startColumn": 51,
+                  "endLine": 683,
+                  "endColumn": 64
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "0": null,
+              "1": null,
+              "10": null,
+              "11": null,
+              "12": null,
+              "13": null,
+              "14": null,
+              "15": null,
+              "2": null,
+              "3": null,
+              "4": null,
+              "5": null,
+              "6": null,
+              "7": null,
+              "8": null,
+              "9": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1192",
+          "level": "warning",
+          "message": "Define a constant instead of using this literal 'Doctor' 9 times.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 49,
+                  "endLine": 21,
+                  "endColumn": 57
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 159,
+                  "startColumn": 52,
+                  "endLine": 159,
+                  "endColumn": 60
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 161,
+                  "startColumn": 64,
+                  "endLine": 161,
+                  "endColumn": 72
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 164,
+                  "startColumn": 77,
+                  "endLine": 164,
+                  "endColumn": 85
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 205,
+                  "startColumn": 51,
+                  "endLine": 205,
+                  "endColumn": 59
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 220,
+                  "startColumn": 51,
+                  "endLine": 220,
+                  "endColumn": 59
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 234,
+                  "startColumn": 51,
+                  "endLine": 234,
+                  "endColumn": 59
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 265,
+                  "startColumn": 51,
+                  "endLine": 265,
+                  "endColumn": 59
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 361,
+                  "startColumn": 31,
+                  "endLine": 361,
+                  "endColumn": 39
                 }
               }
             }
@@ -3144,341 +3464,24 @@
           }
         },
         {
-          "ruleId": "S1192",
+          "ruleId": "S6964",
           "level": "warning",
-          "message": "Define a constant instead of using this literal 'Doctor' 9 times.",
+          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/UpdatePatientDto.cs",
                 "region": {
-                  "startLine": 21,
-                  "startColumn": 49,
-                  "endLine": 21,
-                  "endColumn": 57
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 159,
-                  "startColumn": 52,
-                  "endLine": 159,
-                  "endColumn": 60
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 161,
-                  "startColumn": 64,
-                  "endLine": 161,
-                  "endColumn": 72
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 164,
-                  "startColumn": 77,
-                  "endLine": 164,
-                  "endColumn": 85
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 205,
-                  "startColumn": 51,
-                  "endLine": 205,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 220,
-                  "startColumn": 51,
-                  "endLine": 220,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 234,
-                  "startColumn": 51,
-                  "endLine": 234,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 265,
-                  "startColumn": 51,
-                  "endLine": 265,
-                  "endColumn": 59
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 361,
-                  "startColumn": 31,
-                  "endLine": 361,
-                  "endColumn": 39
+                  "startLine": 20,
+                  "startColumn": 27,
+                  "endLine": 20,
+                  "endColumn": 33
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "2": null,
-              "3": null,
-              "4": null,
-              "5": null,
-              "6": null,
-              "7": null
-            }
-          }
-        },
-        {
-          "ruleId": "S1192",
-          "level": "warning",
-          "message": "Define a constant instead of using this literal 'Appointment' 17 times.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 18,
-                  "startColumn": 54,
-                  "endLine": 18,
-                  "endColumn": 67
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 270,
-                  "startColumn": 51,
-                  "endLine": 270,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 309,
-                  "startColumn": 51,
-                  "endLine": 309,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 323,
-                  "startColumn": 51,
-                  "endLine": 323,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 350,
-                  "startColumn": 51,
-                  "endLine": 350,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 364,
-                  "startColumn": 51,
-                  "endLine": 364,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 390,
-                  "startColumn": 51,
-                  "endLine": 390,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 411,
-                  "startColumn": 51,
-                  "endLine": 411,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 433,
-                  "startColumn": 51,
-                  "endLine": 433,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 447,
-                  "startColumn": 51,
-                  "endLine": 447,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 461,
-                  "startColumn": 51,
-                  "endLine": 461,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 506,
-                  "startColumn": 51,
-                  "endLine": 506,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 552,
-                  "startColumn": 51,
-                  "endLine": 552,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 609,
-                  "startColumn": 51,
-                  "endLine": 609,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 632,
-                  "startColumn": 51,
-                  "endLine": 632,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 655,
-                  "startColumn": 51,
-                  "endLine": 655,
-                  "endColumn": 64
-                }
-              }
-            },
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/AppointmentService.cs",
-                "region": {
-                  "startLine": 683,
-                  "startColumn": 51,
-                  "endLine": 683,
-                  "endColumn": 64
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "0": null,
-              "1": null,
-              "10": null,
-              "11": null,
-              "12": null,
-              "13": null,
-              "14": null,
-              "15": null,
-              "2": null,
-              "3": null,
-              "4": null,
-              "5": null,
-              "6": null,
-              "7": null,
-              "8": null,
-              "9": null
-            }
+            "warningLevel": 1
           }
         },
         {
@@ -3587,18 +3590,18 @@
           }
         },
         {
-          "ruleId": "S6964",
+          "ruleId": "S6966",
           "level": "warning",
-          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
+          "message": "Await RunAsync instead.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/UpdatePatientDto.cs",
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Program.cs",
                 "region": {
-                  "startLine": 20,
-                  "startColumn": 27,
-                  "endLine": 20,
-                  "endColumn": 33
+                  "startLine": 162,
+                  "startColumn": 1,
+                  "endLine": 162,
+                  "endColumn": 10
                 }
               }
             }
@@ -3620,27 +3623,6 @@
                   "startColumn": 22,
                   "endLine": 176,
                   "endColumn": 39
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S6966",
-          "level": "warning",
-          "message": "Await RunAsync instead.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Program.cs",
-                "region": {
-                  "startLine": 162,
-                  "startColumn": 1,
-                  "endLine": 162,
-                  "endColumn": 10
                 }
               }
             }
@@ -3683,27 +3665,6 @@
                   "startColumn": 22,
                   "endLine": 212,
                   "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S927",
-          "level": "warning",
-          "message": "Rename parameter 'Builder' to 'builder' to match the base class declaration.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Data/HealthAxisDbContext.cs",
-                "region": {
-                  "startLine": 29,
-                  "startColumn": 62,
-                  "endLine": 29,
-                  "endColumn": 69
                 }
               }
             }
@@ -3818,27 +3779,87 @@
           }
         },
         {
-          "ruleId": "CA1861",
-          "level": "note",
-          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
+          "ruleId": "S6964",
+          "level": "warning",
+          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615043705_SeedPatientData.cs",
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/UpdateAppointmentDto.cs",
                 "region": {
-                  "startLine": 18,
-                  "startColumn": 26,
-                  "endLine": 18,
-                  "endColumn": 141
+                  "startLine": 24,
+                  "startColumn": 25,
+                  "endLine": 24,
+                  "endColumn": 38
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "paramName": "columns"
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S6964",
+          "level": "warning",
+          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/BookAppointmentDto.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 25,
+                  "endLine": 17,
+                  "endColumn": 38
+                }
+              }
             }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S927",
+          "level": "warning",
+          "message": "Rename parameter 'Builder' to 'builder' to match the base class declaration.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Data/HealthAxisDbContext.cs",
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 62,
+                  "endLine": 29,
+                  "endColumn": 69
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S6964",
+          "level": "warning",
+          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/PatientRegisterDto.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 27,
+                  "endLine": 18,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
           }
         },
         {
@@ -4041,167 +4062,12 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/BookAppointmentDto.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 25,
-                  "endLine": 17,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S6964",
-          "level": "warning",
-          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/UpdateAppointmentDto.cs",
-                "region": {
-                  "startLine": 24,
-                  "startColumn": 25,
-                  "endLine": 24,
-                  "endColumn": 38
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S6964",
-          "level": "warning",
-          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/PatientRegisterDto.cs",
-                "region": {
-                  "startLine": 18,
-                  "startColumn": 27,
-                  "endLine": 18,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S1186",
-          "level": "warning",
-          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260621154631_UpdateSeedDateTimeKind.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 33,
-                  "endLine": 17,
-                  "endColumn": 37
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1862",
-          "level": "note",
-          "message": "Prefer using 'string.Equals(string, StringComparison)' to perform a case-insensitive comparison, but keep in mind that this might cause subtle changes in behavior, so make sure to conduct thorough testing after applying the suggestion, or if culturally sensitive comparison is not required, consider using 'StringComparison.OrdinalIgnoreCase'",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Repository/Impl/PatientRepository.cs",
-                "region": {
-                  "startLine": 30,
-                  "startColumn": 9,
-                  "endLine": 30,
-                  "endColumn": 63
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "LeftOffendingMethod": "ToUpper",
-              "RightOffendingMethod": null
-            }
-          }
-        },
-        {
-          "ruleId": "CA1862",
-          "level": "note",
-          "message": "Prefer using 'string.Equals(string, StringComparison)' to perform a case-insensitive comparison, but keep in mind that this might cause subtle changes in behavior, so make sure to conduct thorough testing after applying the suggestion, or if culturally sensitive comparison is not required, consider using 'StringComparison.OrdinalIgnoreCase'",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Repository/Impl/PatientRepository.cs",
-                "region": {
-                  "startLine": 31,
-                  "startColumn": 12,
-                  "endLine": 31,
-                  "endColumn": 54
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "LeftOffendingMethod": "ToUpper",
-              "RightOffendingMethod": null
-            }
-          }
-        },
-        {
-          "ruleId": "S6964",
-          "level": "warning",
-          "message": "Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.",
-          "locations": [
-            {
-              "resultFile": {
                 "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Models/Dtos/CancelAppointmentDto.cs",
                 "region": {
                   "startLine": 9,
                   "startColumn": 20,
                   "endLine": 9,
                   "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'ValidateHealthRecordId' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/HealthRecordService.cs",
-                "region": {
-                  "startLine": 468,
-                  "startColumn": 22,
-                  "endLine": 468,
-                  "endColumn": 44
                 }
               }
             }
@@ -4295,34 +4161,9 @@
           }
         },
         {
-          "ruleId": "CA1862",
-          "level": "note",
-          "message": "Prefer using 'string.Equals(string, StringComparison)' to perform a case-insensitive comparison, but keep in mind that this might cause subtle changes in behavior, so make sure to conduct thorough testing after applying the suggestion, or if culturally sensitive comparison is not required, consider using 'StringComparison.OrdinalIgnoreCase'",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Repository/Impl/DoctorRepository.cs",
-                "region": {
-                  "startLine": 48,
-                  "startColumn": 32,
-                  "endLine": 48,
-                  "endColumn": 68
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "LeftOffendingMethod": "ToUpper",
-              "RightOffendingMethod": null
-            }
-          }
-        },
-        {
-          "ruleId": "CA1822",
-          "level": "note",
-          "message": "Member 'ValidateHealthRecordId' does not access instance data and can be marked as static",
+          "ruleId": "S2325",
+          "level": "warning",
+          "message": "Make 'ValidateHealthRecordId' a static method.",
           "locations": [
             {
               "resultFile": {
@@ -4406,6 +4247,27 @@
         {
           "ruleId": "CA1822",
           "level": "note",
+          "message": "Member 'ValidateHealthRecordId' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/HealthRecordService.cs",
+                "region": {
+                  "startLine": 468,
+                  "startColumn": 22,
+                  "endLine": 468,
+                  "endColumn": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
           "message": "Member 'ValidateHealthRecordText' does not access instance data and can be marked as static",
           "locations": [
             {
@@ -4431,12 +4293,12 @@
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615044341_SeedDoctorData.cs",
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615043705_SeedPatientData.cs",
                 "region": {
                   "startLine": 18,
                   "startColumn": 26,
                   "endLine": 18,
-                  "endColumn": 145
+                  "endColumn": 141
                 }
               }
             }
@@ -4446,96 +4308,6 @@
             "customProperties": {
               "paramName": "columns"
             }
-          }
-        },
-        {
-          "ruleId": "S1186",
-          "level": "warning",
-          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618201917_Addpatientidentity.cs",
-                "region": {
-                  "startLine": 17,
-                  "startColumn": 33,
-                  "endLine": 17,
-                  "endColumn": 37
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CA1861",
-          "level": "note",
-          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615044709_AddAppointmentTable.cs",
-                "region": {
-                  "startLine": 49,
-                  "startColumn": 26,
-                  "endLine": 49,
-                  "endColumn": 152
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "paramName": "columns"
-            }
-          }
-        },
-        {
-          "ruleId": "CA1861",
-          "level": "note",
-          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615045634_AddHealthRecordTable.cs",
-                "region": {
-                  "startLine": 61,
-                  "startColumn": 26,
-                  "endLine": 61,
-                  "endColumn": 160
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "paramName": "columns"
-            }
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'ValidateUpdateDoctorDto' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
-                "region": {
-                  "startLine": 298,
-                  "startColumn": 22,
-                  "endLine": 298,
-                  "endColumn": 45
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
           }
         },
         {
@@ -4560,33 +4332,9 @@
           }
         },
         {
-          "ruleId": "CA1861",
-          "level": "note",
-          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
-                "region": {
-                  "startLine": 36,
-                  "startColumn": 26,
-                  "endLine": 36,
-                  "endColumn": 123
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "paramName": "columns"
-            }
-          }
-        },
-        {
-          "ruleId": "CA1822",
-          "level": "note",
-          "message": "Member 'ValidateUpdateDoctorDto' does not access instance data and can be marked as static",
+          "ruleId": "S2325",
+          "level": "warning",
+          "message": "Make 'ValidateUpdateDoctorDto' a static method.",
           "locations": [
             {
               "resultFile": {
@@ -4623,6 +4371,240 @@
           ],
           "properties": {
             "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'ValidateUpdateDoctorDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Services/Impl/DoctorService.cs",
+                "region": {
+                  "startLine": 298,
+                  "startColumn": 22,
+                  "endLine": 298,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1186",
+          "level": "warning",
+          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260621154631_UpdateSeedDateTimeKind.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 33,
+                  "endLine": 17,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615044341_SeedDoctorData.cs",
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 26,
+                  "endLine": 18,
+                  "endColumn": 145
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1862",
+          "level": "note",
+          "message": "Prefer using 'string.Equals(string, StringComparison)' to perform a case-insensitive comparison, but keep in mind that this might cause subtle changes in behavior, so make sure to conduct thorough testing after applying the suggestion, or if culturally sensitive comparison is not required, consider using 'StringComparison.OrdinalIgnoreCase'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Repository/Impl/PatientRepository.cs",
+                "region": {
+                  "startLine": 30,
+                  "startColumn": 9,
+                  "endLine": 30,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "LeftOffendingMethod": "ToUpper",
+              "RightOffendingMethod": null
+            }
+          }
+        },
+        {
+          "ruleId": "CA1862",
+          "level": "note",
+          "message": "Prefer using 'string.Equals(string, StringComparison)' to perform a case-insensitive comparison, but keep in mind that this might cause subtle changes in behavior, so make sure to conduct thorough testing after applying the suggestion, or if culturally sensitive comparison is not required, consider using 'StringComparison.OrdinalIgnoreCase'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Repository/Impl/PatientRepository.cs",
+                "region": {
+                  "startLine": 31,
+                  "startColumn": 12,
+                  "endLine": 31,
+                  "endColumn": 54
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "LeftOffendingMethod": "ToUpper",
+              "RightOffendingMethod": null
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615044709_AddAppointmentTable.cs",
+                "region": {
+                  "startLine": 49,
+                  "startColumn": 26,
+                  "endLine": 49,
+                  "endColumn": 152
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1862",
+          "level": "note",
+          "message": "Prefer using 'string.Equals(string, StringComparison)' to perform a case-insensitive comparison, but keep in mind that this might cause subtle changes in behavior, so make sure to conduct thorough testing after applying the suggestion, or if culturally sensitive comparison is not required, consider using 'StringComparison.OrdinalIgnoreCase'",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Repository/Impl/DoctorRepository.cs",
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 32,
+                  "endLine": 48,
+                  "endColumn": 68
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "LeftOffendingMethod": "ToUpper",
+              "RightOffendingMethod": null
+            }
+          }
+        },
+        {
+          "ruleId": "S1186",
+          "level": "warning",
+          "message": "Add a nested comment explaining why this method is empty, throw a 'NotSupportedException' or complete the implementation.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260618201917_Addpatientidentity.cs",
+                "region": {
+                  "startLine": 17,
+                  "startColumn": 33,
+                  "endLine": 17,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615045634_AddHealthRecordTable.cs",
+                "region": {
+                  "startLine": 61,
+                  "startColumn": 26,
+                  "endLine": 61,
+                  "endColumn": 160
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
+          }
+        },
+        {
+          "ruleId": "CA1861",
+          "level": "note",
+          "message": "Prefer 'static readonly' fields over constant array arguments if the called method is called repeatedly and is not mutating the passed array",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp/Migrations/20260615050714_AddUserTable.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 26,
+                  "endLine": 36,
+                  "endColumn": 123
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1,
+            "customProperties": {
+              "paramName": "columns"
+            }
           }
         },
         {
@@ -4910,20 +4892,6 @@
             "tags": [
               "Telemetry",
               "EnabledRuleInAggressiveMode"
-            ]
-          }
-        },
-        "CS0266": {
-          "id": "CS0266",
-          "defaultLevel": "error",
-          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0266)",
-          "properties": {
-            "category": "Compiler",
-            "isEnabledByDefault": true,
-            "tags": [
-              "Compiler",
-              "Telemetry",
-              "NotConfigurable"
             ]
           }
         },

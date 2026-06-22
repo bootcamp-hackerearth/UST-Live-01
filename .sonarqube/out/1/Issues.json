@@ -401,6 +401,48 @@
         {
           "ruleId": "S2325",
           "level": "warning",
+          "message": "Make 'GetInitials' a static method.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp.AdminBlazor/Pages/Admin/Patients.razor",
+                "region": {
+                  "startLine": 265,
+                  "startColumn": 20,
+                  "endLine": 265,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2325",
+          "level": "warning",
+          "message": "Make 'GetInitials' a static method.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp.AdminBlazor/Pages/Admin/PatientDetails.razor",
+                "region": {
+                  "startLine": 160,
+                  "startColumn": 20,
+                  "endLine": 160,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2325",
+          "level": "warning",
           "message": "Make 'GetStatusBadgeClass' a static method.",
           "locations": [
             {
@@ -443,27 +485,6 @@
         {
           "ruleId": "S2325",
           "level": "warning",
-          "message": "Make 'GetInitials' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp.AdminBlazor/Pages/Admin/Appointements.razor",
-                "region": {
-                  "startLine": 305,
-                  "startColumn": 20,
-                  "endLine": 305,
-                  "endColumn": 31
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
           "message": "Make 'GetStatusBadgeClass' a static method.",
           "locations": [
             {
@@ -489,53 +510,32 @@
           "locations": [
             {
               "resultFile": {
+                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp.AdminBlazor/Pages/Admin/Appointements.razor",
+                "region": {
+                  "startLine": 305,
+                  "startColumn": 20,
+                  "endLine": 305,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2325",
+          "level": "warning",
+          "message": "Make 'GetInitials' a static method.",
+          "locations": [
+            {
+              "resultFile": {
                 "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp.AdminBlazor/Pages/Admin/Doctors.razor",
                 "region": {
                   "startLine": 263,
                   "startColumn": 20,
                   "endLine": 263,
-                  "endColumn": 31
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetInitials' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp.AdminBlazor/Pages/Admin/Patients.razor",
-                "region": {
-                  "startLine": 265,
-                  "startColumn": 20,
-                  "endLine": 265,
-                  "endColumn": 31
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "S2325",
-          "level": "warning",
-          "message": "Make 'GetInitials' a static method.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310476/Desktop/HealthCareApp/HealthCareApp/HealthCareApp.AdminBlazor/Pages/Admin/PatientDetails.razor",
-                "region": {
-                  "startLine": 160,
-                  "startColumn": 20,
-                  "endLine": 160,
                   "endColumn": 31
                 }
               }

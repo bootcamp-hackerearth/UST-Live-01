@@ -1,19 +1,26 @@
-﻿
-# Visual Studio local workspace/cache
-.vs
+﻿# Ignore Visual Studio workspace files and build artifacts
 .vs/
-.vs/**
-**/.vs/
-**/.vs/**
-*.suo
+**/bin/
+**/obj/
+ 
+# Optional project-specific ignores
 *.user
+*.suo
 *.userosscache
 *.sln.docstates
-*.slnLaunch.user
-
-# Build outputs
-bin/
-obj/
-
-# NuGet packages folder, if using packages.config
-packages/
+ 
+*.lscache
+ 
+Logs/
+ 
+TestResults/
+.TestResults/
+# SonarQube
+.sonar/
+.sonarqube/
+sonar-project.properties.user
+coverage.xml
+dotnet-tools.json
+ 
+/packages/
+ 

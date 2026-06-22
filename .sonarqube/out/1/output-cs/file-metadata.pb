@@ -22,9 +22,9 @@ mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\D
 gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Doctors\DoctorDto.csutf-8v
 mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Doctors\CreateDoctorDto.csutf-8Ä
 wC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Dashboard\AdminDashboardReportDto.csutf-8l
-cC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Auth\LoginDto.csutf-8Å
-xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\CreateAppointementDto.csutf-8s
+cC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Auth\LoginDto.csutf-8s
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Auth\AuthResponseDto.csutf-8Ä
-wC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\UpdateAppointmentDto.csutf-8z
-qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointmentDto.csutf-8Å
-xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointementStatusDto.csutf-8
+wC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\UpdateAppointmentDto.csutf-8Å
+xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\CreateAppointementDto.csutf-8Å
+xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointementStatusDto.csutf-8z
+qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\Dtos\Appointments\AppointmentDto.csutf-8
