@@ -1,4 +1,5 @@
-﻿using HealthAxis.API.DTOs;
+﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Patient;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

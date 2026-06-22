@@ -91,7 +91,9 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 
 // ✅ Doctor
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
-builder.Services.AddScoped<IDoctorService, DoctorService>();
+
+builder.Services.AddScoped<IDoctorService>(sp =>
+    new DoctorService(sp.GetRequiredService<HealthAxisDbContext>()));
 
 // ✅ Appointment
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();

@@ -1,4 +1,4 @@
-﻿using HealthAxis.API.DTOs;
+﻿using HealthAxis.Shared.DTOs.Doctor;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -23,9 +23,9 @@ namespace HealthAxis.API.Controllers
         }
 
         [HttpGet("doctors")]
-        public async Task<IActionResult> GetDoctors()
+        public async Task<IActionResult> GetDoctors([FromQuery] HealthAxis.Shared.DTOs.Common.PaginationParams paginationParams, CancellationToken ct)
         {
-            var result = await _doctorService.GetAllAsync();
+            var result = await _doctorService.GetAllAsync(paginationParams, ct);
             return Ok(result);
         }
 

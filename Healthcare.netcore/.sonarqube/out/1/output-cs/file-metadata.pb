@@ -1,0 +1,11 @@
+à
+¸C:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\obj\Debug\net10.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.csutf-8õ
+èC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\obj\Debug\net10.0\Healthcare.netcore.Tests.AssemblyInfo.csutf-8¢
+ñC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\obj\Debug\net10.0\.NETCoreApp,Version=v10.0.AssemblyAttributes.csutf-8ù
+ëC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\obj\Debug\net10.0\Healthcare.netcore.Tests.GlobalUsings.g.csutf-8x
+mC:\Users\310481\.nuget\packages\microsoft.net.test.sdk\17.14.1\build\net8.0\Microsoft.NET.Test.Sdk.Program.csutf-8}
+tC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\PatientServiceTests.csutf-8Ç
+yC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\HealthRecordServiceTests.csutf-8|
+sC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\DoctorServiceTests.csutf-8z
+qC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\AuthServiceTests.csutf-8Å
+xC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore.Tests\Services\AppointmentServiceTests.csutf-8

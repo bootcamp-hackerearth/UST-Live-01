@@ -1,4 +1,6 @@
-﻿using HealthAxis.API.DTOs;
+﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Patient;
+using HealthAxis.Shared.DTOs.HealthRecord;
 
 namespace HealthAxis.API.Services.Interfaces
 {

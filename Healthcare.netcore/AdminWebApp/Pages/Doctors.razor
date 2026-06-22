@@ -1,0 +1,74 @@
+﻿@page "/doctors"
+
+<div class="page-title">
+    <h1>Doctors Management</h1>
+    <p>Admin view for doctor profiles and availability.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h4>Available Doctors</h4>
+        <h2>24</h2>
+        <span>Currently available</span>
+    </div>
+
+    <div class="stat-card">
+        <h4>Total Departments</h4>
+        <h2>8</h2>
+        <span>Hospital departments</span>
+    </div>
+
+    <div class="stat-card">
+        <h4>On Leave</h4>
+        <h2>4</h2>
+        <span>Today</span>
+    </div>
+
+    <div class="stat-card">
+        <h4>Emergency Staff</h4>
+        <h2>10</h2>
+        <span>Active duty</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Doctor List</h3>
+        <button class="btn-primary">Add Doctor</button>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Doctor ID</th>
+                <th>Name</th>
+                <th>Specialization</th>
+                <th>Availability</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>D001</td>
+                <td>Dr. Rahul Menon</td>
+                <td>Cardiology</td>
+                <td>10:00 AM - 04:00 PM</td>
+                <td><span class="badge badge-success">Available</span></td>
+            </tr>
+            <tr>
+                <td>D002</td>
+                <td>Dr. Meera Iyer</td>
+                <td>Dermatology</td>
+                <td>11:00 AM - 03:00 PM</td>
+                <td><span class="badge badge-warning">Busy</span></td>
+            </tr>
+            <tr>
+                <td>D003</td>
+                <td>Dr. Arjun Kumar</td>
+                <td>Orthopedics</td>
+                <td>09:30 AM - 02:00 PM</td>
+                <td><span class="badge badge-success">Available</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

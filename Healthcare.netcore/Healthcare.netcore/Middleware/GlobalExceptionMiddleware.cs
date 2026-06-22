@@ -1,4 +1,4 @@
-﻿using HealthAxis.API.DTOs;
+﻿
 using HealthAxis.API.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 

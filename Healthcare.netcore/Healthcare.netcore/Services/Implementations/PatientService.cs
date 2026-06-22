@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
-using HealthAxis.API.DTOs;
+using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Patient;
+using HealthAxis.Shared.DTOs.HealthRecord;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
@@ -46,11 +48,11 @@ namespace HealthAxis.API.Services.Implementations
 
             return new PagedResponse<PatientDto>
             {
+                Items = patientDtos.ToList(),
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalRecords = totalRecords,
-                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
-                Data = patientDtos
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
             };
         }
 
@@ -94,11 +96,11 @@ namespace HealthAxis.API.Services.Implementations
 
             return new PagedResponse<PatientDto>
             {
+                Items = patientDtos.ToList(),
                 PageNumber = pageNumber,
                 PageSize = pageSize,
                 TotalRecords = totalRecords,
-                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize),
-                Data = patientDtos
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
             };
         }
 

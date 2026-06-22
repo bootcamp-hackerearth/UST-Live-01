@@ -1,4 +1,5 @@
 ﻿using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTOs.Doctor;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,27 +18,32 @@ namespace HealthAxis.API.Controllers
             _service = service;
         }
 
-        // ✅ GET /api/doctors
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(
+            [FromQuery] PaginationParams paginationParams,
+            CancellationToken ct)
         {
-            var doctors = await _service.GetAllAsync();
+            var doctors = await _service.GetAllAsync(paginationParams, ct);
             return Ok(doctors);
         }
 
-        // ✅ GET /api/doctors/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(int id, CancellationToken ct)
         {
-            var doctor = await _service.GetByIdAsync(id);
+            var doctor = await _service.GetByIdAsync(id, ct);
+
+            if (doctor is null)
+            {
+                return NotFound("Doctor not found");
+            }
+
             return Ok(doctor);
         }
 
-        // ✅ GET /api/doctors/{id}/availability
         [HttpGet("{id}/availability")]
-        public async Task<IActionResult> GetAvailability(int id)
+        public async Task<IActionResult> GetAvailability(int id, CancellationToken ct)
         {
-            var availability = await _service.GetAvailabilityAsync(id);
+            var availability = await _service.GetAvailabilityAsync(id, ct);
             return Ok(availability);
         }
     }

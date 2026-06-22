@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthAxis.API.DTOs;
+using HealthAxis.Shared.DTOs.Doctor;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;

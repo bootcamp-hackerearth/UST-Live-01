@@ -1,0 +1,74 @@
+﻿@page "/reports"
+
+<div class="page-title">
+    <h1>Reports</h1>
+    <p>Admin overview of hospital performance and daily activity.</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h4>Monthly Patients</h4>
+        <h2>3,420</h2>
+        <span>+18% from last month</span>
+    </div>
+
+    <div class="stat-card">
+        <h4>Completed Appointments</h4>
+        <h2>1,126</h2>
+        <span>This month</span>
+    </div>
+
+    <div class="stat-card">
+        <h4>Cancelled Appointments</h4>
+        <h2>64</h2>
+        <span>Needs review</span>
+    </div>
+
+    <div class="stat-card">
+        <h4>Revenue Status</h4>
+        <h2>Good</h2>
+        <span>Static demo data</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Department Summary</h3>
+        <button class="btn-secondary">Download Report</button>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Department</th>
+                <th>Patients</th>
+                <th>Doctors</th>
+                <th>Appointments</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cardiology</td>
+                <td>420</td>
+                <td>8</td>
+                <td>126</td>
+                <td><span class="badge badge-success">Good</span></td>
+            </tr>
+            <tr>
+                <td>Dermatology</td>
+                <td>310</td>
+                <td>5</td>
+                <td>98</td>
+                <td><span class="badge badge-info">Stable</span></td>
+            </tr>
+            <tr>
+                <td>Orthopedics</td>
+                <td>280</td>
+                <td>6</td>
+                <td>84</td>
+                <td><span class="badge badge-warning">Busy</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

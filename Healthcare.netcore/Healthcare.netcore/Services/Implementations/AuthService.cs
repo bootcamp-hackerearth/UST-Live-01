@@ -1,6 +1,7 @@
 ﻿using HealthAxis.API.Data;
 using HealthAxis.API.Models;
 using HealthAxis.API.Models.Auth;
+using HealthAxis.Shared.DTOs.Auth;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;

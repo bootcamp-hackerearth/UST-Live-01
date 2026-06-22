@@ -1,0 +1,574 @@
+{
+  "$schema": "http://json.schemastore.org/sarif-1.0.0",
+  "version": "1.0.0",
+  "runs": [
+    {
+      "tool": {
+        "name": "Microsoft (R) Visual C# Compiler",
+        "version": "5.3.0.0",
+        "fileVersion": "5.3.0-2.26230.114 (e7aa4b537d95ae955b5c98c25fa9b9220e7eb71e)",
+        "semanticVersion": "5.3.0",
+        "language": "en-US"
+      },
+      "results": [
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Appointment>, Task<Appointment>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Appointment>, Task<Appointment?>>' in 'IReturnsResult<IRepository<Appointment>> ReturnsExtensions.ReturnsAsync<IRepository<Appointment>, Appointment?>(IReturns<IRepository<Appointment>, Task<Appointment?>> mock, Appointment? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 95,
+                  "startColumn": 13,
+                  "endLine": 96,
+                  "endColumn": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 91,
+                  "startColumn": 13,
+                  "endLine": 92,
+                  "endColumn": 59
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 85,
+                  "startColumn": 13,
+                  "endLine": 86,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Doctor>, Task<Doctor>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Doctor>, Task<Doctor?>>' in 'IReturnsResult<IRepository<Doctor>> ReturnsExtensions.ReturnsAsync<IRepository<Doctor>, Doctor?>(IReturns<IRepository<Doctor>, Task<Doctor?>> mock, Doctor? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 115,
+                  "startColumn": 13,
+                  "endLine": 116,
+                  "endColumn": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IDoctorRepository, Task<Doctor>>' cannot be used for parameter 'mock' of type 'IReturns<IDoctorRepository, Task<Doctor?>>' in 'IReturnsResult<IDoctorRepository> ReturnsExtensions.ReturnsAsync<IDoctorRepository, Doctor?>(IReturns<IDoctorRepository, Task<Doctor?>> mock, Doctor? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 204,
+                  "startColumn": 13,
+                  "endLine": 205,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 169,
+                  "startColumn": 13,
+                  "endLine": 170,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IDoctorRepository, Task<Doctor>>' cannot be used for parameter 'mock' of type 'IReturns<IDoctorRepository, Task<Doctor?>>' in 'IReturnsResult<IDoctorRepository> ReturnsExtensions.ReturnsAsync<IDoctorRepository, Doctor?>(IReturns<IDoctorRepository, Task<Doctor?>> mock, Doctor? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 246,
+                  "startColumn": 13,
+                  "endLine": 247,
+                  "endColumn": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Appointment>, Task<Appointment>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Appointment>, Task<Appointment?>>' in 'IReturnsResult<IRepository<Appointment>> ReturnsExtensions.ReturnsAsync<IRepository<Appointment>, Appointment?>(IReturns<IRepository<Appointment>, Task<Appointment?>> mock, Appointment? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 268,
+                  "startColumn": 13,
+                  "endLine": 269,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IHealthRecordRepository, Task<HealthRecord>>' cannot be used for parameter 'mock' of type 'IReturns<IHealthRecordRepository, Task<HealthRecord?>>' in 'IReturnsResult<IHealthRecordRepository> ReturnsExtensions.ReturnsAsync<IHealthRecordRepository, HealthRecord?>(IReturns<IHealthRecordRepository, Task<HealthRecord?>> mock, HealthRecord? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 270,
+                  "startColumn": 13,
+                  "endLine": 271,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 266,
+                  "startColumn": 13,
+                  "endLine": 267,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 284,
+                  "startColumn": 13,
+                  "endLine": 285,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IRepository<Appointment>, Task<Appointment>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Appointment>, Task<Appointment?>>' in 'IReturnsResult<IRepository<Appointment>> ReturnsExtensions.ReturnsAsync<IRepository<Appointment>, Appointment?>(IReturns<IRepository<Appointment>, Task<Appointment?>> mock, Appointment? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 458,
+                  "startColumn": 13,
+                  "endLine": 459,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8620",
+          "level": "warning",
+          "message": "Argument of type 'ISetup<IDoctorRepository, Task<Doctor>>' cannot be used for parameter 'mock' of type 'IReturns<IDoctorRepository, Task<Doctor?>>' in 'IReturnsResult<IDoctorRepository> ReturnsExtensions.ReturnsAsync<IDoctorRepository, Doctor?>(IReturns<IDoctorRepository, Task<Doctor?>> mock, Doctor? value)' due to differences in the nullability of reference types.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 450,
+                  "startColumn": 13,
+                  "endLine": 451,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetPatientDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 49,
+                  "startColumn": 28,
+                  "endLine": 49,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetPatient' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/PatientServiceTests.cs",
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 25,
+                  "endLine": 35,
+                  "endColumn": 35
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetCreateDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 39,
+                  "endLine": 36,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetCompletedAppointment' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 29,
+                  "endLine": 47,
+                  "endColumn": 52
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetHealthRecord' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 60,
+                  "startColumn": 30,
+                  "endLine": 60,
+                  "endColumn": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetHealthRecordDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/HealthRecordServiceTests.cs",
+                "region": {
+                  "startLine": 75,
+                  "startColumn": 33,
+                  "endLine": 75,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetCreateAppointmentDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/AppointmentServiceTests.cs",
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 38,
+                  "endLine": 36,
+                  "endColumn": 61
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetRegisterDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/AuthServiceTests.cs",
+                "region": {
+                  "startLine": 66,
+                  "startColumn": 29,
+                  "endLine": 66,
+                  "endColumn": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetDoctorDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 60,
+                  "startColumn": 27,
+                  "endLine": 60,
+                  "endColumn": 39
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetDoctor' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 24,
+                  "endLine": 47,
+                  "endColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetCreateDoctorDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 73,
+                  "startColumn": 33,
+                  "endLine": 73,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1822",
+          "level": "note",
+          "message": "Member 'GetUpdateDoctorDto' does not access instance data and can be marked as static",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310481/source/repos/UST-Live-01/Healthcare.netcore/Healthcare.netcore.Tests/Services/DoctorServiceTests.cs",
+                "region": {
+                  "startLine": 86,
+                  "startColumn": 33,
+                  "endLine": 86,
+                  "endColumn": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        }
+      ],
+      "rules": {
+        "CA1822": {
+          "id": "CA1822",
+          "shortDescription": "Mark members as static",
+          "fullDescription": "Members that do not access instance data or call instance methods can be marked as static. After you mark the methods as static, the compiler will emit nonvirtual call sites to these members. This can give you a measurable performance gain for performance-sensitive code.",
+          "defaultLevel": "note",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822",
+          "properties": {
+            "category": "Performance",
+            "isEnabledByDefault": true,
+            "tags": [
+              "PortedFromFxCop",
+              "Telemetry",
+              "EnabledRuleInAggressiveMode"
+            ]
+          }
+        },
+        "CS8620": {
+          "id": "CS8620",
+          "shortDescription": "Argument cannot be used for parameter due to differences in the nullability of reference types.",
+          "defaultLevel": "warning",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8620)",
+          "properties": {
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

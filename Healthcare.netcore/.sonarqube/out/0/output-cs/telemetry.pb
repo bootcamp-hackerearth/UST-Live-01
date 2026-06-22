@@ -1,0 +1,1 @@
+RhC:\Users\310481\source\repos\UST-Live-01\Healthcare.netcore\Healthcare.netcore\Healthcare.netcore.csproj¢net10.0òCSharp14

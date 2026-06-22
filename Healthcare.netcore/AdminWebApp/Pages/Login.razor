@@ -1,0 +1,95 @@
+﻿@page "/"
+@page "/login"
+
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Nav
+
+<div class="login-shell">
+    <div class="login-left">
+        <div class="login-brand">
+            <div class="brand-circle">HA</div>
+            <h2>HealthAxis</h2>
+            <p>Admin console for healthcare operations.</p>
+        </div>
+
+        <div class="login-illustration">
+            <div class="doctor-card">
+                <div class="doctor-icon">+</div>
+                <h3>Healthcare Admin</h3>
+                <p>Manage doctors, patients, appointments, and reports from one place.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-right">
+        <div class="login-form-card">
+            <h1>Login</h1>
+            <p>Enter your admin credentials to continue.</p>
+
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                <div class="alert alert-danger">@ErrorMessage</div>
+            }
+
+            <div class="form-group">
+                <label>Email</label>
+                <input class="form-control"
+                       placeholder="admin@gmail.com"
+                       @bind="LoginRequest.Email" />
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password"
+                       class="form-control"
+                       placeholder="Enter password"
+                       @bind="LoginRequest.Password" />
+            </div>
+
+            <button class="primary-btn full-btn" @onclick="HandleLogin">
+                Sign In
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private LoginDto LoginRequest = new();
+    private string ErrorMessage = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        ErrorMessage = string.Empty;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/login", LoginRequest);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ErrorMessage = "Invalid email or password.";
+                return;
+            }
+
+            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponse>();
+
+            if (authResponse == null || string.IsNullOrWhiteSpace(authResponse.AccessToken))
+            {
+                ErrorMessage = "Login failed. Token was not received.";
+                return;
+            }
+
+            await JS.InvokeVoidAsync("localStorage.setItem", "token", authResponse.AccessToken);
+
+            AuthStateProvider.NotifyUserLoggedIn(authResponse.AccessToken);
+
+            Nav.NavigateTo("/dashboard");
+        }
+        catch
+        {
+            ErrorMessage = "Unable to connect to API. Please check API is running.";
+        }
+    }
+}

@@ -1,22 +1,26 @@
-﻿using HealthAxis.API.DTOs;
-
-namespace HealthAxis.API.Services.Interfaces
+﻿namespace HealthAxis.API.Services.Interfaces
 {
     public interface IDoctorService
     {
-        Task<IEnumerable<DoctorDto>> GetAllAsync(
+        Task<PagedResponse<DoctorDto>> GetAllAsync(
+            PaginationParams paginationParams,
             CancellationToken ct = default);
 
         Task<DoctorDto?> GetByIdAsync(
             int id,
             CancellationToken ct = default);
 
-        Task<object> GetAvailabilityAsync(int id);
+        Task<object> GetAvailabilityAsync(
+            int id,
+            CancellationToken ct = default);
 
-        // ✅ Used by AdminController
-        Task<DoctorDto> AddAsync(CreateDoctorDto dto);
+        Task<DoctorDto> AddAsync(
+            CreateDoctorDto dto,
+            CancellationToken ct = default);
 
-        // ✅ Used by AdminController
-        Task<DoctorDto> UpdateAsync(int id, UpdateDoctorDto dto);
+        Task<DoctorDto> UpdateAsync(
+            int id,
+            UpdateDoctorDto dto,
+            CancellationToken ct = default);
     }
 }

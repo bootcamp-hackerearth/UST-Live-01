@@ -1,0 +1,59 @@
+﻿@inject IJSRuntime JS
+@inject CustomAuthStateProvider AuthStateProvider
+@inject NavigationManager Nav
+
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-avatar">HA</div>
+        <div>
+            <h3>HealthAxis</h3>
+            <span>Admin Console</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-menu">
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <NavLink class="sidebar-link" href="/dashboard" Match="NavLinkMatch.All">
+                    Dashboard
+                </NavLink>
+
+                <NavLink class="sidebar-link" href="/doctors">
+                    Doctors
+                </NavLink>
+
+                <NavLink class="sidebar-link" href="/appointments">
+                    Appointment Reports
+                </NavLink>
+
+                <NavLink class="sidebar-link" href="/patients">
+                    Users
+                </NavLink>
+
+                <button class="sidebar-link logout-btn" @onclick="HandleLogout">
+                    Logout
+                </button>
+            </Authorized>
+
+            <NotAuthorized>
+                <NavLink class="sidebar-link" href="/login">
+                    Login
+                </NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+
+    <div class="sidebar-footer">
+        <small>Sprint 3</small>
+        <span>Blazor Admin UI</span>
+    </div>
+</div>
+
+@code {
+    private async Task HandleLogout()
+    {
+        await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+        AuthStateProvider.NotifyUserLoggedOut();
+        Nav.NavigateTo("/login");
+    }
+}

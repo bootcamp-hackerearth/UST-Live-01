@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="AdminWebApp/AdminWebApp.csproj" />
+  <Project Path="EmployeeApp.Shared/HealthcareAxis.Shared.csproj" Id="cde064d0-9c76-43bc-a96f-c21be438326b" />
+  <Project Path="Healthcare.netcore.Tests/Healthcare.netcore.Tests.csproj" />
   <Project Path="Healthcare.netcore/Healthcare.netcore.csproj" />
 </Solution>

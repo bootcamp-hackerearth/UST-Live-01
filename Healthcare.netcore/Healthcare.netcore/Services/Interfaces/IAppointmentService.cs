@@ -1,4 +1,4 @@
-﻿using HealthAxis.API.DTOs;
+﻿using HealthAxis.Shared.DTOs.Appointment;
 
 namespace HealthAxis.API.Services.Interfaces
 {
