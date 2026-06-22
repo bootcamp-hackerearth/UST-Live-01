@@ -1,4 +1,4 @@
-﻿using S3_HealthAxisApi.DTOs.Patient;
+﻿using S3_HealthAxis.Shared.DTOs.Patient;
 
 namespace S3_HealthAxisApi.Services.Interface
 {

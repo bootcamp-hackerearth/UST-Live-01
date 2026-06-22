@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using S3_HealthAxisApi.Enums;
+using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 
 namespace S3_HealthAxisApi.Models

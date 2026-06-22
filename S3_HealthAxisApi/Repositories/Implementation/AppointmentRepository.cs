@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using HealthAxis.API.Data;
-using S3_HealthAxisApi.Enums;
+using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 

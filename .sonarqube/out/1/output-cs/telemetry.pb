@@ -1,1 +1,1 @@
-pRYC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Tests\S3_HealthAxis.Tests.csproj¢net10.0òCSharp14
+rR[C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\S3_HealthAxis.Blazor.csproj¢net10.0òCSharp14

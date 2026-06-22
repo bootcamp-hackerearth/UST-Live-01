@@ -1,0 +1,34 @@
+﻿@page "/statistics"
+
+@using S3_HealthAxis.Blazor.Models
+@using S3_HealthAxis.Blazor.Services
+
+@inject IAdminService AdminService
+
+<h3>Statistics</h3>
+
+@if (_stats == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        <li>Completed: @_stats.CompletedAppointments</li>
+        <li>Pending: @_stats.PendingAppointments</li>
+        <li>Confirmed: @_stats.ConfirmedAppointments</li>
+        <li>Cancelled: @_stats.CancelledAppointments</li>
+    </ul>
+}
+
+@code {
+
+    private StatisticsDto? _stats;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _stats =
+            await AdminService
+                .GetStatisticsAsync();
+    }
+}

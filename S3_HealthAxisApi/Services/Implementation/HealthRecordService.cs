@@ -1,5 +1,5 @@
-﻿using S3_HealthAxisApi.DTOs.HealthRecord;
-using S3_HealthAxisApi.Enums;
+﻿using S3_HealthAxis.Shared.DTOs.HealthRecord;
+using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Interface;

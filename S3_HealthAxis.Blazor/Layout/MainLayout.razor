@@ -1,0 +1,35 @@
+﻿@inherits LayoutComponentBase
+
+<div class="main-layout">
+
+    <!-- ✅ TOP NAVBAR -->
+    <div class="top-navbar">
+
+        <div class="nav-left">
+            <a href="/dashboard" class="brand-link">
+                HealthAxis Admin
+            </a>
+        </div>
+
+        <div class="nav-right">
+            <a href="#">About</a>
+        </div>
+
+    </div>
+
+    <!-- ✅ BODY (Sidebar + Content) -->
+    <div class="layout-body">
+
+        <!-- 🔵 Sidebar -->
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+
+        <!-- 🔵 Main Content -->
+        <div class="main-content">
+            @Body
+        </div>
+
+    </div>
+
+</div>

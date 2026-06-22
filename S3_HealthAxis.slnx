@@ -2,6 +2,8 @@
   <Folder Name="/Solution Items/">
     <File Path=".gitignore" />
   </Folder>
+  <Project Path="S3_HealthAxis.Blazor/S3_HealthAxis.Blazor.csproj" Id="4a1c188c-bc1e-4ffd-8652-664421fb8852" />
+  <Project Path="S3_HealthAxis.Shared/S3_HealthAxis.Shared.csproj" Id="92a6033a-3d03-4411-aad4-22e141bcc6fa" />
   <Project Path="S3_HealthAxis.Tests/S3_HealthAxis.Tests.csproj" Id="d1a1266b-b9db-48ee-b1f9-6a5ec1b92824" />
   <Project Path="S3_HealthAxisApi/S3_HealthAxisApi.csproj" />
 </Solution>

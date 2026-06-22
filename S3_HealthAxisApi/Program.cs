@@ -103,6 +103,23 @@ builder.Services.AddAuthorization();
 
 #endregion
 
+#region CORS
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        "BlazorPolicy",
+        policy =>
+        {
+            policy
+                .WithOrigins("https://localhost:7206")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
+#endregion
+
 #region Repositories
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
@@ -147,6 +164,8 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
+
+app.UseCors("BlazorPolicy");
 
 app.UseAuthentication();
 

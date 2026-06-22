@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using Moq;
-using S3_HealthAxisApi.DTOs.Admin;
-using S3_HealthAxisApi.Enums;
+using S3_HealthAxis.Shared.DTOs.Admin;
+using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Implementation;
 using Xunit;

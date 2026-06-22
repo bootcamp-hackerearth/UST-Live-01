@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using S3_HealthAxisApi.Enums;
+using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 
 namespace HealthAxis.API.Data
@@ -17,7 +17,9 @@ namespace HealthAxis.API.Data
         public DbSet<Doctor> Doctors => Set<Doctor>();
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
         public DbSet<User> Users => Set<User>();
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

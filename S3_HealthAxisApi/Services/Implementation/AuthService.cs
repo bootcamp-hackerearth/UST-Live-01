@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using S3_HealthAxisApi.DTOs.Auth;
-using S3_HealthAxisApi.Enums;
+using S3_HealthAxis.Shared.DTOs.Auth;
+using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Interface;

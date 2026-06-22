@@ -1,0 +1,188 @@
+﻿@page "/login"
+@layout EmptyLayout
+
+@using S3_HealthAxis.Blazor.Services
+@using S3_HealthAxis.Shared.DTOs.Auth
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<style>
+    /* Scoped UI Enhancements for the Login Page */
+    .login-right {
+        background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+    }
+
+    .enhanced-login-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 48px 40px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+        .enhanced-login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(43, 108, 176, 0.12), 0 10px 20px rgba(43, 108, 176, 0.05);
+        }
+
+    @@keyframes slideUpFade {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-header .logo {
+        font-size: 32px;
+        letter-spacing: -0.5px;
+    }
+
+    .form-header .title {
+        color: #718096;
+        font-weight: 500;
+        font-size: 1.1rem;
+        margin-top: 5px;
+    }
+
+    .custom-input {
+        background-color: #f8fafc;
+        border: 2px solid #edf2f7;
+        padding: 14px 16px;
+        font-size: 15px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+        .custom-input:focus {
+            background-color: #ffffff;
+            border-color: #2b6cb0;
+            box-shadow: 0 0 0 4px rgba(43, 108, 176, 0.1);
+        }
+
+    .input-group label {
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary-login {
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 16px;
+        letter-spacing: 0.3px;
+        box-shadow: 0 4px 12px rgba(43, 108, 176, 0.2);
+    }
+
+        .btn-primary-login:hover:not(:disabled) {
+            box-shadow: 0 6px 16px rgba(43, 108, 176, 0.3);
+        }
+</style>
+
+<div class="login-root">
+
+    <!-- LEFT PANEL -->
+    <div class="login-left">
+        <div class="left-content">
+            <div class="illustration">
+                <div class="shape-main">
+                    <div class="medical-cross"></div>
+                </div>
+                <div class="shape small"></div>
+                <div class="shape circle"></div>
+                <div class="shape diamond"></div>
+            </div>
+
+            <div class="left-text">
+                <h3>Care Management Portal</h3>
+                <p>Secure access for healthcare administrators</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="login-right">
+        <div class="enhanced-login-card">
+
+            <div class="text-center mb-5 form-header">
+                <div class="logo">HealthAxis</div>
+                <h4 class="title">Admin Login</h4>
+            </div>
+
+            <EditForm Model="_login" OnValidSubmit="Login">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <InputText class="custom-input"
+                               placeholder="admin@hospital.com"
+                               @bind-Value="_login.Email" />
+                </div>
+
+                <div class="input-group position-relative mt-4 mb-4">
+                    <label>Password</label>
+                    <InputText type="@PasswordInputType"
+                               class="custom-input pe-5"
+                               placeholder="Enter your password"
+                               @bind-Value="_login.Password" />
+
+                    <button type="button" class="eye-btn" @onclick="TogglePassword" tabindex="-1" style="top: 42px; right: 16px;">
+                        @ToggleButtonText
+                    </button>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(_error))
+                {
+                    <div class="error-banner animate__animated animate__shakeX">
+                        <i class="bi bi-exclamation-circle me-2"></i> @_error
+                    </div>
+                }
+
+                <button type="submit" class="btn-primary-login mt-2" disabled="@_isLoading">
+                    <span class="spinner" style="display: @SpinnerDisplay;"></span>
+                    @SubmitButtonText
+                </button>
+            </EditForm>
+
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private LoginDto _login = new();
+    private string? _error;
+    private bool _isLoading = false;
+    private bool _showPassword = false;
+
+    // Razor Parser Safe Properties
+    private string PasswordInputType => _showPassword ? "text" : "password";
+    private string ToggleButtonText => _showPassword ? "Hide" : "Show";
+    private string SpinnerDisplay => _isLoading ? "inline-block" : "none";
+    private string SubmitButtonText => _isLoading ? "Authenticating..." : "Log In";
+
+    private async Task Login()
+    {
+        _isLoading = true;
+        _error = null;
+
+        var success = await AuthService.LoginAsync(_login);
+
+        _isLoading = false;
+
+        if (success)
+            Navigation.NavigateTo("/dashboard");
+        else
+            _error = "Invalid credentials";
+    }
+
+    private void TogglePassword()
+    {
+        _showPassword = !_showPassword;
+    }
+}

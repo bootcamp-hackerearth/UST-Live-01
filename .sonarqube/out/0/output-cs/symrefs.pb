@@ -890,44 +890,7 @@ cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementa
 
 QQ 
 QQ! #TT3 5<
-SS VV [[ \\ ]] ^^ "ß
-eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IUserRepository.cs
-
- $
-
-  
-
-% '
-
-		 #
-
-		+ 0
-
-
-
-  .
-
-
-
-8 <
-
- 
-
- 
-
- 
-
- "
-
- #
-
-+ 0
-
- 
-
- *
-
-2 >Ü
+SS VV [[ \\ ]] ^^ "Ü
 hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IPatientRepository.cs
 
  '
@@ -1009,7 +972,44 @@ hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interf
 
  
 
-# %¡
+# %ß
+eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IUserRepository.cs
+
+ $
+
+  
+
+% '
+
+		 #
+
+		+ 0
+
+
+
+  .
+
+
+
+8 <
+
+ 
+
+ 
+
+ 
+
+ "
+
+ #
+
++ 0
+
+ 
+
+ *
+
+2 >¡
 gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IDoctorRepository.cs
 
  &
@@ -1482,26 +1482,28 @@ jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implem
 
 == 
 ==! #AA% '
-AA AA Õ
-FC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Program.cs¬
-    AA DD KK OO ff ll mm nn oo pp qq ww xx yy zz {{ || }} 
-ÅÅ
+AA AA ü
+FC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Program.csﬁ
+    AA DD KK OO ff ll }} ~~  ÄÄ ÅÅ ÇÇ àà ââ ää ãã åå çç éé 
+íí
  
   (
  &   (( 33 
 33# +88 
 AA3 :CC 
 MM QQ (
-OO UU !XX  #``/ 2l
+OO UU !XX  #``/ 2
+ll  nn 
+pp rr v
 
-ÅÅ 
-ÖÖ 
-áá 
-ââ ìì ïï óó ôô õõ üü $
+íí 
+ññ 
+òò 
+öö §§ ¶¶ ®® ™™ ¨¨ ÆÆ ≤≤ $
 
-ââ 
-ãã 
-èè ∏
+öö 
+úú 
+†† ∏
 JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\User.cs
 
  
@@ -1615,16 +1617,7 @@ QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Appointment.
 
    )
 
-"" )Á
-mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260619044738_AddUniqueDoctorEmail.cs
-
- -
-
-  "2
-4 D   ## 
-
-++  $
-++6 F-- 11 ò
+"" )ò
 `C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260617093733_testing.cs
 
 		  
@@ -1693,7 +1686,16 @@ mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260619
 ”” 
 ÷÷ 
 ŸŸ 
-‹‹ –
+‹‹ Á
+mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260619044738_AddUniqueDoctorEmail.cs
+
+ -
+
+  "2
+4 D   ## 
+
+++  $
+++6 F-- 11 –
 jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260616160604_UpdatedUsersMOdel.cs
 
 		 *
@@ -1752,7 +1754,20 @@ fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260615
 ÆÆ 
 ±± 
 ¥¥ 
-∑∑ ¡
+∑∑ ∫
+bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\RequestLoggingMiddleware.cs
+ )! 9
+
+ ,
+) .  (
+; B   
+		   
+
+
+. 4 
+
+ %2
+2 9    ¡
 ]C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\ExceptionMiddleware.cs
 
  $
@@ -1781,41 +1796,18 @@ TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Enums\InsuranceStat
  Y
 KC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Enums\Gender.cs
 
- ∫
-bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\RequestLoggingMiddleware.cs
- )! 9
-
- ,
-) .  (
-; B   
-		   
-
-
-. 4 
-
- %2
-2 9    g
+ g
 YC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Enums\DoctorSpecialization.cs
 
  $d
 VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Enums\AppointmentStatus.cs
 
- !≤
-\C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\UpdatePatientDto.cs
+ !z
+`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\DeactivatePatientDto.cs
 
- !
+ '
 
-		 
-
- #
-
- 
-
- !
-
- 
-
- &É
+ É
 ]C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\PatientSummaryDto.cs
 
  "
@@ -1852,29 +1844,22 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\Patien
 
  "
 
- z
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\DeactivatePatientDto.cs
+ ≤
+\C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\UpdatePatientDto.cs
 
- '
+ !
 
- ≤
-\C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\CreatePatientDto.cs
+		 
 
- !
+ #
 
-
-
- 
+ 
 
- #
+ !
 
- 
+ 
 
- !
-
- 
-
- &ò
+ &ò
 fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\HealthRecord\UpdateHealthRecordDto.cs
 
  &
@@ -1930,7 +1915,24 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Doctor\UpdateD
 
  $
 
- &∂
+ &≤
+\C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Patient\CreatePatientDto.cs
+
+ !
+
+
+
+ 
+
+ #
+
+ 
+
+ !
+
+ 
+
+ &∂
 TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Doctor\DoctorDto.cs
 
  
@@ -1988,18 +1990,7 @@ PC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\UserDto.c
 
 
 
- ñ
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\AuthResponseDto.cs
-
-  
-
- !
-
- "
-
-		 
-
- û
+ û
 TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\RegisterDto.cs
 
  
@@ -2014,32 +2005,36 @@ TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\RegisterD
 
  
 
- w
+ r
+XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\RefreshTokenDto.cs
+
+  
+
+ "w
 QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\LoginDto.cs
 
  
 
  
 
- r
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\RefreshTokenDto.cs
+ ¬
+lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Appointment\PatientAppointmentHistoryDto.cs
 
-  
+ -
 
- "†
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\CreateUserDto.cs
+  
 
- 
+ %
 
- 
+ 
 
- 
+ 
 
- 
+		  
 
- 
-
-		 …
+
+
+ …
 [C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\RegisterPatientDto.cs
 
  #
@@ -2060,7 +2055,20 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\CreateUse
 
  %
 
-   &ê
+   &†
+VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\CreateUserDto.cs
+
+ 
+
+ 
+
+ 
+
+ 
+
+ 
+
+		 ê
 jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Appointment\UpdateAppointmentStatusDto.cs
 
  +
@@ -2076,24 +2084,18 @@ dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Appointment\Up
 
  %
 
- ¬
-lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Appointment\PatientAppointmentHistoryDto.cs
+ ñ
+XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Auth\AuthResponseDto.cs
 
- -
+  
 
-  
+ !
 
- %
+ "
 
- 
+		 
 
- 
-
-		  
-
-
-
- ª
+ ª
 eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\DTOs\Appointment\DoctorScheduleItemDto.cs
 
  &
@@ -2220,29 +2222,29 @@ PC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Data\AppDbContext.c
 
 # 0
 
-  
+  
 
-  /Ñ
-= I! - "" )) 55 ;; AA HH NN TT qq 
-ää 
-  
-   
-  $ %
-## ## 
-$$ $$  
-%%  %%$ %(
-** ,, -- .. 
-66 66  
-77 77 
-88- /883 5
-<< <<  
-== ==  
->> !>>% '
-BB BB  
-CC CC  
-DD !DD% '
-II II  "
-OO OO  ¿
+  /Ñ
+= I! - $$ ++ 77 == CC JJ PP VV ss 
+åå 
+  
+       
+!!  !!$ %
+%% %% 
+&& &&  
+''  ''$ %(
+,, .. // 00 
+88 88  
+99 99 
+::- /::3 5
+>> >>  
+?? ??  
+@@ !@@% '
+DD DD  
+EE EE  
+FF !FF% '
+KK KK  "
+QQ QQ  ¿
 \C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\PatientController.cs
 
  #Z

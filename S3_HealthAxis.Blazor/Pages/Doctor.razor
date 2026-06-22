@@ -1,0 +1,371 @@
+﻿@page "/doctors"
+@using S3_HealthAxis.Shared.DTOs.Doctor
+@using S3_HealthAxis.Shared.Enums
+@using S3_HealthAxis.Blazor.Services
+@using System.ComponentModel.DataAnnotations
+@inject IDoctorService DoctorService
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1 fw-bold text-dark">Doctors Management</h3>
+        <p class="text-muted mb-0">View, add, and manage hospital medical staff.</p>
+    </div>
+    <button class="btn btn-primary" @onclick="OpenAddModal">
+        <i class="bi bi-plus-lg me-1"></i> Add Doctor
+    </button>
+</div>
+
+<!-- ERROR BANNER: Catches API or loading errors gracefully -->
+@if (!string.IsNullOrEmpty(_pageError))
+{
+    <div class="alert alert-danger shadow-sm mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Error:</strong> @_pageError
+    </div>
+}
+
+@if (_newDoctorResult != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Doctor Created Successfully!</strong>
+        <br />
+        Please securely share this temporary password with Dr. @_newDoctorResult.FullName:
+        <code class="fs-5 bg-white px-2 py-1 rounded border ms-2">@_newDoctorResult.TemporaryPassword</code>
+        <button type="button" class="btn-close" @onclick="() => _newDoctorResult = null"></button>
+    </div>
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        @if (_loading)
+        {
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Loading doctors...</p>
+            </div>
+        }
+        else if (_doctors == null || !_doctors.Any())
+        {
+            <div class="text-center p-5 text-muted">
+                <i class="bi bi-person-x fs-1"></i>
+                <p class="mt-2">No doctors found in the system.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Full Name</th>
+                            <th>Email</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Fee</th>
+                            <th>Status</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var doc in _doctors)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-medium">Dr. @doc.FullName</td>
+                                <td class="text-muted">@doc.Email</td>
+
+                                <!-- Fixed spelling to 's' and added helper to read the Display Name -->
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @GetDisplayName((S3_HealthAxis.Shared.Enums.DoctorSpecialisation)doc.Specialisation)
+                                    </span>
+                                </td>
+
+                                <td>@doc.YearsOfExperience yrs</td>
+                                <td>₹@doc.ConsultationFee</td>
+                                <td>
+                                    @if (doc.IsActive)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => OpenEditModal(doc)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    @if (doc.IsActive)
+                                    {
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ToggleStatus(doc.DoctorId, false)">
+                                            Disable
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-sm btn-outline-success" @onclick="() => ToggleStatus(doc.DoctorId, true)">
+                                            Enable
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Add/Edit Modal (Pure HTML/CSS Modal) -->
+@if (_showModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+
+                <div class="modal-header bg-light border-0">
+                    <h5 class="modal-title fw-bold">@(_isEditing ? "Edit Doctor" : "Add New Doctor")</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <!-- Bound to our new Validated Form Model -->
+                    <EditForm Model="@_formData" OnValidSubmit="HandleSubmit">
+
+                        <!-- Activates Blazor's inline validation engine -->
+                        <DataAnnotationsValidator />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Full Name</label>
+                            <InputText class="form-control" @bind-Value="_formData.FullName" placeholder="e.g. John Doe" />
+                            <ValidationMessage For="@(() => _formData.FullName)" class="text-danger small mt-1" />
+                        </div>
+
+                        @if (!_isEditing)
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Email Address</label>
+                                <InputText class="form-control" @bind-Value="_formData.Email" placeholder="doctor@hospital.com" />
+                                <ValidationMessage For="@(() => _formData.Email)" class="text-danger small mt-1" />
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-medium">Specialisation</label>
+                                <!-- Fixed spelling to 's' and added helper to read the Display Name -->
+                                <InputSelect TValue="int" class="form-select" @bind-Value="_formData.Specialisation">
+                                    <option value="0" disabled>-- Select --</option>
+                                    @foreach (S3_HealthAxis.Shared.Enums.DoctorSpecialisation spec in Enum.GetValues(typeof(S3_HealthAxis.Shared.Enums.DoctorSpecialisation)))
+                                    {
+                                        <option value="@((int)spec)">@GetDisplayName(spec)</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="@(() => _formData.Specialisation)" class="text-danger small mt-1" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-medium">Years Exp.</label>
+                                <InputNumber class="form-control" @bind-Value="_formData.YearsOfExperience" />
+                                <ValidationMessage For="@(() => _formData.YearsOfExperience)" class="text-danger small mt-1" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-medium">Consultation Fee (₹)</label>
+                            <InputNumber class="form-control" @bind-Value="_formData.ConsultationFee" />
+                            <ValidationMessage For="@(() => _formData.ConsultationFee)" class="text-danger small mt-1" />
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <button type="button" class="btn btn-light" @onclick="CloseModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" disabled="@_isSaving">
+                                @if (_isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                @(_isEditing ? "Save Changes" : "Create Doctor")
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<DoctorDto>? _doctors;
+    private bool _loading = true;
+    private string? _pageError = null;
+
+    // Modal State
+    private bool _showModal = false;
+    private bool _isEditing = false;
+    private bool _isSaving = false;
+    private int _editingDoctorId = 0;
+
+    // The View Model for the UI (Contains all Validation Rules)
+    private DoctorFormModel _formData = new();
+    private DoctorCreationResultDto? _newDoctorResult;
+
+    // Nested class specifically for frontend validation rules
+    public class DoctorFormModel
+    {
+        [Required(ErrorMessage = "Full Name is required")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be at least 2 characters")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a specialisation")]
+        public int Specialisation { get; set; }
+
+        [Required]
+        [Range(0, 60, ErrorMessage = "Experience must be between 0 and 60 years")]
+        public int YearsOfExperience { get; set; }
+
+        [Required]
+        [Range(0.01, 5000, ErrorMessage = "Fee must be greater than ₹0")]
+        public decimal ConsultationFee { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDoctors();
+    }
+
+    private async Task LoadDoctors()
+    {
+        try
+        {
+            _loading = true;
+            _pageError = null;
+            _doctors = await DoctorService.GetAllAsync();
+        }
+        catch (Exception ex)
+        {
+            _pageError = $"Could not load doctors from the API. ({ex.Message})";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        _isEditing = false;
+        _formData = new DoctorFormModel(); // Start with clean, empty validation state
+        _newDoctorResult = null;
+        _showModal = true;
+    }
+
+    private void OpenEditModal(DoctorDto doctor)
+    {
+        _isEditing = true;
+        _editingDoctorId = doctor.DoctorId;
+
+        // Map the selected doctor into our validated UI model
+        _formData = new DoctorFormModel
+        {
+            FullName = doctor.FullName,
+            Email = doctor.Email, // Email isn't editable, but we populate it so validation doesn't fail
+            Specialisation = doctor.Specialisation,
+            YearsOfExperience = doctor.YearsOfExperience,
+            ConsultationFee = doctor.ConsultationFee
+        };
+        _showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        _showModal = false;
+    }
+
+    // --- NEW HELPER METHOD: Reads the [Display(Name="...")] from your Enum ---
+    private string GetDisplayName(Enum enumValue)
+    {
+        var displayAttribute = enumValue.GetType()
+            .GetMember(enumValue.ToString())
+            .First()
+            .GetCustomAttributes(typeof(DisplayAttribute), false)
+            .FirstOrDefault() as DisplayAttribute;
+
+        return displayAttribute?.Name ?? enumValue.ToString();
+    }
+
+    private async Task HandleSubmit()
+    {
+        try
+        {
+            _isSaving = true;
+            _pageError = null;
+
+            if (_isEditing)
+            {
+                // Map Validated UI Model -> API Update DTO
+                var updateDto = new UpdateDoctorDto
+                {
+                    FullName = _formData.FullName,
+                    Specialisation = _formData.Specialisation,
+                    YearsOfExperience = _formData.YearsOfExperience,
+                    ConsultationFee = _formData.ConsultationFee
+                };
+                await DoctorService.UpdateAsync(_editingDoctorId, updateDto);
+            }
+            else
+            {
+                // Map Validated UI Model -> API Create DTO
+                var createDto = new CreateDoctorDto
+                {
+                    FullName = _formData.FullName,
+                    Email = _formData.Email,
+                    Specialisation = _formData.Specialisation,
+                    YearsOfExperience = _formData.YearsOfExperience,
+                    ConsultationFee = _formData.ConsultationFee
+                };
+
+                _newDoctorResult = await DoctorService.CreateAsync(createDto);
+                if (_newDoctorResult == null)
+                {
+                    _pageError = "Failed to create doctor. The email might already be in use.";
+                    return; // Stop here so the modal stays open to show the error
+                }
+            }
+
+            CloseModal();
+            await LoadDoctors();
+        }
+        catch (Exception ex)
+        {
+            _pageError = $"An error occurred while saving: {ex.Message}";
+        }
+        finally
+        {
+            _isSaving = false;
+        }
+    }
+
+    private async Task ToggleStatus(int doctorId, bool activate)
+    {
+        try
+        {
+            _pageError = null;
+            if (activate)
+                await DoctorService.ActivateAsync(doctorId);
+            else
+                await DoctorService.DeactivateAsync(doctorId);
+
+            await LoadDoctors();
+        }
+        catch (Exception ex)
+        {
+            _pageError = $"Failed to change status: {ex.Message}";
+        }
+    }
+}

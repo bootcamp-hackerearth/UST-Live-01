@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using S3_HealthAxisApi.Services.Interface;
+using S3_HealthAxis.Shared.DTOs;
+using S3_HealthAxis.Shared.Enums;
 
 namespace S3_HealthAxisApi.Controllers
 {

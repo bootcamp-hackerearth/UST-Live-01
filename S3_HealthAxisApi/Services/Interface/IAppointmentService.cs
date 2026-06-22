@@ -1,4 +1,4 @@
-﻿using S3_HealthAxisApi.DTOs.Appointment;
+﻿using S3_HealthAxis.Shared.DTOs.Appointment;
 
 namespace S3_HealthAxisApi.Services.Interface
 {

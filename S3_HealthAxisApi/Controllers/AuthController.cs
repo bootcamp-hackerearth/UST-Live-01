@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using S3_HealthAxisApi.DTOs.Auth;
+using S3_HealthAxis.Shared.DTOs.Auth;
 using S3_HealthAxisApi.Services.Interface;
 
 namespace S3_HealthAxisApi.Controllers

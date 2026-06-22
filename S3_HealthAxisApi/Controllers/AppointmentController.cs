@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using S3_HealthAxisApi.DTOs.Appointment;
+using S3_HealthAxis.Shared.DTOs.Appointment;
 using S3_HealthAxisApi.Services.Interface;
 
 namespace S3_HealthAxisApi.Controllers

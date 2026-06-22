@@ -1,4 +1,4 @@
-﻿using S3_HealthAxisApi.DTOs.Admin;
+﻿using S3_HealthAxis.Shared.DTOs.Admin;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Interface;
 

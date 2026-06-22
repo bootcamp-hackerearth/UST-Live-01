@@ -1,0 +1,870 @@
+/* =========================================
+   1. GLOBAL & TYPOGRAPHY
+   ========================================= */
+html, body {
+    font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1:focus {
+    outline: none;
+}
+
+a, .btn-link {
+    color: #0071c1;
+}
+
+code {
+    color: #c02d76;
+}
+
+.content {
+    padding-top: 1.1rem;
+}
+
+/* =========================================
+   2. FORMS & BUTTONS (Global)
+   ========================================= */
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+.valid.modified:not([type=checkbox]) {
+    outline: 1px solid #26b050;
+}
+
+.invalid {
+    outline: 1px solid red;
+}
+
+.validation-message {
+    color: red;
+}
+
+/* =========================================
+   3. BLAZOR BOILERPLATE (Errors & Loading)
+   ========================================= */
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+.blazor-error-boundary {
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    padding: 1rem 1rem 1rem 3.7rem;
+    color: white;
+}
+
+    .blazor-error-boundary::after {
+        content: "An error has occurred."
+    }
+
+.loading-progress {
+    position: absolute;
+    display: block;
+    width: 8rem;
+    height: 8rem;
+    inset: 20vh 0 auto 0;
+    margin: 0 auto 0 auto;
+}
+
+    .loading-progress circle {
+        fill: none;
+        stroke: #e0e0e0;
+        stroke-width: 0.6rem;
+        transform-origin: 50% 50%;
+        transform: rotate(-90deg);
+    }
+
+        .loading-progress circle:last-child {
+            stroke: #1b6ec2;
+            stroke-dasharray: calc(3.141 * var(--blazor-load-percentage, 0%) * 0.8), 500%;
+            transition: stroke-dasharray 0.05s ease-in-out;
+        }
+
+.loading-progress-text {
+    position: absolute;
+    text-align: center;
+    font-weight: bold;
+    inset: calc(20vh + 3.25rem) 0 auto 0.2rem;
+}
+
+    .loading-progress-text:after {
+        content: var(--blazor-load-percentage-text, "Loading");
+    }
+
+/* =========================================
+   4. MAIN DASHBOARD LAYOUT (FIXED)
+   ========================================= */
+.main-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* Prevents whole page from scrolling */
+    background-color: #f7fafc; /* Overrides default dark blazor background */
+}
+
+/* Top Navbar */
+.top-navbar {
+    height: 60px;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e9f2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-shrink: 0; /* Prevents navbar from collapsing */
+    box-sizing: border-box;
+}
+
+.nav-left {
+    font-weight: 600;
+    color: #2b6cb0;
+    font-size: 16px;
+}
+
+    .nav-left a {
+        font-weight: 600;
+        font-size: 16px;
+        color: #2b6cb0;
+        text-decoration: none;
+    }
+
+        .nav-left a:hover {
+            text-decoration: underline;
+        }
+
+.nav-right a {
+    color: #64748b;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+    .nav-right a:hover {
+        color: #2b6cb0;
+    }
+
+/* Layout Body (Holds Sidebar + Content) */
+.layout-body {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background: #ffffff;
+    border-right: 1px solid #e5e9f2;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.brand {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2b6cb0;
+    margin-bottom: 30px;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    color: #4a5568;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+    .nav-item i {
+        font-size: 16px;
+    }
+
+    .nav-item:hover {
+        background: #f1f5f9;
+        color: #2b6cb0;
+    }
+
+    .nav-item.active {
+        background: rgba(43, 108, 176, 0.12);
+        color: #2b6cb0;
+        font-weight: 500;
+    }
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding: 25px;
+    background: #f7fafc;
+    overflow-y: auto;
+    width: 100%;
+}
+
+/* =========================================
+   5. LOGIN PAGE STYLES
+   ========================================= */
+.login-wrapper {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #4facfe, #00c6ff);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.login-root, .split-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Left Pane */
+.login-left, .split-left {
+    flex: 0 0 45%;
+    width: 45%;
+    background: linear-gradient(160deg, #e6fffa, #b2f5ea);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.left-content {
+    text-align: center;
+    color: #234E52;
+    padding: 40px;
+}
+
+.left-text h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1A202C;
+}
+
+.left-text p {
+    font-size: 16px;
+    color: #4A5568;
+}
+
+/* Right Pane */
+.login-right, .split-right {
+    flex: 0 0 55%;
+    width: 55%;
+    background: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-box {
+    width: 380px;
+    padding: 35px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Branding */
+.logo {
+    font-weight: 800;
+    color: #2B6CB0;
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.title, .login-title {
+    color: #2D3748;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.login-subtitle {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* Inputs & Form Groups */
+.input-group {
+    margin-bottom: 24px;
+}
+
+    .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #4A5568;
+    }
+
+.custom-input, .form-control {
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    padding: 12px 16px;
+    font-size: 16px;
+    color: #1A202C;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+    .custom-input:focus, .form-control:focus {
+        outline: none;
+        border-color: #2B6CB0;
+        box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
+    }
+
+    .custom-input::placeholder {
+        color: #A0AEC0;
+    }
+
+.position-relative {
+    position: relative;
+}
+
+.pe-5 {
+    padding-right: 48px;
+}
+
+/* Password Toggle */
+.eye-btn, .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 36px;
+    font-size: 13px;
+    color: #2B6CB0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.2s ease;
+}
+
+    .eye-btn:hover {
+        color: #4A5568;
+    }
+
+/* Secondary Actions */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    font-size: 14px;
+}
+
+.checkbox-container {
+    color: #4A5568;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.forgot-link {
+    color: #2B6CB0;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+    .forgot-link:hover {
+        text-decoration: underline;
+    }
+
+/* Login Buttons */
+.btn-login, .login-btn, .btn-primary-login {
+    width: 100%;
+    background: #2B6CB0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    .btn-login:hover, .login-btn:hover, .btn-primary-login:hover:not(:disabled) {
+        background: #244f91;
+        transform: translateY(-1px);
+    }
+
+    .btn-primary-login:disabled {
+        background-color: #A0AEC0;
+        cursor: not-allowed;
+    }
+
+/* Graphics & Illustrations */
+.illustration, .illustration-card {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto 30px auto;
+    border-radius: 20px;
+    background: radial-gradient(circle, #81E6D9, #38B2AC);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.shape-main {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(145deg, #4fd1c5, #38b2ac);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Medical cross container */
+.medical-cross {
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+
+    .medical-cross::before,
+    .medical-cross::after {
+        content: "";
+        position: absolute;
+        background: white;
+        border-radius: 6px;
+    }
+
+    /* Vertical bar */
+    .medical-cross::before {
+        width: 14px;
+        height: 60px;
+        left: 50%;
+        top: 0; /* <-- Added this to pin it to the top */
+        transform: translateX(-50%);
+    }
+
+    /* Horizontal bar */
+    .medical-cross::after {
+        width: 60px;
+        height: 14px;
+        top: 50%;
+        left: 0; /* <-- Added this to pin it to the left edge */
+        transform: translateY(-50%);
+    }
+
+.medical-icon-wrapper {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 40px auto;
+    color: #319795;
+    background: rgba(255, 255, 255, 0.4);
+    padding: 24px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(49, 151, 149, 0.1);
+    backdrop-filter: blur(4px);
+}
+
+.shape {
+    position: absolute;
+    background: rgba(255,255,255,0.6);
+}
+
+    .shape.small {
+        width: 20px;
+        height: 20px;
+        top: 10px;
+        left: 10px;
+        border-radius: 6px;
+    }
+
+    .shape.circle {
+        width: 25px;
+        height: 25px;
+        bottom: 15px;
+        right: 20px;
+        border-radius: 50%;
+    }
+
+    .shape.diamond {
+        width: 18px;
+        height: 18px;
+        top: 30px;
+        right: 30px;
+        transform: rotate(45deg);
+    }
+
+.minimal-icon {
+    font-size: 80px;
+    color: #2b6cb0;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+/* Animations & States */
+.small-text {
+    font-size: 14px;
+    color: #718096;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.error-banner {
+    background-color: #FFF5F5;
+    color: #C53030;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 24px;
+    text-align: center;
+    border: 1px solid #FEB2B2;
+}
+
+.spinner {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 2px solid #FFFFFF;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================================
+   6. RESPONSIVE BREAKPOINTS
+   ========================================= */
+@media (max-width: 900px) {
+    .login-left, .split-left {
+        display: none;
+    }
+
+    .login-right, .split-right {
+        width: 100%;
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .split-layout {
+        flex-direction: column;
+    }
+
+    .split-right {
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+}
+
+/* =========================================
+   7. DASHBOARD COMPONENTS
+   ========================================= */
+html, body {
+    height: 100%;
+    background-color: #f7fafc; /* Kills the Blazor purple background */
+}
+
+/* Make sure the sidebar fills the void */
+.layout-body {
+    background-color: #f7fafc;
+}
+
+.sidebar {
+    height: 100%; /* Stretches the white background down */
+}
+
+/* Clickable Dashboard Cards */
+.dash-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+    .dash-card-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+
+.dash-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    border-left: 5px solid transparent; /* Colored Accent */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+    .dash-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+    }
+
+.card-doctors {
+    border-left-color: #2b6cb0;
+}
+
+.card-patients {
+    border-left-color: #38b2ac;
+}
+
+.card-appointments {
+    border-left-color: #805ad5;
+}
+
+.card-today {
+    border-left-color: #dd6b20;
+}
+
+.card-header-ui {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #718096;
+    margin: 0;
+}
+
+.card-icon {
+    font-size: 24px;
+    opacity: 0.8;
+}
+
+.card-doctors .card-icon {
+    color: #2b6cb0;
+}
+
+.card-patients .card-icon {
+    color: #38b2ac;
+}
+
+.card-appointments .card-icon {
+    color: #805ad5;
+}
+
+.card-today .card-icon {
+    color: #dd6b20;
+}
+
+.card-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #2d3748;
+    margin: 0;
+}
+
+/* Chart Container Cards */
+.chart-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    border: 1px solid #e2e8f0;
+    height: 100%;
+}
+
+.chart-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 24px;
+}
+
+/* Pure CSS Donut Chart */
+.css-donut-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.donut-chart {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: conic-gradient(var(--chart-color) calc(var(--percentage) * 1%), #e2e8f0 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.donut-inner {
+    width: 120px;
+    height: 120px;
+    background: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.donut-percentage {
+    font-size: 28px;
+    font-weight: 800;
+    color: #2d3748;
+}
+
+.donut-label {
+    font-size: 12px;
+    color: #718096;
+}
+
+/* Pure CSS Bar Chart */
+.css-bar-chart {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    height: 200px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #e2e8f0;
+    margin-top: 20px;
+}
+
+.bar-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40px;
+    height: 100%;
+    justify-content: flex-end;
+    position: relative;
+}
+
+.bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    /* CSS animation on load */
+    animation: growUp 1s ease-out forwards;
+    transform-origin: bottom;
+}
+
+.bar-label {
+    position: absolute;
+    bottom: -25px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4a5568;
+    white-space: nowrap;
+}
+
+.bar-value {
+    margin-bottom: 5px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #2d3748;
+}
+
+@keyframes growUp {
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
+}

@@ -12,99 +12,79 @@
       },
       "results": [
         {
-          "ruleId": "CA1850",
-          "level": "note",
-          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make '_login' 'readonly'.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxis.Tests/ServiceTests/AuthServiceTests.cs",
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxis.Blazor/Pages/LoginPage.razor",
                 "region": {
-                  "startLine": 611,
-                  "startColumn": 24,
-                  "endLine": 611,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxis.Tests/ServiceTests/AuthServiceTests.cs",
-                "region": {
-                  "startLine": 609,
-                  "startColumn": 23,
-                  "endLine": 609,
-                  "endColumn": 47
+                  "startLine": 75,
+                  "startColumn": 26,
+                  "endLine": 75,
+                  "endColumn": 32
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "ComputeTypePropertyKey": "ComputeHash",
-              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
-              "HashCreationIndexPropertyKey": "0",
-              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
-            }
+            "warningLevel": 1
           }
         },
         {
-          "ruleId": "CA1850",
-          "level": "note",
-          "message": "Prefer static 'System.Security.Cryptography.SHA256.HashData' method over 'ComputeHash'",
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxis.Tests/ServiceTests/DoctorServiceTests.cs",
+                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxis.Blazor/Program.cs",
                 "region": {
-                  "startLine": 920,
-                  "startColumn": 24,
-                  "endLine": 920,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "relatedLocations": [
-            {
-              "physicalLocation": {
-                "uri": "file:///C:/Users/287766/source/repos/S3_HealthAxis/S3_HealthAxis.Tests/ServiceTests/DoctorServiceTests.cs",
-                "region": {
-                  "startLine": 918,
-                  "startColumn": 23,
-                  "endLine": 918,
-                  "endColumn": 47
+                  "startLine": 14,
+                  "startColumn": 27,
+                  "endLine": 14,
+                  "endColumn": 52
                 }
               }
             }
           ],
           "properties": {
-            "warningLevel": 1,
-            "customProperties": {
-              "ComputeTypePropertyKey": "ComputeHash",
-              "DeleteHashCreationPropertyKey": "DeleteHashCreationPropertyKey",
-              "HashCreationIndexPropertyKey": "0",
-              "TargetHashTypeDiagnosticPropertyKey": "SHA256"
-            }
+            "warningLevel": 1
           }
         }
       ],
       "rules": {
-        "CA1850": {
-          "id": "CA1850",
-          "shortDescription": "Prefer static 'HashData' method over 'ComputeHash'",
-          "fullDescription": "It is more efficient to use the static 'HashData' method over creating and managing a HashAlgorithm instance to call 'ComputeHash'.",
-          "defaultLevel": "note",
-          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850",
+        "S1075": {
+          "id": "S1075",
+          "shortDescription": "URIs should not be hardcoded",
+          "fullDescription": "Hard-coding a URI makes it difficult to test a program for a variety of reasons:",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1075",
           "properties": {
-            "category": "Performance",
+            "category": "Minor Code Smell",
             "isEnabledByDefault": true,
             "tags": [
-              "Telemetry",
-              "EnabledRuleInAggressiveMode"
+              "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S2933": {
+          "id": "S2933",
+          "shortDescription": "Fields that are only assigned in the constructor should be \"readonly\"",
+          "fullDescription": "readonly fields can only be assigned in a class constructor. If a class has a field that’s not marked readonly but is only set in the constructor, it could cause confusion about the field’s intended use. To avoid confusion, such fields should be marked readonly to make their intended use explicit, and to prevent future maintainers from inadvertently changing their use.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2933",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
             ]
           }
         }

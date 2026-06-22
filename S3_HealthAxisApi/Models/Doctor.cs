@@ -1,4 +1,4 @@
-﻿using S3_HealthAxisApi.Enums;
+﻿using S3_HealthAxis.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
