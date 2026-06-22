@@ -1,8 +1,8 @@
 ﻿@page "/admin/patients/edit/{patientId:int}"
 @layout AdminLayout
 
-@using HealthCareApp.AdminBlazor.Dtos.Patients
-@using HealthCareApp.AdminBlazor.Enums
+@using HealthCareApp.Shared.Dtos.Patients
+@using HealthCareApp.Shared.Enums;
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
@@ -127,7 +127,7 @@ else
     [Parameter]
     public int patientId { get; set; }
 
-    private UpdatePatientDto patient = new()
+    private UpdatePatientDto patient = new UpdatePatientDto
     {
         DateOfBirth = DateTime.Today.AddYears(-18),
         Gender = GenderType.Male

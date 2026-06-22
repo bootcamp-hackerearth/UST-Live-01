@@ -1,7 +1,9 @@
-﻿using HealthCareApp.Dtos;
-using HealthCareApp.Exceptions;
+﻿using HealthCareApp.Exceptions;
 using HealthCareApp.Services;
 using Microsoft.AspNetCore.Diagnostics;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Auth;
+
 
 namespace HealthCareApp.Middleware
 {

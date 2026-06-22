@@ -1,4 +1,6 @@
-﻿using HealthCareApp.Dtos;
+﻿using HealthCareApp.Shared.Dtos.Auth;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Patients;
 
 namespace HealthCareApp.Services
 {

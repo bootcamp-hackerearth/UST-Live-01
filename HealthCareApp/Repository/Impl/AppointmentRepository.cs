@@ -1,5 +1,5 @@
 ﻿using HealthCareApp.Data;
-using HealthCareApp.Enums;
+using HealthCareApp.Shared.Enums;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using Microsoft.EntityFrameworkCore;

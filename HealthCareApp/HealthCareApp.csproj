@@ -22,4 +22,8 @@
     <PackageReference Include="system.identitymodel.tokens.jwt" Version="8.19.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HealthCareApp.Shared\HealthCareApp.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,4 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Doctors;
-
+﻿using HealthCareApp.Shared.Dtos.Doctors;
 namespace HealthCareApp.AdminBlazor.Services.Interfaces
 {
     public interface IDoctorAdminService

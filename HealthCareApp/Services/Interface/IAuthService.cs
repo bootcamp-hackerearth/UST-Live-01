@@ -1,5 +1,6 @@
-﻿using HealthCareApp.Dtos;
-using HealthCareApp.Models.Dtos;
+﻿using HealthCareApp.Shared.Dtos.Auth;
+using HealthCareApp.Shared.Dtos.Patients;
+
 
 namespace HealthCareApp.Services.Interface
 {

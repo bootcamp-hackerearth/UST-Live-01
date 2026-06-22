@@ -1,4 +1,4 @@
-﻿using HealthCareApp.Enums;
+﻿using HealthCareApp.Shared.Enums;
 using HealthCareApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;

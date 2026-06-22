@@ -1,6 +1,6 @@
 ﻿using HealthCareApp.Models;
 
-using HealthCareApp.Enums;
+using HealthCareApp.Shared.Enums;
 
 namespace HealthCareApp.Repository.Interface
 {

@@ -1,5 +1,5 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Appointments;
-using HealthCareApp.AdminBlazor.Enums;
+﻿using HealthCareApp.Shared.Dtos.Appointments;
+using HealthCareApp.Shared.Enums;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl

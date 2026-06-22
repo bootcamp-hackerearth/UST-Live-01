@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
-using HealthCareApp.Dtos;
 using HealthCareApp.Models;
-using HealthCareApp.Models.Dtos;
-using SharedClasses.Dtos;
+using HealthCareApp.Shared.Dtos.Auth;
+using HealthCareApp.Shared.Dtos.HealthRecords;
+using HealthCareApp.Shared.Dtos.Doctors;
+using HealthCareApp.Shared.Dtos.Patients;
+using HealthCareApp.Shared.Dtos.Appointments;
+
 
 namespace HealthCareApp.Mapping
 {

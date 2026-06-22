@@ -1,7 +1,9 @@
-﻿using HealthCareApp.Dtos;
-using HealthCareApp.Enums;
+﻿using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Enums;
+using HealthCareApp.Shared.Dtos.Appointments;
 
 namespace HealthCareApp.Services
+
 {
     public interface IAppointmentService
     {

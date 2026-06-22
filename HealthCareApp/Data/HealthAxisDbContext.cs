@@ -1,4 +1,4 @@
-﻿using HealthCareApp.Enums;
+﻿using HealthCareApp.Shared.Enums;
 using HealthCareApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

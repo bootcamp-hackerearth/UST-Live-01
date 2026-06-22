@@ -1,6 +1,4 @@
-﻿using HealthCareApp.Dtos;
-using SharedClasses.Dtos;
-
+﻿using HealthCareApp.Shared.Dtos.HealthRecords;
 namespace HealthCareApp.Services
 {
     public interface IHealthRecordService

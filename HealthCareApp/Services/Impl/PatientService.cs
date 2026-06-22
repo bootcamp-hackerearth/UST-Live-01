@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
-using HealthCareApp.Dtos;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Patients;
+
 
 namespace HealthCareApp.Services
 {

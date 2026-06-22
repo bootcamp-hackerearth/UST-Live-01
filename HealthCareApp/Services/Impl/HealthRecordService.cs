@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using HealthCareApp.Dtos;
-using HealthCareApp.Enums;
+using HealthCareApp.Shared.Enums;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
-using SharedClasses.Dtos;
-
+using HealthCareApp.Shared.Dtos.HealthRecords;
 namespace HealthCareApp.Services
 {
     public class HealthRecordService(

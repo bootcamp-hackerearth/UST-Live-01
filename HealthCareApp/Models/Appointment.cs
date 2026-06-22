@@ -1,4 +1,4 @@
-﻿using HealthCareApp.Enums;
+﻿using HealthCareApp.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using HealthCareApp.Enums;
+using HealthCareApp.Shared.Enums;
 
 namespace HealthCareApp.Models
 {

@@ -1,6 +1,7 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Patients;
-using HealthCareApp.AdminBlazor.Enums;
+﻿using HealthCareApp.Shared.Dtos.Patients;
+using HealthCareApp.Shared.Enums;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
+using HealthCareApp.Shared.Dtos.Patients;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {

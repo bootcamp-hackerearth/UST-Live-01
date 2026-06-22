@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using HealthCareApp.Dtos;
+using HealthCareApp.Shared.Dtos.Auth;
 using HealthCareApp.Models;
-using HealthCareApp.Models.Dtos;
 using HealthCareApp.Repository.Interface;
+using HealthCareApp.Shared.Dtos.Patients;
 using HealthCareApp.Services.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;

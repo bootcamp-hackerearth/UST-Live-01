@@ -1,10 +1,12 @@
-﻿using HealthCareApp.Dtos;
-using HealthCareApp.Enums;
+﻿using HealthCareApp.Shared.Enums;
 using HealthCareApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Appointments;
+
 
 namespace HealthCareApp.Controllers
 {

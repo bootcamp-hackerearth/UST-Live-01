@@ -1,9 +1,11 @@
 ﻿@page "/admin/appointments/edit/{appointmentId:int}"
 @layout AdminLayout
 
-@using HealthCareApp.AdminBlazor.Dtos.Appointments
-@using HealthCareApp.AdminBlazor.Enums
+@using HealthCareApp.Shared.Dtos.Appointments
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+@using HealthCareApp.Shared.Constants
+@using HealthCareApp.Shared.Enums
+
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
 @inject NavigationManager Navigation
@@ -101,7 +103,8 @@ else
 
                     <div class="hc-form-group">
                         <label class="hc-form-label">Scheduled Date</label>
-                        <InputDate class="hc-form-control" @bind-Value="appointment.ScheduledDate" />
+                        <InputDate class="hc-form-control"
+                                   @bind-Value="appointment.ScheduledDate" />
                         <ValidationMessage For="@(() => appointment.ScheduledDate)" />
                     </div>
 
@@ -138,7 +141,7 @@ else
 
     private UpdateAppointmentDto appointment = new();
 
-    private AppointmentStatus existingStatus;
+    private AppointmentStatus existingStatus = AppointmentStatus.Pending;
 
     private string? existingCancellationReason;
 
@@ -146,24 +149,7 @@ else
 
     private string? errorMessage;
 
-    private readonly List<string> timeSlots = new()
-    {
-        "09:00 AM - 09:30 AM",
-        "09:30 AM - 10:00 AM",
-        "10:00 AM - 10:30 AM",
-        "10:30 AM - 11:00 AM",
-        "11:00 AM - 11:30 AM",
-        "11:30 AM - 12:00 PM",
-        "12:00 PM - 12:30 PM",
-        "02:00 PM - 02:30 PM",
-        "02:30 PM - 03:00 PM",
-        "03:00 PM - 03:30 PM",
-        "03:30 PM - 04:00 PM",
-        "04:00 PM - 04:30 PM",
-        "04:30 PM - 05:00 PM",
-        "05:00 PM - 05:30 PM",
-        "05:30 PM - 06:00 PM"
-    };
+    private readonly List<string> timeSlots = TimeSlots.Slots.ToList();
 
     protected override async Task OnInitializedAsync()
     {
@@ -192,7 +178,9 @@ else
             return;
         }
 
-        if (!DateTime.TryParse(existingAppointment.ScheduledDate, out var scheduledDate))
+        DateTime scheduledDate;
+
+        if (!DateTime.TryParse(existingAppointment.ScheduledDate, out scheduledDate))
         {
             scheduledDate = DateTime.Today;
         }

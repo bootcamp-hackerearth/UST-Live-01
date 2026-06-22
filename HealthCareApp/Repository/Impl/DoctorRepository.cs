@@ -6,7 +6,7 @@ using HealthCareApp.Repository.Interface;
 
 using Microsoft.EntityFrameworkCore;
 
-using HealthCareApp.Enums;
+using HealthCareApp.Shared.Enums;
 
 namespace HealthCareApp.Repository.Impl
 {

@@ -1,6 +1,6 @@
-﻿using HealthCareApp.Dtos;
-using HealthCareApp.Enums;
-using HealthCareApp.Models.Dtos;
+﻿using HealthCareApp.Shared.Enums;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Doctors;
 
 namespace HealthCareApp.Services
 {

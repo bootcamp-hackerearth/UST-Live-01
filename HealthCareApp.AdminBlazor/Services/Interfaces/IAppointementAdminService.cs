@@ -1,5 +1,4 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Appointments;
-
+﻿using HealthCareApp.Shared.Dtos.Appointments;
 namespace HealthCareApp.AdminBlazor.Services.Interfaces
 {
     public interface IAppointmentAdminService

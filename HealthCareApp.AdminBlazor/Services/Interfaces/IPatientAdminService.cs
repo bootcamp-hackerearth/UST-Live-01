@@ -1,4 +1,4 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Patients;
+﻿using HealthCareApp.Shared.Dtos.Patients;
 
 namespace HealthCareApp.AdminBlazor.Services.Interfaces
 {

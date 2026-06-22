@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
-using HealthCareApp.Constants;
-using HealthCareApp.Dtos;
-using HealthCareApp.Enums;
+using HealthCareApp.Shared.Constants;
+using HealthCareApp.Shared.Enums;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Doctors;
+
 
 namespace HealthCareApp.Services
 {

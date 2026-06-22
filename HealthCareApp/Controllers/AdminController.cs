@@ -1,8 +1,11 @@
-﻿using HealthCareApp.Dtos;
+﻿using HealthCareApp.Shared.Dtos;
 using HealthCareApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Doctors;
+
 
 namespace HealthCareApp.Controllers
 {

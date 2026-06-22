@@ -1,5 +1,4 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Dashboard;
-
+﻿using HealthCareApp.Shared.Dtos.Dashboard;
 namespace HealthCareApp.AdminBlazor.Services.Interfaces
 {
     public interface IAdminDashboardService

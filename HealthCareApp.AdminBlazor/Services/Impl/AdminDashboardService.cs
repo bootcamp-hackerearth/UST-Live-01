@@ -1,5 +1,5 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Dashboard;
-using HealthCareApp.AdminBlazor.Services.Interfaces;
+﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
+using HealthCareApp.Shared.Dtos.Dashboard;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {

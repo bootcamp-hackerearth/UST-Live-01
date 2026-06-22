@@ -1,4 +1,4 @@
-﻿using HealthCareApp.AdminBlazor.Dtos.Auth;
+﻿using HealthCareApp.Shared.Dtos.Auth;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
