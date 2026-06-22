@@ -8,45 +8,95 @@ using System.Security.Claims;
 
 namespace HealthAxis.API.Controller
 {
-        [Route("api/[controller]")]
-        [ApiController]
-        public class AuthController(IAuthService service) : ControllerBase
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController(IAuthService service) : ControllerBase
+    {
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegisterDto request)
         {
-            [HttpPost("register")]
-            public async Task<IActionResult> Register(RegisterDto request)
+            var (success, message, userId, statusCode) =
+                await service.Register(request);
+
+            if (!success)
             {
-                var (success, message, userId, StatusCode) = await service.Register(request);
-
-                if (!success)
+                return StatusCode(statusCode, new
                 {
-                    return BadRequest(new { message });
-                }
-
-                return Ok(new { message, userId });
+                    message
+                });
             }
 
-            [HttpPost("login")]
-            public async Task<IActionResult> Login(LoginDto request)
+            return Ok(new
             {
-                var (success, message, token, ExpiresIn) = await service.Login(request);
+                message,
+                userId
+            });
+        }
 
-                if (!success)
-                {
-                    return Unauthorized(new { message });
-                }
-                AuthResponse response = new AuthResponse
-                {
-                    AccessToken = token,
-                    Message = message,
-                    ExpiresIn = ExpiresIn
-                };
-
-                return Ok(response);
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
             }
+
+            var (success, message, accessToken, refreshToken, expiresIn) =
+                await service.Login(request);
+
+            if (!success)
+            {
+                return Unauthorized(new
+                {
+                    message
+                });
+            }
+
+            var response = new AuthResponse
+            {
+                Message = message,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                ExpiresIn = expiresIn
+            };
+
+            return Ok(response);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(
+            [FromBody] RefreshTokenDto request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await service.RefreshToken(request);
+
+            if (!result.Success)
+            {
+                return StatusCode(result.StatusCode, new
+                {
+                    message = result.Message
+                });
+            }
+
+            var response = new AuthResponse
+            {
+                Message = result.Message,
+                AccessToken = result.AccessToken,
+                RefreshToken = result.RefreshToken,
+                ExpiresIn = result.ExpiresIn
+            };
+
+            return Ok(response);
+        }
 
         [Authorize]
         [HttpPost("change-password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        public async Task<IActionResult> ChangePassword(
+            [FromBody] ChangePasswordDto request)
         {
             if (!ModelState.IsValid)
             {
@@ -80,4 +130,3 @@ namespace HealthAxis.API.Controller
         }
     }
 }
-

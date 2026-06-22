@@ -1,68 +1,64 @@
-﻿using HealthAxis.API.DTO.CommonDtos;
-using HealthAxis.API.Exceptions;
+﻿using HealthAxis.API.Exceptions;
+using HealthAxis.API.Models;
 using Microsoft.AspNetCore.Diagnostics;
+
 namespace HealthAxis.API.Middlewares
 {
-    public class GlobalExceptionHandler : IExceptionHandler
+    public sealed class GlobalExceptionHandler(
+        ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+    {
+        public async ValueTask<bool> TryHandleAsync(
+            HttpContext httpContext,
+            Exception exception,
+            CancellationToken cancellationToken)
         {
+            var statusCode = GetStatusCode(exception);
+            var message = GetMessage(exception);
 
-            private readonly ILogger<GlobalExceptionHandler> _logger;
+            logger.LogError(
+                exception,
+                "Unhandled exception occurred. StatusCode: {StatusCode}, Path: {Path}",
+                statusCode,
+                httpContext.Request.Path);
 
-
-            public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
-
+            var response = new ApiErrorResponse
             {
+                StatusCode = statusCode,
+                Message = message
+            };
 
-                _logger = logger;
+            httpContext.Response.StatusCode = statusCode;
+            httpContext.Response.ContentType = "application/json";
 
-            }
+            await httpContext.Response.WriteAsJsonAsync(
+                response,
+                cancellationToken);
 
-
-            public async ValueTask<bool> TryHandleAsync(HttpContext httpContext,
-
-                Exception exception, CancellationToken cancellationToken)
-
-            {
-
-                _logger.LogError(exception, "An Unexpected Error occurred : {Message}", exception.Message);
-
-
-                var (statusCode, message) = exception switch
-                {
-
-                    NotFoundException => (StatusCodes.Status404NotFound, exception.Message),
-
-                    ValidationException => (StatusCodes.Status400BadRequest, exception.Message),
-
-                    BusinessRuleException => (StatusCodes.Status400BadRequest, exception.Message),
-
-                    //AppException => (StatusCodes.Status400BadRequest, exception.Message),
-
-                    _ => (StatusCodes.Status500InternalServerError, exception.Message)
-
-                };
-
-
-                var response = new ErrorResponse
-                {
-
-                    StatusCode = statusCode,
-
-                    Message = message,
-
-                    TimeStamp = DateTime.UtcNow,
-
-                    Path = httpContext.Request.Path
-
-                };
-
-                httpContext.Response.StatusCode = statusCode;
-                await httpContext.Response.WriteAsJsonAsync(response);
-
-                return true;
-
-            }
-
+            return true;
         }
 
+        private static int GetStatusCode(Exception exception)
+        {
+            return exception switch
+            {
+                NotFoundException => StatusCodes.Status404NotFound,
+                ValidationException => StatusCodes.Status400BadRequest,
+                BusinessRuleException => StatusCodes.Status400BadRequest,
+                UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+                _ => StatusCodes.Status500InternalServerError
+            };
+        }
+
+        private static string GetMessage(Exception exception)
+        {
+            return exception switch
+            {
+                NotFoundException => exception.Message,
+                ValidationException => exception.Message,
+                BusinessRuleException => exception.Message,
+                UnauthorizedAccessException => "Unauthorized access",
+                _ => "An unexpected error occurred. Please try again later."
+            };
+        }
     }
+}

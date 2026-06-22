@@ -1,31 +1,35 @@
 ﻿using HealthAxis.API.DTO.AuthDtos;
 using HealthAxis.API.DTO.DoctorDtos;
-using HealthAxis.API.Enums;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace HealthAxis.API.Services.Implementation
 {
     public class AuthService(
         UserManager<IdentityUser> userManager,
-        RoleManager<IdentityRole> roleManager,
         IConfiguration config,
         IRepository<Patient> patientRepository) : IAuthService
     {
-        public async Task<(bool Success, string Message, string Token, int ExpiresIn)> Login(
+        private const string LoginProvider = "HealthAxisAPI";
+        private const string RefreshTokenName = "RefreshToken";
+        private const string RefreshTokenExpiryName = "RefreshTokenExpiry";
+
+        public async Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn)> Login(
             LoginDto request)
         {
             var user = await userManager.FindByEmailAsync(request.Email);
 
             if (user is null)
             {
-                return (false, "Invalid credentials", string.Empty, 0);
+                return (false, "Invalid credentials", string.Empty, string.Empty, 0);
             }
 
             var isPasswordValid =
@@ -33,19 +37,143 @@ namespace HealthAxis.API.Services.Implementation
 
             if (!isPasswordValid)
             {
-                return (false, "Invalid credentials", string.Empty, 0);
+                return (false, "Invalid credentials", string.Empty, string.Empty, 0);
             }
 
-            var token = await GenerateToken(user);
+            var accessToken = await GenerateToken(user);
+
+            var refreshToken = GenerateRefreshToken();
+
+            await SaveRefreshToken(user, refreshToken);
 
             var expiry =
                 int.Parse(config.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
 
-            return (true, "User logged in successfully", token, expiry);
+            return (
+                true,
+                "User logged in successfully",
+                accessToken,
+                refreshToken,
+                expiry);
+        }
+
+        public async Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn, int StatusCode)> RefreshToken(
+            RefreshTokenDto request)
+        {
+            ClaimsPrincipal principal;
+
+            try
+            {
+                principal = GetPrincipalFromExpiredToken(request.AccessToken);
+            }
+            catch
+            {
+                return (
+                    false,
+                    "Invalid access token",
+                    string.Empty,
+                    string.Empty,
+                    0,
+                    401);
+            }
+
+            var userId = principal.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return (
+                    false,
+                    "Invalid access token",
+                    string.Empty,
+                    string.Empty,
+                    0,
+                    401);
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user is null)
+            {
+                return (
+                    false,
+                    "User not found",
+                    string.Empty,
+                    string.Empty,
+                    0,
+                    404);
+            }
+
+            var savedRefreshToken =
+                await userManager.GetAuthenticationTokenAsync(
+                    user,
+                    LoginProvider,
+                    RefreshTokenName);
+
+            if (savedRefreshToken != request.RefreshToken)
+            {
+                return (
+                    false,
+                    "Invalid refresh token",
+                    string.Empty,
+                    string.Empty,
+                    0,
+                    401);
+            }
+
+            var savedExpiry =
+                await userManager.GetAuthenticationTokenAsync(
+                    user,
+                    LoginProvider,
+                    RefreshTokenExpiryName);
+
+            if (string.IsNullOrWhiteSpace(savedExpiry))
+            {
+                return (
+                    false,
+                    "Refresh token expiry not found",
+                    string.Empty,
+                    string.Empty,
+                    0,
+                    401);
+            }
+
+            var isValidDate = DateTime.TryParse(
+                savedExpiry,
+                null,
+                DateTimeStyles.RoundtripKind,
+                out var refreshTokenExpiry);
+
+            if (!isValidDate || refreshTokenExpiry < DateTime.UtcNow)
+            {
+                return (
+                    false,
+                    "Refresh token expired. Please login again",
+                    string.Empty,
+                    string.Empty,
+                    0,
+                    401);
+            }
+
+            var newAccessToken = await GenerateToken(user);
+
+            var newRefreshToken = GenerateRefreshToken();
+
+            await SaveRefreshToken(user, newRefreshToken);
+
+            var expiry =
+                int.Parse(config.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
+
+            return (
+                true,
+                "Token refreshed successfully",
+                newAccessToken,
+                newRefreshToken,
+                expiry,
+                200);
         }
 
         public async Task<(bool Success, string Message, string UserId, int StatusCode)> Register(
-    RegisterDto request)
+            RegisterDto request)
         {
             var patients = await patientRepository.GetAllAsync();
 
@@ -81,6 +209,7 @@ namespace HealthAxis.API.Services.Implementation
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
                 return (false, errors, string.Empty, 400);
             }
 
@@ -102,7 +231,9 @@ namespace HealthAxis.API.Services.Implementation
             return (true, "Patient registered successfully", identityUser.Id, 200);
         }
 
-        public async Task<(bool Success, string Message, int StatusCode)> ChangePassword(string userId, ChangePasswordDto request)
+        public async Task<(bool Success, string Message, int StatusCode)> ChangePassword(
+            string userId,
+            ChangePasswordDto request)
         {
             if (request.NewPassword != request.ConfirmNewPassword)
             {
@@ -121,7 +252,10 @@ namespace HealthAxis.API.Services.Implementation
                 return (false, "User not found", 404);
             }
 
-            var result = await userManager.ChangePasswordAsync( user, request.CurrentPassword, request.NewPassword);
+            var result = await userManager.ChangePasswordAsync(
+                user,
+                request.CurrentPassword,
+                request.NewPassword);
 
             if (!result.Succeeded)
             {
@@ -170,6 +304,78 @@ namespace HealthAxis.API.Services.Implementation
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private static string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+
+            using var randomNumberGenerator = RandomNumberGenerator.Create();
+
+            randomNumberGenerator.GetBytes(randomBytes);
+
+            return Convert.ToBase64String(randomBytes);
+        }
+
+        private async Task SaveRefreshToken(
+            IdentityUser user,
+            string refreshToken)
+        {
+            var refreshTokenExpirationDays =
+                int.Parse(config.GetSection("Jwt")["RefreshTokenExpirationDays"]!);
+
+            var refreshTokenExpiry =
+                DateTime.UtcNow.AddDays(refreshTokenExpirationDays);
+
+            await userManager.SetAuthenticationTokenAsync(
+                user,
+                LoginProvider,
+                RefreshTokenName,
+                refreshToken);
+
+            await userManager.SetAuthenticationTokenAsync(
+                user,
+                LoginProvider,
+                RefreshTokenExpiryName,
+                refreshTokenExpiry.ToString("O"));
+        }
+
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string accessToken)
+        {
+            var jwtSettings = config.GetSection("Jwt");
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = false,
+
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"],
+
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtSettings["Key"]!)),
+
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            var principal = tokenHandler.ValidateToken(
+                accessToken,
+                tokenValidationParameters,
+                out var securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtToken ||
+                !jwtToken.Header.Alg.Equals(
+                    SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
         }
     }
 }
