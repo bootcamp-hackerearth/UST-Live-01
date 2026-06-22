@@ -1,9 +1,6 @@
 ﻿using HealthAxis.API.Utilities;
-using Microsoft.VisualBasic;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
 
 namespace HealthAxis.API.Models
 {
@@ -28,7 +25,7 @@ namespace HealthAxis.API.Models
         {
             get;
             set;
-        }
+        } = null!;
 
         [Required]
         public int PatientId
@@ -42,7 +39,7 @@ namespace HealthAxis.API.Models
         {
             get;
             set;
-        }
+        } = null!;
 
         [Required]
         public int DoctorId
@@ -56,41 +53,32 @@ namespace HealthAxis.API.Models
         {
             get;
             set;
-        }
+        } = null!;
 
-        [Required(
-            ErrorMessage =
-            Helpers.VisitDateRequired)]
+        [Required(ErrorMessage = Helpers.VisitDateRequired)]
         public DateTime VisitDate
         {
             get;
             set;
         }
 
-        [Required(
-            ErrorMessage =
-            Helpers.DiagnosisRequired)]
-        [StringLength(
-            ValidationLimits.DiagnosisLength)]
+        [Required(ErrorMessage = Helpers.DiagnosisRequired)]
+        [StringLength(ValidationLimits.DiagnosisLength)]
         public string Diagnosis
         {
             get;
             set;
         } = string.Empty;
 
-        [Required(
-            ErrorMessage =
-            Helpers.PrescriptionRequired)]
-        [StringLength(
-            ValidationLimits.PrescriptionLength)]
+        [Required(ErrorMessage = Helpers.PrescriptionRequired)]
+        [StringLength(ValidationLimits.PrescriptionLength)]
         public string Prescription
         {
             get;
             set;
         } = string.Empty;
 
-        [StringLength(
-            ValidationLimits.NotesLength)]
+        [StringLength(ValidationLimits.NotesLength)]
         public string Notes
         {
             get;

@@ -21,11 +21,11 @@ namespace HealthAxis.API.Data
 
         public DbSet<HealthRecord> HealthRecords { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<Patient>(entity =>
+            builder.Entity<Patient>(entity =>
             {
                 entity.HasKey(patient => patient.PatientId);
 
@@ -48,7 +48,7 @@ namespace HealthAxis.API.Data
                     .IsUnique();
             });
 
-            modelBuilder.Entity<Doctor>(entity =>
+            builder.Entity<Doctor>(entity =>
             {
                 entity.HasKey(doctor => doctor.DoctorId);
 
@@ -63,7 +63,7 @@ namespace HealthAxis.API.Data
                     .HasPrecision(18, 2);
             });
 
-            modelBuilder.Entity<Appointment>(entity =>
+            builder.Entity<Appointment>(entity =>
             {
                 entity.HasKey(appointment => appointment.AppointmentId);
 
@@ -88,7 +88,7 @@ namespace HealthAxis.API.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<HealthRecord>(entity =>
+            builder.Entity<HealthRecord>(entity =>
             {
                 entity.HasKey(record => record.RecordId);
 
@@ -119,7 +119,7 @@ namespace HealthAxis.API.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Doctor>().HasData(
+            builder.Entity<Doctor>().HasData(
                 new Doctor
                 {
                     DoctorId = 1,
