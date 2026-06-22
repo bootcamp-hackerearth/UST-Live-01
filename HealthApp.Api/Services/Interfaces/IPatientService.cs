@@ -1,4 +1,5 @@
-﻿using HealthApp.Api.Dtos;
+﻿
+using HealthApp.Shared.Dtos;
 
 namespace HealthApp.Api.Services.Interfaces
 {

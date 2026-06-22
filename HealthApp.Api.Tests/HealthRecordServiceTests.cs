@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using AutoMapper;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Api.Repositories.Interfaces;
-using HealthApp.Api.Dtos;
 using HealthApp.Api.Models;
-using HealthApp.Api.Enums;
 using HealthApp.Api.Exceptions;
+using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Enums;
 
 namespace HealthApp.Api.Tests.Services
 {

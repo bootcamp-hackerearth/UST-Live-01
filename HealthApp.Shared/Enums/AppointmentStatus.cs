@@ -1,4 +1,4 @@
-﻿namespace HealthApp.Api.Enums
+﻿namespace HealthApp.Shared.Enums
 {
     public enum AppointmentStatus
     {

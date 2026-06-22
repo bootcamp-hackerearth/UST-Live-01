@@ -1,5 +1,4 @@
-﻿using HealthApp.Api.Constants;
-using HealthApp.Api.Models;
+﻿using HealthApp.Api.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace HealthApp.Api.Data

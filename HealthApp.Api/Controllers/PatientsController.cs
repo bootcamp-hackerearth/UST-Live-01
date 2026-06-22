@@ -1,5 +1,5 @@
-﻿using HealthApp.Api.Dtos;
-using HealthApp.Api.Services.Interfaces;
+﻿using HealthApp.Api.Services.Interfaces;
+using HealthApp.Shared.Dtos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

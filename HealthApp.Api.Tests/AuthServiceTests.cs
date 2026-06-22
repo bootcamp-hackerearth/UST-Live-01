@@ -1,16 +1,15 @@
 ﻿using Xunit;
 using Moq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Models;
-using HealthApp.Api.Dtos;
 using HealthApp.Api.Exceptions;
 using AutoMapper;
 using System.Linq;
+using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Enums;
 
 namespace HealthApp.Api.Tests.Services
 {
@@ -362,7 +361,7 @@ namespace HealthApp.Api.Tests.Services
                 DoctorEmail = "doc@test.com",
                 FullName = "John Doe",
                 DoctorPhoneNo = "1234567890",
-                Specialisation = HealthApp.Api.Enums.SpecialisationType.GeneralPhysician,
+                Specialisation = SpecialisationType.GeneralPhysician,
                 YearsOfExperience = 5,
                 ConsultationFee = 500
             };

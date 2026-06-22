@@ -1,4 +1,4 @@
-﻿namespace HealthApp.Api.Constants
+﻿namespace HealthApp.Shared.Constants
 {
     public static class TimeSlots
     {

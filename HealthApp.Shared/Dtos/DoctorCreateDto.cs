@@ -1,9 +1,10 @@
-﻿using HealthApp.Api.Enums;
+﻿
+using HealthApp.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace HealthApp.Api.Dtos
+namespace HealthApp.Shared.Dtos
 {
-    using HealthApp.Api.Enums;
-    using System.ComponentModel.DataAnnotations;
+    
 
     public class DoctorCreateDto
     {

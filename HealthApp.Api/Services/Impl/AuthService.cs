@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using HealthApp.Api.Dtos;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Impl;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
+using HealthApp.Shared.Dtos;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;

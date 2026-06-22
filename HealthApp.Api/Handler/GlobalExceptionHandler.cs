@@ -1,5 +1,5 @@
-﻿using HealthApp.Api.Dtos;
-using HealthApp.Api.Exceptions;
+﻿using HealthApp.Api.Exceptions;
+using HealthApp.Shared.Dtos;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace HealthApp.Api.Handler

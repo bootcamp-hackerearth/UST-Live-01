@@ -1,8 +1,8 @@
 ﻿using HealthApp.Api.Data;
-using HealthApp.Api.Dtos;
-using HealthApp.Api.Enums;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

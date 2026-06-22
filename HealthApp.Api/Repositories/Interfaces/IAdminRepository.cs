@@ -1,4 +1,4 @@
-﻿using HealthApp.Api.Dtos;
+﻿using HealthApp.Shared.Dtos;
 
 namespace HealthApp.Api.Repositories.Interfaces
 {

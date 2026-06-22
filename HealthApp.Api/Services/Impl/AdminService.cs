@@ -1,6 +1,6 @@
-﻿using HealthApp.Api.Dtos;
-using HealthApp.Api.Repositories.Interfaces;
+﻿using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
+using HealthApp.Shared.Dtos;
 
 namespace HealthApp.Api.Services.Impl
 {

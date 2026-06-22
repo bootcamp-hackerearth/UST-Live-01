@@ -1,4 +1,4 @@
-﻿namespace HealthApp.Api.Dtos
+﻿namespace HealthApp.Shared.Dtos
 {
     public class AppointmentReportDto
     {

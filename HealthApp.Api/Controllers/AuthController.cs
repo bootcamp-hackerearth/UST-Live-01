@@ -1,7 +1,7 @@
-﻿using HealthApp.Api.Dtos;
-using HealthApp.Api.Exceptions;
+﻿using HealthApp.Api.Exceptions;
 using HealthApp.Api.Extensions;
 using HealthApp.Api.Services.Interfaces;
+using HealthApp.Shared.Dtos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

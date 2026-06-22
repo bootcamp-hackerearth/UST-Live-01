@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using HealthApp.Api.Services.Impl;
 using HealthApp.Api.Repositories.Interfaces;
-using HealthApp.Api.Dtos;
+using HealthApp.Shared.Dtos;
 
 namespace HealthApp.Api.Tests.Services
 {

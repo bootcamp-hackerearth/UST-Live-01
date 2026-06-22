@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using HealthApp.Api.Dtos;
-using HealthApp.Api.Enums;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
-using HealthApp.Api.Constants;
+using HealthApp.Shared.Constants;
+using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Enums;
 
 namespace HealthApp.Api.Services.Impl
 {

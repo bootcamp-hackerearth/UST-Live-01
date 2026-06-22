@@ -1,5 +1,5 @@
-﻿using HealthApp.Api.Enums;
-using HealthApp.Api.Models;
+﻿using HealthApp.Api.Models;
+using HealthApp.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.Api.Repositories.Interfaces

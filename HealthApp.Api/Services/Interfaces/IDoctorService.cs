@@ -1,5 +1,6 @@
-﻿using HealthApp.Api.Dtos;
-using HealthApp.Api.Enums;
+﻿
+using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Enums;
 
 namespace HealthApp.Api.Services.Interfaces
 {

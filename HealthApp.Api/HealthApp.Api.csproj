@@ -22,6 +22,10 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HealthApp.Shared\HealthApp.Shared.csproj" />
+  </ItemGroup>
+
 	<ItemGroup>
 		<Compile Update="Migrations\**\*.cs">
 			<SonarQubeExclude>true</SonarQubeExclude>
