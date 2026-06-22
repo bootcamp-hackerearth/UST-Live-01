@@ -1,4 +1,5 @@
-﻿@page "/login"
+﻿@page "/"
+@page "/login"
 
 @using HealthCareApp.AdminBlazor.Dtos.Auth
 @using HealthCareApp.AdminBlazor.Services.Interfaces
@@ -62,7 +63,7 @@
                 <div class="hc-form-group">
                     <label class="hc-form-label">Email address</label>
                     <InputText class="hc-form-control"
-                               placeholder="Enter Your Mail"
+                               placeholder="Enter your email"
                                @bind-Value="loginModel.Email" />
                     <ValidationMessage For="@(() => loginModel.Email)" />
                 </div>
@@ -78,7 +79,7 @@
 
                 <div class="hc-login-actions">
                     <label>
-                        <InputCheckbox @bind-Value="loginModel.RememberMe" />
+                        <InputCheckbox @bind-Value="rememberMe" />
                         Remember me
                     </label>
 
@@ -102,6 +103,8 @@
 @code {
     private LoginDto loginModel = new();
 
+    private bool rememberMe;
+
     private string? errorMessage;
 
     private async Task HandleLogin()
@@ -110,12 +113,12 @@
 
         var response = await AuthService.LoginAsync(loginModel);
 
-        if (!response.IsSuccess)
+        if (string.IsNullOrWhiteSpace(response.AccessToken))
         {
             errorMessage = response.Message;
             return;
         }
 
-        Navigation.NavigateTo("/admin");
+        Navigation.NavigateTo("/admin/dashboard");
     }
 }

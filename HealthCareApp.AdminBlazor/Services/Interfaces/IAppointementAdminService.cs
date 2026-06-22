@@ -8,7 +8,7 @@ namespace HealthCareApp.AdminBlazor.Services.Interfaces
 
         Task<AppointmentDto?> GetAppointmentByIdAsync(int appointmentId);
 
-        Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentDto request);
+        Task<AppointmentDto> CreateAppointmentAsync(BookAppointmentDto request);
 
         Task<AppointmentDto?> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto request);
 

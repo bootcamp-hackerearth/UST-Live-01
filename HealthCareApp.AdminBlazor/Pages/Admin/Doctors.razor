@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Doctors
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
@@ -187,13 +188,13 @@ else
                 query = query.Where(d =>
                     d.FullName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                     d.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    d.Specialisation.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                    d.Specialisation.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(selectedSpecialisation))
             {
                 query = query.Where(d =>
-                    d.Specialisation.Equals(selectedSpecialisation, StringComparison.OrdinalIgnoreCase));
+                    d.Specialisation.ToString().Equals(selectedSpecialisation, StringComparison.OrdinalIgnoreCase));
             }
 
             if (selectedStatus == "active")
@@ -227,7 +228,7 @@ else
         doctors = await DoctorService.GetAllDoctorsAsync();
 
         specialisations = doctors
-            .Select(d => d.Specialisation)
+            .Select(d => d.Specialisation.ToString())
             .Distinct()
             .OrderBy(s => s)
             .ToList();

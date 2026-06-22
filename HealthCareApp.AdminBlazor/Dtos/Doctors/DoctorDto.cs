@@ -1,4 +1,6 @@
-﻿namespace HealthCareApp.AdminBlazor.Dtos.Doctors
+﻿using HealthCareApp.AdminBlazor.Enums;
+
+namespace HealthCareApp.AdminBlazor.Dtos.Doctors
 {
     public class DoctorDto
     {
@@ -6,9 +8,9 @@
 
         public string FullName { get; set; } = string.Empty;
 
-        public string Email { get; set; } = string.Empty;
+        public SpecialisationType Specialisation { get; set; }
 
-        public string Specialisation { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
         public int YearsOfExperience { get; set; }
 

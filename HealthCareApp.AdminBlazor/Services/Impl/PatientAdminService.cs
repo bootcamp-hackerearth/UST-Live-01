@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.AdminBlazor.Dtos.Patients;
+using HealthCareApp.AdminBlazor.Enums;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
@@ -11,34 +12,34 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             {
                 PatientId = 1,
                 FullName = "Ravi Kumar",
-                DateOfBirth = new DateTime(1998, 5, 12),
-                Gender = "Male",
+                DateOfBirth = "1998-05-12",
+                Gender = GenderType.Male,
                 Email = "ravi.kumar@example.com",
                 PhoneNumber = "9876543210",
                 InsuranceId = "INS1001",
-                CreatedDate = new DateTime(2026, 6, 15)
+                CreatedDate = "2026-06-15"
             },
             new PatientDto
             {
                 PatientId = 2,
                 FullName = "Anjali Nair",
-                DateOfBirth = new DateTime(2001, 8, 20),
-                Gender = "Female",
+                DateOfBirth = "2001-08-20",
+                Gender = GenderType.Female,
                 Email = "anjali.nair@example.com",
                 PhoneNumber = "8765432109",
                 InsuranceId = "INS1002",
-                CreatedDate = new DateTime(2026, 6, 15)
+                CreatedDate = "2026-06-15"
             },
             new PatientDto
             {
                 PatientId = 3,
                 FullName = "Kiran Das",
-                DateOfBirth = new DateTime(1995, 11, 3),
-                Gender = "Other",
+                DateOfBirth = "1995-11-03",
+                Gender = GenderType.Other,
                 Email = "kiran.das@example.com",
                 PhoneNumber = "7654321098",
-                InsuranceId = null,
-                CreatedDate = new DateTime(2026, 6, 15)
+                InsuranceId = string.Empty,
+                CreatedDate = "2026-06-15"
             }
         };
 
@@ -68,12 +69,12 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             {
                 PatientId = nextId,
                 FullName = request.FullName,
-                DateOfBirth = request.DateOfBirth.Date,
+                DateOfBirth = request.DateOfBirth.ToString("yyyy-MM-dd"),
                 Gender = request.Gender,
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 InsuranceId = request.InsuranceId,
-                CreatedDate = DateTime.Today
+                CreatedDate = DateTime.Today.ToString("yyyy-MM-dd")
             };
 
             Patients.Add(patient);
@@ -91,7 +92,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             }
 
             patient.FullName = request.FullName;
-            patient.DateOfBirth = request.DateOfBirth.Date;
+            patient.DateOfBirth = request.DateOfBirth.ToString("yyyy-MM-dd");
             patient.Gender = request.Gender;
             patient.Email = request.Email;
             patient.PhoneNumber = request.PhoneNumber;

@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.AdminBlazor.Dtos.Appointments;
+using HealthCareApp.AdminBlazor.Enums;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
@@ -14,11 +15,10 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 PatientName = "Ravi Kumar",
                 DoctorId = 1,
                 DoctorName = "Arun Menon",
-                ScheduledDate = DateTime.Today,
+                ScheduledDate = DateTime.Today.ToString("yyyy-MM-dd"),
                 TimeSlot = "10:00 AM - 10:30 AM",
-                Status = AppointmentStatusDto.Pending,
-                CancellationReason = null,
-                CreatedDate = DateTime.Today.AddDays(-2)
+                Status = AppointmentStatus.Pending,
+                CancellationReason = null
             },
             new AppointmentDto
             {
@@ -27,11 +27,10 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 PatientName = "Anjali Nair",
                 DoctorId = 2,
                 DoctorName = "Meera Nair",
-                ScheduledDate = DateTime.Today,
+                ScheduledDate = DateTime.Today.ToString("yyyy-MM-dd"),
                 TimeSlot = "11:00 AM - 11:30 AM",
-                Status = AppointmentStatusDto.Confirmed,
-                CancellationReason = null,
-                CreatedDate = DateTime.Today.AddDays(-1)
+                Status = AppointmentStatus.Confirmed,
+                CancellationReason = null
             },
             new AppointmentDto
             {
@@ -40,11 +39,10 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 PatientName = "Kiran Das",
                 DoctorId = 3,
                 DoctorName = "Vikram Das",
-                ScheduledDate = DateTime.Today.AddDays(1),
+                ScheduledDate = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd"),
                 TimeSlot = "02:00 PM - 02:30 PM",
-                Status = AppointmentStatusDto.Cancelled,
-                CancellationReason = "Patient requested cancellation",
-                CreatedDate = DateTime.Today.AddDays(-3)
+                Status = AppointmentStatus.Cancelled,
+                CancellationReason = "Patient requested cancellation"
             },
             new AppointmentDto
             {
@@ -53,11 +51,10 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 PatientName = "Ravi Kumar",
                 DoctorId = 2,
                 DoctorName = "Meera Nair",
-                ScheduledDate = DateTime.Today.AddDays(-1),
+                ScheduledDate = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"),
                 TimeSlot = "03:00 PM - 03:30 PM",
-                Status = AppointmentStatusDto.Completed,
-                CancellationReason = null,
-                CreatedDate = DateTime.Today.AddDays(-5)
+                Status = AppointmentStatus.Completed,
+                CancellationReason = null
             },
             new AppointmentDto
             {
@@ -66,18 +63,17 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 PatientName = "Anjali Nair",
                 DoctorId = 1,
                 DoctorName = "Arun Menon",
-                ScheduledDate = DateTime.Today.AddDays(3),
+                ScheduledDate = DateTime.Today.AddDays(3).ToString("yyyy-MM-dd"),
                 TimeSlot = "09:00 AM - 09:30 AM",
-                Status = AppointmentStatusDto.Pending,
-                CancellationReason = null,
-                CreatedDate = DateTime.Today
+                Status = AppointmentStatus.Pending,
+                CancellationReason = null
             }
         };
 
         public Task<List<AppointmentDto>> GetAllAppointmentsAsync()
         {
             var appointments = Appointments
-                .OrderByDescending(a => a.ScheduledDate)
+                .OrderByDescending(a => ParseDate(a.ScheduledDate))
                 .ThenBy(a => a.TimeSlot)
                 .ToList();
 
@@ -92,7 +88,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             return Task.FromResult(appointment);
         }
 
-        public Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentDto request)
+        public Task<AppointmentDto> CreateAppointmentAsync(BookAppointmentDto request)
         {
             int nextId = Appointments.Any()
                 ? Appointments.Max(a => a.AppointmentId) + 1
@@ -105,13 +101,10 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 PatientName = GetPatientName(request.PatientId),
                 DoctorId = request.DoctorId,
                 DoctorName = GetDoctorName(request.DoctorId),
-                ScheduledDate = request.ScheduledDate.Date,
+                ScheduledDate = request.ScheduledDate.Date.ToString("yyyy-MM-dd"),
                 TimeSlot = request.TimeSlot,
-                Status = request.Status,
-                CancellationReason = request.Status == AppointmentStatusDto.Cancelled
-                    ? "Cancelled by admin"
-                    : null,
-                CreatedDate = DateTime.Today
+                Status = AppointmentStatus.Pending,
+                CancellationReason = null
             };
 
             Appointments.Add(appointment);
@@ -133,12 +126,8 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             appointment.PatientName = GetPatientName(request.PatientId);
             appointment.DoctorId = request.DoctorId;
             appointment.DoctorName = GetDoctorName(request.DoctorId);
-            appointment.ScheduledDate = request.ScheduledDate.Date;
+            appointment.ScheduledDate = request.ScheduledDate.Date.ToString("yyyy-MM-dd");
             appointment.TimeSlot = request.TimeSlot;
-            appointment.Status = request.Status;
-            appointment.CancellationReason = request.Status == AppointmentStatusDto.Cancelled
-                ? request.CancellationReason
-                : null;
 
             return Task.FromResult<AppointmentDto?>(appointment);
         }
@@ -156,6 +145,13 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             Appointments.Remove(appointment);
 
             return Task.FromResult(true);
+        }
+
+        private static DateTime ParseDate(string date)
+        {
+            return DateTime.TryParse(date, out var parsedDate)
+                ? parsedDate
+                : DateTime.MinValue;
         }
 
         private static string GetPatientName(int patientId)

@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Doctors
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
@@ -26,7 +27,7 @@
             <div class="hc-form-icon">✚</div>
             <div>
                 <h3>Doctor Registration</h3>
-                <p>Enter doctor details carefully. Login credential flow will be connected with API later.</p>
+                <p>Admin creates doctor account. API will generate temporary password.</p>
             </div>
         </div>
 
@@ -62,8 +63,7 @@
                     <label class="hc-form-label">Specialisation</label>
                     <InputSelect class="hc-form-control"
                                  @bind-Value="doctor.Specialisation">
-                        <option value="">-- Select Specialisation --</option>
-                        @foreach (var specialisation in specialisations)
+                        @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
                         {
                             <option value="@specialisation">@specialisation</option>
                         }
@@ -72,10 +72,10 @@
                 </div>
 
                 <div class="hc-form-group">
-                    <label class="hc-form-label">Years Of Experience</label>
-                    <InputNumber class="hc-form-control"
-                                 @bind-Value="doctor.YearsOfExperience" />
-                    <ValidationMessage For="@(() => doctor.YearsOfExperience)" />
+                    <label class="hc-form-label">Practice Start Date</label>
+                    <InputDate class="hc-form-control"
+                               @bind-Value="doctor.PracticeStartDate" />
+                    <ValidationMessage For="@(() => doctor.PracticeStartDate)" />
                 </div>
 
                 <div class="hc-form-group">
@@ -83,15 +83,6 @@
                     <InputNumber class="hc-form-control"
                                  @bind-Value="doctor.ConsultationFee" />
                     <ValidationMessage For="@(() => doctor.ConsultationFee)" />
-                </div>
-
-                <div class="hc-form-group">
-                    <label class="hc-form-label">Status</label>
-
-                    <label class="hc-switch-row">
-                        <InputCheckbox @bind-Value="doctor.IsActive" />
-                        <span>@(doctor.IsActive ? "Active doctor" : "Inactive doctor")</span>
-                    </label>
                 </div>
             </div>
 
@@ -111,22 +102,11 @@
 @code {
     private CreateDoctorDto doctor = new()
     {
-        IsActive = true
+        Specialisation = SpecialisationType.GeneralPractitioner,
+        PracticeStartDate = DateTime.Today.AddYears(-1)
     };
 
     private string? errorMessage;
-
-    private readonly List<string> specialisations = new()
-    {
-        "General Practitioner",
-        "Cardiologist",
-        "Dermatologist",
-        "Neurologist",
-        "Orthopedic",
-        "Pediatrician",
-        "Psychiatrist",
-        "ENT Specialist"
-    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -143,6 +123,12 @@
         try
         {
             errorMessage = null;
+
+            if (doctor.PracticeStartDate.Date > DateTime.Today)
+            {
+                errorMessage = "Practice start date cannot be in the future.";
+                return;
+            }
 
             await DoctorService.CreateDoctorAsync(doctor);
 

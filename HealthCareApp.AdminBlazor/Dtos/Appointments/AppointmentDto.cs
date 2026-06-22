@@ -1,4 +1,6 @@
-﻿namespace HealthCareApp.AdminBlazor.Dtos.Appointments
+﻿using HealthCareApp.AdminBlazor.Enums;
+
+namespace HealthCareApp.AdminBlazor.Dtos.Appointments
 {
     public class AppointmentDto
     {
@@ -6,20 +8,18 @@
 
         public int PatientId { get; set; }
 
-        public string PatientName { get; set; } = string.Empty;
+        public string? PatientName { get; set; }
 
         public int DoctorId { get; set; }
 
-        public string DoctorName { get; set; } = string.Empty;
+        public string? DoctorName { get; set; }
 
-        public DateTime ScheduledDate { get; set; }
+        public string ScheduledDate { get; set; } = string.Empty;
 
         public string TimeSlot { get; set; } = string.Empty;
 
-        public AppointmentStatusDto Status { get; set; }
+        public AppointmentStatus Status { get; set; }
 
         public string? CancellationReason { get; set; }
-
-        public DateTime CreatedDate { get; set; }
     }
 }

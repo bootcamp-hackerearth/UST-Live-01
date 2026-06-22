@@ -83,16 +83,6 @@
                     </InputSelect>
                     <ValidationMessage For="@(() => appointment.TimeSlot)" />
                 </div>
-
-                <div class="hc-form-group">
-                    <label class="hc-form-label">Status</label>
-                    <InputSelect class="hc-form-control" @bind-Value="appointment.Status">
-                        <option value="@AppointmentStatusDto.Pending">Pending</option>
-                        <option value="@AppointmentStatusDto.Confirmed">Confirmed</option>
-                        <option value="@AppointmentStatusDto.Completed">Completed</option>
-                        <option value="@AppointmentStatusDto.Cancelled">Cancelled</option>
-                    </InputSelect>
-                </div>
             </div>
 
             <div class="hc-form-actions">
@@ -109,10 +99,9 @@
 </section>
 
 @code {
-    private CreateAppointmentDto appointment = new()
+    private BookAppointmentDto appointment = new()
     {
-        ScheduledDate = DateTime.Today,
-        Status = AppointmentStatusDto.Pending
+        ScheduledDate = DateTime.Today
     };
 
     private string? errorMessage;
@@ -120,12 +109,20 @@
     private readonly List<string> timeSlots = new()
     {
         "09:00 AM - 09:30 AM",
+        "09:30 AM - 10:00 AM",
         "10:00 AM - 10:30 AM",
+        "10:30 AM - 11:00 AM",
         "11:00 AM - 11:30 AM",
+        "11:30 AM - 12:00 PM",
         "12:00 PM - 12:30 PM",
         "02:00 PM - 02:30 PM",
+        "02:30 PM - 03:00 PM",
         "03:00 PM - 03:30 PM",
-        "04:00 PM - 04:30 PM"
+        "03:30 PM - 04:00 PM",
+        "04:00 PM - 04:30 PM",
+        "04:30 PM - 05:00 PM",
+        "05:00 PM - 05:30 PM",
+        "05:30 PM - 06:00 PM"
     };
 
     protected override async Task OnInitializedAsync()

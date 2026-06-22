@@ -1,26 +1,27 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthCareApp.AdminBlazor.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareApp.AdminBlazor.Dtos.Doctors
 {
     public class CreateDoctorDto
     {
-        [Required(ErrorMessage = "Doctor name is required.")]
-        [MinLength(2, ErrorMessage = "Doctor name must contain at least 2 characters.")]
+        [Required]
+        [StringLength(100)]
         public string FullName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Email address is required.")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
+        [Required]
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Specialisation is required.")]
-        public string Specialisation { get; set; } = string.Empty;
+        [Required]
+        public SpecialisationType Specialisation { get; set; }
 
-        [Range(0, 60, ErrorMessage = "Years of experience must be between 0 and 60.")]
-        public int YearsOfExperience { get; set; }
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime PracticeStartDate { get; set; }
 
-        [Range(1, 100000, ErrorMessage = "Consultation fee must be greater than 0.")]
+        [Required]
+        [Range(0, 100000)]
         public decimal ConsultationFee { get; set; }
-
-        public bool IsActive { get; set; } = true;
     }
 }

@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Appointments
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
@@ -108,11 +109,13 @@ else
                     <tbody>
                         @foreach (var appointment in FilteredAppointments)
                         {
+                            var scheduledDate = ParseDate(appointment.ScheduledDate);
+
                             <tr>
                                 <td>
                                     <strong>#@appointment.AppointmentId</strong>
                                     <div class="hc-table-subtext">
-                                        Created @appointment.CreatedDate.ToString("dd MMM yyyy")
+                                        Appointment record
                                     </div>
                                 </td>
 
@@ -138,7 +141,7 @@ else
                                     </div>
                                 </td>
 
-                                <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
+                                <td>@scheduledDate.ToString("dd MMM yyyy")</td>
 
                                 <td>
                                     <span class="hc-specialisation-pill">
@@ -163,8 +166,6 @@ else
                                                 @onclick="() => GoToEditAppointment(appointment.AppointmentId)">
                                             Edit
                                         </button>
-
-                                       
                                     </div>
                                 </td>
                             </tr>
@@ -175,6 +176,7 @@ else
         }
     </section>
 }
+
 @code {
     private List<AppointmentDto>? appointments;
 
@@ -198,7 +200,7 @@ else
     {
         get
         {
-            return appointments?.Count(a => a.ScheduledDate.Date == DateTime.Today) ?? 0;
+            return appointments?.Count(a => ParseDate(a.ScheduledDate).Date == DateTime.Today) ?? 0;
         }
     }
 
@@ -206,7 +208,7 @@ else
     {
         get
         {
-            return appointments?.Count(a => a.ScheduledDate.Date > DateTime.Today) ?? 0;
+            return appointments?.Count(a => ParseDate(a.ScheduledDate).Date > DateTime.Today) ?? 0;
         }
     }
 
@@ -214,7 +216,7 @@ else
     {
         get
         {
-            return appointments?.Count(a => a.Status == AppointmentStatusDto.Cancelled) ?? 0;
+            return appointments?.Count(a => a.Status == AppointmentStatus.Cancelled) ?? 0;
         }
     }
 
@@ -232,8 +234,10 @@ else
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
                 query = query.Where(a =>
-                    a.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    a.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(a.PatientName) &&
+                     a.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (!string.IsNullOrWhiteSpace(a.DoctorName) &&
+                     a.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
                     a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                     (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
                      a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
@@ -242,22 +246,22 @@ else
             if (!string.IsNullOrWhiteSpace(selectedDoctor))
             {
                 query = query.Where(a =>
-                    a.DoctorName.Equals(selectedDoctor, StringComparison.OrdinalIgnoreCase));
+                    string.Equals(a.DoctorName, selectedDoctor, StringComparison.OrdinalIgnoreCase));
             }
 
             query = selectedStatusFilter switch
             {
-                "today" => query.Where(a => a.ScheduledDate.Date == DateTime.Today),
-                "upcoming" => query.Where(a => a.ScheduledDate.Date > DateTime.Today),
-                "pending" => query.Where(a => a.Status == AppointmentStatusDto.Pending),
-                "confirmed" => query.Where(a => a.Status == AppointmentStatusDto.Confirmed),
-                "completed" => query.Where(a => a.Status == AppointmentStatusDto.Completed),
-                "cancelled" => query.Where(a => a.Status == AppointmentStatusDto.Cancelled),
+                "today" => query.Where(a => ParseDate(a.ScheduledDate).Date == DateTime.Today),
+                "upcoming" => query.Where(a => ParseDate(a.ScheduledDate).Date > DateTime.Today),
+                "pending" => query.Where(a => a.Status == AppointmentStatus.Pending),
+                "confirmed" => query.Where(a => a.Status == AppointmentStatus.Confirmed),
+                "completed" => query.Where(a => a.Status == AppointmentStatus.Completed),
+                "cancelled" => query.Where(a => a.Status == AppointmentStatus.Cancelled),
                 _ => query
             };
 
             return query
-                .OrderByDescending(a => a.ScheduledDate)
+                .OrderByDescending(a => ParseDate(a.ScheduledDate))
                 .ThenBy(a => a.TimeSlot);
         }
     }
@@ -280,7 +284,8 @@ else
         appointments = await AppointmentService.GetAllAppointmentsAsync();
 
         doctors = appointments
-            .Select(a => a.DoctorName)
+            .Where(a => !string.IsNullOrWhiteSpace(a.DoctorName))
+            .Select(a => a.DoctorName!)
             .Distinct()
             .OrderBy(d => d)
             .ToList();
@@ -301,8 +306,14 @@ else
         Navigation.NavigateTo($"/admin/appointments/details/{appointmentId}");
     }
 
-    
-    private string GetInitials(string fullName)
+    private static DateTime ParseDate(string date)
+    {
+        return DateTime.TryParse(date, out var parsedDate)
+            ? parsedDate
+            : DateTime.MinValue;
+    }
+
+    private string GetInitials(string? fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {
@@ -321,14 +332,14 @@ else
         return $"{parts[0][0]}{parts[1][0]}".ToUpper();
     }
 
-    private string GetStatusBadgeClass(AppointmentStatusDto status)
+    private string GetStatusBadgeClass(AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatusDto.Pending => "hc-status-badge pending",
-            AppointmentStatusDto.Confirmed => "hc-status-badge confirmed",
-            AppointmentStatusDto.Completed => "hc-status-badge completed",
-            AppointmentStatusDto.Cancelled => "hc-status-badge cancelled",
+            AppointmentStatus.Pending => "hc-status-badge pending",
+            AppointmentStatus.Confirmed => "hc-status-badge confirmed",
+            AppointmentStatus.Completed => "hc-status-badge completed",
+            AppointmentStatus.Cancelled => "hc-status-badge cancelled",
             _ => "hc-status-badge"
         };
     }

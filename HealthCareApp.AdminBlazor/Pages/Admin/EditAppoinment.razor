@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Appointments
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
@@ -12,7 +13,7 @@
 <div class="hc-page-heading">
     <div>
         <h1>Edit Appointment</h1>
-        <p>Update appointment schedule, doctor, patient, status, and cancellation details.</p>
+        <p>Update appointment schedule, doctor, patient, and time slot.</p>
     </div>
 
     <button class="hc-secondary-btn" @onclick="BackToAppointments">
@@ -50,6 +51,24 @@ else
                     <p>Modify appointment details from the admin workspace.</p>
                 </div>
             </div>
+
+            <div class="hc-details-badge-row mb-3">
+                <span class="@GetStatusBadgeClass(existingStatus)">
+                    Current Status: @existingStatus
+                </span>
+            </div>
+
+            @if (existingStatus == AppointmentStatus.Cancelled)
+            {
+                <div class="hc-details-note mb-3">
+                    <span>Cancellation Reason</span>
+                    <p>
+                        @(string.IsNullOrWhiteSpace(existingCancellationReason)
+                            ? "No cancellation reason provided."
+                            : existingCancellationReason)
+                    </p>
+                </div>
+            }
 
             <EditForm Model="appointment" OnValidSubmit="UpdateAppointment">
                 <DataAnnotationsValidator />
@@ -97,27 +116,6 @@ else
                         </InputSelect>
                         <ValidationMessage For="@(() => appointment.TimeSlot)" />
                     </div>
-
-                    <div class="hc-form-group">
-                        <label class="hc-form-label">Status</label>
-                        <InputSelect class="hc-form-control" @bind-Value="appointment.Status">
-                            <option value="@AppointmentStatusDto.Pending">Pending</option>
-                            <option value="@AppointmentStatusDto.Confirmed">Confirmed</option>
-                            <option value="@AppointmentStatusDto.Completed">Completed</option>
-                            <option value="@AppointmentStatusDto.Cancelled">Cancelled</option>
-                        </InputSelect>
-                    </div>
-
-                    @if (appointment.Status == AppointmentStatusDto.Cancelled)
-                    {
-                        <div class="hc-form-group">
-                            <label class="hc-form-label">Cancellation Reason</label>
-                            <InputText class="hc-form-control"
-                                       placeholder="Enter cancellation reason"
-                                       @bind-Value="appointment.CancellationReason" />
-                            <ValidationMessage For="@(() => appointment.CancellationReason)" />
-                        </div>
-                    }
                 </div>
 
                 <div class="hc-form-actions">
@@ -140,6 +138,10 @@ else
 
     private UpdateAppointmentDto appointment = new();
 
+    private AppointmentStatus existingStatus;
+
+    private string? existingCancellationReason;
+
     private bool isLoading = true;
 
     private string? errorMessage;
@@ -147,12 +149,20 @@ else
     private readonly List<string> timeSlots = new()
     {
         "09:00 AM - 09:30 AM",
+        "09:30 AM - 10:00 AM",
         "10:00 AM - 10:30 AM",
+        "10:30 AM - 11:00 AM",
         "11:00 AM - 11:30 AM",
+        "11:30 AM - 12:00 PM",
         "12:00 PM - 12:30 PM",
         "02:00 PM - 02:30 PM",
+        "02:30 PM - 03:00 PM",
         "03:00 PM - 03:30 PM",
-        "04:00 PM - 04:30 PM"
+        "03:30 PM - 04:00 PM",
+        "04:00 PM - 04:30 PM",
+        "04:30 PM - 05:00 PM",
+        "05:00 PM - 05:30 PM",
+        "05:30 PM - 06:00 PM"
     };
 
     protected override async Task OnInitializedAsync()
@@ -182,14 +192,23 @@ else
             return;
         }
 
+        if (!DateTime.TryParse(existingAppointment.ScheduledDate, out var scheduledDate))
+        {
+            scheduledDate = DateTime.Today;
+        }
+
+        existingStatus = existingAppointment.Status;
+        existingCancellationReason = existingAppointment.CancellationReason;
+
         appointment = new UpdateAppointmentDto
         {
+            AppointmentId = existingAppointment.AppointmentId.ToString(),
+            PatientName = existingAppointment.PatientName,
+            DoctorName = existingAppointment.DoctorName,
             PatientId = existingAppointment.PatientId,
             DoctorId = existingAppointment.DoctorId,
-            ScheduledDate = existingAppointment.ScheduledDate,
-            TimeSlot = existingAppointment.TimeSlot,
-            Status = existingAppointment.Status,
-            CancellationReason = existingAppointment.CancellationReason
+            ScheduledDate = scheduledDate,
+            TimeSlot = existingAppointment.TimeSlot
         };
 
         isLoading = false;
@@ -200,23 +219,11 @@ else
         errorMessage = null;
 
         if (appointment.ScheduledDate.Date < DateTime.Today &&
-            appointment.Status != AppointmentStatusDto.Completed &&
-            appointment.Status != AppointmentStatusDto.Cancelled)
+            existingStatus != AppointmentStatus.Completed &&
+            existingStatus != AppointmentStatus.Cancelled)
         {
             errorMessage = "Only completed or cancelled appointments can remain in the past.";
             return;
-        }
-
-        if (appointment.Status == AppointmentStatusDto.Cancelled &&
-            string.IsNullOrWhiteSpace(appointment.CancellationReason))
-        {
-            errorMessage = "Cancellation reason is required when appointment is cancelled.";
-            return;
-        }
-
-        if (appointment.Status != AppointmentStatusDto.Cancelled)
-        {
-            appointment.CancellationReason = null;
         }
 
         var updatedAppointment = await AppointmentService.UpdateAppointmentAsync(
@@ -235,5 +242,17 @@ else
     private void BackToAppointments()
     {
         Navigation.NavigateTo("/admin/appointments");
+    }
+
+    private string GetStatusBadgeClass(AppointmentStatus status)
+    {
+        return status switch
+        {
+            AppointmentStatus.Pending => "hc-status-badge pending",
+            AppointmentStatus.Confirmed => "hc-status-badge confirmed",
+            AppointmentStatus.Completed => "hc-status-badge completed",
+            AppointmentStatus.Cancelled => "hc-status-badge cancelled",
+            _ => "hc-status-badge"
+        };
     }
 }

@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.AdminBlazor.Dtos.Doctors;
+using HealthCareApp.AdminBlazor.Enums;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
@@ -12,7 +13,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 DoctorId = 1,
                 FullName = "Arun Menon",
                 Email = "arun.menon@example.com",
-                Specialisation = "General Practitioner",
+                Specialisation = SpecialisationType.GeneralPractitioner,
                 YearsOfExperience = 10,
                 ConsultationFee = 500,
                 IsActive = true
@@ -22,7 +23,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 DoctorId = 2,
                 FullName = "Meera Nair",
                 Email = "meera.nair@example.com",
-                Specialisation = "Cardiologist",
+                Specialisation = SpecialisationType.Cardiologist,
                 YearsOfExperience = 15,
                 ConsultationFee = 1000,
                 IsActive = true
@@ -32,7 +33,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 DoctorId = 3,
                 FullName = "Vikram Das",
                 Email = "vikram.das@example.com",
-                Specialisation = "Dermatologist",
+                Specialisation = SpecialisationType.Dermatologist,
                 YearsOfExperience = 8,
                 ConsultationFee = 700,
                 IsActive = true
@@ -67,9 +68,9 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 FullName = request.FullName,
                 Email = request.Email,
                 Specialisation = request.Specialisation,
-                YearsOfExperience = request.YearsOfExperience,
+                YearsOfExperience = CalculateYearsOfExperience(request.PracticeStartDate),
                 ConsultationFee = request.ConsultationFee,
-                IsActive = request.IsActive
+                IsActive = true
             };
 
             Doctors.Add(doctor);
@@ -87,9 +88,8 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             }
 
             doctor.FullName = request.FullName;
-            doctor.Email = request.Email;
             doctor.Specialisation = request.Specialisation;
-            doctor.YearsOfExperience = request.YearsOfExperience;
+            doctor.YearsOfExperience = CalculateYearsOfExperience(request.PracticeStartDate);
             doctor.ConsultationFee = request.ConsultationFee;
             doctor.IsActive = request.IsActive;
 
@@ -122,6 +122,18 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             doctor.IsActive = !doctor.IsActive;
 
             return Task.FromResult<DoctorDto?>(doctor);
+        }
+
+        private static int CalculateYearsOfExperience(DateTime practiceStartDate)
+        {
+            int years = DateTime.Today.Year - practiceStartDate.Year;
+
+            if (practiceStartDate.Date > DateTime.Today.AddYears(-years))
+            {
+                years--;
+            }
+
+            return years < 0 ? 0 : years;
         }
     }
 }

@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Patients
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
@@ -49,7 +50,7 @@ else
 
         <div class="hc-doctor-stat-card purple">
             <span>Added Today</span>
-            <strong>@patients.Count(p => p.CreatedDate.Date == DateTime.Today)</strong>
+            <strong>@patients.Count(p => ParseDate(p.CreatedDate).Date == DateTime.Today)</strong>
         </div>
     </div>
 
@@ -103,6 +104,8 @@ else
                     <tbody>
                         @foreach (var patient in FilteredPatients)
                         {
+                            var dateOfBirth = ParseDate(patient.DateOfBirth);
+
                             <tr>
                                 <td>
                                     <div class="hc-doctor-cell">
@@ -123,7 +126,7 @@ else
                                     </span>
                                 </td>
 
-                                <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
+                                <td>@dateOfBirth.ToString("dd MMM yyyy")</td>
 
                                 <td>@patient.PhoneNumber</td>
 
@@ -149,8 +152,6 @@ else
                                                 @onclick="() => GoToEditPatient(patient.PatientId)">
                                             Edit
                                         </button>
-
-                                      
                                     </div>
                                 </td>
                             </tr>
@@ -197,7 +198,7 @@ else
             if (!string.IsNullOrWhiteSpace(selectedGender))
             {
                 query = query.Where(p =>
-                    p.Gender.Equals(selectedGender, StringComparison.OrdinalIgnoreCase));
+                    p.Gender.ToString().Equals(selectedGender, StringComparison.OrdinalIgnoreCase));
             }
 
             if (selectedInsuranceStatus == "insured")
@@ -231,7 +232,7 @@ else
         patients = await PatientService.GetAllPatientsAsync();
 
         genders = patients
-            .Select(p => p.Gender)
+            .Select(p => p.Gender.ToString())
             .Distinct()
             .OrderBy(g => g)
             .ToList();
@@ -252,14 +253,11 @@ else
         Navigation.NavigateTo($"/admin/patients/details/{patientId}");
     }
 
-    private async Task DeletePatient(int patientId)
+    private static DateTime ParseDate(string date)
     {
-        var deleted = await PatientService.DeletePatientAsync(patientId);
-
-        if (deleted)
-        {
-            await LoadPatients();
-        }
+        return DateTime.TryParse(date, out var parsedDate)
+            ? parsedDate
+            : DateTime.MinValue;
     }
 
     private string GetInitials(string fullName)

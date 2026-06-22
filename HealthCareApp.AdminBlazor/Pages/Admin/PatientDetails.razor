@@ -1,7 +1,8 @@
 ﻿@page "/admin/patients/details/{patientId:int}"
 @layout AdminLayout
 
-HealthCareApp.AdminBlazor.Services.Interfaces@using HealthCareApp.AdminBlazor.Dtos.Patients
+@using HealthCareApp.AdminBlazor.Dtos.Patients
+@using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
 @inject NavigationManager Navigation
@@ -73,7 +74,7 @@ else if (patient is not null)
 
             <div class="hc-details-card">
                 <span>Date Of Birth</span>
-                <strong>@patient.DateOfBirth.ToString("dd MMM yyyy")</strong>
+                <strong>@dateOfBirth.ToString("dd MMM yyyy")</strong>
             </div>
 
             <div class="hc-details-card">
@@ -83,12 +84,16 @@ else if (patient is not null)
 
             <div class="hc-details-card">
                 <span>Insurance ID</span>
-                <strong>@(string.IsNullOrWhiteSpace(patient.InsuranceId) ? "Not Available" : patient.InsuranceId)</strong>
+                <strong>
+                    @(string.IsNullOrWhiteSpace(patient.InsuranceId)
+                        ? "Not Available"
+                        : patient.InsuranceId)
+                </strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Created Date</span>
-                <strong>@patient.CreatedDate.ToString("dd MMM yyyy")</strong>
+                <strong>@createdDate.ToString("dd MMM yyyy")</strong>
             </div>
 
             <div class="hc-details-card">
@@ -114,6 +119,10 @@ else if (patient is not null)
     public int patientId { get; set; }
 
     private PatientDto? patient;
+
+    private DateTime dateOfBirth;
+
+    private DateTime createdDate;
 
     private bool isLoading = true;
 
@@ -142,6 +151,18 @@ else if (patient is not null)
         if (patient is null)
         {
             errorMessage = "Patient profile was not found.";
+            isLoading = false;
+            return;
+        }
+
+        if (!DateTime.TryParse(patient.DateOfBirth, out dateOfBirth))
+        {
+            dateOfBirth = DateTime.MinValue;
+        }
+
+        if (!DateTime.TryParse(patient.CreatedDate, out createdDate))
+        {
+            createdDate = DateTime.MinValue;
         }
 
         isLoading = false;

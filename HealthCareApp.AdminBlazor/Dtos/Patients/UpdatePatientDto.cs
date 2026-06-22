@@ -1,27 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HealthCareApp.AdminBlazor.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCareApp.AdminBlazor.Dtos.Patients
 {
     public class UpdatePatientDto
     {
-        [Required(ErrorMessage = "Patient name is required.")]
-        [MinLength(2, ErrorMessage = "Patient name must contain at least 2 characters.")]
+        [Required]
+        [StringLength(100)]
         public string FullName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Date of birth is required.")]
+        [Required]
         public DateTime DateOfBirth { get; set; }
 
-        [Required(ErrorMessage = "Gender is required.")]
-        public string Gender { get; set; } = string.Empty;
+        [Required]
+        public GenderType Gender { get; set; }
 
-        [Required(ErrorMessage = "Email address is required.")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-        public string Email { get; set; } = string.Empty;
-
-        [Required(ErrorMessage = "Phone number is required.")]
-        [Phone(ErrorMessage = "Please enter a valid phone number.")]
+        [Required]
+        [RegularExpression(@"^[0-9]{10}$")]
         public string PhoneNumber { get; set; } = string.Empty;
 
-        public string? InsuranceId { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(30)]
+        public string InsuranceId { get; set; } = string.Empty;
     }
 }

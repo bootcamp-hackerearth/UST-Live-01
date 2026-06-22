@@ -2,15 +2,8 @@
 
 namespace HealthCareApp.AdminBlazor.Dtos.Appointments
 {
-    public class UpdateAppointmentDto
+    public class BookAppointmentDto
     {
-        public string? PatientName { get; set; }
-
-        public string? DoctorName { get; set; }
-
-        [Required]
-        public string? AppointmentId { get; set; }
-
         [Required]
         [Range(1, int.MaxValue)]
         public int PatientId { get; set; }

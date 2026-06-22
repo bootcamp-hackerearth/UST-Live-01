@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Doctors
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
@@ -51,6 +52,14 @@ else
                 </div>
             </div>
 
+            @if (!string.IsNullOrWhiteSpace(existingEmail))
+            {
+                <div class="hc-details-note mb-3">
+                    <span>Email Address</span>
+                    <p>@existingEmail</p>
+                </div>
+            }
+
             <EditForm Model="doctor" OnValidSubmit="UpdateDoctor">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -65,19 +74,10 @@ else
                     </div>
 
                     <div class="hc-form-group">
-                        <label class="hc-form-label">Email Address</label>
-                        <InputText class="hc-form-control"
-                                   placeholder="doctor@example.com"
-                                   @bind-Value="doctor.Email" />
-                        <ValidationMessage For="@(() => doctor.Email)" />
-                    </div>
-
-                    <div class="hc-form-group">
                         <label class="hc-form-label">Specialisation</label>
                         <InputSelect class="hc-form-control"
                                      @bind-Value="doctor.Specialisation">
-                            <option value="">-- Select Specialisation --</option>
-                            @foreach (var specialisation in specialisations)
+                            @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
                             {
                                 <option value="@specialisation">@specialisation</option>
                             }
@@ -86,10 +86,10 @@ else
                     </div>
 
                     <div class="hc-form-group">
-                        <label class="hc-form-label">Years Of Experience</label>
-                        <InputNumber class="hc-form-control"
-                                     @bind-Value="doctor.YearsOfExperience" />
-                        <ValidationMessage For="@(() => doctor.YearsOfExperience)" />
+                        <label class="hc-form-label">Practice Start Date</label>
+                        <InputDate class="hc-form-control"
+                                   @bind-Value="doctor.PracticeStartDate" />
+                        <ValidationMessage For="@(() => doctor.PracticeStartDate)" />
                     </div>
 
                     <div class="hc-form-group">
@@ -127,23 +127,17 @@ else
     [Parameter]
     public int doctorId { get; set; }
 
-    private UpdateDoctorDto doctor = new();
+    private UpdateDoctorDto doctor = new()
+    {
+        Specialisation = SpecialisationType.GeneralPractitioner,
+        PracticeStartDate = DateTime.Today.AddYears(-1)
+    };
 
     private bool isLoading = true;
 
     private string? errorMessage;
 
-    private readonly List<string> specialisations = new()
-    {
-        "General Practitioner",
-        "Cardiologist",
-        "Dermatologist",
-        "Neurologist",
-        "Orthopedic",
-        "Pediatrician",
-        "Psychiatrist",
-        "ENT Specialist"
-    };
+    private string? existingEmail;
 
     protected override async Task OnInitializedAsync()
     {
@@ -172,12 +166,13 @@ else
             return;
         }
 
+        existingEmail = existingDoctor.Email;
+
         doctor = new UpdateDoctorDto
         {
             FullName = existingDoctor.FullName,
-            Email = existingDoctor.Email,
             Specialisation = existingDoctor.Specialisation,
-            YearsOfExperience = existingDoctor.YearsOfExperience,
+            PracticeStartDate = CalculatePracticeStartDate(existingDoctor.YearsOfExperience),
             ConsultationFee = existingDoctor.ConsultationFee,
             IsActive = existingDoctor.IsActive
         };
@@ -188,6 +183,12 @@ else
     private async Task UpdateDoctor()
     {
         errorMessage = null;
+
+        if (doctor.PracticeStartDate.Date > DateTime.Today)
+        {
+            errorMessage = "Practice start date cannot be in the future.";
+            return;
+        }
 
         var updatedDoctor = await DoctorService.UpdateDoctorAsync(doctorId, doctor);
 
@@ -203,5 +204,15 @@ else
     private void BackToDoctors()
     {
         Navigation.NavigateTo("/admin/doctors");
+    }
+
+    private static DateTime CalculatePracticeStartDate(int yearsOfExperience)
+    {
+        if (yearsOfExperience < 0)
+        {
+            yearsOfExperience = 0;
+        }
+
+        return DateTime.Today.AddYears(-yearsOfExperience);
     }
 }

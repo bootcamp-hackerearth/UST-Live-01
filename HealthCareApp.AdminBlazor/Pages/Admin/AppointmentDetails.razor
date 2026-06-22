@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Appointments
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
@@ -56,11 +57,11 @@ else if (appointment is not null)
                         @appointment.Status
                     </span>
 
-                    @if (appointment.ScheduledDate.Date == DateTime.Today)
+                    @if (scheduledDate.Date == DateTime.Today)
                     {
                         <span class="hc-status-badge confirmed">Today</span>
                     }
-                    else if (appointment.ScheduledDate.Date > DateTime.Today)
+                    else if (scheduledDate.Date > DateTime.Today)
                     {
                         <span class="hc-status-badge pending">Upcoming</span>
                     }
@@ -100,7 +101,7 @@ else if (appointment is not null)
 
             <div class="hc-details-card">
                 <span>Scheduled Date</span>
-                <strong>@appointment.ScheduledDate.ToString("dd MMM yyyy")</strong>
+                <strong>@scheduledDate.ToString("dd MMM yyyy")</strong>
             </div>
 
             <div class="hc-details-card">
@@ -112,14 +113,9 @@ else if (appointment is not null)
                 <span>Status</span>
                 <strong>@appointment.Status</strong>
             </div>
-
-            <div class="hc-details-card">
-                <span>Created Date</span>
-                <strong>@appointment.CreatedDate.ToString("dd MMM yyyy")</strong>
-            </div>
         </div>
 
-        @if (appointment.Status == AppointmentStatusDto.Cancelled)
+        @if (appointment.Status == AppointmentStatus.Cancelled)
         {
             <div class="hc-details-note">
                 <span>Cancellation Reason</span>
@@ -149,6 +145,8 @@ else if (appointment is not null)
 
     private AppointmentDto? appointment;
 
+    private DateTime scheduledDate;
+
     private bool isLoading = true;
 
     private string? errorMessage;
@@ -176,6 +174,13 @@ else if (appointment is not null)
         if (appointment is null)
         {
             errorMessage = "Appointment was not found.";
+            isLoading = false;
+            return;
+        }
+
+        if (!DateTime.TryParse(appointment.ScheduledDate, out scheduledDate))
+        {
+            scheduledDate = DateTime.MinValue;
         }
 
         isLoading = false;
@@ -191,14 +196,14 @@ else if (appointment is not null)
         Navigation.NavigateTo("/admin/appointments");
     }
 
-    private string GetStatusBadgeClass(AppointmentStatusDto status)
+    private string GetStatusBadgeClass(AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatusDto.Pending => "hc-status-badge pending",
-            AppointmentStatusDto.Confirmed => "hc-status-badge confirmed",
-            AppointmentStatusDto.Completed => "hc-status-badge completed",
-            AppointmentStatusDto.Cancelled => "hc-status-badge cancelled",
+            AppointmentStatus.Pending => "hc-status-badge pending",
+            AppointmentStatus.Confirmed => "hc-status-badge confirmed",
+            AppointmentStatus.Completed => "hc-status-badge completed",
+            AppointmentStatus.Cancelled => "hc-status-badge cancelled",
             _ => "hc-status-badge"
         };
     }

@@ -2,6 +2,7 @@
 @layout AdminLayout
 
 @using HealthCareApp.AdminBlazor.Dtos.Patients
+@using HealthCareApp.AdminBlazor.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
@@ -75,8 +76,7 @@ else
                         <label class="hc-form-label">Gender</label>
                         <InputSelect class="hc-form-control"
                                      @bind-Value="patient.Gender">
-                            <option value="">-- Select Gender --</option>
-                            @foreach (var gender in genders)
+                            @foreach (var gender in Enum.GetValues<GenderType>())
                             {
                                 <option value="@gender">@gender</option>
                             }
@@ -103,7 +103,7 @@ else
                     <div class="hc-form-group">
                         <label class="hc-form-label">Insurance ID</label>
                         <InputText class="hc-form-control"
-                                   placeholder="Optional insurance reference"
+                                   placeholder="Enter insurance reference"
                                    @bind-Value="patient.InsuranceId" />
                         <ValidationMessage For="@(() => patient.InsuranceId)" />
                     </div>
@@ -127,18 +127,15 @@ else
     [Parameter]
     public int patientId { get; set; }
 
-    private UpdatePatientDto patient = new();
+    private UpdatePatientDto patient = new()
+    {
+        DateOfBirth = DateTime.Today.AddYears(-18),
+        Gender = GenderType.Male
+    };
 
     private bool isLoading = true;
 
     private string? errorMessage;
-
-    private readonly List<string> genders = new()
-    {
-        "Male",
-        "Female",
-        "Other"
-    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -167,10 +164,15 @@ else
             return;
         }
 
+        if (!DateTime.TryParse(existingPatient.DateOfBirth, out var dateOfBirth))
+        {
+            dateOfBirth = DateTime.Today.AddYears(-18);
+        }
+
         patient = new UpdatePatientDto
         {
             FullName = existingPatient.FullName,
-            DateOfBirth = existingPatient.DateOfBirth,
+            DateOfBirth = dateOfBirth,
             Gender = existingPatient.Gender,
             Email = existingPatient.Email,
             PhoneNumber = existingPatient.PhoneNumber,
@@ -187,6 +189,12 @@ else
         if (patient.DateOfBirth.Date > DateTime.Today)
         {
             errorMessage = "Date of birth cannot be a future date.";
+            return;
+        }
+
+        if (patient.DateOfBirth.Date < new DateTime(1900, 1, 1))
+        {
+            errorMessage = "Date of birth cannot be before 01 Jan 1900.";
             return;
         }
 
