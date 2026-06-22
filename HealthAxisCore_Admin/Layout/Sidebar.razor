@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
 @inject NavigationManager NavigationManager
 @inject HealthAxisCore_Admin.Services.AuthService AuthService
+@inject HealthAxisCore_Admin.Services.ThemeService ThemeService
 
 <aside class="sidebar glass">
     <div class="sidebar-title">
@@ -33,6 +34,11 @@
         </NavLink>
     </nav>
 
+    <button class="sidebar-link theme-toggle-link"
+            @onclick="ToggleThemeAsync">
+        @themeButtonText
+    </button>
+
     <button class="sidebar-link logout-link"
             @onclick="LogoutAsync">
         Logout
@@ -40,6 +46,32 @@
 </aside>
 
 @code {
+
+    private string currentTheme = "dark";
+
+    private string themeButtonText =>
+        currentTheme == "dark"
+            ? "Switch to Light Mode"
+            : "Switch to Dark Mode";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        currentTheme = await ThemeService.GetThemeAsync();
+
+        StateHasChanged();
+    }
+
+    private async Task ToggleThemeAsync()
+    {
+        currentTheme = await ThemeService.ToggleThemeAsync();
+    }
+
+
     private async Task LogoutAsync()
     {
         await AuthService.LogoutAsync();

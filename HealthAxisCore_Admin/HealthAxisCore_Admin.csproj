@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+	  <SonarQubeTestProject>false</SonarQubeTestProject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,30 +16,23 @@
 	<ItemGroup>
 		<SonarQubeSetting Include="sonar.coverage.exclusions">
 			<Value>
-				**/HealthAxisCore_Admin/Pages/**/*.cs,
-				**/HealthAxisCore_Admin/Pages/**/*.razor,
-				**/HealthAxisCore_Admin/Shared/**/*.cs,
-				**/HealthAxisCore_Admin/Shared/**/*.razor,
-				**/HealthAxisCore_Admin/Layout/**/*.cs,
-				**/HealthAxisCore_Admin/Layout/**/*.razor,
-				**/HealthAxisCore_Admin/Components/**/*.cs,
-				**/HealthAxisCore_Admin/Components/**/*.razor,
-				**/HealthAxisCore_Admin/Models/**/*.cs,
-				**/HealthAxisCore_Admin/Services/**/*.cs,
-				**/HealthAxisCore_Admin/Data/**/*.cs,
-				**/HealthAxisCore_Admin/Helpers/**/*.cs,
-				**/HealthAxisCore_Admin/Extensions/**/*.cs,
-				**/HealthAxisCore_Admin/Constants/**/*.cs,
-				**/HealthAxisCore_Admin/DTOs/**/*.cs,
-				**/HealthAxisCore_Admin/Dtos/**/*.cs,
-				**/HealthAxisCore_Admin/ViewModels/**/*.cs,
-				**/HealthAxisCore_Admin/Interfaces/**/*.cs,
-				**/HealthAxisCore_Admin/wwwroot/**/*,
-				**/HealthAxisCore_Admin/Properties/**/*.cs,
-				**/HealthAxisCore_Admin/Program.cs,
-				**/HealthAxisCore_Admin/_Imports.razor,
-				**/HealthAxisCore_Admin/App.razor,
-				**/HealthAxisCore_Admin/Routes.razor
+				**/Pages/**,
+				**/Shared/**,
+				**/Layout/**,
+				**/Components/**,
+				**/Models/**,
+				**/Services/**,
+				**/Data/**,
+				**/Helpers/**,
+				**/Extensions/**,
+				**/Constants/**,
+				**/DTOs/**,
+				**/Dtos/**,
+				**/ViewModels/**,
+				**/Interfaces/**,
+				**/wwwroot/**,
+				**/App.razor,          
+				**/Program.cs          
 			</Value>
 		</SonarQubeSetting>
 	</ItemGroup>

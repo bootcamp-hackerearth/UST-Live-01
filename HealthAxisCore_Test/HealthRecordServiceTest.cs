@@ -675,5 +675,95 @@ namespace HealthAxisCore_Api.Tests.Services
             healthRecordRepositoryMock.Verify(x => x.GetDetailsAsync(savedRecord.HealthRecordId, ct), Times.Once);
             mapperMock.Verify(x => x.Map<HealthRecordDto>(savedRecord), Times.Once);
         }
+        [Fact]
+        public async Task GetByPatientIdAsync_DoctorWithoutClaim_Throws()
+        {
+            var service = CreateService();
+
+            var user = CreateUser("Doctor");
+
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                service.GetByPatientIdAsync(10, user));
+        }
+
+        [Fact]
+        public async Task GetByPatientIdAsync_InvalidRole_Throws()
+        {
+            var service = CreateService();
+
+            var user = new ClaimsPrincipal(new ClaimsIdentity());
+
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                service.GetByPatientIdAsync(10, user));
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_PatientAccessingOthersRecord_Throws()
+        {
+            var ct = CancellationToken.None;
+
+            var record = CreateHealthRecord(patientId: 99);
+
+            var repo = new Mock<IHealthRecordRepository>();
+            repo.Setup(x => x.GetDetailsAsync(1, ct)).ReturnsAsync(record);
+
+            var service = CreateService(healthRecordRepositoryMock: repo);
+
+            var user = CreateUser("Patient", patientId: 10);
+
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                service.GetByIdAsync(1, user, ct));
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_DoctorAccessingOthersRecord_Throws()
+        {
+            var ct = CancellationToken.None;
+
+            var record = CreateHealthRecord(doctorId: 99);
+
+            var repo = new Mock<IHealthRecordRepository>();
+            repo.Setup(x => x.GetDetailsAsync(1, ct)).ReturnsAsync(record);
+
+            var service = CreateService(healthRecordRepositoryMock: repo);
+
+            var user = CreateUser("Doctor", doctorId: 10);
+
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                service.GetByIdAsync(1, user, ct));
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_PatientWithoutClaim_Throws()
+        {
+            var ct = CancellationToken.None;
+
+            var record = CreateHealthRecord();
+
+            var repo = new Mock<IHealthRecordRepository>();
+            repo.Setup(x => x.GetDetailsAsync(1, ct)).ReturnsAsync(record);
+
+            var service = CreateService(healthRecordRepositoryMock: repo);
+
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                service.GetByIdAsync(1, CreateUser("Patient"), ct));
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_DoctorWithoutClaim_Throws()
+        {
+            var ct = CancellationToken.None;
+
+            var record = CreateHealthRecord();
+
+            var repo = new Mock<IHealthRecordRepository>();
+            repo.Setup(x => x.GetDetailsAsync(1, ct)).ReturnsAsync(record);
+
+            var service = CreateService(healthRecordRepositoryMock: repo);
+
+            await Assert.ThrowsAsync<UnauthorizedException>(() =>
+                service.GetByIdAsync(1, CreateUser("Doctor"), ct));
+        }
+
     }
 }

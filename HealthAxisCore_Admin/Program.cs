@@ -21,5 +21,6 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DoctorAdminService>();
 builder.Services.AddScoped<UserAdminService>();
 builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<ThemeService>();
 await Task.Delay(1000);
 await builder.Build().RunAsync();
