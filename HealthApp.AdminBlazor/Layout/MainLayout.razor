@@ -1,0 +1,49 @@
+@inherits LayoutComponentBase
+@inject AdminAuthStateService AuthState
+@inject NavigationManager Navigation
+
+<div class="app-shell">
+    <aside class="sidebar">
+        <div class="brand-row">
+            <div class="brand-logo">H</div>
+            <div>
+                <h2>HealthApp</h2>
+                <span>Admin Console</span>
+            </div>
+        </div>
+
+        <nav class="nav-list">
+            <NavLink href="/dashboard" Match="NavLinkMatch.All">Dashboard</NavLink>
+            <NavLink href="/doctors">Doctor Management</NavLink>
+            <NavLink href="/reports/appointments">Appointments Report</NavLink>
+            <NavLink href="/users">User Management</NavLink>
+        </nav>
+
+        <div class="sidebar-footer">
+            @if (AuthState.IsLoggedIn)
+            {
+                <div class="admin-chip">
+                    <span>Signed in as</span>
+                    <strong>@AuthState.AdminEmail</strong>
+                </div>
+                <button class="btn btn-outline-light" @onclick="Logout">Logout</button>
+            }
+            else
+            {
+                <a class="btn btn-primary" href="/login">Admin Login</a>
+            }
+        </div>
+    </aside>
+
+    <main class="main-content">
+        @Body
+    </main>
+</div>
+
+@code {
+    private void Logout()
+    {
+        AuthState.Logout();
+        Navigation.NavigateTo("/login");
+    }
+}

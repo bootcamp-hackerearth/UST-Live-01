@@ -1,0 +1,50 @@
+@page "/login"
+@layout EmptyLayout
+@inject AdminAuthStateService AuthState
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Login</PageTitle>
+
+<section class="login-page">
+    <div class="login-card">
+        <div class="login-brand">H</div>
+        <h1>Admin Login</h1>
+
+        @if (!string.IsNullOrWhiteSpace(message))
+        {
+            <div class="alert @(isSuccess ? "alert-success" : "alert-error")">@message</div>
+        }
+
+        <EditForm Model="loginDto" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <label>Email</label>
+            <InputText class="input" @bind-Value="loginDto.Email" placeholder="Enter admin email" />
+
+            <label>Password</label>
+            <InputText class="input" type="password" @bind-Value="loginDto.Password" placeholder="Enter password" />
+
+            <button class="btn btn-primary btn-full" type="submit">Login</button>
+        </EditForm>
+    </div>
+</section>
+
+@code {
+    private LoginDto loginDto = new();
+    private string? message;
+    private bool isSuccess;
+
+    private async Task HandleLogin()
+    {
+        var result = AuthState.Login(loginDto);
+        message = result.Message;
+        isSuccess = result.IsSuccess;
+
+        if (result.IsSuccess)
+        {
+            await Task.Delay(400);
+            Navigation.NavigateTo("/dashboard");
+        }
+    }
+}

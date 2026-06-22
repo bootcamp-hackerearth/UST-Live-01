@@ -1,0 +1,215 @@
+@page "/doctors"
+@inject AdminAuthStateService AuthState
+@inject InMemoryAdminDataService Data
+@inject NavigationManager Navigation
+
+<PageTitle>Doctor Management</PageTitle>
+
+<div class="page-header">
+    <div>
+        <h1>Doctor Management</h1>
+        <p>Register, edit, and toggle active/inactive doctors.</p>
+    </div>
+    <button class="btn btn-primary" @onclick="StartCreate">Add Doctor</button>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <div class="alert alert-success">@message</div>
+}
+
+<div class="toolbar">
+    <InputText class="input" placeholder="Search doctors..." @bind-Value="searchText" @bind-Value:event="oninput" />
+    <select class="input" @bind="statusFilter">
+        <option value="All">All</option>
+        <option value="Active">Active</option>
+        <option value="Inactive">Inactive</option>
+    </select>
+</div>
+
+@if (showCreateForm)
+{
+    <section class="panel form-panel">
+        <h2>Register Doctor</h2>
+        <EditForm Model="createDto" OnValidSubmit="CreateDoctor">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <div><label>Full Name</label><InputText class="input" @bind-Value="createDto.FullName" /></div>
+                <div><label>Email</label><InputText class="input" @bind-Value="createDto.Email" /></div>
+                <div><label>Temporary Password</label><InputText class="input" type="password" @bind-Value="createDto.TemporaryPassword" /></div>
+                <div>
+                    <label>Specialisation</label>
+                    <InputSelect class="input" @bind-Value="createDto.Specialisation">
+                        @foreach (var specialisation in Data.Specialisations)
+                        {
+                            <option value="@specialisation">@specialisation</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div><label>Practice Start Date</label><InputDate class="input" @bind-Value="createDto.PracticeStartDate" /></div>
+                <div><label>Consultation Fee</label><InputNumber class="input" @bind-Value="createDto.ConsultationFee" /></div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Register Doctor</button>
+                <button class="btn btn-secondary" type="button" @onclick="CancelForms">Cancel</button>
+            </div>
+        </EditForm>
+    </section>
+}
+
+@if (editingDoctorId is not null)
+{
+    <section class="panel form-panel">
+        <h2>Edit Doctor</h2>
+        <EditForm Model="updateDto" OnValidSubmit="UpdateDoctor">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <div><label>Full Name</label><InputText class="input" @bind-Value="updateDto.FullName" /></div>
+                <div>
+                    <label>Specialisation</label>
+                    <InputSelect class="input" @bind-Value="updateDto.Specialisation">
+                        @foreach (var specialisation in Data.Specialisations)
+                        {
+                            <option value="@specialisation">@specialisation</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div><label>Practice Start Date</label><InputDate class="input" @bind-Value="updateDto.PracticeStartDate" /></div>
+                <div><label>Consultation Fee</label><InputNumber class="input" @bind-Value="updateDto.ConsultationFee" /></div>
+                <div class="checkbox-row"><InputCheckbox @bind-Value="updateDto.IsActive" /> <span>Active</span></div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-primary" type="submit">Save Changes</button>
+                <button class="btn btn-secondary" type="button" @onclick="CancelForms">Cancel</button>
+            </div>
+        </EditForm>
+    </section>
+}
+
+<section class="panel">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Specialisation</th>
+                <th>Experience</th>
+                <th>Fee</th>
+                <th>Password</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var doctor in FilteredDoctors)
+            {
+                <tr>
+                    <td>@doctor.FullName</td>
+                    <td>@doctor.Email</td>
+                    <td>@doctor.Specialisation</td>
+                    <td>@doctor.YearsOfExperience yrs</td>
+                    <td>₹@doctor.ConsultationFee</td>
+                    <td><span class="badge @(doctor.MustChangePassword ? "warning" : "success")">@(doctor.MustChangePassword ? "Change Required" : "Ready")</span></td>
+                    <td><span class="badge @(doctor.IsActive ? "success" : "muted")">@(doctor.IsActive ? "Active" : "Inactive")</span></td>
+                    <td class="action-cell">
+                        <button class="btn btn-small" @onclick="() => StartEdit(doctor.DoctorId)">Edit</button>
+                        <button class="btn btn-small btn-secondary" @onclick="() => ToggleStatus(doctor.DoctorId)">@(doctor.IsActive ? "Deactivate" : "Activate")</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</section>
+
+@code {
+    private string searchText = string.Empty;
+    private string statusFilter = "All";
+    private string? message;
+    private bool showCreateForm;
+    private int? editingDoctorId;
+    private CreateDoctorDto createDto = new();
+    private UpdateDoctorDto updateDto = new();
+
+    private IEnumerable<DoctorDto> FilteredDoctors => Data.Doctors
+        .Where(d => string.IsNullOrWhiteSpace(searchText)
+            || d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+            || d.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+            || d.Specialisation.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+        .Where(d => statusFilter == "All"
+            || statusFilter == "Active" && d.IsActive
+            || statusFilter == "Inactive" && !d.IsActive);
+
+    protected override void OnInitialized()
+    {
+        if (!AuthState.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login", replace: true);
+        }
+    }
+
+    private void StartCreate()
+    {
+        editingDoctorId = null;
+        showCreateForm = true;
+        message = null;
+        createDto = new CreateDoctorDto
+        {
+            Specialisation = Data.Specialisations.First(),
+            PracticeStartDate = DateTime.Today.AddYears(-5),
+            ConsultationFee = 1000
+        };
+    }
+
+    private void CreateDoctor()
+    {
+        Data.AddDoctor(createDto);
+        message = "Doctor registered successfully with a temporary password.";
+        showCreateForm = false;
+    }
+
+    private void StartEdit(int doctorId)
+    {
+        var doctor = Data.Doctors.First(d => d.DoctorId == doctorId);
+        showCreateForm = false;
+        editingDoctorId = doctorId;
+        message = null;
+        updateDto = new UpdateDoctorDto
+        {
+            FullName = doctor.FullName,
+            Specialisation = doctor.Specialisation,
+            PracticeStartDate = DateTime.Today.AddYears(-doctor.YearsOfExperience),
+            ConsultationFee = doctor.ConsultationFee,
+            IsActive = doctor.IsActive
+        };
+    }
+
+    private void UpdateDoctor()
+    {
+        if (editingDoctorId is null)
+        {
+            return;
+        }
+
+        Data.UpdateDoctor(editingDoctorId.Value, updateDto);
+        message = "Doctor updated successfully.";
+        editingDoctorId = null;
+    }
+
+    private void ToggleStatus(int doctorId)
+    {
+        Data.ToggleDoctorActive(doctorId);
+        message = "Doctor status updated successfully.";
+    }
+
+    private void CancelForms()
+    {
+        showCreateForm = false;
+        editingDoctorId = null;
+    }
+}

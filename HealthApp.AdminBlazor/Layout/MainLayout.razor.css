@@ -1,0 +1,101 @@
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    background: #f4f7fb;
+}
+
+.sidebar {
+    width: 285px;
+    background: #0f172a;
+    color: white;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand-logo {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2563eb, #22c55e);
+    font-weight: 900;
+    font-size: 24px;
+}
+
+.brand-row h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.brand-row span {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.nav-list {
+    display: grid;
+    gap: 8px;
+}
+
+.nav-list a {
+    color: #cbd5e1;
+    padding: 12px 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.nav-list a.active,
+.nav-list a:hover {
+    background: #1e293b;
+    color: #ffffff;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    display: grid;
+    gap: 12px;
+}
+
+.admin-chip {
+    display: grid;
+    gap: 4px;
+    padding: 12px;
+    border-radius: 14px;
+    background: #1e293b;
+}
+
+.admin-chip span {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.admin-chip strong {
+    overflow-wrap: anywhere;
+    font-size: 14px;
+}
+
+.main-content {
+    flex: 1;
+    padding: 32px;
+    overflow-x: auto;
+}
+
+@media (max-width: 900px) {
+    .app-shell {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+    }
+}
