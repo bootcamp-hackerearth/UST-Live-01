@@ -15,6 +15,7 @@ namespace HealthCareApp.Services.Impl
         IHealthRecordRepository healthRecordRepository,
         IMapper mapper) : IAppointmentService
     {
+        private const string AppointmentEntityName = "Appointment";
         public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
         {
             var appointments = await appointmentRepository.GetAllAsync();
@@ -23,88 +24,85 @@ namespace HealthCareApp.Services.Impl
         }
 
         public async Task<PagedResponse<AppointmentDto>> GetAllAppointmentsPagedAsync(AppointmentPaginationQueryDto query)
-        {
-            if (query is null)
-            {
-                query = new AppointmentPaginationQueryDto();
-            }
+{
+            query ??= new AppointmentPaginationQueryDto();
 
             int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
 
-            int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+    int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
 
-            pageSize = pageSize > 100 ? 100 : pageSize;
+    pageSize = pageSize > 100 ? 100 : pageSize;
 
-            var appointments = await appointmentRepository.GetAllAsync();
+    var appointments = await appointmentRepository.GetAllAsync();
 
-            var filteredAppointments = appointments.AsEnumerable();
+    var filteredAppointments = appointments.AsEnumerable();
 
-            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
-            {
-                string searchTerm = query.SearchTerm.Trim();
+    if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+    {
+        string searchTerm = query.SearchTerm.Trim();
 
-                filteredAppointments = filteredAppointments.Where(a =>
-                    (a.Patient != null &&
-                     a.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    (a.Doctor != null &&
-                     a.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
-                    a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
-                     a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
-            }
+        filteredAppointments = filteredAppointments.Where(a =>
+            (a.Patient != null &&
+             a.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+            (a.Doctor != null &&
+             a.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+            a.TimeSlot.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+            (!string.IsNullOrWhiteSpace(a.CancellationReason) &&
+             a.CancellationReason.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+    }
 
-            if (query.PatientId is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.PatientId == query.PatientId.Value);
-            }
+    if (query.PatientId is not null)
+    {
+        filteredAppointments = filteredAppointments.Where(a =>
+            a.PatientId == query.PatientId.Value);
+    }
 
-            if (query.DoctorId is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.DoctorId == query.DoctorId.Value);
-            }
+    if (query.DoctorId is not null)
+    {
+        filteredAppointments = filteredAppointments.Where(a =>
+            a.DoctorId == query.DoctorId.Value);
+    }
 
-            if (query.Status is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.Status == query.Status.Value);
-            }
+    if (query.Status is not null)
+    {
+        filteredAppointments = filteredAppointments.Where(a =>
+            a.Status == query.Status.Value);
+    }
 
-            if (query.ScheduledDate is not null)
-            {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.ScheduledDate.Date == query.ScheduledDate.Value.Date);
-            }
+    if (query.ScheduledDate is not null)
+    {
+        filteredAppointments = filteredAppointments.Where(a =>
+            a.ScheduledDate.Date == query.ScheduledDate.Value.Date);
+    }
 
-            if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
-            {
-                filteredAppointments = filteredAppointments.Where(a =>
-                    a.ScheduledDate.Date >= DateTime.Today &&
-                    a.Status != AppointmentStatus.Cancelled &&
-                    a.Status != AppointmentStatus.Completed);
-            }
+    if (query.UpcomingOnly is not null && query.UpcomingOnly.Value)
+    {
+        filteredAppointments = filteredAppointments.Where(a =>
+            a.ScheduledDate.Date >= DateTime.Today &&
+            a.Status != AppointmentStatus.Cancelled &&
+            a.Status != AppointmentStatus.Completed);
+    }
 
-            int totalRecords = filteredAppointments.Count();
+    int totalRecords = filteredAppointments.Count();
 
-            var pagedAppointments = filteredAppointments
-                .OrderByDescending(a => a.ScheduledDate)
-                .ThenBy(a => a.TimeSlot)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+    var pagedAppointments = filteredAppointments
+        .OrderByDescending(a => a.ScheduledDate)
+        .ThenBy(a => a.TimeSlot)
+        .Skip((pageNumber - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
 
-            var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedAppointments);
+    var mappedAppointments = mapper.Map<List<AppointmentDto>>(pagedAppointments);
 
-            return new PagedResponse<AppointmentDto>
-            {
-                Items = mappedAppointments,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalRecords = totalRecords,
-                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
-            };
-        }
+    return new PagedResponse<AppointmentDto>
+    {
+        Items = mappedAppointments,
+        PageNumber = pageNumber,
+        PageSize = pageSize,
+        TotalRecords = totalRecords,
+        TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+    };
+}
 
         public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
         {
@@ -114,7 +112,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             return mapper.Map<AppointmentDto>(appointment);
@@ -724,7 +722,7 @@ namespace HealthCareApp.Services.Impl
 
             return patient;
         }
-        private void ValidateAppointmentId(int appointmentId)
+        private static void ValidateAppointmentId(int appointmentId)
         {
             if (appointmentId <= 0)
             {
@@ -732,7 +730,7 @@ namespace HealthCareApp.Services.Impl
             }
         }
 
-        private void ValidatePatientId(int patientId)
+        private static void ValidatePatientId(int patientId)
         {
             if (patientId <= 0)
             {
@@ -740,7 +738,7 @@ namespace HealthCareApp.Services.Impl
             }
         }
 
-        private void ValidateDoctorId(int doctorId)
+        private static void ValidateDoctorId(int doctorId)
         {
             if (doctorId <= 0)
             {
@@ -774,7 +772,7 @@ namespace HealthCareApp.Services.Impl
             return doctor;
         }
 
-        private void ValidateDoctorAvailability(Doctor doctor)
+        private static void ValidateDoctorAvailability(Doctor doctor)
         {
             if (!doctor.IsActive)
             {
@@ -782,7 +780,7 @@ namespace HealthCareApp.Services.Impl
             }
         }
 
-        private void ValidateAppointmentDate(DateTime scheduledDate)
+        private static void ValidateAppointmentDate(DateTime scheduledDate)
         {
             if (scheduledDate.Date < DateTime.Today)
             {
@@ -790,7 +788,7 @@ namespace HealthCareApp.Services.Impl
             }
         }
 
-        private void ValidateTimeSlot(string timeSlot)
+        private static void ValidateTimeSlot(string timeSlot)
         {
             if (string.IsNullOrWhiteSpace(timeSlot))
             {
@@ -803,7 +801,7 @@ namespace HealthCareApp.Services.Impl
             }
         }
 
-        private void ValidateCancellationReason(string reason)
+        private static void ValidateCancellationReason(string reason)
         {
             if (string.IsNullOrWhiteSpace(reason))
             {

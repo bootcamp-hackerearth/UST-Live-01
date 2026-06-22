@@ -9,7 +9,7 @@ namespace HealthCareApp.Dtos
     {
         [Required(ErrorMessage = "Please enter the patient's full name.")]
         [StringLength(100, ErrorMessage = "Patient name must not exceed 100 characters.")]
-        public string FullName { get; set; }
+        public required string FullName { get; set; }
 
         [Required(ErrorMessage = "Please enter the patient's date of birth.")]
         [Range(typeof(DateTime), "1900-01-01", "9999-12-31",
@@ -20,14 +20,14 @@ namespace HealthCareApp.Dtos
         public GenderType Gender { get; set; }
         [Required(ErrorMessage = "Please enter the patient's phone number.")]
         [RegularExpression(@"^[0-9]{10}$", ErrorMessage = "Phone number must contain exactly 10 digits.")]
-        public string PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Please enter the patient's email address.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required(ErrorMessage = "Please enter the patient's insurance ID.")]
         [StringLength(30, ErrorMessage = "Insurance ID must not exceed 30 characters.")]
-        public string InsuranceId { get; set; }
+        public required string InsuranceId { get; set; }
     }
 }

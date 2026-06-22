@@ -10,8 +10,11 @@ namespace HealthCareApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
+
     public class HealthRecordsController(IHealthRecordService service) : ControllerBase
     {
+        private const string InvalidUserTokenMessage = "Invalid user token.";
         // Admin only: view all health records
         [HttpGet]
         [Authorize(
@@ -37,7 +40,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -79,7 +82,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -152,7 +155,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -177,7 +180,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -207,7 +210,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 

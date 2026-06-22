@@ -6,14 +6,14 @@ namespace SharedClasses.Dtos
     {
         [Required(ErrorMessage = "Please enter the updated diagnosis details.")]
         [StringLength(500, ErrorMessage = "Diagnosis details must not exceed 500 characters.")]
-        public string Diagnosis { get; set; }
+        public required string Diagnosis { get; set; }
 
         [Required(ErrorMessage = "Please enter the updated prescription details.")]
         [StringLength(500, ErrorMessage = "Prescription details must not exceed 500 characters.")]
-        public string Prescription { get; set; }
+        public required string Prescription { get; set; }
 
         [StringLength(1000, ErrorMessage = "Additional notes must not exceed 1000 characters.")]
-        public string Notes { get; set; }
+        public required string Notes { get; set; }
 
 
         [Required]

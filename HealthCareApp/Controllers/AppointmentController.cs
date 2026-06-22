@@ -12,6 +12,11 @@ namespace HealthCareApp.Controllers
     [ApiController]
     public class AppointmentsController(IAppointmentService service) : ControllerBase
     {
+
+        private const string InvalidUserTokenMessage = "Invalid user token.";
+        private const string PatientRoleName = "Patient";
+        private const string DoctorRoleName = "Doctor";
+
         // Admin only: View all appointments
         [HttpGet]
         [Authorize(
@@ -37,18 +42,18 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
-            if (User.IsInRole("Patient"))
+            if (User.IsInRole(PatientRoleName))
             {
                 var appointments = await service.GetMyAppointmentsForPatientAsync(identityUserId);
 
                 return Ok(appointments);
             }
 
-            if (User.IsInRole("Doctor"))
+            if (User.IsInRole(DoctorRoleName))
             {
                 var appointments = await service.GetMyAppointmentsForDoctorAsync(identityUserId);
 
@@ -71,18 +76,18 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
-            if (User.IsInRole("Patient"))
+            if (User.IsInRole(PatientRoleName))
             {
                 var appointments = await service.GetMyUpcomingAppointmentsForPatientAsync(identityUserId);
 
                 return Ok(appointments);
             }
 
-            if (User.IsInRole("Doctor"))
+            if (User.IsInRole(DoctorRoleName))
             {
                 var appointments = await service.GetMyUpcomingAppointmentsForDoctorAsync(identityUserId);
 
@@ -105,18 +110,18 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
-            if (User.IsInRole("Patient"))
+            if (User.IsInRole(PatientRoleName))
             {
                 var appointments = await service.GetMyPendingAppointmentsForPatientAsync(identityUserId);
 
                 return Ok(appointments);
             }
 
-            if (User.IsInRole("Doctor"))
+            if (User.IsInRole(DoctorRoleName))
             {
                 var appointments = await service.GetMyPendingAppointmentsForDoctorAsync(identityUserId);
 
@@ -139,7 +144,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -162,7 +167,7 @@ namespace HealthCareApp.Controllers
                 return Ok(appointment);
             }
 
-            if (User.IsInRole("Patient"))
+            if (User.IsInRole(PatientRoleName))
             {
                 var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -170,7 +175,7 @@ namespace HealthCareApp.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = "Invalid user token."
+                        Message = InvalidUserTokenMessage
                     });
                 }
 
@@ -181,7 +186,7 @@ namespace HealthCareApp.Controllers
                 return Ok(appointment);
             }
 
-            if (User.IsInRole("Doctor"))
+            if (User.IsInRole(DoctorRoleName))
             {
                 var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -189,7 +194,7 @@ namespace HealthCareApp.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = "Invalid user token."
+                        Message = InvalidUserTokenMessage
                     });
                 }
 
@@ -332,7 +337,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -373,7 +378,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -397,7 +402,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -423,7 +428,7 @@ namespace HealthCareApp.Controllers
                 return Ok(appointment);
             }
 
-            if (User.IsInRole("Patient"))
+            if (User.IsInRole(PatientRoleName))
             {
                 var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -431,7 +436,7 @@ namespace HealthCareApp.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = "Invalid user token."
+                        Message = InvalidUserTokenMessage
                     });
                 }
 
@@ -442,7 +447,7 @@ namespace HealthCareApp.Controllers
                 return Ok(appointment);
             }
 
-            if (User.IsInRole("Doctor"))
+            if (User.IsInRole(DoctorRoleName))
             {
                 var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -450,7 +455,7 @@ namespace HealthCareApp.Controllers
                 {
                     return Unauthorized(new
                     {
-                        Message = "Invalid user token."
+                        Message = InvalidUserTokenMessage   
                     });
                 }
 

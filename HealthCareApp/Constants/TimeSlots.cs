@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+
 namespace HealthCareApp.Constants
 {
     public static class TimeSlots
     {
-        public static readonly List<string> Slots = new List<string>
+        public static IReadOnlyList<string> Slots { get; } = new List<string>
         {
             // Morning
             "09:00 AM - 09:30 AM",
@@ -23,6 +24,6 @@ namespace HealthCareApp.Constants
             "04:30 PM - 05:00 PM",
             "05:00 PM - 05:30 PM",
             "05:30 PM - 06:00 PM"
-        };
+        }.AsReadOnly();
     }
 }

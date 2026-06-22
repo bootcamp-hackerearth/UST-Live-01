@@ -66,20 +66,20 @@ namespace HealthCareApp.Migrations
                         new
                         {
                             AppointmentId = 1,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             DoctorId = 1,
                             PatientId = 1,
-                            ScheduledDate = new DateTime(2026, 6, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ScheduledDate = new DateTime(2026, 6, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
                             TimeSlot = "10:00 AM - 10:30 AM"
                         },
                         new
                         {
                             AppointmentId = 2,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             DoctorId = 2,
                             PatientId = 2,
-                            ScheduledDate = new DateTime(2026, 6, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ScheduledDate = new DateTime(2026, 6, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Status = 1,
                             TimeSlot = "11:00 AM - 11:30 AM"
                         },
@@ -87,10 +87,10 @@ namespace HealthCareApp.Migrations
                         {
                             AppointmentId = 3,
                             CancellationReason = "Patient requested cancellation",
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             DoctorId = 3,
                             PatientId = 3,
-                            ScheduledDate = new DateTime(2026, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ScheduledDate = new DateTime(2026, 6, 22, 0, 0, 0, 0, DateTimeKind.Utc),
                             Status = 2,
                             TimeSlot = "02:00 PM - 02:30 PM"
                         });
@@ -140,7 +140,7 @@ namespace HealthCareApp.Migrations
                         {
                             DoctorId = 1,
                             ConsultationFee = 5000,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             DoctorName = "Arun Menon",
                             Email = "arun.menon@example.com",
                             IsActive = true,
@@ -151,7 +151,7 @@ namespace HealthCareApp.Migrations
                         {
                             DoctorId = 2,
                             ConsultationFee = 1000,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             DoctorName = "Meera Nair",
                             Email = "meera.nair@example.com",
                             IsActive = true,
@@ -162,7 +162,7 @@ namespace HealthCareApp.Migrations
                         {
                             DoctorId = 3,
                             ConsultationFee = 700,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             DoctorName = "Vikram Das",
                             Email = "vikram.das@example.com",
                             IsActive = true,
@@ -224,36 +224,36 @@ namespace HealthCareApp.Migrations
                         {
                             HealthRecordId = 1,
                             AppointmentId = 1,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             Diagnosis = "Fever and cold",
                             DoctorId = 1,
                             Notes = "Drink enough water and take rest",
                             PatientId = 1,
                             Prescription = "Paracetamol 500mg twice daily",
-                            VisitDate = new DateTime(2026, 6, 20, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            VisitDate = new DateTime(2026, 6, 20, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             HealthRecordId = 2,
                             AppointmentId = 2,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             Diagnosis = "Chest discomfort",
                             DoctorId = 2,
                             Notes = "Avoid heavy exercise until review",
                             PatientId = 2,
                             Prescription = "ECG test and follow-up consultation",
-                            VisitDate = new DateTime(2026, 6, 21, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            VisitDate = new DateTime(2026, 6, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             HealthRecordId = 3,
                             AppointmentId = 3,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
                             Diagnosis = "Consultation cancelled",
                             Notes = "Appointment was cancelled by patient",
                             PatientId = 3,
                             Prescription = "No prescription issued",
-                            VisitDate = new DateTime(2026, 6, 22, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                            VisitDate = new DateTime(2026, 6, 22, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -305,8 +305,8 @@ namespace HealthCareApp.Migrations
                         new
                         {
                             PatientId = 1,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1998, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DateOfBirth = new DateTime(1998, 5, 12, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "ravi.kumar@example.com",
                             Gender = 0,
                             InsuranceID = "INS1001",
@@ -316,8 +316,8 @@ namespace HealthCareApp.Migrations
                         new
                         {
                             PatientId = 2,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(2001, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DateOfBirth = new DateTime(2001, 8, 20, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "anjali.nair@example.com",
                             Gender = 1,
                             InsuranceID = "INS1002",
@@ -327,8 +327,8 @@ namespace HealthCareApp.Migrations
                         new
                         {
                             PatientId = 3,
-                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DateOfBirth = new DateTime(1995, 11, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedDate = new DateTime(2026, 6, 15, 0, 0, 0, 0, DateTimeKind.Utc),
+                            DateOfBirth = new DateTime(1995, 11, 3, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "kiran.das@example.com",
                             Gender = 3,
                             PatientName = "Kiran Das",

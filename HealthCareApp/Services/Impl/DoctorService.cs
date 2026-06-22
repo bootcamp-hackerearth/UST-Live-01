@@ -9,12 +9,16 @@ using Microsoft.AspNetCore.Identity;
 
 namespace HealthCareApp.Services
 {
+
     public class DoctorService(
+
         IDoctorRepository repository,
         IMapper mapper,
         UserManager<IdentityUser> userManager,
         RoleManager<IdentityRole> roleManager) : IDoctorService
+
     {
+        private const string DoctorEntityName = "Doctor";
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
             var doctors = await repository.GetAllAsync();
@@ -95,7 +99,7 @@ namespace HealthCareApp.Services
 
             if (doctor is null)
             {
-                throw new EntityNotFoundException("Doctor", doctorId);
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
             }
 
             return mapper.Map<DoctorDto>(doctor);
@@ -266,10 +270,10 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
             }
 
-            return TimeSlots.Slots;
+            return TimeSlots.Slots.ToList();
         }
 
-        private void ValidateDoctorId(int doctorId)
+        private static void ValidateDoctorId(int doctorId)
         {
             if (doctorId <= 0)
             {
@@ -305,7 +309,7 @@ namespace HealthCareApp.Services
                 dto.ConsultationFee);
         }
 
-        private void ValidateDoctorCommonFields(
+        private static void ValidateDoctorCommonFields(
             string fullName,
             string? email,
             DateTime practiceStartDate,
@@ -332,7 +336,7 @@ namespace HealthCareApp.Services
             }
         }
 
-        private int CalculateYearsOfExperience(DateTime practiceStartDate)
+        private static int CalculateYearsOfExperience(DateTime practiceStartDate)
         {
             int years = DateTime.Today.Year - practiceStartDate.Year;
 
@@ -344,7 +348,7 @@ namespace HealthCareApp.Services
             return years;
         }
 
-        private string GenerateTemporaryPassword(string doctorName)
+        private static string GenerateTemporaryPassword(string doctorName)
         {
             string cleanedName = new string(
                 doctorName

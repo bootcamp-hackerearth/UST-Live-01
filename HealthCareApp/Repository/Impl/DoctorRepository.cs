@@ -42,8 +42,10 @@ namespace HealthCareApp.Repository.Impl
         }
         public async Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default)
         {
+            string normalizedEmail = email.ToUpperInvariant();
+
             return await _context.Doctors
-                .AnyAsync(d => d.Email.ToLower() == email.ToLower(), ct);
+                .AnyAsync(d => d.Email.ToUpper() == normalizedEmail, ct);
         }
         public async Task<Doctor?> GetByIdentityUserIdAsync(
     string identityUserId,

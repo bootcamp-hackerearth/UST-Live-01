@@ -1,0 +1,6 @@
+projectKey=HealthCareApp
+serverUrl=http://localhost:9000
+serverVersion=26.1.0.118079
+dashboardUrl=http://localhost:9000/dashboard?id=HealthCareApp
+ceTaskId=ac1990ff-f6c6-4cdb-a6e9-5f7ba130ce0d
+ceTaskUrl=http://localhost:9000/api/ce/task?id=ac1990ff-f6c6-4cdb-a6e9-5f7ba130ce0d

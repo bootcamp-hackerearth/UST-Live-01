@@ -8,7 +8,7 @@ namespace HealthCareApp.Dtos
     {
         [Required(ErrorMessage = "Please enter the doctor's full name.")]
         [StringLength(100, ErrorMessage = "Doctor name must not exceed 100 characters.")]
-        public string FullName { get; set; }
+        public required string FullName { get; set; }
 
         [Required(ErrorMessage = "Please select the doctor's specialisation.")]
         public SpecialisationType Specialisation { get; set; }

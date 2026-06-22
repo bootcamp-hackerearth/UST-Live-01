@@ -16,21 +16,24 @@ namespace HealthCareApp.Repository.Impl
         }
 
         public async Task<bool> IsDuplicatePatientAsync(
-            string patientName,
-            string email,
-            string phoneNumber,
-            DateTime dateOfBirth,
-            int? excludePatientId = null,
-            CancellationToken ct = default)
-        {
-            return await _context.Patients.AnyAsync(patient =>
-                patient.PatientName.ToLower() == patientName.ToLower()
-                && patient.Email.ToLower() == email.ToLower()
-                && patient.PhoneNumber == phoneNumber
-                && patient.DateOfBirth.Date == dateOfBirth.Date
-                && (!excludePatientId.HasValue || patient.PatientId != excludePatientId.Value),
-                ct);
-        }
+    string patientName,
+    string email,
+    string phoneNumber,
+    DateTime dateOfBirth,
+    int? excludePatientId = null,
+    CancellationToken ct = default)
+{
+    string normalizedPatientName = patientName.ToUpperInvariant();
+    string normalizedEmail = email.ToUpperInvariant();
+
+    return await _context.Patients.AnyAsync(patient =>
+        patient.PatientName.ToUpper() == normalizedPatientName
+        && patient.Email.ToUpper() == normalizedEmail
+        && patient.PhoneNumber == phoneNumber
+        && patient.DateOfBirth.Date == dateOfBirth.Date
+        && (!excludePatientId.HasValue || patient.PatientId != excludePatientId.Value),
+        ct);
+}
 
         public async Task<Patient?> GetByIdentityUserIdAsync(
     string identityUserId,

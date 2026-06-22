@@ -9,6 +9,6 @@ namespace HealthCareApp.Dtos
         public int AppointmentId { get; set; }
         [Required(ErrorMessage = "Please provide a reason for cancelling the appointment.")]
         [StringLength(500, ErrorMessage = "Cancellation reason must not exceed 500 characters.")]
-        public string Reason { get; set; }
+        public required string Reason { get; set; }
     }
 }

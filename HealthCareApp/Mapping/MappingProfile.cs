@@ -8,8 +8,10 @@ namespace HealthCareApp.Mapping
 {
     public class MappingProfile : Profile
     {
+        private const string DateFormat = "yyyy-MM-dd";
         public MappingProfile()
         {
+
             // Patient mappings
             CreateMap<Patient, PatientDto>()
                 .ForMember(
@@ -22,11 +24,11 @@ namespace HealthCareApp.Mapping
                 )
                 .ForMember(
                     dest => dest.DateOfBirth,
-                    opt => opt.MapFrom(src => src.DateOfBirth.ToString("yyyy-MM-dd"))
+                    opt => opt.MapFrom(src => src.DateOfBirth.ToString(DateFormat))
                 )
                 .ForMember(
                     dest => dest.CreatedDate,
-                    opt => opt.MapFrom(src => src.CreatedDate.ToString("yyyy-MM-dd"))
+                    opt => opt.MapFrom(src => src.DateOfBirth.ToString(DateFormat))
                 );
 
             CreateMap<CreatePatientDto, Patient>()
@@ -90,7 +92,7 @@ namespace HealthCareApp.Mapping
                 )
                 .ForMember(
                     dest => dest.ScheduledDate,
-                    opt => opt.MapFrom(src => src.ScheduledDate.ToString("yyyy-MM-dd"))
+                    opt => opt.MapFrom(src => src.ScheduledDate.ToString(DateFormat))
                 );
 
             CreateMap<BookAppointmentDto, Appointment>();
@@ -109,7 +111,7 @@ namespace HealthCareApp.Mapping
                 )
                 .ForMember(
                     dest => dest.VisitDate,
-                    opt => opt.MapFrom(src => src.VisitDate.ToString("yyyy-MM-dd"))
+                    opt => opt.MapFrom(src => src.VisitDate.ToString(DateFormat))
                 );
 
             CreateMap<AddHealthRecordDto, HealthRecord>();

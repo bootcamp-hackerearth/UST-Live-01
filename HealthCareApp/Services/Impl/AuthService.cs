@@ -15,7 +15,6 @@ namespace HealthCareApp.Services.Impl
     public class AuthService(
         UserManager<IdentityUser> userManager,
         IPatientRepository patientRepository,
-        IMapper mapper,
         IConfiguration config) : IAuthService
     {
         public async Task<(bool Success, string Message, int PatientId)> RegisterPatientAsync(PatientRegisterDto request)
