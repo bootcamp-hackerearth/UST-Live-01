@@ -1,0 +1,111 @@
+﻿@page "/admin/health-records"
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+@using HealthAxisAdminLayout.DTOs.HealthRecord
+@using HealthAxisAdminLayout.Services.Interfaces
+
+@inject IHealthRecordApiService HealthRecordService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+
+@using HealthAxisAdminLayout.DTOs.Appointment
+
+<h3 class="page-title">Health Records</h3>
+<p class="page-subtitle">View and manage patient health records</p>
+
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <div class="alert alert-info">
+        @message
+    </div>
+}
+
+<div class="table-card">
+    @if (records.Count == 0)
+    {
+        <p>No health records found.</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Record Id</th>
+                    <th>Patient Id</th>
+                    <th>Doctor Id</th>
+                    <th>Appointment Id</th>
+                    <th>Visit Date</th>
+                    <th>Diagnosis</th>
+                    <th>Prescription</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var record in records)
+                {
+                    <tr>
+                        <td>@record.HealthRecordId</td>
+                        <td>@record.PatientId</td>
+                        <td>@(record.DoctorId?.ToString() ?? "-")</td>
+                        <td>@record.AppointmentId</td>
+                        <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
+                        <td>@record.Diagnosis</td>
+                        <td>@record.Prescription</td>
+                        <td>@(record.Notes ?? "-")</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger"
+                                    @onclick="() => DeleteHealthRecordAsync(record.HealthRecordId)">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<HealthRecordResponseDTO> records = new();
+
+    private string message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await AuthService.IsAdminAsync();
+
+        if (!isAdmin)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadHealthRecordsAsync();
+    }
+
+    private async Task LoadHealthRecordsAsync()
+    {
+        records = await HealthRecordService.GetHealthRecordsAsync();
+    }
+
+    private async Task DeleteHealthRecordAsync(int healthRecordId)
+    {
+        message = string.Empty;
+
+        var success = await HealthRecordService.DeleteHealthRecordAsync(healthRecordId);
+
+        if (success)
+        {
+            message = "Health record deleted successfully.";
+            await LoadHealthRecordsAsync();
+        }
+        else
+        {
+            message = "Failed to delete health record.";
+        }
+    }
+}
+
+

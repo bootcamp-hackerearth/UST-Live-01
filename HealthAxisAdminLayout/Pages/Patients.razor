@@ -1,0 +1,65 @@
+﻿@page "/admin/patients"
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+
+@using HealthAxisAdminLayout.DTOs.Patient
+@using HealthAxisAdminLayout.Services.Interfaces
+
+@inject IPatientApiService PatientService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<h3 class="page-title">Patients</h3>
+<p class="page-subtitle">View registered patients</p>
+
+<div class="table-card">
+    @if (patients.Count == 0)
+    {
+        <p>No patients found.</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Date of Birth</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var patient in patients)
+                {
+                    <tr>
+                        <td>@patient.PatientId</td>
+                        <td>@patient.PatientName</td>
+                        <td>@patient.DateOfBirth.ToString("dd-MMM-yyyy")</td>
+                        <td>@patient.Gender</td>
+                        <td>@patient.Email</td>
+                        <td>@patient.PhoneNumber</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<PatientResponseDTO> patients = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await AuthService.IsAdminAsync();
+
+        if (!isAdmin)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        patients = await PatientService.GetPatientsAsync();
+    }
+}

@@ -1,0 +1,80 @@
+﻿@inherits LayoutComponentBase
+@inject HealthAxisAdminLayout.Services.Interfaces.IAuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="admin-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h4 class="brand-title">HealthAxis</h4>
+            <p class="brand-subtitle">Admin Portal</p>
+        </div>
+
+        <nav class="admin-nav">
+            <NavLink class="nav-link" href="/admin/dashboard">
+                <span>Dashboard</span>
+            </NavLink>
+
+            <NavLink class="nav-link" href="/admin/doctors">
+                <span>Doctors</span>
+            </NavLink>
+
+            <NavLink class="nav-link" href="/admin/patients">
+                <span>Patients</span>
+            </NavLink>
+
+            <NavLink class="nav-link" href="/admin/appointments">
+                <span>Appointments</span>
+            </NavLink>
+
+            <NavLink class="nav-link" href="/admin/health-records">
+                <span>Health Records</span>
+            </NavLink>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="logout-btn" @onclick="Logout">
+                Logout
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-section">
+        <header class="topbar">
+            <div>
+                <h5 class="topbar-title">HealthAxis Admin Dashboard</h5>
+            </div>
+
+            <div class="topbar-user">
+                <span>@adminEmail</span>
+            </div>
+        </header>
+
+        <section class="page-content">
+            @Body
+        </section>
+    </main>
+</div>
+
+@code {
+    private string adminEmail = "Admin";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await AuthService.IsAdminAsync();
+
+        if (!isAdmin)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        adminEmail = await AuthService.GetEmailAsync() ?? "Admin";
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/login");
+    }
+}
+``

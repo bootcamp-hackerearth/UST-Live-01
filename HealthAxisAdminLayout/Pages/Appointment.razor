@@ -1,0 +1,141 @@
+﻿@page "/admin/appointments"
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+@using HealthAxisAdminLayout.Services.Interfaces
+
+@inject IAppointmentApiService AppointmentService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+
+@using HealthAxisAdminLayout.DTOs.Appointment
+
+<h3 class="page-title">Appointments</h3>
+<p class="page-subtitle">View and manage appointments</p>
+
+@if (!string.IsNullOrWhiteSpace(message))
+{
+    <div class="alert alert-info">
+        @message
+    </div>
+}
+
+<div class="table-card">
+    @if (appointments.Count == 0)
+    {
+        <p>No appointments found.</p>
+    }
+    else
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Patient Id</th>
+                    <th>Doctor Id</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th>Cancellation Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var appointment in appointments)
+                {
+                    <tr>
+                        <td>@appointment.AppointmentId</td>
+                        <td>@appointment.PatientId</td>
+                        <td>@appointment.DoctorId</td>
+                        <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                        <td>@appointment.TimeSlot</td>
+                        <td>@GetStatusText(appointment.Status)</td>
+                        <td>@(appointment.CancellationReason ?? "-")</td>
+                        <td>
+                            <button class="btn btn-sm btn-success me-2"
+                                    @onclick="() => ConfirmAppointmentAsync(appointment.AppointmentId)">
+                                Confirm
+                            </button>
+
+                            <button class="btn btn-sm btn-danger"
+                                    @onclick="() => DeleteAppointmentAsync(appointment.AppointmentId)">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<AppointmentResponseDTO> appointments = new();
+
+    private string message = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await AuthService.IsAdminAsync();
+
+        if (!isAdmin)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        await LoadAppointmentsAsync();
+    }
+
+    private async Task LoadAppointmentsAsync()
+    {
+        appointments = await AppointmentService.GetAppointmentsAsync();
+    }
+
+    private async Task ConfirmAppointmentAsync(int appointmentId)
+    {
+        message = string.Empty;
+
+        var success = await AppointmentService.ConfirmAppointmentAsync(appointmentId);
+
+        if (success)
+        {
+            message = "Appointment confirmed successfully.";
+            await LoadAppointmentsAsync();
+        }
+        else
+        {
+            message = "Failed to confirm appointment.";
+        }
+    }
+
+    private async Task DeleteAppointmentAsync(int appointmentId)
+    {
+        message = string.Empty;
+
+        var success = await AppointmentService.DeleteAppointmentAsync(appointmentId);
+
+        if (success)
+        {
+            message = "Appointment deleted successfully.";
+            await LoadAppointmentsAsync();
+        }
+        else
+        {
+            message = "Failed to delete appointment.";
+        }
+    }
+
+    private string GetStatusText(int status)
+    {
+        return status switch
+        {
+            0 => "Pending",
+            1 => "Confirmed",
+            2 => "Cancelled",
+            3 => "Completed",
+            _ => "Unknown"
+        };
+    }
+}
+

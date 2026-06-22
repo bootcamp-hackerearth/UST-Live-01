@@ -1,0 +1,122 @@
+﻿@page "/admin/dashboard"
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+
+@using HealthAxisAdminLayout.DTOs.Dashboard
+@using HealthAxisAdminLayout.Services.Interfaces
+
+@inject IDashboardService DashboardService
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<h3 class="page-title">Admin Dashboard</h3>
+<p class="page-subtitle">Overview of HealthAxis Healthcare System</p>
+
+@if (dashboard == null)
+{
+    <div class="loading-box">
+        Loading dashboard data...
+    </div>
+}
+else
+{
+    <div class="dashboard-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Doctors</div>
+            <div class="stat-value">@dashboard.TotalDoctors</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Active Doctors</div>
+            <div class="stat-value">@dashboard.ActiveDoctors</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Total Patients</div>
+            <div class="stat-value">@dashboard.TotalPatients</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Total Appointments</div>
+            <div class="stat-value">@dashboard.TotalAppointments</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Pending Appointments</div>
+            <div class="stat-value">@dashboard.PendingAppointments</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Confirmed Appointments</div>
+            <div class="stat-value">@dashboard.ConfirmedAppointments</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Cancelled Appointments</div>
+            <div class="stat-value">@dashboard.CancelledAppointments</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Health Records</div>
+            <div class="stat-value">@dashboard.TotalHealthRecords</div>
+        </div>
+    </div>
+
+    <div class="dashboard-actions">
+        <h5>Quick Actions</h5>
+
+        <div class="quick-actions">
+            <button class="action-card" @onclick="GoToDoctors">
+                Manage Doctors
+            </button>
+
+            <button class="action-card" @onclick="GoToPatients">
+                View Patients
+            </button>
+
+            <button class="action-card" @onclick="GoToAppointments">
+                View Appointments
+            </button>
+
+            <button class="action-card" @onclick="GoToHealthRecords">
+                View Health Records
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private AdminDashboardDTO? dashboard;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isAdmin = await AuthService.IsAdminAsync();
+
+        if (!isAdmin)
+        {
+            Navigation.NavigateTo("/login");
+            return;
+        }
+
+        dashboard = await DashboardService.GetDashboardAsync();
+    }
+
+    private void GoToDoctors()
+    {
+        Navigation.NavigateTo("/admin/doctors");
+    }
+
+    private void GoToPatients()
+    {
+        Navigation.NavigateTo("/admin/patients");
+    }
+
+    private void GoToAppointments()
+    {
+        Navigation.NavigateTo("/admin/appointments");
+    }
+
+    private void GoToHealthRecords()
+    {
+        Navigation.NavigateTo("/admin/health-records");
+    }
+}
