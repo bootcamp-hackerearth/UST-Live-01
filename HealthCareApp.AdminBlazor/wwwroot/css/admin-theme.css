@@ -2189,3 +2189,13 @@ font-weight: 700;
     }
 }
 
+.hc-alert-success {
+    border-radius: 16px;
+    padding: 12px 14px;
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    margin-bottom: 18px;
+    font-weight: 800;
+}
+

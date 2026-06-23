@@ -10,7 +10,7 @@
 
 <PageTitle>Admin Dashboard | HealthAxis</PageTitle>
 
-@if (dashboardReport is null)
+@if (isLoading)
 {
     <div class="hc-page-loading">
         <div class="hc-loading-card">
@@ -19,7 +19,13 @@
         </div>
     </div>
 }
-else
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
+    </div>
+}
+else if (dashboardReport is not null)
 {
     <div class="hc-page-heading">
         <div>
@@ -133,16 +139,16 @@ else
                 <button class="hc-action-card ha-action-card" @onclick="GoToPatients">
                     <span>◉</span>
                     <div>
-                        <strong>Manage Patients</strong>
-                        <p>View, add, and update patient details.</p>
+                        <strong>View Patients</strong>
+                        <p>Review patient profiles and demographic details.</p>
                     </div>
                 </button>
 
                 <button class="hc-action-card ha-action-card" @onclick="GoToAppointments">
                     <span>◷</span>
                     <div>
-                        <strong>View Appointments</strong>
-                        <p>Review schedules and appointment status.</p>
+                        <strong>Manage Appointments</strong>
+                        <p>Book appointments and review appointment status.</p>
                     </div>
                 </button>
             </div>
@@ -152,6 +158,10 @@ else
 
 @code {
     private AdminDashboardReportDto? dashboardReport;
+
+    private bool isLoading = true;
+
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -163,7 +173,30 @@ else
             return;
         }
 
-        dashboardReport = await DashboardService.GetDashboardReportAsync();
+        await LoadDashboardReport();
+    }
+
+    private async Task LoadDashboardReport()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+
+            dashboardReport = await DashboardService.GetDashboardReportAsync();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Unable to load dashboard data. Please check whether the API is running.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private void GoToDoctors()

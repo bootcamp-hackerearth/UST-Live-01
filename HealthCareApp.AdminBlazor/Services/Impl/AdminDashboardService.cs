@@ -1,26 +1,25 @@
 ﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
 using HealthCareApp.Shared.Dtos.Dashboard;
+using Microsoft.JSInterop;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {
-    public class AdminDashboardService : IAdminDashboardService
+    public class AdminDashboardService : BaseApiService, IAdminDashboardService
     {
-        public Task<AdminDashboardReportDto> GetDashboardReportAsync()
+        private const string DashboardEndpoint = "api/Admin/dashboard";
+
+        public AdminDashboardService(
+            HttpClient httpClient,
+            IJSRuntime jsRuntime)
+            : base(httpClient, jsRuntime)
         {
-            var report = new AdminDashboardReportDto
-            {
-                TotalDoctors = 12,
-                TotalPatients = 48,
-                TotalAppointments = 26,
+        }
 
-                TodaysAppointments = 8,
-                TodaysPatients = 5,
-                CompletedToday = 3,
-                PendingToday = 4,
-                CancelledToday = 1
-            };
-
-            return Task.FromResult(report);
+        public async Task<AdminDashboardReportDto> GetDashboardReportAsync()
+        {
+            return await GetAuthorizedAsync<AdminDashboardReportDto>(
+                DashboardEndpoint,
+                "Your admin session is not authorized to load dashboard data.");
         }
     }
 }

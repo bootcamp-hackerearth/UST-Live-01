@@ -32,5 +32,6 @@ builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<IDoctorAdminService, DoctorAdminService>();
 builder.Services.AddScoped<IPatientAdminService, PatientAdminService>();
 builder.Services.AddScoped<IAppointmentAdminService, AppointmentAdminService>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 
 await builder.Build().RunAsync();

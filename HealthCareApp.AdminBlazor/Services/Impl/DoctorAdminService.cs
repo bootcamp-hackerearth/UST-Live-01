@@ -1,140 +1,134 @@
-﻿using HealthCareApp.Shared.Dtos.Doctors;
-using HealthCareApp.Shared.Enums;
-using HealthCareApp.AdminBlazor.Services.Interfaces;
+﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
 using HealthCareApp.Shared.Dtos.Doctors;
+using HealthCareApp.Shared.Dtos.Pagination;
+using Microsoft.JSInterop;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {
-    public class DoctorAdminService : IDoctorAdminService
+    public class DoctorAdminService : BaseApiService, IDoctorAdminService
     {
-        private static readonly List<DoctorDto> Doctors = new()
-        {
-            new DoctorDto
-            {
-                DoctorId = 1,
-                FullName = "Arun Menon",
-                Email = "arun.menon@example.com",
-                Specialisation = SpecialisationType.GeneralPractitioner,
-                YearsOfExperience = 10,
-                ConsultationFee = 500,
-                IsActive = true
-            },
-            new DoctorDto
-            {
-                DoctorId = 2,
-                FullName = "Meera Nair",
-                Email = "meera.nair@example.com",
-                Specialisation = SpecialisationType.Cardiologist,
-                YearsOfExperience = 15,
-                ConsultationFee = 1000,
-                IsActive = true
-            },
-            new DoctorDto
-            {
-                DoctorId = 3,
-                FullName = "Vikram Das",
-                Email = "vikram.das@example.com",
-                Specialisation = SpecialisationType.Dermatologist,
-                YearsOfExperience = 8,
-                ConsultationFee = 700,
-                IsActive = true
-            }
-        };
+        private const string AdminDoctorsEndpoint = "api/Admin/doctors";
+        private const string DoctorsEndpoint = "api/Doctors";
 
-        public Task<List<DoctorDto>> GetAllDoctorsAsync()
+        public DoctorAdminService(
+            HttpClient httpClient,
+            IJSRuntime jsRuntime)
+            : base(httpClient, jsRuntime)
         {
-            var doctors = Doctors
-                .OrderBy(d => d.DoctorId)
-                .ToList();
-
-            return Task.FromResult(doctors);
         }
 
-        public Task<DoctorDto?> GetDoctorByIdAsync(int doctorId)
+        public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
-            var doctor = Doctors.FirstOrDefault(d => d.DoctorId == doctorId);
-
-            return Task.FromResult(doctor);
-        }
-
-        public Task<DoctorDto> CreateDoctorAsync(CreateDoctorDto request)
-        {
-            int nextId = Doctors.Any()
-                ? Doctors.Max(d => d.DoctorId) + 1
-                : 1;
-
-            var doctor = new DoctorDto
+            var query = new DoctorPaginationQueryDto
             {
-                DoctorId = nextId,
-                FullName = request.FullName,
-                Email = request.Email,
-                Specialisation = request.Specialisation,
-                YearsOfExperience = CalculateYearsOfExperience(request.PracticeStartDate),
-                ConsultationFee = request.ConsultationFee,
-                IsActive = true
+                PageNumber = 1,
+                PageSize = 100
             };
 
-            Doctors.Add(doctor);
+            var response = await GetDoctorsPagedAsync(query);
 
-            return Task.FromResult(doctor);
+            return response.Items;
         }
 
-        public Task<DoctorDto?> UpdateDoctorAsync(int doctorId, UpdateDoctorDto request)
+        public async Task<PagedResponse<DoctorDto>> GetDoctorsPagedAsync(DoctorPaginationQueryDto query)
         {
-            var doctor = Doctors.FirstOrDefault(d => d.DoctorId == doctorId);
+            string endpoint = BuildDoctorsEndpoint(query);
+
+            return await GetAuthorizedAsync<PagedResponse<DoctorDto>>(
+                endpoint,
+                "Your admin session is not authorized to load doctor data.");
+        }
+
+        public async Task<DoctorDto?> GetDoctorByIdAsync(int doctorId)
+        {
+            if (doctorId <= 0)
+            {
+                return null;
+            }
+
+            return await GetAuthorizedAsync<DoctorDto>(
+                $"{DoctorsEndpoint}/{doctorId}",
+                "Your admin session is not authorized to load doctor details.");
+        }
+
+        public async Task<DoctorCreatedResponseDto> CreateDoctorAsync(CreateDoctorDto doctorDto)
+        {
+            return await PostAuthorizedAsync<CreateDoctorDto, DoctorCreatedResponseDto>(
+                AdminDoctorsEndpoint,
+                doctorDto,
+                "Your admin session is not authorized to create doctor accounts.");
+        }
+
+        public async Task<DoctorDto?> UpdateDoctorAsync(int doctorId, UpdateDoctorDto doctorDto)
+        {
+            if (doctorId <= 0)
+            {
+                return null;
+            }
+
+            return await PutAuthorizedAsync<UpdateDoctorDto, DoctorDto>(
+                $"{AdminDoctorsEndpoint}/{doctorId}",
+                doctorDto,
+                "Your admin session is not authorized to update doctor profiles.");
+        }
+
+        public async Task<DoctorDto?> ToggleDoctorStatusAsync(int doctorId)
+        {
+            var doctor = await GetDoctorByIdAsync(doctorId);
 
             if (doctor is null)
             {
-                return Task.FromResult<DoctorDto?>(null);
+                return null;
             }
 
-            doctor.FullName = request.FullName;
-            doctor.Specialisation = request.Specialisation;
-            doctor.YearsOfExperience = CalculateYearsOfExperience(request.PracticeStartDate);
-            doctor.ConsultationFee = request.ConsultationFee;
-            doctor.IsActive = request.IsActive;
+            var updateDoctorDto = new UpdateDoctorDto
+            {
+                FullName = doctor.FullName,
+                Specialisation = doctor.Specialisation,
+                PracticeStartDate = GetApproximatePracticeStartDate(doctor.YearsOfExperience),
+                ConsultationFee = doctor.ConsultationFee,
+                IsActive = !doctor.IsActive
+            };
 
-            return Task.FromResult<DoctorDto?>(doctor);
+            return await UpdateDoctorAsync(doctorId, updateDoctorDto);
         }
 
-        public Task<bool> DeleteDoctorAsync(int doctorId)
-        {
-            var doctor = Doctors.FirstOrDefault(d => d.DoctorId == doctorId);
+   
 
-            if (doctor is null)
+        private static string BuildDoctorsEndpoint(DoctorPaginationQueryDto query)
+        {
+            var queryParameters = new List<string>
             {
-                return Task.FromResult(false);
+                $"pageNumber={query.PageNumber}",
+                $"pageSize={query.PageSize}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                queryParameters.Add($"searchTerm={Uri.EscapeDataString(query.SearchTerm)}");
             }
 
-            Doctors.Remove(doctor);
+            if (query.Specialisation is not null)
+            {
+                queryParameters.Add($"specialisation={query.Specialisation}");
+            }
 
-            return Task.FromResult(true);
+            if (query.IsActive is not null)
+            {
+                queryParameters.Add($"isActive={query.IsActive.Value.ToString().ToLowerInvariant()}");
+            }
+
+            return $"{AdminDoctorsEndpoint}?{string.Join("&", queryParameters)}";
         }
 
-        public Task<DoctorDto?> ToggleDoctorStatusAsync(int doctorId)
+        private static DateTime GetApproximatePracticeStartDate(int yearsOfExperience)
         {
-            var doctor = Doctors.FirstOrDefault(d => d.DoctorId == doctorId);
-
-            if (doctor is null)
+            if (yearsOfExperience <= 0)
             {
-                return Task.FromResult<DoctorDto?>(null);
+                return DateTime.Today;
             }
 
-            doctor.IsActive = !doctor.IsActive;
-
-            return Task.FromResult<DoctorDto?>(doctor);
-        }
-
-        private static int CalculateYearsOfExperience(DateTime practiceStartDate)
-        {
-            int years = DateTime.Today.Year - practiceStartDate.Year;
-
-            if (practiceStartDate.Date > DateTime.Today.AddYears(-years))
-            {
-                years--;
-            }
-
-            return years < 0 ? 0 : years;
+            return DateTime.Today.AddYears(-yearsOfExperience);
         }
     }
 }
