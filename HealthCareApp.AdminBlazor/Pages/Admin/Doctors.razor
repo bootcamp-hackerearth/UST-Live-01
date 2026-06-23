@@ -1,21 +1,21 @@
 ﻿@page "/admin/doctors"
 @layout AdminLayout
 
-@using HealthCareApp.Shared.Dtos.Doctors;
-@using HealthCareApp.Shared.Enums;
+@using HealthCareApp.Shared.Dtos.Doctors
+@using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
 @inject NavigationManager Navigation
 
-<PageTitle>Doctors | HealthCareApp Admin</PageTitle>
+<PageTitle>Doctors | HealthAxis Admin</PageTitle>
 
 @if (doctors is null)
 {
     <div class="hc-page-loading">
         <div class="hc-loading-card">
             <div class="hc-loading-spinner"></div>
-            <p>Loading doctors...</p>
+            <p>Loading doctor profiles...</p>
         </div>
     </div>
 }
@@ -24,7 +24,7 @@ else
     <div class="hc-page-heading">
         <div>
             <h1>Doctors</h1>
-            <p>Register, update, and manage doctor profiles from one place.</p>
+            <p>Register, update, activate, and manage HealthAxis doctor profiles.</p>
         </div>
 
         <button class="hc-page-primary-btn" @onclick="GoToAddDoctor">
@@ -32,30 +32,57 @@ else
         </button>
     </div>
 
-    <div class="hc-doctor-stat-grid">
-        <div class="hc-doctor-stat-card blue">
-            <span>Total Doctors</span>
-            <strong>@doctors.Count</strong>
+    <div class="hc-doctor-stat-grid ha-management-stat-grid">
+        <div class="hc-doctor-stat-card blue ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Total Doctors</span>
+                <strong>@TotalDoctors</strong>
+                <small>Doctor profiles in HealthAxis</small>
+            </div>
+            <div class="ha-stat-card-icon">✚</div>
         </div>
 
-        <div class="hc-doctor-stat-card green">
-            <span>Active Doctors</span>
-            <strong>@doctors.Count(d => d.IsActive)</strong>
+        <div class="hc-doctor-stat-card green ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Active Doctors</span>
+                <strong>@ActiveDoctors</strong>
+                <small>Available for appointments</small>
+            </div>
+            <div class="ha-stat-card-icon">●</div>
         </div>
 
-        <div class="hc-doctor-stat-card red">
-            <span>Inactive Doctors</span>
-            <strong>@doctors.Count(d => !d.IsActive)</strong>
+        <div class="hc-doctor-stat-card red ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Inactive Doctors</span>
+                <strong>@InactiveDoctors</strong>
+                <small>Currently disabled profiles</small>
+            </div>
+            <div class="ha-stat-card-icon">○</div>
         </div>
 
-        <div class="hc-doctor-stat-card purple">
-            <span>Specialisations</span>
-            <strong>@doctors.Select(d => d.Specialisation).Distinct().Count()</strong>
+        <div class="hc-doctor-stat-card purple ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Specialisations</span>
+                <strong>@SpecialisationCount</strong>
+                <small>Distinct care departments</small>
+            </div>
+            <div class="ha-stat-card-icon">▣</div>
         </div>
     </div>
 
-    <section class="hc-list-panel">
-        <div class="hc-list-toolbar">
+    <section class="hc-list-panel ha-management-panel">
+        <div class="ha-list-panel-header">
+            <div>
+                <h3>Doctor Directory</h3>
+                <p>Search, filter, and maintain doctor account visibility.</p>
+            </div>
+
+            <span class="ha-result-count">
+                Showing @FilteredDoctors.Count() of @TotalDoctors
+            </span>
+        </div>
+
+        <div class="hc-list-toolbar ha-list-toolbar">
             <div class="hc-search-box">
                 <span>⌕</span>
                 <input placeholder="Search doctor by name, email, or specialisation..."
@@ -80,16 +107,16 @@ else
 
         @if (!FilteredDoctors.Any())
         {
-            <div class="hc-empty-state">
+            <div class="hc-empty-state ha-empty-state">
                 <div class="hc-empty-icon">✚</div>
-                <h3>No doctors found</h3>
-                <p>Try changing the search text or filters.</p>
+                <h3>No doctor profiles found</h3>
+                <p>Try adjusting search text, specialisation, or status filters.</p>
             </div>
         }
         else
         {
             <div class="hc-table-wrapper">
-                <table class="hc-admin-table">
+                <table class="hc-admin-table ha-management-table">
                     <thead>
                         <tr>
                             <th>Doctor</th>
@@ -107,7 +134,7 @@ else
                             <tr>
                                 <td>
                                     <div class="hc-doctor-cell">
-                                        <div class="hc-doctor-avatar">
+                                        <div class="hc-doctor-avatar ha-doctor-avatar">
                                             @GetInitials(doctor.FullName)
                                         </div>
 
@@ -119,23 +146,35 @@ else
                                 </td>
 
                                 <td>
-                                    <span class="hc-specialisation-pill">
+                                    <span class="hc-specialisation-pill ha-specialisation-pill">
                                         @doctor.Specialisation
                                     </span>
                                 </td>
 
-                                <td>@doctor.YearsOfExperience years</td>
+                                <td>
+                                    <span class="ha-table-strong-text">
+                                        @doctor.YearsOfExperience years
+                                    </span>
+                                </td>
 
-                                <td>₹@doctor.ConsultationFee</td>
+                                <td>
+                                    <span class="ha-fee-pill">
+                                        ₹@doctor.ConsultationFee
+                                    </span>
+                                </td>
 
                                 <td>
                                     @if (doctor.IsActive)
                                     {
-                                        <span class="hc-status-badge active">Active</span>
+                                        <span class="hc-status-badge active ha-status-badge">
+                                            Active
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="hc-status-badge inactive">Inactive</span>
+                                        <span class="hc-status-badge inactive ha-status-badge">
+                                            Inactive
+                                        </span>
                                     }
                                 </td>
 
@@ -171,6 +210,15 @@ else
     private string selectedStatus = string.Empty;
 
     private List<string> specialisations = new();
+
+    private int TotalDoctors => doctors?.Count ?? 0;
+
+    private int ActiveDoctors => doctors?.Count(d => d.IsActive) ?? 0;
+
+    private int InactiveDoctors => doctors?.Count(d => !d.IsActive) ?? 0;
+
+    private int SpecialisationCount =>
+        doctors?.Select(d => d.Specialisation).Distinct().Count() ?? 0;
 
     private IEnumerable<DoctorDto> FilteredDoctors
     {

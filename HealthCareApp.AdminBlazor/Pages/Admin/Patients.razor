@@ -1,21 +1,21 @@
 ﻿@page "/admin/patients"
 @layout AdminLayout
 
-@using HealthCareApp.Shared.Dtos.Patients;
-@using HealthCareApp.Shared.Enums;
+@using HealthCareApp.Shared.Dtos.Patients
+@using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IPatientAdminService PatientService
 @inject NavigationManager Navigation
 
-<PageTitle>Patients | HealthCareApp Admin</PageTitle>
+<PageTitle>Patients | HealthAxis Admin</PageTitle>
 
 @if (patients is null)
 {
     <div class="hc-page-loading">
         <div class="hc-loading-card">
             <div class="hc-loading-spinner"></div>
-            <p>Loading patients...</p>
+            <p>Loading patient profiles...</p>
         </div>
     </div>
 }
@@ -24,7 +24,7 @@ else
     <div class="hc-page-heading">
         <div>
             <h1>Patients</h1>
-            <p>View, add, update, and manage patient profile information.</p>
+            <p>View, add, update, and manage HealthAxis patient profile information.</p>
         </div>
 
         <button class="hc-page-primary-btn" @onclick="GoToAddPatient">
@@ -32,30 +32,57 @@ else
         </button>
     </div>
 
-    <div class="hc-doctor-stat-grid">
-        <div class="hc-doctor-stat-card blue">
-            <span>Total Patients</span>
-            <strong>@patients.Count</strong>
+    <div class="hc-doctor-stat-grid ha-management-stat-grid">
+        <div class="hc-doctor-stat-card blue ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Total Patients</span>
+                <strong>@TotalPatients</strong>
+                <small>Patient profiles in HealthAxis</small>
+            </div>
+            <div class="ha-stat-card-icon">◉</div>
         </div>
 
-        <div class="hc-doctor-stat-card green">
-            <span>With Insurance</span>
-            <strong>@patients.Count(p => !string.IsNullOrWhiteSpace(p.InsuranceId))</strong>
+        <div class="hc-doctor-stat-card green ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>With Insurance</span>
+                <strong>@InsuredPatients</strong>
+                <small>Insurance-linked patient records</small>
+            </div>
+            <div class="ha-stat-card-icon">✓</div>
         </div>
 
-        <div class="hc-doctor-stat-card red">
-            <span>Without Insurance</span>
-            <strong>@patients.Count(p => string.IsNullOrWhiteSpace(p.InsuranceId))</strong>
+        <div class="hc-doctor-stat-card red ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Without Insurance</span>
+                <strong>@UninsuredPatients</strong>
+                <small>Profiles without insurance ID</small>
+            </div>
+            <div class="ha-stat-card-icon">!</div>
         </div>
 
-        <div class="hc-doctor-stat-card purple">
-            <span>Added Today</span>
-            <strong>@patients.Count(p => ParseDate(p.CreatedDate).Date == DateTime.Today)</strong>
+        <div class="hc-doctor-stat-card purple ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Added Today</span>
+                <strong>@AddedToday</strong>
+                <small>New patient records today</small>
+            </div>
+            <div class="ha-stat-card-icon">▣</div>
         </div>
     </div>
 
-    <section class="hc-list-panel">
-        <div class="hc-list-toolbar">
+    <section class="hc-list-panel ha-management-panel">
+        <div class="ha-list-panel-header">
+            <div>
+                <h3>Patient Directory</h3>
+                <p>Search, filter, and maintain patient demographic and contact details.</p>
+            </div>
+
+            <span class="ha-result-count">
+                Showing @FilteredPatients.Count() of @TotalPatients
+            </span>
+        </div>
+
+        <div class="hc-list-toolbar ha-list-toolbar">
             <div class="hc-search-box">
                 <span>⌕</span>
                 <input placeholder="Search patient by name, email, phone, or insurance ID..."
@@ -80,16 +107,16 @@ else
 
         @if (!FilteredPatients.Any())
         {
-            <div class="hc-empty-state">
+            <div class="hc-empty-state ha-empty-state">
                 <div class="hc-empty-icon">◉</div>
-                <h3>No patients found</h3>
-                <p>Try changing the search text or filters.</p>
+                <h3>No patient profiles found</h3>
+                <p>Try adjusting search text, gender, or insurance filters.</p>
             </div>
         }
         else
         {
             <div class="hc-table-wrapper">
-                <table class="hc-admin-table">
+                <table class="hc-admin-table ha-management-table">
                     <thead>
                         <tr>
                             <th>Patient</th>
@@ -109,7 +136,7 @@ else
                             <tr>
                                 <td>
                                     <div class="hc-doctor-cell">
-                                        <div class="hc-patient-avatar">
+                                        <div class="hc-patient-avatar ha-patient-avatar">
                                             @GetInitials(patient.FullName)
                                         </div>
 
@@ -121,23 +148,35 @@ else
                                 </td>
 
                                 <td>
-                                    <span class="hc-specialisation-pill">
+                                    <span class="hc-specialisation-pill ha-gender-pill">
                                         @patient.Gender
                                     </span>
                                 </td>
 
-                                <td>@dateOfBirth.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="ha-table-strong-text">
+                                        @dateOfBirth.ToString("dd MMM yyyy")
+                                    </span>
+                                </td>
 
-                                <td>@patient.PhoneNumber</td>
+                                <td>
+                                    <span class="ha-phone-pill">
+                                        @patient.PhoneNumber
+                                    </span>
+                                </td>
 
                                 <td>
                                     @if (!string.IsNullOrWhiteSpace(patient.InsuranceId))
                                     {
-                                        <span class="hc-status-badge active">@patient.InsuranceId</span>
+                                        <span class="hc-status-badge active ha-insurance-pill">
+                                            @patient.InsuranceId
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="hc-status-badge inactive">Not Available</span>
+                                        <span class="hc-status-badge inactive ha-insurance-pill">
+                                            Not Available
+                                        </span>
                                     }
                                 </td>
 
@@ -173,6 +212,17 @@ else
     private string selectedInsuranceStatus = string.Empty;
 
     private List<string> genders = new();
+
+    private int TotalPatients => patients?.Count ?? 0;
+
+    private int InsuredPatients =>
+        patients?.Count(p => !string.IsNullOrWhiteSpace(p.InsuranceId)) ?? 0;
+
+    private int UninsuredPatients =>
+        patients?.Count(p => string.IsNullOrWhiteSpace(p.InsuranceId)) ?? 0;
+
+    private int AddedToday =>
+        patients?.Count(p => ParseDate(p.CreatedDate).Date == DateTime.Today) ?? 0;
 
     private IEnumerable<PatientDto> FilteredPatients
     {
@@ -260,7 +310,7 @@ else
             : DateTime.MinValue;
     }
 
-    private string GetInitials(string fullName)
+    private static string GetInitials(string fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {

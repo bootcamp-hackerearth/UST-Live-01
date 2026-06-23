@@ -9,7 +9,7 @@ namespace HealthCareApp.Shared.Dtos.Doctors
     {
         [Required(ErrorMessage = "Please enter the doctor's full name.")]
         [StringLength(100, ErrorMessage = "Doctor name must not exceed 100 characters.")]
-        public  string FullName { get; set; }
+        public  string FullName { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Please enter the doctor's email address.")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address.")]

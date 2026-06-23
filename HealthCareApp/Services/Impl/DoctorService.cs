@@ -1,26 +1,25 @@
 ﻿using AutoMapper;
-using HealthCareApp.Shared.Constants;
-using HealthCareApp.Shared.Enums;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
-using Microsoft.AspNetCore.Identity;
-using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Constants;
 using HealthCareApp.Shared.Dtos.Doctors;
-
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Enums;
+using Microsoft.AspNetCore.Identity;
 
 namespace HealthCareApp.Services
 {
-
     public class DoctorService(
-
         IDoctorRepository repository,
         IMapper mapper,
         UserManager<IdentityUser> userManager,
         RoleManager<IdentityRole> roleManager) : IDoctorService
-
     {
         private const string DoctorEntityName = "Doctor";
+        private const string DoctorRoleName = "Doctor";
+        private const string DoctorDetailsRequiredMessage = "Doctor details are required.";
+
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
             var doctors = await repository.GetAllAsync();
@@ -158,12 +157,12 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException(errors);
             }
 
-            if (!await roleManager.RoleExistsAsync("Doctor"))
+            if (!await roleManager.RoleExistsAsync(DoctorRoleName))
             {
-                await roleManager.CreateAsync(new IdentityRole("Doctor"));
+                await roleManager.CreateAsync(new IdentityRole(DoctorRoleName));
             }
 
-            var roleResult = await userManager.AddToRoleAsync(identityUser, "Doctor");
+            var roleResult = await userManager.AddToRoleAsync(identityUser, DoctorRoleName);
 
             if (!roleResult.Succeeded)
             {
@@ -204,7 +203,7 @@ namespace HealthCareApp.Services
 
             if (existingDoctor is null)
             {
-                throw new EntityNotFoundException("Doctor", doctorId);
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
             }
 
             var doctor = mapper.Map<Doctor>(dto);
@@ -219,7 +218,7 @@ namespace HealthCareApp.Services
 
             if (updatedDoctor is null)
             {
-                throw new EntityNotFoundException("Doctor", doctorId);
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
             }
 
             return mapper.Map<DoctorDto>(updatedDoctor);
@@ -233,7 +232,7 @@ namespace HealthCareApp.Services
 
             if (deletedDoctor is null)
             {
-                throw new EntityNotFoundException("Doctor", doctorId);
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
             }
 
             return mapper.Map<DoctorDto>(deletedDoctor);
@@ -264,7 +263,7 @@ namespace HealthCareApp.Services
 
             if (doctor is null)
             {
-                throw new EntityNotFoundException("Doctor", doctorId);
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
             }
 
             if (!doctor.IsActive)
@@ -283,11 +282,11 @@ namespace HealthCareApp.Services
             }
         }
 
-        private void ValidateCreateDoctorDto(CreateDoctorDto dto)
+        private static void ValidateCreateDoctorDto(CreateDoctorDto dto)
         {
             if (dto is null)
             {
-                throw new BusinessRuleException("Doctor details are required.");
+                throw new BusinessRuleException(DoctorDetailsRequiredMessage);
             }
 
             ValidateDoctorCommonFields(
@@ -297,11 +296,11 @@ namespace HealthCareApp.Services
                 dto.ConsultationFee);
         }
 
-        private void ValidateUpdateDoctorDto(UpdateDoctorDto dto)
+        private static void ValidateUpdateDoctorDto(UpdateDoctorDto dto)
         {
             if (dto is null)
             {
-                throw new BusinessRuleException("Doctor details are required.");
+                throw new BusinessRuleException(DoctorDetailsRequiredMessage);
             }
 
             ValidateDoctorCommonFields(
@@ -360,7 +359,7 @@ namespace HealthCareApp.Services
 
             if (string.IsNullOrWhiteSpace(cleanedName))
             {
-                cleanedName = "Doctor";
+                cleanedName = DoctorEntityName;
             }
 
             string formattedName =

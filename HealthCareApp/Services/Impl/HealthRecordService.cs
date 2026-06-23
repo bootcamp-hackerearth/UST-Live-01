@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using HealthCareApp.Shared.Enums;
 using HealthCareApp.Exceptions;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Shared.Dtos.HealthRecords;
+using HealthCareApp.Shared.Enums;
+
 namespace HealthCareApp.Services
 {
     public class HealthRecordService(
@@ -13,6 +14,12 @@ namespace HealthCareApp.Services
         IAppointmentRepository appointmentRepository,
         IMapper mapper) : IHealthRecordService
     {
+        private const string HealthRecordEntityName = "HealthRecord";
+        private const string PatientEntityName = "Patient";
+        private const string DoctorEntityName = "Doctor";
+        private const string AppointmentEntityName = "Appointment";
+        private const string HealthRecordDetailsRequiredMessage = "Health record details are required.";
+
         public async Task<List<HealthRecordDto>> GetAllHealthRecordsAsync()
         {
             var healthRecords = await healthRecordRepository.GetAllAsync();
@@ -28,7 +35,7 @@ namespace HealthCareApp.Services
 
             if (healthRecord is null)
             {
-                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+                throw new EntityNotFoundException(HealthRecordEntityName, healthRecordId);
             }
 
             return mapper.Map<HealthRecordDto>(healthRecord);
@@ -65,77 +72,15 @@ namespace HealthCareApp.Services
         {
             if (dto is null)
             {
-                throw new HealthRecordRuleException("Health record details are required.");
+                throw new HealthRecordRuleException(HealthRecordDetailsRequiredMessage);
             }
 
             ValidatePatientId(dto.PatientId);
             ValidateAppointmentId(dto.AppointmentId);
 
-            var patient = await patientRepository.GetByIdAsync(dto.PatientId);
+            var appointment = await ValidateAndGetAppointmentForHealthRecordAsync(dto);
 
-            if (patient is null)
-            {
-                throw new EntityNotFoundException("Patient", dto.PatientId);
-            }
-
-            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
-
-            if (appointment is null)
-            {
-                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
-            }
-
-            if (appointment.PatientId != dto.PatientId)
-            {
-                throw new HealthRecordRuleException("Appointment does not belong to the selected patient.");
-            }
-
-            if (dto.DoctorId is not null)
-            {
-                ValidateDoctorId(dto.DoctorId.Value);
-
-                var doctor = await doctorRepository.GetByIdAsync(dto.DoctorId.Value);
-
-                if (doctor is null)
-                {
-                    throw new EntityNotFoundException("Doctor", dto.DoctorId.Value);
-                }
-
-                if (appointment.DoctorId != dto.DoctorId.Value)
-                {
-                    throw new HealthRecordRuleException("Appointment does not belong to the selected doctor.");
-                }
-            }
-
-            if (appointment.Status == AppointmentStatus.Cancelled)
-            {
-                throw new HealthRecordRuleException("Health record cannot be added for a cancelled appointment.");
-            }
-
-            if (appointment.Status == AppointmentStatus.Pending)
-            {
-                throw new HealthRecordRuleException("Health record cannot be added for a pending appointment.");
-            }
-
-            if (appointment.Status == AppointmentStatus.Completed)
-            {
-                throw new HealthRecordRuleException("Health record already exists or appointment is already completed.");
-            }
-
-            if (appointment.Status != AppointmentStatus.Confirmed)
-            {
-                throw new HealthRecordRuleException("Health record can be added only for confirmed appointments.");
-            }
-
-            if (appointment.ScheduledDate.Date > DateTime.Today)
-            {
-                throw new HealthRecordRuleException("Health record cannot be added before the appointment date.");
-            }
-
-            if (dto.VisitDate.Date != appointment.ScheduledDate.Date)
-            {
-                throw new HealthRecordRuleException("Visit date must match the appointment scheduled date.");
-            }
+            ValidateAppointmentForHealthRecordCreation(appointment, dto.VisitDate);
 
             var healthRecordExists = await healthRecordRepository.ExistsByAppointmentIdAsync(dto.AppointmentId);
 
@@ -168,21 +113,21 @@ namespace HealthCareApp.Services
 
             if (dto is null)
             {
-                throw new HealthRecordRuleException("Health record details are required.");
+                throw new HealthRecordRuleException(HealthRecordDetailsRequiredMessage);
             }
 
             var existingHealthRecord = await healthRecordRepository.GetByIdAsync(healthRecordId);
 
             if (existingHealthRecord is null)
             {
-                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+                throw new EntityNotFoundException(HealthRecordEntityName, healthRecordId);
             }
 
             var appointment = await appointmentRepository.GetByIdAsync(existingHealthRecord.AppointmentId);
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", existingHealthRecord.AppointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, existingHealthRecord.AppointmentId);
             }
 
             if (appointment.ScheduledDate.Date > DateTime.Today)
@@ -207,7 +152,7 @@ namespace HealthCareApp.Services
 
             if (updatedHealthRecord is null)
             {
-                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+                throw new EntityNotFoundException(HealthRecordEntityName, healthRecordId);
             }
 
             return mapper.Map<HealthRecordDto>(updatedHealthRecord);
@@ -221,13 +166,11 @@ namespace HealthCareApp.Services
 
             if (deletedHealthRecord is null)
             {
-                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+                throw new EntityNotFoundException(HealthRecordEntityName, healthRecordId);
             }
 
             return mapper.Map<HealthRecordDto>(deletedHealthRecord);
         }
-
-        // ---------------- Patient ownership methods ----------------
 
         public async Task<List<HealthRecordDto>> GetMyHealthRecordsForPatientAsync(string identityUserId)
         {
@@ -250,7 +193,7 @@ namespace HealthCareApp.Services
 
             if (healthRecord is null)
             {
-                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+                throw new EntityNotFoundException(HealthRecordEntityName, healthRecordId);
             }
 
             if (healthRecord.PatientId != patient.PatientId)
@@ -260,8 +203,6 @@ namespace HealthCareApp.Services
 
             return mapper.Map<HealthRecordDto>(healthRecord);
         }
-
-        // ---------------- Doctor ownership methods ----------------
 
         public async Task<List<HealthRecordDto>> GetMyHealthRecordsForDoctorAsync(string identityUserId)
         {
@@ -284,7 +225,7 @@ namespace HealthCareApp.Services
 
             if (healthRecord is null)
             {
-                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+                throw new EntityNotFoundException(HealthRecordEntityName, healthRecordId);
             }
 
             if (healthRecord.DoctorId != doctor.DoctorId)
@@ -307,7 +248,7 @@ namespace HealthCareApp.Services
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             if (appointment.DoctorId != doctor.DoctorId)
@@ -326,7 +267,7 @@ namespace HealthCareApp.Services
         {
             if (dto is null)
             {
-                throw new HealthRecordRuleException("Health record details are required.");
+                throw new HealthRecordRuleException(HealthRecordDetailsRequiredMessage);
             }
 
             var doctor = await GetLoggedInDoctorAsync(identityUserId);
@@ -337,7 +278,7 @@ namespace HealthCareApp.Services
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, dto.AppointmentId);
             }
 
             if (appointment.DoctorId != doctor.DoctorId)
@@ -369,7 +310,7 @@ namespace HealthCareApp.Services
 
             if (dto is null)
             {
-                throw new HealthRecordRuleException("Health record details are required.");
+                throw new HealthRecordRuleException(HealthRecordDetailsRequiredMessage);
             }
 
             var doctor = await GetLoggedInDoctorAsync(identityUserId);
@@ -378,7 +319,7 @@ namespace HealthCareApp.Services
 
             if (healthRecord is null)
             {
-                throw new EntityNotFoundException("HealthRecord", healthRecordId);
+                throw new EntityNotFoundException(HealthRecordEntityName, healthRecordId);
             }
 
             if (healthRecord.DoctorId != doctor.DoctorId)
@@ -389,7 +330,86 @@ namespace HealthCareApp.Services
             return await UpdateHealthRecordAsync(healthRecordId, dto);
         }
 
-        // ---------------- Private helper methods ----------------
+        private async Task<Appointment> ValidateAndGetAppointmentForHealthRecordAsync(AddHealthRecordDto dto)
+        {
+            var patient = await patientRepository.GetByIdAsync(dto.PatientId);
+
+            if (patient is null)
+            {
+                throw new EntityNotFoundException(PatientEntityName, dto.PatientId);
+            }
+
+            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException(AppointmentEntityName, dto.AppointmentId);
+            }
+
+            if (appointment.PatientId != dto.PatientId)
+            {
+                throw new HealthRecordRuleException("Appointment does not belong to the selected patient.");
+            }
+
+            if (dto.DoctorId is not null)
+            {
+                await ValidateDoctorForHealthRecordAsync(dto.DoctorId.Value, appointment);
+            }
+
+            return appointment;
+        }
+
+        private async Task ValidateDoctorForHealthRecordAsync(int doctorId, Appointment appointment)
+        {
+            ValidateDoctorId(doctorId);
+
+            var doctor = await doctorRepository.GetByIdAsync(doctorId);
+
+            if (doctor is null)
+            {
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
+            }
+
+            if (appointment.DoctorId != doctorId)
+            {
+                throw new HealthRecordRuleException("Appointment does not belong to the selected doctor.");
+            }
+        }
+
+        private static void ValidateAppointmentForHealthRecordCreation(
+            Appointment appointment,
+            DateTime visitDate)
+        {
+            if (appointment.Status == AppointmentStatus.Cancelled)
+            {
+                throw new HealthRecordRuleException("Health record cannot be added for a cancelled appointment.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Pending)
+            {
+                throw new HealthRecordRuleException("Health record cannot be added for a pending appointment.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed)
+            {
+                throw new HealthRecordRuleException("Health record already exists or appointment is already completed.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Confirmed)
+            {
+                throw new HealthRecordRuleException("Health record can be added only for confirmed appointments.");
+            }
+
+            if (appointment.ScheduledDate.Date > DateTime.Today)
+            {
+                throw new HealthRecordRuleException("Health record cannot be added before the appointment date.");
+            }
+
+            if (visitDate.Date != appointment.ScheduledDate.Date)
+            {
+                throw new HealthRecordRuleException("Visit date must match the appointment scheduled date.");
+            }
+        }
 
         private async Task<Patient> GetLoggedInPatientAsync(string identityUserId)
         {
@@ -433,7 +453,7 @@ namespace HealthCareApp.Services
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             return appointment;
@@ -447,7 +467,7 @@ namespace HealthCareApp.Services
 
             if (patient is null)
             {
-                throw new EntityNotFoundException("Patient", patientId);
+                throw new EntityNotFoundException(PatientEntityName, patientId);
             }
         }
 
@@ -459,11 +479,11 @@ namespace HealthCareApp.Services
 
             if (doctor is null)
             {
-                throw new EntityNotFoundException("Doctor", doctorId);
+                throw new EntityNotFoundException(DoctorEntityName, doctorId);
             }
         }
 
-        private void ValidateHealthRecordId(int healthRecordId)
+        private static void ValidateHealthRecordId(int healthRecordId)
         {
             if (healthRecordId <= 0)
             {
@@ -471,7 +491,7 @@ namespace HealthCareApp.Services
             }
         }
 
-        private void ValidatePatientId(int patientId)
+        private static void ValidatePatientId(int patientId)
         {
             if (patientId <= 0)
             {
@@ -479,7 +499,7 @@ namespace HealthCareApp.Services
             }
         }
 
-        private void ValidateDoctorId(int doctorId)
+        private static void ValidateDoctorId(int doctorId)
         {
             if (doctorId <= 0)
             {
@@ -487,7 +507,7 @@ namespace HealthCareApp.Services
             }
         }
 
-        private void ValidateAppointmentId(int appointmentId)
+        private static void ValidateAppointmentId(int appointmentId)
         {
             if (appointmentId <= 0)
             {
@@ -495,7 +515,7 @@ namespace HealthCareApp.Services
             }
         }
 
-        private void ValidateHealthRecordText(
+        private static void ValidateHealthRecordText(
             string diagnosis,
             string prescription,
             string? notes)

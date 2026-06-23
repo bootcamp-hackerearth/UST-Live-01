@@ -1826,3 +1826,366 @@ font-weight: 700;
         transform: translateY(0);
     }
 }
+
+/* HealthAxis Management Page Polish */
+.ha-management-stat-grid {
+    align-items: stretch;
+}
+
+.ha-management-stat-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .ha-management-stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18);
+    }
+
+    .ha-management-stat-card::after {
+        content: "";
+        position: absolute;
+        width: 115px;
+        height: 115px;
+        right: -42px;
+        bottom: -48px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.16);
+    }
+
+.ha-stat-card-content {
+    position: relative;
+    z-index: 1;
+}
+
+    .ha-stat-card-content small {
+        display: block;
+        margin-top: 8px;
+        color: rgba(255, 255, 255, 0.78);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+.ha-stat-card-icon {
+    position: relative;
+    z-index: 1;
+    width: 48px;
+    height: 48px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 900;
+    background: rgba(255, 255, 255, 0.18);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.ha-management-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+.ha-list-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+    .ha-list-panel-header h3 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 22px;
+        font-weight: 900;
+        letter-spacing: -0.4px;
+    }
+
+    .ha-list-panel-header p {
+        margin: 6px 0 0;
+        color: #64748b;
+        font-weight: 700;
+    }
+
+.ha-result-count {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #1d4ed8;
+    background: #dbeafe;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.ha-list-toolbar {
+    margin-bottom: 24px;
+}
+
+.ha-management-table tbody tr {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+    .ha-management-table tbody tr:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.08);
+    }
+
+.ha-doctor-avatar {
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+}
+
+.ha-specialisation-pill {
+    background: #eef2ff;
+    color: #4338ca;
+}
+
+.ha-fee-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #0f766e;
+    background: #ccfbf1;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.ha-table-strong-text {
+    color: #334155;
+    font-weight: 900;
+}
+
+.ha-status-badge {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.ha-empty-state {
+    background: radial-gradient(circle at top left, rgba(20, 184, 166, 0.09), transparent 30%), #f8fafc;
+}
+
+@media (max-width: 760px) {
+    .ha-list-panel-header {
+        flex-direction: column;
+    }
+
+    .ha-result-count {
+        width: fit-content;
+    }
+}
+
+
+/* HealthAxis Patient Page Polish */
+.ha-patient-avatar {
+    background: linear-gradient(135deg, #14b8a6, #2563eb);
+}
+
+.ha-gender-pill {
+    background: #f0fdfa;
+    color: #0f766e;
+}
+
+.ha-phone-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #334155;
+    background: #f1f5f9;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.ha-insurance-pill {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* HealthAxis Appointment Page Polish */
+.ha-appointment-id-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+    .ha-appointment-id-card strong {
+        color: #0f172a;
+        font-weight: 900;
+    }
+
+    .ha-appointment-id-card span {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+.ha-appointment-avatar {
+    background: linear-gradient(135deg, #8b5cf6, #2563eb);
+}
+
+.ha-doctor-reference strong {
+    display: block;
+    color: #0f172a;
+    font-weight: 900;
+}
+
+.ha-doctor-reference span {
+    display: block;
+    margin-top: 4px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.ha-time-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #4338ca;
+    background: #eef2ff;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.ha-appointment-status {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.36);
+}
+
+
+
+/* HealthAxis Patient Details Polish */
+.ha-profile-details-shell {
+    position: relative;
+    overflow: hidden;
+}
+
+.ha-profile-hero {
+    background: radial-gradient(circle at top left, rgba(20, 184, 166, 0.18), transparent 32%), radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.12), transparent 28%), linear-gradient(135deg, #eff6ff, #f8fafc);
+}
+
+.ha-profile-avatar {
+    background: linear-gradient(135deg, #14b8a6, #2563eb);
+}
+
+.ha-profile-hero-content {
+    min-width: 0;
+}
+
+.ha-profile-kicker {
+    width: fit-content;
+    margin-bottom: 8px;
+    padding: 7px 11px;
+    border-radius: 999px;
+    color: #0f766e;
+    background: #ccfbf1;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.ha-profile-badge {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.ha-profile-id-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 8px 12px;
+    color: #1d4ed8;
+    background: #dbeafe;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.ha-profile-details-grid {
+    margin-top: 20px;
+}
+
+.ha-profile-detail-card {
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+    .ha-profile-detail-card:hover {
+        transform: translateY(-2px);
+        border-color: #bfdbfe;
+        background: #f1f7ff;
+    }
+
+    .ha-profile-detail-card p {
+        margin: 7px 0 0;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+        line-height: 1.5;
+    }
+
+.ha-profile-summary-card {
+    margin-top: 22px;
+    padding: 22px;
+    border-radius: 24px;
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: center;
+    background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.12), transparent 30%), #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+    .ha-profile-summary-card span {
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .ha-profile-summary-card h3 {
+        margin: 5px 0;
+        color: #0f172a;
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+    .ha-profile-summary-card p {
+        margin: 0;
+        max-width: 680px;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.6;
+    }
+
+.ha-profile-summary-badge {
+    width: 58px;
+    height: 58px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 20px;
+    color: #ffffff;
+    font-weight: 900;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 14px 30px rgba(20, 184, 166, 0.22);
+}
+
+@media (max-width: 760px) {
+    .ha-profile-summary-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+

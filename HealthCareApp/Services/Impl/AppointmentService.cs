@@ -17,7 +17,10 @@ namespace HealthCareApp.Services.Impl
         IHealthRecordRepository healthRecordRepository,
         IMapper mapper) : IAppointmentService
     {
+
         private const string AppointmentEntityName = "Appointment";
+        private const string AppointmentDetailsRequiredMessage = "Appointment details are required.";
+        private const string CancellationDetailsRequiredMessage = "Cancellation details are required.";
         public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
         {
             var appointments = await appointmentRepository.GetAllAsync();
@@ -201,7 +204,7 @@ namespace HealthCareApp.Services.Impl
         {
             if (dto is null)
             {
-                throw new AppointmentRuleException("Appointment details are required.");
+                throw new AppointmentRuleException(AppointmentDetailsRequiredMessage);
             }
 
             await ValidatePatientExistsAsync(dto.PatientId);
@@ -262,14 +265,14 @@ namespace HealthCareApp.Services.Impl
 
             if (dto is null)
             {
-                throw new AppointmentRuleException("Appointment details are required.");
+                throw new AppointmentRuleException(AppointmentDetailsRequiredMessage);
             }
 
             var existingAppointment = await appointmentRepository.GetByIdAsync(appointmentId);
 
             if (existingAppointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             await ValidatePatientExistsAsync(dto.PatientId);
@@ -308,7 +311,7 @@ namespace HealthCareApp.Services.Impl
 
             if (updatedAppointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             return mapper.Map<AppointmentDto>(updatedAppointment);
@@ -322,7 +325,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             if (appointment.Status == AppointmentStatus.Cancelled)
@@ -349,7 +352,7 @@ namespace HealthCareApp.Services.Impl
 
             if (updatedAppointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             return mapper.Map<AppointmentDto>(updatedAppointment);
@@ -363,7 +366,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             if (appointment.Status == AppointmentStatus.Cancelled)
@@ -389,7 +392,7 @@ namespace HealthCareApp.Services.Impl
 
             if (updatedAppointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             return mapper.Map<AppointmentDto>(updatedAppointment);
@@ -399,7 +402,7 @@ namespace HealthCareApp.Services.Impl
         {
             if (dto is null)
             {
-                throw new AppointmentRuleException("Cancellation details are required.");
+                throw new AppointmentRuleException(CancellationDetailsRequiredMessage);
             }
 
             ValidateAppointmentId(dto.AppointmentId);
@@ -410,7 +413,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, dto.AppointmentId);
             }
 
             if (appointment.Status == AppointmentStatus.Completed)
@@ -432,7 +435,7 @@ namespace HealthCareApp.Services.Impl
 
             if (updatedAppointment is null)
             {
-                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, dto.AppointmentId);
             }
 
             return mapper.Map<AppointmentDto>(updatedAppointment);
@@ -446,7 +449,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             var hasHealthRecord = await healthRecordRepository.ExistsByAppointmentIdAsync(appointmentId);
@@ -460,7 +463,7 @@ namespace HealthCareApp.Services.Impl
 
             if (deletedAppointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             return mapper.Map<AppointmentDto>(deletedAppointment);
@@ -505,7 +508,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             if (appointment.PatientId != patient.PatientId)
@@ -522,7 +525,7 @@ namespace HealthCareApp.Services.Impl
         {
             if (dto is null)
             {
-                throw new AppointmentRuleException("Appointment details are required.");
+                throw new AppointmentRuleException(AppointmentDetailsRequiredMessage);
             }
 
             var patient = await GetLoggedInPatientAsync(identityUserId);
@@ -540,7 +543,7 @@ namespace HealthCareApp.Services.Impl
         {
             if (dto is null)
             {
-                throw new AppointmentRuleException("Cancellation details are required.");
+                throw new AppointmentRuleException(CancellationDetailsRequiredMessage);
             }
 
             ValidateAppointmentId(dto.AppointmentId);
@@ -551,7 +554,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, dto.AppointmentId);
             }
 
             if (appointment.PatientId != patient.PatientId)
@@ -608,7 +611,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             if (appointment.DoctorId != doctor.DoctorId)
@@ -631,7 +634,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             if (appointment.DoctorId != doctor.DoctorId)
@@ -654,7 +657,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", appointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, appointmentId);
             }
 
             if (appointment.DoctorId != doctor.DoctorId)
@@ -671,7 +674,7 @@ namespace HealthCareApp.Services.Impl
         {
             if (dto is null)
             {
-                throw new AppointmentRuleException("Cancellation details are required.");
+                throw new AppointmentRuleException(CancellationDetailsRequiredMessage);
             }
 
             ValidateAppointmentId(dto.AppointmentId);
@@ -682,7 +685,7 @@ namespace HealthCareApp.Services.Impl
 
             if (appointment is null)
             {
-                throw new EntityNotFoundException("Appointment", dto.AppointmentId);
+                throw new EntityNotFoundException(AppointmentEntityName, dto.AppointmentId);
             }
 
             if (appointment.DoctorId != doctor.DoctorId)

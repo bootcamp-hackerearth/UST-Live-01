@@ -1,21 +1,21 @@
 ﻿@page "/admin/appointments"
 @layout AdminLayout
 
-@using HealthCareApp.Shared.Dtos.Appointments;
-@using HealthCareApp.Shared.Enums;
+@using HealthCareApp.Shared.Dtos.Appointments
+@using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
 @inject NavigationManager Navigation
 
-<PageTitle>Appointments | HealthCareApp Admin</PageTitle>
+<PageTitle>Appointments | HealthAxis Admin</PageTitle>
 
 @if (appointments is null)
 {
     <div class="hc-page-loading">
         <div class="hc-loading-card">
             <div class="hc-loading-spinner"></div>
-            <p>Loading appointments...</p>
+            <p>Loading appointment schedules...</p>
         </div>
     </div>
 }
@@ -24,47 +24,70 @@ else
     <div class="hc-page-heading">
         <div>
             <h1>Appointments</h1>
-            <p>View, create, update, delete, and filter appointment schedules.</p>
-        </div>
-
-        <button class="hc-page-primary-btn" @onclick="GoToAddAppointment">
-            + Create Appointment
-        </button>
-    </div>
-
-    <div class="hc-doctor-stat-grid">
-        <div class="hc-doctor-stat-card blue">
-            <span>Total Appointments</span>
-            <strong>@TotalAppointments</strong>
-        </div>
-
-        <div class="hc-doctor-stat-card green">
-            <span>Today</span>
-            <strong>@TodayAppointments</strong>
-        </div>
-
-        <div class="hc-doctor-stat-card purple">
-            <span>Upcoming</span>
-            <strong>@UpcomingAppointments</strong>
-        </div>
-
-        <div class="hc-doctor-stat-card red">
-            <span>Cancelled</span>
-            <strong>@CancelledAppointments</strong>
+            <p>View, update, and filter HealthAxis appointment schedules.</p>
         </div>
     </div>
 
-    <section class="hc-list-panel">
-        <div class="hc-list-toolbar">
+    <div class="hc-doctor-stat-grid ha-management-stat-grid">
+        <div class="hc-doctor-stat-card blue ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Total Appointments</span>
+                <strong>@TotalAppointments</strong>
+                <small>Overall appointment records</small>
+            </div>
+            <div class="ha-stat-card-icon">◷</div>
+        </div>
+
+        <div class="hc-doctor-stat-card green ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Today</span>
+                <strong>@TodayAppointments</strong>
+                <small>Scheduled for current day</small>
+            </div>
+            <div class="ha-stat-card-icon">▣</div>
+        </div>
+
+        <div class="hc-doctor-stat-card purple ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Upcoming</span>
+                <strong>@UpcomingAppointments</strong>
+                <small>Future appointment activity</small>
+            </div>
+            <div class="ha-stat-card-icon">→</div>
+        </div>
+
+        <div class="hc-doctor-stat-card red ha-management-stat-card">
+            <div class="ha-stat-card-content">
+                <span>Cancelled</span>
+                <strong>@CancelledAppointments</strong>
+                <small>Cancelled appointment count</small>
+            </div>
+            <div class="ha-stat-card-icon">!</div>
+        </div>
+    </div>
+
+    <section class="hc-list-panel ha-management-panel">
+        <div class="ha-list-panel-header">
+            <div>
+                <h3>Appointment Directory</h3>
+                <p>Search, filter, and review patient-doctor appointment activity.</p>
+            </div>
+
+            <span class="ha-result-count">
+                Showing @FilteredAppointments.Count() of @TotalAppointments
+            </span>
+        </div>
+
+        <div class="hc-list-toolbar ha-list-toolbar">
             <div class="hc-search-box">
                 <span>⌕</span>
-                <input placeholder="Search by patient, doctor, time slot, or reason..."
+                <input placeholder="Search by patient, doctor, time slot, or cancellation reason..."
                        @bind="searchTerm"
                        @bind:event="oninput" />
             </div>
 
             <select class="hc-filter-select" @bind="selectedStatusFilter">
-                <option value="all">All</option>
+                <option value="all">All Status</option>
                 <option value="today">Today</option>
                 <option value="upcoming">Upcoming</option>
                 <option value="pending">Pending</option>
@@ -84,16 +107,16 @@ else
 
         @if (!FilteredAppointments.Any())
         {
-            <div class="hc-empty-state">
+            <div class="hc-empty-state ha-empty-state">
                 <div class="hc-empty-icon">◷</div>
-                <h3>No appointments found</h3>
-                <p>Try changing the search text or filters.</p>
+                <h3>No appointment records found</h3>
+                <p>Try adjusting search text, status, date, or doctor filters.</p>
             </div>
         }
         else
         {
             <div class="hc-table-wrapper">
-                <table class="hc-admin-table">
+                <table class="hc-admin-table ha-management-table">
                     <thead>
                         <tr>
                             <th>Appointment</th>
@@ -113,15 +136,15 @@ else
 
                             <tr>
                                 <td>
-                                    <strong>#@appointment.AppointmentId</strong>
-                                    <div class="hc-table-subtext">
-                                        Appointment record
+                                    <div class="ha-appointment-id-card">
+                                        <strong>#@appointment.AppointmentId</strong>
+                                        <span>Appointment record</span>
                                     </div>
                                 </td>
 
                                 <td>
                                     <div class="hc-doctor-cell">
-                                        <div class="hc-patient-avatar">
+                                        <div class="hc-patient-avatar ha-appointment-avatar">
                                             @GetInitials(appointment.PatientName)
                                         </div>
 
@@ -133,18 +156,20 @@ else
                                 </td>
 
                                 <td>
-                                    <div>
+                                    <div class="ha-doctor-reference">
                                         <strong>@appointment.DoctorName</strong>
-                                        <div class="hc-table-subtext">
-                                            Doctor ID: @appointment.DoctorId
-                                        </div>
+                                        <span>Doctor ID: @appointment.DoctorId</span>
                                     </div>
                                 </td>
 
-                                <td>@scheduledDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <span class="ha-table-strong-text">
+                                        @scheduledDate.ToString("dd MMM yyyy")
+                                    </span>
+                                </td>
 
                                 <td>
-                                    <span class="hc-specialisation-pill">
+                                    <span class="ha-time-pill">
                                         @appointment.TimeSlot
                                     </span>
                                 </td>
@@ -178,47 +203,34 @@ else
 }
 
 @code {
+    private const string AllStatusFilter = "all";
+    private const string TodayFilter = "today";
+    private const string UpcomingFilter = "upcoming";
+    private const string PendingFilter = "pending";
+    private const string ConfirmedFilter = "confirmed";
+    private const string CompletedFilter = "completed";
+    private const string CancelledFilter = "cancelled";
+
     private List<AppointmentDto>? appointments;
 
     private string searchTerm = string.Empty;
 
-    private string selectedStatusFilter = "all";
+    private string selectedStatusFilter = AllStatusFilter;
 
     private string selectedDoctor = string.Empty;
 
     private List<string> doctors = new();
 
-    private int TotalAppointments
-    {
-        get
-        {
-            return appointments?.Count ?? 0;
-        }
-    }
+    private int TotalAppointments => appointments?.Count ?? 0;
 
-    private int TodayAppointments
-    {
-        get
-        {
-            return appointments?.Count(a => ParseDate(a.ScheduledDate).Date == DateTime.Today) ?? 0;
-        }
-    }
+    private int TodayAppointments =>
+        appointments?.Count(a => ParseDate(a.ScheduledDate).Date == DateTime.Today) ?? 0;
 
-    private int UpcomingAppointments
-    {
-        get
-        {
-            return appointments?.Count(a => ParseDate(a.ScheduledDate).Date > DateTime.Today) ?? 0;
-        }
-    }
+    private int UpcomingAppointments =>
+        appointments?.Count(a => ParseDate(a.ScheduledDate).Date > DateTime.Today) ?? 0;
 
-    private int CancelledAppointments
-    {
-        get
-        {
-            return appointments?.Count(a => a.Status == AppointmentStatus.Cancelled) ?? 0;
-        }
-    }
+    private int CancelledAppointments =>
+        appointments?.Count(a => a.Status == AppointmentStatus.Cancelled) ?? 0;
 
     private IEnumerable<AppointmentDto> FilteredAppointments
     {
@@ -251,12 +263,12 @@ else
 
             query = selectedStatusFilter switch
             {
-                "today" => query.Where(a => ParseDate(a.ScheduledDate).Date == DateTime.Today),
-                "upcoming" => query.Where(a => ParseDate(a.ScheduledDate).Date > DateTime.Today),
-                "pending" => query.Where(a => a.Status == AppointmentStatus.Pending),
-                "confirmed" => query.Where(a => a.Status == AppointmentStatus.Confirmed),
-                "completed" => query.Where(a => a.Status == AppointmentStatus.Completed),
-                "cancelled" => query.Where(a => a.Status == AppointmentStatus.Cancelled),
+                TodayFilter => query.Where(a => ParseDate(a.ScheduledDate).Date == DateTime.Today),
+                UpcomingFilter => query.Where(a => ParseDate(a.ScheduledDate).Date > DateTime.Today),
+                PendingFilter => query.Where(a => a.Status == AppointmentStatus.Pending),
+                ConfirmedFilter => query.Where(a => a.Status == AppointmentStatus.Confirmed),
+                CompletedFilter => query.Where(a => a.Status == AppointmentStatus.Completed),
+                CancelledFilter => query.Where(a => a.Status == AppointmentStatus.Cancelled),
                 _ => query
             };
 
@@ -291,11 +303,6 @@ else
             .ToList();
     }
 
-    private void GoToAddAppointment()
-    {
-        Navigation.NavigateTo("/admin/appointments/add");
-    }
-
     private void GoToEditAppointment(int appointmentId)
     {
         Navigation.NavigateTo($"/admin/appointments/edit/{appointmentId}");
@@ -313,7 +320,7 @@ else
             : DateTime.MinValue;
     }
 
-    private string GetInitials(string? fullName)
+    private static string GetInitials(string? fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {
@@ -332,15 +339,15 @@ else
         return $"{parts[0][0]}{parts[1][0]}".ToUpper();
     }
 
-    private string GetStatusBadgeClass(AppointmentStatus status)
+    private static string GetStatusBadgeClass(AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatus.Pending => "hc-status-badge pending",
-            AppointmentStatus.Confirmed => "hc-status-badge confirmed",
-            AppointmentStatus.Completed => "hc-status-badge completed",
-            AppointmentStatus.Cancelled => "hc-status-badge cancelled",
-            _ => "hc-status-badge"
+            AppointmentStatus.Pending => "hc-status-badge pending ha-appointment-status",
+            AppointmentStatus.Confirmed => "hc-status-badge confirmed ha-appointment-status",
+            AppointmentStatus.Completed => "hc-status-badge completed ha-appointment-status",
+            AppointmentStatus.Cancelled => "hc-status-badge cancelled ha-appointment-status",
+            _ => "hc-status-badge ha-appointment-status"
         };
     }
 }
