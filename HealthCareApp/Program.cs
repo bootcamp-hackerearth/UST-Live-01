@@ -128,6 +128,19 @@ builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+const string BlazorCorsPolicy = "BlazorCorsPolicy";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(BlazorCorsPolicy, policy =>
+    {
+        policy.WithOrigins("https://localhost:7075")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 var app = builder.Build();
 
 // Seed roles and default admin.
@@ -152,6 +165,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+
+app.UseCors(BlazorCorsPolicy);
+
 
 app.UseAuthentication();
 

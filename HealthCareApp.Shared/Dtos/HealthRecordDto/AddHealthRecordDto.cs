@@ -7,7 +7,6 @@ namespace HealthCareApp.Shared.Dtos.HealthRecords
 
     {
 
-
         [Required]
         public int PatientId { get; set; }
 

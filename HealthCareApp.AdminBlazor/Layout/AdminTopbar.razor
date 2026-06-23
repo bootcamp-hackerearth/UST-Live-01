@@ -24,7 +24,7 @@
 </header>
 
 @code {
-    private string adminEmail = "admin@healthcare.com";
+    private string adminEmail = "Admin";
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,6 +40,6 @@
     {
         await AuthService.LogoutAsync();
 
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateTo("/login", replace: true);
     }
 }

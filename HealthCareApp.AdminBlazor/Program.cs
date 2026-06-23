@@ -1,6 +1,8 @@
 using HealthCareApp.AdminBlazor;
+using HealthCareApp.AdminBlazor.Auth;
 using HealthCareApp.AdminBlazor.Services.Impl;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,12 +15,22 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp =>
     new HttpClient
     {
-        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+        BaseAddress = new Uri("https://localhost:7250/")
     });
+
+builder.Services.AddAuthorizationCore();
+
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+
+builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+{
+    return sp.GetRequiredService<CustomAuthenticationStateProvider>();
+});
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
 builder.Services.AddScoped<IDoctorAdminService, DoctorAdminService>();
 builder.Services.AddScoped<IPatientAdminService, PatientAdminService>();
 builder.Services.AddScoped<IAppointmentAdminService, AppointmentAdminService>();
+
 await builder.Build().RunAsync();

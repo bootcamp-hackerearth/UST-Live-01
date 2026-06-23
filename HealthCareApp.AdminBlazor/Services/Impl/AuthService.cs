@@ -1,76 +1,200 @@
-﻿using HealthCareApp.Shared.Dtos.Auth;
+﻿using HealthCareApp.AdminBlazor.Auth;
 using HealthCareApp.AdminBlazor.Services.Interfaces;
+using HealthCareApp.Shared.Dtos.Auth;
+using Microsoft.JSInterop;
+using System.Net.Http.Json;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {
     public class AuthService : IAuthService
     {
-        private bool _isAuthenticated;
+        private const string TokenStorageKey = "token";
+        private const string AdminRoleName = "Admin";
+        private const string LoginEndpoint = "api/Auth/login";
 
-        private string? _currentUserEmail;
+        private readonly HttpClient _httpClient;
+        private readonly IJSRuntime _jsRuntime;
+        private readonly CustomAuthenticationStateProvider _authStateProvider;
 
-        private string? _currentUserRole;
-
-        private string? _accessToken;
-
-        private const string AdminEmail = "admin@healthcare.com";
-
-        private const string AdminPassword = "Admin@123";
-
-        public Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
+        public AuthService(
+            HttpClient httpClient,
+            IJSRuntime jsRuntime,
+            CustomAuthenticationStateProvider authStateProvider)
         {
-            if (loginDto.Email.Equals(AdminEmail, StringComparison.OrdinalIgnoreCase) &&
-                loginDto.Password == AdminPassword)
-            {
-                _isAuthenticated = true;
-                _currentUserEmail = AdminEmail;
-                _currentUserRole = "Admin";
-                _accessToken = "fake-admin-token";
+            _httpClient = httpClient;
+            _jsRuntime = jsRuntime;
+            _authStateProvider = authStateProvider;
+        }
 
-                return Task.FromResult(new AuthResponseDto
-                {
-                    AccessToken = _accessToken,
-                    Message = "Login successful.",
-                    ExpiresIn = 15
-                });
+        public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
+        {
+            var response = await _httpClient.PostAsJsonAsync(LoginEndpoint, loginDto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return CreateFailedResponse("Invalid email or password.");
             }
 
-            _isAuthenticated = false;
-            _currentUserEmail = null;
-            _currentUserRole = null;
-            _accessToken = null;
+            var authResponse = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
 
-            return Task.FromResult(new AuthResponseDto
+            if (authResponse is null || string.IsNullOrWhiteSpace(authResponse.AccessToken))
+            {
+                return CreateFailedResponse("Invalid login response from server.");
+            }
+
+            var role = GetRoleFromToken(authResponse.AccessToken);
+
+            if (!string.Equals(role, AdminRoleName, StringComparison.OrdinalIgnoreCase))
+            {
+                await LogoutAsync();
+
+                return CreateFailedResponse("Only Admin users can access this portal.");
+            }
+
+            await _jsRuntime.InvokeVoidAsync(
+                "localStorage.setItem",
+                TokenStorageKey,
+                authResponse.AccessToken);
+
+            _authStateProvider.NotifyUserLoggedIn(authResponse.AccessToken);
+
+            return authResponse;
+        }
+
+        public async Task LogoutAsync()
+        {
+            await _jsRuntime.InvokeVoidAsync(
+                "localStorage.removeItem",
+                TokenStorageKey);
+
+            _authStateProvider.NotifyUserLoggedOut();
+        }
+
+        public async Task<bool> IsAuthenticatedAsync()
+        {
+            var token = await GetTokenAsync();
+
+            return !string.IsNullOrWhiteSpace(token);
+        }
+
+        public async Task<string?> GetCurrentUserEmailAsync()
+        {
+            var token = await GetTokenAsync();
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return null;
+            }
+
+            return GetEmailFromToken(token);
+        }
+
+        public async Task<string?> GetCurrentUserRoleAsync()
+        {
+            var token = await GetTokenAsync();
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return null;
+            }
+
+            return GetRoleFromToken(token);
+        }
+
+        private async Task<string?> GetTokenAsync()
+        {
+            return await _jsRuntime.InvokeAsync<string?>(
+                "localStorage.getItem",
+                TokenStorageKey);
+        }
+
+        private static AuthResponseDto CreateFailedResponse(string message)
+        {
+            return new AuthResponseDto
             {
                 AccessToken = string.Empty,
-                Message = "Invalid email or password.",
+                Message = message,
                 ExpiresIn = 0
-            });
+            };
         }
 
-        public Task LogoutAsync()
+        private static string GetEmailFromToken(string token)
         {
-            _isAuthenticated = false;
-            _currentUserEmail = null;
-            _currentUserRole = null;
-            _accessToken = null;
+            var payload = GetJwtPayload(token);
 
-            return Task.CompletedTask;
+            if (payload.TryGetProperty("email", out var emailClaim))
+            {
+                return emailClaim.GetString() ?? string.Empty;
+            }
+
+            return string.Empty;
         }
 
-        public Task<bool> IsAuthenticatedAsync()
+        private static string GetRoleFromToken(string token)
         {
-            return Task.FromResult(_isAuthenticated);
+            var payload = GetJwtPayload(token);
+
+            const string roleClaimUri =
+                "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+
+            if (payload.TryGetProperty(roleClaimUri, out var roleClaim))
+            {
+                return roleClaim.GetString() ?? string.Empty;
+            }
+
+            if (payload.TryGetProperty(ClaimTypes.Role, out var claimTypesRole))
+            {
+                return claimTypesRole.GetString() ?? string.Empty;
+            }
+
+            if (payload.TryGetProperty("role", out var simpleRoleClaim))
+            {
+                return simpleRoleClaim.GetString() ?? string.Empty;
+            }
+
+            return string.Empty;
         }
 
-        public Task<string?> GetCurrentUserEmailAsync()
+        private static JsonElement GetJwtPayload(string token)
         {
-            return Task.FromResult(_currentUserEmail);
+            var tokenParts = token.Split('.');
+
+            if (tokenParts.Length < 2)
+            {
+                return default;
+            }
+
+            var payload = tokenParts[1]
+                .Replace('-', '+')
+                .Replace('_', '/');
+
+            payload = AddBase64Padding(payload);
+
+            var jsonBytes = Convert.FromBase64String(payload);
+
+            var json = Encoding.UTF8.GetString(jsonBytes);
+
+            return JsonSerializer.Deserialize<JsonElement>(json);
         }
 
-        public Task<string?> GetCurrentUserRoleAsync()
+        private static string AddBase64Padding(string base64)
         {
-            return Task.FromResult(_currentUserRole);
+            int remainder = base64.Length % 4;
+
+            if (remainder == 2)
+            {
+                return base64 + "==";
+            }
+
+            if (remainder == 3)
+            {
+                return base64 + "=";
+            }
+
+            return base64;
         }
     }
 }

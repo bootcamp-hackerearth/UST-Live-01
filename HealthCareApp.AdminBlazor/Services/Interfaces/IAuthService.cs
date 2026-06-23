@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.Shared.Dtos.Auth;
+
 namespace HealthCareApp.AdminBlazor.Services.Interfaces
 {
     public interface IAuthService

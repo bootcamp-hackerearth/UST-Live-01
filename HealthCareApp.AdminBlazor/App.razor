@@ -1,15 +1,29 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <LayoutView Layout="@typeof(MainLayout)">
+                        <div style="padding: 40px;">
+                            <h3>You are not authorized</h3>
+                            <p>Please login to access the Admin Portal.</p>
+                            <a href="login">Go to Login</a>
+                        </div>
+                    </LayoutView>
+                </NotAuthorized>
+            </AuthorizeRouteView>
 
-    <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <div style="padding: 40px;">
-                <h3>Page not found</h3>
-                <p>The requested page does not exist.</p>
-            </div>
-        </LayoutView>
-    </NotFound>
-</Router>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div style="padding: 40px;">
+                    <h3>Page not found</h3>
+                    <p>The requested page does not exist.</p>
+                    <a href="login">Go to Login</a>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
