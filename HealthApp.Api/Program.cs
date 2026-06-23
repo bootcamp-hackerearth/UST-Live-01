@@ -1,7 +1,6 @@
 using HealthApp.Api.Data;
 using HealthApp.Api.Mappings;
 using HealthApp.Api.Middleware;
-//using HealthApp.Api.Migrations;
 using HealthApp.Api.Repository.Impl;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Impl;
@@ -33,7 +32,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
     options.Password.RequireUppercase = true;
     options.User.RequireUniqueEmail = true;
 
-    // Important for .NET 10 passkey schema
     options.Stores.SchemaVersion = IdentitySchemaVersions.Version3;
 })
 .AddEntityFrameworkStores<HealthAppDbContext>()
@@ -126,4 +124,4 @@ using (var scope = app.Services.CreateScope())
     await RoleSeeder.seedroleAsync(roleManager);
 }
 
-app.Run();
+await app.RunAsync();

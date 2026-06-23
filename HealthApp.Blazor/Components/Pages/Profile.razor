@@ -1,0 +1,43 @@
+﻿@page "/profile"
+
+<PageTitle>My Profile</PageTitle>
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h3 class="text-primary fw-bold">My Profile</h3>
+        <p class="text-muted">This page shows the logged-in admin profile.</p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Full Name</label>
+                    <input class="form-control" value="System Administrator" disabled />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input class="form-control" value="admin@healthapp.com" disabled />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Role</label>
+                    <input class="form-control" value="Admin" disabled />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Department</label>
+                    <input class="form-control" value="Administration" disabled />
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold">Description</label>
+                    <textarea class="form-control" rows="4" disabled>
+This is the administrator profile page for HealthApp.Blazor.
+                    </textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

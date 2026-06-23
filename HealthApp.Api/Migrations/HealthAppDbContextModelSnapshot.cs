@@ -33,6 +33,10 @@ namespace HealthApp.Api.Migrations
                     b.Property<decimal>("ConsultationFee")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("DoctorPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -42,16 +46,20 @@ namespace HealthApp.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("IdentityUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<bool?>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("PracticeStartDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Specialisation")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("YearsOfExperience")
-                        .HasColumnType("int");
 
                     b.HasKey("DoctorId");
 
@@ -65,51 +73,56 @@ namespace HealthApp.Api.Migrations
                         {
                             DoctorId = 1,
                             ConsultationFee = 1500m,
+                            DoctorPhoneNumber = "1234567890",
                             Email = "Vignesh@gmail.com",
                             FullName = "Vignesh Kumar",
                             IsActive = true,
-                            Specialisation = "Orthopedic",
-                            YearsOfExperience = 14
+                            PracticeStartDate = new DateTime(2002, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Specialisation = "Orthopedic"
                         },
                         new
                         {
                             DoctorId = 2,
                             ConsultationFee = 1800m,
+                            DoctorPhoneNumber = "6789012345",
                             Email = "paul@gmail.com",
                             FullName = "Sneha Paul",
                             IsActive = true,
-                            Specialisation = "Gynecologist",
-                            YearsOfExperience = 20
+                            PracticeStartDate = new DateTime(2004, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Specialisation = "Gynecologist"
                         },
                         new
                         {
                             DoctorId = 3,
                             ConsultationFee = 900m,
+                            DoctorPhoneNumber = "1278906784",
                             Email = "hari@gmail.com",
                             FullName = "Hari Narayanan",
                             IsActive = true,
-                            Specialisation = "ENT",
-                            YearsOfExperience = 9
+                            PracticeStartDate = new DateTime(2012, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Specialisation = "ENT"
                         },
                         new
                         {
                             DoctorId = 4,
                             ConsultationFee = 2000m,
+                            DoctorPhoneNumber = "0987654321",
                             Email = "smith@gmail.com",
                             FullName = "Martin Smith",
                             IsActive = false,
-                            Specialisation = "Psychiatrist",
-                            YearsOfExperience = 11
+                            PracticeStartDate = new DateTime(2009, 5, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Specialisation = "Psychiatrist"
                         },
                         new
                         {
                             DoctorId = 5,
                             ConsultationFee = 3000m,
+                            DoctorPhoneNumber = "1234509874",
                             Email = "raj@gmail.com",
                             FullName = "Bharath Raj",
                             IsActive = true,
-                            Specialisation = "Cardiologist",
-                            YearsOfExperience = 25
+                            PracticeStartDate = new DateTime(2010, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Specialisation = "Cardiologist"
                         });
                 });
 
@@ -160,7 +173,7 @@ namespace HealthApp.Api.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -169,11 +182,16 @@ namespace HealthApp.Api.Migrations
 
                     b.Property<string>("FullName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IdentityUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("InsuranceId")
                         .HasMaxLength(100)

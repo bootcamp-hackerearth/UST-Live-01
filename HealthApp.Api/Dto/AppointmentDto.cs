@@ -7,7 +7,7 @@ namespace HealthApp.Api.Dto
         public int AppointmentId { get; set; }
 
         [Required]
-        public int PatientId { get; set; }
+        public int? PatientId { get; set; }
 
         [Required]
         public int DoctorId { get; set; }
@@ -16,13 +16,11 @@ namespace HealthApp.Api.Dto
         public DateTime ScheduledDate { get; set; }
 
         [Required]
-        public string TimeSlot { get; set; }
+        public string TimeSlot { get; set; } = string.Empty;
 
-        [Required]
         [MaxLength(50)]
-        public string Status { get; set; }
+        public string Status { get; set; } = "Pending";
 
-        [Required]
         [MaxLength(500)]
         public string? CancellationReason { get; set; }
     }

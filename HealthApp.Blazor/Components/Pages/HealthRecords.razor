@@ -1,0 +1,52 @@
+﻿@page "/healthrecords"
+@using HealthApp.Blazor.Components.Models
+@using HealthApp.Blazor.Components.Services
+@inject HealthRecordService HealthRecordService
+
+<PageTitle>Health Records</PageTitle>
+
+<h3>Health Records</h3>
+
+@if (_records == null || !_records.Any())
+{
+    <p>No health records found.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Record Id</th>
+                <th>Patient</th>
+                <th>Doctor</th>
+                <th>Visit Date</th>
+                <th>Diagnosis</th>
+                <th>Prescription</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var record in _records)
+            {
+                <tr>
+                    <td>@record.RecordId</td>
+                    <td>@record.Patient?.FullName</td>
+                    <td>@record.Doctor?.FullName</td>
+                    <td>@record.VisitDate.ToShortDateString()</td>
+                    <td>@record.Diagnosis</td>
+                    <td>@record.Prescription</td>
+                    <td>@record.Notes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<HealthRecord> _records = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _records = await HealthRecordService.GetAllHealthRecordsAsync();
+    }
+}

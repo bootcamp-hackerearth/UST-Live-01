@@ -1,0 +1,315 @@
+﻿@page "/doctors"
+@rendermode InteractiveServer
+
+@using DoctorModel = HealthApp.Blazor.Components.Models.Doctor
+@using HealthApp.Blazor.Components.Services
+@inject DoctorService DoctorService
+
+<PageTitle>Doctors</PageTitle>
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="text-primary fw-bold mb-0">Doctors</h3>
+            <p class="text-muted mb-0">Manage doctor information</p>
+        </div>
+
+        <button class="btn btn-primary" @onclick="ShowAddForm">
+            + Add Doctor
+        </button>
+    </div>
+
+    <!-- Search -->
+    <div class="mb-3 d-flex gap-2">
+        <input class="form-control"
+               placeholder="Search by name..."
+               @bind="searchText" />
+
+        <button class="btn btn-outline-primary" @onclick="Search">
+            Search
+        </button>
+
+        <button class="btn btn-outline-secondary" @onclick="Reset">
+            Reset
+        </button>
+    </div>
+
+    <!-- Add/Edit Form -->
+    @if (showForm)
+    {
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5>@(editMode ? "Edit Doctor" : "Add Doctor")</h5>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <input class="form-control" placeholder="Full Name" @bind="formDoctor.FullName" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <input class="form-control" placeholder="Specialisation" @bind="formDoctor.Specialisation" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <input class="form-control" placeholder="Email" @bind="formDoctor.Email" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <input class="form-control" placeholder="Phone" @bind="formDoctor.DoctorPhoneNumber" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <input type="number" class="form-control" placeholder="Fee" @bind="formDoctor.ConsultationFee" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <input type="date" class="form-control" @bind="formDoctor.PracticeStartDate" />
+                    </div>
+
+                    <div class="col-md-12 d-flex gap-2">
+                        <button class="btn btn-success" @onclick="SaveDoctor">Save</button>
+                        <button class="btn btn-secondary" @onclick="CancelForm">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Table -->
+    @if (isLoading)
+    {
+        <p>Loading doctors...</p>
+    }
+    else if (!doctors.Any())
+    {
+        <div class="alert alert-warning">No doctors found.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Specialisation</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Fee</th>
+                                <th>Status</th>
+                                <th style="width:150px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var doctor in doctors)
+                            {
+                                <tr>
+                                    <td>@doctor.DoctorId</td>
+                                    <td>@doctor.FullName</td>
+                                    <td>@doctor.Specialisation</td>
+                                    <td>@doctor.Email</td>
+                                    <td>@doctor.DoctorPhoneNumber</td>
+                                    <td>₹@doctor.ConsultationFee</td>
+                                    <td>
+                                        @if (doctor.IsActive == true)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info me-1"
+                                                @onclick="() => ViewDoctor(doctor)">
+                                            View
+                                        </button>
+
+                                        <button class="btn btn-sm btn-warning"
+                                                @onclick="() => EditDoctor(doctor)">
+                                            Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- ✅ View Modal -->
+    @if (viewDoctor != null)
+    {
+        <div class="modal d-block" style="background:rgba(0,0,0,0.3)">
+            <div class="modal-dialog">
+                <div class="modal-content p-3">
+
+                    <h5>Doctor Details</h5>
+
+                    <p><b>ID:</b> @viewDoctor.DoctorId</p>
+                    <p><b>Name:</b> @viewDoctor.FullName</p>
+                    <p><b>Specialisation:</b> @viewDoctor.Specialisation</p>
+                    <p><b>Email:</b> @viewDoctor.Email</p>
+                    <p><b>Phone:</b> @viewDoctor.DoctorPhoneNumber</p>
+
+                    <!-- ✅ Added Fee -->
+                    <p><b>Consultation Fee:</b> ₹@viewDoctor.ConsultationFee</p>
+
+                    <!-- ✅ Added Experience -->
+                    <p>
+                        <b>Experience:</b>
+                        @GetExperience(viewDoctor.PracticeStartDate)
+                        @((GetExperience(viewDoctor.PracticeStartDate) == 1) ? " year" : " years")
+                    </p>
+
+                    <!-- ✅ Start Date -->
+                    <p><b>Start Date:</b> @viewDoctor.PracticeStartDate.ToString("dd-MM-yyyy")</p>
+
+                    <!-- ✅ Status -->
+                    <p>
+                        <b>Status:</b>
+                        @if (viewDoctor.IsActive == true)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Inactive</span>
+                        }
+                    </p>
+
+                    <button class="btn btn-secondary mt-2" @onclick="CloseView">
+                        Close
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    private List<DoctorModel> doctors = new();
+    private List<DoctorModel> allDoctors = new();
+    private bool isLoading = true;
+
+    private string searchText = "";
+
+    private bool showForm = false;
+    private bool editMode = false;
+
+    private DoctorModel formDoctor = new();
+
+    private DoctorModel? viewDoctor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        allDoctors = await DoctorService.GetAllDoctorsAsync();
+        doctors = allDoctors.ToList();
+        isLoading = false;
+    }
+
+    /* ✅ SEARCH */
+    private void Search()
+    {
+        if (string.IsNullOrWhiteSpace(searchText)) return;
+
+        doctors = allDoctors
+            .Where(d => d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private void Reset()
+    {
+        searchText = "";
+        doctors = allDoctors.ToList();
+    }
+
+    /* ✅ ADD */
+    private void ShowAddForm()
+    {
+        formDoctor = new DoctorModel();
+        editMode = false;
+        showForm = true;
+    }
+
+    /* ✅ EDIT */
+    private void EditDoctor(DoctorModel d)
+    {
+        formDoctor = new DoctorModel
+        {
+            DoctorId = d.DoctorId,
+            FullName = d.FullName,
+            Specialisation = d.Specialisation,
+            Email = d.Email,
+            DoctorPhoneNumber = d.DoctorPhoneNumber,
+            ConsultationFee = d.ConsultationFee,
+            PracticeStartDate = d.PracticeStartDate,
+            IsActive = d.IsActive
+        };
+
+        editMode = true;
+        showForm = true;
+    }
+
+    /* ✅ SAVE */
+    private void SaveDoctor()
+    {
+        if (editMode)
+        {
+            var existing = allDoctors.First(x => x.DoctorId == formDoctor.DoctorId);
+
+            existing.FullName = formDoctor.FullName;
+            existing.Specialisation = formDoctor.Specialisation;
+            existing.Email = formDoctor.Email;
+            existing.DoctorPhoneNumber = formDoctor.DoctorPhoneNumber;
+            existing.ConsultationFee = formDoctor.ConsultationFee;
+            existing.PracticeStartDate = formDoctor.PracticeStartDate;
+        }
+        else
+        {
+            formDoctor.DoctorId = allDoctors.Any() ? allDoctors.Max(x => x.DoctorId) + 1 : 1;
+            formDoctor.IsActive = true;
+            allDoctors.Add(formDoctor);
+        }
+
+        doctors = allDoctors.ToList();
+        showForm = false;
+    }
+
+    private void CancelForm()
+    {
+        showForm = false;
+    }
+
+    /* ✅ VIEW */
+    private void ViewDoctor(DoctorModel d)
+    {
+        viewDoctor = d;
+    }
+
+    private void CloseView()
+    {
+        viewDoctor = null;
+    }
+
+    /* ✅ EXPERIENCE CALC */
+    private int GetExperience(DateTime startDate)
+    {
+        var today = DateTime.Today;
+        int years = today.Year - startDate.Year;
+
+        if (startDate.Date > today.AddYears(-years))
+            years--;
+
+        return years;
+    }
+}

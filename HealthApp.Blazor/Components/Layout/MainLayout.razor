@@ -1,0 +1,97 @@
+﻿@inherits LayoutComponentBase
+@using HealthApp.Blazor.Components.Services
+
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="healthapp-shell">
+
+    <aside class="healthapp-sidebar">
+        <NavMenu />
+    </aside>
+
+    <div class="healthapp-main">
+
+        <header class="top-bar">
+            <h4>HealthApp Dashboard</h4>
+
+            <div class="menu-links">
+                <NavLink href="/doctors">Doctors</NavLink>
+                <NavLink href="/patients">Patients</NavLink>
+
+                <button class="logout-btn" @onclick="Logout">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <main class="content">
+            @Body
+        </main>
+
+    </div>
+
+</div>
+
+<style>
+    .healthapp-shell {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .healthapp-sidebar {
+        width: 250px;
+        background: #0d6efd;
+        color: white;
+    }
+
+    .healthapp-main {
+        flex: 1;
+        background: #f5f7fa;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 25px;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    .menu-links {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .menu-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+        }
+
+    .logout-btn {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .content {
+        padding: 20px;
+    }
+</style>
+
+@code {
+
+    private void Logout()
+    {
+        AuthService.Logout();
+
+        Navigation.NavigateTo("/login");
+    }
+
+}

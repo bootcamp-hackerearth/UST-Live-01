@@ -3,6 +3,7 @@ using HealthApp.Api.Service.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthApp.Api.Controllers
 {
@@ -10,7 +11,6 @@ namespace HealthApp.Api.Controllers
     [ApiController]
     public class PatientApiController : ControllerBase
     {
-
         private readonly IPatientService _service;
 
         public PatientApiController(IPatientService service)
@@ -21,48 +21,53 @@ namespace HealthApp.Api.Controllers
         // GET all patients
         [HttpGet]
         [Route("")]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> Get()
         {
-            var data= await _service.GetAllPatientsAsync();
+            var data = await _service.GetAllPatientsAsync();
             return Ok(data);
-              
-            
         }
 
         // GET patient by ID
         [HttpGet]
-        [Route("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles ="Doctor,Admin"  )]
+        [Route("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             var patient = await _service.GetPatientByIdAsync(id);
             return Ok(patient);
-            
         }
 
-        // CREATE new patient
-        [HttpPost]
-        [Route("")]
+        // GET logged-in user's patient profile
+        [HttpGet("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
-        public async Task<IActionResult> Create([FromBody] PatientDto dto)
+        public async Task<IActionResult> GetMyProfile()
         {
-            await _service.AddPatientAsync(dto);
-            return Ok("Patient registered successfully");
-            
-            
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized("Invalid token.");
+            }
+
+            var patient = await _service.GetMyProfileAsync(identityUserId);
+            return Ok(patient);
         }
 
-        //  UPDATE patient
-        [HttpPut]
-        [Route("{id}")]
+        // UPDATE logged-in user's patient profile
+        [HttpPut("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
-        public async Task<IActionResult> update(int id, [FromBody] PatientDto dto)
+        public async Task<IActionResult> UpdateMyProfile([FromBody] PatientDto dto)
         {
-            await _service.UpdatePatientByIdAsync(id, dto);
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized("Invalid token.");
+            }
+
+            await _service.UpdateMyProfileAsync(identityUserId, dto);
             return Ok("Patient updated successfully");
-            
         }
     }
-
 }

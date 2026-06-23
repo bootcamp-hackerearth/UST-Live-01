@@ -3,7 +3,6 @@ using HealthApp.Api.Dto;
 using HealthApp.Api.Model;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;
-using HospitalManagementAPI.Model;
 using HealthApp.Api.Exceptions;
 
 namespace HealthApp.Api.Service.Impl
@@ -180,17 +179,18 @@ namespace HealthApp.Api.Service.Impl
         }
 
 
-        public async Task<List<Appointment>> GetAppointmentsByPatientAndDoctor(int? patientId, int? doctorId)
+
+        public async Task<List<AppointmentDto>> GetAppointmentsByPatientAndDoctor(int? patientId, int? doctorId)
         {
-            if (patientId == null || doctorId == null)
-                throw new AppointmentRuleException("Patient and Doctor id must be provided.");
+            if (!patientId.HasValue && !doctorId.HasValue)
+                throw new AppointmentRuleException("Either patient id or doctor id must be provided.");
 
-            var appointment = await _repo.GetByPatientAndDoctor(patientId, doctorId);
+            var appointments = await _repo.GetByPatientAndDoctor(patientId, doctorId);
 
-            if (appointment == null)
+            if (appointments == null || !appointments.Any())
                 throw new EntityNotFoundException("Appointment", 0);
 
-            return appointment;
+            return _mapper.Map<List<AppointmentDto>>(appointments);
         }
     }
 }

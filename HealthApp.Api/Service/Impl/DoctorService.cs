@@ -27,7 +27,7 @@ namespace HealthApp.Api.Service.Impl
             bool exists = doctors != null &&
                           doctors.Any(d =>
                               !string.IsNullOrWhiteSpace(d.Email) &&
-                              d.Email.ToLower() == dto.Email.ToLower());
+                              d.Email.ToLower() == dto.Email!.ToLower());
 
             if (exists)
             {
@@ -49,14 +49,12 @@ namespace HealthApp.Api.Service.Impl
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
             var doctors = await _repo.getallAsync();
-
             return _mapper.Map<List<DoctorDto>>(doctors ?? new List<Doctor>());
         }
 
         public async Task<List<DoctorDto>> GetAllActiveDoctorAsync()
         {
             var doctors = await _repo.getAllActiveAsync();
-
             return _mapper.Map<List<DoctorDto>>(doctors ?? new List<Doctor>());
         }
 
@@ -83,7 +81,7 @@ namespace HealthApp.Api.Service.Impl
 
             var doctors = await _repo.searchbyspecialisationAsync(specialisation);
 
-            return _mapper.Map<List<DoctorDto>>(doctors);
+            return _mapper.Map<List<DoctorDto>>(doctors ?? new List<Doctor>());
         }
 
         public async Task<DoctorDto> UpdateDoctorByIdAsync(int id, DoctorDto doctorDto)
@@ -104,17 +102,22 @@ namespace HealthApp.Api.Service.Impl
                              doctors.Any(d =>
                                  d.DoctorId != id &&
                                  !string.IsNullOrWhiteSpace(d.Email) &&
-                                 d.Email.ToLower() == doctorDto.Email.ToLower());
+                                 d.Email.ToLower() == doctorDto.Email!.ToLower());
 
             if (duplicate)
             {
                 throw new ConflictException("Another doctor with the same email already exists.");
             }
 
-            var doctor = _mapper.Map<Doctor>(doctorDto);
-            doctor.DoctorId = id;
+            existingDoctor.FullName = doctorDto.FullName!;
+            existingDoctor.Specialisation = doctorDto.Specialisation!;
+            existingDoctor.Email = doctorDto.Email!;
+            existingDoctor.PracticeStartDate = doctorDto.PracticeStartDate!.Value.Date;
+            existingDoctor.ConsultationFee = doctorDto.ConsultationFee ?? 0;
+            existingDoctor.DoctorPhoneNumber = doctorDto.DoctorPhoneNumber;
+            existingDoctor.IsActive = doctorDto.IsActive ?? existingDoctor.IsActive;
 
-            var updatedDoctor = await _repo.updateAsync(id, doctor);
+            var updatedDoctor = await _repo.updateAsync(id, existingDoctor);
 
             if (updatedDoctor == null)
             {
@@ -123,8 +126,6 @@ namespace HealthApp.Api.Service.Impl
 
             return _mapper.Map<DoctorDto>(updatedDoctor);
         }
-
-        // Validation methods
 
         private void ValidateDoctorId(int id)
         {
@@ -150,6 +151,44 @@ namespace HealthApp.Api.Service.Impl
             {
                 throw new BusinessRuleException("Doctor email is required.");
             }
+
+            if (string.IsNullOrWhiteSpace(dto.Specialisation))
+            {
+                throw new BusinessRuleException("Specialisation is required.");
+            }
+
+            if (!dto.PracticeStartDate.HasValue)
+            {
+                throw new BusinessRuleException("Practice start date is required.");
+            }
+
+            if (!dto.ConsultationFee.HasValue)
+            {
+                throw new BusinessRuleException("Consultation fee is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(dto.DoctorPhoneNumber))
+            {
+                throw new BusinessRuleException("Doctor phone number is required.");
+            }
         }
+
+        public async Task<DoctorDto> GetMyProfileAsync(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid user identity.");
+            }
+
+            var doctor = await _repo.GetByIdentityUserIdAsync(identityUserId);
+
+            if (doctor == null)
+            {
+                throw new BusinessRuleException("Doctor profile not found.");
+            }
+
+            return _mapper.Map<DoctorDto>(doctor);
+        }
+
     }
 }

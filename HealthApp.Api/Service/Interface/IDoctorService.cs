@@ -16,5 +16,8 @@ namespace HealthApp.Api.Service.Interface
 
         Task<DoctorDto> UpdateDoctorByIdAsync(int id, DoctorDto doctorDto);
 
+        Task<DoctorDto> GetMyProfileAsync(string identityUserId);
+
+
     }
 }

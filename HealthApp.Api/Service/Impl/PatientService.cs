@@ -98,12 +98,73 @@ namespace HealthApp.Api.Service.Impl
 
             var patient = _mapper.Map<Patient>(patientDto);
             patient.PatientId = id;
+            patient.IdentityUserId = existingPatient.IdentityUserId; // preserve link
 
             var updatedPatient = await _repo.updateAsync(id, patient);
 
             if (updatedPatient == null)
             {
                 throw new EntityNotFoundException("Patient", id);
+            }
+
+            return _mapper.Map<PatientDto>(updatedPatient);
+        }
+
+        public async Task<PatientDto> GetMyProfileAsync(string identityUserId)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid logged in user.");
+            }
+
+            var patient = await _repo.GetByIdentityUserIdAsync(identityUserId);
+
+            if (patient == null)
+            {
+                throw new BusinessRuleException("Patient profile not found for this logged-in user.");
+            }
+
+            return _mapper.Map<PatientDto>(patient);
+        }
+
+        public async Task<PatientDto> UpdateMyProfileAsync(string identityUserId, PatientDto patientDto)
+        {
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                throw new BusinessRuleException("Invalid logged in user.");
+            }
+
+            ValidatePatientDto(patientDto);
+
+            var existingPatient = await _repo.GetByIdentityUserIdAsync(identityUserId);
+
+            if (existingPatient == null)
+            {
+                throw new BusinessRuleException("Patient profile not found for this logged-in user.");
+            }
+
+            var allPatients = await _repo.getallAsync();
+
+            bool duplicate = allPatients != null &&
+                             allPatients.Any(p =>
+                                 p.PatientId != existingPatient.PatientId &&
+                                 !string.IsNullOrWhiteSpace(p.Email) &&
+                                 p.Email.Trim().ToLower() == patientDto.Email.Trim().ToLower());
+
+            if (duplicate)
+            {
+                throw new ConflictException("Another patient with the same email already exists.");
+            }
+
+            var patient = _mapper.Map<Patient>(patientDto);
+            patient.PatientId = existingPatient.PatientId;
+            patient.IdentityUserId = existingPatient.IdentityUserId; // preserve link
+
+            var updatedPatient = await _repo.updateAsync(existingPatient.PatientId, patient);
+
+            if (updatedPatient == null)
+            {
+                throw new BusinessRuleException("Unable to update patient profile.");
             }
 
             return _mapper.Map<PatientDto>(updatedPatient);

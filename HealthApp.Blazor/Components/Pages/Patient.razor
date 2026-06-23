@@ -1,0 +1,174 @@
+﻿@page "/patients"
+@rendermode InteractiveServer
+
+@using PatientModel = HealthApp.Blazor.Components.Models.Patient
+@using HealthApp.Blazor.Components.Services
+@inject PatientService PatientService
+
+<PageTitle>Patients</PageTitle>
+
+<div class="container-fluid">
+
+    <!-- Header -->
+    <div class="mb-3">
+        <h3 class="text-primary fw-bold">Patients</h3>
+        <p class="text-muted">Manage patient information</p>
+    </div>
+
+    <!-- ✅ Search -->
+    <div class="mb-3 d-flex gap-2">
+        <input class="form-control"
+               placeholder="Search by ID or Name..."
+               @bind="searchText" />
+
+        <button class="btn btn-outline-primary" @onclick="Search">
+            Search
+        </button>
+
+        <button class="btn btn-outline-secondary" @onclick="Reset">
+            Reset
+        </button>
+    </div>
+
+    <!-- Table -->
+    @if (isLoading)
+    {
+        <p>Loading patients...</p>
+    }
+    else if (!patients.Any())
+    {
+        <div class="alert alert-warning">No patients found.</div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 rounded-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Gender</th>
+                                <th>DOB</th>
+                                <th>Insurance</th>
+                                <th style="width:120px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var patient in patients)
+                            {
+                                <tr>
+                                    <td>@patient.PatientId</td>
+                                    <td>@patient.FullName</td>
+                                    <td>@patient.Email</td>
+                                    <td>@patient.PhoneNumber</td>
+                                    <td>@patient.Gender</td>
+                                    <td>@patient.DateOfBirth.ToString("dd-MM-yyyy")</td>
+                                    <td>@patient.InsuranceId</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info"
+                                                @onclick="() => ViewPatient(patient)">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- ✅ View Modal -->
+    @if (viewPatient != null)
+    {
+        <div class="modal d-block" style="background:rgba(0,0,0,0.3)">
+            <div class="modal-dialog">
+                <div class="modal-content p-3">
+
+                    <h5>Patient Details</h5>
+
+                    <p><b>ID:</b> @viewPatient.PatientId</p>
+                    <p><b>Name:</b> @viewPatient.FullName</p>
+                    <p><b>Email:</b> @viewPatient.Email</p>
+                    <p><b>Phone:</b> @viewPatient.PhoneNumber</p>
+                    <p><b>Gender:</b> @viewPatient.Gender</p>
+                    <p><b>Date of Birth:</b> @viewPatient.DateOfBirth.ToString("dd-MM-yyyy")</p>
+                    <p><b>Insurance ID:</b> @viewPatient.InsuranceId</p>
+                    <p><b>Created Date:</b> @viewPatient.CreatedDate?.ToString("dd-MM-yyyy")</p>
+
+                    <!-- ✅ Age calculation -->
+                    <p><b>Age:</b> @GetAge(viewPatient.DateOfBirth) years</p>
+
+                    <button class="btn btn-secondary mt-2" @onclick="CloseView">
+                        Close
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+    private List<PatientModel> patients = new();
+    private List<PatientModel> allPatients = new();
+
+    private bool isLoading = true;
+    private string searchText = "";
+
+    private PatientModel? viewPatient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        allPatients = await PatientService.GetAllPatientsAsync();
+        patients = allPatients.ToList();
+        isLoading = false;
+    }
+
+    /* ✅ SEARCH */
+    private void Search()
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+            return;
+
+        patients = allPatients.Where(p =>
+            p.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+            || p.PatientId.ToString().Contains(searchText)
+        ).ToList();
+    }
+
+    private void Reset()
+    {
+        searchText = "";
+        patients = allPatients.ToList();
+    }
+
+    /* ✅ VIEW */
+    private void ViewPatient(PatientModel p)
+    {
+        viewPatient = p;
+    }
+
+    private void CloseView()
+    {
+        viewPatient = null;
+    }
+
+    /* ✅ AGE CALC */
+    private int GetAge(DateTime dob)
+    {
+        var today = DateTime.Today;
+        int age = today.Year - dob.Year;
+
+        if (dob.Date > today.AddYears(-age))
+            age--;
+
+        return age;
+    }
+}

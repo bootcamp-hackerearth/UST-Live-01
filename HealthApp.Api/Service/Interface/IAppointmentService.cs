@@ -1,5 +1,4 @@
 ﻿using HealthApp.Api.Dto;
-using HospitalManagementAPI.Model;
 
 namespace HealthApp.Api.Service.Interface
 {
@@ -23,7 +22,7 @@ namespace HealthApp.Api.Service.Interface
 
         Task<AppointmentDto> ConfirmAppointment(int appointmentId);
 
-        Task<List<Appointment>> GetAppointmentsByPatientAndDoctor(int? patientId,int? doctorId);
+        Task<List<AppointmentDto>> GetAppointmentsByPatientAndDoctor(int? patientId,int? doctorId);
 
 
     }

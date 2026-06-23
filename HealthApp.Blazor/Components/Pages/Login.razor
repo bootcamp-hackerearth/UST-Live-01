@@ -1,0 +1,308 @@
+﻿@page "/login"
+@rendermode InteractiveServer
+
+@using HealthApp.Blazor.Components.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Admin Login</PageTitle>
+
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .login-page {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #0d6efd, #6610f2);
+        position: relative;
+        overflow: hidden;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    .login-bg-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(10px);
+        opacity: 0.25;
+    }
+
+    .orb-one {
+        width: 240px;
+        height: 240px;
+        background: #ffffff;
+        top: -40px;
+        left: -40px;
+    }
+
+    .orb-two {
+        width: 300px;
+        height: 300px;
+        background: #9ec5fe;
+        bottom: -80px;
+        right: -60px;
+    }
+
+    .login-card {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 430px;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 20px;
+        padding: 32px 28px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+        backdrop-filter: blur(6px);
+        box-sizing: border-box;
+    }
+
+    .login-brand {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .brand-icon {
+        width: 54px;
+        height: 54px;
+        border-radius: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+        font-weight: 700;
+        color: white;
+        background: linear-gradient(135deg, #0d6efd, #25c6da);
+        box-shadow: 0 10px 20px rgba(13, 110, 253, 0.25);
+    }
+
+    .login-brand h1 {
+        margin: 0;
+        font-size: 24px;
+        color: #0f172a;
+        line-height: 1.1;
+    }
+
+    .login-brand p {
+        margin: 4px 0 0 0;
+        color: #64748b;
+        font-size: 14px;
+    }
+
+    .login-heading {
+        margin-bottom: 20px;
+    }
+
+    .eyebrow {
+        margin: 0 0 8px 0;
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .login-heading h2 {
+        margin: 0 0 10px 0;
+        font-size: 28px;
+        color: #0f172a;
+    }
+
+    .login-heading p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.6;
+        font-size: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        .form-control:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.12);
+        }
+
+    .primary-btn {
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0d6efd, #1d4ed8);
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        padding: 12px 14px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 10px 22px rgba(13, 110, 253, 0.22);
+    }
+
+        .primary-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 26px rgba(13, 110, 253, 0.25);
+        }
+
+    .alert {
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+        .alert.error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+    .demo-credentials {
+        margin-top: 18px;
+        padding: 14px;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        font-size: 14px;
+        color: #475569;
+        line-height: 1.6;
+    }
+
+        .demo-credentials span {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .demo-credentials strong {
+            color: #0f172a;
+        }
+
+    @@media (max-width: 480px) {
+        .login-card {
+            padding: 24px 20px;
+            border-radius: 16px;
+        }
+
+        .login-heading h2 {
+            font-size: 24px;
+        }
+
+        .login-brand h1 {
+            font-size: 21px;
+        }
+    }
+</style>
+
+<div class="login-page">
+    <div class="login-bg-orb orb-one"></div>
+    <div class="login-bg-orb orb-two"></div>
+
+    <div class="login-card">
+
+        <div class="login-brand">
+            <div class="brand-icon">H</div>
+            <div>
+                <h1>HealthApp</h1>
+                <p>Admin Portal Access</p>
+            </div>
+        </div>
+
+        <div class="login-heading">
+            <p class="eyebrow">Secure admin login</p>
+            <h2>Welcome Back</h2>
+            <p>Enter your admin credentials to continue to the dashboard.</p>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        {
+            <div class="alert error">@errorMessage</div>
+        }
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <input class="form-control"
+                   type="email"
+                   placeholder="admin@gmail.com"
+                   @bind="email" />
+        </div>
+
+        <div class="form-group">
+            <label>Password</label>
+            <input class="form-control"
+                   type="password"
+                   placeholder="Enter password"
+                   @bind="password" />
+        </div>
+
+        <button type="button" class="primary-btn" @onclick="HandleLogin">
+            Login to Admin Portal
+        </button>
+
+        <div class="demo-credentials">
+            <span>Demo Credentials</span>
+            <div><strong>Email:</strong> admin@gmail.com</div>
+            <div><strong>Password:</strong> Admin@123</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string email = string.Empty;
+    private string password = string.Empty;
+    private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        if (AuthService.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    private void HandleLogin()
+    {
+        errorMessage = null;
+
+        if (email.Trim().ToLower() == "admin@gmail.com"
+            && password == "Admin@123")
+        {
+            AuthService.Login();
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            errorMessage = "Invalid admin email or password.";
+        }
+    }
+}

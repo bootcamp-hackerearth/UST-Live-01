@@ -1,5 +1,4 @@
 ﻿using HealthApp.Api.Model;
-using HospitalManagementAPI.Model;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -95,10 +94,12 @@ namespace HealthApp.Api.Data
                         DoctorId = 1,
                         FullName = "Vignesh Kumar",
                         Specialisation = "Orthopedic",
-                        YearsOfExperience = 14,
+                        PracticeStartDate = new DateTime(2002, 11, 30),
                         Email = "Vignesh@gmail.com",
                         ConsultationFee = 1500,
-                        IsActive = true
+                        IsActive = true,
+                        DoctorPhoneNumber="1234567890"
+
                     },
 
                     new Doctor
@@ -106,10 +107,11 @@ namespace HealthApp.Api.Data
                         DoctorId = 2,
                         FullName = "Sneha Paul",
                         Specialisation = "Gynecologist",
-                        YearsOfExperience = 20,
+                        PracticeStartDate = new DateTime(2004, 01, 01),
                         Email = "paul@gmail.com",
                         ConsultationFee = 1800,
-                        IsActive = true
+                        IsActive = true,
+                        DoctorPhoneNumber="6789012345"
                     },
 
                     new Doctor
@@ -117,10 +119,11 @@ namespace HealthApp.Api.Data
                         DoctorId = 3,
                         FullName = "Hari Narayanan",
                         Specialisation = "ENT",
-                        YearsOfExperience = 9,
+                        PracticeStartDate = new DateTime(2012, 10, 03),
                         Email = "hari@gmail.com",
                         ConsultationFee = 900,
-                        IsActive = true
+                        IsActive = true,
+                        DoctorPhoneNumber = "1278906784"
                     },
 
                     new Doctor
@@ -128,10 +131,12 @@ namespace HealthApp.Api.Data
                         DoctorId = 4,
                         FullName = "Martin Smith",
                         Specialisation = "Psychiatrist",
-                        YearsOfExperience = 11,
+                        PracticeStartDate = new DateTime(2009, 05, 30),
                         Email = "smith@gmail.com",
                         ConsultationFee = 2000,
-                        IsActive = false
+                        IsActive = false,
+                        DoctorPhoneNumber="0987654321"
+                        
                     },
 
                     new Doctor
@@ -139,10 +144,11 @@ namespace HealthApp.Api.Data
                         DoctorId = 5,
                         FullName = "Bharath Raj",
                         Specialisation = "Cardiologist",
-                        YearsOfExperience = 25,
+                        PracticeStartDate = new DateTime(2010, 10, 01),
                         Email = "raj@gmail.com",
                         ConsultationFee = 3000,
-                        IsActive = true
+                        IsActive = true,
+                        DoctorPhoneNumber="1234509874"
                     }
                 );
         }

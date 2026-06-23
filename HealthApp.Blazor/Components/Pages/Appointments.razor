@@ -1,0 +1,52 @@
+﻿@page "/appointments"
+@using HealthApp.Blazor.Components.Models
+@using HealthApp.Blazor.Components.Services
+@inject AppointmentService AppointmentService
+
+<PageTitle>Appointments</PageTitle>
+
+<h3>Appointments</h3>
+
+@if (_appointments == null || !_appointments.Any())
+{
+    <p>No appointments found.</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Appointment Id</th>
+                <th>Doctor</th>
+                <th>Patient</th>
+                <th>Scheduled Date</th>
+                <th>Time Slot</th>
+                <th>Status</th>
+                <th>Cancellation Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appointment in _appointments)
+            {
+                <tr>
+                    <td>@appointment.AppointmentId</td>
+                    <td>@appointment.Doctor?.FullName</td>
+                    <td>@appointment.Patient?.FullName</td>
+                    <td>@appointment.ScheduledDate.ToShortDateString()</td>
+                    <td>@appointment.TimeSlot</td>
+                    <td>@appointment.Status</td>
+                    <td>@appointment.CancellationReason</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Appointment> _appointments = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _appointments = await AppointmentService.GetAllAppointmentsAsync();
+    }
+}

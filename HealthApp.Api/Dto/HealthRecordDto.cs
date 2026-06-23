@@ -1,27 +1,27 @@
-﻿using HealthApp.Api.Model;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HealthApp.Api.Dto
 {
     public class HealthRecordDto
     {
+        [Required]
         public int RecordId { get; set; }
 
         [Required]
-        public int PatientId { get; set; }
+        public int? PatientId { get; set; }
 
         [Required]
-        public int DoctorId { get; set; }
+        public int? DoctorId { get; set; }
 
         [Required]
-        public DateTime VisitDate { get; set; }
+        public DateTime? VisitDate { get; set; }
+
         [Required]
         public string? Diagnosis { get; set; }
+
         [Required]
         public string? Prescription { get; set; }
 
         public string? Notes { get; set; }
-
     }
 }

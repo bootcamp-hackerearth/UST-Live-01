@@ -14,9 +14,6 @@ namespace HealthApp.Api.Data
                     await roleManager.CreateAsync(new IdentityRole(roleName));
                 }
             }
-
-
-
+        }
     }
-}
 }

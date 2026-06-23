@@ -1,8 +1,7 @@
-﻿using HealthApp.Api.Model;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HospitalManagementAPI.Model
+namespace HealthApp.Api.Model
 {
     public class Appointment
     {

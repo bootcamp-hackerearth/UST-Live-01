@@ -63,6 +63,7 @@ namespace HealthApp.Api.Migrations
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     YearsOfExperience = table.Column<int>(type: "int", nullable: false),
                     ConsultationFee = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DoctorPhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
@@ -276,14 +277,14 @@ namespace HealthApp.Api.Migrations
 
             migrationBuilder.InsertData(
                 table: "Doctors",
-                columns: new[] { "DoctorId", "ConsultationFee", "Email", "FullName", "IsActive", "Specialisation", "YearsOfExperience" },
+                columns: new[] { "DoctorId", "ConsultationFee", "DoctorPhoneNumber", "Email", "FullName", "IsActive", "Specialisation", "YearsOfExperience" },
                 values: new object[,]
                 {
-                    { 1, 1500m, "Vignesh@gmail.com", "Vignesh Kumar", true, "Orthopedic", 14 },
-                    { 2, 1800m, "paul@gmail.com", "Sneha Paul", true, "Gynecologist", 20 },
-                    { 3, 900m, "hari@gmail.com", "Hari Narayanan", true, "ENT", 9 },
-                    { 4, 2000m, "smith@gmail.com", "Martin Smith", false, "Psychiatrist", 11 },
-                    { 5, 3000m, "raj@gmail.com", "Bharath Raj", true, "Cardiologist", 25 }
+                    { 1, 1500m, "1234567890", "Vignesh@gmail.com", "Vignesh Kumar", true, "Orthopedic", 14 },
+                    { 2, 1800m, "6789012345", "paul@gmail.com", "Sneha Paul", true, "Gynecologist", 20 },
+                    { 3, 900m, "1278906784", "hari@gmail.com", "Hari Narayanan", true, "ENT", 9 },
+                    { 4, 2000m, "0987654321", "smith@gmail.com", "Martin Smith", false, "Psychiatrist", 11 },
+                    { 5, 3000m, "1234509874", "raj@gmail.com", "Bharath Raj", true, "Cardiologist", 25 }
                 });
 
             migrationBuilder.InsertData(

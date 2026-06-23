@@ -1,6 +1,5 @@
-﻿using HospitalManagementAPI.Model;
-using System.CodeDom.Compiler;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthApp.Api.Model
 {
@@ -10,22 +9,22 @@ namespace HealthApp.Api.Model
         public int PatientId { get; set; }
 
         [Required]
-        [Range(3,200)]
+        [StringLength(200, MinimumLength = 3)]
         public string? FullName { get; set; }
 
         [Required]
+        [Column(TypeName = "date")]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
         [RegularExpression("^(Male|Female|Other)$", ErrorMessage = "Invalid gender specified.")]
         public string? Gender { get; set; }
 
-        [MaxLength(20)]
         [Required]
+        [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
         [Required]
-
         [MaxLength(450)]
         [EmailAddress]
         public string? Email { get; set; }
@@ -35,5 +34,7 @@ namespace HealthApp.Api.Model
 
         public DateTime? CreatedDate { get; set; }
 
+        [MaxLength(450)]
+        public string? IdentityUserId { get; set; }
     }
 }

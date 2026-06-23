@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HealthApp.Api.Dto
 {
     public class DoctorDto
     {
-
         public int DoctorId { get; set; }
 
         [Required]
@@ -15,17 +12,29 @@ namespace HealthApp.Api.Dto
 
         [Required]
         public string? Specialisation { get; set; }
+
+
         [Required]
-        [Range(0, 100 ,ErrorMessage = "Invalid experience specified." )]
-        public int YearsOfExperience { get; set; }
+        public DateTime? PracticeStartDate { get; set; }
+
+
         [Required]
-        [Range(0, 10000000 ,ErrorMessage = "Invalid consultation fee specified.")]
-        public decimal ConsultationFee { get; set; }
+        [Range(0, 10000000, ErrorMessage = "Invalid consultation fee specified.")]
+        public decimal? ConsultationFee { get; set; }
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; }
+
+        [Required]
+        [Phone(ErrorMessage = "Phone Number should contain ten digits")]
+        public string DoctorPhoneNumber { get; set; } = string.Empty;
 
         public bool? IsActive { get; set; }
+
+
+        [MaxLength(450)]
+        public string? IdentityUserId { get; set; }
+
     }
 }

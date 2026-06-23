@@ -1,7 +1,6 @@
 ﻿using HealthApp.Api.Data;
 using HealthApp.Api.Model;
 using HealthApp.Api.Repository.Interface;
-using HospitalManagementAPI.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.Api.Repository.Impl

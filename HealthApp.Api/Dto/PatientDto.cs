@@ -4,6 +4,7 @@ namespace HealthApp.Api.Dto
 {
     public class PatientDto
     {
+        [Required]
         public int PatientId { get; set; }
 
         [Required]
@@ -11,14 +12,14 @@ namespace HealthApp.Api.Dto
         public string? FullName { get; set; }
 
         [Required]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [Required]
         [RegularExpression("^(Male|Female|Other)$", ErrorMessage = "Invalid gender specified.")]
         public string? Gender { get; set; }
 
-        [MaxLength(20)]
         [Required]
+        [MaxLength(20)]
         public string? PhoneNumber { get; set; }
 
         [Required]
@@ -29,5 +30,8 @@ namespace HealthApp.Api.Dto
         public string? InsuranceId { get; set; }
 
         public DateTime? CreatedDate { get; set; }
+
+        [MaxLength(450)]
+        public string? IdentityUserId { get; set; }
     }
 }

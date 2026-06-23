@@ -1,6 +1,4 @@
-﻿using HealthApp.Api.Model;
-using HospitalManagementAPI.Model;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthApp.Api.Model
@@ -20,13 +18,25 @@ namespace HealthApp.Api.Model
         [Required]
         [EmailAddress]
         public string Email { get; set; } = string.Empty;
+
         [Required]
-        public int YearsOfExperience { get; set; }
+        [Column(TypeName = "date")]
+        public DateTime PracticeStartDate { get; set; }
+
         [Required]
         [Column(TypeName = "decimal(18,2)")]
         public decimal ConsultationFee { get; set; }
 
+        [Required]
+        [Phone(ErrorMessage = "Phone Number should contain ten digits")]
+        public string DoctorPhoneNumber { get; set; } = string.Empty;
+
         public bool? IsActive { get; set; }
+
+
+        [MaxLength(450)]
+        public string? IdentityUserId { get; set; }
+
 
     }
 }

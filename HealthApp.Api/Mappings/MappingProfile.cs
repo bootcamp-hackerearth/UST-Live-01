@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using HealthApp.Api.Dto;
 using HealthApp.Api.Model;
-using HospitalManagementAPI.Model;
 
 namespace HealthApp.Api.Mappings
 {

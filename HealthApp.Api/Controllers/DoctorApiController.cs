@@ -1,4 +1,5 @@
-﻿using HealthApp.Api.Dto;
+﻿using System.Security.Claims;
+using HealthApp.Api.Dto;
 using HealthApp.Api.Service.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +19,7 @@ namespace HealthApp.Api.Controllers
         }
 
         // GET all active doctors
-        [HttpGet]
+        [HttpGet("activedoctors")]
         [AllowAnonymous]
         public async Task<IActionResult> GetAllActive()
         {
@@ -35,22 +36,29 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
+        // GET logged-in doctor profile
+        [HttpGet("me")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized("Invalid token.");
+            }
+
+            var doctor = await _service.GetMyProfileAsync(identityUserId);
+            return Ok(doctor);
+        }
+
         // GET doctor by ID
-        [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [HttpGet("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             var doctor = await _service.GetDoctorByIdAsync(id);
             return Ok(doctor);
-        }
-
-        // CREATE doctor
-        [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> Create([FromBody] DoctorDto dto)
-        {
-            var result = await _service.AddDoctorAsync(dto);
-            return Ok(result);
         }
 
         // SEARCH by specialisation
@@ -62,8 +70,8 @@ namespace HealthApp.Api.Controllers
             return Ok(result);
         }
 
-        // UPDATE doctor
-        [HttpPut("{id}")]
+        // UPDATE doctor by ID (Admin only)
+        [HttpPut("{id:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] DoctorDto dto)
         {
