@@ -1,8 +1,11 @@
 ﻿@page "/doctors"
+
 @using S3_HealthAxis.Shared.DTOs.Doctor
 @using S3_HealthAxis.Shared.Enums
 @using S3_HealthAxis.Blazor.Services
 @using System.ComponentModel.DataAnnotations
+@using System.Linq
+
 @inject IDoctorService DoctorService
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -10,12 +13,12 @@
         <h3 class="mb-1 fw-bold text-dark">Doctors Management</h3>
         <p class="text-muted mb-0">View, add, and manage hospital medical staff.</p>
     </div>
+
     <button class="btn btn-primary" @onclick="OpenAddModal">
         <i class="bi bi-plus-lg me-1"></i> Add Doctor
     </button>
 </div>
 
-<!-- ERROR BANNER: Catches API or loading errors gracefully -->
 @if (!string.IsNullOrEmpty(_pageError))
 {
     <div class="alert alert-danger shadow-sm mb-4">
@@ -35,7 +38,7 @@
     </div>
 }
 
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0 ha-data-card">
     <div class="card-body p-0">
         @if (_loading)
         {
@@ -54,8 +57,8 @@
         else
         {
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                <table class="table table-hover align-middle mb-0 ha-data-table ha-doctors-table">
+                    <thead>
                         <tr>
                             <th class="ps-4">Full Name</th>
                             <th>Email</th>
@@ -70,41 +73,62 @@
                         @foreach (var doc in _doctors)
                         {
                             <tr>
-                                <td class="ps-4 fw-medium">Dr. @doc.FullName</td>
-                                <td class="text-muted">@doc.Email</td>
+                                <td class="ps-4">
+                                    <div class="ha-doctor-name">Dr. @doc.FullName</div>
+                                </td>
 
-                                <!-- Fixed spelling to 's' and added helper to read the Display Name -->
                                 <td>
-                                    <span class="badge bg-secondary">
-                                        @GetDisplayName((S3_HealthAxis.Shared.Enums.DoctorSpecialisation)doc.Specialisation)
+                                    <span class="ha-table-email">
+                                        @(string.IsNullOrWhiteSpace(doc.Email) ? "N/A" : doc.Email)
                                     </span>
                                 </td>
 
-                                <td>@doc.YearsOfExperience yrs</td>
-                                <td>₹@doc.ConsultationFee</td>
+                                <td>
+                                    <span class="ha-plain-specialization">
+                                        @GetDisplayName((DoctorSpecialisation)doc.Specialisation)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-table-muted">@doc.YearsOfExperience yrs</span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-table-fee">₹@doc.ConsultationFee.ToString("0.00")</span>
+                                </td>
+
                                 <td>
                                     @if (doc.IsActive)
                                     {
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Active</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success ha-table-pill">
+                                            Active
+                                        </span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Inactive</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger ha-table-pill">
+                                            Inactive
+                                        </span>
                                     }
                                 </td>
+
                                 <td class="text-end pe-4">
-                                    <button class="btn btn-sm btn-outline-primary me-2" @onclick="() => OpenEditModal(doc)">
+                                    <button class="btn btn-sm btn-outline-primary me-2 ha-table-action"
+                                            @onclick="() => OpenEditModal(doc)">
                                         <i class="bi bi-pencil"></i>
                                     </button>
+
                                     @if (doc.IsActive)
                                     {
-                                        <button class="btn btn-sm btn-outline-danger" @onclick="() => ToggleStatus(doc.DoctorId, false)">
+                                        <button class="btn btn-sm btn-outline-danger ha-table-action"
+                                                @onclick="() => AskToggleDoctorStatus(doc.DoctorId, false)">
                                             Disable
                                         </button>
                                     }
                                     else
                                     {
-                                        <button class="btn btn-sm btn-outline-success" @onclick="() => ToggleStatus(doc.DoctorId, true)">
+                                        <button class="btn btn-sm btn-outline-success ha-table-action"
+                                                @onclick="() => AskToggleDoctorStatus(doc.DoctorId, true)">
                                             Enable
                                         </button>
                                     }
@@ -118,28 +142,25 @@
     </div>
 </div>
 
-<!-- Add/Edit Modal (Pure HTML/CSS Modal) -->
 @if (_showModal)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
-
                 <div class="modal-header bg-light border-0">
                     <h5 class="modal-title fw-bold">@(_isEditing ? "Edit Doctor" : "Add New Doctor")</h5>
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
 
                 <div class="modal-body p-4">
-                    <!-- Bound to our new Validated Form Model -->
-                    <EditForm Model="@_formData" OnValidSubmit="HandleSubmit">
-
-                        <!-- Activates Blazor's inline validation engine -->
+                    <EditForm Model="@_formData" OnValidSubmit="ConfirmSaveDoctor">
                         <DataAnnotationsValidator />
 
                         <div class="mb-3">
                             <label class="form-label fw-medium">Full Name</label>
-                            <InputText class="form-control" @bind-Value="_formData.FullName" placeholder="e.g. John Doe" />
+                            <InputText class="form-control"
+                                       @bind-Value="_formData.FullName"
+                                       placeholder="e.g. John Doe" />
                             <ValidationMessage For="@(() => _formData.FullName)" class="text-danger small mt-1" />
                         </div>
 
@@ -147,7 +168,9 @@
                         {
                             <div class="mb-3">
                                 <label class="form-label fw-medium">Email Address</label>
-                                <InputText class="form-control" @bind-Value="_formData.Email" placeholder="doctor@hospital.com" />
+                                <InputText class="form-control"
+                                           @bind-Value="_formData.Email"
+                                           placeholder="doctor@hospital.com" />
                                 <ValidationMessage For="@(() => _formData.Email)" class="text-danger small mt-1" />
                             </div>
                         }
@@ -155,16 +178,16 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-medium">Specialisation</label>
-                                <!-- Fixed spelling to 's' and added helper to read the Display Name -->
                                 <InputSelect TValue="int" class="form-select" @bind-Value="_formData.Specialisation">
                                     <option value="0" disabled>-- Select --</option>
-                                    @foreach (S3_HealthAxis.Shared.Enums.DoctorSpecialisation spec in Enum.GetValues(typeof(S3_HealthAxis.Shared.Enums.DoctorSpecialisation)))
+                                    @foreach (DoctorSpecialisation spec in Enum.GetValues(typeof(DoctorSpecialisation)))
                                     {
                                         <option value="@((int)spec)">@GetDisplayName(spec)</option>
                                     }
                                 </InputSelect>
                                 <ValidationMessage For="@(() => _formData.Specialisation)" class="text-danger small mt-1" />
                             </div>
+
                             <div class="col-md-6 mb-3">
                                 <label class="form-label fw-medium">Years Exp.</label>
                                 <InputNumber class="form-control" @bind-Value="_formData.YearsOfExperience" />
@@ -195,22 +218,34 @@
     </div>
 }
 
+<ConfirmDialog IsOpen="@_showConfirmDialog"
+               Title="@_confirmTitle"
+               Message="@_confirmMessage"
+               ConfirmText="@_confirmButtonText"
+               IsDanger="@_confirmIsDanger"
+               OnConfirm="ConfirmAction"
+               OnCancel="CancelConfirmation" />
+
 @code {
     private List<DoctorDto>? _doctors;
     private bool _loading = true;
     private string? _pageError = null;
 
-    // Modal State
     private bool _showModal = false;
     private bool _isEditing = false;
     private bool _isSaving = false;
     private int _editingDoctorId = 0;
 
-    // The View Model for the UI (Contains all Validation Rules)
+    private bool _showConfirmDialog = false;
+    private string _confirmTitle = "";
+    private string _confirmMessage = "";
+    private string _confirmButtonText = "Confirm";
+    private bool _confirmIsDanger = false;
+    private Func<Task>? _pendingConfirmedAction;
+
     private DoctorFormModel _formData = new();
     private DoctorCreationResultDto? _newDoctorResult;
 
-    // Nested class specifically for frontend validation rules
     public class DoctorFormModel
     {
         [Required(ErrorMessage = "Full Name is required")]
@@ -260,7 +295,7 @@
     private void OpenAddModal()
     {
         _isEditing = false;
-        _formData = new DoctorFormModel(); // Start with clean, empty validation state
+        _formData = new DoctorFormModel();
         _newDoctorResult = null;
         _showModal = true;
     }
@@ -270,15 +305,15 @@
         _isEditing = true;
         _editingDoctorId = doctor.DoctorId;
 
-        // Map the selected doctor into our validated UI model
         _formData = new DoctorFormModel
         {
             FullName = doctor.FullName,
-            Email = doctor.Email, // Email isn't editable, but we populate it so validation doesn't fail
+            Email = doctor.Email,
             Specialisation = doctor.Specialisation,
             YearsOfExperience = doctor.YearsOfExperience,
             ConsultationFee = doctor.ConsultationFee
         };
+
         _showModal = true;
     }
 
@@ -287,7 +322,6 @@
         _showModal = false;
     }
 
-    // --- NEW HELPER METHOD: Reads the [Display(Name="...")] from your Enum ---
     private string GetDisplayName(Enum enumValue)
     {
         var displayAttribute = enumValue.GetType()
@@ -299,6 +333,61 @@
         return displayAttribute?.Name ?? enumValue.ToString();
     }
 
+    private void OpenConfirmation(string title, string message, string confirmText, bool isDanger, Func<Task> action)
+    {
+        _confirmTitle = title;
+        _confirmMessage = message;
+        _confirmButtonText = confirmText;
+        _confirmIsDanger = isDanger;
+        _pendingConfirmedAction = action;
+        _showConfirmDialog = true;
+    }
+
+    private void CancelConfirmation()
+    {
+        _showConfirmDialog = false;
+        _pendingConfirmedAction = null;
+    }
+
+    private async Task ConfirmAction()
+    {
+        _showConfirmDialog = false;
+
+        if (_pendingConfirmedAction != null)
+        {
+            await _pendingConfirmedAction.Invoke();
+            _pendingConfirmedAction = null;
+        }
+    }
+
+    private Task ConfirmSaveDoctor()
+    {
+        OpenConfirmation(
+            _isEditing ? "Confirm Changes" : "Confirm Doctor Creation",
+            _isEditing
+                ? "Do you want to save these changes to the doctor record?"
+                : "Do you want to create this doctor record?",
+            _isEditing ? "Save Changes" : "Create Doctor",
+            false,
+            HandleSubmit);
+
+        return Task.CompletedTask;
+    }
+
+    private Task AskToggleDoctorStatus(int doctorId, bool activate)
+    {
+        OpenConfirmation(
+            activate ? "Enable Doctor" : "Disable Doctor",
+            activate
+                ? "Do you want to enable this doctor?"
+                : "Do you want to disable this doctor?",
+            activate ? "Enable" : "Disable",
+            !activate,
+            () => ToggleStatus(doctorId, activate));
+
+        return Task.CompletedTask;
+    }
+
     private async Task HandleSubmit()
     {
         try
@@ -308,7 +397,6 @@
 
             if (_isEditing)
             {
-                // Map Validated UI Model -> API Update DTO
                 var updateDto = new UpdateDoctorDto
                 {
                     FullName = _formData.FullName,
@@ -316,11 +404,11 @@
                     YearsOfExperience = _formData.YearsOfExperience,
                     ConsultationFee = _formData.ConsultationFee
                 };
+
                 await DoctorService.UpdateAsync(_editingDoctorId, updateDto);
             }
             else
             {
-                // Map Validated UI Model -> API Create DTO
                 var createDto = new CreateDoctorDto
                 {
                     FullName = _formData.FullName,
@@ -331,10 +419,11 @@
                 };
 
                 _newDoctorResult = await DoctorService.CreateAsync(createDto);
+
                 if (_newDoctorResult == null)
                 {
                     _pageError = "Failed to create doctor. The email might already be in use.";
-                    return; // Stop here so the modal stays open to show the error
+                    return;
                 }
             }
 
@@ -356,6 +445,7 @@
         try
         {
             _pageError = null;
+
             if (activate)
                 await DoctorService.ActivateAsync(doctorId);
             else

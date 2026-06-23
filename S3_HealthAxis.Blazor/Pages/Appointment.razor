@@ -1,43 +1,23 @@
 ﻿@page "/appointments"
+
 @using S3_HealthAxis.Shared.DTOs.Appointment
 @using S3_HealthAxis.Shared.DTOs.Doctor
 @using S3_HealthAxis.Shared.DTOs.Patient
 @using S3_HealthAxis.Shared.Enums
 @using S3_HealthAxis.Blazor.Services
+@using S3_HealthAxis.Blazor.Shared
 @using System.ComponentModel.DataAnnotations
 
 @inject IAppointmentService AppointmentService
 @inject IDoctorService DoctorService
 @inject IPatientService PatientService
 
-<style>
-    .stat-card {
-        border-radius: 16px;
-        transition: transform 0.2s;
-    }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-        }
-
-    .progress-stacked {
-        height: 12px;
-        border-radius: 10px;
-        background-color: #f1f5f9;
-        overflow: hidden;
-        display: flex;
-    }
-
-    .segment {
-        transition: width 0.5s ease-in-out;
-    }
-</style>
-
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h3 class="mb-1 fw-bold text-dark">Appointment Dashboard</h3>
         <p class="text-muted mb-0">Monitor schedule health and manage bookings.</p>
     </div>
+
     <button class="btn btn-primary shadow-sm" @onclick="OpenAddModal">
         <i class="bi bi-calendar-plus me-1"></i> Book Appointment
     </button>
@@ -51,45 +31,56 @@
     </div>
 }
 
-<!-- ANALYTICS DASHBOARD -->
 @if (_appointments != null)
 {
     <div class="card shadow-sm border-0 mb-4 bg-white">
         <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="fw-bold mb-0">Schedule Overview</h5>
+
                 <div class="btn-group shadow-sm" role="group">
-                    <input type="radio" class="btn-check" name="btnradio" id="btnToday" autocomplete="off" checked="@(!_showWeekView)" @onchange="() => ToggleChart(false)">
+                    <input type="radio"
+                           class="btn-check"
+                           name="btnradio"
+                           id="btnToday"
+                           autocomplete="off"
+                           checked="@(!_showWeekView)"
+                           @onchange="() => ToggleChart(false)" />
                     <label class="btn btn-outline-primary btn-sm px-3" for="btnToday">Today</label>
 
-                    <input type="radio" class="btn-check" name="btnradio" id="btnWeek" autocomplete="off" checked="@_showWeekView" @onchange="() => ToggleChart(true)">
+                    <input type="radio"
+                           class="btn-check"
+                           name="btnradio"
+                           id="btnWeek"
+                           autocomplete="off"
+                           checked="@_showWeekView"
+                           @onchange="() => ToggleChart(true)" />
                     <label class="btn btn-outline-primary btn-sm px-3" for="btnWeek">This Week</label>
                 </div>
             </div>
 
             <div class="row g-3 mb-4">
-                <!-- Pending -->
                 <div class="col-md-3">
                     <div class="stat-card bg-warning bg-opacity-10 p-3 border border-warning border-opacity-25">
                         <div class="text-warning small fw-bold text-uppercase mb-1">Pending</div>
                         <h3 class="fw-bold text-dark mb-0">@Analytics.Pending</h3>
                     </div>
                 </div>
-                <!-- Confirmed -->
+
                 <div class="col-md-3">
                     <div class="stat-card bg-primary bg-opacity-10 p-3 border border-primary border-opacity-25">
                         <div class="text-primary small fw-bold text-uppercase mb-1">Confirmed</div>
                         <h3 class="fw-bold text-dark mb-0">@Analytics.Confirmed</h3>
                     </div>
                 </div>
-                <!-- Completed -->
+
                 <div class="col-md-3">
                     <div class="stat-card bg-success bg-opacity-10 p-3 border border-success border-opacity-25">
                         <div class="text-success small fw-bold text-uppercase mb-1">Completed</div>
                         <h3 class="fw-bold text-dark mb-0">@Analytics.Completed</h3>
                     </div>
                 </div>
-                <!-- Cancelled -->
+
                 <div class="col-md-3">
                     <div class="stat-card bg-danger bg-opacity-10 p-3 border border-danger border-opacity-25">
                         <div class="text-danger small fw-bold text-uppercase mb-1">Cancelled</div>
@@ -98,7 +89,6 @@
                 </div>
             </div>
 
-            <!-- Visual Distribution Bar -->
             @if (Analytics.Total > 0)
             {
                 <div class="progress-stacked w-100">
@@ -107,6 +97,7 @@
                     <div class="segment bg-success" style="width: @(Analytics.CompletedPct)%"></div>
                     <div class="segment bg-danger" style="width: @(Analytics.CancelledPct)%"></div>
                 </div>
+
                 <div class="text-center text-muted small mt-2">
                     Distribution of @Analytics.Total appointments @(_showWeekView ? "this week" : "today")
                 </div>
@@ -115,32 +106,42 @@
     </div>
 }
 
-<!-- DATA GRID & FILTERS -->
-<div class="card shadow-sm border-0">
+<div class="card shadow-sm border-0 ha-data-card">
     <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
         <h6 class="mb-0 fw-bold">All Appointments</h6>
+
         <div class="input-group input-group-sm w-auto shadow-sm">
-            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" placeholder="Search ID or Patient..." @bind="SearchQuery" @bind:event="oninput" style="min-width: 250px;" />
+            <span class="input-group-text bg-white">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text"
+                   class="form-control"
+                   placeholder="Search ID or Patient..."
+                   @bind="SearchQuery"
+                   @bind:event="oninput"
+                   style="min-width: 250px;" />
         </div>
     </div>
 
     <div class="card-body p-0">
         @if (_loading)
         {
-            <div class="text-center p-5"><div class="spinner-border text-primary"></div></div>
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary"></div>
+            </div>
         }
         else if (!PagedAppointments.Any())
         {
             <div class="text-center p-5 text-muted">
-                <i class="bi bi-calendar-x fs-1"></i><p class="mt-2">No appointments found.</p>
+                <i class="bi bi-calendar-x fs-1"></i>
+                <p class="mt-2">No appointments found.</p>
             </div>
         }
         else
         {
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
+                <table class="table table-hover align-middle mb-0 ha-data-table ha-appointments-table">
+                    <thead>
                         <tr>
                             <th class="ps-4">ID</th>
                             <th>Date</th>
@@ -156,32 +157,64 @@
                         {
                             <tr>
                                 <td class="ps-4 text-muted">#@appt.AppointmentId</td>
-                                <td class="fw-medium">@appt.ScheduledDate.ToString("MMM dd, yyyy")</td>
-                                <!-- Translated the Enum to Human Readable String -->
+
                                 <td>
-                                    <span class="badge bg-light text-dark border">
-                                        <i class="bi bi-clock me-1"></i> @GetEnumDisplayName((AppointmentTimeSlot)appt.TimeSlot)
+                                    <span class="ha-appt-date">@appt.ScheduledDate.ToString("MMM dd, yyyy")</span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-time-slot-pill">
+                                        <i class="bi bi-clock me-1"></i>
+                                        @GetEnumDisplayName((AppointmentTimeSlot)appt.TimeSlot)
                                     </span>
                                 </td>
-                                <td>@(string.IsNullOrWhiteSpace(appt.PatientName) ? "—" : appt.PatientName)</td>
-                                <td>@(string.IsNullOrWhiteSpace(appt.DoctorName) ? "—" : $"Dr. {appt.DoctorName}")</td>
-                                <td>@GetStatusBadge(appt.Status)</td>
-                                <td class="text-end pe-4">
 
+                                <td>
+                                    <span class="ha-appt-person">
+                                        @(string.IsNullOrWhiteSpace(appt.PatientName) ? "—" : appt.PatientName)
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-appt-person">
+                                        @(string.IsNullOrWhiteSpace(appt.DoctorName) ? "—" : $"Dr. {appt.DoctorName}")
+                                    </span>
+                                </td>
+
+                                <td>@GetStatusBadge(appt.Status)</td>
+
+                                <td class="text-end pe-4">
                                     @if (appt.Status == 0) // Pending
                                     {
-                                        <button class="btn btn-sm btn-outline-primary me-1" title="Confirm" @onclick="() => ConfirmAppointment(appt.AppointmentId)"><i class="bi bi-check-lg"></i></button>
+                                        <button class="btn btn-sm btn-outline-primary me-1 ha-table-action"
+                                                title="Confirm"
+                                                @onclick="() => AskConfirmAppointment(appt.AppointmentId)">
+                                            <i class="bi bi-check-lg"></i>
+                                        </button>
                                     }
+
                                     @if (appt.Status == 1) // Confirmed
                                     {
-                                        <button class="btn btn-sm btn-outline-success me-1" title="Mark Completed" @onclick="() => CompleteAppointment(appt.AppointmentId)"><i class="bi bi-flag-fill"></i></button>
+                                        <button class="btn btn-sm btn-outline-success me-1 ha-table-action"
+                                                title="Mark Completed"
+                                                @onclick="() => AskCompleteAppointment(appt.AppointmentId)">
+                                            <i class="bi bi-flag-fill"></i>
+                                        </button>
                                     }
 
-                                    <button class="btn btn-sm btn-outline-secondary me-1" title="Reschedule" @onclick="() => OpenEditModal(appt)"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary me-1 ha-table-action"
+                                            title="Reschedule"
+                                            @onclick="() => OpenEditModal(appt)">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
 
-                                    @if (appt.Status == 0 || appt.Status == 1) // Pending or Confirmed
+                                    @if (appt.Status == 0 || appt.Status == 1)
                                     {
-                                        <button class="btn btn-sm btn-outline-danger" title="Cancel" @onclick="() => OpenCancelModal(appt.AppointmentId)"><i class="bi bi-x-lg"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger ha-table-action"
+                                                title="Cancel"
+                                                @onclick="() => OpenCancelModal(appt.AppointmentId)">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
                                     }
                                 </td>
                             </tr>
@@ -190,16 +223,36 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
             @if (TotalPages > 1)
             {
                 <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center py-3">
-                    <span class="text-muted small">Showing @(((_currentPage - 1) * _pageSize) + 1) to @Math.Min(_currentPage * _pageSize, FilteredAppointments.Count()) of @FilteredAppointments.Count() entries</span>
+                    <span class="text-muted small">
+                        Showing @(((_currentPage - 1) * _pageSize) + 1)
+                        to @Math.Min(_currentPage * _pageSize, FilteredAppointments.Count())
+                        of @FilteredAppointments.Count() entries
+                    </span>
+
                     <nav>
                         <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item @(_currentPage == 1 ? "disabled" : "")"><button class="page-link" @onclick="() => _currentPage--">Prev</button></li>
-                            <li class="page-item disabled"><span class="page-link text-dark">@_currentPage / @TotalPages</span></li>
-                            <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")"><button class="page-link" @onclick="() => _currentPage++">Next</button></li>
+                            <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                                <button class="page-link"
+                                        disabled="@(_currentPage == 1)"
+                                        @onclick="PreviousPage">
+                                    Prev
+                                </button>
+                            </li>
+
+                            <li class="page-item disabled">
+                                <span class="page-link text-dark">@_currentPage / @TotalPages</span>
+                            </li>
+
+                            <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
+                                <button class="page-link"
+                                        disabled="@(_currentPage == TotalPages)"
+                                        @onclick="NextPage">
+                                    Next
+                                </button>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -208,7 +261,6 @@
     </div>
 </div>
 
-<!-- Add/Reschedule Modal -->
 @if (_showAddModal)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
@@ -216,15 +268,18 @@
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-light border-0">
                     <h5 class="modal-title fw-bold">@(_isEditing ? "Reschedule Appointment" : "Book Appointment")</h5>
-                    <button type="button" class="btn-close" @onclick="() => _showAddModal = false"></button>
+                    <button type="button" class="btn-close" @onclick="CloseAddModal"></button>
                 </div>
+
                 <div class="modal-body p-4">
-                    <EditForm Model="@_formData" OnValidSubmit="HandleSubmit">
+                    <EditForm Model="@_formData" OnValidSubmit="ConfirmSaveAppointment">
                         <DataAnnotationsValidator />
 
                         <div class="mb-3">
                             <label class="form-label fw-medium">Select Patient</label>
-                            <InputSelect class="form-select" @bind-Value="_formData.PatientId" disabled="@_isEditing">
+                            <InputSelect class="form-select"
+                                         @bind-Value="_formData.PatientId"
+                                         disabled="@_isEditing">
                                 <option value="0" disabled>-- Choose Patient --</option>
                                 @foreach (var p in _activePatients)
                                 {
@@ -249,13 +304,14 @@
                         <div class="row">
                             <div class="col-6 mb-3">
                                 <label class="form-label fw-medium">Date</label>
-                                <!-- Added the min attribute to block past dates -->
-                                <InputDate class="form-control" @bind-Value="_formData.ScheduledDate" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                                <InputDate class="form-control"
+                                           @bind-Value="_formData.ScheduledDate"
+                                           min="@DateTime.Today.ToString("yyyy-MM-dd")" />
                                 <ValidationMessage For="@(() => _formData.ScheduledDate)" class="text-danger small mt-1" />
                             </div>
+
                             <div class="col-6 mb-3">
                                 <label class="form-label fw-medium">Time Slot</label>
-                                <!-- Converted to Dropdown reading the Enum tags -->
                                 <InputSelect TValue="int" class="form-select" @bind-Value="_formData.TimeSlot">
                                     <option value="0" disabled>-- Choose Slot --</option>
                                     @foreach (AppointmentTimeSlot slot in Enum.GetValues(typeof(AppointmentTimeSlot)))
@@ -268,8 +324,14 @@
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-2">
-                            <button type="button" class="btn btn-light" @onclick="() => _showAddModal = false">Cancel</button>
-                            <button type="submit" class="btn btn-primary" disabled="@_isSaving">@(_isEditing ? "Reschedule" : "Book")</button>
+                            <button type="button" class="btn btn-light" @onclick="CloseAddModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" disabled="@_isSaving">
+                                @if (_isSaving)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                @(_isEditing ? "Reschedule" : "Book")
+                            </button>
                         </div>
                     </EditForm>
                 </div>
@@ -278,29 +340,42 @@
     </div>
 }
 
-<!-- Cancel Reason Modal -->
 @if (_showCancelModal)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow">
                 <div class="modal-header bg-danger text-white border-0">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle me-2"></i> Cancel Appointment</h5>
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        Cancel Appointment
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseCancelModal"></button>
                 </div>
+
                 <div class="modal-body p-4">
-                    <p>Are you sure you want to cancel Appointment <strong>#@_cancelId</strong>?</p>
+                    <p>Provide a reason before cancelling Appointment <strong>#@_cancelId</strong>.</p>
+
                     <div class="mb-3">
                         <label class="form-label fw-medium">Cancellation Reason</label>
-                        <textarea class="form-control" @bind="_cancelReason" rows="3" placeholder="Patient requested cancellation..."></textarea>
+                        <textarea class="form-control"
+                                  @bind="_cancelReason"
+                                  rows="3"
+                                  placeholder="Patient requested cancellation..."></textarea>
                     </div>
+
                     <div class="d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-light" @onclick="() => _showCancelModal = false">Nevermind</button>
-                        <button type="button" class="btn btn-danger" disabled="@(string.IsNullOrWhiteSpace(_cancelReason) || _isSaving)" @onclick="SubmitCancel">
+                        <button type="button" class="btn btn-light" @onclick="CloseCancelModal">Nevermind</button>
+
+                        <button type="button"
+                                class="btn btn-danger"
+                                disabled="@(string.IsNullOrWhiteSpace(_cancelReason) || _isSaving)"
+                                @onclick="ConfirmCancelFromReasonModal">
                             @if (_isSaving)
                             {
                                 <span class="spinner-border spinner-border-sm me-2"></span>
                             }
-                            Confirm Cancellation
+                            Continue
                         </button>
                     </div>
                 </div>
@@ -308,6 +383,14 @@
         </div>
     </div>
 }
+
+<ConfirmDialog IsOpen="@_showConfirmDialog"
+               Title="@_confirmTitle"
+               Message="@_confirmMessage"
+               ConfirmText="@_confirmButtonText"
+               IsDanger="@_confirmIsDanger"
+               OnConfirm="ConfirmAction"
+               OnCancel="CancelConfirmation" />
 
 @code {
     private List<AppointmentDetailsDto>? _appointments = new();
@@ -317,7 +400,7 @@
     private bool _loading = true;
     private string? _pageError = null;
 
-    // --- Search & Pagination ---
+    // Search & Pagination
     private string _searchQuery = "";
     private int _currentPage = 1;
     private readonly int _pageSize = 20;
@@ -325,20 +408,27 @@
     private string SearchQuery
     {
         get => _searchQuery;
-        set { _searchQuery = value; _currentPage = 1; }
+        set
+        {
+            _searchQuery = value;
+            _currentPage = 1;
+        }
     }
 
     private IEnumerable<AppointmentDetailsDto> FilteredAppointments =>
         (_appointments ?? new List<AppointmentDetailsDto>())
-            .Where(a => string.IsNullOrWhiteSpace(SearchQuery)
-                     || (!string.IsNullOrEmpty(a.PatientName) && a.PatientName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
-                     || a.AppointmentId.ToString() == SearchQuery)
+            .Where(a =>
+                string.IsNullOrWhiteSpace(SearchQuery)
+                || (!string.IsNullOrEmpty(a.PatientName) && a.PatientName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+                || a.AppointmentId.ToString() == SearchQuery)
             .OrderByDescending(a => a.ScheduledDate);
 
     private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredAppointments.Count() / (double)_pageSize));
-    private IEnumerable<AppointmentDetailsDto> PagedAppointments => FilteredAppointments.Skip((_currentPage - 1) * _pageSize).Take(_pageSize);
 
-    // --- Analytics Logic ---
+    private IEnumerable<AppointmentDetailsDto> PagedAppointments =>
+        FilteredAppointments.Skip((_currentPage - 1) * _pageSize).Take(_pageSize);
+
+    // Analytics
     private bool _showWeekView = false;
     private ChartData Analytics = new();
 
@@ -348,6 +438,7 @@
         public int Confirmed { get; set; }
         public int Completed { get; set; }
         public int Cancelled { get; set; }
+
         public int Total => Pending + Confirmed + Completed + Cancelled;
 
         public double PendingPct => Total == 0 ? 0 : (Pending / (double)Total) * 100;
@@ -364,14 +455,17 @@
 
     private void CalculateAnalytics()
     {
-        if (_appointments == null) return;
+        if (_appointments == null)
+            return;
 
         var today = DateOnly.FromDateTime(DateTime.Today);
-        var targetSet = _appointments.Where(a => _showWeekView
-            ? (a.ScheduledDate >= today && a.ScheduledDate <= today.AddDays(7))
-            : a.ScheduledDate == today).ToList();
 
-        // FIXED ENUM MAPPING: 2 is Cancelled, 3 is Completed
+        var targetSet = _appointments.Where(a =>
+            _showWeekView
+                ? (a.ScheduledDate >= today && a.ScheduledDate <= today.AddDays(7))
+                : a.ScheduledDate == today)
+            .ToList();
+
         Analytics = new ChartData
         {
             Pending = targetSet.Count(a => a.Status == 0),
@@ -381,30 +475,42 @@
         };
     }
 
-    // --- Modal State & Models ---
+    // Modal + form state
     private bool _showAddModal = false;
     private bool _showCancelModal = false;
     private bool _isEditing = false;
     private bool _isSaving = false;
+
     private int _cancelId = 0;
     private string _cancelReason = "";
 
     private AppointmentFormModel _formData = new();
 
+    // Confirmation dialog state
+    private bool _showConfirmDialog = false;
+    private string _confirmTitle = "";
+    private string _confirmMessage = "";
+    private string _confirmButtonText = "Confirm";
+    private bool _confirmIsDanger = false;
+    private Func<Task>? _pendingConfirmedAction;
+
     public class AppointmentFormModel
     {
         public int AppointmentId { get; set; }
+
         [Range(1, int.MaxValue, ErrorMessage = "Please select a patient")]
         public int PatientId { get; set; }
+
         [Range(1, int.MaxValue, ErrorMessage = "Please select a doctor")]
         public int DoctorId { get; set; }
+
         [Required]
         public DateOnly ScheduledDate { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+
         [Range(1, 48, ErrorMessage = "Valid time slot required")]
         public int TimeSlot { get; set; } = 0;
     }
 
-    // --- Lifecycle ---
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
@@ -430,12 +536,68 @@
         {
             _pageError = $"Failed to load dashboard data: {ex.Message}";
         }
-        finally { _loading = false; }
+        finally
+        {
+            _loading = false;
+        }
     }
 
-    // --- Quick Actions ---
-    private async Task ConfirmAppointment(int id) { await ExecuteAction(async () => await AppointmentService.ConfirmAsync(id)); }
-    private async Task CompleteAppointment(int id) { await ExecuteAction(async () => await AppointmentService.CompleteAsync(id)); }
+    // --------------------------
+    // Confirmation dialog helpers
+    // --------------------------
+    private void OpenConfirmation(string title, string message, string confirmText, bool isDanger, Func<Task> action)
+    {
+        _confirmTitle = title;
+        _confirmMessage = message;
+        _confirmButtonText = confirmText;
+        _confirmIsDanger = isDanger;
+        _pendingConfirmedAction = action;
+        _showConfirmDialog = true;
+    }
+
+    private void CancelConfirmation()
+    {
+        _showConfirmDialog = false;
+        _pendingConfirmedAction = null;
+    }
+
+    private async Task ConfirmAction()
+    {
+        _showConfirmDialog = false;
+
+        if (_pendingConfirmedAction != null)
+        {
+            await _pendingConfirmedAction.Invoke();
+            _pendingConfirmedAction = null;
+        }
+    }
+
+    // --------------------------
+    // Quick actions with confirmation
+    // --------------------------
+    private Task AskConfirmAppointment(int id)
+    {
+        OpenConfirmation(
+            "Confirm Appointment",
+            $"Do you want to confirm appointment #{id}?",
+            "Confirm Appointment",
+            false,
+            async () => await ExecuteAction(async () => await AppointmentService.ConfirmAsync(id)));
+
+        return Task.CompletedTask;
+    }
+
+    private Task AskCompleteAppointment(int id)
+    {
+        OpenConfirmation(
+            "Complete Appointment",
+            $"Do you want to mark appointment #{id} as completed?",
+            "Mark Completed",
+            false,
+            async () => await ExecuteAction(async () => await AppointmentService.CompleteAsync(id)));
+
+        return Task.CompletedTask;
+    }
 
     private async Task ExecuteAction(Func<Task> action)
     {
@@ -445,10 +607,15 @@
             await action();
             await LoadData();
         }
-        catch (Exception ex) { _pageError = ex.Message; }
+        catch (Exception ex)
+        {
+            _pageError = ex.Message;
+        }
     }
 
-    // --- Cancel Modal Logic ---
+    // --------------------------
+    // Cancel flow
+    // --------------------------
     private void OpenCancelModal(int id)
     {
         _cancelId = id;
@@ -456,20 +623,55 @@
         _showCancelModal = true;
     }
 
+    private void CloseCancelModal()
+    {
+        _showCancelModal = false;
+        _cancelReason = "";
+        _cancelId = 0;
+    }
+
+    private Task ConfirmCancelFromReasonModal()
+    {
+        OpenConfirmation(
+            "Cancel Appointment",
+            $"Do you want to cancel appointment #{_cancelId}? This action requires the provided reason and cannot be undone.",
+            "Confirm Cancellation",
+            true,
+            SubmitCancel);
+
+        return Task.CompletedTask;
+    }
+
     private async Task SubmitCancel()
     {
         _isSaving = true;
+
         try
         {
-            await AppointmentService.CancelAsync(_cancelId, new CancelAppointmentDto { CancellationReason = _cancelReason });
+            await AppointmentService.CancelAsync(_cancelId, new CancelAppointmentDto
+            {
+                CancellationReason = _cancelReason
+            });
+
             _showCancelModal = false;
+            _cancelReason = "";
+            _cancelId = 0;
+
             await LoadData();
         }
-        catch (Exception ex) { _pageError = ex.Message; }
-        finally { _isSaving = false; }
+        catch (Exception ex)
+        {
+            _pageError = ex.Message;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
     }
 
-    // --- Add/Edit Modal Logic ---
+    // --------------------------
+    // Add / Edit appointment flow
+    // --------------------------
     private void OpenAddModal()
     {
         _isEditing = false;
@@ -491,31 +693,85 @@
         _showAddModal = true;
     }
 
+    private void CloseAddModal()
+    {
+        _showAddModal = false;
+    }
+
+    private Task ConfirmSaveAppointment()
+    {
+        OpenConfirmation(
+            _isEditing ? "Save Appointment Changes" : "Book Appointment",
+            _isEditing
+                ? "Do you want to save these changes to the appointment?"
+                : "Do you want to book this appointment?",
+            _isEditing ? "Save Changes" : "Book Appointment",
+            false,
+            HandleSubmit);
+
+        return Task.CompletedTask;
+    }
+
     private async Task HandleSubmit()
     {
         _isSaving = true;
+
         try
         {
             if (_isEditing)
             {
-                await AppointmentService.UpdateAsync(_formData.AppointmentId, new UpdateAppointmentDto
-                { DoctorId = _formData.DoctorId, ScheduledDate = _formData.ScheduledDate, TimeSlot = _formData.TimeSlot });
+                await AppointmentService.UpdateAsync(
+                    _formData.AppointmentId,
+                    new UpdateAppointmentDto
+                    {
+                        DoctorId = _formData.DoctorId,
+                        ScheduledDate = _formData.ScheduledDate,
+                        TimeSlot = _formData.TimeSlot
+                    });
             }
             else
             {
-                await AppointmentService.CreateAsync(new CreateAppointmentDto
-                { PatientId = _formData.PatientId, DoctorId = _formData.DoctorId, ScheduledDate = _formData.ScheduledDate, TimeSlot = _formData.TimeSlot });
+                await AppointmentService.CreateAsync(
+                    new CreateAppointmentDto
+                    {
+                        PatientId = _formData.PatientId,
+                        DoctorId = _formData.DoctorId,
+                        ScheduledDate = _formData.ScheduledDate,
+                        TimeSlot = _formData.TimeSlot
+                    });
             }
+
             _showAddModal = false;
             await LoadData();
         }
-        catch (Exception ex) { _pageError = ex.Message; }
-        finally { _isSaving = false; }
+        catch (Exception ex)
+        {
+            _pageError = ex.Message;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
     }
 
-    // --- Helpers ---
+    // --------------------------
+    // Pagination
+    // --------------------------
+    private void PreviousPage()
+    {
+        if (_currentPage > 1)
+            _currentPage--;
+    }
 
-    // Safely reads the [Display(Name="...")] attribute from Enums
+    private void NextPage()
+    {
+        if (_currentPage < TotalPages)
+            _currentPage++;
+    }
+
+    // --------------------------
+    // Helpers
+    // --------------------------
     private string GetEnumDisplayName(Enum enumValue)
     {
         var type = enumValue.GetType();
@@ -529,19 +785,33 @@
                 return ((DisplayAttribute)attrs[0]).Name ?? enumValue.ToString();
             }
         }
+
         return enumValue.ToString();
     }
 
     private RenderFragment GetStatusBadge(int status) => builder =>
     {
-        // FIXED ENUM MAPPING: 2 is Cancelled, 3 is Completed
         switch (status)
         {
-            case 0: builder.AddMarkupContent(0, "<span class='badge bg-warning text-dark'><i class='bi bi-hourglass-split me-1'></i> Pending</span>"); break;
-            case 1: builder.AddMarkupContent(0, "<span class='badge bg-primary'><i class='bi bi-check-circle me-1'></i> Confirmed</span>"); break;
-            case 2: builder.AddMarkupContent(0, "<span class='badge bg-danger'><i class='bi bi-x-circle me-1'></i> Cancelled</span>"); break;
-            case 3: builder.AddMarkupContent(0, "<span class='badge bg-success'><i class='bi bi-flag-fill me-1'></i> Completed</span>"); break;
-            default: builder.AddMarkupContent(0, $"<span class='badge bg-secondary'>Unknown ({status})</span>"); break;
+            case 0:
+                builder.AddMarkupContent(0, "<span class='badge bg-warning text-dark ha-table-pill'><i class='bi bi-hourglass-split me-1'></i> Pending</span>");
+                break;
+
+            case 1:
+                builder.AddMarkupContent(0, "<span class='badge bg-primary ha-table-pill'><i class='bi bi-check-circle me-1'></i> Confirmed</span>");
+                break;
+
+            case 2:
+                builder.AddMarkupContent(0, "<span class='badge bg-danger ha-table-pill'><i class='bi bi-x-circle me-1'></i> Cancelled</span>");
+                break;
+
+            case 3:
+                builder.AddMarkupContent(0, "<span class='badge bg-success ha-table-pill'><i class='bi bi-flag-fill me-1'></i> Completed</span>");
+                break;
+
+            default:
+                builder.AddMarkupContent(0, $"<span class='badge bg-secondary ha-table-pill'>Unknown ({status})</span>");
+                break;
         }
     };
 }

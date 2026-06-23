@@ -1,28 +1,49 @@
-﻿<div class="ha-sidebar-title">
+﻿@using Microsoft.AspNetCore.Components
+
+<div class="ha-sidebar-title">
     HealthAxis
 </div>
 
 <nav class="ha-nav">
 
-    <NavLink class="ha-nav-link" href="/dashboard" Match="NavLinkMatch.All">
+    <NavLink class="ha-nav-link"
+             href="/dashboard"
+             Match="NavLinkMatch.All"
+             @onclick="NotifyNavigate">
         <i class="bi bi-speedometer2"></i>
         <span>Dashboard</span>
     </NavLink>
 
-    <NavLink class="ha-nav-link" href="/patients">
+    <NavLink class="ha-nav-link"
+             href="/patients"
+             @onclick="NotifyNavigate">
         <i class="bi bi-people"></i>
         <span>Patients</span>
     </NavLink>
 
-    <NavLink class="ha-nav-link" href="/doctors">
+    <NavLink class="ha-nav-link"
+             href="/doctors"
+             @onclick="NotifyNavigate">
         <i class="bi bi-person-badge"></i>
         <span>Doctors</span>
     </NavLink>
 
-    <NavLink class="ha-nav-link" href="/appointments">
+    <NavLink class="ha-nav-link"
+             href="/appointments"
+             @onclick="NotifyNavigate">
         <i class="bi bi-calendar-event"></i>
         <span>Appointments</span>
     </NavLink>
 
 </nav>
-    
+
+@code {
+    [Parameter]
+    public EventCallback OnNavigate { get; set; }
+
+    private async Task NotifyNavigate()
+    {
+        if (OnNavigate.HasDelegate)
+            await OnNavigate.InvokeAsync();
+    }
+}

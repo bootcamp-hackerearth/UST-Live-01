@@ -1,44 +1,182 @@
 ﻿@inherits LayoutComponentBase
 
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
 @using S3_HealthAxis.Blazor.Services
 
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="ha-layout">
 
+    <!-- Top Navbar -->
     <header class="ha-topbar">
-        <a class="ha-brand-top" href="/dashboard">
-            HealthAxis Admin
-        </a>
 
-        <a href="#"
-           class="ha-logout"
-           @onclick="Logout"
-           @onclick:preventDefault="true">
-            <i class="bi bi-box-arrow-right"></i>
-            Logout
-        </a>
+        <div class="ha-topbar-left">
+            <button class="ha-menu-toggle"
+                    @onclick="ToggleSidebar"
+                    aria-label="Toggle navigation">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <a href="/dashboard" class="ha-brand-top">
+                HealthAxis Admin
+            </a>
+        </div>
+
+        <div class="ha-topbar-right">
+            <div class="ha-user-menu">
+                <button class="ha-user-trigger"
+                        @onclick="ToggleUserMenu"
+                        aria-expanded="@_showUserDropdown"
+                        aria-haspopup="true">
+                    <div class="ha-user-avatar">
+                        @GetInitials(_displayName)
+                    </div>
+
+                    <div class="ha-user-info">
+                        <span class="ha-user-name">@_displayName</span>
+                        @if (!string.IsNullOrWhiteSpace(_role))
+                        {
+                            <span class="ha-user-role">@_role</span>
+                        }
+                    </div>
+
+                    <i class="bi bi-chevron-down ha-user-chevron @(_showUserDropdown ? "open" : "")"></i>
+                </button>
+
+                @if (_showUserDropdown)
+                {
+                    <div class="ha-user-dropdown">
+                        <button class="ha-dropdown-item ha-logout-item" @onclick="Logout">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
     </header>
 
+    <!-- Body -->
     <div class="ha-body">
 
-        <aside class="ha-sidebar">
-            <NavMenu />
+        <!-- Mobile backdrop -->
+        @if (_isSidebarOpen)
+        {
+            <div class="ha-sidebar-backdrop" @onclick="CloseSidebar"></div>
+        }
+
+        <!-- Sidebar -->
+        <aside class="ha-sidebar @(_isSidebarOpen ? "open" : "")">
+            <NavMenu OnNavigate="HandleNavClick" />
         </aside>
 
-        <main class="ha-content">
+        <!-- Main Content -->
+        <main class="ha-content" @onclick="CloseUserMenu">
             @Body
         </main>
 
     </div>
-
 </div>
 
 @code {
+    private bool _showUserDropdown = false;
+    private bool _isSidebarOpen = false;
+
+    private string _displayName = "Admin User";
+    private string _role = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserInfoAsync();
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        await LoadUserInfoAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadUserInfoAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            _displayName =
+                user.FindFirst(ClaimTypes.Name)?.Value
+                ?? user.FindFirst("name")?.Value
+                ?? user.FindFirst(ClaimTypes.Email)?.Value
+                ?? user.FindFirst("email")?.Value
+                ?? user.Identity.Name
+                ?? "Admin User";
+
+            _role =
+                user.FindFirst(ClaimTypes.Role)?.Value
+                ?? user.FindFirst("role")?.Value
+                ?? string.Empty;
+        }
+        else
+        {
+            _displayName = "Admin User";
+            _role = string.Empty;
+        }
+    }
+
+    private void ToggleUserMenu()
+    {
+        _showUserDropdown = !_showUserDropdown;
+    }
+
+    private void CloseUserMenu()
+    {
+        _showUserDropdown = false;
+    }
+
+    private void ToggleSidebar()
+    {
+        _isSidebarOpen = !_isSidebarOpen;
+    }
+
+    private void CloseSidebar()
+    {
+        _isSidebarOpen = false;
+    }
+
+    private void HandleNavClick()
+    {
+        _isSidebarOpen = false;
+        _showUserDropdown = false;
+    }
+
     private async Task Logout()
     {
+        _showUserDropdown = false;
+        _isSidebarOpen = false;
+
         await AuthService.LogoutAsync();
         Navigation.NavigateTo("/login", forceLoad: true);
+    }
+
+    private string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            return "A";
+
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+            return parts[0][0].ToString().ToUpper();
+
+        return $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[1][0])}";
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 }

@@ -1,144 +1,172 @@
-/* =========================================
-   1. GLOBAL & TYPOGRAPHY
-   ========================================= */
+/* =========================================================
+   HEALTHAXIS ADMIN PORTAL - CLEAN FINAL CSS
+   ========================================================= */
 
-html, body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+/* =========================================================
+   1. ROOT / GLOBAL
+   ========================================================= */
+html,
+body,
+#app {
+    width: 100%;
+    height: 100%;
     margin: 0;
     padding: 0;
-    height: 100%;
-    background-color: #f4f7f6 !important; /* Soft premium gray background */
-    color: #2c3e50;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #eef8fc;
+    color: #243447;
 }
 
-h1:focus {
+* {
+    box-sizing: border-box;
+}
+
+h1:focus,
+h2:focus,
+h3:focus,
+h4:focus {
     outline: none;
 }
 
-a, .btn-link {
-    color: #2b6cb0;
+a {
+    text-decoration: none;
 }
 
 code {
     color: #c02d76;
 }
 
-.content {
-    padding-top: 1.1rem;
-}
+/* =========================================================
+   2. GLOBAL UI ELEMENTS
+   ========================================================= */
 
-/* =========================================
-   2. GLOBAL UI ELEMENTS (Premium Overrides)
-   ========================================= */
 /* Cards */
 .card {
     border: none !important;
     border-radius: 16px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
-    background-color: #ffffff;
-    transition: box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.97) !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045) !important;
+    transition: all 0.25s ease;
 }
 
+    .card:hover {
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06) !important;
+    }
+
 .card-header {
-    background-color: #ffffff !important;
+    background: #ffffff !important;
     border-bottom: 1px solid #edf2f7 !important;
     border-top-left-radius: 16px !important;
     border-top-right-radius: 16px !important;
-    padding: 1.25rem 1.5rem !important;
+    padding: 1.2rem 1.5rem !important;
 }
 
 .card-footer {
-    background-color: #ffffff !important;
+    background: #ffffff !important;
     border-top: 1px solid #edf2f7 !important;
     border-bottom-left-radius: 16px !important;
     border-bottom-right-radius: 16px !important;
 }
 
-/* Premium Buttons */
+/* Buttons */
 .btn {
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    padding: 0.5rem 1rem;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
     transition: all 0.2s ease;
 }
 
 .btn-sm {
-    padding: 0.35rem 0.6rem !important;
-    border-radius: 6px !important;
+    padding: 0.35rem 0.65rem !important;
+    border-radius: 8px !important;
 }
 
 .btn-primary {
     color: #fff !important;
-    background-color: #2b6cb0 !important;
-    border-color: #2b6cb0 !important;
-    box-shadow: 0 2px 4px rgba(43, 108, 176, 0.15);
+    background: linear-gradient(135deg, #2b8be6, #2563eb) !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.22);
 }
 
     .btn-primary:hover:not(:disabled) {
-        background-color: #22548a !important;
+        background: linear-gradient(135deg, #1f72d8, #1d4ed8) !important;
+        border-color: #1d4ed8 !important;
         transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(43, 108, 176, 0.3);
+        box-shadow: 0 10px 18px rgba(37, 99, 235, 0.28);
     }
 
-.btn:focus, .btn:active:focus, .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.1) !important;
+.btn-light {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
 }
 
-/* Clean Form Inputs */
-.form-control, .form-select {
+/* Inputs */
+.form-control,
+.form-select {
     border-radius: 10px !important;
-    border: 2px solid #e2e8f0 !important;
-    padding: 0.6rem 1rem !important;
-    transition: all 0.2s ease;
-    background-color: #f8fafc !important;
+    border: 1px solid #dbe5ef !important;
+    padding: 0.65rem 0.9rem !important;
+    background: #f8fbfd !important;
     font-size: 0.95rem;
+    transition: all 0.2s ease;
 }
 
-    .form-control:focus, .form-select:focus {
-        background-color: #ffffff !important;
+    .form-control:focus,
+    .form-select:focus,
+    .form-check-input:focus,
+    .btn:focus,
+    .btn:active:focus {
+        background: #ffffff !important;
         border-color: #3182ce !important;
-        box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.1) !important;
+        box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.12) !important;
     }
 
-/* Beautiful Tables */
+/* Tables */
 .table {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
+    background: rgba(255, 255, 255, 0.97) !important;
 }
 
-    .table th {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        color: #718096;
-        border-bottom: 2px solid #edf2f7 !important;
-        padding: 1rem !important;
-    }
+.table-responsive {
+    border-radius: 16px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.97) !important;
+}
 
-    .table td {
-        padding: 1rem !important;
-        vertical-align: middle;
-        border-bottom: 1px solid #f8fafc;
-        color: #4a5568;
-    }
+.table th {
+    background: #f8fcff !important;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #64748b !important;
+    border-bottom: 1px solid #e5e9f2 !important;
+    padding: 1rem !important;
+}
+
+.table td {
+    padding: 1rem !important;
+    vertical-align: middle;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9 !important;
+}
 
 .table-hover tbody tr:hover {
-    background-color: #f8fafc !important;
+    background: #f8fbff !important;
 }
 
-/* Status Badges */
+/* Badges */
 .badge {
-    font-weight: 600 !important;
+    font-weight: 700 !important;
     padding: 0.5em 0.8em !important;
-    border-radius: 6px !important;
-    letter-spacing: 0.3px;
+    border-radius: 8px !important;
+    letter-spacing: 0.2px;
 }
 
 /* Modals */
 .modal-content {
     border-radius: 20px !important;
     border: none !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.16) !important;
 }
 
 .modal-header {
@@ -149,11 +177,11 @@ code {
 
 /* Validation */
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    outline: 1px solid #22c55e;
 }
 
 .invalid {
-    outline: 1px solid #e53e3e;
+    outline: 1px solid #ef4444;
 }
 
 .validation-message {
@@ -161,129 +189,328 @@ code {
     font-size: 0.85rem;
 }
 
-/* =========================================
-   3. MAIN DASHBOARD LAYOUT
-   ========================================= */
-.main-layout {
+/* =========================================================
+   3. APP SHELL / LAYOUT
+   ========================================================= */
+.ha-layout {
+    width: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
 }
 
-/* Top Navbar */
-.top-navbar {
-    height: 60px;
-    width: 100%;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e9f2;
+/* =========================================================
+   4. TOP BAR
+   ========================================================= */
+.ha-topbar {
+    height: 72px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    flex-shrink: 0;
-    box-sizing: border-box;
+    padding: 0 22px;
+    background: linear-gradient(135deg, rgba(4, 28, 49, 0.92), rgba(8, 53, 90, 0.82));
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(158, 212, 255, 0.12);
+    box-shadow: 0 8px 28px rgba(2, 12, 27, 0.18);
+    position: sticky;
+    top: 0;
+    z-index: 1200;
 }
 
-.nav-left {
-    font-weight: 600;
-    color: #2b6cb0;
-    font-size: 16px;
+.ha-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
-    .nav-left a {
-        font-weight: 600;
-        font-size: 16px;
-        color: #2b6cb0;
-        text-decoration: none;
+.ha-brand-top {
+    color: #ffffff !important;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    text-decoration: none !important;
+}
+
+    .ha-brand-top:hover {
+        color: #d9f3ff !important;
     }
 
-        .nav-left a:hover {
-            text-decoration: underline;
-        }
-
-.nav-right a {
-    color: #64748b;
-    text-decoration: none;
-    font-size: 14px;
+/* Hamburger */
+.ha-menu-toggle {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(203, 232, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f0f9ff;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.22s ease;
 }
 
-    .nav-right a:hover {
-        color: #2b6cb0;
+    .ha-menu-toggle i {
+        font-size: 1.25rem;
     }
 
-/* Layout Body (Holds Sidebar + Content) */
-.layout-body {
+    .ha-menu-toggle:hover {
+        background: rgba(255, 255, 255, 0.14);
+        transform: translateY(-1px);
+    }
+
+/* User menu */
+.ha-topbar-right {
     display: flex;
-    flex: 1;
-    height: calc(100vh - 60px);
-    overflow: hidden;
+    align-items: center;
+    position: relative;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 220px;
-    background: #ffffff;
-    border-right: 1px solid #e5e9f2;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    overflow-y: auto;
-    z-index: 10;
+.ha-user-menu {
+    position: relative;
 }
 
-.brand {
-    font-size: 18px;
-    font-weight: 600;
-    color: #2b6cb0;
-    margin-bottom: 30px;
-}
-
-.nav-links {
-    display: flex;
-    flex-direction: column;
-}
-
-.nav-item {
+.ha-user-trigger {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 10px 12px;
-    margin-bottom: 6px;
-    border-radius: 8px;
-    color: #4a5568;
-    font-size: 14px;
-    text-decoration: none;
-    transition: all 0.2s ease;
+    min-height: 52px;
+    padding: 8px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(203, 232, 255, 0.14);
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+    box-shadow: 0 8px 20px rgba(2, 12, 27, 0.14);
+    cursor: pointer;
+    transition: all 0.22s ease;
 }
 
-    .nav-item i {
-        font-size: 16px;
+    .ha-user-trigger:hover {
+        background: rgba(255, 255, 255, 0.16);
+        transform: translateY(-1px);
     }
 
-    .nav-item:hover {
-        background: #f1f5f9;
-        color: #2b6cb0;
+.ha-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.92rem;
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.28);
+    flex-shrink: 0;
+}
+
+.ha-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.15;
+    min-width: 0;
+    max-width: 250px;
+}
+
+.ha-user-name {
+    color: #ffffff !important;
+    font-size: 0.95rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+}
+
+.ha-user-role {
+    margin-top: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.18);
+    color: #d8f5ff !important;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.ha-user-chevron {
+    color: #d9f3ff;
+    font-size: 0.85rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+    .ha-user-chevron.open {
+        transform: rotate(180deg);
     }
 
-    .nav-item.active {
-        background: rgba(43, 108, 176, 0.12);
-        color: #2b6cb0;
-        font-weight: 500;
+/* Dropdown */
+.ha-user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 210px;
+    background: rgba(8, 24, 39, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(203, 232, 255, 0.10);
+    border-radius: 18px;
+    box-shadow: 0 20px 36px rgba(2, 6, 23, 0.28);
+    padding: 8px;
+    z-index: 1300;
+}
+
+.ha-dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    background: transparent;
+    color: #f8fafc;
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 700;
+    transition: all 0.18s ease;
+}
+
+    .ha-dropdown-item:hover {
+        background: rgba(56, 189, 248, 0.14);
     }
 
-/* Main Content Area */
+.ha-logout-item {
+    color: #ffd4d4;
+}
+
+    .ha-logout-item:hover {
+        background: rgba(239, 68, 68, 0.16);
+        color: #ffffff;
+    }
+
+/* =========================================================
+   5. BODY / CONTENT AREA
+   ========================================================= */
+.ha-body {
+    flex: 1;
+    display: flex;
+    min-height: calc(100vh - 72px);
+    position: relative;
+}
+
+.ha-content,
 .main-content {
     flex: 1;
-    padding: 25px;
+    min-width: 0;
+    padding: 28px;
     overflow-y: auto;
-    width: 100%;
+    background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 32%), linear-gradient(180deg, #f3fbff 0%, #edf7fb 45%, #f6fafb 100%) !important;
 }
 
-/* =========================================
-   4. DASHBOARD CARDS & CHARTS
-   ========================================= */
+    /* Better heading contrast */
+    .ha-content h1,
+    .ha-content h2,
+    .ha-content h3,
+    .main-content h1,
+    .main-content h2,
+    .main-content h3 {
+        color: #172033;
+        font-weight: 800;
+    }
+
+/* =========================================================
+   6. SIDEBAR
+   ========================================================= */
+.ha-sidebar {
+    width: 252px;
+    background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.28), transparent 35%), linear-gradient(180deg, #063b63 0%, #052c4f 45%, #031b34 100%);
+    border-right: none;
+    padding: 22px 12px;
+    box-shadow: 4px 0 18px rgba(3, 27, 52, 0.22);
+    transition: transform 0.28s ease, width 0.25s ease;
+    z-index: 1250;
+}
+
+.ha-sidebar-title {
+    color: #e0f7ff !important;
+    font-size: 1.3rem;
+    font-weight: 800;
+    padding: 0 12px;
+    margin-bottom: 26px;
+    letter-spacing: 0.2px;
+}
+
+    .ha-sidebar-title::after {
+        content: "";
+        display: block;
+        height: 1px;
+        margin-top: 16px;
+        background: linear-gradient(90deg, rgba(186, 230, 253, 0.38), transparent);
+    }
+
+.ha-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ha-nav-link {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    color: #d7ecf8 !important;
+    font-size: 0.95rem;
+    font-weight: 650;
+    text-decoration: none !important;
+    transition: all 0.22s ease;
+}
+
+    .ha-nav-link i {
+        font-size: 1rem;
+        color: #9ddcf6;
+        transition: color 0.22s ease;
+    }
+
+    .ha-nav-link:hover {
+        background: rgba(56, 189, 248, 0.16);
+        color: #ffffff !important;
+        transform: translateX(3px);
+        box-shadow: 0 8px 18px rgba(2, 132, 199, 0.18);
+    }
+
+        .ha-nav-link:hover i {
+            color: #ffffff;
+        }
+
+    .ha-nav-link.active {
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.96), rgba(37, 99, 235, 0.96));
+        color: #ffffff !important;
+        font-weight: 800;
+        box-shadow: 0 8px 20px rgba(14, 165, 233, 0.28), inset 4px 0 0 #bae6fd;
+    }
+
+        .ha-nav-link.active i {
+            color: #ffffff;
+        }
+
+/* Backdrop for mobile sidebar */
+.ha-sidebar-backdrop {
+    position: fixed;
+    inset: 72px 0 0 0;
+    background: rgba(2, 6, 23, 0.42);
+    backdrop-filter: blur(2px);
+    z-index: 1240;
+}
+
+/* =========================================================
+   7. DASHBOARD CARDS / CHARTS
+   ========================================================= */
 .dash-card-link {
     text-decoration: none;
     color: inherit;
@@ -296,11 +523,11 @@ code {
     }
 
 .dash-card {
-    background: #ffffff;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.05);
-    border: 1px solid #e2e8f0;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+    border: 1px solid rgba(203, 213, 225, 0.75);
     border-left: 5px solid transparent;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     height: 100%;
@@ -309,8 +536,8 @@ code {
 }
 
     .dash-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
     }
 
 .card-doctors {
@@ -345,7 +572,7 @@ code {
 
 .card-icon {
     font-size: 24px;
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
 .card-doctors .card-icon {
@@ -372,11 +599,11 @@ code {
 }
 
 .chart-card {
-    background: #ffffff;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-    border: 1px solid #e2e8f0;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+    border: 1px solid rgba(203, 213, 225, 0.75);
     height: 100%;
 }
 
@@ -387,7 +614,7 @@ code {
     margin-bottom: 24px;
 }
 
-/* Pure CSS Donut Chart */
+/* Donut chart */
 .css-donut-container {
     display: flex;
     justify-content: center;
@@ -403,7 +630,7 @@ code {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
 }
 
 .donut-inner {
@@ -428,7 +655,7 @@ code {
     color: #718096;
 }
 
-/* Pure CSS Bar Chart */
+/* Bar chart */
 .css-bar-chart {
     display: flex;
     justify-content: space-around;
@@ -482,9 +709,9 @@ code {
     }
 }
 
-/* =========================================
-   5. LOGIN PAGE STYLES
-   ========================================= */
+/* =========================================================
+   8. LOGIN PAGE
+   ========================================================= */
 .login-wrapper {
     height: 100vh;
     display: flex;
@@ -494,7 +721,8 @@ code {
     font-family: 'Segoe UI', sans-serif;
 }
 
-.login-root, .split-layout {
+.login-root,
+.split-layout {
     display: flex;
     width: 100vw;
     height: 100vh;
@@ -502,7 +730,8 @@ code {
     padding: 0;
 }
 
-.login-left, .split-left {
+.login-left,
+.split-left {
     flex: 0 0 45%;
     width: 45%;
     background: linear-gradient(160deg, #e6fffa, #b2f5ea);
@@ -531,7 +760,8 @@ code {
     color: #4A5568;
 }
 
-.login-right, .split-right {
+.login-right,
+.split-right {
     flex: 0 0 55%;
     width: 55%;
     background: #FFFFFF;
@@ -566,7 +796,8 @@ code {
     margin-bottom: 8px;
 }
 
-.title, .login-title {
+.title,
+.login-title {
     color: #2D3748;
     font-size: 20px;
     font-weight: 600;
@@ -618,7 +849,8 @@ code {
     padding-right: 48px;
 }
 
-.eye-btn, .toggle-password {
+.eye-btn,
+.toggle-password {
     position: absolute;
     right: 12px;
     top: 36px;
@@ -634,7 +866,9 @@ code {
         color: #4A5568;
     }
 
-.btn-login, .login-btn, .btn-primary-login {
+.btn-login,
+.login-btn,
+.btn-primary-login {
     width: 100%;
     background: #2B6CB0;
     color: white;
@@ -650,7 +884,9 @@ code {
     align-items: center;
 }
 
-    .btn-login:hover, .login-btn:hover, .btn-primary-login:hover:not(:disabled) {
+    .btn-login:hover,
+    .login-btn:hover,
+    .btn-primary-login:hover:not(:disabled) {
         background: #244f91;
         transform: translateY(-1px);
     }
@@ -691,7 +927,8 @@ code {
     position: relative;
 }
 
-    .medical-cross::before, .medical-cross::after {
+    .medical-cross::before,
+    .medical-cross::after {
         content: "";
         position: absolute;
         background: white;
@@ -774,15 +1011,59 @@ code {
     }
 }
 
-/* =========================================
-   6. RESPONSIVE BREAKPOINTS
-   ========================================= */
-@media (max-width: 900px) {
-    .login-left, .split-left {
+/* =========================================================
+   9. RESPONSIVE
+   ========================================================= */
+
+/* Desktop - sidebar visible */
+@media (min-width: 992px) {
+    .ha-menu-toggle {
         display: none;
     }
 
-    .login-right, .split-right {
+    .ha-sidebar {
+        transform: translateX(0);
+        position: relative;
+    }
+}
+
+/* Tablet/mobile - collapsible sidebar */
+@media (max-width: 991.98px) {
+    .ha-sidebar {
+        position: fixed;
+        top: 72px;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        width: 270px;
+    }
+
+        .ha-sidebar.open {
+            transform: translateX(0);
+        }
+
+    .ha-content {
+        padding: 20px 16px;
+    }
+
+    .ha-user-info {
+        display: none;
+    }
+
+    .ha-user-trigger {
+        padding: 8px 10px;
+    }
+}
+
+/* Login responsive */
+@media (max-width: 900px) {
+    .login-left,
+    .split-left {
+        display: none;
+    }
+
+    .login-right,
+    .split-right {
         width: 100%;
         flex: 1;
     }
@@ -799,9 +1080,29 @@ code {
     }
 }
 
-/* =========================================
-   7. BLAZOR BOILERPLATE (Errors & Loading)
-   ========================================= */
+@media (max-width: 576px) {
+    .ha-topbar {
+        padding: 0 14px;
+    }
+
+    .ha-brand-top {
+        font-size: 1rem;
+    }
+
+    .ha-user-avatar {
+        width: 36px;
+        height: 36px;
+        font-size: 0.84rem;
+    }
+
+    .ha-sidebar {
+        width: 250px;
+    }
+}
+
+/* =========================================================
+   10. BLAZOR BOILERPLATE
+   ========================================================= */
 #blazor-error-ui {
     color-scheme: light only;
     background: lightyellow;
@@ -813,7 +1114,7 @@ code {
     padding: 0.6rem 1.25rem 0.7rem 1.25rem;
     position: fixed;
     width: 100%;
-    z-index: 1000;
+    z-index: 2000;
 }
 
     #blazor-error-ui .dismiss {
@@ -830,7 +1131,7 @@ code {
 }
 
     .blazor-error-boundary::after {
-        content: "An error has occurred."
+        content: "An error has occurred.";
     }
 
 .loading-progress {
@@ -839,7 +1140,7 @@ code {
     width: 8rem;
     height: 8rem;
     inset: 20vh 0 auto 0;
-    margin: 0 auto 0 auto;
+    margin: 0 auto;
 }
 
     .loading-progress circle {
@@ -867,402 +1168,562 @@ code {
         content: var(--blazor-load-percentage-text, "Loading");
     }
 
-/*delete if fucked*/
-/* =====================================================
-   HEALTHAXIS ADMIN LAYOUT - CLEAN FINAL
-===================================================== */
-
-html,
-body,
-#app {
-    width: 100%;
-    height: 100%;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f4f7f6 !important;
-    color: #243447;
+/* Confirm dialog */
+.ha-confirm-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
 }
 
-.ha-layout {
+.ha-confirm-dialog {
     width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 20px;
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    animation: haDialogPop 0.18s ease-out;
+}
+
+.ha-confirm-header {
+    padding: 18px 22px 10px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+    .ha-confirm-header h5 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #172033;
+    }
+
+.ha-confirm-body {
+    padding: 16px 22px 8px;
+}
+
+    .ha-confirm-body p {
+        margin: 0;
+        color: #475569;
+        line-height: 1.5;
+    }
+
+.ha-confirm-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px 22px 22px;
+}
+
+@keyframes haDialogPop {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Better data table styling */
+.ha-data-card {
+    border-radius: 18px !important;
+    overflow: hidden;
+}
+
+.ha-data-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+    .ha-data-table thead th {
+        background: linear-gradient(180deg, #f8fcff 0%, #f3f9fd 100%) !important;
+        color: #5f7490 !important;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-bottom: 1px solid #dce7f2 !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .ha-data-table tbody td {
+        background: rgba(255, 255, 255, 0.98);
+        color: #334155;
+        border-bottom: 1px solid #edf3f8 !important;
+        transition: background 0.18s ease;
+    }
+
+    .ha-data-table tbody tr:hover td {
+        background: #f7fbff !important;
+    }
+
+    .ha-data-table tbody tr:last-child td {
+        border-bottom: none !important;
+    }
+
+.ha-table-action {
+    border-radius: 10px !important;
+}
+
+.ha-table-pill {
+    border-radius: 999px !important;
+    padding: 0.42rem 0.78rem !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+}
+
+/* Doctors table refinements */
+.ha-doctors-table thead th {
+    background: linear-gradient(180deg, #f8fcff 0%, #f1f8fd 100%) !important;
+    color: #547092 !important;
+}
+
+.ha-doctor-name {
+    font-weight: 700;
+    color: #1f3b5c;
+    letter-spacing: 0.1px;
+}
+
+.ha-table-email {
+    color: #5c7088;
+    font-size: 0.93rem;
+}
+
+.ha-plain-specialization {
+    color: #294866;
+    font-weight: 600;
+    font-size: 0.94rem;
+}
+
+.ha-table-muted {
+    color: #5f6f82;
+}
+
+.ha-table-fee {
+    color: #1c3552;
+    font-weight: 700;
+}
+
+.ha-doctors-table tbody td {
+    padding-top: 1.15rem !important;
+    padding-bottom: 1.15rem !important;
+}
+
+/*@page "/login"
+@layout EmptyLayout
+
+@using S3_HealthAxis.Blazor.Services
+@using S3_HealthAxis.Shared.DTOs.Auth
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="ha-login-page">
+
+    <!-- LEFT PANEL -->
+    <section class="ha-login-visual">
+        <div class="ha-login-visual-overlay"></div>
+
+        <div class="ha-login-visual-content">
+            <div class="ha-login-visual-text">
+                <h1>HealthAxis Login Portal</h1>
+                <p>
+                    Secure access to appointments, patients, doctors, and healthcare operations.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <section class="ha-login-form-panel">
+        <div class="ha-login-form-shell">
+            <div class="ha-login-form-card">
+
+                <div class="ha-login-heading-block">
+                    <h2>Admin Sign In</h2>
+                    <p>Enter your credentials to continue.</p>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(_error))
+                {
+                    <div class="ha-login-alert">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <span>@_error</span>
+                    </div>
+                }
+
+                <EditForm Model="_login" OnValidSubmit="Login">
+                    <DataAnnotationsValidator />
+
+                    <div class="ha-login-field">
+                        <label>Email Address</label>
+                        <InputText class="form-control ha-login-input"
+                                   placeholder="admin@hospital.com"
+                                   @bind-Value="_login.Email" />
+                    </div>
+
+                    <div class="ha-login-field ha-login-password-field">
+                        <label>Password</label>
+
+                        <InputText type="@(_showPassword ? "text" : "password")"
+                                   class="form-control ha-login-input ha-login-input-password"
+                                   placeholder="Enter your password"
+                                   @bind-Value="_login.Password" />
+
+                        <button type="button"
+                                class="ha-login-password-toggle"
+                                @onclick="TogglePassword"
+                                tabindex="-1">
+                            <i class="bi @( _showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                            <span>@(_showPassword ? "Hide" : "Show")</span>
+                        </button>
+                    </div>
+
+                    <button type="submit"
+                            class="ha-login-submit"
+                            disabled="@_isLoading">
+
+                        @if (_isLoading)
+                        {
+                            <span class="ha-login-spinner"></span>
+                        }
+
+                        <span>@(_isLoading ? "Signing in..." : "Log In")</span>
+                    </button>
+                </EditForm>
+
+                <div class="ha-login-footer-note">
+                    Authorized admin access only.
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+@code {
+    private LoginDto _login = new();
+    private string? _error;
+    private bool _isLoading = false;
+    private bool _showPassword = false;
+
+    private async Task Login()
+    {
+        _isLoading = true;
+        _error = null;
+
+        var success = await AuthService.LoginAsync(_login);
+
+        _isLoading = false;
+
+        if (success)
+        {
+            Navigation.NavigateTo("/dashboard");
+        }
+        else
+        {
+            _error = "Invalid email or password. Please try again.";
+        }
+    }
+
+    private void TogglePassword()
+    {
+        _showPassword = !_showPassword;
+    }
+}*/
+
+/* =========================================================
+   HEALTHAXIS LOGIN PAGE - BACKGROUND IMAGE LEFT PANEL
+   ========================================================= */
+
+.ha-login-page {
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    background: #f4f7f6;
+    background: linear-gradient(135deg, #edf6fb 0%, #f6fbff 100%);
 }
 
-.ha-topbar {
-    height: 64px;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e9f2;
+/* ---------------------------------------------------------
+   LEFT PANEL
+--------------------------------------------------------- */
+.ha-login-visual {
+    position: relative;
+    width: 50%;
+    min-height: 100vh;
+    overflow: hidden;
+    /* ✅ actual background image */
+    background-image: linear-gradient(180deg, rgba(7, 34, 57, 0.70), rgba(5, 32, 52, 0.76)), url('/images/login-healthcare-hero.png');
+    background-repeat: no-repeat, no-repeat;
+    background-position: center center, center center;
+    background-size: cover, 78%;
+    background-color: #0b2f4d;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 26px;
-    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
-    flex-shrink: 0;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 56px;
 }
 
-.ha-brand-top {
-    color: #2b6cb0 !important;
-    font-size: 17px;
+/* extra soft layer for readability */
+.ha-login-visual-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 38%), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    pointer-events: none;
+}
+
+.ha-login-visual-content {
+    position: relative;
+    z-index: 2;
+    max-width: 520px;
+}
+
+.ha-login-visual-text h1 {
+    margin: 0 0 14px;
+    color: #f8fcff;
+    font-size: 2.35rem;
     font-weight: 800;
-    text-decoration: none !important;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
 }
 
-    .ha-brand-top:hover {
-        color: #1e4f86 !important;
-    }
+.ha-login-visual-text p {
+    margin: 0;
+    color: #dcecf7;
+    font-size: 1rem;
+    line-height: 1.75;
+    max-width: 460px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
 
-.ha-logout {
-    color: #dc3545 !important;
-    font-size: 14px;
-    font-weight: 700;
-    text-decoration: none !important;
+/* ---------------------------------------------------------
+   RIGHT PANEL
+--------------------------------------------------------- */
+.ha-login-form-panel {
+    width: 50%;
+    min-height: 100vh;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border-radius: 10px;
-    transition: all 0.2s ease;
+    justify-content: center;
+    padding: 40px;
+    background: radial-gradient(circle at top right, rgba(14,165,233,0.07), transparent 24%), linear-gradient(180deg, #f7fbff 0%, #edf5fb 100%);
 }
 
-    .ha-logout:hover {
-        background: #fff1f2;
-        color: #b91c1c !important;
-    }
-
-.ha-body {
-    flex: 1;
-    display: flex;
-    min-height: calc(100vh - 64px);
-    background: #f4f7f6;
+.ha-login-form-shell {
+    width: 100%;
+    max-width: 470px;
 }
 
-.ha-sidebar {
-    width: 232px;
-    background: #ffffff;
-    border-right: 1px solid #e5e9f2;
-    padding: 22px 12px;
-    flex-shrink: 0;
-    box-shadow: 2px 0 10px rgba(15, 23, 42, 0.03);
+.ha-login-form-card {
+    background: rgba(255,255,255,0.90);
+    border: 1px solid rgba(203, 213, 225, 0.65);
+    border-radius: 28px;
+    padding: 34px 32px 26px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08), 0 8px 18px rgba(15, 23, 42, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 
-.ha-sidebar-title {
-    color: #2b6cb0;
-    font-size: 19px;
-    font-weight: 800;
-    padding: 0 12px;
-    margin-bottom: 28px;
+/* Heading */
+.ha-login-heading-block {
+    margin-bottom: 24px;
 }
 
-.ha-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.ha-nav-link {
-    display: flex !important;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    color: #475569 !important;
-    font-size: 14px;
-    font-weight: 650;
-    text-decoration: none !important;
-    transition: all 0.2s ease;
-}
-
-    .ha-nav-link i {
-        font-size: 16px;
-    }
-
-    .ha-nav-link:hover {
-        background: #e8f2ff;
-        color: #2b6cb0 !important;
-        transform: translateX(2px);
-    }
-
-    .ha-nav-link.active {
-        background: linear-gradient(135deg, #dbeafe, #eef6ff);
-        color: #2b6cb0 !important;
+    .ha-login-heading-block h2 {
+        margin: 0 0 8px;
+        color: #12263a;
+        font-size: 1.7rem;
         font-weight: 800;
-        box-shadow: inset 4px 0 0 #2b6cb0;
+        letter-spacing: -0.02em;
     }
 
-.ha-content {
-    flex: 1;
-    min-width: 0;
-    padding: 32px 28px;
-    overflow-y: auto;
-    background: #f4f7f6;
-}
-
-    /* Page headings */
-    .ha-content h1,
-    .ha-content h2,
-    .ha-content h3 {
-        color: #172033;
-        font-weight: 800;
+    .ha-login-heading-block p {
+        margin: 0;
+        color: #62748a;
+        font-size: 0.96rem;
+        line-height: 1.6;
     }
 
-    /* Cards */
-    .ha-content .card {
-        border: none !important;
-        border-radius: 16px !important;
-        background: #ffffff !important;
-        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.045) !important;
-    }
-
-    /* Tables */
-    .ha-content .table-responsive {
-        border-radius: 16px;
-        overflow: hidden;
-    }
-
-    .ha-content .table {
-        margin-bottom: 0 !important;
-        background: #ffffff !important;
-    }
-
-        .ha-content .table thead th {
-            background: #ffffff !important;
-            color: #64748b !important;
-            font-size: 12px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            border-bottom: 1px solid #e5e9f2 !important;
-            padding: 1rem !important;
-        }
-
-        .ha-content .table tbody td {
-            padding: 1rem !important;
-            vertical-align: middle;
-            color: #334155;
-            border-bottom: 1px solid #f1f5f9 !important;
-        }
-
-        .ha-content .table tbody tr:hover {
-            background: #f8fbff !important;
-        }
-
-    /* Buttons */
-    .ha-content .btn {
-        border-radius: 10px !important;
-        font-weight: 700 !important;
-        transition: all 0.2s ease;
-    }
-
-    .ha-content .btn-primary {
-        background: #2b6cb0 !important;
-        border-color: #2b6cb0 !important;
-        color: #ffffff !important;
-        box-shadow: 0 4px 12px rgba(43, 108, 176, 0.22);
-    }
-
-        .ha-content .btn-primary:hover {
-            background: #22548a !important;
-            border-color: #22548a !important;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 18px rgba(43, 108, 176, 0.28);
-        }
-
-    /* Forms */
-    .ha-content .form-control,
-    .ha-content .form-select {
-        border-radius: 10px !important;
-        border: 1px solid #e2e8f0 !important;
-        padding: 0.65rem 0.9rem !important;
-        background: #f8fafc !important;
-    }
-
-        .ha-content .form-control:focus,
-        .ha-content .form-select:focus {
-            background: #ffffff !important;
-            border-color: #2b6cb0 !important;
-            box-shadow: 0 0 0 4px rgba(43, 108, 176, 0.12) !important;
-        }
-
-@media (max-width: 768px) {
-    .ha-sidebar {
-        width: 76px;
-        padding: 18px 8px;
-    }
-
-    .ha-sidebar-title {
-        display: none;
-    }
-
-    .ha-nav-link {
-        justify-content: center;
-        padding: 12px;
-    }
-
-        .ha-nav-link span {
-            display: none;
-        }
-
-    .ha-content {
-        padding: 20px 16px;
-    }
-}
-
-/* =====================================================
-   DARK BLUE HEALTHCARE SIDEBAR THEME
-   Inspired by cyan-blue medical technology palette
-===================================================== */
-
-.ha-sidebar {
-    width: 232px;
-    background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.28), transparent 35%), linear-gradient(180deg, #063b63 0%, #052c4f 45%, #031b34 100%) !important;
-    border-right: none !important;
-    padding: 22px 12px;
-    flex-shrink: 0;
-    box-shadow: 4px 0 18px rgba(3, 27, 52, 0.22);
-}
-
-/* Sidebar brand */
-.ha-sidebar-title {
-    color: #e0f7ff !important;
-    font-size: 19px;
-    font-weight: 800;
-    padding: 0 12px;
-    margin-bottom: 28px;
-    letter-spacing: 0.2px;
-}
-
-/* Nav wrapper */
-.ha-nav {
+/* Error */
+.ha-login-alert {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
+    background: #fff5f5;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    font-size: 0.93rem;
+    font-weight: 600;
 }
 
-/* Default nav item */
-.ha-nav-link {
-    display: flex !important;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    color: #c7e7f5 !important;
-    font-size: 14px;
-    font-weight: 650;
-    text-decoration: none !important;
+/* Fields */
+.ha-login-field {
+    margin-bottom: 20px;
+}
+
+    .ha-login-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #324a5f;
+        font-size: 0.92rem;
+        font-weight: 700;
+    }
+
+.ha-login-input {
+    height: 56px !important;
+    border-radius: 16px !important;
+    border: 1px solid #d7e3ed !important;
+    background: rgba(248, 251, 253, 0.98) !important;
+    padding: 0 1rem !important;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
     transition: all 0.22s ease;
 }
 
-    /* Icons */
-    .ha-nav-link i {
-        font-size: 16px;
-        color: #91d9f2;
-        transition: all 0.22s ease;
+    .ha-login-input:focus {
+        border-color: #2b8be6 !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 4px rgba(43, 139, 230, 0.12) !important;
     }
 
-    /* Hover state */
-    .ha-nav-link:hover {
-        background: rgba(56, 189, 248, 0.18);
-        color: #ffffff !important;
-        transform: translateX(3px);
-        box-shadow: 0 8px 18px rgba(2, 132, 199, 0.18);
-    }
-
-        /* Hover icon */
-        .ha-nav-link:hover i {
-            color: #ffffff;
-        }
-
-    /* Active route */
-    .ha-nav-link.active {
-        background: linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(37, 99, 235, 0.95));
-        color: #ffffff !important;
-        font-weight: 800;
-        box-shadow: 0 8px 20px rgba(14, 165, 233, 0.28), inset 4px 0 0 #bae6fd;
-    }
-
-        /* Active icon */
-        .ha-nav-link.active i {
-            color: #ffffff;
-        }
-
-/* Optional subtle divider under brand */
-.ha-sidebar-title::after {
-    content: "";
-    display: block;
-    height: 1px;
-    margin-top: 18px;
-    background: linear-gradient(90deg, rgba(186, 230, 253, 0.45), transparent);
+.ha-login-password-field {
+    position: relative;
 }
 
-.ha-topbar {
-    height: 64px;
-    background: #ffffff !important;
-    border-bottom: 1px solid #dbeafe !important;
-    display: flex;
+.ha-login-input-password {
+    padding-right: 108px !important;
+}
+
+.ha-login-password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 39px;
+    height: 34px;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 26px;
-    flex-shrink: 0;
-    box-shadow: 0 2px 12px rgba(3, 105, 161, 0.06);
+    gap: 6px;
+    border: none;
+    background: transparent;
+    color: #2563eb;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
 }
 
-.ha-brand-top {
-    color: #075985 !important;
-    font-size: 17px;
+    .ha-login-password-toggle:hover {
+        color: #1749b9;
+    }
+
+/* Submit */
+.ha-login-submit {
+    width: 100%;
+    height: 58px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2b8be6, #2563eb);
+    color: #ffffff;
+    font-size: 1rem;
     font-weight: 800;
-    text-decoration: none !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
 }
 
-    .ha-brand-top:hover {
-        color: #0284c7 !important;
+    .ha-login-submit:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 16px 30px rgba(37, 99, 235, 0.24);
+        background: linear-gradient(135deg, #197be0, #1e4fd9);
     }
 
-/* =====================================================
-   MAIN BODY SOFT HEALTHCARE BACKGROUND
-   Add at bottom of app.css
-===================================================== */
-
-html,
-body,
-#app {
-    background: #eef8fc !important;
-}
-
-/* Main content background */
-.ha-content {
-    background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 32%), linear-gradient(180deg, #f3fbff 0%, #edf7fb 45%, #f6fafb 100%) !important;
-}
-
-/* If your layout still uses main-content somewhere */
-.main-content {
-    background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 32%), linear-gradient(180deg, #f3fbff 0%, #edf7fb 45%, #f6fafb 100%) !important;
-}
-
-/* Keep cards clean against the tinted background */
-.ha-content .card,
-.ha-content .dash-card,
-.ha-content .chart-card {
-    background: rgba(255, 255, 255, 0.96) !important;
-    border: 1px solid rgba(203, 213, 225, 0.75) !important;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045) !important;
-}
-
-/* Slightly improve dashboard chart/card contrast */
-.ha-content .chart-card {
-    background: rgba(255, 255, 255, 0.98) !important;
-}
-
-/* Table/card surfaces */
-.ha-content .table,
-.ha-content .table-responsive {
-    background: rgba(255, 255, 255, 0.97) !important;
-}
-
-    /* Optional: softer table header */
-    .ha-content .table thead th {
-        background: #f8fcff !important;
+    .ha-login-submit:disabled {
+        opacity: 0.82;
+        cursor: not-allowed;
     }
+
+.ha-login-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.34);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: haLoginSpin 0.8s linear infinite;
+}
+
+@keyframes haLoginSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Footer */
+.ha-login-footer-note {
+    margin-top: 18px;
+    text-align: center;
+    color: #72859b;
+    font-size: 0.86rem;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+--------------------------------------------------------- */
+@media (max-width: 1100px) {
+    .ha-login-page {
+        flex-direction: column;
+    }
+
+    .ha-login-visual,
+    .ha-login-form-panel {
+        width: 100%;
+    }
+
+    .ha-login-visual {
+        min-height: 340px;
+        padding: 36px 28px;
+        background-size: cover, 56%;
+    }
+
+    .ha-login-visual-text h1 {
+        font-size: 2rem;
+    }
+
+    .ha-login-form-panel {
+        padding: 26px 18px 36px;
+    }
+}
+
+@media (max-width: 768px) {
+    .ha-login-visual {
+        display: none;
+    }
+
+    .ha-login-form-panel {
+        width: 100%;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .ha-login-form-card {
+        padding: 26px 22px 22px;
+        border-radius: 22px;
+    }
+
+    .ha-login-heading-block h2 {
+        font-size: 1.45rem;
+    }
+}

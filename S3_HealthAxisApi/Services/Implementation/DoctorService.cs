@@ -52,6 +52,7 @@ namespace S3_HealthAxisApi.Services.Implementation
             var doctor = new Doctor
             {
                 FullName = dto.FullName.Trim(),
+                Email = dto.Email.Trim().ToLower(), // ✅ FIXED
                 Specialisation = (DoctorSpecialisation)dto.Specialisation,
                 YearsOfExperience = dto.YearsOfExperience,
                 ConsultationFee = dto.ConsultationFee,
@@ -82,7 +83,7 @@ namespace S3_HealthAxisApi.Services.Implementation
             await _doctorRepository.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<int>> GetAvailabilityAsync(int doctorId,DateOnly date)
+        public async Task<IEnumerable<int>> GetAvailabilityAsync(int doctorId, DateOnly date)
         {
             var doctor =
                 await _doctorRepository.GetByIdAsync(doctorId);
@@ -103,42 +104,34 @@ namespace S3_HealthAxisApi.Services.Implementation
             return allSlots.Except(bookedSlots);
         }
 
-        public async Task<DoctorCreationResultDto>
-    CreateDoctorWithAccountAsync(
-        CreateDoctorDto dto)
+        public async Task<DoctorCreationResultDto> CreateDoctorWithAccountAsync(CreateDoctorDto dto)
         {
             ValidateDoctor(dto);
 
             if (await _userService.EmailExistsAsync(dto.Email))
             {
-                throw new ArgumentException(
-                    "Email already exists.");
+                throw new ArgumentException("Email already exists.");
             }
 
             var doctor = new Doctor
             {
                 FullName = dto.FullName.Trim(),
                 Email = dto.Email.Trim().ToLower(),
-                Specialisation =
-                    (DoctorSpecialisation)dto.Specialisation,
-                YearsOfExperience =
-                    dto.YearsOfExperience,
-                ConsultationFee =
-                    dto.ConsultationFee,
+                Specialisation = (DoctorSpecialisation)dto.Specialisation,
+                YearsOfExperience = dto.YearsOfExperience,
+                ConsultationFee = dto.ConsultationFee,
                 IsActive = true
             };
 
             await _doctorRepository.AddAsync(doctor);
             await _doctorRepository.SaveChangesAsync();
 
-            var temporaryPassword =
-                GenerateTemporaryPassword();
+            var temporaryPassword = GenerateTemporaryPassword();
 
             var user = new User
             {
                 Email = doctor.Email,
-                PasswordHash =
-                    HashPassword(temporaryPassword),
+                PasswordHash = HashPassword(temporaryPassword),
                 Role = UserRole.Doctor,
                 ReferenceId = doctor.DoctorId,
                 CreatedDate = DateTime.UtcNow
@@ -195,10 +188,9 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             if (dto.ConsultationFee <= 0)
                 throw new ArgumentException("Consultation fee must be greater than zero.");
+
             if (string.IsNullOrWhiteSpace(dto.Email))
-            {
                 throw new ArgumentException("Email is required.");
-            }
         }
 
         private static void ValidateDoctor(UpdateDoctorDto dto)
@@ -221,17 +213,12 @@ namespace S3_HealthAxisApi.Services.Implementation
             return $"Doc@{Random.Shared.Next(100000, 999999)}";
         }
 
-        private static string HashPassword(
-    string password)
+        private static string HashPassword(string password)
         {
-            using var sha256 =
-                System.Security.Cryptography.SHA256.Create();
+            using var sha256 = System.Security.Cryptography.SHA256.Create();
 
-            var bytes =
-                System.Text.Encoding.UTF8.GetBytes(password);
-
-            var hash =
-                sha256.ComputeHash(bytes);
+            var bytes = System.Text.Encoding.UTF8.GetBytes(password);
+            var hash = sha256.ComputeHash(bytes);
 
             return Convert.ToBase64String(hash);
         }
@@ -242,6 +229,7 @@ namespace S3_HealthAxisApi.Services.Implementation
             {
                 DoctorId = doctor.DoctorId,
                 FullName = doctor.FullName,
+                Email = doctor.Email, // ✅ FIXED
                 Specialisation = (int)doctor.Specialisation,
                 YearsOfExperience = doctor.YearsOfExperience,
                 ConsultationFee = doctor.ConsultationFee,
