@@ -2,21 +2,30 @@
 @layout AdminLayout
 
 @using HealthCareApp.Shared.Dtos.Doctors
+@using HealthCareApp.Shared.Dtos.Pagination
 @using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
 @inject NavigationManager Navigation
 
 <PageTitle>Doctors | HealthAxis Admin</PageTitle>
 
-@if (doctors is null)
+@if (isLoading)
 {
     <div class="hc-page-loading">
         <div class="hc-loading-card">
             <div class="hc-loading-spinner"></div>
-            <p>Loading doctor profiles...</p>
+
+            <p>Loading doctors from database...</p>
         </div>
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="hc-alert-error">
+        @errorMessage
     </div>
 }
 else
@@ -24,6 +33,7 @@ else
     <div class="hc-page-heading">
         <div>
             <h1>Doctors</h1>
+
             <p>Register, update, activate, and manage HealthAxis doctor profiles.</p>
         </div>
 
@@ -32,147 +42,168 @@ else
         </button>
     </div>
 
-    <div class="hc-doctor-stat-grid ha-management-stat-grid">
-        <div class="hc-doctor-stat-card blue ha-management-stat-card">
-            <div class="ha-stat-card-content">
-                <span>Total Doctors</span>
-                <strong>@TotalDoctors</strong>
-                <small>Doctor profiles in HealthAxis</small>
-            </div>
-            <div class="ha-stat-card-icon">✚</div>
+    <div class="hc-doctor-stat-grid">
+        <div class="hc-doctor-stat-card blue">
+            <span>Total Matching Doctors</span>
+
+            <strong>@totalRecords</strong>
         </div>
 
-        <div class="hc-doctor-stat-card green ha-management-stat-card">
-            <div class="ha-stat-card-content">
-                <span>Active Doctors</span>
-                <strong>@ActiveDoctors</strong>
-                <small>Available for appointments</small>
-            </div>
-            <div class="ha-stat-card-icon">●</div>
+        <div class="hc-doctor-stat-card green">
+            <span>Active On This Page</span>
+
+            <strong>@doctors.Count(d => d.IsActive)</strong>
         </div>
 
-        <div class="hc-doctor-stat-card red ha-management-stat-card">
-            <div class="ha-stat-card-content">
-                <span>Inactive Doctors</span>
-                <strong>@InactiveDoctors</strong>
-                <small>Currently disabled profiles</small>
-            </div>
-            <div class="ha-stat-card-icon">○</div>
+        <div class="hc-doctor-stat-card red">
+            <span>Inactive On This Page</span>
+
+            <strong>@doctors.Count(d => !d.IsActive)</strong>
         </div>
 
-        <div class="hc-doctor-stat-card purple ha-management-stat-card">
-            <div class="ha-stat-card-content">
-                <span>Specialisations</span>
-                <strong>@SpecialisationCount</strong>
-                <small>Distinct care departments</small>
-            </div>
-            <div class="ha-stat-card-icon">▣</div>
+        <div class="hc-doctor-stat-card purple">
+            <span>Page</span>
+
+            <strong>@currentPage / @totalPages</strong>
         </div>
     </div>
 
-    <section class="hc-list-panel ha-management-panel">
+    <section class="hc-list-panel">
         <div class="ha-list-panel-header">
             <div>
                 <h3>Doctor Directory</h3>
-                <p>Search, filter, and maintain doctor account visibility.</p>
+
+                <p>Search and filter doctor records directly from backend data.</p>
             </div>
 
             <span class="ha-result-count">
-                Showing @FilteredDoctors.Count() of @TotalDoctors
+                Showing @StartRecord to @EndRecord of @totalRecords
             </span>
         </div>
 
-        <div class="hc-list-toolbar ha-list-toolbar">
+        <div class="hc-list-toolbar">
             <div class="hc-search-box">
                 <span>⌕</span>
-                <input placeholder="Search doctor by name, email, or specialisation..."
-                       @bind="searchTerm"
-                       @bind:event="oninput" />
+
+                <input placeholder="Search doctor by name or email..."
+                       value="@searchTerm"
+                       @oninput="OnSearchChanged" />
             </div>
 
-            <select class="hc-filter-select" @bind="selectedSpecialisation">
+            <select class="hc-filter-select"
+                    value="@selectedSpecialisation"
+                    @onchange="OnSpecialisationChanged">
                 <option value="">All Specialisations</option>
-                @foreach (var specialisation in specialisations)
+
+                @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
                 {
                     <option value="@specialisation">@specialisation</option>
                 }
             </select>
 
-            <select class="hc-filter-select" @bind="selectedStatus">
+            <select class="hc-filter-select"
+                    value="@selectedStatus"
+                    @onchange="OnStatusChanged">
                 <option value="">All Status</option>
+
                 <option value="active">Active</option>
+
                 <option value="inactive">Inactive</option>
             </select>
         </div>
 
-        @if (!FilteredDoctors.Any())
+        <div class="hc-form-actions" style="margin-top: 0; margin-bottom: 20px;">
+            <select class="hc-filter-select"
+                    value="@pageSize"
+                    @onchange="OnPageSizeChanged">
+                <option value="5">5 per page</option>
+
+                <option value="10">10 per page</option>
+
+                <option value="20">20 per page</option>
+
+                <option value="50">50 per page</option>
+            </select>
+
+            <button type="button"
+                    class="hc-secondary-btn"
+                    @onclick="ClearFilters">
+                Clear Filters
+            </button>
+        </div>
+
+        @if (!doctors.Any())
         {
-            <div class="hc-empty-state ha-empty-state">
+            <div class="hc-empty-state">
                 <div class="hc-empty-icon">✚</div>
-                <h3>No doctor profiles found</h3>
-                <p>Try adjusting search text, specialisation, or status filters.</p>
+
+                <h3>No doctors found</h3>
+
+                <p>Try changing the search text, specialisation, or status filters.</p>
             </div>
         }
         else
         {
             <div class="hc-table-wrapper">
-                <table class="hc-admin-table ha-management-table">
+                <table class="hc-admin-table">
                     <thead>
                         <tr>
                             <th>Doctor</th>
+
                             <th>Specialisation</th>
+
                             <th>Experience</th>
+
                             <th>Consultation Fee</th>
+
                             <th>Status</th>
+
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        @foreach (var doctor in FilteredDoctors)
+                        @foreach (var doctor in doctors)
                         {
                             <tr>
                                 <td>
                                     <div class="hc-doctor-cell">
-                                        <div class="hc-doctor-avatar ha-doctor-avatar">
+                                        <div class="hc-doctor-avatar">
                                             @GetInitials(doctor.FullName)
                                         </div>
 
                                         <div>
                                             <strong>@doctor.FullName</strong>
+
                                             <span>@doctor.Email</span>
                                         </div>
                                     </div>
                                 </td>
 
                                 <td>
-                                    <span class="hc-specialisation-pill ha-specialisation-pill">
+                                    <span class="hc-specialisation-pill">
                                         @doctor.Specialisation
                                     </span>
                                 </td>
 
                                 <td>
-                                    <span class="ha-table-strong-text">
-                                        @doctor.YearsOfExperience years
-                                    </span>
+                                    @doctor.YearsOfExperience years
                                 </td>
 
                                 <td>
-                                    <span class="ha-fee-pill">
-                                        ₹@doctor.ConsultationFee
-                                    </span>
+                                    ₹@doctor.ConsultationFee
                                 </td>
 
                                 <td>
                                     @if (doctor.IsActive)
                                     {
-                                        <span class="hc-status-badge active ha-status-badge">
+                                        <span class="hc-status-badge active">
                                             Active
                                         </span>
                                     }
                                     else
                                     {
-                                        <span class="hc-status-badge inactive ha-status-badge">
+                                        <span class="hc-status-badge inactive">
                                             Inactive
                                         </span>
                                     }
@@ -196,12 +227,32 @@ else
                     </tbody>
                 </table>
             </div>
+
+            <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
+                <button type="button"
+                        class="hc-secondary-btn"
+                        disabled="@(currentPage <= 1)"
+                        @onclick="PreviousPage">
+                    Previous
+                </button>
+
+                <div style="font-weight: 900; color: #334155;">
+                    Page @currentPage of @totalPages
+                </div>
+
+                <button type="button"
+                        class="hc-secondary-btn"
+                        disabled="@(currentPage >= totalPages)"
+                        @onclick="NextPage">
+                    Next
+                </button>
+            </div>
         }
     </section>
 }
 
 @code {
-    private List<DoctorDto>? doctors;
+    private List<DoctorDto> doctors = new();
 
     private string searchTerm = string.Empty;
 
@@ -209,52 +260,43 @@ else
 
     private string selectedStatus = string.Empty;
 
-    private List<string> specialisations = new();
+    private int currentPage = 1;
 
-    private int TotalDoctors => doctors?.Count ?? 0;
+    private int pageSize = 10;
 
-    private int ActiveDoctors => doctors?.Count(d => d.IsActive) ?? 0;
+    private int totalRecords;
 
-    private int InactiveDoctors => doctors?.Count(d => !d.IsActive) ?? 0;
+    private int totalPages = 1;
 
-    private int SpecialisationCount =>
-        doctors?.Select(d => d.Specialisation).Distinct().Count() ?? 0;
+    private bool isLoading = true;
 
-    private IEnumerable<DoctorDto> FilteredDoctors
+    private string? errorMessage;
+
+    private int StartRecord
     {
         get
         {
-            if (doctors is null)
+            if (totalRecords == 0)
             {
-                return Enumerable.Empty<DoctorDto>();
+                return 0;
             }
 
-            var query = doctors.AsEnumerable();
+            return ((currentPage - 1) * pageSize) + 1;
+        }
+    }
 
-            if (!string.IsNullOrWhiteSpace(searchTerm))
+    private int EndRecord
+    {
+        get
+        {
+            int calculatedEnd = currentPage * pageSize;
+
+            if (calculatedEnd > totalRecords)
             {
-                query = query.Where(d =>
-                    d.FullName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    d.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    d.Specialisation.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                return totalRecords;
             }
 
-            if (!string.IsNullOrWhiteSpace(selectedSpecialisation))
-            {
-                query = query.Where(d =>
-                    d.Specialisation.ToString().Equals(selectedSpecialisation, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (selectedStatus == "active")
-            {
-                query = query.Where(d => d.IsActive);
-            }
-            else if (selectedStatus == "inactive")
-            {
-                query = query.Where(d => !d.IsActive);
-            }
-
-            return query.OrderBy(d => d.DoctorId);
+            return calculatedEnd;
         }
     }
 
@@ -265,21 +307,153 @@ else
         if (!isAuthenticated)
         {
             Navigation.NavigateTo("/login");
+
             return;
         }
 
-        await LoadDoctors();
+        await LoadDoctorsAsync();
     }
 
-    private async Task LoadDoctors()
+    private async Task LoadDoctorsAsync()
     {
-        doctors = await DoctorService.GetAllDoctorsAsync();
+        try
+        {
+            isLoading = true;
 
-        specialisations = doctors
-            .Select(d => d.Specialisation.ToString())
-            .Distinct()
-            .OrderBy(s => s)
-            .ToList();
+            errorMessage = null;
+
+            var query = BuildDoctorQuery();
+
+            var response = await DoctorService.GetDoctorsPagedAsync(query);
+
+            doctors = response.Items ?? new List<DoctorDto>();
+
+            currentPage = response.PageNumber;
+
+            pageSize = response.PageSize;
+
+            totalRecords = response.TotalRecords;
+
+            totalPages = response.TotalPages <= 0 ? 1 : response.TotalPages;
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to load doctors. Please check whether the API is running.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private DoctorPaginationQueryDto BuildDoctorQuery()
+    {
+        var query = new DoctorPaginationQueryDto
+        {
+            PageNumber = currentPage,
+
+            PageSize = pageSize,
+
+            SearchTerm = string.IsNullOrWhiteSpace(searchTerm)
+                ? null
+                : searchTerm.Trim()
+        };
+
+        if (Enum.TryParse<SpecialisationType>(selectedSpecialisation, out var specialisation))
+        {
+            query.Specialisation = specialisation;
+        }
+
+        if (selectedStatus == "active")
+        {
+            query.IsActive = true;
+        }
+        else if (selectedStatus == "inactive")
+        {
+            query.IsActive = false;
+        }
+
+        return query;
+    }
+
+    private async Task OnSearchChanged(ChangeEventArgs args)
+    {
+        searchTerm = args.Value?.ToString() ?? string.Empty;
+
+        currentPage = 1;
+
+        await LoadDoctorsAsync();
+    }
+
+    private async Task OnSpecialisationChanged(ChangeEventArgs args)
+    {
+        selectedSpecialisation = args.Value?.ToString() ?? string.Empty;
+
+        currentPage = 1;
+
+        await LoadDoctorsAsync();
+    }
+
+    private async Task OnStatusChanged(ChangeEventArgs args)
+    {
+        selectedStatus = args.Value?.ToString() ?? string.Empty;
+
+        currentPage = 1;
+
+        await LoadDoctorsAsync();
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs args)
+    {
+        if (int.TryParse(args.Value?.ToString(), out var selectedPageSize))
+        {
+            pageSize = selectedPageSize;
+
+            currentPage = 1;
+
+            await LoadDoctorsAsync();
+        }
+    }
+
+    private async Task ClearFilters()
+    {
+        searchTerm = string.Empty;
+
+        selectedSpecialisation = string.Empty;
+
+        selectedStatus = string.Empty;
+
+        currentPage = 1;
+
+        await LoadDoctorsAsync();
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage <= 1)
+        {
+            return;
+        }
+
+        currentPage--;
+
+        await LoadDoctorsAsync();
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage >= totalPages)
+        {
+            return;
+        }
+
+        currentPage++;
+
+        await LoadDoctorsAsync();
     }
 
     private void GoToAddDoctor()
@@ -294,22 +468,35 @@ else
 
     private async Task ToggleDoctorStatus(int doctorId)
     {
-        var updatedDoctor = await DoctorService.ToggleDoctorStatusAsync(doctorId);
-
-        if (updatedDoctor is not null)
+        try
         {
-            await LoadDoctors();
+            errorMessage = null;
+
+            var updatedDoctor = await DoctorService.ToggleDoctorStatusAsync(doctorId);
+
+            if (updatedDoctor is not null)
+            {
+                await LoadDoctorsAsync();
+            }
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to update doctor status. Please try again.";
         }
     }
 
-    private string GetToggleButtonClass(bool isActive)
+    private static string GetToggleButtonClass(bool isActive)
     {
         return isActive
             ? "hc-action-btn deactivate"
             : "hc-action-btn activate";
     }
 
-    private string GetInitials(string fullName)
+    private static string GetInitials(string fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {
@@ -320,9 +507,12 @@ else
 
         if (parts.Length == 1)
         {
-            return parts[0].Length >= 2
-                ? parts[0][..2].ToUpper()
-                : parts[0].ToUpper();
+            if (parts[0].Length >= 2)
+            {
+                return parts[0][..2].ToUpper();
+            }
+
+            return parts[0].ToUpper();
         }
 
         return $"{parts[0][0]}{parts[1][0]}".ToUpper();

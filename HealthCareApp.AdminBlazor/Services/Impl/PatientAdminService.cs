@@ -1,119 +1,101 @@
-﻿using HealthCareApp.Shared.Dtos.Patients;
-using HealthCareApp.Shared.Enums;
-using HealthCareApp.AdminBlazor.Services.Interfaces;
+﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
+using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Dtos.Patients;
+using HealthCareApp.Shared.Enums;
+using Microsoft.JSInterop;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {
-    public class PatientAdminService : IPatientAdminService
+    public class PatientAdminService : BaseApiService, IPatientAdminService
     {
-        private static readonly List<PatientDto> Patients = new()
-        {
-            new PatientDto
-            {
-                PatientId = 1,
-                FullName = "Ravi Kumar",
-                DateOfBirth = "1998-05-12",
-                Gender = GenderType.Male,
-                Email = "ravi.kumar@example.com",
-                PhoneNumber = "9876543210",
-                InsuranceId = "INS1001",
-                CreatedDate = "2026-06-15"
-            },
-            new PatientDto
-            {
-                PatientId = 2,
-                FullName = "Anjali Nair",
-                DateOfBirth = "2001-08-20",
-                Gender = GenderType.Female,
-                Email = "anjali.nair@example.com",
-                PhoneNumber = "8765432109",
-                InsuranceId = "INS1002",
-                CreatedDate = "2026-06-15"
-            },
-            new PatientDto
-            {
-                PatientId = 3,
-                FullName = "Kiran Das",
-                DateOfBirth = "1995-11-03",
-                Gender = GenderType.Other,
-                Email = "kiran.das@example.com",
-                PhoneNumber = "7654321098",
-                InsuranceId = string.Empty,
-                CreatedDate = "2026-06-15"
-            }
-        };
+        private const string PatientsEndpoint = "api/Patients";
 
-        public Task<List<PatientDto>> GetAllPatientsAsync()
+        public PatientAdminService(
+            HttpClient httpClient,
+            IJSRuntime jsRuntime)
+            : base(httpClient, jsRuntime)
         {
-            var patients = Patients
-                .OrderBy(p => p.PatientId)
-                .ToList();
-
-            return Task.FromResult(patients);
         }
 
-        public Task<PatientDto?> GetPatientByIdAsync(int patientId)
+        public async Task<List<PatientDto>> GetAllPatientsAsync()
         {
-            var patient = Patients.FirstOrDefault(p => p.PatientId == patientId);
-
-            return Task.FromResult(patient);
-        }
-
-        public Task<PatientDto> CreatePatientAsync(CreatePatientDto request)
-        {
-            int nextId = Patients.Any()
-                ? Patients.Max(p => p.PatientId) + 1
-                : 1;
-
-            var patient = new PatientDto
+            var query = new PatientPaginationQueryDto
             {
-                PatientId = nextId,
-                FullName = request.FullName,
-                DateOfBirth = request.DateOfBirth.ToString("yyyy-MM-dd"),
-                Gender = request.Gender,
-                Email = request.Email,
-                PhoneNumber = request.PhoneNumber,
-                InsuranceId = request.InsuranceId,
-                CreatedDate = DateTime.Today.ToString("yyyy-MM-dd")
+                PageNumber = 1,
+                PageSize = 100
             };
 
-            Patients.Add(patient);
+            var response = await GetPatientsPagedAsync(query);
 
-            return Task.FromResult(patient);
+            return response.Items;
         }
 
-        public Task<PatientDto?> UpdatePatientAsync(int patientId, UpdatePatientDto request)
+        public async Task<PagedResponse<PatientDto>> GetPatientsPagedAsync(PatientPaginationQueryDto query)
         {
-            var patient = Patients.FirstOrDefault(p => p.PatientId == patientId);
+            string endpoint = BuildPatientsEndpoint(query);
 
-            if (patient is null)
-            {
-                return Task.FromResult<PatientDto?>(null);
-            }
-
-            patient.FullName = request.FullName;
-            patient.DateOfBirth = request.DateOfBirth.ToString("yyyy-MM-dd");
-            patient.Gender = request.Gender;
-            patient.Email = request.Email;
-            patient.PhoneNumber = request.PhoneNumber;
-            patient.InsuranceId = request.InsuranceId;
-
-            return Task.FromResult<PatientDto?>(patient);
+            return await GetAuthorizedAsync<PagedResponse<PatientDto>>(
+                endpoint,
+                "Your admin session is not authorized to load patient data.");
         }
 
-        public Task<bool> DeletePatientAsync(int patientId)
+        public async Task<PatientDto?> GetPatientByIdAsync(int patientId)
         {
-            var patient = Patients.FirstOrDefault(p => p.PatientId == patientId);
-
-            if (patient is null)
+            if (patientId <= 0)
             {
-                return Task.FromResult(false);
+                return null;
             }
 
-            Patients.Remove(patient);
+            return await GetAuthorizedAsync<PatientDto>(
+                $"{PatientsEndpoint}/{patientId}",
+                "Your admin session is not authorized to load patient details.");
+        }
 
-            return Task.FromResult(true);
+        public async Task<PatientDto?> CreatePatientAsync(CreatePatientDto patientDto)
+        {
+            return await PostAuthorizedAsync<CreatePatientDto, PatientDto>(
+                PatientsEndpoint,
+                patientDto,
+                "Your admin session is not authorized to create patient profiles.");
+        }
+
+        public async Task<PatientDto?> UpdatePatientAsync(int patientId, UpdatePatientDto patientDto)
+        {
+            if (patientId <= 0)
+            {
+                return null;
+            }
+
+            return await PutAuthorizedAsync<UpdatePatientDto, PatientDto>(
+                $"{PatientsEndpoint}/{patientId}",
+                patientDto,
+                "Your admin session is not authorized to update patient profiles.");
+        }
+
+        private static string BuildPatientsEndpoint(PatientPaginationQueryDto query)
+        {
+            var queryParameters = new List<string>
+            {
+                $"pageNumber={query.PageNumber}",
+                $"pageSize={query.PageSize}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                queryParameters.Add($"searchTerm={Uri.EscapeDataString(query.SearchTerm)}");
+            }
+
+            if (query.Gender is not null)
+            {
+                queryParameters.Add($"gender={query.Gender}");
+            }
+
+            if (query.HasInsurance is not null)
+            {
+                queryParameters.Add($"hasInsurance={query.HasInsurance.Value.ToString().ToLowerInvariant()}");
+            }
+
+            return $"{PatientsEndpoint}?{string.Join("&", queryParameters)}";
         }
     }
 }

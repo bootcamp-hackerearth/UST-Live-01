@@ -1,7 +1,7 @@
 ﻿using HealthCareApp.Data;
-using HealthCareApp.Shared.Enums;
 using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
+using HealthCareApp.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Repository.Impl
@@ -13,6 +13,24 @@ namespace HealthCareApp.Repository.Impl
         public AppointmentRepository(HealthAxisDbContext context) : base(context)
         {
             _context = context;
+        }
+
+        public new async Task<List<Appointment>> GetAllAsync(CancellationToken ct = default)
+        {
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot)
+                .ToListAsync(ct);
+        }
+
+        public new async Task<Appointment?> GetByIdAsync(int appointmentId, CancellationToken ct = default)
+        {
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId, ct);
         }
 
         public async Task<List<Appointment>> GetByPatientIdAsync(int patientId, CancellationToken ct = default)

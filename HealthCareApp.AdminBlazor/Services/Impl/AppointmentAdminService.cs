@@ -1,181 +1,218 @@
-﻿using HealthCareApp.Shared.Dtos.Appointments;
-using HealthCareApp.Shared.Enums;
-using HealthCareApp.AdminBlazor.Services.Interfaces;
+﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
+using HealthCareApp.Shared.Dtos.Appointments;
+using HealthCareApp.Shared.Dtos.Pagination;
+using Microsoft.JSInterop;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {
     public class AppointmentAdminService : IAppointmentAdminService
     {
-        private static readonly List<AppointmentDto> Appointments = new()
+        private const string TokenStorageKey = "token";
+
+        private const string AppointmentsEndpoint = "api/Appointments";
+
+        private readonly HttpClient _httpClient;
+
+        private readonly IJSRuntime _jsRuntime;
+
+        private static readonly JsonSerializerOptions JsonOptions = new()
         {
-            new AppointmentDto
-            {
-                AppointmentId = 1,
-                PatientId = 1,
-                PatientName = "Ravi Kumar",
-                DoctorId = 1,
-                DoctorName = "Arun Menon",
-                ScheduledDate = DateTime.Today.ToString("yyyy-MM-dd"),
-                TimeSlot = "10:00 AM - 10:30 AM",
-                Status = AppointmentStatus.Pending,
-                CancellationReason = null
-            },
-            new AppointmentDto
-            {
-                AppointmentId = 2,
-                PatientId = 2,
-                PatientName = "Anjali Nair",
-                DoctorId = 2,
-                DoctorName = "Meera Nair",
-                ScheduledDate = DateTime.Today.ToString("yyyy-MM-dd"),
-                TimeSlot = "11:00 AM - 11:30 AM",
-                Status = AppointmentStatus.Confirmed,
-                CancellationReason = null
-            },
-            new AppointmentDto
-            {
-                AppointmentId = 3,
-                PatientId = 3,
-                PatientName = "Kiran Das",
-                DoctorId = 3,
-                DoctorName = "Vikram Das",
-                ScheduledDate = DateTime.Today.AddDays(1).ToString("yyyy-MM-dd"),
-                TimeSlot = "02:00 PM - 02:30 PM",
-                Status = AppointmentStatus.Cancelled,
-                CancellationReason = "Patient requested cancellation"
-            },
-            new AppointmentDto
-            {
-                AppointmentId = 4,
-                PatientId = 1,
-                PatientName = "Ravi Kumar",
-                DoctorId = 2,
-                DoctorName = "Meera Nair",
-                ScheduledDate = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd"),
-                TimeSlot = "03:00 PM - 03:30 PM",
-                Status = AppointmentStatus.Completed,
-                CancellationReason = null
-            },
-            new AppointmentDto
-            {
-                AppointmentId = 5,
-                PatientId = 2,
-                PatientName = "Anjali Nair",
-                DoctorId = 1,
-                DoctorName = "Arun Menon",
-                ScheduledDate = DateTime.Today.AddDays(3).ToString("yyyy-MM-dd"),
-                TimeSlot = "09:00 AM - 09:30 AM",
-                Status = AppointmentStatus.Pending,
-                CancellationReason = null
-            }
+            PropertyNameCaseInsensitive = true
         };
 
-        public Task<List<AppointmentDto>> GetAllAppointmentsAsync()
+        public AppointmentAdminService(
+            HttpClient httpClient,
+            IJSRuntime jsRuntime)
         {
-            var appointments = Appointments
-                .OrderByDescending(a => ParseDate(a.ScheduledDate))
-                .ThenBy(a => a.TimeSlot)
-                .ToList();
+            _httpClient = httpClient;
 
-            return Task.FromResult(appointments);
+            _jsRuntime = jsRuntime;
         }
 
-        public Task<AppointmentDto?> GetAppointmentByIdAsync(int appointmentId)
+        public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
         {
-            var appointment = Appointments
-                .FirstOrDefault(a => a.AppointmentId == appointmentId);
-
-            return Task.FromResult(appointment);
-        }
-
-        public Task<AppointmentDto> CreateAppointmentAsync(BookAppointmentDto request)
-        {
-            int nextId = Appointments.Any()
-                ? Appointments.Max(a => a.AppointmentId) + 1
-                : 1;
-
-            var appointment = new AppointmentDto
+            var query = new AppointmentPaginationQueryDto
             {
-                AppointmentId = nextId,
-                PatientId = request.PatientId,
-                PatientName = GetPatientName(request.PatientId),
-                DoctorId = request.DoctorId,
-                DoctorName = GetDoctorName(request.DoctorId),
-                ScheduledDate = request.ScheduledDate.Date.ToString("yyyy-MM-dd"),
-                TimeSlot = request.TimeSlot,
-                Status = AppointmentStatus.Pending,
-                CancellationReason = null
+                PageNumber = 1,
+
+                PageSize = 100
             };
 
-            Appointments.Add(appointment);
+            var response = await GetAppointmentsPagedAsync(query);
 
-            return Task.FromResult(appointment);
+            return response.Items ?? new List<AppointmentDto>();
         }
 
-        public Task<AppointmentDto?> UpdateAppointmentAsync(int appointmentId, UpdateAppointmentDto request)
+        public async Task<PagedResponse<AppointmentDto>> GetAppointmentsPagedAsync(
+            AppointmentPaginationQueryDto query)
         {
-            var appointment = Appointments
-                .FirstOrDefault(a => a.AppointmentId == appointmentId);
+            string endpoint = BuildAppointmentsEndpoint(query);
 
-            if (appointment is null)
+            using var response = await SendAuthorizedRequestAsync(
+                HttpMethod.Get,
+                endpoint);
+
+            EnsureAuthorizedResponse(
+                response,
+                "Your admin session is not authorized to load appointment data.");
+
+            response.EnsureSuccessStatusCode();
+
+            var pagedResponse = await response.Content
+                .ReadFromJsonAsync<PagedResponse<AppointmentDto>>(JsonOptions);
+
+            return pagedResponse ?? new PagedResponse<AppointmentDto>
             {
-                return Task.FromResult<AppointmentDto?>(null);
+                Items = new List<AppointmentDto>(),
+
+                PageNumber = query.PageNumber,
+
+                PageSize = query.PageSize,
+
+                TotalRecords = 0,
+
+                TotalPages = 0
+            };
+        }
+
+        public async Task<AppointmentDto?> GetAppointmentByIdAsync(int appointmentId)
+        {
+            if (appointmentId <= 0)
+            {
+                return null;
             }
 
-            appointment.PatientId = request.PatientId;
-            appointment.PatientName = GetPatientName(request.PatientId);
-            appointment.DoctorId = request.DoctorId;
-            appointment.DoctorName = GetDoctorName(request.DoctorId);
-            appointment.ScheduledDate = request.ScheduledDate.Date.ToString("yyyy-MM-dd");
-            appointment.TimeSlot = request.TimeSlot;
+            using var response = await SendAuthorizedRequestAsync(
+                HttpMethod.Get,
+                $"{AppointmentsEndpoint}/{appointmentId}");
 
-            return Task.FromResult<AppointmentDto?>(appointment);
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            EnsureAuthorizedResponse(
+                response,
+                "Your admin session is not authorized to load appointment details.");
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadFromJsonAsync<AppointmentDto>(JsonOptions);
+        }
+
+        public async Task<AppointmentDto> CreateAppointmentAsync(BookAppointmentDto request)
+        {
+            using var response = await SendAuthorizedRequestAsync(
+                HttpMethod.Post,
+                AppointmentsEndpoint,
+                request);
+
+            EnsureAuthorizedResponse(
+                response,
+                "Your admin session is not authorized to create appointments.");
+
+            response.EnsureSuccessStatusCode();
+
+            var appointment = await response.Content.ReadFromJsonAsync<AppointmentDto>(JsonOptions);
+
+            return appointment ?? new AppointmentDto();
+        }
+
+        public Task<AppointmentDto?> UpdateAppointmentAsync(
+            int appointmentId,
+            UpdateAppointmentDto request)
+        {
+            return Task.FromResult<AppointmentDto?>(null);
         }
 
         public Task<bool> DeleteAppointmentAsync(int appointmentId)
         {
-            var appointment = Appointments
-                .FirstOrDefault(a => a.AppointmentId == appointmentId);
+            return Task.FromResult(false);
+        }
 
-            if (appointment is null)
+        private static string BuildAppointmentsEndpoint(AppointmentPaginationQueryDto query)
+        {
+            var queryParameters = new List<string>
             {
-                return Task.FromResult(false);
+                $"pageNumber={query.PageNumber}",
+
+                $"pageSize={query.PageSize}"
+            };
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                queryParameters.Add($"searchTerm={Uri.EscapeDataString(query.SearchTerm)}");
             }
 
-            Appointments.Remove(appointment);
-
-            return Task.FromResult(true);
-        }
-
-        private static DateTime ParseDate(string date)
-        {
-            return DateTime.TryParse(date, out var parsedDate)
-                ? parsedDate
-                : DateTime.MinValue;
-        }
-
-        private static string GetPatientName(int patientId)
-        {
-            return patientId switch
+            if (query.PatientId is not null)
             {
-                1 => "Ravi Kumar",
-                2 => "Anjali Nair",
-                3 => "Kiran Das",
-                4 => "Ownership Patient",
-                _ => $"Patient #{patientId}"
-            };
+                queryParameters.Add($"patientId={query.PatientId.Value}");
+            }
+
+            if (query.DoctorId is not null)
+            {
+                queryParameters.Add($"doctorId={query.DoctorId.Value}");
+            }
+
+            if (query.Status is not null)
+            {
+                queryParameters.Add($"status={query.Status.Value}");
+            }
+
+            if (query.ScheduledDate is not null)
+            {
+                queryParameters.Add($"scheduledDate={query.ScheduledDate.Value:yyyy-MM-dd}");
+            }
+
+            if (query.UpcomingOnly is not null)
+            {
+                queryParameters.Add($"upcomingOnly={query.UpcomingOnly.Value.ToString().ToLowerInvariant()}");
+            }
+
+            return $"{AppointmentsEndpoint}?{string.Join("&", queryParameters)}";
         }
 
-        private static string GetDoctorName(int doctorId)
+        private async Task<HttpResponseMessage> SendAuthorizedRequestAsync(
+            HttpMethod method,
+            string endpoint,
+            object? requestData = null)
         {
-            return doctorId switch
+            var token = await _jsRuntime.InvokeAsync<string?>(
+                "localStorage.getItem",
+                TokenStorageKey);
+
+            if (string.IsNullOrWhiteSpace(token))
             {
-                1 => "Arun Menon",
-                2 => "Meera Nair",
-                3 => "Vikram Das",
-                4 => "Rishi Doctor",
-                _ => $"Doctor #{doctorId}"
-            };
+                throw new UnauthorizedAccessException(
+                    "Authentication token was not found. Please login again.");
+            }
+
+            using var request = new HttpRequestMessage(method, endpoint);
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            if (requestData is not null)
+            {
+                request.Content = JsonContent.Create(requestData);
+            }
+
+            return await _httpClient.SendAsync(request);
+        }
+
+        private static void EnsureAuthorizedResponse(
+            HttpResponseMessage response,
+            string unauthorizedMessage)
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized ||
+                response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                throw new UnauthorizedAccessException(unauthorizedMessage);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using HealthCareApp.Shared.Dtos.Patients;
+﻿using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Patients;
 
 namespace HealthCareApp.AdminBlazor.Services.Interfaces
 {
@@ -6,12 +7,12 @@ namespace HealthCareApp.AdminBlazor.Services.Interfaces
     {
         Task<List<PatientDto>> GetAllPatientsAsync();
 
+        Task<PagedResponse<PatientDto>> GetPatientsPagedAsync(PatientPaginationQueryDto query);
+
         Task<PatientDto?> GetPatientByIdAsync(int patientId);
 
-        Task<PatientDto> CreatePatientAsync(CreatePatientDto request);
+        Task<PatientDto?> CreatePatientAsync(CreatePatientDto patientDto);
 
-        Task<PatientDto?> UpdatePatientAsync(int patientId, UpdatePatientDto request);
-
-        Task<bool> DeletePatientAsync(int patientId);
+        Task<PatientDto?> UpdatePatientAsync(int patientId, UpdatePatientDto patientDto);
     }
 }

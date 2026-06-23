@@ -9,12 +9,7 @@
 
 <PageTitle>Patient Details | HealthAxis Admin</PageTitle>
 
-<div class="hc-page-heading">
-    <div>
-        <h1>Patient Details</h1>
-        <p>Review HealthAxis patient demographic, contact, and insurance information.</p>
-    </div>
-
+<div class="hc-details-actions">
     <button class="hc-secondary-btn" @onclick="BackToPatients">
         Back to Patients
     </button>
@@ -136,9 +131,7 @@ else if (patient is not null)
         </div>
 
         <div class="hc-details-actions">
-            <button class="hc-page-primary-btn" @onclick="EditPatient">
-                Edit Patient
-            </button>
+           
 
             <button class="hc-secondary-btn" @onclick="BackToPatients">
                 Back
@@ -201,10 +194,7 @@ else if (patient is not null)
         isLoading = false;
     }
 
-    private void EditPatient()
-    {
-        Navigation.NavigateTo($"/admin/patients/edit/{patientId}");
-    }
+    
 
     private void BackToPatients()
     {
