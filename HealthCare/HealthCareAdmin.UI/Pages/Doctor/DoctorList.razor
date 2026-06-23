@@ -1,48 +1,103 @@
 ﻿@page "/doctor/list"
-@using HealthCareAdmin.UI.Services;
-
 @using Healthcare.Shared.DTOs.Doctor
-@using System.Net.Http.Headers
 
-@inject HttpClient Http
+@inject DoctorService DoctorService
 @inject IJSRuntime JS
-@inject NavigationManager Navigation
 
-<h3 class="mb-3">Doctor Management</h3>
+<h3 class="mb-3 text-primary fw-bold">👨‍⚕️ Doctor Management</h3>
 
-<div class="d-flex justify-content-between mb-3">
-    <input class="form-control w-50" placeholder="Search by name..."
-           @bind="searchText" @oninput="FilterDoctors" />
+<!-- ✅ FILTER PANEL -->
+<div class="card shadow mb-4 p-3 border-0 bg-light">
+    <div class="row g-2 align-items-end">
 
-    <button class="btn btn-primary" @onclick="AddDoctor">
-        + Add Doctor
-    </button>
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Search</label>
+
+            <input class="form-control"
+                   placeholder="Doctor name"
+                   @bind="searchText"
+                   @bind:event="oninput"
+                   @bind:after="ApplyFilters" />
+
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fw-bold">Specialisation</label>
+
+            <select class="form-select"
+                    @bind="selectedSpecialisation"
+                    @bind:after="ApplyFilters">
+                <option value="">All</option>
+                @foreach (var s in specialisations)
+                {
+                    <option value="@s">@s</option>
+                }
+            </select>
+
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fw-bold">Experience</label>
+            <input type="number"
+                        class="form-control"
+                        @bind="minExperience"
+                        @bind:event="oninput"
+                        @bind:after="ApplyFilters" />
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fw-bold">Status</label>
+
+                <select class="form-select"
+                        @bind="statusFilter"
+                        @bind:after="ApplyFilters">
+                    <option value="">All</option>
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+
+        </div>
+
+        <div class="col-md-3 text-end">
+            <button class="btn btn-success mt-3" @onclick="ShowModal">
+                ➕ Register
+            </button>
+        </div>
+
+    </div>
 </div>
 
-@if (isLoading)
-{
-    <p>Loading doctors...</p>
-}
-else if (filteredDoctors.Count == 0)
-{
-    <div class="alert alert-warning">No doctors found</div>
-}
-else
-{
-    <table class="table table-hover shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>Name</th>
-                <th>Specialisation</th>
-                <th>Experience</th>
-                <th>Fee</th>
-                <th>Status</th>
-                <th class="text-end">Actions</th>
-            </tr>
-        </thead>
+<!-- ✅ TABLE -->
+<table class="table table-hover shadow-sm border">
+    <thead class="table-primary">
+        <tr>
+            <th>Name</th>
+            <th>Specialisation</th>
+            <th>Experience</th>
+            <th>Fee</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
 
-        <tbody>
-            @foreach (var doc in filteredDoctors)
+    <tbody>
+        @if (isLoading)
+        {
+            <tr>
+                <td colspan="6" class="text-center">Loading...</td>
+            </tr>
+        }
+        else if (paginatedDoctors.Count == 0)
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    No doctors found
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var doc in paginatedDoctors)
             {
                 <tr>
                     <td>@doc.FullName</td>
@@ -57,30 +112,74 @@ else
                     </td>
 
                     <td class="text-end">
-                        <button class="btn btn-sm btn-warning me-2"
+                        <button class="btn btn-sm btn-outline-warning me-1"
                                 @onclick="() => EditDoctor(doc.DoctorId)">
-                            Edit
+                            ✏️
                         </button>
 
-                        <button class="btn btn-sm btn-danger"
+                        <button class="btn btn-sm btn-outline-danger me-1"
                                 @onclick="() => DeleteDoctor(doc.DoctorId)">
-                            Delete
+                            🗑️
+                        </button>
+
+                        <button class="btn btn-sm btn-outline-secondary"
+                                @onclick="() => ToggleStatus(doc)">
+                            🔄
                         </button>
                     </td>
                 </tr>
             }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
+<!-- ✅ PAGINATION -->
+<div class="d-flex justify-content-between mt-3">
+    <button class="btn btn-outline-primary"
+            disabled="@(_currentPage == 1)"
+            @onclick="PrevPage">
+        ⬅ Prev
+    </button>
+
+    <span class="fw-bold">
+        Page @_currentPage / @TotalPages
+    </span>
+
+    <button class="btn btn-outline-primary"
+            disabled="@(_currentPage == TotalPages)"
+            @onclick="NextPage">
+        Next ➡
+    </button>
+</div>
+
+<!-- ✅ REGISTER MODAL -->
+<RegisterDoctorModal 
+    IsVisible="showModal"
+    IsVisibleChanged="@(v => showModal = v)"
+    OnSaved="LoadDoctors" />
 
 @code {
 
     private List<DoctorListDto> doctors = new();
     private List<DoctorListDto> filteredDoctors = new();
+    private List<DoctorListDto> paginatedDoctors = new();
 
     private bool isLoading = true;
+
     private string searchText = "";
+    private string selectedSpecialisation = "";
+    private int? minExperience;
+    private string statusFilter = "";
+
+    private int _currentPage = 1;
+    private int pageSize = 5;
+
+    private int TotalPages =>
+        (int)Math.Ceiling(filteredDoctors.Count / (double)pageSize);
+
+    private List<string> specialisations = new();
+
+    private bool showModal = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -89,40 +188,19 @@ else
 
     private async Task LoadDoctors()
     {
-
-
         try
         {
             isLoading = true;
 
-            var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
+            var result = await DoctorService.GetDoctors();
+            doctors = result.Items;
 
-            if (string.IsNullOrEmpty(token))
-            {
-                Navigation.NavigateTo("/");
-                return;
-            }
+            specialisations = doctors
+                .Select(x => x.Specialisation)
+                .Distinct()
+                .ToList();
 
-            Http.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
-
-            var response = await Http.GetAsync("api/admin/doctors");
-
-            if (response.IsSuccessStatusCode)
-            {
-                doctors = await response.Content.ReadFromJsonAsync<List<DoctorListDto>>() ?? new();
-                filteredDoctors = doctors;
-            }
-            else
-            {
-                doctors = new();
-                filteredDoctors = new();
-            }
-        }
-        catch
-        {
-            doctors = new();
-            filteredDoctors = new();
+            ApplyFilters();
         }
         finally
         {
@@ -130,51 +208,71 @@ else
         }
     }
 
-    // ✅ SEARCH / FILTER
-    private void FilterDoctors(ChangeEventArgs e)
+    private void ApplyFilters()
     {
-        searchText = e.Value?.ToString() ?? "";
-
         filteredDoctors = doctors
-            .Where(d => d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .Where(d => string.IsNullOrEmpty(searchText) ||
+                        d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .Where(d => string.IsNullOrEmpty(selectedSpecialisation) ||
+                        d.Specialisation == selectedSpecialisation)
+            .Where(d => !minExperience.HasValue ||
+                        d.YearsOfExperience >= minExperience)
+            .Where(d => string.IsNullOrEmpty(statusFilter) ||
+                        d.IsActive.ToString().ToLower() == statusFilter)
+            .ToList();
+
+        _currentPage = 1;
+        ApplyPagination();
+    }
+
+    private void ApplyPagination()
+    {
+        paginatedDoctors = filteredDoctors
+            .Skip((_currentPage - 1) * pageSize)
+            .Take(pageSize)
             .ToList();
     }
 
-    // ✅ ADD (Navigate to add page)
-    private void AddDoctor()
+    private void NextPage()
     {
-        Navigation.NavigateTo("/doctor/add");
+        if (_currentPage < TotalPages)
+        {
+            _currentPage++;
+            ApplyPagination();
+        }
     }
 
-    // ✅ EDIT
-    private void EditDoctor(int id)
+    private void PrevPage()
     {
-        Navigation.NavigateTo($"/doctor/edit/{id}");
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+            ApplyPagination();
+        }
     }
 
-    // ✅ DELETE
     private async Task DeleteDoctor(int id)
     {
-        var confirm = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete?");
+        if (!await JS.InvokeAsync<bool>("confirm", "Delete doctor?"))
+            return;
 
-        if (!confirm) return;
+        await DoctorService.DeleteDoctor(id);
+        await LoadDoctors();
+    }
 
-        var response = await Http.DeleteAsync($"api/admin/doctors/{id}");
+    private async Task ToggleStatus(DoctorListDto doc)
+    {
+        await DoctorService.UpdateStatus(doc.DoctorId, !doc.IsActive);
+        await LoadDoctors();
+    }
 
-        if (response.IsSuccessStatusCode)
-        {
-            await LoadDoctors(); // refresh
-        }
-        else
-        {
-            await JS.InvokeVoidAsync("alert", "Delete failed!");
-        }
+    private void EditDoctor(int id)
+    {
+        // Future implementation
+    }
 
-        Console.WriteLine("Status Code: " + response.StatusCode);
-
-        var raw = await response.Content.ReadAsStringAsync();
-        Console.WriteLine("Response: " + raw);
+    private void ShowModal()
+    {
+        showModal = true;
     }
 }
-
- 

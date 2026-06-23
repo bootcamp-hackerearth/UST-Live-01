@@ -20,25 +20,31 @@
             <p>Sign in to continue</p>
         </div>
 
-        <div class="mb-3">
-            <label>Email</label>
-            <input class="form-control"
-                   placeholder="Enter Email"
-                   @bind="loginRequest.Email" />
-        </div>
+       
+        <EditForm Model="@loginRequest" OnValidSubmit="AdminLogin">
+            <DataAnnotationsValidator />
 
-        <div class="mb-3">
-            <label>Password</label>
-            <input class="form-control"
-                   type="password"
-                   placeholder="Enter Password"
-                   @bind="loginRequest.Password" />
-        </div>
+            <div class="mb-3">
+                <label>Email</label>
+                <InputText class="form-control"
+                           placeholder="Enter Email"
+                           @bind-Value="loginRequest.Email" />
+                <ValidationMessage For="@(() => loginRequest.Email)" />
+            </div>
 
-        <button class="btn btn-primary w-100"
-                @onclick="AdminLogin">
-            Login
-        </button>
+            <div class="mb-3">
+                <label>Password</label>
+                <InputText type="password"
+                           class="form-control"
+                           placeholder="Enter Password"
+                           @bind-Value="loginRequest.Password" />
+                <ValidationMessage For="@(() => loginRequest.Password)" />
+            </div>
+
+            <button class="btn btn-primary w-100">
+                Login
+            </button>
+        </EditForm>
 
         @if (!string.IsNullOrEmpty(ErrorMessage))
         {
@@ -56,40 +62,37 @@
     private LoginDto loginRequest = new();
 
     private string ErrorMessage = string.Empty;
+    private bool isLoading = false;
 
+    
     private async Task AdminLogin()
     {
+        isLoading = true;
         ErrorMessage = string.Empty;
 
         try
         {
             var result = await AuthService.LoginAsync(loginRequest);
 
-            if (result != null)
+            if (result != null && !string.IsNullOrEmpty(result.AccessToken))
             {
-                // Save JWT token
-                await JS.InvokeVoidAsync(
-                    "localStorage.setItem",
-                    "token",
-                    result.AccessToken);
-
-                // Save Role
-                await JS.InvokeVoidAsync(
-                    "localStorage.setItem",
-                    "role",
-                    result.Role);
-
-                // Navigate to Dashboard
+                await JS.InvokeVoidAsync("localStorage.setItem", "role", result.Role);
                 Navigation.NavigateTo("/dashboard");
             }
             else
             {
-                ErrorMessage = "Invalid Email or Password";
+                ErrorMessage = "Invalid credentials";
             }
         }
-        catch (Exception ex)
+        catch
         {
-            ErrorMessage = ex.Message;
+            ErrorMessage = "Invalid credentials";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
+
+
 }

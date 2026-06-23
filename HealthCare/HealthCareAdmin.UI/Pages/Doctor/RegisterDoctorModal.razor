@@ -1,0 +1,183 @@
+﻿@using Healthcare.Shared.DTOs.Authentication
+@inject DoctorService DoctorService
+@inject IJSRuntime JS
+
+@if (IsVisible)
+{
+    <!-- BACKDROP -->
+    <div class="modal-backdrop fade show"></div>
+
+    <!-- MODAL -->
+    <div class="modal show d-block">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3">
+
+                <h4 class="text-center mb-3 text-primary">Doctor Registration</h4>
+
+                <EditForm Model="@doctor" OnValidSubmit="HandleSave">
+                    <DataAnnotationsValidator />
+
+                    <!-- Name -->
+                    <div class="mb-2">
+                        <label>Name</label>
+                        <InputText class="form-control" @bind-Value="doctor.FullName" />
+                        <ValidationMessage For="@(() => doctor.FullName)" />
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-2">
+                        <label>Email</label>
+                        <InputText class="form-control" @bind-Value="doctor.Email" />
+                        <ValidationMessage For="@(() => doctor.Email)" />
+                    </div>
+
+                    <!-- Specialisation -->
+                    <div class="mb-2">
+                        <label>Specialisation</label>
+                        <InputText class="form-control" @bind-Value="doctor.Specialisation" />
+                        <ValidationMessage For="@(() => doctor.Specialisation)" />
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="mb-2">
+                        <label>Experience</label>
+                        <InputNumber class="form-control" @bind-Value="doctor.YearsOfExperience" />
+                        <ValidationMessage For="@(() => doctor.YearsOfExperience)" />
+                    </div>
+
+                    <!-- Fee -->
+                    <div class="mb-2">
+                        <label>Consultation Fee</label>
+                        <InputNumber class="form-control" @bind-Value="doctor.ConsultationFee" />
+                        <ValidationMessage For="@(() => doctor.ConsultationFee)" />
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-2">
+                        <label>Password</label>
+                        <InputText type="password" class="form-control" @bind-Value="doctor.Password" />
+                        <ValidationMessage For="@(() => doctor.Password)" />
+                    </div>
+
+                    <!-- Confirm -->
+                    <div class="mb-2">
+                        <label>Confirm Password</label>
+                        <InputText type="password" class="form-control" @bind-Value="doctor.ConfirmPassword" />
+                        <ValidationMessage For="@(() => doctor.ConfirmPassword)" />
+                    </div>
+
+                    <!-- Time Slots -->
+                    <div class="mb-3">
+                        <label class="fw-bold">Time Slots</label>
+
+                        @foreach (var slot in availableSlots)
+                        {
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       @onchange="(e) => ToggleSlot(slot, e.Value)" />
+
+                                <label class="form-check-label">@slot</label>
+                            </div>
+                        }
+
+                        @if (slotError)
+                        {
+                            <div class="text-danger">Select at least one slot</div>
+                        }
+                    </div>
+
+                    <!-- BUTTONS -->
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="button" class="btn btn-secondary" @onclick="ShowCancelConfirm">
+                            Cancel
+                        </button>
+
+                        <button type="submit" class="btn btn-success">
+                            Save
+                        </button>
+                    </div>
+
+                </EditForm>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public EventCallback OnSaved { get; set; }
+
+    private DoctorRegisterDto doctor = new();
+    private List<string> selectedSlots = new();
+    private bool slotError = false;
+
+    private List<string> availableSlots = new()
+    {
+        "09:00-10:00",
+        "10:00-11:00",
+        "11:00-12:00",
+        "14:00-15:00"
+    };
+
+    private void ToggleSlot(string slot, object value)
+    {
+        bool isChecked = value?.ToString() == "true";
+
+        if (isChecked)
+        {
+            if (!selectedSlots.Contains(slot))
+                selectedSlots.Add(slot);
+        }
+        else
+        {
+            selectedSlots.Remove(slot);
+        }
+    }
+
+    public async Task<bool> RegisterDoctor(DoctorRegisterDto dto)
+    {
+        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
+
+        if (string.IsNullOrEmpty(token))
+            throw new Exception("User not authenticated");
+
+        _http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        var response = await _http.PostAsJsonAsync("api/auth/register-doctor", dto);
+
+        return response.IsSuccessStatusCode;
+    }
+
+    /* ✅ SUCCESS POPUP CENTER */
+    private async Task ShowSuccessPopup()
+    {
+        await JS.InvokeVoidAsync("eval", @"
+        alert('✅ Doctor registered successfully');
+    ");
+    }
+
+    /* ✅ CANCEL CONFIRM POPUP */
+    private async void ShowCancelConfirm()
+    {
+        var confirm = await JS.InvokeAsync<bool>("confirm", "Do you want to cancel?");
+
+        if (confirm)
+        {
+            await CloseAndReset();
+        }
+    }
+
+    private async Task CloseAndReset()
+    {
+        doctor = new DoctorRegisterDto();
+        selectedSlots = new List<string>();
+        slotError = false;
+
+        await IsVisibleChanged.InvokeAsync(false);
+    }
+}

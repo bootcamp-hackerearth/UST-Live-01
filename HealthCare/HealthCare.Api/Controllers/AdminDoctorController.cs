@@ -1,4 +1,6 @@
-﻿using Healthcare.Shared.DTOs.Doctor;
+﻿using Healthcare.Shared.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Doctor;
+using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -35,17 +37,10 @@ namespace HealthCare.Api.Controllers
 
         [HttpGet("doctors")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> GetAllDoctor([FromQuery] DoctorFilter filter)
+        public async Task<IActionResult> GetAllDoctor()
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-
-            filter ??= new DoctorFilter(); // prevent null
-
-            var result = await _doctorService.GetAllAsync(filter);
+            var result = await _doctorService.GetAllAsync(new DoctorFilter());
             return Ok(result);
-
         }
 
 
@@ -53,8 +48,6 @@ namespace HealthCare.Api.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] UpdateDoctorDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
 
             await _doctorService.UpdateAsync(id, dto);
             return Ok();

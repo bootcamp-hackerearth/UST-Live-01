@@ -119,7 +119,7 @@ namespace HealthCare.Api.Services.Implementations
             var validPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
 
             if (!validPassword)
-                throw new Exception("Invalid email or password");
+                return null;
 
             var roles = await _userManager.GetRolesAsync(user);
 

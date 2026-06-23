@@ -14,7 +14,7 @@ namespace HealthCare.Api.Mapping
        {
         
             //patient
-            CreateMap<PatientRegisterDto, Patient>();
+            CreateMap<CreatePatientDto, Patient>();
             CreateMap<UpdatePatientDto, Patient>();
             CreateMap<Patient, PatientListDto>();   
             CreateMap<Patient, PatientListDto>();
