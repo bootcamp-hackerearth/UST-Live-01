@@ -11,53 +11,74 @@
 @inject CustomAuthStateProvider AuthStateProvider
 @inject NavigationManager Nav
 
-<div class="admin-login-page">
-    <div class="admin-login-card">
-        <div class="login-brand">
-            <div class="login-logo">HA</div>
-            <h1>HealthAxis Admin</h1>
-            <p>Login to access the admin dashboard.</p>
-        </div>
+<div class="login-container">
 
-        @if (!string.IsNullOrWhiteSpace(StatusMessage))
-        {
-            <div class="login-alert login-info">
-                @StatusMessage
-            </div>
-        }
+    <!-- LEFT SIDE -->
+    <div class="login-left">
+        <h2>Healthcare Admin Portal</h2>
 
-        @if (!string.IsNullOrWhiteSpace(ErrorMessage))
-        {
-            <div class="login-alert login-error">
-                @ErrorMessage
-            </div>
-        }
+        <p>Manage doctors, appointments, and users securely from one place.</p>
 
-        <EditForm Model="LoginRequest" OnValidSubmit="HandleLogin">
-            <DataAnnotationsValidator />
-
-            <div class="login-field">
-                <label>Email</label>
-                <InputText class="login-input"
-                           placeholder="admin@healthaxis.com"
-                           @bind-Value="LoginRequest.Email" />
-                <ValidationMessage For="() => LoginRequest.Email" />
-            </div>
-
-            <div class="login-field">
-                <label>Password</label>
-                <InputText type="password"
-                           class="login-input"
-                           placeholder="Enter password"
-                           @bind-Value="LoginRequest.Password" />
-                <ValidationMessage For="() => LoginRequest.Password" />
-            </div>
-
-            <button type="submit" class="login-button" disabled="@IsLoading">
-                @(IsLoading ? "Signing in..." : "Sign In")
-            </button>
-        </EditForm>
+        <ul>
+            <li>✔ Doctor management</li>
+            <li>✔ Appointment tracking</li>
+            <li>✔ Secure role-based access</li>
+        </ul>
     </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="login-right">
+        <div class="admin-login-card">
+
+            <div class="login-brand">
+                <div class="login-logo">HA</div>
+                <h1>HealthAxis Admin</h1>
+                <p>Login to access the admin dashboard.</p>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(StatusMessage))
+            {
+                <div class="login-alert login-info">
+                    @StatusMessage
+                </div>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+            {
+                <div class="login-alert login-error">
+                    @ErrorMessage
+                </div>
+            }
+
+            <EditForm Model="LoginRequest" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+
+                <div class="login-field">
+                    <label>Email</label>
+                    <InputText class="login-input"
+                               placeholder="admin@healthaxis.com"
+                               @bind-Value="LoginRequest.Email" />
+                    <ValidationMessage For="() => LoginRequest.Email" />
+                </div>
+
+                <div class="login-field">
+                    <label>Password</label>
+                    <InputText type="password"
+                               class="login-input"
+                               placeholder="Enter password"
+                               @bind-Value="LoginRequest.Password" />
+                    <ValidationMessage For="() => LoginRequest.Password" />
+                </div>
+
+                <!-- ✅ TEXT UPDATED -->
+                <button type="submit" class="login-button" disabled="@IsLoading">
+                    @(IsLoading ? "Logging in..." : "Log in")
+                </button>
+            </EditForm>
+
+        </div>
+    </div>
+
 </div>
 
 @code {

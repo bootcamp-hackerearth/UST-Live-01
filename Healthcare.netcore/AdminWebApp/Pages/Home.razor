@@ -1,7 +1,44 @@
 ﻿@page "/dashboard"
 @attribute [Authorize(Roles = "Admin")]
 
-<div class="panel-card">
+<div class="dashboard-content">
+
     <h1>Dashboard</h1>
     <p>Welcome to HealthAxis Admin Console.</p>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h4>Total Doctors</h4>
+            <h2>12</h2>
+            <p>Registered doctors</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>Total Patients</h4>
+            <h2>50</h2>
+            <p>Active patients</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>Appointments</h4>
+            <h2>18</h2>
+            <p>Upcoming</p>
+        </div>
+
+        <div class="stat-card">
+            <h4>Staff</h4>
+            <h2>6</h2>
+            <p>Active staff</p>
+        </div>
+
+    </div>
+
+    <!-- INFO -->
+    <div class="info-card">
+        <h3>Hospital Information</h3>
+        <p>Manage your healthcare system efficiently.</p>
+    </div>
+
 </div>
