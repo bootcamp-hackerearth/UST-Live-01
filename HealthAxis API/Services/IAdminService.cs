@@ -1,5 +1,6 @@
 ﻿using HealthAxis.API.DTOs.Admin;
 using HealthAxis.API.DTOs.Appointments;
+using HealthAxis.API.DTOs.CommonDtos;
 using HealthAxis.API.DTOs.Doctors;
 using HealthAxis.API.DTOs.HealthRecords;
 using HealthAxis.API.DTOs.Patients;
@@ -8,7 +9,8 @@ namespace HealthAxis.API.Services
 {
     public interface IAdminService
     {
-        Task<List<PatientReadDto>> GetPatientsAsync(
+        Task<PagedResultDto<PatientReadDto>> GetPatientsAsync(
+            PaginationQueryDto pagination,
             CancellationToken ct = default);
 
         Task<PatientReadDto> UpdatePatientAsync(
@@ -16,7 +18,8 @@ namespace HealthAxis.API.Services
             PatientUpdateDto dto,
             CancellationToken ct = default);
 
-        Task<List<DoctorReadDto>> GetDoctorsAsync(
+        Task<PagedResultDto<DoctorReadDto>> GetDoctorsAsync(
+            PaginationQueryDto pagination,
             CancellationToken ct = default);
 
         Task<DoctorReadDto> CreateDoctorAsync(
@@ -33,7 +36,8 @@ namespace HealthAxis.API.Services
             HealthRecordUpdateDto dto,
             CancellationToken ct = default);
 
-        Task<List<AppointmentReportDto>> GetAppointmentReportAsync(
+        Task<PagedResultDto<AppointmentReportDto>> GetAppointmentReportAsync(
+            PaginationQueryDto pagination,
             CancellationToken ct = default);
     }
 }

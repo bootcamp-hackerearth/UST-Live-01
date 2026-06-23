@@ -1,0 +1,352 @@
+﻿@page "/dashboard"
+
+@inject HttpClient Http
+@inject IJSRuntime Js
+@inject NavigationManager NavigationManager
+
+<div class="page-title-row">
+    <div>
+        <h2>Dashboard</h2>
+        <p>Live overview of HealthAxis administration from backend data.</p>
+    </div>
+
+    <button class="secondary-btn" @onclick="LoadDashboardAsync" disabled="@isLoading">
+        @(isLoading ? "Refreshing..." : "Refresh")
+    </button>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert-error">
+        @errorMessage
+    </div>
+}
+
+@if (isLoading)
+{
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Doctors</span>
+            <strong>...</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Active Doctors</span>
+            <strong>...</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Total Patients</span>
+            <strong>...</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Completed Appointments</span>
+            <strong>...</strong>
+        </div>
+    </div>
+
+    <div class="page-card">
+        <p>Loading latest dashboard data from backend...</p>
+    </div>
+}
+else
+{
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Doctors</span>
+            <strong>@totalDoctors</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Active Doctors</span>
+            <strong>@activeDoctors</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Total Patients</span>
+            <strong>@totalPatients</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Completed Appointments</span>
+            <strong>@completedAppointments</strong>
+        </div>
+    </div>
+
+    <div class="page-card dashboard-summary-card">
+        <div>
+            <h3>Admin Actions</h3>
+
+            <p class="dashboard-muted">
+                Last refreshed: @lastRefreshedText
+            </p>
+        </div>
+
+        <div class="quick-actions">
+            <a href="/doctors">Manage Doctors</a>
+            <a href="/patients">Manage Patients</a>
+            <a href="/appointment-reports">View Reports</a>
+        </div>
+    </div>
+}
+
+@code {
+    private const int DashboardPageSize = 50;
+
+    private bool isLoading;
+
+    private string errorMessage = string.Empty;
+
+    private int totalDoctors;
+
+    private int activeDoctors;
+
+    private int totalPatients;
+
+    private int completedAppointments;
+
+    private DateTime? lastRefreshedAt;
+
+    private readonly JsonSerializerOptions jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
+    private string lastRefreshedText =>
+        lastRefreshedAt.HasValue
+            ? lastRefreshedAt.Value.ToString("dd-MMM-yyyy hh:mm:ss tt")
+            : "Not refreshed yet";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardAsync();
+    }
+
+    private async Task LoadDashboardAsync()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+
+        try
+        {
+            PagedResultDto<DoctorReadDto> doctorResult =
+                await GetFromApiWithRefreshAsync<PagedResultDto<DoctorReadDto>>(
+                    $"api/admin/doctors?pageNumber=1&pageSize={DashboardPageSize}");
+
+            PagedResultDto<PatientReadDto> patientResult =
+                await GetFromApiWithRefreshAsync<PagedResultDto<PatientReadDto>>(
+                    $"api/admin/patients?pageNumber=1&pageSize={DashboardPageSize}");
+
+            PagedResultDto<AppointmentReportDto> appointmentReportResult =
+                await GetFromApiWithRefreshAsync<PagedResultDto<AppointmentReportDto>>(
+                    $"api/admin/reports/appointments?pageNumber=1&pageSize={DashboardPageSize}");
+
+            totalDoctors = doctorResult.TotalCount;
+
+            activeDoctors = doctorResult.Items.Count(doctor =>
+                doctor.IsActive);
+
+            totalPatients = patientResult.TotalCount;
+
+            completedAppointments = appointmentReportResult.Items.Sum(report =>
+                report.CompletedCount);
+
+            lastRefreshedAt = DateTime.Now;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            await ClearLoginDataAsync();
+
+            NavigationManager.NavigateTo(
+                "/login",
+                replace: true);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task<T> GetFromApiWithRefreshAsync<T>(
+        string url)
+    {
+        await AddBearerTokenAsync();
+
+        HttpResponseMessage response =
+            await Http.GetAsync(url);
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            response.Dispose();
+
+            bool refreshSucceeded =
+                await RefreshAccessTokenAsync();
+
+            if (!refreshSucceeded)
+            {
+                throw new UnauthorizedAccessException(
+                    "Session expired. Please login again.");
+            }
+
+            await AddBearerTokenAsync();
+
+            response =
+                await Http.GetAsync(url);
+        }
+
+        if (!response.IsSuccessStatusCode)
+        {
+            string message =
+                await GetErrorMessageAsync(response);
+
+            throw new InvalidOperationException(message);
+        }
+
+        T? result =
+            await response.Content.ReadFromJsonAsync<T>(
+                jsonOptions);
+
+        return result
+            ?? throw new InvalidOperationException(
+                "Invalid response received from server.");
+    }
+
+    private async Task AddBearerTokenAsync()
+    {
+        string? accessToken =
+            await Js.InvokeAsync<string?>(
+                "localStorage.getItem",
+                "healthaxis_access_token");
+
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            throw new UnauthorizedAccessException(
+                "Login token was not found. Please login again.");
+        }
+
+        Http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(
+                "Bearer",
+                accessToken);
+    }
+
+    private async Task<bool> RefreshAccessTokenAsync()
+    {
+        string? userId =
+            await Js.InvokeAsync<string?>(
+                "localStorage.getItem",
+                "healthaxis_user_id");
+
+        string? refreshToken =
+            await Js.InvokeAsync<string?>(
+                "localStorage.getItem",
+                "healthaxis_refresh_token");
+
+        if (string.IsNullOrWhiteSpace(userId) ||
+            string.IsNullOrWhiteSpace(refreshToken))
+        {
+            await ClearLoginDataAsync();
+
+            return false;
+        }
+
+        RefreshTokenDto request = new()
+        {
+            UserId = userId,
+            RefreshToken = refreshToken
+        };
+
+        Http.DefaultRequestHeaders.Authorization = null;
+
+        HttpResponseMessage response =
+            await Http.PostAsJsonAsync(
+                "api/auth/refresh-token",
+                request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await ClearLoginDataAsync();
+
+            return false;
+        }
+
+        AuthResponseDto? authResponse =
+            await response.Content.ReadFromJsonAsync<AuthResponseDto>(
+                jsonOptions);
+
+        if (authResponse == null ||
+            string.IsNullOrWhiteSpace(authResponse.AccessToken) ||
+            string.IsNullOrWhiteSpace(authResponse.RefreshToken))
+        {
+            await ClearLoginDataAsync();
+
+            return false;
+        }
+
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_access_token",
+            authResponse.AccessToken);
+
+        await Js.InvokeVoidAsync(
+            "localStorage.setItem",
+            "healthaxis_refresh_token",
+            authResponse.RefreshToken);
+
+        return true;
+    }
+
+    private async Task<string> GetErrorMessageAsync(
+        HttpResponseMessage response)
+    {
+        try
+        {
+            ErrorResponseDto? error =
+                await response.Content.ReadFromJsonAsync<ErrorResponseDto>(
+                    jsonOptions);
+
+            if (!string.IsNullOrWhiteSpace(error?.Message))
+            {
+                return error.Message;
+            }
+        }
+        catch
+        {
+            // Ignore parsing issue and return generic message below.
+        }
+
+        return $"Request failed with status code {(int)response.StatusCode}.";
+    }
+
+    private async Task ClearLoginDataAsync()
+    {
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_access_token");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_refresh_token");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_user_role");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_user_email");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_user_id");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_reference_id");
+    }
+}

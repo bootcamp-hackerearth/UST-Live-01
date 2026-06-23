@@ -1,0 +1,52 @@
+﻿@inherits LayoutComponentBase
+
+@using HealthAxis.Admin.Services
+
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <div class="brand">
+            <div class="brand-mark">
+                <span>H</span>
+            </div>
+
+            <div class="brand-copy">
+                <h2>HealthAxis</h2>
+                <span>Admin Console</span>
+            </div>
+        </div>
+
+        <NavMenu />
+
+        <div class="sidebar-footer">
+            <span>Inspired by Elevance Health</span>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        <header class="admin-header">
+            <div>
+                <h1>Admin Portal</h1>
+                <p>Manage whole-health operations with clarity and confidence.</p>
+            </div>
+
+            <button class="logout-btn" @onclick="LogoutAsync">
+                Logout
+            </button>
+        </header>
+
+        <section class="admin-content">
+            @Body
+        </section>
+    </main>
+</div>
+
+@code {
+    private async Task LogoutAsync()
+    {
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/login", replace: true);
+    }
+}

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HealthAxis.API.DTOs.Admin;
 using HealthAxis.API.DTOs.Appointments;
+using HealthAxis.API.DTOs.CommonDtos;
 using HealthAxis.API.DTOs.Doctors;
 using HealthAxis.API.DTOs.HealthRecords;
 using HealthAxis.API.DTOs.Patients;
@@ -38,13 +39,37 @@ namespace HealthAxis.API.Services
             _mapper = mapper;
         }
 
-        public async Task<List<PatientReadDto>> GetPatientsAsync(
+        public async Task<PagedResultDto<PatientReadDto>> GetPatientsAsync(
+            PaginationQueryDto pagination,
             CancellationToken ct = default)
         {
             List<Patient> patients =
                 await _patientRepository.GetAllAsync(ct);
 
-            return _mapper.Map<List<PatientReadDto>>(patients);
+            List<Patient> orderedPatients =
+                patients
+                    .OrderBy(patient => patient.PatientId)
+                    .ToList();
+
+            int totalCount =
+                orderedPatients.Count;
+
+            List<Patient> pagedPatients =
+                orderedPatients
+                    .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                    .Take(pagination.PageSize)
+                    .ToList();
+
+            List<PatientReadDto> patientDtos =
+                _mapper.Map<List<PatientReadDto>>(pagedPatients);
+
+            return new PagedResultDto<PatientReadDto>
+            {
+                Items = patientDtos,
+                TotalCount = totalCount,
+                PageNumber = pagination.PageNumber,
+                PageSize = pagination.PageSize
+            };
         }
 
         public async Task<PatientReadDto> UpdatePatientAsync(
@@ -67,13 +92,37 @@ namespace HealthAxis.API.Services
             return _mapper.Map<PatientReadDto>(patient);
         }
 
-        public async Task<List<DoctorReadDto>> GetDoctorsAsync(
+        public async Task<PagedResultDto<DoctorReadDto>> GetDoctorsAsync(
+            PaginationQueryDto pagination,
             CancellationToken ct = default)
         {
             List<Doctor> doctors =
                 await _doctorRepository.GetAllAsync(ct);
 
-            return _mapper.Map<List<DoctorReadDto>>(doctors);
+            List<Doctor> orderedDoctors =
+                doctors
+                    .OrderBy(doctor => doctor.DoctorId)
+                    .ToList();
+
+            int totalCount =
+                orderedDoctors.Count;
+
+            List<Doctor> pagedDoctors =
+                orderedDoctors
+                    .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                    .Take(pagination.PageSize)
+                    .ToList();
+
+            List<DoctorReadDto> doctorDtos =
+                _mapper.Map<List<DoctorReadDto>>(pagedDoctors);
+
+            return new PagedResultDto<DoctorReadDto>
+            {
+                Items = doctorDtos,
+                TotalCount = totalCount,
+                PageNumber = pagination.PageNumber,
+                PageSize = pagination.PageSize
+            };
         }
 
         public async Task<DoctorReadDto> CreateDoctorAsync(
@@ -127,7 +176,8 @@ namespace HealthAxis.API.Services
 
                 string errors = string.Join(
                     ", ",
-                    createUserResult.Errors.Select(error => error.Description));
+                    createUserResult.Errors.Select(error =>
+                        error.Description));
 
                 throw new BadRequestException(errors);
             }
@@ -147,7 +197,8 @@ namespace HealthAxis.API.Services
 
                 string errors = string.Join(
                     ", ",
-                    roleClaimResult.Errors.Select(error => error.Description));
+                    roleClaimResult.Errors.Select(error =>
+                        error.Description));
 
                 throw new BadRequestException(errors);
             }
@@ -169,7 +220,8 @@ namespace HealthAxis.API.Services
 
                 string errors = string.Join(
                     ", ",
-                    referenceClaimResult.Errors.Select(error => error.Description));
+                    referenceClaimResult.Errors.Select(error =>
+                        error.Description));
 
                 throw new BadRequestException(errors);
             }
@@ -217,36 +269,55 @@ namespace HealthAxis.API.Services
             return _mapper.Map<HealthRecordReadDto>(healthRecord);
         }
 
-        public async Task<List<AppointmentReportDto>> GetAppointmentReportAsync(
+        public async Task<PagedResultDto<AppointmentReportDto>> GetAppointmentReportAsync(
+            PaginationQueryDto pagination,
             CancellationToken ct = default)
         {
             List<Appointment> appointments =
                 await _appointmentRepository.GetAllAsync(ct);
 
-            return appointments
-                .GroupBy(appointment =>
-                    appointment.ScheduledDate.Date)
-                .Select(group => new AppointmentReportDto
-                {
-                    Date = group.Key,
+            List<AppointmentReportDto> appointmentReports =
+                appointments
+                    .GroupBy(appointment =>
+                        appointment.ScheduledDate.Date)
+                    .Select(group => new AppointmentReportDto
+                    {
+                        Date = group.Key,
 
-                    TotalCount = group.Count(),
+                        TotalCount = group.Count(),
 
-                    ScheduledCount = group.Count(appointment =>
-                        appointment.Status == AppointmentStatus.Scheduled),
+                        ScheduledCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Scheduled),
 
-                    ConfirmedCount = group.Count(appointment =>
-                        appointment.Status == AppointmentStatus.Confirmed),
+                        ConfirmedCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Confirmed),
 
-                    CancelledCount = group.Count(appointment =>
-                        appointment.Status == AppointmentStatus.Cancelled),
+                        CancelledCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Cancelled),
 
-                    CompletedCount = group.Count(appointment =>
-                        appointment.Status == AppointmentStatus.Completed)
-                })
-                .OrderBy(report =>
-                    report.Date)
-                .ToList();
+                        CompletedCount = group.Count(appointment =>
+                            appointment.Status == AppointmentStatus.Completed)
+                    })
+                    .OrderBy(report =>
+                        report.Date)
+                    .ToList();
+
+            int totalCount =
+                appointmentReports.Count;
+
+            List<AppointmentReportDto> pagedReports =
+                appointmentReports
+                    .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+                    .Take(pagination.PageSize)
+                    .ToList();
+
+            return new PagedResultDto<AppointmentReportDto>
+            {
+                Items = pagedReports,
+                TotalCount = totalCount,
+                PageNumber = pagination.PageNumber,
+                PageSize = pagination.PageSize
+            };
         }
     }
 }

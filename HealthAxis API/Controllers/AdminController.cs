@@ -1,4 +1,5 @@
 ﻿using HealthAxis.API.DTOs.Admin;
+using HealthAxis.API.DTOs.CommonDtos;
 using HealthAxis.API.DTOs.Doctors;
 using HealthAxis.API.DTOs.HealthRecords;
 using HealthAxis.API.DTOs.Patients;
@@ -26,10 +27,13 @@ namespace HealthAxis.API.Controllers
 
         [HttpGet("patients")]
         public async Task<IActionResult> GetPatients(
+            [FromQuery] PaginationQueryDto pagination,
             CancellationToken ct)
         {
             var patients =
-                await _adminService.GetPatientsAsync(ct);
+                await _adminService.GetPatientsAsync(
+                    pagination,
+                    ct);
 
             return Ok(patients);
         }
@@ -51,10 +55,13 @@ namespace HealthAxis.API.Controllers
 
         [HttpGet("doctors")]
         public async Task<IActionResult> GetDoctors(
+            [FromQuery] PaginationQueryDto pagination,
             CancellationToken ct)
         {
             var doctors =
-                await _adminService.GetDoctorsAsync(ct);
+                await _adminService.GetDoctorsAsync(
+                    pagination,
+                    ct);
 
             return Ok(doctors);
         }
@@ -104,10 +111,13 @@ namespace HealthAxis.API.Controllers
 
         [HttpGet("reports/appointments")]
         public async Task<IActionResult> GetAppointmentReport(
+            [FromQuery] PaginationQueryDto pagination,
             CancellationToken ct)
         {
             var report =
-                await _adminService.GetAppointmentReportAsync(ct);
+                await _adminService.GetAppointmentReportAsync(
+                    pagination,
+                    ct);
 
             return Ok(report);
         }
