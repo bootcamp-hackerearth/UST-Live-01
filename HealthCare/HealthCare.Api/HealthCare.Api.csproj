@@ -27,4 +27,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Healthcare.Shared\Healthcare.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

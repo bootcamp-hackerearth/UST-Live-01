@@ -1,4 +1,4 @@
-﻿using HealthCare.Api.DTOs.Appointments;
+﻿using Healthcare.Shared.DTOs.Appointments;
 using HealthCare.Api.Models;
 
 

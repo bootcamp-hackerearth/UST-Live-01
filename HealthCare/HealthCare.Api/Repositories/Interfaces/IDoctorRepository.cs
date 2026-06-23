@@ -1,4 +1,4 @@
-﻿using HealthCare.Api.DTOs.Doctor;
+﻿using Healthcare.Shared.DTOs.Doctor;
 using HealthCare.Api.Models;
 
 

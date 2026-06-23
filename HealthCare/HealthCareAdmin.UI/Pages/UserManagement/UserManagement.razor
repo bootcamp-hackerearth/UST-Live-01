@@ -1,0 +1,29 @@
+﻿@page "/users"
+
+@code {
+
+    private List<UserDto> users = new();
+
+    private string selectedRole = "";
+
+    private IEnumerable<UserDto> filteredUsers =>
+        string.IsNullOrEmpty(selectedRole)
+            ? users
+            : users.Where(x => x.Role == selectedRole);
+
+    protected override void OnInitialized()
+    {
+        users = new List<UserDto>
+        {
+            new UserDto { Email = "admin@test.com", Role = "Admin" },
+            new UserDto { Email = "doc@test.com", Role = "Doctor" },
+            new UserDto { Email = "user@test.com", Role = "Patient" }
+        };
+    }
+
+    public class UserDto
+    {
+        public string Email { get; set; }
+        public string Role { get; set; }
+    }
+}

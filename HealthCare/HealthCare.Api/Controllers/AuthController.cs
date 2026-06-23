@@ -1,9 +1,11 @@
-﻿using HealthCare.Api.DTOs.Authentication;
-using HealthCare.Api.Services.Interfaces;
+﻿using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Healthcare.Shared.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Patient;
+
 
 namespace HealthCare.Api.Controllers
 {
@@ -21,7 +23,7 @@ namespace HealthCare.Api.Controllers
         //  PATIENT SELF-REGISTRATION
         [HttpPost("register-patient")]
         [AllowAnonymous]
-        public async Task<IActionResult> RegisterPatient([FromBody] PatientRegisterDto dto)
+        public async Task<IActionResult> RegisterPatient([FromBody] CreatePatientDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

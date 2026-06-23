@@ -1,5 +1,5 @@
-﻿using HealthCare.Api.DTOs.Authentication;
-using HealthCare.Api.DTOs.Patient;
+﻿using Healthcare.Shared.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Patient;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -72,7 +72,7 @@ public class AdminPatientController : ControllerBase
     //register
     [HttpPost("register")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-    public async Task<IActionResult> RegisterPatient(PatientRegisterDto dto)
+    public async Task<IActionResult> RegisterPatient(CreatePatientDto dto)
     {
         await _authService.RegisterPatientAsync(dto);
         return Ok(new { message = "Registration successful" });

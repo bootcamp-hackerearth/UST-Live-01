@@ -38,6 +38,13 @@ public partial class Program
             options.UseSqlServer(builder.Configuration.GetConnectionString("Dbconn"))
         );
 
+        //CORS
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            });
+
+
         builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
             options.User.RequireUniqueEmail = true;
@@ -47,6 +54,7 @@ public partial class Program
             options.Password.RequiredLength = 8;
         })
            .AddEntityFrameworkStores<HealthCareDbContext>().AddDefaultTokenProviders();
+
 
         // JWT Auth
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -137,6 +145,8 @@ public partial class Program
             app.UseSwaggerUI();
 
         }
+
+        app.UseCors("AllowAll");
 
         app.UseHttpsRedirection();
         app.UseRouting();

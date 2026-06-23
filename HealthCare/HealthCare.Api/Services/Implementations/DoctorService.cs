@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
-using HealthCare.Api.DTOs;
-using HealthCare.Api.DTOs.Doctor;
+using Healthcare.Shared.DTOs;
+using Healthcare.Shared.DTOs.Doctor;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
-using HealthCare.Api.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Authentication;
 using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations

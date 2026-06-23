@@ -1,4 +1,4 @@
-﻿using HealthCare.Api.DTOs.Doctor;
+﻿using Healthcare.Shared.DTOs.Doctor;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -40,8 +40,12 @@ namespace HealthCare.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+
+            filter ??= new DoctorFilter(); // prevent null
+
             var result = await _doctorService.GetAllAsync(filter);
             return Ok(result);
+
         }
 
 

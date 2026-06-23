@@ -1,0 +1,35 @@
+﻿@page "/reports/appointments"
+
+@code {
+
+    private List<AppointmentReportDto> reports = new();
+
+    protected override void OnInitialized()
+    {
+        reports = new List<AppointmentReportDto>
+        {
+            new AppointmentReportDto
+            {
+                Date = DateTime.Today,
+                Confirmed = 10,
+                Cancelled = 2,
+                Completed = 8
+            },
+            new AppointmentReportDto
+            {
+                Date = DateTime.Today.AddDays(-1),
+                Confirmed = 15,
+                Cancelled = 3,
+                Completed = 12
+            }
+        };
+    }
+
+    public class AppointmentReportDto
+    {
+        public DateTime Date { get; set; }
+        public int Confirmed { get; set; }
+        public int Cancelled { get; set; }
+        public int Completed { get; set; }
+    }
+}

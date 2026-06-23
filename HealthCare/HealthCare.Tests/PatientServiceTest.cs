@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using HealthCare.Api.Data;
-using HealthCare.Api.DTOs;
-using HealthCare.Api.DTOs.Patient;
+using Healthcare.Shared.DTOs;
+using Healthcare.Shared.DTOs.Patient;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;

@@ -1,8 +1,8 @@
-﻿using HealthCare.Api.DTOs.Patient;
-using HealthCare.Api.DTOs.Doctor;
-using HealthCare.Api.DTOs.Appointments;
-using HealthCare.Api.DTOs.HealthRecord;
-using HealthCare.Api.DTOs.Authentication;
+﻿using Healthcare.Shared.DTOs.Patient;
+using Healthcare.Shared.DTOs.Doctor;
+using Healthcare.Shared.DTOs.Appointments;
+using Healthcare.Shared.DTOs.HealthRecord;
+using Healthcare.Shared.DTOs.Authentication;
 using HealthCare.Api.Models;
 using AutoMapper;
 

@@ -1,5 +1,5 @@
-﻿using HealthCare.Api.DTOs.Doctor;
-using HealthCare.Api.DTOs.Patient;
+﻿using Healthcare.Shared.DTOs.Doctor;
+using Healthcare.Shared.DTOs.Patient;
 using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

@@ -1,4 +1,4 @@
-﻿using HealthCare.Api.DTOs.Patient;
+﻿using Healthcare.Shared.DTOs.Patient;
 using HealthCare.Api.Models;
 
 namespace HealthCare.Api.Repositories.Interfaces

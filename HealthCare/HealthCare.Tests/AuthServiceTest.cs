@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Data;
-using HealthCare.Api.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Authentication;
 using HealthCare.Api.Models;
 using Microsoft.EntityFrameworkCore;
 

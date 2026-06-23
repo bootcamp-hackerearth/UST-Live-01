@@ -1,0 +1,180 @@
+﻿@page "/doctor/list"
+@using HealthCareAdmin.UI.Services;
+
+@using Healthcare.Shared.DTOs.Doctor
+@using System.Net.Http.Headers
+
+@inject HttpClient Http
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<h3 class="mb-3">Doctor Management</h3>
+
+<div class="d-flex justify-content-between mb-3">
+    <input class="form-control w-50" placeholder="Search by name..."
+           @bind="searchText" @oninput="FilterDoctors" />
+
+    <button class="btn btn-primary" @onclick="AddDoctor">
+        + Add Doctor
+    </button>
+</div>
+
+@if (isLoading)
+{
+    <p>Loading doctors...</p>
+}
+else if (filteredDoctors.Count == 0)
+{
+    <div class="alert alert-warning">No doctors found</div>
+}
+else
+{
+    <table class="table table-hover shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Specialisation</th>
+                <th>Experience</th>
+                <th>Fee</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var doc in filteredDoctors)
+            {
+                <tr>
+                    <td>@doc.FullName</td>
+                    <td>@doc.Specialisation</td>
+                    <td>@doc.YearsOfExperience yrs</td>
+                    <td>₹@doc.ConsultationFee</td>
+
+                    <td>
+                        <span class="badge @(doc.IsActive ? "bg-success" : "bg-danger")">
+                            @(doc.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-warning me-2"
+                                @onclick="() => EditDoctor(doc.DoctorId)">
+                            Edit
+                        </button>
+
+                        <button class="btn btn-sm btn-danger"
+                                @onclick="() => DeleteDoctor(doc.DoctorId)">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+
+    private List<DoctorListDto> doctors = new();
+    private List<DoctorListDto> filteredDoctors = new();
+
+    private bool isLoading = true;
+    private string searchText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDoctors();
+    }
+
+    private async Task LoadDoctors()
+    {
+
+
+        try
+        {
+            isLoading = true;
+
+            var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Navigation.NavigateTo("/");
+                return;
+            }
+
+            Http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await Http.GetAsync("api/admin/doctors");
+
+            if (response.IsSuccessStatusCode)
+            {
+                doctors = await response.Content.ReadFromJsonAsync<List<DoctorListDto>>() ?? new();
+                filteredDoctors = doctors;
+            }
+            else
+            {
+                doctors = new();
+                filteredDoctors = new();
+            }
+        }
+        catch
+        {
+            doctors = new();
+            filteredDoctors = new();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    // ✅ SEARCH / FILTER
+    private void FilterDoctors(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? "";
+
+        filteredDoctors = doctors
+            .Where(d => d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    // ✅ ADD (Navigate to add page)
+    private void AddDoctor()
+    {
+        Navigation.NavigateTo("/doctor/add");
+    }
+
+    // ✅ EDIT
+    private void EditDoctor(int id)
+    {
+        Navigation.NavigateTo($"/doctor/edit/{id}");
+    }
+
+    // ✅ DELETE
+    private async Task DeleteDoctor(int id)
+    {
+        var confirm = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete?");
+
+        if (!confirm) return;
+
+        var response = await Http.DeleteAsync($"api/admin/doctors/{id}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadDoctors(); // refresh
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Delete failed!");
+        }
+
+        Console.WriteLine("Status Code: " + response.StatusCode);
+
+        var raw = await response.Content.ReadAsStringAsync();
+        Console.WriteLine("Response: " + raw);
+    }
+}
+
+ 

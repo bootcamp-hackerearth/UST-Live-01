@@ -1,6 +1,6 @@
-﻿using HealthCare.Api.DTOs;
-using HealthCare.Api.DTOs.Doctor;
-using HealthCare.Api.DTOs.Authentication;
+﻿using Healthcare.Shared.DTOs;
+using Healthcare.Shared.DTOs.Doctor;
+using Healthcare.Shared.DTOs.Authentication;
 
 namespace HealthCare.Api.Services.Interfaces
 {

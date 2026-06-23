@@ -3,12 +3,13 @@ using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using HealthCare.Api.Data;
-using HealthCare.Api.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Authentication;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Healthcare.Shared.DTOs.Patient;
 
 namespace HealthCare.Api.Services.Implementations
 {
@@ -62,7 +63,7 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         //  PATIENT REGISTRATION 
-        public async Task RegisterPatientAsync(PatientRegisterDto dto)
+        public async Task RegisterPatientAsync(CreatePatientDto dto)
         {
 
 
@@ -108,7 +109,7 @@ namespace HealthCare.Api.Services.Implementations
         }
 
         //  LOGIN
-        public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
+        public async Task<AuthorResponseDto> LoginAsync(LoginDto dto)
         {
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
@@ -161,7 +162,7 @@ namespace HealthCare.Api.Services.Implementations
                 throw new Exception("Doctor record not found");
             }
 
-            return new AuthResponseDto
+            return new AuthorResponseDto
             {
                 AccessToken = token,
                 Role = role
@@ -231,5 +232,7 @@ namespace HealthCare.Api.Services.Implementations
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+       
     }
 }

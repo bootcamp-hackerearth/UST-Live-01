@@ -1,0 +1,95 @@
+﻿@page "/"
+@page "/login"
+
+@layout EmptyLayout
+
+@using HealthCareAdmin.UI.Services
+@using Healthcare.Shared.DTOs.Authentication
+
+
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="login-page">
+
+    <div class="login-card">
+
+        <div class="text-center mb-4">
+            <h2>🏥 Healthcare Admin Portal</h2>
+            <p>Sign in to continue</p>
+        </div>
+
+        <div class="mb-3">
+            <label>Email</label>
+            <input class="form-control"
+                   placeholder="Enter Email"
+                   @bind="loginRequest.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label>Password</label>
+            <input class="form-control"
+                   type="password"
+                   placeholder="Enter Password"
+                   @bind="loginRequest.Password" />
+        </div>
+
+        <button class="btn btn-primary w-100"
+                @onclick="AdminLogin">
+            Login
+        </button>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger mt-3">
+                @ErrorMessage
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@code {
+
+    private LoginDto loginRequest = new();
+
+    private string ErrorMessage = string.Empty;
+
+    private async Task AdminLogin()
+    {
+        ErrorMessage = string.Empty;
+
+        try
+        {
+            var result = await AuthService.LoginAsync(loginRequest);
+
+            if (result != null)
+            {
+                // Save JWT token
+                await JS.InvokeVoidAsync(
+                    "localStorage.setItem",
+                    "token",
+                    result.AccessToken);
+
+                // Save Role
+                await JS.InvokeVoidAsync(
+                    "localStorage.setItem",
+                    "role",
+                    result.Role);
+
+                // Navigate to Dashboard
+                Navigation.NavigateTo("/dashboard");
+            }
+            else
+            {
+                ErrorMessage = "Invalid Email or Password";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = ex.Message;
+        }
+    }
+}

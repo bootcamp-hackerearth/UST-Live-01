@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="HealthCare.Api/HealthCare.Api.csproj" />
+  <Project Path="Healthcare.Shared/Healthcare.Shared.csproj" />
   <Project Path="HealthCare.Tests/HealthCare.Tests.csproj" Id="8f4755f7-c31c-4783-98c1-ab8fa90e55dc" />
-  <Project Path="HealthCareAdmin.UI/HealthCareAdmin.UI.csproj" Id="2890cc2f-6532-4939-be09-7ff74c18251d" />
+  <Project Path="HealthCareAdmin.UI/HealthCareAdmin.UI.csproj" Id="7402248c-c324-4114-8874-1586e560b850" />
 </Solution>
