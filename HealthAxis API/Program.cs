@@ -119,8 +119,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.WithOrigins(
-                "https://localhost:7273",
-                "http://localhost:4200")
+                "https://localhost:7051", // Blazor WebAssembly Admin HTTPS
+                "http://localhost:5293",  // Blazor WebAssembly Admin HTTP
+                "http://localhost:4200")  // Angular frontend
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -246,4 +247,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 await app.RunAsync();
-

@@ -3,6 +3,7 @@
     <File Path=".gitignore" />
   </Folder>
   <Project Path="HealthAxis API/HealthAxis.API.csproj" />
+  <Project Path="HealthAxis.Admin/HealthAxis.Admin.csproj" Id="fe0146a3-e1ca-4c13-9eba-f0079883508c" />
   <Project Path="HealthAxis.API.Tests/HealthAxis.API.Tests.csproj" Id="78b82159-bf2b-4e79-8c6e-8533e74a4621" />
   <Project Path="HealthAxis.Shared/HealthAxis.Shared.csproj" />
 </Solution>

@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using HealthAxis.API.DTOs.Admin;
+using HealthAxis.API.DTOs.Appointments;
+using HealthAxis.API.DTOs.CommonDtos;
 using HealthAxis.API.DTOs.Doctors;
 using HealthAxis.API.DTOs.HealthRecords;
 using HealthAxis.API.DTOs.Patients;
-using HealthAxis.API.DTOs.Appointments;
 using HealthAxis.API.Enums;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using System.Numerics;
 using System.Security.Claims;
 
 namespace HealthAxis.API.Tests.Services
@@ -47,9 +47,15 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
-        public async Task GetPatientsAsync_WhenPatientsExist_ReturnsMappedPatients()
+        public async Task GetPatientsAsync_WhenPatientsExist_ReturnsPagedMappedPatients()
         {
             // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+
             List<Patient> patients = new()
             {
                 new Patient
@@ -73,24 +79,76 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _patientRepositoryMock
-                .Setup(repository => repository.GetAllAsync(It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patients);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<List<PatientReadDto>>(patients))
+                .Setup(mapper => mapper.Map<List<PatientReadDto>>(
+                    It.IsAny<List<Patient>>()))
                 .Returns(expectedDtos);
 
             // Act
-            List<PatientReadDto> result =
-                await _adminService.GetPatientsAsync();
+            PagedResultDto<PatientReadDto> result =
+                await _adminService.GetPatientsAsync(pagination);
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal(expectedDtos[0].PatientId, result[0].PatientId);
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(5, result.PageSize);
+            Assert.Equal(expectedDtos[0].PatientId, result.Items[0].PatientId);
 
             _patientRepositoryMock.Verify(
-                repository => repository.GetAllAsync(It.IsAny<CancellationToken>()),
+                repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
+        }
+
+        [Fact]
+        public async Task GetPatientsAsync_WhenPaginationApplied_ReturnsOnlyRequestedPage()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 2,
+                PageSize = 2
+            };
+
+            List<Patient> patients = new()
+            {
+                new Patient { PatientId = 1, FullName = "Patient One" },
+                new Patient { PatientId = 2, FullName = "Patient Two" },
+                new Patient { PatientId = 3, FullName = "Patient Three" }
+            };
+
+            List<PatientReadDto> expectedDtos = new()
+            {
+                new PatientReadDto { PatientId = 3, FullName = "Patient Three" }
+            };
+
+            _patientRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(patients);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<PatientReadDto>>(
+                    It.Is<List<Patient>>(list =>
+                        list.Count == 1 &&
+                        list[0].PatientId == 3)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<PatientReadDto> result =
+                await _adminService.GetPatientsAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(3, result.TotalCount);
+            Assert.Equal(2, result.PageNumber);
+            Assert.Equal(2, result.PageSize);
+            Assert.Equal(3, result.Items[0].PatientId);
         }
 
         [Fact]
@@ -123,14 +181,17 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _patientRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetByIdAsync(
+                    patientId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(patient);
 
             _mapperMock
                 .Setup(mapper => mapper.Map(updateDto, patient));
 
             _patientRepositoryMock
-                .Setup(repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             _mapperMock
@@ -146,7 +207,8 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal(expectedDto.FullName, result.FullName);
 
             _patientRepositoryMock.Verify(
-                repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()),
+                repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
@@ -164,7 +226,9 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _patientRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetByIdAsync(
+                    patientId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Patient?)null);
 
             // Act & Assert
@@ -173,9 +237,15 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
-        public async Task GetDoctorsAsync_WhenDoctorsExist_ReturnsMappedDoctors()
+        public async Task GetDoctorsAsync_WhenDoctorsExist_ReturnsPagedMappedDoctors()
         {
             // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+
             List<Doctor> doctors = new()
             {
                 new Doctor
@@ -203,20 +273,71 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _doctorRepositoryMock
-                .Setup(repository => repository.GetAllAsync(It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctors);
 
             _mapperMock
-                .Setup(mapper => mapper.Map<List<DoctorReadDto>>(doctors))
+                .Setup(mapper => mapper.Map<List<DoctorReadDto>>(
+                    It.IsAny<List<Doctor>>()))
                 .Returns(expectedDtos);
 
             // Act
-            List<DoctorReadDto> result =
-                await _adminService.GetDoctorsAsync();
+            PagedResultDto<DoctorReadDto> result =
+                await _adminService.GetDoctorsAsync(pagination);
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal(expectedDtos[0].DoctorId, result[0].DoctorId);
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(5, result.PageSize);
+            Assert.Equal(expectedDtos[0].DoctorId, result.Items[0].DoctorId);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenPaginationApplied_ReturnsOnlyRequestedPage()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 2,
+                PageSize = 2
+            };
+
+            List<Doctor> doctors = new()
+            {
+                new Doctor { DoctorId = 1, FullName = "Doctor One" },
+                new Doctor { DoctorId = 2, FullName = "Doctor Two" },
+                new Doctor { DoctorId = 3, FullName = "Doctor Three" }
+            };
+
+            List<DoctorReadDto> expectedDtos = new()
+            {
+                new DoctorReadDto { DoctorId = 3, FullName = "Doctor Three" }
+            };
+
+            _doctorRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctors);
+
+            _mapperMock
+                .Setup(mapper => mapper.Map<List<DoctorReadDto>>(
+                    It.Is<List<Doctor>>(list =>
+                        list.Count == 1 &&
+                        list[0].DoctorId == 3)))
+                .Returns(expectedDtos);
+
+            // Act
+            PagedResultDto<DoctorReadDto> result =
+                await _adminService.GetDoctorsAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(3, result.TotalCount);
+            Assert.Equal(2, result.PageNumber);
+            Assert.Equal(2, result.PageSize);
+            Assert.Equal(3, result.Items[0].DoctorId);
         }
 
         [Fact]
@@ -429,14 +550,17 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(doctor);
 
             _mapperMock
                 .Setup(mapper => mapper.Map(updateDto, doctor));
 
             _doctorRepositoryMock
-                .Setup(repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             _mapperMock
@@ -468,7 +592,9 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _doctorRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetByIdAsync(
+                    doctorId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Doctor?)null);
 
             // Act & Assert
@@ -518,14 +644,17 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _healthRecordRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(recordId, It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetByIdAsync(
+                    recordId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(healthRecord);
 
             _mapperMock
                 .Setup(mapper => mapper.Map(updateDto, healthRecord));
 
             _healthRecordRepositoryMock
-                .Setup(repository => repository.SaveChangesAsync(It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.SaveChangesAsync(
+                    It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             _mapperMock
@@ -559,7 +688,9 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _healthRecordRepositoryMock
-                .Setup(repository => repository.GetByIdAsync(recordId, It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetByIdAsync(
+                    recordId,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync((HealthRecord?)null);
 
             // Act & Assert
@@ -568,9 +699,15 @@ namespace HealthAxis.API.Tests.Services
         }
 
         [Fact]
-        public async Task GetAppointmentReportAsync_WhenAppointmentsExist_ReturnsGroupedReportByDate()
+        public async Task GetAppointmentReportAsync_WhenAppointmentsExist_ReturnsPagedGroupedReportByDate()
         {
             // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+
             DateTime firstDate = new(2026, 6, 14);
             DateTime secondDate = new(2026, 6, 15);
 
@@ -603,18 +740,22 @@ namespace HealthAxis.API.Tests.Services
             };
 
             _appointmentRepositoryMock
-                .Setup(repository => repository.GetAllAsync(It.IsAny<CancellationToken>()))
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(appointments);
 
             // Act
-            List<AppointmentReportDto> result =
-                await _adminService.GetAppointmentReportAsync();
+            PagedResultDto<AppointmentReportDto> result =
+                await _adminService.GetAppointmentReportAsync(pagination);
 
             // Assert
-            Assert.Equal(2, result.Count);
+            Assert.Equal(2, result.Items.Count);
+            Assert.Equal(2, result.TotalCount);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(5, result.PageSize);
 
             AppointmentReportDto firstReport =
-                result.Single(report => report.Date == firstDate.Date);
+                result.Items.Single(report => report.Date == firstDate.Date);
 
             Assert.Equal(3, firstReport.TotalCount);
             Assert.Equal(1, firstReport.ScheduledCount);
@@ -623,13 +764,65 @@ namespace HealthAxis.API.Tests.Services
             Assert.Equal(0, firstReport.CancelledCount);
 
             AppointmentReportDto secondReport =
-                result.Single(report => report.Date == secondDate.Date);
+                result.Items.Single(report => report.Date == secondDate.Date);
 
             Assert.Equal(1, secondReport.TotalCount);
             Assert.Equal(0, secondReport.ScheduledCount);
             Assert.Equal(0, secondReport.ConfirmedCount);
             Assert.Equal(0, secondReport.CompletedCount);
             Assert.Equal(1, secondReport.CancelledCount);
+        }
+
+        [Fact]
+        public async Task GetAppointmentReportAsync_WhenPaginationApplied_ReturnsRequestedPage()
+        {
+            // Arrange
+            PaginationQueryDto pagination = new()
+            {
+                PageNumber = 2,
+                PageSize = 1
+            };
+
+            DateTime firstDate = new(2026, 6, 14);
+            DateTime secondDate = new(2026, 6, 15);
+
+            List<Appointment> appointments = new()
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    ScheduledDate = firstDate,
+                    Status = AppointmentStatus.Scheduled
+                },
+                new Appointment
+                {
+                    AppointmentId = 2,
+                    ScheduledDate = secondDate,
+                    Status = AppointmentStatus.Completed
+                }
+            };
+
+            _appointmentRepositoryMock
+                .Setup(repository => repository.GetAllAsync(
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            // Act
+            PagedResultDto<AppointmentReportDto> result =
+                await _adminService.GetAppointmentReportAsync(pagination);
+
+            // Assert
+            Assert.Single(result.Items);
+            Assert.Equal(2, result.TotalCount);
+            Assert.Equal(2, result.PageNumber);
+            Assert.Equal(1, result.PageSize);
+
+            AppointmentReportDto report =
+                result.Items.Single();
+
+            Assert.Equal(secondDate.Date, report.Date);
+            Assert.Equal(1, report.TotalCount);
+            Assert.Equal(1, report.CompletedCount);
         }
 
         private static AdminDoctorCreateDto CreateAdminDoctorCreateDto()
