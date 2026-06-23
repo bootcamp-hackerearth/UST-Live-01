@@ -1,5 +1,6 @@
-using HealthApp.API.Enums;
+
 using HealthApp.API.Models;
+using HealthApp.Shared.Enums;
 namespace HealthApp.API.Repository.Interface;
 public interface IDoctorRepository : IRepository<Doctor>
 {

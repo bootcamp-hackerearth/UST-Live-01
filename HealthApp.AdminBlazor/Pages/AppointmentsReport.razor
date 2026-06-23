@@ -1,7 +1,6 @@
 @page "/reports/appointments"
-@inject AdminAuthStateService AuthState
-@inject InMemoryAdminDataService Data
-@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin")]
+@inject AdminApiService AdminApi
 
 <PageTitle>Appointments Report</PageTitle>
 
@@ -12,49 +11,117 @@
     </div>
 </div>
 
-<div class="stats-grid">
-    <div class="stat-card"><span>Pending</span><strong>@Reports.Sum(r => r.Pending)</strong></div>
-    <div class="stat-card"><span>Confirmed</span><strong>@Reports.Sum(r => r.Confirmed)</strong></div>
-    <div class="stat-card"><span>Cancelled</span><strong>@Reports.Sum(r => r.Cancelled)</strong></div>
-    <div class="stat-card"><span>Completed</span><strong>@Reports.Sum(r => r.Completed)</strong></div>
-</div>
+@if (isLoading)
+{
+    <section class="panel">
+        <p>Loading appointment reports...</p>
+    </section>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-error">@errorMessage</div>
+}
+else
+{
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Pending</span>
+            <strong>@Reports.Sum(r => r.Pending)</strong>
+        </div>
 
-<section class="panel">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Pending</th>
-                <th>Confirmed</th>
-                <th>Cancelled</th>
-                <th>Completed</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var report in Reports)
-            {
+        <div class="stat-card">
+            <span>Confirmed</span>
+            <strong>@Reports.Sum(r => r.Confirmed)</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Cancelled</span>
+            <strong>@Reports.Sum(r => r.Cancelled)</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Completed</span>
+            <strong>@Reports.Sum(r => r.Completed)</strong>
+        </div>
+    </div>
+
+    <section class="panel">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@report.Date.ToString("dd MMM yyyy")</td>
-                    <td><span class="badge warning">@report.Pending</span></td>
-                    <td><span class="badge info">@report.Confirmed</span></td>
-                    <td><span class="badge danger">@report.Cancelled</span></td>
-                    <td><span class="badge success">@report.Completed</span></td>
-                    <td>@report.Total</td>
+                    <th>Date</th>
+                    <th>Pending</th>
+                    <th>Confirmed</th>
+                    <th>Cancelled</th>
+                    <th>Completed</th>
+                    <th>Total</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</section>
+            </thead>
+
+            <tbody>
+                @if (!Reports.Any())
+                {
+                    <tr>
+                        <td colspan="6">No appointment report data found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var report in Reports)
+                    {
+                        <tr>
+                            <td>@report.Date.ToString("dd MMM yyyy")</td>
+
+                            <td>
+                                <span class="badge warning">@report.Pending</span>
+                            </td>
+
+                            <td>
+                                <span class="badge info">@report.Confirmed</span>
+                            </td>
+
+                            <td>
+                                <span class="badge danger">@report.Cancelled</span>
+                            </td>
+
+                            <td>
+                                <span class="badge success">@report.Completed</span>
+                            </td>
+
+                            <td>@GetTotal(report)</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </section>
+}
 
 @code {
-    private List<AppointmentReportDto> Reports => Data.GetAppointmentReports();
+    private List<AppointmentReportDto> Reports = new();
 
-    protected override void OnInitialized()
+    private bool isLoading = true;
+
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
     {
-        if (!AuthState.IsLoggedIn)
+        try
         {
-            Navigation.NavigateTo("/login", replace: true);
+            Reports = await AdminApi.GetAppointmentReportsAsync();
         }
+        catch
+        {
+            errorMessage = "Unable to load appointment reports. Please check API connection or login again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private static int GetTotal(AppointmentReportDto report)
+    {
+        return report.Pending + report.Confirmed + report.Cancelled + report.Completed;
     }
 }

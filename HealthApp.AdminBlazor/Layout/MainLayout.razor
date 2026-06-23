@@ -1,5 +1,5 @@
 @inherits LayoutComponentBase
-@inject AdminAuthStateService AuthState
+@inject AuthApiService AuthApi
 @inject NavigationManager Navigation
 
 <div class="app-shell">
@@ -20,18 +20,24 @@
         </nav>
 
         <div class="sidebar-footer">
-            @if (AuthState.IsLoggedIn)
-            {
-                <div class="admin-chip">
-                    <span>Signed in as</span>
-                    <strong>@AuthState.AdminEmail</strong>
-                </div>
-                <button class="btn btn-outline-light" @onclick="Logout">Logout</button>
-            }
-            else
-            {
-                <a class="btn btn-primary" href="/login">Admin Login</a>
-            }
+            <AuthorizeView Roles="Admin">
+                <Authorized>
+                    <div class="admin-chip">
+                        <span>Signed in as</span>
+                        <strong>@GetEmail(context.User)</strong>
+                    </div>
+
+                    <button class="btn btn-outline-light" @onclick="Logout">
+                        Logout
+                    </button>
+                </Authorized>
+
+                <NotAuthorized>
+                    <a class="btn btn-primary" href="/login">
+                        Admin Login
+                    </a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </aside>
 
@@ -41,9 +47,17 @@
 </div>
 
 @code {
-    private void Logout()
+    private async Task Logout()
     {
-        AuthState.Logout();
-        Navigation.NavigateTo("/login");
+        await AuthApi.LogoutAsync();
+
+        Navigation.NavigateTo("/login", replace: true);
+    }
+
+    private static string GetEmail(System.Security.Claims.ClaimsPrincipal user)
+    {
+        return user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+            ?? user.FindFirst("email")?.Value
+            ?? "Admin";
     }
 }

@@ -1,7 +1,6 @@
 @page "/dashboard"
-@inject AdminAuthStateService AuthState
-@inject InMemoryAdminDataService Data
-@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin")]
+@inject AdminApiService AdminApi
 
 <PageTitle>Admin Dashboard</PageTitle>
 
@@ -11,59 +10,120 @@
     </div>
 </div>
 
-<div class="stats-grid">
-    <div class="stat-card"><span>Total Doctors</span><strong>@Data.Doctors.Count</strong></div>
-    <div class="stat-card"><span>Active Doctors</span><strong>@Data.Doctors.Count(d => d.IsActive)</strong></div>
-    <div class="stat-card"><span>Users</span><strong>@Data.Users.Count</strong></div>
-    <div class="stat-card"><span>Appointments</span><strong>@Data.Appointments.Count</strong></div>
-</div>
-
-<div class="dashboard-grid">
+@if (isLoading)
+{
     <section class="panel">
-        <div class="panel-header">
-            <h2>Recent Doctors</h2>
-            <a href="/doctors">Manage</a>
+        <p>Loading dashboard data...</p>
+    </section>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-error">@errorMessage</div>
+}
+else
+{
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span>Total Doctors</span>
+            <strong>@doctors.Count</strong>
         </div>
-        <table class="table">
-            <thead><tr><th>Name</th><th>Specialisation</th><th>Status</th></tr></thead>
-            <tbody>
-                @foreach (var doctor in Data.Doctors.Take(5))
-                {
+
+        <div class="stat-card">
+            <span>Active Doctors</span>
+            <strong>@doctors.Count(d => d.IsActive)</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Users</span>
+            <strong>@users.Count</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Appointments</span>
+            <strong>@TotalAppointments</strong>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Recent Doctors</h2>
+                <a href="/doctors">Manage</a>
+            </div>
+
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@doctor.FullName</td>
-                        <td>@doctor.Specialisation</td>
-                        <td><span class="badge @(doctor.IsActive ? "success" : "muted")">@(doctor.IsActive ? "Active" : "Inactive")</span></td>
+                        <th>Name</th>
+                        <th>Specialisation</th>
+                        <th>Status</th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    </section>
+                </thead>
 
-    <section class="panel">
-        <div class="panel-header">
-            <h2>Appointment Report Preview</h2>
-            <a href="/reports/appointments">View Report</a>
-        </div>
-        <div class="report-preview">
-            @foreach (var report in Data.GetAppointmentReports().Take(4))
-            {
-                <div class="report-row">
-                    <strong>@report.Date.ToString("dd MMM yyyy")</strong>
-                    <span>Confirmed: @report.Confirmed</span>
-                    <span>Cancelled: @report.Cancelled</span>
-                    <span>Completed: @report.Completed</span>
-                </div>
-            }
-        </div>
-    </section>
-</div>
+                <tbody>
+                    @foreach (var doctor in doctors.Take(5))
+                    {
+                        <tr>
+                            <td>@doctor.FullName</td>
+                            <td>@doctor.Specialisation</td>
+                            <td>
+                                <span class="badge @(doctor.IsActive ? "success" : "muted")">
+                                    @(doctor.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <div class="panel-header">
+                <h2>Appointment Report Preview</h2>
+                <a href="/reports/appointments">View Report</a>
+            </div>
+
+            <div class="report-preview">
+                @foreach (var report in reports.Take(4))
+                {
+                    <div class="report-row">
+                        <strong>@report.Date.ToString("dd MMM yyyy")</strong>
+                        <span>Confirmed: @report.Confirmed</span>
+                        <span>Cancelled: @report.Cancelled</span>
+                        <span>Completed: @report.Completed</span>
+                    </div>
+                }
+            </div>
+        </section>
+    </div>
+}
 
 @code {
-    protected override void OnInitialized()
+    private List<DoctorDto> doctors = new();
+    private List<UserDto> users = new();
+    private List<AppointmentReportDto> reports = new();
+
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    private int TotalAppointments =>
+        reports.Sum(r => r.Pending + r.Confirmed + r.Cancelled + r.Completed);
+
+    protected override async Task OnInitializedAsync()
     {
-        if (!AuthState.IsLoggedIn)
+        try
         {
-            Navigation.NavigateTo("/login", replace: true);
+            doctors = await AdminApi.GetDoctorsAsync();
+            users = await AdminApi.GetUsersAsync();
+            reports = await AdminApi.GetAppointmentReportsAsync();
+        }
+        catch
+        {
+            errorMessage = "Unable to load dashboard data. Please check API connection or login again.";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }

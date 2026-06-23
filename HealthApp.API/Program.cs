@@ -122,6 +122,18 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAdminBlazor", policy =>
+    {
+        policy.WithOrigins("https://localhost:7083")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
@@ -153,6 +165,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAdminBlazor");
 
 app.UseAuthentication();
 

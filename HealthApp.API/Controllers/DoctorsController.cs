@@ -1,8 +1,8 @@
-using HealthApp.API.Enums;
-using HealthApp.API.Models.DTOs;
 using HealthApp.API.Service.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Enums;
 
 namespace HealthApp.API.Controllers;
 

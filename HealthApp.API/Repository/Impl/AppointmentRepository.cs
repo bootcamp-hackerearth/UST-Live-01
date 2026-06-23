@@ -1,7 +1,7 @@
 using HealthApp.API.Data;
-using HealthApp.API.Enums;
 using HealthApp.API.Models;
 using HealthApp.API.Repository.Interface;
+using HealthApp.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.API.Repository.Impl;

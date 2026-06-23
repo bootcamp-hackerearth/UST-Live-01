@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace HealthApp.API.Models.DTOs;
+namespace HealthApp.Shared.DTOs;
 
 public class ChangePasswordDto
 {

@@ -1,4 +1,4 @@
-namespace HealthApp.API.Constants;
+namespace HealthApp.Shared.Constants;
 
 public static class Roles { 
     public const string Patient="Patient";

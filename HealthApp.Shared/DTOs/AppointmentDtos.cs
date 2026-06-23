@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using HealthApp.API.Enums;
+using HealthApp.Shared.Enums;
 
-namespace HealthApp.API.Models.DTOs;
+namespace HealthApp.Shared.DTOs;
 
 public class AppointmentDto
 {
@@ -15,14 +15,23 @@ public class AppointmentDto
     public AppointmentStatus Status { get; set; }
     public string? CancellationReason { get; set; }
 }
+
 public class BookAppointmentDto
 {
-    [Range(1,int.MaxValue)] public int PatientId { get; set; }
-    [Range(1,int.MaxValue)] public int DoctorId { get; set; }
-    [Required] public DateTime ScheduledDate { get; set; }
-    [Required, MaxLength(50)] public string TimeSlot { get; set; } = string.Empty;
+    [Range(1, int.MaxValue, ErrorMessage = "Please provide a valid patient reference.")]
+    public int PatientId { get; set; }
+    [Range(1, int.MaxValue, ErrorMessage = "Please provide a valid doctor reference.")]
+    public int DoctorId { get; set; }
+
+    [Required(ErrorMessage = "Please enter the appointment date.")]
+    public DateTime ScheduledDate { get; set; }
+
+    [Required(ErrorMessage = "Please select a time slot.")]
+    [MaxLength(50, ErrorMessage = "Time slot must not exceed 50 characters.")]
+    public string TimeSlot { get; set; } = string.Empty;
 }
-public class UpdateAppointmentStatusDto
+
+    public class UpdateAppointmentStatusDto
 {
     [Required] public AppointmentStatus Status { get; set; }
     [MaxLength(200)] public string? CancellationReason { get; set; }

@@ -6,8 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 
 using HealthApp.API.Models;
-using HealthApp.API.Models.DTOs;
-using HealthApp.API.Constants;
+using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Constants;
+using HealthApp.Shared.Enums;
 using HealthApp.API.Exceptions;
 using HealthApp.API.Identity;
 using HealthApp.API.Repository.Interface;
@@ -79,7 +80,7 @@ public class AuthServiceTests
             FullName = "Test User",
             Role = Roles.Patient,
             DateOfBirth = System.DateTime.Today.AddYears(-20),
-            Gender = Enums.GenderType.Male,
+            Gender = GenderType.Male,
             PhoneNumber = "9657255221"
         };
 

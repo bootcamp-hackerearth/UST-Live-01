@@ -1,20 +1,23 @@
 @page "/users"
-@inject AdminAuthStateService AuthState
-@inject InMemoryAdminDataService Data
-@inject NavigationManager Navigation
+@attribute [Authorize(Roles = "Admin")]
+@inject AdminApiService AdminApi
 
 <PageTitle>User Management</PageTitle>
 
 <div class="page-header">
     <div>
         <h1>User Management</h1>
-        <p>View in-memory users and filter by role.</p>
+        <p>View registered users and filter by role.</p>
     </div>
 </div>
 
 <div class="toolbar">
-    <InputText class="input" placeholder="Search users..." @bind-Value="searchText" @bind-Value:event="oninput" />
-    <select class="input" @bind="roleFilter">
+    <input class="input"
+           placeholder="Search users..."
+           @bind="searchText"
+           @bind:event="oninput" />
+
+    <select class="input" @onchange="OnRoleChanged">
         <option value="All">All Roles</option>
         <option value="Admin">Admin</option>
         <option value="Doctor">Doctor</option>
@@ -22,45 +25,99 @@
     </select>
 </div>
 
-<section class="panel">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Password State</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in FilteredUsers)
-            {
+@if (isLoading)
+{
+    <section class="panel">
+        <p>Loading users...</p>
+    </section>
+}
+else if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="alert alert-error">@errorMessage</div>
+}
+else
+{
+    <section class="panel">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@user.FullName</td>
-                    <td>@user.Email</td>
-                    <td><span class="badge info">@user.Role</span></td>
-                    <td><span class="badge @(user.MustChangePassword ? "warning" : "success")">@(user.MustChangePassword ? "Change Required" : "Ready")</span></td>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-</section>
+            </thead>
+
+            <tbody>
+                @if (!FilteredUsers.Any())
+                {
+                    <tr>
+                        <td colspan="3">No users found.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var user in FilteredUsers)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>
+                                <span class="badge info">@user.Role</span>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </section>
+}
 
 @code {
+    private List<UserDto> users = new();
+
     private string searchText = string.Empty;
+
     private string roleFilter = "All";
 
-    private IEnumerable<UserDto> FilteredUsers => Data.Users
-        .Where(u => roleFilter == "All" || u.Role == roleFilter)
-        .Where(u => string.IsNullOrWhiteSpace(searchText)
-            || u.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase)
-            || u.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+    private bool isLoading = true;
 
-    protected override void OnInitialized()
+    private string? errorMessage;
+
+    private IEnumerable<UserDto> FilteredUsers => users
+        .Where(user =>
+            string.IsNullOrWhiteSpace(searchText) ||
+            user.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            user.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            user.Role.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
     {
-        if (!AuthState.IsLoggedIn)
+        await LoadUsersAsync();
+    }
+
+    private async Task OnRoleChanged(ChangeEventArgs e)
+    {
+        roleFilter = e.Value?.ToString() ?? "All";
+
+        await LoadUsersAsync();
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        try
         {
-            Navigation.NavigateTo("/login", replace: true);
+            isLoading = true;
+            errorMessage = null;
+
+            users = await AdminApi.GetUsersAsync(roleFilter);
+        }
+        catch
+        {
+            errorMessage = "Unable to load users. Please check API connection or login again.";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }

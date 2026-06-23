@@ -1,6 +1,6 @@
 @page "/login"
 @layout EmptyLayout
-@inject AdminAuthStateService AuthState
+@inject AuthApiService AuthApi
 @inject NavigationManager Navigation
 
 <PageTitle>Admin Login</PageTitle>
@@ -8,11 +8,12 @@
 <section class="login-page">
     <div class="login-card">
         <div class="login-brand">H</div>
+
         <h1>Admin Login</h1>
 
-        @if (!string.IsNullOrWhiteSpace(message))
+        @if (!string.IsNullOrWhiteSpace(errorMessage))
         {
-            <div class="alert @(isSuccess ? "alert-success" : "alert-error")">@message</div>
+            <div class="alert alert-error">@errorMessage</div>
         }
 
         <EditForm Model="loginDto" OnValidSubmit="HandleLogin">
@@ -20,31 +21,45 @@
             <ValidationSummary />
 
             <label>Email</label>
-            <InputText class="input" @bind-Value="loginDto.Email" placeholder="Enter admin email" />
+            <InputText class="input"
+                       @bind-Value="loginDto.Email"
+                       placeholder="Enter admin email" />
 
             <label>Password</label>
-            <InputText class="input" type="password" @bind-Value="loginDto.Password" placeholder="Enter password" />
+            <InputText class="input"
+                       type="password"
+                       @bind-Value="loginDto.Password"
+                       placeholder="Enter password" />
 
-            <button class="btn btn-primary btn-full" type="submit">Login</button>
+            <button class="btn btn-primary btn-full" type="submit" disabled="@isLoading">
+                @(isLoading ? "Logging in..." : "Login")
+            </button>
         </EditForm>
     </div>
 </section>
 
 @code {
-    private LoginDto loginDto = new();
-    private string? message;
-    private bool isSuccess;
+    private LoginRequestDto loginDto = new();
+
+    private string? errorMessage;
+
+    private bool isLoading;
 
     private async Task HandleLogin()
     {
-        var result = AuthState.Login(loginDto);
-        message = result.Message;
-        isSuccess = result.IsSuccess;
+        errorMessage = null;
+        isLoading = true;
 
-        if (result.IsSuccess)
+        var result = await AuthApi.LoginAsync(loginDto);
+
+        isLoading = false;
+
+        if (result is null)
         {
-            await Task.Delay(400);
-            Navigation.NavigateTo("/dashboard");
+            errorMessage = "Invalid admin credentials or this account is not authorized for admin access.";
+            return;
         }
+
+        Navigation.NavigateTo("/dashboard", replace: true);
     }
 }

@@ -1,10 +1,12 @@
 using AutoMapper;
-using HealthApp.API.Constants;
-using HealthApp.API.Enums;
+
 using HealthApp.API.Exceptions;
-using HealthApp.API.Models.DTOs;
+
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.Constants;
+using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Enums;
 
 namespace HealthApp.API.Service.Impl;
 
@@ -31,9 +33,17 @@ public class DoctorService(
     }
 
     public async Task<List<DoctorDto>> GetDoctorsBySpecialisationAsync(
-        SpecialisationType specialisation)
-        => mapper.Map<List<DoctorDto>>(
-            await doctorRepository.GetActiveBySpecialisationAsync(specialisation));
+    SpecialisationType specialisation)
+    {
+        if (!Enum.IsDefined(typeof(SpecialisationType), specialisation))
+        {
+            throw new BusinessRuleException("Invalid specialisation.");
+        }
+
+        var doctors = await doctorRepository.GetActiveBySpecialisationAsync(specialisation);
+
+        return mapper.Map<List<DoctorDto>>(doctors);
+    }
 
     public async Task<DoctorAvailabilityDto> GetDoctorAvailabilityAsync(
         int doctorId,

@@ -2,13 +2,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using HealthApp.API.Constants;
 using HealthApp.API.Exceptions;
 using HealthApp.API.Identity;
 using HealthApp.API.Models;
-using HealthApp.API.Models.DTOs;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.Constants;
+using HealthApp.Shared.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -22,11 +22,6 @@ public class AuthService(
 {
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
     {
-        if (!new[] { Roles.Patient, Roles.Doctor, Roles.Admin }.Contains(dto.Role))
-        {
-            throw new BusinessRuleException("Invalid role.");
-        }
-
         if (await userManager.FindByEmailAsync(dto.Email) is not null)
         {
             throw new ConflictException("Email already registered.");
@@ -49,19 +44,9 @@ public class AuthService(
                 string.Join("; ", result.Errors.Select(e => e.Description)));
         }
 
-        await userManager.AddToRoleAsync(user, dto.Role);
+        await userManager.AddToRoleAsync(user, Roles.Patient);
 
-        if (dto.Role == Roles.Patient)
-        {
-            if (dto.DateOfBirth is null ||
-                dto.Gender is null ||
-                string.IsNullOrWhiteSpace(dto.PhoneNumber))
-            {
-                throw new BusinessRuleException(
-                    "Patient registration details are incomplete.");
-            }
-
-            await patientRepository.AddAsync(new Patient
+        await patientRepository.AddAsync(new Patient
             {
                 UserId = user.Id,
                 PatientName = dto.FullName,
@@ -72,10 +57,12 @@ public class AuthService(
                 InsuranceId = dto.InsuranceId,
                 CreatedDate = DateTime.Now
             });
-        }
-
         return await GenerateAuthResponseAsync(user);
+
     }
+
+
+
 
     public async Task<AuthResponseDto> LoginAsync(LoginRequestDto dto)
     {

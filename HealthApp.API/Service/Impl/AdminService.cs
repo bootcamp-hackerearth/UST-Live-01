@@ -1,13 +1,14 @@
 using AutoMapper;
-using HealthApp.API.Constants;
-using HealthApp.API.Enums;
+using HealthApp.Shared.Constants;
+using HealthApp.Shared.Enums;
 using HealthApp.API.Exceptions;
 using HealthApp.API.Identity;
 using HealthApp.API.Models;
-using HealthApp.API.Models.DTOs;
+using HealthApp.Shared.DTOs;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.API.Service.Impl;
 
@@ -173,6 +174,13 @@ public class AdminService(
             throw new BusinessRuleException("Temporary password is required.");
         }
 
+
+        if (!Enum.IsDefined(typeof(SpecialisationType), dto.Specialisation))
+        {
+            throw new BusinessRuleException("Invalid specialisation.");
+        }
+
+
         if (dto.PracticeStartDate.Date > DateTime.Today)
         {
             throw new BusinessRuleException("Practice start date cannot be in the future.");
@@ -191,6 +199,13 @@ public class AdminService(
             throw new BusinessRuleException("Doctor full name is required.");
         }
 
+
+        if (!Enum.IsDefined(typeof(SpecialisationType), dto.Specialisation))
+        {
+            throw new BusinessRuleException("Invalid specialisation.");
+        }
+
+
         if (dto.PracticeStartDate.Date > DateTime.Today)
         {
             throw new BusinessRuleException("Practice start date cannot be in the future.");
@@ -200,5 +215,59 @@ public class AdminService(
         {
             throw new BusinessRuleException("Consultation fee cannot be negative.");
         }
+    }
+
+    public async Task<List<UserDto>> GetUsersAsync(string? role = null)
+    {
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            var selectedRole = role.Trim();
+
+            var validRoles = new[]
+            {
+            Roles.Admin,
+            Roles.Doctor,
+            Roles.Patient
+        };
+
+            if (!validRoles.Contains(selectedRole))
+            {
+                throw new BusinessRuleException("Invalid role filter.");
+            }
+
+            var usersInRole = await userManager.GetUsersInRoleAsync(selectedRole);
+
+            return usersInRole
+                .Select(user => new UserDto
+                {
+                    UserId = user.Id,
+                    Email = user.Email ?? string.Empty,
+                    FullName = user.FullName,
+                    Role = selectedRole
+                })
+                .OrderBy(user => user.FullName)
+                .ToList();
+        }
+
+        var users = await userManager.Users
+            .OrderBy(user => user.FullName)
+            .ToListAsync();
+
+        var result = new List<UserDto>();
+
+        foreach (var user in users)
+        {
+            var roles = await userManager.GetRolesAsync(user);
+
+            result.Add(new UserDto
+            {
+                UserId = user.Id,
+                Email = user.Email ?? string.Empty,
+                FullName = user.FullName,
+                Role = roles.FirstOrDefault() ?? "Unknown"
+            });
+        }
+
+        return result;
     }
 }

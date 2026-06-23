@@ -1,9 +1,9 @@
 using AutoMapper;
 using HealthApp.API.Exceptions;
 using HealthApp.API.Models;
-using HealthApp.API.Models.DTOs;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.DTOs;
 
 namespace HealthApp.API.Service.Impl;
 

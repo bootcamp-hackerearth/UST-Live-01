@@ -1,4 +1,4 @@
-using HealthApp.API.Models.DTOs;
+using HealthApp.Shared.DTOs;
 
 namespace HealthApp.API.Service.Interface;
 
@@ -13,4 +13,5 @@ public interface IAdminService
         UpdateDoctorDto dto);
 
     Task<List<AppointmentReportDto>> GetAppointmentReportsAsync();
+    Task<List<UserDto>> GetUsersAsync(string? role = null);
 }

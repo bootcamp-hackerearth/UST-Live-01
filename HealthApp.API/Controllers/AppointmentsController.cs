@@ -1,6 +1,7 @@
-using HealthApp.API.Constants;
-using HealthApp.API.Models.DTOs;
+
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.Constants;
+using HealthApp.Shared.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

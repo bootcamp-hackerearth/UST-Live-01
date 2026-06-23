@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using HealthApp.API.Enums;
+using HealthApp.Shared.Enums;
 
-namespace HealthApp.API.Models.DTOs;
+namespace HealthApp.Shared.DTOs;
 
 public class DoctorDto
 {
@@ -24,6 +24,7 @@ public class CreateDoctorDto
     public string TemporaryPassword { get; set; } = string.Empty;
 
     [Required]
+    [EnumDataType(typeof(SpecialisationType), ErrorMessage = "Invalid specialisation.")]
     public SpecialisationType Specialisation { get; set; }
 
     [Required]
@@ -38,6 +39,7 @@ public class UpdateDoctorDto
     public string FullName { get; set; } = string.Empty;
 
     [Required]
+    [EnumDataType(typeof(SpecialisationType), ErrorMessage = "Invalid specialisation.")]
     public SpecialisationType Specialisation { get; set; }
 
     [Required]

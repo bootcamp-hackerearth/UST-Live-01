@@ -1,4 +1,4 @@
-namespace HealthApp.API.Enums;
+namespace HealthApp.Shared.Enums;
 
 public enum SpecialisationType { 
     Endocrinologist, 

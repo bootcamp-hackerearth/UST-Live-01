@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using HealthApp.API.Models;
-using HealthApp.API.Models.DTOs;
-using HealthApp.API.Enums;
+using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Enums;
 using HealthApp.API.Exceptions;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Impl;
-using HealthApp.API.Constants;
+using HealthApp.Shared.Constants;
 
 namespace HealthApp.API.Tests;
 

@@ -1,4 +1,4 @@
-namespace HealthApp.API.Models.DTOs;
+namespace HealthApp.Shared.DTOs;
 
 public class ErrorResponse 
 { 

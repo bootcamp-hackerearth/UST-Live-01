@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using HealthApp.API.Models;
-using HealthApp.API.Models.DTOs;
+using HealthApp.Shared.DTOs;
 using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Impl;
 using HealthApp.API.Exceptions;

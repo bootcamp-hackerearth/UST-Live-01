@@ -1,4 +1,4 @@
-using HealthApp.API.Models.DTOs;
+using HealthApp.Shared.DTOs;
 using HealthApp.API.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
 

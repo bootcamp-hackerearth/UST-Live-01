@@ -1,4 +1,5 @@
-using HealthApp.API.Models.DTOs;
+
+using HealthApp.Shared.DTOs;
 
 namespace HealthApp.API.Service.Interface;
 

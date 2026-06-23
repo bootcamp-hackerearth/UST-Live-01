@@ -1,6 +1,6 @@
-using HealthApp.API.Constants;
-using HealthApp.API.Models.DTOs;
+
 using HealthApp.API.Service.Interface;
+using HealthApp.Shared.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,4 +27,9 @@ public class AdminController(IAdminService adminService) : ControllerBase
     [HttpGet("reports/appointments")]
     public async Task<ActionResult<List<AppointmentReportDto>>> Reports()
         => Ok(await adminService.GetAppointmentReportsAsync());
+
+    [HttpGet("users")]
+    public async Task<ActionResult<List<UserDto>>> GetUsers([FromQuery] string? role)
+            => Ok(await adminService.GetUsersAsync(role));
+
 }

@@ -1,4 +1,5 @@
-using HealthApp.API.Models.DTOs;
+
+using HealthApp.Shared.DTOs;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace HealthApp.API.Exceptions;
