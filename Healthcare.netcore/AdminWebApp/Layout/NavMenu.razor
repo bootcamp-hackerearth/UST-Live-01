@@ -5,6 +5,7 @@
 <div class="sidebar">
     <div class="sidebar-brand">
         <div class="brand-avatar">HA</div>
+
         <div>
             <h3>HealthAxis</h3>
             <span>Admin Console</span>
@@ -30,7 +31,7 @@
                     Users
                 </NavLink>
 
-                <button class="sidebar-link logout-btn" @onclick="HandleLogout">
+                <button type="button" class="sidebar-link logout-btn" @onclick="HandleLogout">
                     Logout
                 </button>
             </Authorized>
@@ -53,7 +54,9 @@
     private async Task HandleLogout()
     {
         await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+
         AuthStateProvider.NotifyUserLoggedOut();
-        Nav.NavigateTo("/login");
+
+        Nav.NavigateTo("/login", true);
     }
 }

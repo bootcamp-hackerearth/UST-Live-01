@@ -47,6 +47,12 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+//CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
+
 // ✅ DbContext
 builder.Services.AddDbContext<HealthAxisDbContext>(options =>
     options.UseSqlServer(
@@ -110,6 +116,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
+
+app.UseCors("AllowAll");
 
 // ✅ Swagger
 if (app.Environment.IsDevelopment())

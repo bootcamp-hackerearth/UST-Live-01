@@ -1,5 +1,6 @@
 using AdminWebApp;
 using AdminWebApp.Auth;
+using AdminWebApp.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -15,6 +16,7 @@ builder.Services.AddScoped(sp => new HttpClient
 });
 
 builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<DoctorService>();
 
 builder.Services.AddScoped<CustomAuthStateProvider>();
 

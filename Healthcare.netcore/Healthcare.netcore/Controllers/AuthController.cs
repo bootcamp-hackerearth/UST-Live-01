@@ -1,5 +1,4 @@
-﻿using HealthAxis.Shared.DTOs.Auth;
-using HealthAxis.API.Services.Interfaces;
+﻿using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthAxis.API.Controllers
@@ -22,11 +21,16 @@ namespace HealthAxis.API.Controllers
 
             if (!result.Success)
             {
-                return BadRequest(new { message = result.Message });
+                return BadRequest(new
+                {
+                    success = false,
+                    message = result.Message
+                });
             }
 
             return Ok(new
             {
+                success = true,
                 message = result.Message,
                 userId = result.UserId
             });
@@ -39,14 +43,23 @@ namespace HealthAxis.API.Controllers
 
             if (!result.Success)
             {
-                return Unauthorized(new { message = result.Message });
+                return Unauthorized(new AuthResponse
+                {
+                    Success = false,
+                    Message = result.Message,
+                    AccessToken = string.Empty,
+                    RefreshToken = string.Empty,
+                    ExpiresIn = 0,
+                    RequiresPasswordChange = result.RequiresPasswordChange
+                });
             }
 
             return Ok(new AuthResponse
             {
+                Success = true,
+                Message = result.Message,
                 AccessToken = result.AccessToken,
                 RefreshToken = result.RefreshToken,
-                Message = result.Message,
                 ExpiresIn = result.ExpiresIn,
                 RequiresPasswordChange = result.RequiresPasswordChange
             });
@@ -59,10 +72,18 @@ namespace HealthAxis.API.Controllers
 
             if (!result.Success)
             {
-                return BadRequest(new { message = result.Message });
+                return BadRequest(new
+                {
+                    success = false,
+                    message = result.Message
+                });
             }
 
-            return Ok(new { message = result.Message });
+            return Ok(new
+            {
+                success = true,
+                message = result.Message
+            });
         }
 
         [HttpPost("refresh-token")]
@@ -72,14 +93,23 @@ namespace HealthAxis.API.Controllers
 
             if (!result.Success)
             {
-                return Unauthorized(new { message = result.Message });
+                return Unauthorized(new AuthResponse
+                {
+                    Success = false,
+                    Message = result.Message,
+                    AccessToken = string.Empty,
+                    RefreshToken = string.Empty,
+                    ExpiresIn = 0,
+                    RequiresPasswordChange = false
+                });
             }
 
             return Ok(new AuthResponse
             {
+                Success = true,
+                Message = result.Message,
                 AccessToken = result.AccessToken,
                 RefreshToken = result.RefreshToken,
-                Message = result.Message,
                 ExpiresIn = result.ExpiresIn,
                 RequiresPasswordChange = false
             });

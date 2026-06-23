@@ -1,14 +1,14 @@
-﻿@using Microsoft.AspNetCore.Components.Routing
+﻿@using AdminWebApp.Layout
 @using Microsoft.AspNetCore.Components.Authorization
-@using AdminWebApp.Layout
+@using Microsoft.AspNetCore.Components.Routing
 
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    <LayoutView Layout="@typeof(MainLayout)">
-                        <div class="panel-card">
+                    <LayoutView Layout="@typeof(AuthLayout)">
+                        <div class="auth-message-card">
                             <h3>Access Denied</h3>
                             <p>Please login as admin to access this page.</p>
                         </div>
@@ -20,8 +20,8 @@
         </Found>
 
         <NotFound>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <div class="panel-card">
+            <LayoutView Layout="@typeof(AuthLayout)">
+                <div class="auth-message-card">
                     <h3>Page Not Found</h3>
                     <p>The requested page does not exist.</p>
                 </div>

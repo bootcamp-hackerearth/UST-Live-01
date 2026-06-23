@@ -7,34 +7,56 @@ namespace AdminWebApp.Auth
 {
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
-        private readonly IJSRuntime _js;
+        private readonly IJSRuntime _jsRuntime;
 
-        public CustomAuthStateProvider(IJSRuntime js)
+        public CustomAuthStateProvider(IJSRuntime jsRuntime)
         {
-            _js = js;
+            _jsRuntime = jsRuntime;
         }
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-            if (string.IsNullOrWhiteSpace(token))
+            try
             {
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                string? token = await _jsRuntime.InvokeAsync<string>(
+                    "localStorage.getItem",
+                    "token");
+
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    return GetAnonymousState();
+                }
+
+                List<Claim> claims = ParseClaimsFromJwt(token);
+
+                ClaimsIdentity identity = new ClaimsIdentity(
+                    claims,
+                    "jwt",
+                    ClaimTypes.Name,
+                    ClaimTypes.Role);
+
+                ClaimsPrincipal user = new ClaimsPrincipal(identity);
+
+                return new AuthenticationState(user);
             }
-
-            var claims = ParseClaimsFromJwt(token);
-            var identity = new ClaimsIdentity(claims, "jwt");
-            var user = new ClaimsPrincipal(identity);
-
-            return new AuthenticationState(user);
+            catch
+            {
+                await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", "token");
+                return GetAnonymousState();
+            }
         }
 
         public void NotifyUserLoggedIn(string token)
         {
-            var claims = ParseClaimsFromJwt(token);
-            var identity = new ClaimsIdentity(claims, "jwt");
-            var user = new ClaimsPrincipal(identity);
+            List<Claim> claims = ParseClaimsFromJwt(token);
+
+            ClaimsIdentity identity = new ClaimsIdentity(
+                claims,
+                "jwt",
+                ClaimTypes.Name,
+                ClaimTypes.Role);
+
+            ClaimsPrincipal user = new ClaimsPrincipal(identity);
 
             NotifyAuthenticationStateChanged(
                 Task.FromResult(new AuthenticationState(user)));
@@ -42,67 +64,94 @@ namespace AdminWebApp.Auth
 
         public void NotifyUserLoggedOut()
         {
-            var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
-
             NotifyAuthenticationStateChanged(
-                Task.FromResult(new AuthenticationState(anonymousUser)));
+                Task.FromResult(GetAnonymousState()));
         }
 
-        private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+        private static AuthenticationState GetAnonymousState()
         {
-            var claims = new List<Claim>();
-            var payload = jwt.Split('.')[1];
+            ClaimsPrincipal anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
 
-            payload = payload.Replace('-', '+').Replace('_', '/');
+            return new AuthenticationState(anonymousUser);
+        }
+
+        private static List<Claim> ParseClaimsFromJwt(string jwt)
+        {
+            List<Claim> claims = new List<Claim>();
+
+            string[] parts = jwt.Split('.');
+
+            if (parts.Length < 2)
+            {
+                return claims;
+            }
+
+            string payload = parts[1]
+                .Replace('-', '+')
+                .Replace('_', '/');
 
             switch (payload.Length % 4)
             {
                 case 2:
                     payload += "==";
                     break;
+
                 case 3:
                     payload += "=";
                     break;
             }
 
-            var jsonBytes = Convert.FromBase64String(payload);
-            var values = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonBytes);
+            byte[] jsonBytes = Convert.FromBase64String(payload);
 
-            if (values == null)
+            Dictionary<string, JsonElement>? keyValuePairs =
+                JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonBytes);
+
+            if (keyValuePairs == null)
             {
                 return claims;
             }
 
-            foreach (var item in values)
+            foreach (KeyValuePair<string, JsonElement> kvp in keyValuePairs)
             {
-                if (item.Value.ValueKind == JsonValueKind.Array)
+                if (kvp.Value.ValueKind == JsonValueKind.Array)
                 {
-                    foreach (var arrayItem in item.Value.EnumerateArray())
+                    foreach (JsonElement item in kvp.Value.EnumerateArray())
                     {
-                        AddClaim(claims, item.Key, arrayItem.ToString());
+                        AddClaim(claims, kvp.Key, item.ToString());
                     }
                 }
                 else
                 {
-                    AddClaim(claims, item.Key, item.Value.ToString());
+                    AddClaim(claims, kvp.Key, kvp.Value.ToString());
                 }
             }
 
             return claims;
         }
 
-        private void AddClaim(List<Claim> claims, string key, string value)
+        private static void AddClaim(List<Claim> claims, string key, string value)
         {
             claims.Add(new Claim(key, value));
 
-            if (key == "role" || key.EndsWith("/role"))
+            string lowerKey = key.ToLowerInvariant();
+
+            if (lowerKey == "role" ||
+                lowerKey == "roles" ||
+                lowerKey.EndsWith("/role"))
             {
                 claims.Add(new Claim(ClaimTypes.Role, value));
             }
 
-            if (key == "email" || key.EndsWith("/emailaddress"))
+            if (lowerKey == "email" ||
+                lowerKey.EndsWith("/emailaddress"))
             {
                 claims.Add(new Claim(ClaimTypes.Email, value));
+            }
+
+            if (lowerKey == "sub" ||
+                lowerKey.EndsWith("/nameidentifier"))
+            {
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, value));
             }
         }
     }
