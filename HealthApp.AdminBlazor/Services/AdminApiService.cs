@@ -1,5 +1,6 @@
-﻿using System.Net.Http.Json;
-using HealthApp.Shared.DTOs;
+﻿using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Enums;
+using System.Net.Http.Json;
 
 namespace HealthApp.AdminBlazor.Services;
 
@@ -54,5 +55,35 @@ public class AdminApiService(HttpClient httpClient)
         return await httpClient.GetFromJsonAsync<List<AppointmentReportDto>>(
                 "api/admin/reports/appointments")
             ?? new List<AppointmentReportDto>();
+    }
+
+    public async Task<List<PatientDto>> GetPatientsAsync(
+    string? search = null,
+    GenderType? gender = null,
+    bool? hasInsurance = null)
+    {
+        var queryParams = new List<string>();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            queryParams.Add($"search={Uri.EscapeDataString(search)}");
+        }
+
+        if (gender.HasValue)
+        {
+            queryParams.Add($"gender={gender.Value}");
+        }
+
+        if (hasInsurance.HasValue)
+        {
+            queryParams.Add($"hasInsurance={hasInsurance.Value.ToString().ToLower()}");
+        }
+
+        var url = queryParams.Count == 0
+            ? "api/admin/patients"
+            : $"api/admin/patients?{string.Join("&", queryParams)}";
+
+        return await httpClient.GetFromJsonAsync<List<PatientDto>>(url)
+            ?? new List<PatientDto>();
     }
 }

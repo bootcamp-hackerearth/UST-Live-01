@@ -14,6 +14,7 @@ namespace HealthApp.API.Service.Impl;
 
 public class AdminService(
     IDoctorRepository doctorRepository,
+    IPatientRepository patientRepository,
     IAppointmentRepository appointmentRepository,
     UserManager<ApplicationUser> userManager,
     IMapper mapper) : IAdminService
@@ -269,5 +270,24 @@ public class AdminService(
         }
 
         return result;
+    }
+
+    public async Task<List<PatientDto>> GetPatientsAsync(
+    string? search = null,
+    GenderType? gender = null,
+    bool? hasInsurance = null)
+    {
+        if (gender.HasValue &&
+            !Enum.IsDefined(typeof(GenderType), gender.Value))
+        {
+            throw new BusinessRuleException("Invalid gender filter.");
+        }
+
+        var patients = await patientRepository.GetFilteredAsync(
+            search,
+            gender,
+            hasInsurance);
+
+        return mapper.Map<List<PatientDto>>(patients);
     }
 }

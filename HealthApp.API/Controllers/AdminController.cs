@@ -1,6 +1,6 @@
-
 using HealthApp.API.Service.Interface;
 using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,5 +31,12 @@ public class AdminController(IAdminService adminService) : ControllerBase
     [HttpGet("users")]
     public async Task<ActionResult<List<UserDto>>> GetUsers([FromQuery] string? role)
             => Ok(await adminService.GetUsersAsync(role));
+
+    [HttpGet("patients")]
+    public async Task<ActionResult<List<PatientDto>>> GetPatients(
+    [FromQuery] string? search,
+    [FromQuery] GenderType? gender,
+    [FromQuery] bool? hasInsurance)
+    => Ok(await adminService.GetPatientsAsync(search, gender, hasInsurance));
 
 }
