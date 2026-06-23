@@ -8,14 +8,14 @@
 @inject IAdminDashboardService DashboardService
 @inject NavigationManager Navigation
 
-<PageTitle>Admin Dashboard | HealthCareApp</PageTitle>
+<PageTitle>Admin Dashboard | HealthAxis</PageTitle>
 
 @if (dashboardReport is null)
 {
     <div class="hc-page-loading">
         <div class="hc-loading-card">
             <div class="hc-loading-spinner"></div>
-            <p>Loading dashboard report...</p>
+            <p>Loading HealthAxis dashboard...</p>
         </div>
     </div>
 }
@@ -24,7 +24,7 @@ else
     <div class="hc-page-heading">
         <div>
             <h1>Dashboard</h1>
-            <p>Monitor today’s healthcare operations and manage system activity.</p>
+            <p>Monitor today’s HealthAxis operations and manage admin activity.</p>
         </div>
 
         <div class="hc-dashboard-date-card">
@@ -33,89 +33,104 @@ else
         </div>
     </div>
 
-    <div class="hc-report-grid">
-        <div class="hc-report-card hc-report-blue">
-            <div class="hc-report-icon">✚</div>
+    <div class="hc-report-grid ha-dashboard-report-grid">
+        <div class="hc-report-card hc-report-blue ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">✚</div>
             <div>
                 <p>Total Doctors</p>
                 <h2>@dashboardReport.TotalDoctors</h2>
+                <span class="ha-dashboard-card-meta">Registered doctor profiles</span>
             </div>
         </div>
 
-        <div class="hc-report-card hc-report-teal">
-            <div class="hc-report-icon">◉</div>
+        <div class="hc-report-card hc-report-teal ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">◉</div>
             <div>
                 <p>Total Patients</p>
                 <h2>@dashboardReport.TotalPatients</h2>
+                <span class="ha-dashboard-card-meta">Patient records managed</span>
             </div>
         </div>
 
-        <div class="hc-report-card hc-report-purple">
-            <div class="hc-report-icon">◷</div>
+        <div class="hc-report-card hc-report-purple ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">◷</div>
             <div>
                 <p>Total Appointments</p>
                 <h2>@dashboardReport.TotalAppointments</h2>
+                <span class="ha-dashboard-card-meta">Overall appointment activity</span>
             </div>
         </div>
 
-        
+        <div class="hc-report-card hc-report-orange ha-dashboard-report-card">
+            <div class="hc-report-icon ha-dashboard-report-icon">▣</div>
+            <div>
+                <p>Today’s Schedule</p>
+                <h2>@dashboardReport.TodaysAppointments</h2>
+                <span class="ha-dashboard-card-meta">Appointments planned today</span>
+            </div>
+        </div>
     </div>
 
     <div class="hc-section-grid">
-        <section class="hc-dashboard-section">
+        <section class="hc-dashboard-section ha-dashboard-panel">
             <div class="hc-section-header">
                 <div>
                     <h3>Today’s Overview</h3>
-                    <p>Live operational summary for today.</p>
+                    <p>Live operational summary for the current day.</p>
                 </div>
             </div>
 
             <div class="hc-mini-report-grid">
-                <div class="hc-mini-card">
+                <div class="hc-mini-card ha-mini-card">
                     <span class="hc-mini-label">Today’s Appointments</span>
                     <strong>@dashboardReport.TodaysAppointments</strong>
+                    <p>Scheduled for today</p>
                 </div>
 
-                <div class="hc-mini-card">
+                <div class="hc-mini-card ha-mini-card">
                     <span class="hc-mini-label">Today’s Patients</span>
                     <strong>@dashboardReport.TodaysPatients</strong>
+                    <p>Patient activity today</p>
                 </div>
 
-                <div class="hc-mini-card success">
+                <div class="hc-mini-card success ha-mini-card">
                     <span class="hc-mini-label">Completed Today</span>
                     <strong>@dashboardReport.CompletedToday</strong>
+                    <p>Completed appointment count</p>
                 </div>
 
-                <div class="hc-mini-card warning">
+                <div class="hc-mini-card warning ha-mini-card">
                     <span class="hc-mini-label">Pending Today</span>
                     <strong>@dashboardReport.PendingToday</strong>
+                    <p>Waiting for confirmation</p>
                 </div>
 
-                <div class="hc-mini-card danger">
+                <div class="hc-mini-card danger ha-mini-card">
                     <span class="hc-mini-label">Cancelled Today</span>
                     <strong>@dashboardReport.CancelledToday</strong>
+                    <p>Cancelled appointment count</p>
                 </div>
             </div>
         </section>
 
-        <section class="hc-dashboard-section">
+        <section class="hc-dashboard-section ha-dashboard-panel">
             <div class="hc-section-header">
                 <div>
                     <h3>Quick Actions</h3>
-                    <p>Jump into frequent admin tasks.</p>
+                    <p>Jump into frequent HealthAxis admin tasks.</p>
                 </div>
             </div>
 
             <div class="hc-quick-actions">
-                <button class="hc-action-card" @onclick="GoToDoctors">
+                <button class="hc-action-card ha-action-card" @onclick="GoToDoctors">
                     <span>✚</span>
                     <div>
-                        <strong>Register Doctor</strong>
-                        <p>Add and manage doctor profiles.</p>
+                        <strong>Manage Doctors</strong>
+                        <p>Add, update, and activate doctor profiles.</p>
                     </div>
                 </button>
 
-                <button class="hc-action-card" @onclick="GoToPatients">
+                <button class="hc-action-card ha-action-card" @onclick="GoToPatients">
                     <span>◉</span>
                     <div>
                         <strong>Manage Patients</strong>
@@ -123,15 +138,13 @@ else
                     </div>
                 </button>
 
-                <button class="hc-action-card" @onclick="GoToAppointments">
+                <button class="hc-action-card ha-action-card" @onclick="GoToAppointments">
                     <span>◷</span>
                     <div>
-                        <strong>Create Appointment</strong>
-                        <p>Manage schedules and appointment status.</p>
+                        <strong>View Appointments</strong>
+                        <p>Review schedules and appointment status.</p>
                     </div>
                 </button>
-
-           
             </div>
         </section>
     </div>
@@ -166,10 +179,5 @@ else
     private void GoToAppointments()
     {
         Navigation.NavigateTo("/admin/appointments");
-    }
-
-    private void GoToHealthRecords()
-    {
-        Navigation.NavigateTo("/admin/health-records");
     }
 }

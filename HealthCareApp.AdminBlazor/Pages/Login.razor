@@ -6,21 +6,34 @@
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<PageTitle>Admin Login | HealthCareApp</PageTitle>
+<PageTitle>Admin Login | HealthAxis</PageTitle>
 
 <div class="hc-login-page">
+    @if (isSigningIn)
+    {
+        <div class="hc-login-overlay">
+            <div class="hc-login-overlay-card">
+                <div class="hc-login-overlay-logo">HA</div>
+                <h3>Verifying admin access</h3>
+                <p>Preparing your HealthAxis workspace...</p>
+                <div class="hc-login-overlay-bar">
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    }
     <section class="hc-login-hero">
         <div class="hc-brand-badge">
-            HealthCareApp Admin Portal
+            HealthAxis Admin Portal
         </div>
 
         <h1 class="hc-login-title">
-            Manage healthcare with <span>clarity</span>.
+            Manage care operations with <span>clarity</span>.
         </h1>
 
         <p class="hc-login-subtitle">
             A secure and focused admin workspace to manage doctors, patients,
-            appointments, and health records from one modern healthcare dashboard.
+            appointments, and health records from one modern HealthAxis dashboard.
         </p>
 
         <div class="hc-hero-stats">
@@ -35,8 +48,8 @@
             </div>
 
             <div class="hc-stat-card">
-                <div class="hc-stat-number">API</div>
-                <div class="hc-stat-label">Ready architecture</div>
+                <div class="hc-stat-number">JWT</div>
+                <div class="hc-stat-label">Secured access</div>
             </div>
         </div>
     </section>
@@ -46,7 +59,7 @@
             <div class="hc-login-card-header">
                 <h2 class="hc-login-card-title">Welcome back</h2>
                 <p class="hc-login-card-subtitle">
-                    Sign in as Admin to continue to the management dashboard.
+                    Sign in as Admin to continue to the HealthAxis management dashboard.
                 </p>
             </div>
 
@@ -64,6 +77,7 @@
                     <label class="hc-form-label">Email address</label>
                     <InputText class="hc-form-control"
                                placeholder="Enter your email"
+                               disabled="@isSigningIn"
                                @bind-Value="loginModel.Email" />
                     <ValidationMessage For="@(() => loginModel.Email)" />
                 </div>
@@ -73,52 +87,67 @@
                     <InputText class="hc-form-control"
                                type="password"
                                placeholder="Enter admin password"
+                               disabled="@isSigningIn"
                                @bind-Value="loginModel.Password" />
                     <ValidationMessage For="@(() => loginModel.Password)" />
                 </div>
 
                 <div class="hc-login-actions">
                     <label>
-                        <InputCheckbox @bind-Value="rememberMe" />
+                        <InputCheckbox @bind-Value="rememberMe" disabled="@isSigningIn" />
                         Remember me
                     </label>
 
                     <span>Admin access only</span>
                 </div>
 
-                <button type="submit" class="hc-btn-primary">
-                    Sign in to Dashboard
+                <button type="submit"
+                        class="hc-btn-primary"
+                        disabled="@isSigningIn">
+                    @(isSigningIn ? "Signing in securely..." : "Sign in to Dashboard")
                 </button>
             </EditForm>
-
-            <div class="hc-demo-note">
-                <strong>Temporary demo login</strong><br />
-                Email: admin@healthcare.com<br />
-                Password: Admin@123
-            </div>
         </div>
     </section>
 </div>
 
 @code {
-    private LoginDto loginModel = new();
+    private LoginDto loginModel = new LoginDto();
 
     private bool rememberMe;
+
+    private bool isSigningIn;
 
     private string? errorMessage;
 
     private async Task HandleLogin()
     {
-        errorMessage = null;
-
-        var response = await AuthService.LoginAsync(loginModel);
-
-        if (string.IsNullOrWhiteSpace(response.AccessToken))
+        if (isSigningIn)
         {
-            errorMessage = response.Message;
             return;
         }
 
-        Navigation.NavigateTo("/admin/dashboard");
+        try
+        {
+            isSigningIn = true;
+            errorMessage = null;
+
+            var response = await AuthService.LoginAsync(loginModel);
+
+            if (string.IsNullOrWhiteSpace(response.AccessToken))
+            {
+                errorMessage = response.Message;
+                return;
+            }
+
+            await Task.Delay(650);
+
+
+            Navigation.NavigateTo("/admin/dashboard");
+        }
+        finally
+        {
+            isSigningIn = false;
+        }
     }
 }

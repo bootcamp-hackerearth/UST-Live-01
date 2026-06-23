@@ -113,3 +113,181 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+
+/* HealthAxis App Startup Loader */
+.ha-app-loader {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at top left, rgba(20, 184, 166, 0.22), transparent 32%), radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.2), transparent 30%), linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #172554 100%);
+    color: #ffffff;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.ha-loader-card {
+    width: min(420px, calc(100% - 40px));
+    padding: 34px 30px;
+    border-radius: 30px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(18px);
+}
+
+.ha-loader-logo {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    border-radius: 24px;
+    display: grid;
+    place-items: center;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 18px 42px rgba(20, 184, 166, 0.32);
+}
+
+.ha-loader-title {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+}
+
+    .ha-loader-title span {
+        color: #5eead4;
+    }
+
+.ha-loader-subtitle {
+    margin: 10px 0 24px;
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.ha-loader-progress {
+    width: 100%;
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.ha-loader-progress-bar {
+    width: 42%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #14b8a6, #60a5fa, #8b5cf6);
+    animation: ha-loader-slide 1.25s ease-in-out infinite;
+}
+
+.ha-loader-caption {
+    margin-top: 16px;
+    color: #94a3b8;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+@keyframes ha-loader-slide {
+    0% {
+        transform: translateX(-120%);
+    }
+
+    50% {
+        transform: translateX(75%);
+    }
+
+    100% {
+        transform: translateX(240%);
+    }
+}
+
+
+/* HealthAxis Access / Not Authorized / Not Found Page */
+.ha-access-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px;
+    background: radial-gradient(circle at top left, rgba(20, 184, 166, 0.22), transparent 32%), radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.2), transparent 30%), linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #172554 100%);
+}
+
+.ha-access-card {
+    width: min(520px, 100%);
+    padding: 38px 34px;
+    text-align: center;
+    border-radius: 32px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.11);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.36);
+    backdrop-filter: blur(18px);
+}
+
+.ha-access-logo {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 26px;
+    color: #ffffff;
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 18px 42px rgba(20, 184, 166, 0.32);
+}
+
+.ha-access-kicker {
+    width: fit-content;
+    margin: 0 auto 14px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    color: #5eead4;
+    background: rgba(255, 255, 255, 0.09);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.ha-access-card h1 {
+    margin: 0;
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 900;
+    letter-spacing: -1px;
+}
+
+.ha-access-card p {
+    margin: 14px auto 26px;
+    max-width: 420px;
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.ha-access-primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 150px;
+    padding: 13px 18px;
+    border-radius: 18px;
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 900;
+    background: linear-gradient(135deg, #2563eb, #14b8a6);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.28);
+    transition: 0.2s ease;
+}
+
+    .ha-access-primary-link:hover {
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 18px 36px rgba(37, 99, 235, 0.34);
+    }

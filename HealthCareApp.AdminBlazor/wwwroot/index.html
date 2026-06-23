@@ -19,11 +19,27 @@
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="ha-app-loader">
+            <div class="ha-loader-card">
+                <div class="ha-loader-logo">HA</div>
+
+                <h1 class="ha-loader-title">
+                    Health<span>Axis</span>
+                </h1>
+
+                <p class="ha-loader-subtitle">
+                    Preparing your secure admin workspace...
+                </p>
+
+                <div class="ha-loader-progress">
+                    <div class="ha-loader-progress-bar"></div>
+                </div>
+
+                <div class="ha-loader-caption">
+                    Admin Portal loading
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="blazor-error-ui">

@@ -1419,3 +1419,410 @@ font-weight: 700;
     color: #15803d;
     background: #dcfce7;
 }
+
+
+
+.hc-btn-primary:disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+    transform: none;
+    box-shadow: none;
+}
+
+/* HealthAxis Login Verification Overlay */
+.hc-login-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at top left, rgba(20, 184, 166, 0.24), transparent 32%), radial-gradient(circle at bottom right, rgba(139, 92, 246, 0.22), transparent 30%), rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(14px);
+}
+
+.hc-login-overlay-card {
+    width: min(380px, calc(100% - 36px));
+    padding: 30px 28px;
+    text-align: center;
+    border-radius: 30px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.11);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+}
+
+.hc-login-overlay-logo {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 24px;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 18px 42px rgba(20, 184, 166, 0.32);
+}
+
+.hc-login-overlay-card h3 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.hc-login-overlay-card p {
+    margin: 10px 0 22px;
+    color: #cbd5e1;
+    font-size: 14px;
+}
+
+.hc-login-overlay-bar {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+    .hc-login-overlay-bar span {
+        display: block;
+        width: 42%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #14b8a6, #60a5fa, #8b5cf6);
+        animation: hc-login-overlay-slide 1.15s ease-in-out infinite;
+    }
+
+@keyframes hc-login-overlay-slide {
+    0% {
+        transform: translateX(-120%);
+    }
+
+    50% {
+        transform: translateX(80%);
+    }
+
+    100% {
+        transform: translateX(240%);
+    }
+}
+
+
+
+/* HealthAxis Premium Sidebar Polish */
+.hc-sidebar {
+    position: relative;
+    overflow: hidden;
+}
+
+    .hc-sidebar::before {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        top: -70px;
+        right: -80px;
+        border-radius: 999px;
+        background: rgba(20, 184, 166, 0.16);
+        filter: blur(4px);
+    }
+
+.hc-sidebar-brand {
+    position: relative;
+    z-index: 1;
+}
+
+.hc-sidebar-logo {
+    position: relative;
+    overflow: hidden;
+}
+
+    .hc-sidebar-logo::after {
+        content: "";
+        position: absolute;
+        inset: -30%;
+        background: linear-gradient( 120deg, transparent, rgba(255, 255, 255, 0.35), transparent );
+        transform: translateX(-120%) rotate(18deg);
+        animation: ha-logo-shine 3.8s ease-in-out infinite;
+    }
+
+@keyframes ha-logo-shine {
+    0% {
+        transform: translateX(-120%) rotate(18deg);
+    }
+
+    45% {
+        transform: translateX(140%) rotate(18deg);
+    }
+
+    100% {
+        transform: translateX(140%) rotate(18deg);
+    }
+}
+
+.hc-sidebar-title {
+    letter-spacing: -0.3px;
+}
+
+.hc-nav-link {
+    position: relative;
+    isolation: isolate;
+}
+
+    .hc-nav-link::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 50%;
+        width: 4px;
+        height: 0;
+        border-radius: 999px;
+        background: #5eead4;
+        transform: translateY(-50%);
+        transition: height 0.2s ease;
+    }
+
+    .hc-nav-link:hover {
+        transform: translateX(3px);
+    }
+
+    .hc-nav-link.active {
+        padding-left: 18px;
+    }
+
+        .hc-nav-link.active::before {
+            height: 28px;
+        }
+
+        .hc-nav-link.active span {
+            filter: drop-shadow(0 0 8px rgba(94, 234, 212, 0.55));
+        }
+
+.hc-sidebar-footer-card {
+    position: relative;
+    overflow: hidden;
+}
+
+    .hc-sidebar-footer-card::after {
+        content: "";
+        position: absolute;
+        width: 90px;
+        height: 90px;
+        right: -40px;
+        bottom: -42px;
+        border-radius: 999px;
+        background: rgba(139, 92, 246, 0.2);
+    }
+
+.hc-footer-label {
+    position: relative;
+    z-index: 1;
+}
+
+.hc-footer-text {
+    position: relative;
+    z-index: 1;
+}
+
+
+
+/* HealthAxis Premium Dashboard Polish */
+.ha-dashboard-report-grid {
+    align-items: stretch;
+}
+
+.ha-dashboard-report-card {
+    min-height: 150px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .ha-dashboard-report-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.2);
+    }
+
+.ha-dashboard-report-icon {
+    flex: 0 0 auto;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.ha-dashboard-card-meta {
+    display: block;
+    margin-top: 6px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.ha-dashboard-panel {
+    position: relative;
+    overflow: hidden;
+}
+
+    .ha-dashboard-panel::after {
+        content: "";
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        right: -58px;
+        top: -58px;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, 0.06);
+    }
+
+.ha-mini-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+    .ha-mini-card:hover {
+        transform: translateY(-2px);
+        border-color: #bfdbfe;
+        background: #f1f7ff;
+    }
+
+    .ha-mini-card p {
+        margin: 6px 0 0;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+.ha-action-card {
+    position: relative;
+    overflow: hidden;
+}
+
+    .ha-action-card::after {
+        content: "→";
+        position: absolute;
+        right: 18px;
+        top: 50%;
+        color: #2563eb;
+        font-size: 20px;
+        font-weight: 900;
+        transform: translateY(-50%) translateX(-4px);
+        opacity: 0;
+        transition: 0.2s ease;
+    }
+
+    .ha-action-card:hover::after {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+
+@media (max-width: 1200px) {
+    .ha-dashboard-report-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .ha-dashboard-report-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* HealthAxis Logout Confirmation Modal */
+.ha-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(14px);
+}
+
+.ha-logout-modal {
+    width: min(420px, 100%);
+    padding: 32px 30px;
+    text-align: center;
+    border-radius: 30px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 28px 70px rgba(15, 23, 42, 0.32);
+}
+
+.ha-logout-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    border-radius: 24px;
+    color: #ffffff;
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 18px 42px rgba(20, 184, 166, 0.28);
+}
+
+.ha-logout-modal h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.ha-logout-modal p {
+    margin: 12px auto 24px;
+    max-width: 330px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 600;
+}
+
+.ha-logout-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.ha-modal-secondary-btn,
+.ha-modal-danger-btn {
+    border: none;
+    border-radius: 16px;
+    padding: 12px 18px;
+    font-weight: 900;
+    transition: 0.2s ease;
+}
+
+.ha-modal-secondary-btn {
+    color: #334155;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+}
+
+.ha-modal-danger-btn {
+    color: #ffffff;
+    background: linear-gradient(135deg, #ef4444, #f97316);
+    box-shadow: 0 14px 30px rgba(239, 68, 68, 0.24);
+}
+
+    .ha-modal-secondary-btn:hover,
+    .ha-modal-danger-btn:hover {
+        transform: translateY(-1px);
+    }
+
+/* HealthAxis Page Transition Polish */
+.hc-admin-content {
+    animation: ha-page-enter 0.28s ease-out;
+}
+
+@keyframes ha-page-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

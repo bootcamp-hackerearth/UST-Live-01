@@ -4,11 +4,26 @@
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
                     <LayoutView Layout="@typeof(MainLayout)">
-                        <div style="padding: 40px;">
-                            <h3>You are not authorized</h3>
-                            <p>Please login to access the Admin Portal.</p>
-                            <a href="login">Go to Login</a>
-                        </div>
+                        <section class="ha-access-page">
+                            <div class="ha-access-card">
+                                <div class="ha-access-logo">HA</div>
+
+                                <div class="ha-access-kicker">
+                                    Admin Portal
+                                </div>
+
+                                <h1>Access restricted</h1>
+
+                                <p>
+                                    Only authorized Admin users can access the HealthAxis Admin Portal.
+                                    Please sign in with an Admin account to continue.
+                                </p>
+
+                                <a class="ha-access-primary-link" href="login">
+                                    Go to Login
+                                </a>
+                            </div>
+                        </section>
                     </LayoutView>
                 </NotAuthorized>
             </AuthorizeRouteView>
@@ -18,11 +33,26 @@
 
         <NotFound>
             <LayoutView Layout="@typeof(MainLayout)">
-                <div style="padding: 40px;">
-                    <h3>Page not found</h3>
-                    <p>The requested page does not exist.</p>
-                    <a href="login">Go to Login</a>
-                </div>
+                <section class="ha-access-page">
+                    <div class="ha-access-card">
+                        <div class="ha-access-logo">HA</div>
+
+                        <div class="ha-access-kicker">
+                            Page Not Found
+                        </div>
+
+                        <h1>Route unavailable</h1>
+
+                        <p>
+                            The page you are looking for does not exist in the HealthAxis Admin Portal.
+                            Please return to the login page or use the sidebar navigation after signing in.
+                        </p>
+
+                        <a class="ha-access-primary-link" href="login">
+                            Go to Login
+                        </a>
+                    </div>
+                </section>
             </LayoutView>
         </NotFound>
     </Router>
