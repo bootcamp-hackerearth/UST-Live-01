@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthAxis.API.DTO.DoctorDtos;
+using HealthAxis.Shared.DTO.DoctorDtos;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
@@ -50,5 +50,6 @@ namespace HealthAxis.API.Services.Implementation
 
             return mapper.Map<DoctorDto>(doctor);
         }
+
     }
 }

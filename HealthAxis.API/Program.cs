@@ -163,6 +163,17 @@ builder.Services.AddAutoMapper(cfg =>
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowHealthAxisAdmin", policy =>
+    {
+        policy.WithOrigins("https://localhost:7172")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -176,7 +187,7 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowHealthAxisAdmin");
 
 app.UseAuthentication();
 app.UseAuthorization();

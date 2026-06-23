@@ -1,4 +1,4 @@
-﻿using HealthAxis.API.Enums;
+﻿using HealthAxis.Shared.Enums;
 using HealthAxis.API.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

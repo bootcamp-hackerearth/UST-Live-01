@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using HealthAxis.API.DTO.HealthRecordDtos;
-using HealthAxis.API.Enums;
+using HealthAxis.Shared.Enums;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.HealthRecordDtos;
 
 namespace HealthAxis.API.Services.Implementation
 {

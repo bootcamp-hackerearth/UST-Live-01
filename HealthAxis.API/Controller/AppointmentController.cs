@@ -1,5 +1,5 @@
-﻿using HealthAxis.API.DTO.AppointmentDtos;
-using HealthAxis.API.Enums;
+﻿using HealthAxis.Shared.DTO.AppointmentDtos;
+using HealthAxis.Shared.Enums;
 using HealthAxis.API.Services;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;

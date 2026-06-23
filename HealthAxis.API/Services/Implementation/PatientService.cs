@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
-using HealthAxis.API.DTO.HealthRecordDtos;
-using HealthAxis.API.DTO.PatientDtos;
+using HealthAxis.Shared.DTO.CommonDtos;
+using HealthAxis.Shared.DTO.PatientDtos;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
+using HealthAxis.Shared.Utilities;
+using HealthAxis.Shared.DTO.HealthRecordDtos;
 
 namespace HealthAxis.API.Services.Implementation
 {
@@ -138,5 +140,21 @@ namespace HealthAxis.API.Services.Implementation
 
             return mapper.Map<PatientDto>(patient);
         }
+    //    public async Task<PagedResponseDto<PatientDto>> GetPagedAsync(
+    //PaginationQueryDto paginationQuery)
+    //    {
+    //        var totalRecords = await patientRepository.CountAsync();
+
+    //        var patients = await patientRepository.GetPagedAsync(
+    //            paginationQuery,
+    //            patient => patient.PatientId);
+
+    //        var patientDtos = mapper.Map<List<PatientDto>>(patients);
+
+    //        return PagedResponseFactory.Create(
+    //            patientDtos,
+    //            paginationQuery,
+    //            totalRecords);
+    //    }
     }
 }
