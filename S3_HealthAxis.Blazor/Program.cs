@@ -40,4 +40,20 @@ builder.Services.AddScoped<IDoctorService>(sp =>
     return new DoctorService(client);
 });
 
+// --- ADD THE MISSING PATIENT SERVICE ---
+builder.Services.AddScoped<IPatientService>(sp =>
+{
+    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+    var client = httpClientFactory.CreateClient("HealthAxisAPI");
+    return new PatientService(client);
+});
+
+// --- ADD THE MISSING APPOINTMENT SERVICE ---
+builder.Services.AddScoped<IAppointmentService>(sp =>
+{
+    var httpClientFactory = sp.GetRequiredService<IHttpClientFactory>();
+    var client = httpClientFactory.CreateClient("HealthAxisAPI");
+    return new AppointmentService(client);
+});
+
 await builder.Build().RunAsync();

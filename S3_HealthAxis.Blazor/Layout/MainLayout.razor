@@ -1,35 +1,44 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="main-layout">
+@using S3_HealthAxis.Blazor.Services
 
-    <!-- ✅ TOP NAVBAR -->
-    <div class="top-navbar">
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
 
-        <div class="nav-left">
-            <a href="/dashboard" class="brand-link">
-                HealthAxis Admin
-            </a>
-        </div>
+<div class="ha-layout">
 
-        <div class="nav-right">
-            <a href="#">About</a>
-        </div>
+    <header class="ha-topbar">
+        <a class="ha-brand-top" href="/dashboard">
+            HealthAxis Admin
+        </a>
 
-    </div>
+        <a href="#"
+           class="ha-logout"
+           @onclick="Logout"
+           @onclick:preventDefault="true">
+            <i class="bi bi-box-arrow-right"></i>
+            Logout
+        </a>
+    </header>
 
-    <!-- ✅ BODY (Sidebar + Content) -->
-    <div class="layout-body">
+    <div class="ha-body">
 
-        <!-- 🔵 Sidebar -->
-        <div class="sidebar">
+        <aside class="ha-sidebar">
             <NavMenu />
-        </div>
+        </aside>
 
-        <!-- 🔵 Main Content -->
-        <div class="main-content">
+        <main class="ha-content">
             @Body
-        </div>
+        </main>
 
     </div>
 
 </div>
+
+@code {
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+}
