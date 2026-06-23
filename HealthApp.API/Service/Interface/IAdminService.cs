@@ -7,7 +7,7 @@ public interface IAdminService
 {
     Task<List<DoctorDto>> GetDoctorsAsync();
 
-    Task<DoctorDto> CreateDoctorAsync(CreateDoctorDto dto);
+    Task<CreateDoctorResponseDto> CreateDoctorAsync(CreateDoctorDto dto);
 
     Task<DoctorDto> UpdateDoctorAsync(
         int doctorId,

@@ -12,7 +12,7 @@ public class AdminApiService(HttpClient httpClient)
             ?? new List<DoctorDto>();
     }
 
-    public async Task<DoctorDto?> CreateDoctorAsync(CreateDoctorDto dto)
+    public async Task<CreateDoctorResponseDto?> CreateDoctorAsync(CreateDoctorDto dto)
     {
         var response = await httpClient.PostAsJsonAsync("api/admin/doctors", dto);
 
@@ -21,7 +21,7 @@ public class AdminApiService(HttpClient httpClient)
             return null;
         }
 
-        return await response.Content.ReadFromJsonAsync<DoctorDto>();
+        return await response.Content.ReadFromJsonAsync<CreateDoctorResponseDto>();
     }
 
     public async Task<DoctorDto?> UpdateDoctorAsync(
@@ -58,9 +58,9 @@ public class AdminApiService(HttpClient httpClient)
     }
 
     public async Task<List<PatientDto>> GetPatientsAsync(
-    string? search = null,
-    GenderType? gender = null,
-    bool? hasInsurance = null)
+        string? search = null,
+        GenderType? gender = null,
+        bool? hasInsurance = null)
     {
         var queryParams = new List<string>();
 

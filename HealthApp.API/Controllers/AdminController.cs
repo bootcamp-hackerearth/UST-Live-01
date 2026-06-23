@@ -17,7 +17,7 @@ public class AdminController(IAdminService adminService) : ControllerBase
         => Ok(await adminService.GetDoctorsAsync());
 
     [HttpPost("doctors")]
-    public async Task<ActionResult<DoctorDto>> CreateDoctor(CreateDoctorDto dto)
+    public async Task<ActionResult<CreateDoctorResponseDto>> CreateDoctor(CreateDoctorDto dto)
         => Ok(await adminService.CreateDoctorAsync(dto));
 
     [HttpPut("doctors/{id:int}")]

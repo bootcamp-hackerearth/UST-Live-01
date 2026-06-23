@@ -67,6 +67,7 @@ public class MappingProfile : Profile
         CreateMap<BookAppointmentDto, Appointment>()
             .ForMember(d => d.TimeSlots, o => o.MapFrom(s => s.TimeSlot))
             .ForMember(d => d.AppointmentId, o => o.Ignore())
+            .ForMember(d => d.PatientId, o => o.Ignore())
             .ForMember(d => d.Patient, o => o.Ignore())
             .ForMember(d => d.Doctor, o => o.Ignore())
             .ForMember(d => d.Status, o => o.Ignore())

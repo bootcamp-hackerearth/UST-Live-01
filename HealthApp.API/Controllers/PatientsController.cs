@@ -26,5 +26,9 @@ public class PatientsController(
     [HttpGet("{id:int}/health-records")]
     [Authorize(Roles = Roles.Patient + "," + Roles.Doctor + "," + Roles.Admin)]
     public async Task<ActionResult<List<HealthRecordDto>>> Records(int id)
-        => Ok(await healthRecordService.GetHealthRecordsByPatientIdAsync(id));
+    {
+        await patientService.EnsurePatientAccessAsync(id);
+
+        return Ok(await healthRecordService.GetHealthRecordsByPatientIdAsync(id));
+    }
 }

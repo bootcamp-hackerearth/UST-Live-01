@@ -1,4 +1,3 @@
-
 using HealthApp.API.Service.Interface;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.DTOs;
@@ -18,10 +17,14 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
         [FromQuery] int? doctorId)
     {
         if (patientId.HasValue)
+        {
             return Ok(await appointmentService.GetAppointmentsByPatientIdAsync(patientId.Value));
+        }
 
         if (doctorId.HasValue)
+        {
             return Ok(await appointmentService.GetAppointmentsByDoctorIdAsync(doctorId.Value));
+        }
 
         return Ok(await appointmentService.GetAllAppointmentsAsync());
     }
@@ -31,15 +34,21 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
         => Ok(await appointmentService.GetAppointmentByIdAsync(id));
 
     [HttpPost]
-    [Authorize(Roles = Roles.Patient + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Patient)]
     public async Task<ActionResult<AppointmentDto>> Post(BookAppointmentDto dto)
         => Ok(await appointmentService.BookAppointmentAsync(dto));
 
     [HttpPut("{id:int}/status")]
-    public async Task<ActionResult<AppointmentDto>> Status(int id, UpdateAppointmentStatusDto dto)
+    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor + "," + Roles.Admin)]
+    public async Task<ActionResult<AppointmentDto>> Status(
+        int id,
+        UpdateAppointmentStatusDto dto)
         => Ok(await appointmentService.ChangeAppointmentStatusAsync(id, dto));
 
     [HttpDelete("{id:int}")]
-    public async Task<ActionResult<AppointmentDto>> Delete(int id, [FromQuery] string? reason)
+    [Authorize(Roles = Roles.Patient + "," + Roles.Admin)]
+    public async Task<ActionResult<AppointmentDto>> Delete(
+        int id,
+        [FromQuery] string? reason)
         => Ok(await appointmentService.CancelAppointmentAsync(id, reason));
 }

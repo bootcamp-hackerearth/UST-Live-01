@@ -9,6 +9,7 @@ using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 
 namespace HealthApp.API.Service.Impl;
 
@@ -22,7 +23,7 @@ public class AdminService(
     public async Task<List<DoctorDto>> GetDoctorsAsync()
         => mapper.Map<List<DoctorDto>>(await doctorRepository.GetAllAsync());
 
-    public async Task<DoctorDto> CreateDoctorAsync(CreateDoctorDto dto)
+    public async Task<CreateDoctorResponseDto> CreateDoctorAsync(CreateDoctorDto dto)
     {
         if (dto is null)
         {
@@ -38,6 +39,8 @@ public class AdminService(
             throw new ConflictException("A user with this email already exists.");
         }
 
+        var temporaryPassword = GenerateTemporaryPassword();
+
         var doctorUser = new ApplicationUser
         {
             UserName = dto.Email.Trim(),
@@ -50,7 +53,7 @@ public class AdminService(
 
         var createUserResult = await userManager.CreateAsync(
             doctorUser,
-            dto.TemporaryPassword);
+            temporaryPassword);
 
         if (!createUserResult.Succeeded)
         {
@@ -85,13 +88,49 @@ public class AdminService(
 
             var savedDoctor = await doctorRepository.AddAsync(doctor);
 
-            return mapper.Map<DoctorDto>(savedDoctor);
+            return new CreateDoctorResponseDto
+            {
+                Message = "Doctor registered successfully. Share the temporary password securely.",
+                Doctor = mapper.Map<DoctorDto>(savedDoctor),
+                TemporaryPassword = temporaryPassword
+            };
         }
         catch
         {
             await userManager.DeleteAsync(doctorUser);
             throw;
         }
+    }
+
+    private static string GenerateTemporaryPassword()
+    {
+        const string upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const string lower = "abcdefghijkmnopqrstuvwxyz";
+        const string digits = "23456789";
+        const string symbols = "@#$!";
+        const string all = upper + lower + digits + symbols;
+
+        var passwordChars = new List<char>
+    {
+        GetRandomChar(upper),
+        GetRandomChar(lower),
+        GetRandomChar(digits),
+        GetRandomChar(symbols)
+    };
+
+        while (passwordChars.Count < 10)
+        {
+            passwordChars.Add(GetRandomChar(all));
+        }
+
+        return new string(passwordChars
+            .OrderBy(_ => RandomNumberGenerator.GetInt32(int.MaxValue))
+            .ToArray());
+    }
+
+    private static char GetRandomChar(string source)
+    {
+        return source[RandomNumberGenerator.GetInt32(source.Length)];
     }
 
     public async Task<DoctorDto> UpdateDoctorAsync(int doctorId, UpdateDoctorDto dto)
@@ -170,17 +209,10 @@ public class AdminService(
             throw new BusinessRuleException("Doctor email is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(dto.TemporaryPassword))
-        {
-            throw new BusinessRuleException("Temporary password is required.");
-        }
-
-
         if (!Enum.IsDefined(typeof(SpecialisationType), dto.Specialisation))
         {
             throw new BusinessRuleException("Invalid specialisation.");
         }
-
 
         if (dto.PracticeStartDate.Date > DateTime.Today)
         {

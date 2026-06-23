@@ -15,13 +15,11 @@ public class DoctorDto
 public class CreateDoctorDto
 {
     [Required, StringLength(100)]
+    [RegularExpression(@"[A-Z][a-zA-Z\s]{2,}", ErrorMessage = "Full name must start with Capital letter and contain only letters")]
     public string FullName { get; set; } = string.Empty;
 
-    [Required, EmailAddress]
+    [Required, EmailAddress(ErrorMessage = "Invalid email address.")]
     public string Email { get; set; } = string.Empty;
-
-    [Required, MinLength(6)]
-    public string TemporaryPassword { get; set; } = string.Empty;
 
     [Required]
     [EnumDataType(typeof(SpecialisationType), ErrorMessage = "Invalid specialisation.")]
@@ -36,6 +34,7 @@ public class CreateDoctorDto
 public class UpdateDoctorDto
 {
     [Required, StringLength(100)]
+    [RegularExpression(@"[A-Z][a-zA-Z\s]{2,}", ErrorMessage = "Full name must start with Capital letter and contain only letters")]
     public string FullName { get; set; } = string.Empty;
 
     [Required]
@@ -56,3 +55,11 @@ public class DoctorAvailabilityDto
     public DateTime Date { get; set; } 
     public List<string> AvailableSlots { get; set; } = new(); 
 }
+
+public class CreateDoctorResponseDto
+{
+    public string Message { get; set; } = string.Empty;
+    public DoctorDto Doctor { get; set; } = new();
+    public string TemporaryPassword { get; set; } = string.Empty;
+}
+

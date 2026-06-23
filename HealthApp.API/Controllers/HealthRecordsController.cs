@@ -9,20 +9,32 @@ namespace HealthApp.API.Controllers;
 [ApiController]
 [Route("api/health-records")]
 [Authorize]
-public class HealthRecordsController(IHealthRecordService service) : ControllerBase
+public class HealthRecordsController(
+    IHealthRecordService service,
+    IPatientService patientService) : ControllerBase
 {
     [HttpGet("{patientId:int}")]
-    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]
     public async Task<ActionResult<List<HealthRecordDto>>> ByPatient(int patientId)
-        => Ok(await service.GetHealthRecordsByPatientIdAsync(patientId));
+    {
+        await patientService.EnsurePatientAccessAsync(patientId);
+
+        return Ok(await service.GetHealthRecordsByPatientIdAsync(patientId));
+    }
 
     [HttpGet("record/{id:int}")]
-    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]
     public async Task<ActionResult<HealthRecordDto>> ById(int id)
-        => Ok(await service.GetHealthRecordByIdAsync(id));
+    {
+        var healthRecord = await service.GetHealthRecordByIdAsync(id);
+
+        await patientService.EnsurePatientAccessAsync(healthRecord.PatientId);
+
+        return Ok(healthRecord);
+    }
 
     [HttpPost]
-    [Authorize(Roles = Roles.Doctor + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Doctor)]
     public async Task<ActionResult<HealthRecordDto>> Post(AddHealthRecordDto dto)
         => Ok(await service.AddHealthRecordAsync(dto));
 }

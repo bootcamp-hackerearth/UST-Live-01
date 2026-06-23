@@ -25,6 +25,9 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             ConflictException ex =>
                 (StatusCodes.Status409Conflict, ex.Message),
 
+            ForbiddenAccessException ex =>
+                    (StatusCodes.Status403Forbidden, ex.Message),
+
             PasswordChangeRequiredException ex =>
                 (StatusCodes.Status403Forbidden, ex.Message),
 

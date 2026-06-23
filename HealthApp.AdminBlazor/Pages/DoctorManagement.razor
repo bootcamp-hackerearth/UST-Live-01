@@ -20,6 +20,15 @@
     </div>
 }
 
+@if (!string.IsNullOrWhiteSpace(generatedTemporaryPassword))
+{
+    <div class="alert alert-success">
+        <strong>Generated Temporary Password:</strong>
+        <span>@generatedTemporaryPassword</span>
+        <p>Share this password securely with the doctor. This password will not be shown again after leaving this page.</p>
+    </div>
+}
+
 <div class="toolbar">
     <input class="input"
            placeholder="Search doctors..."
@@ -51,11 +60,6 @@
                 <div>
                     <label>Email</label>
                     <InputText class="input" @bind-Value="createDto.Email" />
-                </div>
-
-                <div>
-                    <label>Temporary Password</label>
-                    <InputText class="input" type="password" @bind-Value="createDto.TemporaryPassword" />
                 </div>
 
                 <div>
@@ -211,6 +215,7 @@ else
     private string searchText = string.Empty;
     private string statusFilter = "All";
     private string? message;
+    private string? generatedTemporaryPassword;
 
     private bool isLoading = true;
     private bool isSaving;
@@ -234,16 +239,21 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(clearMessage: true);
     }
 
-    private async Task LoadDoctorsAsync()
+    private async Task LoadDoctorsAsync(bool clearMessage = false)
     {
         try
         {
             isLoading = true;
-            message = null;
-            isError = false;
+
+            if (clearMessage)
+            {
+                message = null;
+                isError = false;
+                generatedTemporaryPassword = null;
+            }
 
             doctors = await AdminApi.GetDoctorsAsync();
         }
@@ -264,6 +274,7 @@ else
         showCreateForm = true;
         message = null;
         isError = false;
+        generatedTemporaryPassword = null;
 
         createDto = new CreateDoctorDto
         {
@@ -280,21 +291,23 @@ else
             isSaving = true;
             message = null;
             isError = false;
+            generatedTemporaryPassword = null;
 
-            var createdDoctor = await AdminApi.CreateDoctorAsync(createDto);
+            var response = await AdminApi.CreateDoctorAsync(createDto);
 
-            if (createdDoctor is null)
+            if (response is null)
             {
                 message = "Doctor registration failed.";
                 isError = true;
                 return;
             }
 
-            message = "Doctor registered successfully with a temporary password.";
+            message = response.Message;
+            generatedTemporaryPassword = response.TemporaryPassword;
             isError = false;
             showCreateForm = false;
 
-            await LoadDoctorsAsync();
+            doctors = await AdminApi.GetDoctorsAsync();
         }
         catch
         {
@@ -320,6 +333,7 @@ else
         editingDoctorId = doctorId;
         message = null;
         isError = false;
+        generatedTemporaryPassword = null;
 
         updateDto = new UpdateDoctorDto
         {
@@ -343,6 +357,7 @@ else
             isSaving = true;
             message = null;
             isError = false;
+            generatedTemporaryPassword = null;
 
             var updatedDoctor = await AdminApi.UpdateDoctorAsync(editingDoctorId.Value, updateDto);
 
@@ -357,7 +372,7 @@ else
             isError = false;
             editingDoctorId = null;
 
-            await LoadDoctorsAsync();
+            doctors = await AdminApi.GetDoctorsAsync();
         }
         catch
         {
@@ -390,6 +405,8 @@ else
 
         try
         {
+            generatedTemporaryPassword = null;
+
             var updatedDoctor = await AdminApi.UpdateDoctorAsync(doctorId, dto);
 
             if (updatedDoctor is null)
@@ -402,7 +419,7 @@ else
             message = "Doctor status updated successfully.";
             isError = false;
 
-            await LoadDoctorsAsync();
+            doctors = await AdminApi.GetDoctorsAsync();
         }
         catch
         {
@@ -417,5 +434,6 @@ else
         editingDoctorId = null;
         message = null;
         isError = false;
+        generatedTemporaryPassword = null;
     }
 }

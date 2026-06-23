@@ -18,8 +18,7 @@ public class AppointmentDto
 
 public class BookAppointmentDto
 {
-    [Range(1, int.MaxValue, ErrorMessage = "Please provide a valid patient reference.")]
-    public int PatientId { get; set; }
+    [Required(ErrorMessage = "Please provide a valid Doctor reference.")]
     [Range(1, int.MaxValue, ErrorMessage = "Please provide a valid doctor reference.")]
     public int DoctorId { get; set; }
 

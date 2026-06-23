@@ -1,4 +1,3 @@
-
 using HealthApp.Shared.DTOs;
 
 namespace HealthApp.API.Service.Interface;
@@ -14,4 +13,6 @@ public interface IPatientService
     Task<PatientDto> UpdatePatientAsync(
         int patientId,
         UpdatePatientDto dto);
+
+    Task EnsurePatientAccessAsync(int patientId);
 }
