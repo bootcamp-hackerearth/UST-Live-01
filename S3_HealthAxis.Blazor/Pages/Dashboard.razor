@@ -5,10 +5,24 @@
 
 @inject IAdminService AdminService
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="ha-dashboard-header mb-4">
     <div>
         <h3 class="mb-1 fw-bold text-dark">Dashboard Overview</h3>
         <p class="text-muted mb-0">Welcome back to the Care Management Portal.</p>
+    </div>
+
+    <div class="ha-dashboard-actions">
+        <a href="/patients" class="btn btn-light ha-dashboard-action-btn">
+            <i class="bi bi-person-plus me-1"></i> Add Patient
+        </a>
+
+        <a href="/appointments" class="btn btn-primary ha-dashboard-action-btn">
+            <i class="bi bi-calendar-plus me-1"></i> Book Appointment
+        </a>
+
+        <a href="/appointments" class="btn btn-light ha-dashboard-action-btn">
+            <i class="bi bi-eye me-1"></i> View Appointments
+        </a>
     </div>
 </div>
 
@@ -27,10 +41,9 @@ else if (_dashboard == null)
 }
 else
 {
-    <!-- CLICKABLE STAT CARDS -->
+    <!-- KPI CARDS -->
     <div class="row g-4 mb-4">
-
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <a href="/doctors" class="dash-card-link">
                 <div class="dash-card card-doctors">
                     <div class="card-header-ui">
@@ -42,7 +55,19 @@ else
             </a>
         </div>
 
-        <div class="col-xl-3 col-md-6">
+        <div class="col-xl-2 col-lg-4 col-md-6">
+            <a href="/doctors" class="dash-card-link">
+                <div class="dash-card ha-kpi-card-active-doctors">
+                    <div class="card-header-ui">
+                        <h5 class="card-title">Active Doctors</h5>
+                        <i class="bi bi-person-check card-icon"></i>
+                    </div>
+                    <h2 class="card-value">@_dashboard.ActiveDoctors</h2>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-2 col-lg-4 col-md-6">
             <a href="/patients" class="dash-card-link">
                 <div class="dash-card card-patients">
                     <div class="card-header-ui">
@@ -54,90 +79,173 @@ else
             </a>
         </div>
 
-        <div class="col-xl-3 col-md-6">
-            <a href="/appointments" class="dash-card-link">
-                <div class="dash-card card-appointments">
+        <div class="col-xl-2 col-lg-4 col-md-6">
+            <a href="/patients" class="dash-card-link">
+                <div class="dash-card ha-kpi-card-active-patients">
                     <div class="card-header-ui">
-                        <h5 class="card-title">All Appointments</h5>
-                        <i class="bi bi-calendar-check card-icon"></i>
+                        <h5 class="card-title">Active Patients</h5>
+                        <i class="bi bi-person-heart card-icon"></i>
                     </div>
-                    <h2 class="card-value">@_dashboard.TotalAppointments</h2>
+                    <h2 class="card-value">@_dashboard.ActivePatients</h2>
                 </div>
             </a>
         </div>
 
-        <div class="col-xl-3 col-md-6">
-            <a href="/appointments?filter=today" class="dash-card-link">
+        <div class="col-xl-2 col-lg-4 col-md-6">
+            <a href="/appointments" class="dash-card-link">
                 <div class="dash-card card-today">
                     <div class="card-header-ui">
-                        <h5 class="card-title">Today's Schedule</h5>
-                        <i class="bi bi-clock-history card-icon"></i>
+                        <h5 class="card-title">Today's Appointments</h5>
+                        <i class="bi bi-calendar-day card-icon"></i>
                     </div>
                     <h2 class="card-value">@_dashboard.TodayAppointments</h2>
                 </div>
             </a>
         </div>
 
+        <div class="col-xl-2 col-lg-4 col-md-6">
+            <a href="/appointments" class="dash-card-link">
+                <div class="dash-card ha-kpi-card-pending">
+                    <div class="card-header-ui">
+                        <h5 class="card-title">Pending Appointments</h5>
+                        <i class="bi bi-hourglass-split card-icon"></i>
+                    </div>
+                    <h2 class="card-value">@_dashboard.PendingAppointments</h2>
+                </div>
+            </a>
+        </div>
     </div>
 
-    <!-- GRAPHS ROW -->
-    <div class="row g-4">
+    <!-- MAIN INSIGHTS -->
+    <div class="row g-4 mb-4">
 
-        <!-- Graph 1: Doctor Availability (Donut Chart) -->
+        <!-- Doctor Availability -->
         <div class="col-lg-4">
             <div class="chart-card">
-                <h5 class="chart-title">Active Doctors</h5>
+                <div class="ha-panel-header">
+                    <h5 class="chart-title mb-0">Doctor Availability</h5>
+                    <span class="ha-panel-subtitle">Based on active doctor count</span>
+                </div>
+
                 <div class="css-donut-container">
-                    <!-- Dynamic inline style sets the percentage color fill -->
                     <div class="donut-chart" style="--percentage: @_activeDoctorPercentage; --chart-color: #38b2ac;">
                         <div class="donut-inner">
                             <span class="donut-percentage">@_activeDoctorPercentage%</span>
-                            <span class="donut-label">Available</span>
+                            <span class="donut-label">Active</span>
                         </div>
                     </div>
                 </div>
-                <div class="text-center mt-3 text-muted small">
-                    <i class="bi bi-circle-fill" style="color: #38b2ac; font-size: 8px; margin-right: 4px;"></i> Active
-                    <i class="bi bi-circle-fill ms-3" style="color: #e2e8f0; font-size: 8px; margin-right: 4px;"></i> Off-Duty
+
+                <div class="ha-legend-row">
+                    <div class="ha-legend-item">
+                        <span class="ha-dot ha-dot-green"></span>
+                        <span>Active: @_dashboard.ActiveDoctors</span>
+                    </div>
+
+                    <div class="ha-legend-item">
+                        <span class="ha-dot ha-dot-light"></span>
+                        <span>Inactive: @_inactiveDoctors</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Graph 2: Appointment Status (Bar Chart) -->
+        <!-- Appointment Progress -->
         <div class="col-lg-8">
             <div class="chart-card">
-                <h5 class="chart-title">Today's Appointment Status</h5>
+                <div class="ha-panel-header">
+                    <h5 class="chart-title mb-0">Today's Appointment Progress</h5>
+                    <span class="ha-panel-subtitle">Real-time operational snapshot</span>
+                </div>
 
-                <div class="css-bar-chart">
-
-                    <div class="bar-col">
-                        <div class="bar-value">@_pendingAppointments</div>
-                        <div class="bar" style="height: @(_pendingAppointments * 10)%; background-color: #cbd5e0;"></div>
-                        <div class="bar-label">Pending</div>
+                <div class="row g-3 mt-1">
+                    <div class="col-md-4">
+                        <div class="ha-mini-stat ha-mini-stat-pending">
+                            <div class="ha-mini-stat-label">Pending</div>
+                            <div class="ha-mini-stat-value">@_dashboard.PendingAppointments</div>
+                        </div>
                     </div>
 
-                    <div class="bar-col">
-                        <div class="bar-value">@_confirmedAppointments</div>
-                        <div class="bar" style="height: @(_confirmedAppointments * 10)%; background-color: #2b6cb0;"></div>
-                        <div class="bar-label">Confirmed</div>
+                    <div class="col-md-4">
+                        <div class="ha-mini-stat ha-mini-stat-completed">
+                            <div class="ha-mini-stat-label">Completed</div>
+                            <div class="ha-mini-stat-value">@_dashboard.CompletedAppointments</div>
+                        </div>
                     </div>
 
-                    <div class="bar-col">
-                        <div class="bar-value">@_completedAppointments</div>
-                        <div class="bar" style="height: @(_completedAppointments * 10)%; background-color: #38b2ac;"></div>
-                        <div class="bar-label">Completed</div>
+                    <div class="col-md-4">
+                        <div class="ha-mini-stat ha-mini-stat-other">
+                            <div class="ha-mini-stat-label">Other / Remaining</div>
+                            <div class="ha-mini-stat-value">@_remainingAppointments</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ha-progress-track mt-4">
+                    <div class="ha-progress-segment ha-progress-pending"
+                         style="width:@($"{_pendingPct}%")"></div>
+
+                    <div class="ha-progress-segment ha-progress-completed"
+                         style="width:@($"{_completedPct}%")"></div>
+
+                    <div class="ha-progress-segment ha-progress-other"
+                         style="width:@($"{_remainingPct}%")"></div>
+                </div>
+
+                <div class="ha-progress-legend mt-3">
+                    <div class="ha-legend-item">
+                        <span class="ha-dot ha-dot-pending"></span>
+                        <span>Pending</span>
                     </div>
 
-                    <div class="bar-col">
-                        <div class="bar-value">@_cancelledAppointments</div>
-                        <div class="bar" style="height: @(_cancelledAppointments * 10)%; background-color: #fc8181;"></div>
-                        <div class="bar-label">Cancelled</div>
+                    <div class="ha-legend-item">
+                        <span class="ha-dot ha-dot-completed"></span>
+                        <span>Completed</span>
                     </div>
 
+                    <div class="ha-legend-item">
+                        <span class="ha-dot ha-dot-other"></span>
+                        <span>Other / Remaining</span>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
+    <!-- SECONDARY INSIGHTS -->
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="chart-card ha-insight-card">
+                <div class="ha-insight-title">
+                    <i class="bi bi-check2-circle me-2"></i>
+                    Completed Today
+                </div>
+                <div class="ha-insight-value text-success">@_dashboard.CompletedAppointments</div>
+                <div class="ha-insight-subtext">Appointments successfully completed today</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="chart-card ha-insight-card">
+                <div class="ha-insight-title">
+                    <i class="bi bi-person-dash me-2"></i>
+                    Inactive Doctors
+                </div>
+                <div class="ha-insight-value text-danger">@_inactiveDoctors</div>
+                <div class="ha-insight-subtext">Doctors currently not active in the system</div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="chart-card ha-insight-card">
+                <div class="ha-insight-title">
+                    <i class="bi bi-person-x me-2"></i>
+                    Inactive Patients
+                </div>
+                <div class="ha-insight-value text-warning">@_inactivePatients</div>
+                <div class="ha-insight-subtext">Patients currently marked inactive</div>
+            </div>
+        </div>
     </div>
 }
 
@@ -145,14 +253,14 @@ else
     private DashboardDto? _dashboard;
     private bool _loading = true;
 
-    // --- Graph Mock Data Variables ---
-    // (Since these statuses aren't in your DTO yet, we derive them visually for the chart)
     private int _activeDoctorPercentage = 0;
+    private int _inactiveDoctors = 0;
+    private int _inactivePatients = 0;
+    private int _remainingAppointments = 0;
 
-    private int _pendingAppointments = 0;
-    private int _confirmedAppointments = 0;
-    private int _completedAppointments = 0;
-    private int _cancelledAppointments = 0;
+    private double _pendingPct = 0;
+    private double _completedPct = 0;
+    private double _remainingPct = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -162,17 +270,24 @@ else
 
             if (_dashboard != null)
             {
-                // Logic to generate realistic-looking graph data based on actual numbers
-                // If you update your DTO to include exact status counts later, replace this logic.
-                _activeDoctorPercentage = _dashboard.TotalDoctors > 0 ? 82 : 0; // Assuming 82% are active
+                // Doctor availability
+                _inactiveDoctors = Math.Max(_dashboard.TotalDoctors - _dashboard.ActiveDoctors, 0);
+                _inactivePatients = Math.Max(_dashboard.TotalPatients - _dashboard.ActivePatients, 0);
 
-                int totalToday = _dashboard.TodayAppointments;
-                if (totalToday > 0)
+                _activeDoctorPercentage = _dashboard.TotalDoctors > 0
+                    ? (int)Math.Round((_dashboard.ActiveDoctors / (double)_dashboard.TotalDoctors) * 100)
+                    : 0;
+
+                // Appointment progress
+                _remainingAppointments = Math.Max(
+                    _dashboard.TodayAppointments - (_dashboard.PendingAppointments + _dashboard.CompletedAppointments),
+                    0);
+
+                if (_dashboard.TodayAppointments > 0)
                 {
-                    _completedAppointments = (int)(totalToday * 0.4);
-                    _confirmedAppointments = (int)(totalToday * 0.3);
-                    _cancelledAppointments = (int)(totalToday * 0.1);
-                    _pendingAppointments = totalToday - (_completedAppointments + _confirmedAppointments + _cancelledAppointments);
+                    _pendingPct = (_dashboard.PendingAppointments / (double)_dashboard.TodayAppointments) * 100;
+                    _completedPct = (_dashboard.CompletedAppointments / (double)_dashboard.TodayAppointments) * 100;
+                    _remainingPct = (_remainingAppointments / (double)_dashboard.TodayAppointments) * 100;
                 }
             }
         }

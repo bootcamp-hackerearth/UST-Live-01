@@ -4,7 +4,7 @@ namespace S3_HealthAxisApi.Services.Interface
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<AppointmentDto>> GetAllAsync();
+        Task<IEnumerable<AppointmentDetailsDto>> GetAllAsync();
 
         Task<AppointmentDetailsDto?> GetByIdAsync(int id);
 

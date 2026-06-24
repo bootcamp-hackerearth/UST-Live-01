@@ -3,7 +3,9 @@
 @using S3_HealthAxis.Shared.DTOs.Patient
 @using S3_HealthAxis.Shared.Enums
 @using S3_HealthAxis.Blazor.Services
+@using S3_HealthAxis.Blazor.Shared
 @using System.ComponentModel.DataAnnotations
+@using System.Linq
 
 @inject IPatientService PatientService
 
@@ -26,8 +28,48 @@
     </div>
 }
 
-<div class="row mb-3">
-    <div class="col-md-4">
+<!-- SUMMARY CARDS -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-all @GetPatientCardClass(PatientViewFilter.All)"
+                @onclick="() => SetPatientFilter(PatientViewFilter.All)">
+            <div class="ha-summary-card-label">Total Patients</div>
+            <div class="ha-summary-card-value">@TotalPatientsCount</div>
+        </button>
+    </div>
+
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-active @GetPatientCardClass(PatientViewFilter.Active)"
+                @onclick="() => SetPatientFilter(PatientViewFilter.Active)">
+            <div class="ha-summary-card-label">Active Patients</div>
+            <div class="ha-summary-card-value">@ActivePatientsCount</div>
+        </button>
+    </div>
+
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-inactive @GetPatientCardClass(PatientViewFilter.Inactive)"
+                @onclick="() => SetPatientFilter(PatientViewFilter.Inactive)">
+            <div class="ha-summary-card-label">Inactive Patients</div>
+            <div class="ha-summary-card-value">@InactivePatientsCount</div>
+        </button>
+    </div>
+
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-insured @GetPatientCardClass(PatientViewFilter.Insured)"
+                @onclick="() => SetPatientFilter(PatientViewFilter.Insured)">
+            <div class="ha-summary-card-label">Insured Patients</div>
+            <div class="ha-summary-card-value">@InsuredPatientsCount</div>
+        </button>
+    </div>
+</div>
+
+<!-- SEARCH + SORT -->
+<div class="row mb-3 g-3">
+    <div class="col-md-5">
         <div class="input-group shadow-sm">
             <span class="input-group-text bg-white border-end-0">
                 <i class="bi bi-search text-muted"></i>
@@ -37,6 +79,16 @@
                    placeholder="Search by Name or ID..."
                    @bind="SearchQuery"
                    @bind:event="oninput" />
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="shadow-sm">
+            <InputSelect class="form-select" @bind-Value="SelectedSortOption">
+                <option value="@PatientSortOption.NameAsc">Sort by: Name (A–Z)</option>
+                <option value="@PatientSortOption.NameDesc">Sort by: Name (Z–A)</option>
+                <option value="@PatientSortOption.Id">Sort by: ID</option>
+            </InputSelect>
         </div>
     </div>
 </div>
@@ -57,10 +109,17 @@
                 <p class="mt-2">No patients found in the registry.</p>
             </div>
         }
+        else if (!FilteredPatients.Any())
+        {
+            <div class="text-center p-5 text-muted">
+                <i class="bi bi-search fs-1"></i>
+                <p class="mt-2">No patients match the selected filters.</p>
+            </div>
+        }
         else
         {
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 ha-data-table">
+                <table class="table table-hover align-middle mb-0 ha-data-table ha-patients-table">
                     <thead>
                         <tr>
                             <th class="ps-4">ID</th>
@@ -78,11 +137,29 @@
                         {
                             <tr>
                                 <td class="ps-4 text-muted">#@patient.PatientId</td>
-                                <td class="fw-medium">@patient.FullName</td>
-                                <td>@patient.DateOfBirth.ToString("MMM dd, yyyy")</td>
-                                <td>@patient.Gender.ToString()</td>
-                                <td>@patient.PhoneNumber</td>
-                                <td class="text-muted">@(string.IsNullOrEmpty(patient.InsuranceId) ? "N/A" : patient.InsuranceId)</td>
+
+                                <td>
+                                    <div class="ha-patient-name">@patient.FullName</div>
+                                </td>
+
+                                <td>
+                                    <span class="ha-patient-dob">@patient.DateOfBirth.ToString("MMM dd, yyyy")</span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-gender-pill">@patient.Gender.ToString()</span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-patient-phone">@patient.PhoneNumber</span>
+                                </td>
+
+                                <td>
+                                    <span class="ha-patient-insurance">
+                                        @(string.IsNullOrEmpty(patient.InsuranceId) ? "N/A" : patient.InsuranceId)
+                                    </span>
+                                </td>
+
                                 <td>
                                     @if (patient.IsActive)
                                     {
@@ -97,6 +174,7 @@
                                         </span>
                                     }
                                 </td>
+
                                 <td class="text-end pe-4">
                                     <button class="btn btn-sm btn-outline-primary me-2 ha-table-action"
                                             @onclick="() => OpenEditModal(patient)">
@@ -126,11 +204,9 @@
 
             @if (TotalPages > 1)
             {
-                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center py-3">
+                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center py-3 flex-wrap gap-2">
                     <span class="text-muted small">
-                        Showing @(((_currentPage - 1) * _pageSize) + 1)
-                        to @Math.Min(_currentPage * _pageSize, FilteredPatients.Count())
-                        of @FilteredPatients.Count() patients
+                        Showing @StartRecord to @EndRecord of @FilteredPatients.Count() patients
                     </span>
 
                     <nav>
@@ -144,7 +220,9 @@
                             </li>
 
                             <li class="page-item disabled">
-                                <span class="page-link text-dark">Page @_currentPage of @TotalPages</span>
+                                <span class="page-link text-dark">
+                                    Page @_currentPage of @TotalPages
+                                </span>
                             </li>
 
                             <li class="page-item @(_currentPage == TotalPages ? "disabled" : "")">
@@ -158,13 +236,6 @@
                     </nav>
                 </div>
             }
-
-            @if (!FilteredPatients.Any() && _patients.Any())
-            {
-                <div class="text-center p-4 text-muted border-top">
-                    <p class="mb-0">No patients match your search criteria.</p>
-                </div>
-            }
         }
     </div>
 </div>
@@ -174,6 +245,7 @@
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow">
+
                 <div class="modal-header bg-light border-0">
                     <h5 class="modal-title fw-bold">@(_isEditing ? "Edit Patient" : "Add New Patient")</h5>
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
@@ -268,40 +340,15 @@
     private bool _loading = true;
     private string? _pageError = null;
 
-    // Search + pagination
     private string _searchQuery = "";
     private int _currentPage = 1;
-    private readonly int _pageSize = 20;
+    private readonly int _pageSize = 5;
 
-    private string SearchQuery
-    {
-        get => _searchQuery;
-        set
-        {
-            _searchQuery = value;
-            _currentPage = 1;
-        }
-    }
-
-    private IEnumerable<PatientDto> FilteredPatients =>
-        _patients?.Where(p =>
-            string.IsNullOrWhiteSpace(SearchQuery)
-            || p.FullName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)
-            || p.PatientId.ToString().Contains(SearchQuery))
-        ?? Array.Empty<PatientDto>();
-
-    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredPatients.Count() / (double)_pageSize));
-
-    private IEnumerable<PatientDto> PagedPatients =>
-        FilteredPatients.Skip((_currentPage - 1) * _pageSize).Take(_pageSize);
-
-    // Modal state
     private bool _showModal = false;
     private bool _isEditing = false;
     private bool _isSaving = false;
     private int _editingPatientId = 0;
 
-    // Confirmation dialog state
     private bool _showConfirmDialog = false;
     private string _confirmTitle = "";
     private string _confirmMessage = "";
@@ -309,7 +356,19 @@
     private bool _confirmIsDanger = false;
     private Func<Task>? _pendingConfirmedAction;
 
-    // Form model
+    private PatientViewFilter CurrentPatientFilter { get; set; } = PatientViewFilter.All;
+
+    private PatientSortOption _selectedSortOption = PatientSortOption.NameAsc;
+    private PatientSortOption SelectedSortOption
+    {
+        get => _selectedSortOption;
+        set
+        {
+            _selectedSortOption = value;
+            _currentPage = 1;
+        }
+    }
+
     private PatientFormModel _formData = new();
 
     public class PatientFormModel
@@ -333,6 +392,61 @@
         public string? InsuranceNumber { get; set; }
     }
 
+    private enum PatientViewFilter
+    {
+        All,
+        Active,
+        Inactive,
+        Insured
+    }
+
+    private enum PatientSortOption
+    {
+        NameAsc,
+        NameDesc,
+        Id
+    }
+
+    private string SearchQuery
+    {
+        get => _searchQuery;
+        set
+        {
+            _searchQuery = value;
+            _currentPage = 1;
+        }
+    }
+
+    private int TotalPatientsCount => _patients?.Count ?? 0;
+    private int ActivePatientsCount => _patients?.Count(p => p.IsActive) ?? 0;
+    private int InactivePatientsCount => _patients?.Count(p => !p.IsActive) ?? 0;
+    private int InsuredPatientsCount => _patients?.Count(p => !string.IsNullOrWhiteSpace(p.InsuranceId)) ?? 0;
+
+    private IEnumerable<PatientDto> FilteredPatients =>
+        ApplySorting(
+            (_patients ?? Enumerable.Empty<PatientDto>())
+            .Where(p =>
+                CurrentPatientFilter switch
+                {
+                    PatientViewFilter.Active => p.IsActive,
+                    PatientViewFilter.Inactive => !p.IsActive,
+                    PatientViewFilter.Insured => !string.IsNullOrWhiteSpace(p.InsuranceId),
+                    _ => true
+                })
+            .Where(p =>
+                string.IsNullOrWhiteSpace(SearchQuery)
+                || p.FullName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)
+                || p.PatientId.ToString().Contains(SearchQuery))
+        );
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredPatients.Count() / (double)_pageSize));
+
+    private IEnumerable<PatientDto> PagedPatients =>
+        FilteredPatients.Skip((_currentPage - 1) * _pageSize).Take(_pageSize);
+
+    private int StartRecord => FilteredPatients.Any() ? ((_currentPage - 1) * _pageSize) + 1 : 0;
+    private int EndRecord => FilteredPatients.Any() ? Math.Min(_currentPage * _pageSize, FilteredPatients.Count()) : 0;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadPatients();
@@ -346,8 +460,7 @@
             _pageError = null;
             _patients = await PatientService.GetAllAsync();
 
-            if (_currentPage > TotalPages)
-                _currentPage = TotalPages;
+            EnsureValidPage();
         }
         catch (Exception ex)
         {
@@ -358,6 +471,27 @@
             _loading = false;
         }
     }
+
+    private IEnumerable<PatientDto> ApplySorting(IEnumerable<PatientDto> patients)
+    {
+        return _selectedSortOption switch
+        {
+            PatientSortOption.NameAsc => patients.OrderBy(p => p.FullName),
+            PatientSortOption.NameDesc => patients.OrderByDescending(p => p.FullName),
+            PatientSortOption.Id => patients.OrderBy(p => p.PatientId),
+            _ => patients.OrderBy(p => p.FullName)
+        };
+    }
+
+    private void SetPatientFilter(PatientViewFilter filter)
+    {
+        CurrentPatientFilter = filter;
+        _currentPage = 1;
+        EnsureValidPage();
+    }
+
+    private string GetPatientCardClass(PatientViewFilter filter) =>
+        CurrentPatientFilter == filter ? "active" : "";
 
     private void OpenAddModal()
     {
@@ -522,5 +656,14 @@
     {
         if (_currentPage < TotalPages)
             _currentPage++;
+    }
+
+    private void EnsureValidPage()
+    {
+        if (_currentPage < 1)
+            _currentPage = 1;
+
+        if (_currentPage > TotalPages)
+            _currentPage = TotalPages;
     }
 }

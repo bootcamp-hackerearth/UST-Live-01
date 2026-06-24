@@ -7,6 +7,7 @@
 @using S3_HealthAxis.Blazor.Services
 @using S3_HealthAxis.Blazor.Shared
 @using System.ComponentModel.DataAnnotations
+@using System.Linq
 
 @inject IAppointmentService AppointmentService
 @inject IDoctorService DoctorService
@@ -33,73 +34,118 @@
 
 @if (_appointments != null)
 {
-    <div class="card shadow-sm border-0 mb-4 bg-white">
+    <div class="card shadow-sm border-0 mb-4 ha-appointments-overview-card">
         <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <h5 class="fw-bold mb-0">Schedule Overview</h5>
 
-                <div class="btn-group shadow-sm" role="group">
-                    <input type="radio"
-                           class="btn-check"
-                           name="btnradio"
-                           id="btnToday"
-                           autocomplete="off"
-                           checked="@(!_showWeekView)"
-                           @onchange="() => ToggleChart(false)" />
-                    <label class="btn btn-outline-primary btn-sm px-3" for="btnToday">Today</label>
+                <div class="ha-appt-toolbar">
+                    <button type="button"
+                            class="ha-mini-filter-btn @(CurrentStatusFilter == AppointmentStatusFilter.All ? "active" : "")"
+                            @onclick="() => SetStatusFilter(AppointmentStatusFilter.All)">
+                        All
+                    </button>
 
-                    <input type="radio"
-                           class="btn-check"
-                           name="btnradio"
-                           id="btnWeek"
-                           autocomplete="off"
-                           checked="@_showWeekView"
-                           @onchange="() => ToggleChart(true)" />
-                    <label class="btn btn-outline-primary btn-sm px-3" for="btnWeek">This Week</label>
+                    <button type="button"
+                            class="ha-mini-filter-btn @(!_showWeekView ? "active" : "")"
+                            @onclick="() => ToggleChart(false)">
+                        Today
+                    </button>
+
+                    <button type="button"
+                            class="ha-mini-filter-btn @(_showWeekView ? "active" : "")"
+                            @onclick="() => ToggleChart(true)">
+                        This Week
+                    </button>
                 </div>
             </div>
 
             <div class="row g-3 mb-4">
-                <div class="col-md-3">
-                    <div class="stat-card bg-warning bg-opacity-10 p-3 border border-warning border-opacity-25">
-                        <div class="text-warning small fw-bold text-uppercase mb-1">Pending</div>
-                        <h3 class="fw-bold text-dark mb-0">@Analytics.Pending</h3>
-                    </div>
+                <!-- ALL -->
+                <div class="col-xl col-lg-4 col-md-6">
+                    <button type="button"
+                            class="ha-appt-stat-card ha-appt-stat-all @GetStatusCardClass(AppointmentStatusFilter.All)"
+                            @onclick="() => SetStatusFilter(AppointmentStatusFilter.All)">
+                        <div class="ha-appt-stat-icon">
+                            <i class="bi bi-card-list"></i>
+                        </div>
+                        <div class="ha-appt-stat-content">
+                            <div class="ha-appt-stat-label">All Appointments</div>
+                            <div class="ha-appt-stat-value">@Analytics.Total</div>
+                        </div>
+                    </button>
                 </div>
 
-                <div class="col-md-3">
-                    <div class="stat-card bg-primary bg-opacity-10 p-3 border border-primary border-opacity-25">
-                        <div class="text-primary small fw-bold text-uppercase mb-1">Confirmed</div>
-                        <h3 class="fw-bold text-dark mb-0">@Analytics.Confirmed</h3>
-                    </div>
+                <!-- PENDING -->
+                <div class="col-xl col-lg-4 col-md-6">
+                    <button type="button"
+                            class="ha-appt-stat-card ha-appt-stat-pending @GetStatusCardClass(AppointmentStatusFilter.Pending)"
+                            @onclick="() => SetStatusFilter(AppointmentStatusFilter.Pending)">
+                        <div class="ha-appt-stat-icon">
+                            <i class="bi bi-hourglass-split"></i>
+                        </div>
+                        <div class="ha-appt-stat-content">
+                            <div class="ha-appt-stat-label">Pending</div>
+                            <div class="ha-appt-stat-value">@Analytics.Pending</div>
+                        </div>
+                    </button>
                 </div>
 
-                <div class="col-md-3">
-                    <div class="stat-card bg-success bg-opacity-10 p-3 border border-success border-opacity-25">
-                        <div class="text-success small fw-bold text-uppercase mb-1">Completed</div>
-                        <h3 class="fw-bold text-dark mb-0">@Analytics.Completed</h3>
-                    </div>
+                <!-- CONFIRMED -->
+                <div class="col-xl col-lg-4 col-md-6">
+                    <button type="button"
+                            class="ha-appt-stat-card ha-appt-stat-confirmed @GetStatusCardClass(AppointmentStatusFilter.Confirmed)"
+                            @onclick="() => SetStatusFilter(AppointmentStatusFilter.Confirmed)">
+                        <div class="ha-appt-stat-icon">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                        <div class="ha-appt-stat-content">
+                            <div class="ha-appt-stat-label">Confirmed</div>
+                            <div class="ha-appt-stat-value">@Analytics.Confirmed</div>
+                        </div>
+                    </button>
                 </div>
 
-                <div class="col-md-3">
-                    <div class="stat-card bg-danger bg-opacity-10 p-3 border border-danger border-opacity-25">
-                        <div class="text-danger small fw-bold text-uppercase mb-1">Cancelled</div>
-                        <h3 class="fw-bold text-dark mb-0">@Analytics.Cancelled</h3>
-                    </div>
+                <!-- COMPLETED -->
+                <div class="col-xl col-lg-4 col-md-6">
+                    <button type="button"
+                            class="ha-appt-stat-card ha-appt-stat-completed @GetStatusCardClass(AppointmentStatusFilter.Completed)"
+                            @onclick="() => SetStatusFilter(AppointmentStatusFilter.Completed)">
+                        <div class="ha-appt-stat-icon">
+                            <i class="bi bi-check2-square"></i>
+                        </div>
+                        <div class="ha-appt-stat-content">
+                            <div class="ha-appt-stat-label">Completed</div>
+                            <div class="ha-appt-stat-value">@Analytics.Completed</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- CANCELLED -->
+                <div class="col-xl col-lg-4 col-md-6">
+                    <button type="button"
+                            class="ha-appt-stat-card ha-appt-stat-cancelled @GetStatusCardClass(AppointmentStatusFilter.Cancelled)"
+                            @onclick="() => SetStatusFilter(AppointmentStatusFilter.Cancelled)">
+                        <div class="ha-appt-stat-icon">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                        <div class="ha-appt-stat-content">
+                            <div class="ha-appt-stat-label">Cancelled</div>
+                            <div class="ha-appt-stat-value">@Analytics.Cancelled</div>
+                        </div>
+                    </button>
                 </div>
             </div>
 
             @if (Analytics.Total > 0)
             {
-                <div class="progress-stacked w-100">
-                    <div class="segment bg-warning" style="width: @(Analytics.PendingPct)%"></div>
-                    <div class="segment bg-primary" style="width: @(Analytics.ConfirmedPct)%"></div>
-                    <div class="segment bg-success" style="width: @(Analytics.CompletedPct)%"></div>
-                    <div class="segment bg-danger" style="width: @(Analytics.CancelledPct)%"></div>
-                </div>
-
-                <div class="text-center text-muted small mt-2">
-                    Distribution of @Analytics.Total appointments @(_showWeekView ? "this week" : "today")
+                <div class="ha-appt-distribution-wrap">
+                    <div class="ha-appt-donut" style="@GetDonutStyle()">
+                        <div class="ha-appt-donut-inner"></div>
+                    </div>
+                    <div class="ha-appt-distribution-text">
+                        @(_showWeekView ? "This Week's Appointment Distribution" : "Today's Appointment Distribution")
+                    </div>
                 </div>
             }
         </div>
@@ -107,7 +153,7 @@
 }
 
 <div class="card shadow-sm border-0 ha-data-card">
-    <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+    <div class="card-header bg-white border-bottom p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
         <h6 class="mb-0 fw-bold">All Appointments</h6>
 
         <div class="input-group input-group-sm w-auto shadow-sm">
@@ -130,7 +176,7 @@
                 <div class="spinner-border text-primary"></div>
             </div>
         }
-        else if (!PagedAppointments.Any())
+        else if (!FilteredAppointments.Any())
         {
             <div class="text-center p-5 text-muted">
                 <i class="bi bi-calendar-x fs-1"></i>
@@ -159,7 +205,9 @@
                                 <td class="ps-4 text-muted">#@appt.AppointmentId</td>
 
                                 <td>
-                                    <span class="ha-appt-date">@appt.ScheduledDate.ToString("MMM dd, yyyy")</span>
+                                    <span class="ha-appt-date">
+                                        @appt.ScheduledDate.ToString("MMM dd, yyyy")
+                                    </span>
                                 </td>
 
                                 <td>
@@ -225,11 +273,9 @@
 
             @if (TotalPages > 1)
             {
-                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center py-3">
+                <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center py-3 flex-wrap gap-2">
                     <span class="text-muted small">
-                        Showing @(((_currentPage - 1) * _pageSize) + 1)
-                        to @Math.Min(_currentPage * _pageSize, FilteredAppointments.Count())
-                        of @FilteredAppointments.Count() entries
+                        Showing @StartRecord to @EndRecord of @FilteredAppointments.Count() entries
                     </span>
 
                     <nav>
@@ -400,37 +446,45 @@
     private bool _loading = true;
     private string? _pageError = null;
 
-    // Search & Pagination
+    // Search + pagination
     private string _searchQuery = "";
     private int _currentPage = 1;
-    private readonly int _pageSize = 20;
-
-    private string SearchQuery
-    {
-        get => _searchQuery;
-        set
-        {
-            _searchQuery = value;
-            _currentPage = 1;
-        }
-    }
-
-    private IEnumerable<AppointmentDetailsDto> FilteredAppointments =>
-        (_appointments ?? new List<AppointmentDetailsDto>())
-            .Where(a =>
-                string.IsNullOrWhiteSpace(SearchQuery)
-                || (!string.IsNullOrEmpty(a.PatientName) && a.PatientName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
-                || a.AppointmentId.ToString() == SearchQuery)
-            .OrderByDescending(a => a.ScheduledDate);
-
-    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredAppointments.Count() / (double)_pageSize));
-
-    private IEnumerable<AppointmentDetailsDto> PagedAppointments =>
-        FilteredAppointments.Skip((_currentPage - 1) * _pageSize).Take(_pageSize);
+    private readonly int _pageSize = 5;
 
     // Analytics
     private bool _showWeekView = false;
     private ChartData Analytics = new();
+
+    // Status filter
+    private AppointmentStatusFilter CurrentStatusFilter { get; set; } = AppointmentStatusFilter.All;
+
+    // Modals
+    private bool _showAddModal = false;
+    private bool _showCancelModal = false;
+    private bool _isEditing = false;
+    private bool _isSaving = false;
+
+    private int _cancelId = 0;
+    private string _cancelReason = "";
+
+    private AppointmentFormModel _formData = new();
+
+    // Confirm dialog
+    private bool _showConfirmDialog = false;
+    private string _confirmTitle = "";
+    private string _confirmMessage = "";
+    private string _confirmButtonText = "Confirm";
+    private bool _confirmIsDanger = false;
+    private Func<Task>? _pendingConfirmedAction;
+
+    private enum AppointmentStatusFilter
+    {
+        All,
+        Pending,
+        Confirmed,
+        Completed,
+        Cancelled
+    }
 
     private class ChartData
     {
@@ -445,6 +499,92 @@
         public double ConfirmedPct => Total == 0 ? 0 : (Confirmed / (double)Total) * 100;
         public double CompletedPct => Total == 0 ? 0 : (Completed / (double)Total) * 100;
         public double CancelledPct => Total == 0 ? 0 : (Cancelled / (double)Total) * 100;
+    }
+
+    public class AppointmentFormModel
+    {
+        public int AppointmentId { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a patient")]
+        public int PatientId { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a doctor")]
+        public int DoctorId { get; set; }
+
+        [Required]
+        public DateOnly ScheduledDate { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+
+        [Range(1, 48, ErrorMessage = "Valid time slot required")]
+        public int TimeSlot { get; set; } = 0;
+    }
+
+    private string SearchQuery
+    {
+        get => _searchQuery;
+        set
+        {
+            _searchQuery = value;
+            _currentPage = 1;
+        }
+    }
+
+    private IEnumerable<AppointmentDetailsDto> FilteredAppointments =>
+        (_appointments ?? new List<AppointmentDetailsDto>())
+        .Where(a =>
+            CurrentStatusFilter switch
+            {
+                AppointmentStatusFilter.Pending => a.Status == 0,
+                AppointmentStatusFilter.Confirmed => a.Status == 1,
+                AppointmentStatusFilter.Cancelled => a.Status == 2,
+                AppointmentStatusFilter.Completed => a.Status == 3,
+                _ => true
+            })
+        .Where(a =>
+            string.IsNullOrWhiteSpace(SearchQuery)
+            || a.AppointmentId.ToString().Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)
+            || (!string.IsNullOrWhiteSpace(a.PatientName) && a.PatientName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+            || (!string.IsNullOrWhiteSpace(a.DoctorName) && a.DoctorName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)))
+        .OrderByDescending(a => a.ScheduledDate)
+        .ThenBy(a => a.TimeSlot);
+
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(FilteredAppointments.Count() / (double)_pageSize));
+
+    private IEnumerable<AppointmentDetailsDto> PagedAppointments =>
+        FilteredAppointments.Skip((_currentPage - 1) * _pageSize).Take(_pageSize);
+
+    private int StartRecord => FilteredAppointments.Any() ? ((_currentPage - 1) * _pageSize) + 1 : 0;
+    private int EndRecord => FilteredAppointments.Any() ? Math.Min(_currentPage * _pageSize, FilteredAppointments.Count()) : 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            _loading = true;
+            _pageError = null;
+
+            _appointments = await AppointmentService.GetAllAsync() ?? new();
+            var allPatients = await PatientService.GetAllAsync() ?? new();
+            var allDoctors = await DoctorService.GetAllAsync() ?? new();
+
+            _activePatients = allPatients.Where(p => p.IsActive).ToList();
+            _activeDoctors = allDoctors.Where(d => d.IsActive).ToList();
+
+            EnsureValidPage();
+            CalculateAnalytics();
+        }
+        catch (Exception ex)
+        {
+            _pageError = $"Failed to load dashboard data: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     private void ToggleChart(bool showWeek)
@@ -475,76 +615,36 @@
         };
     }
 
-    // Modal + form state
-    private bool _showAddModal = false;
-    private bool _showCancelModal = false;
-    private bool _isEditing = false;
-    private bool _isSaving = false;
-
-    private int _cancelId = 0;
-    private string _cancelReason = "";
-
-    private AppointmentFormModel _formData = new();
-
-    // Confirmation dialog state
-    private bool _showConfirmDialog = false;
-    private string _confirmTitle = "";
-    private string _confirmMessage = "";
-    private string _confirmButtonText = "Confirm";
-    private bool _confirmIsDanger = false;
-    private Func<Task>? _pendingConfirmedAction;
-
-    public class AppointmentFormModel
+    private void SetStatusFilter(AppointmentStatusFilter filter)
     {
-        public int AppointmentId { get; set; }
-
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a patient")]
-        public int PatientId { get; set; }
-
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a doctor")]
-        public int DoctorId { get; set; }
-
-        [Required]
-        public DateOnly ScheduledDate { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
-
-        [Range(1, 48, ErrorMessage = "Valid time slot required")]
-        public int TimeSlot { get; set; } = 0;
+        CurrentStatusFilter = filter;
+        _currentPage = 1;
+        EnsureValidPage();
     }
 
-    protected override async Task OnInitializedAsync()
+    private string GetStatusCardClass(AppointmentStatusFilter filter) =>
+        CurrentStatusFilter == filter ? "active" : string.Empty;
+
+    private string GetDonutStyle()
     {
-        await LoadData();
+        var pending = Analytics.PendingPct;
+        var confirmed = Analytics.ConfirmedPct;
+        var completed = Analytics.CompletedPct;
+        var cancelled = Analytics.CancelledPct;
+
+        var c1 = pending;
+        var c2 = pending + confirmed;
+        var c3 = c2 + completed;
+        var c4 = c3 + cancelled;
+
+        return $"background: conic-gradient(" +
+               $"#f59e0b 0% {c1}%, " +
+               $"#2563eb {c1}% {c2}%, " +
+               $"#16a34a {c2}% {c3}%, " +
+               $"#ef4444 {c3}% {c4}%);";
     }
 
-    private async Task LoadData()
-    {
-        try
-        {
-            _loading = true;
-            _pageError = null;
-
-            _appointments = await AppointmentService.GetAllAsync() ?? new();
-            var allPatients = await PatientService.GetAllAsync() ?? new();
-            var allDoctors = await DoctorService.GetAllAsync() ?? new();
-
-            _activePatients = allPatients.Where(p => p.IsActive).ToList();
-            _activeDoctors = allDoctors.Where(d => d.IsActive).ToList();
-
-            CalculateAnalytics();
-        }
-        catch (Exception ex)
-        {
-            _pageError = $"Failed to load dashboard data: {ex.Message}";
-        }
-        finally
-        {
-            _loading = false;
-        }
-    }
-
-    // --------------------------
     // Confirmation dialog helpers
-    // --------------------------
     private void OpenConfirmation(string title, string message, string confirmText, bool isDanger, Func<Task> action)
     {
         _confirmTitle = title;
@@ -572,9 +672,7 @@
         }
     }
 
-    // --------------------------
-    // Quick actions with confirmation
-    // --------------------------
+    // Quick actions
     private Task AskConfirmAppointment(int id)
     {
         OpenConfirmation(
@@ -613,9 +711,7 @@
         }
     }
 
-    // --------------------------
     // Cancel flow
-    // --------------------------
     private void OpenCancelModal(int id)
     {
         _cancelId = id;
@@ -669,9 +765,7 @@
         }
     }
 
-    // --------------------------
-    // Add / Edit appointment flow
-    // --------------------------
+    // Add / Edit modal
     private void OpenAddModal()
     {
         _isEditing = false;
@@ -754,9 +848,7 @@
         }
     }
 
-    // --------------------------
     // Pagination
-    // --------------------------
     private void PreviousPage()
     {
         if (_currentPage > 1)
@@ -769,9 +861,16 @@
             _currentPage++;
     }
 
-    // --------------------------
+    private void EnsureValidPage()
+    {
+        if (_currentPage < 1)
+            _currentPage = 1;
+
+        if (_currentPage > TotalPages)
+            _currentPage = TotalPages;
+    }
+
     // Helpers
-    // --------------------------
     private string GetEnumDisplayName(Enum enumValue)
     {
         var type = enumValue.GetType();
@@ -796,19 +895,15 @@
             case 0:
                 builder.AddMarkupContent(0, "<span class='badge bg-warning text-dark ha-table-pill'><i class='bi bi-hourglass-split me-1'></i> Pending</span>");
                 break;
-
             case 1:
                 builder.AddMarkupContent(0, "<span class='badge bg-primary ha-table-pill'><i class='bi bi-check-circle me-1'></i> Confirmed</span>");
                 break;
-
             case 2:
                 builder.AddMarkupContent(0, "<span class='badge bg-danger ha-table-pill'><i class='bi bi-x-circle me-1'></i> Cancelled</span>");
                 break;
-
             case 3:
-                builder.AddMarkupContent(0, "<span class='badge bg-success ha-table-pill'><i class='bi bi-flag-fill me-1'></i> Completed</span>");
+                builder.AddMarkupContent(0, "<span class='badge bg-success ha-table-pill'><i class='bi bi-check2-square me-1'></i> Completed</span>");
                 break;
-
             default:
                 builder.AddMarkupContent(0, $"<span class='badge bg-secondary ha-table-pill'>Unknown ({status})</span>");
                 break;

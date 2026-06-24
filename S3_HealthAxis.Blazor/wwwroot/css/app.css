@@ -1,5 +1,6 @@
 /* =========================================================
-   HEALTHAXIS ADMIN PORTAL - CLEAN FINAL CSS
+   HEALTHAXIS ADMIN PORTAL - CLEAN FIXED CSS
+   Works with current LoginPage.razor structure
    ========================================================= */
 
 /* =========================================================
@@ -17,7 +18,9 @@ body,
     color: #243447;
 }
 
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -99,7 +102,7 @@ code {
     border: 1px solid #e2e8f0 !important;
 }
 
-/* Inputs */
+/* Forms */
 .form-control,
 .form-select {
     border-radius: 10px !important;
@@ -150,7 +153,7 @@ code {
     border-bottom: 1px solid #f1f5f9 !important;
 }
 
-.table-hover tbody tr:hover {
+.table-hover tbody tr:hover td {
     background: #f8fbff !important;
 }
 
@@ -236,7 +239,6 @@ code {
         color: #d9f3ff !important;
     }
 
-/* Hamburger */
 .ha-menu-toggle {
     width: 42px;
     height: 42px;
@@ -260,7 +262,6 @@ code {
         transform: translateY(-1px);
     }
 
-/* User menu */
 .ha-topbar-right {
     display: flex;
     align-items: center;
@@ -347,7 +348,6 @@ code {
         transform: rotate(180deg);
     }
 
-/* Dropdown */
 .ha-user-dropdown {
     position: absolute;
     top: calc(100% + 10px);
@@ -411,7 +411,6 @@ code {
     background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 32%), linear-gradient(180deg, #f3fbff 0%, #edf7fb 45%, #f6fafb 100%) !important;
 }
 
-    /* Better heading contrast */
     .ha-content h1,
     .ha-content h2,
     .ha-content h3,
@@ -499,7 +498,6 @@ code {
             color: #ffffff;
         }
 
-/* Backdrop for mobile sidebar */
 .ha-sidebar-backdrop {
     position: fixed;
     inset: 72px 0 0 0;
@@ -509,7 +507,7 @@ code {
 }
 
 /* =========================================================
-   7. DASHBOARD CARDS / CHARTS
+   7. DASHBOARD / ANALYTICS
    ========================================================= */
 .dash-card-link {
     text-decoration: none;
@@ -614,7 +612,6 @@ code {
     margin-bottom: 24px;
 }
 
-/* Donut chart */
 .css-donut-container {
     display: flex;
     justify-content: center;
@@ -655,7 +652,6 @@ code {
     color: #718096;
 }
 
-/* Bar chart */
 .css-bar-chart {
     display: flex;
     justify-content: space-around;
@@ -710,312 +706,497 @@ code {
 }
 
 /* =========================================================
-   8. LOGIN PAGE
+   8. CONFIRM DIALOG
    ========================================================= */
-.login-wrapper {
-    height: 100vh;
+.ha-confirm-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.45);
+    backdrop-filter: blur(2px);
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #4facfe, #00c6ff);
-    font-family: 'Segoe UI', sans-serif;
-}
-
-.login-root,
-.split-layout {
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-}
-
-.login-left,
-.split-left {
-    flex: 0 0 45%;
-    width: 45%;
-    background: linear-gradient(160deg, #e6fffa, #b2f5ea);
-    display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
+    z-index: 2000;
 }
 
-.left-content {
-    text-align: center;
-    color: #234E52;
-    padding: 40px;
-}
-
-.left-text h3 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 10px;
-    color: #1A202C;
-}
-
-.left-text p {
-    font-size: 16px;
-    color: #4A5568;
-}
-
-.login-right,
-.split-right {
-    flex: 0 0 55%;
-    width: 55%;
-    background: #FFFFFF;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-box {
-    width: 380px;
-    padding: 35px;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.form-container {
+.ha-confirm-dialog {
     width: 100%;
-    max-width: 400px;
-    padding: 40px;
-}
-
-.form-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.logo {
-    font-weight: 800;
-    color: #2B6CB0;
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.title,
-.login-title {
-    color: #2D3748;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.login-subtitle {
-    color: #6b7280;
-    font-size: 14px;
-}
-
-.input-group {
-    margin-bottom: 24px;
-}
-
-    .input-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #4A5568;
-    }
-
-.custom-input {
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid #E2E8F0;
-    padding: 12px 16px;
-    font-size: 16px;
-    color: #1A202C;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-}
-
-    .custom-input:focus {
-        outline: none;
-        border-color: #2B6CB0;
-        box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
-    }
-
-    .custom-input::placeholder {
-        color: #A0AEC0;
-    }
-
-.position-relative {
-    position: relative;
-}
-
-.pe-5 {
-    padding-right: 48px;
-}
-
-.eye-btn,
-.toggle-password {
-    position: absolute;
-    right: 12px;
-    top: 36px;
-    font-size: 13px;
-    color: #2B6CB0;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-}
-
-    .eye-btn:hover {
-        color: #4A5568;
-    }
-
-.btn-login,
-.login-btn,
-.btn-primary-login {
-    width: 100%;
-    background: #2B6CB0;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 14px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-    .btn-login:hover,
-    .login-btn:hover,
-    .btn-primary-login:hover:not(:disabled) {
-        background: #244f91;
-        transform: translateY(-1px);
-    }
-
-    .btn-primary-login:disabled {
-        background-color: #A0AEC0;
-        cursor: not-allowed;
-    }
-
-.illustration {
-    position: relative;
-    width: 220px;
-    height: 220px;
-    margin: 0 auto 30px auto;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.98);
     border-radius: 20px;
-    background: radial-gradient(circle, #81E6D9, #38B2AC);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    animation: haDialogPop 0.18s ease-out;
+}
+
+.ha-confirm-header {
+    padding: 18px 22px 10px;
+    border-bottom: 1px solid #edf2f7;
+}
+
+    .ha-confirm-header h5 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #172033;
+    }
+
+.ha-confirm-body {
+    padding: 16px 22px 8px;
+}
+
+    .ha-confirm-body p {
+        margin: 0;
+        color: #475569;
+        line-height: 1.5;
+    }
+
+.ha-confirm-footer {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px 22px 22px;
 }
 
-.shape-main {
-    width: 160px;
-    height: 160px;
-    background: linear-gradient(145deg, #4fd1c5, #38b2ac);
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.medical-cross {
-    width: 60px;
-    height: 60px;
-    position: relative;
-}
-
-    .medical-cross::before,
-    .medical-cross::after {
-        content: "";
-        position: absolute;
-        background: white;
-        border-radius: 6px;
+@keyframes haDialogPop {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
     }
 
-    .medical-cross::before {
-        width: 14px;
-        height: 60px;
-        left: 50%;
-        top: 0;
-        transform: translateX(-50%);
-    }
-
-    .medical-cross::after {
-        width: 60px;
-        height: 14px;
-        top: 50%;
-        left: 0;
-        transform: translateY(-50%);
-    }
-
-.shape {
-    position: absolute;
-    background: rgba(255,255,255,0.6);
-}
-
-    .shape.small {
-        width: 20px;
-        height: 20px;
-        top: 10px;
-        left: 10px;
-        border-radius: 6px;
-    }
-
-    .shape.circle {
-        width: 25px;
-        height: 25px;
-        bottom: 15px;
-        right: 20px;
-        border-radius: 50%;
-    }
-
-    .shape.diamond {
-        width: 18px;
-        height: 18px;
-        top: 30px;
-        right: 30px;
-        transform: rotate(45deg);
-    }
-
-.error-banner {
-    background-color: #FFF5F5;
-    color: #C53030;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    margin-bottom: 24px;
-    text-align: center;
-    border: 1px solid #FEB2B2;
-}
-
-.spinner {
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    border-top: 2px solid #FFFFFF;
-    width: 16px;
-    height: 16px;
-    margin-right: 8px;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
 /* =========================================================
-   9. RESPONSIVE
+   9. DATA TABLE STYLES
+   ========================================================= */
+.ha-data-card {
+    border-radius: 18px !important;
+    overflow: hidden;
+}
+
+.ha-data-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+    .ha-data-table thead th {
+        background: linear-gradient(180deg, #f8fcff 0%, #f3f9fd 100%) !important;
+        color: #5f7490 !important;
+        font-size: 0.74rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        border-bottom: 1px solid #dce7f2 !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .ha-data-table tbody td {
+        background: rgba(255, 255, 255, 0.98);
+        color: #334155;
+        border-bottom: 1px solid #edf3f8 !important;
+        transition: background 0.18s ease;
+    }
+
+    .ha-data-table tbody tr:hover td {
+        background: #f7fbff !important;
+    }
+
+    .ha-data-table tbody tr:last-child td {
+        border-bottom: none !important;
+    }
+
+.ha-table-action {
+    border-radius: 10px !important;
+}
+
+.ha-table-pill {
+    border-radius: 999px !important;
+    padding: 0.42rem 0.78rem !important;
+    font-size: 0.76rem !important;
+    font-weight: 700 !important;
+}
+
+/* Doctors table */
+.ha-doctors-table thead th {
+    background: linear-gradient(180deg, #f8fcff 0%, #f1f8fd 100%) !important;
+    color: #547092 !important;
+}
+
+.ha-doctor-name {
+    font-weight: 700;
+    color: #1f3b5c;
+    letter-spacing: 0.1px;
+}
+
+.ha-table-email {
+    color: #5c7088;
+    font-size: 0.93rem;
+}
+
+.ha-plain-specialization {
+    color: #294866;
+    font-weight: 600;
+    font-size: 0.94rem;
+}
+
+.ha-table-muted {
+    color: #5f6f82;
+}
+
+.ha-table-fee {
+    color: #1c3552;
+    font-weight: 700;
+}
+
+.ha-doctors-table tbody td {
+    padding-top: 1.15rem !important;
+    padding-bottom: 1.15rem !important;
+}
+
+/* Appointment table */
+.stat-card {
+    border-radius: 16px;
+    transition: transform 0.2s ease;
+}
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+
+.progress-stacked {
+    height: 12px;
+    border-radius: 10px;
+    background-color: #f1f5f9;
+    overflow: hidden;
+    display: flex;
+}
+
+.segment {
+    transition: width 0.5s ease-in-out;
+}
+
+.ha-appointments-table thead th {
+    background: linear-gradient(180deg, #f8fcff 0%, #f1f8fd 100%) !important;
+    color: #58708d !important;
+}
+
+.ha-appointments-table tbody td {
+    padding-top: 1.05rem !important;
+    padding-bottom: 1.05rem !important;
+}
+
+.ha-appt-date {
+    font-weight: 700;
+    color: #1f3b5c;
+}
+
+.ha-appt-person {
+    color: #334155;
+    font-weight: 600;
+}
+
+.ha-time-slot-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.42rem 0.72rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.ha-appointments-table .btn-outline-primary,
+.ha-appointments-table .btn-outline-success,
+.ha-appointments-table .btn-outline-danger,
+.ha-appointments-table .btn-outline-secondary {
+    border-radius: 10px !important;
+}
+
+/* =========================================================
+   10. LOGIN PAGE
+   Supports current LoginPage.razor structure exactly
    ========================================================= */
 
-/* Desktop - sidebar visible */
+.ha-login-page {
+    min-height: 100vh;
+    display: flex;
+    background: linear-gradient(135deg, #edf6fb 0%, #f6fbff 100%);
+}
+
+/* LEFT HALF WRAPPER */
+.ha-login-visual {
+    position: relative;
+    width: 50%;
+    min-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(180deg, #06223a 0%, #0b2f4d 100%);
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    padding: 0;
+}
+
+    /* CURRENT nested wrapper from your Razor */
+    .ha-login-visual .login-left {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding: 56px;
+        background: transparent;
+    }
+
+    /* image layer wrapper */
+    .ha-login-visual .login-left-visual {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+    }
+
+    /* actual image */
+    .ha-login-visual .login-hero-image {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        opacity: 0.96;
+        filter: saturate(102%) contrast(102%) brightness(1.01);
+    }
+
+    /* dark blending layer */
+    .ha-login-visual .login-left-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(5, 32, 52, 0.26), rgba(5, 32, 52, 0.32)), radial-gradient(circle at 40% 38%, rgba(255,255,255,0.10), transparent 26%);
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    /* text content */
+    .ha-login-visual .left-content {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        max-width: 520px;
+        padding: 0;
+        margin-top: auto;
+    }
+
+    /* OPTIONAL: if you want no text on image, hide this block by uncommenting below */
+    /*
+.ha-login-visual .left-content {
+    display: none;
+}
+*/
+
+    .ha-login-visual .left-text {
+        text-align: left;
+        max-width: 460px;
+    }
+
+        .ha-login-visual .left-text h3 {
+            margin: 0 0 14px;
+            color: #f8fcff;
+            font-size: 2.3rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            text-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+        }
+
+        .ha-login-visual .left-text p {
+            margin: 0;
+            color: #dcecf7;
+            font-size: 1rem;
+            line-height: 1.75;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+        }
+
+/* RIGHT PANEL */
+.ha-login-form-panel {
+    width: 50%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background: radial-gradient(circle at top right, rgba(14,165,233,0.07), transparent 24%), linear-gradient(180deg, #f7fbff 0%, #edf5fb 100%);
+}
+
+.ha-login-form-shell {
+    width: 100%;
+    max-width: 470px;
+}
+
+.ha-login-form-card {
+    background: rgba(255,255,255,0.90);
+    border: 1px solid rgba(203, 213, 225, 0.65);
+    border-radius: 28px;
+    padding: 34px 32px 26px;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08), 0 8px 18px rgba(15, 23, 42, 0.04);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.ha-login-heading-block {
+    margin-bottom: 24px;
+}
+
+    .ha-login-heading-block h2 {
+        margin: 0 0 8px;
+        color: #12263a;
+        font-size: 1.7rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+
+    .ha-login-heading-block p {
+        margin: 0;
+        color: #62748a;
+        font-size: 0.96rem;
+        line-height: 1.6;
+    }
+
+.ha-login-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff5f5;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    font-size: 0.93rem;
+    font-weight: 600;
+}
+
+.ha-login-field {
+    margin-bottom: 20px;
+}
+
+    .ha-login-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #324a5f;
+        font-size: 0.92rem;
+        font-weight: 700;
+    }
+
+.ha-login-input {
+    height: 56px !important;
+    border-radius: 16px !important;
+    border: 1px solid #d7e3ed !important;
+    background: rgba(248, 251, 253, 0.98) !important;
+    padding: 0 1rem !important;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+    transition: all 0.22s ease;
+}
+
+    .ha-login-input:focus {
+        border-color: #2b8be6 !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 4px rgba(43, 139, 230, 0.12) !important;
+    }
+
+.ha-login-password-field {
+    position: relative;
+}
+
+.ha-login-input-password {
+    padding-right: 108px !important;
+}
+
+.ha-login-password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 39px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    background: transparent;
+    color: #2563eb;
+    font-size: 0.86rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+    .ha-login-password-toggle:hover {
+        color: #1749b9;
+    }
+
+.ha-login-submit {
+    width: 100%;
+    height: 58px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #2b8be6, #2563eb);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
+}
+
+    .ha-login-submit:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 16px 30px rgba(37, 99, 235, 0.24);
+        background: linear-gradient(135deg, #197be0, #1e4fd9);
+    }
+
+    .ha-login-submit:disabled {
+        opacity: 0.82;
+        cursor: not-allowed;
+    }
+
+.ha-login-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.34);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: haLoginSpin 0.8s linear infinite;
+}
+
+@keyframes haLoginSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ha-login-footer-note {
+    margin-top: 18px;
+    text-align: center;
+    color: #72859b;
+    font-size: 0.86rem;
+}
+
+/* =========================================================
+   11. RESPONSIVE
+   ========================================================= */
 @media (min-width: 992px) {
     .ha-menu-toggle {
         display: none;
@@ -1027,7 +1208,6 @@ code {
     }
 }
 
-/* Tablet/mobile - collapsible sidebar */
 @media (max-width: 991.98px) {
     .ha-sidebar {
         position: fixed;
@@ -1055,28 +1235,52 @@ code {
     }
 }
 
-/* Login responsive */
-@media (max-width: 900px) {
-    .login-left,
-    .split-left {
-        display: none;
+@media (max-width: 1100px) {
+    .ha-login-page {
+        flex-direction: column;
     }
 
-    .login-right,
-    .split-right {
+    .ha-login-visual,
+    .ha-login-form-panel {
         width: 100%;
-        flex: 1;
+    }
+
+        .ha-login-visual,
+        .ha-login-visual .login-left {
+            min-height: 340px;
+        }
+
+            .ha-login-visual .login-left {
+                padding: 36px 28px;
+            }
+
+            .ha-login-visual .left-text h3 {
+                font-size: 2rem;
+            }
+
+    .ha-login-form-panel {
+        padding: 26px 18px 36px;
     }
 }
 
 @media (max-width: 768px) {
-    .split-layout {
-        flex-direction: column;
+    .ha-login-visual {
+        display: none;
     }
 
-    .split-right {
-        align-items: flex-start;
-        padding-top: 40px;
+    .ha-login-form-panel {
+        width: 100%;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .ha-login-form-card {
+        padding: 26px 22px 22px;
+        border-radius: 22px;
+    }
+
+    .ha-login-heading-block h2 {
+        font-size: 1.45rem;
     }
 }
 
@@ -1101,7 +1305,7 @@ code {
 }
 
 /* =========================================================
-   10. BLAZOR BOILERPLATE
+   12. BLAZOR BOILERPLATE
    ========================================================= */
 #blazor-error-ui {
     color-scheme: light only;
@@ -1168,562 +1372,991 @@ code {
         content: var(--blazor-load-percentage-text, "Loading");
     }
 
-/* Confirm dialog */
-.ha-confirm-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 6, 23, 0.45);
-    backdrop-filter: blur(2px);
+/* =========================================================
+   DOCTORS PAGE ENHANCEMENTS
+   Summary cards + filters + schedule modal
+   ========================================================= */
+
+.ha-summary-card {
+    width: 100%;
+    border: none;
+    text-align: left;
+    padding: 20px 22px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(203, 213, 225, 0.75);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.045);
+    cursor: pointer;
+    transition: all 0.22s ease;
+}
+
+    .ha-summary-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+    }
+
+.ha-summary-card-label {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.ha-summary-card-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #172033;
+}
+
+.ha-summary-card-all .ha-summary-card-label {
+    color: #2563eb;
+}
+
+.ha-summary-card-active .ha-summary-card-label {
+    color: #059669;
+}
+
+.ha-summary-card-inactive .ha-summary-card-label {
+    color: #dc2626;
+}
+
+.ha-summary-card.active {
+    border-color: #93c5fd;
+    background: linear-gradient(180deg, #f8fcff 0%, #eef7ff 100%);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.10);
+}
+
+.ha-summary-card-active.active {
+    border-color: rgba(5, 150, 105, 0.32);
+    background: linear-gradient(180deg, rgba(236, 253, 245, 0.96) 0%, rgba(220, 252, 231, 0.96) 100%);
+}
+
+.ha-summary-card-inactive.active {
+    border-color: rgba(239, 68, 68, 0.28);
+    background: linear-gradient(180deg, rgba(254, 242, 242, 0.96) 0%, rgba(254, 226, 226, 0.96) 100%);
+}
+
+/* Doctors schedule modal */
+.ha-schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ha-schedule-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: rgba(248, 251, 255, 0.9);
+    border: 1px solid #dce7f2;
+}
+
+.ha-schedule-item-left,
+.ha-schedule-item-center,
+.ha-schedule-item-right {
+    display: flex;
+    align-items: center;
+}
+
+.ha-schedule-item-left {
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 160px;
+}
+
+.ha-schedule-date {
+    font-weight: 700;
+    color: #1f3b5c;
+    margin-bottom: 4px;
+}
+
+.ha-schedule-time {
+    color: #5f7490;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.ha-schedule-patient {
+    font-weight: 700;
+    color: #273b52;
+}
+
+.ha-schedule-item-right {
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .ha-schedule-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .ha-schedule-item-right {
+        margin-left: 0;
+    }
+}
+
+/* =========================================================
+   APPOINTMENTS PAGE REDESIGN
+   Cards + click filters + 5-row pagination look
+   ========================================================= */
+
+.ha-appointments-overview-card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+.ha-appt-stat-card {
+    width: 100%;
+    border: none;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(203, 213, 225, 0.72);
+}
+
+    .ha-appt-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    .ha-appt-stat-card.active {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+    }
+
+.ha-appt-stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.ha-appt-stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.ha-appt-stat-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.ha-appt-stat-value {
+    font-size: 1.9rem;
+    line-height: 1;
+    font-weight: 800;
+    color: #172033;
+}
+
+/* Pending */
+.ha-appt-stat-pending {
+    background: linear-gradient(180deg, #fff8e7 0%, #fff3cf 100%);
+    border-color: rgba(245, 158, 11, 0.25);
+}
+
+    .ha-appt-stat-pending .ha-appt-stat-icon {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+    }
+
+    .ha-appt-stat-pending .ha-appt-stat-label {
+        color: #b45309;
+    }
+
+    .ha-appt-stat-pending.active {
+        box-shadow: 0 14px 28px rgba(245, 158, 11, 0.18);
+    }
+
+/* Confirmed */
+.ha-appt-stat-confirmed {
+    background: linear-gradient(180deg, #eef5ff 0%, #dbeafe 100%);
+    border-color: rgba(37, 99, 235, 0.22);
+}
+
+    .ha-appt-stat-confirmed .ha-appt-stat-icon {
+        background: rgba(37, 99, 235, 0.12);
+        color: #2563eb;
+    }
+
+    .ha-appt-stat-confirmed .ha-appt-stat-label {
+        color: #2563eb;
+    }
+
+    .ha-appt-stat-confirmed.active {
+        box-shadow: 0 14px 28px rgba(37, 99, 235, 0.18);
+    }
+
+/* Completed */
+.ha-appt-stat-completed {
+    background: linear-gradient(180deg, #ecfdf5 0%, #dcfce7 100%);
+    border-color: rgba(22, 163, 74, 0.22);
+}
+
+    .ha-appt-stat-completed .ha-appt-stat-icon {
+        background: rgba(22, 163, 74, 0.12);
+        color: #15803d;
+    }
+
+    .ha-appt-stat-completed .ha-appt-stat-label {
+        color: #15803d;
+    }
+
+    .ha-appt-stat-completed.active {
+        box-shadow: 0 14px 28px rgba(22, 163, 74, 0.18);
+    }
+
+/* Cancelled */
+.ha-appt-stat-cancelled {
+    background: linear-gradient(180deg, #fff1f2 0%, #ffe4e6 100%);
+    border-color: rgba(239, 68, 68, 0.22);
+}
+
+    .ha-appt-stat-cancelled .ha-appt-stat-icon {
+        background: rgba(239, 68, 68, 0.12);
+        color: #dc2626;
+    }
+
+    .ha-appt-stat-cancelled .ha-appt-stat-label {
+        color: #dc2626;
+    }
+
+    .ha-appt-stat-cancelled.active {
+        box-shadow: 0 14px 28px rgba(239, 68, 68, 0.18);
+    }
+
+/* Distribution */
+.ha-appt-distribution-wrap {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 2000;
+    gap: 14px;
+    padding-top: 8px;
 }
 
-.ha-confirm-dialog {
-    width: 100%;
-    max-width: 420px;
-    background: rgba(255, 255, 255, 0.98);
-    border-radius: 20px;
-    box-shadow: 0 24px 50px rgba(0, 0, 0, 0.18);
-    overflow: hidden;
-    animation: haDialogPop 0.18s ease-out;
+.ha-appt-donut {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    position: relative;
+    box-shadow: inset 0 0 0 1px rgba(203, 213, 225, 0.45);
 }
 
-.ha-confirm-header {
-    padding: 18px 22px 10px;
-    border-bottom: 1px solid #edf2f7;
+.ha-appt-donut-inner {
+    position: absolute;
+    inset: 10px;
+    border-radius: 50%;
+    background: white;
 }
 
-    .ha-confirm-header h5 {
-        margin: 0;
-        font-size: 1.05rem;
-        font-weight: 800;
-        color: #172033;
-    }
-
-.ha-confirm-body {
-    padding: 16px 22px 8px;
+.ha-appt-distribution-text {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #334155;
 }
 
-    .ha-confirm-body p {
-        margin: 0;
-        color: #475569;
-        line-height: 1.5;
-    }
-
-.ha-confirm-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 20px 22px 22px;
+/* Appointment table refinements */
+.ha-appointments-table thead th {
+    background: linear-gradient(180deg, #f8fcff 0%, #f1f8fd 100%) !important;
+    color: #58708d !important;
 }
 
-@keyframes haDialogPop {
-    from {
-        opacity: 0;
-        transform: translateY(8px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+.ha-appointments-table tbody td {
+    padding-top: 1.05rem !important;
+    padding-bottom: 1.05rem !important;
 }
 
-/* Better data table styling */
-.ha-data-card {
-    border-radius: 18px !important;
-    overflow: hidden;
+.ha-appt-date {
+    font-weight: 700;
+    color: #1f3b5c;
 }
 
-.ha-data-table {
-    border-collapse: separate;
-    border-spacing: 0;
-    background: rgba(255, 255, 255, 0.98);
+.ha-appt-person {
+    color: #334155;
+    font-weight: 600;
 }
 
-    .ha-data-table thead th {
-        background: linear-gradient(180deg, #f8fcff 0%, #f3f9fd 100%) !important;
-        color: #5f7490 !important;
-        font-size: 0.74rem;
-        font-weight: 800;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        border-bottom: 1px solid #dce7f2 !important;
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
-    }
+.ha-time-slot-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.42rem 0.72rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
 
-    .ha-data-table tbody td {
-        background: rgba(255, 255, 255, 0.98);
-        color: #334155;
-        border-bottom: 1px solid #edf3f8 !important;
-        transition: background 0.18s ease;
-    }
-
-    .ha-data-table tbody tr:hover td {
-        background: #f7fbff !important;
-    }
-
-    .ha-data-table tbody tr:last-child td {
-        border-bottom: none !important;
-    }
-
-.ha-table-action {
+.ha-appointments-table .btn-outline-primary,
+.ha-appointments-table .btn-outline-success,
+.ha-appointments-table .btn-outline-danger,
+.ha-appointments-table .btn-outline-secondary {
     border-radius: 10px !important;
 }
 
-.ha-table-pill {
-    border-radius: 999px !important;
-    padding: 0.42rem 0.78rem !important;
-    font-size: 0.76rem !important;
-    font-weight: 700 !important;
+/* Pagination polish */
+.pagination .page-link {
+    border-radius: 8px !important;
+    margin: 0 2px;
+    border-color: #dbe5ef;
+    color: #334155;
+    font-weight: 600;
 }
 
-/* Doctors table refinements */
-.ha-doctors-table thead th {
+    .pagination .page-item.active .page-link,
+    .pagination .page-link:hover {
+        background: #eff6ff;
+        border-color: #bfdbfe;
+        color: #1d4ed8;
+    }
+
+@media (max-width: 768px) {
+    .ha-appt-distribution-wrap {
+        flex-direction: column;
+    }
+
+    .ha-appt-stat-card {
+        min-height: 88px;
+    }
+}
+
+/* =========================================================
+   APPOINTMENTS PAGE FINAL REDESIGN
+   ========================================================= */
+
+.ha-appointments-overview-card {
+    border-radius: 20px !important;
+    overflow: hidden;
+}
+
+.ha-appt-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Top mini buttons */
+.ha-mini-filter-btn {
+    min-width: 78px;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 10px;
+    border: 1px solid #c7d7e8;
+    background: #ffffff;
+    color: #31506c;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+    .ha-mini-filter-btn:hover {
+        background: #f4f9ff;
+        border-color: #93c5fd;
+        color: #1d4ed8;
+    }
+
+    .ha-mini-filter-btn.active {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border-color: #1d4ed8;
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+/* Cards */
+.ha-appt-stat-card {
+    width: 100%;
+    border: none;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.22s ease;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(203, 213, 225, 0.72);
+}
+
+    .ha-appt-stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.07);
+    }
+
+    .ha-appt-stat-card.active {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+    }
+
+.ha-appt-stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+.ha-appt-stat-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.ha-appt-stat-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.ha-appt-stat-value {
+    font-size: 1.9rem;
+    line-height: 1;
+    font-weight: 800;
+    color: #172033;
+}
+
+/* All */
+.ha-appt-stat-all {
+    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+    border-color: rgba(100, 116, 139, 0.20);
+}
+
+    .ha-appt-stat-all .ha-appt-stat-icon {
+        background: rgba(100, 116, 139, 0.12);
+        color: #475569;
+    }
+
+/* =========================================================
+   PATIENTS PAGE ENHANCEMENTS
+   Cards + refined table styling
+   ========================================================= */
+
+.ha-summary-card-insured .ha-summary-card-label {
+    color: #7c3aed;
+}
+
+.ha-summary-card-insured.active {
+    border-color: rgba(124, 58, 237, 0.28);
+    background: linear-gradient(180deg, rgba(245, 243, 255, 0.96) 0%, rgba(237, 233, 254, 0.96) 100%);
+    box-shadow: 0 14px 28px rgba(124, 58, 237, 0.14);
+}
+
+/* Patients table refinements */
+.ha-patients-table thead th {
     background: linear-gradient(180deg, #f8fcff 0%, #f1f8fd 100%) !important;
-    color: #547092 !important;
+    color: #56718d !important;
 }
 
-.ha-doctor-name {
+.ha-patients-table tbody td {
+    padding-top: 1.08rem !important;
+    padding-bottom: 1.08rem !important;
+}
+
+.ha-patient-name {
     font-weight: 700;
     color: #1f3b5c;
     letter-spacing: 0.1px;
 }
 
-.ha-table-email {
-    color: #5c7088;
-    font-size: 0.93rem;
-}
-
-.ha-plain-specialization {
-    color: #294866;
+.ha-patient-dob {
+    color: #314863;
     font-weight: 600;
-    font-size: 0.94rem;
 }
 
-.ha-table-muted {
-    color: #5f6f82;
+.ha-patient-phone {
+    color: #334155;
+    font-weight: 600;
 }
 
-.ha-table-fee {
-    color: #1c3552;
+.ha-patient-insurance {
+    color: #5c7088;
+    font-weight: 600;
+}
+
+.ha-gender-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.38rem 0.72rem;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #dbe7f3;
+    color: #475569;
+    font-size: 0.82rem;
     font-weight: 700;
 }
 
-.ha-doctors-table tbody td {
-    padding-top: 1.15rem !important;
-    padding-bottom: 1.15rem !important;
-}
-
-/*@page "/login"
-@layout EmptyLayout
-
-@using S3_HealthAxis.Blazor.Services
-@using S3_HealthAxis.Shared.DTOs.Auth
-
-@inject IAuthService AuthService
-@inject NavigationManager Navigation
-
-<div class="ha-login-page">
-
-    <!-- LEFT PANEL -->
-    <section class="ha-login-visual">
-        <div class="ha-login-visual-overlay"></div>
-
-        <div class="ha-login-visual-content">
-            <div class="ha-login-visual-text">
-                <h1>HealthAxis Login Portal</h1>
-                <p>
-                    Secure access to appointments, patients, doctors, and healthcare operations.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- RIGHT PANEL -->
-    <section class="ha-login-form-panel">
-        <div class="ha-login-form-shell">
-            <div class="ha-login-form-card">
-
-                <div class="ha-login-heading-block">
-                    <h2>Admin Sign In</h2>
-                    <p>Enter your credentials to continue.</p>
-                </div>
-
-                @if (!string.IsNullOrWhiteSpace(_error))
-                {
-                    <div class="ha-login-alert">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        <span>@_error</span>
-                    </div>
-                }
-
-                <EditForm Model="_login" OnValidSubmit="Login">
-                    <DataAnnotationsValidator />
-
-                    <div class="ha-login-field">
-                        <label>Email Address</label>
-                        <InputText class="form-control ha-login-input"
-                                   placeholder="admin@hospital.com"
-                                   @bind-Value="_login.Email" />
-                    </div>
-
-                    <div class="ha-login-field ha-login-password-field">
-                        <label>Password</label>
-
-                        <InputText type="@(_showPassword ? "text" : "password")"
-                                   class="form-control ha-login-input ha-login-input-password"
-                                   placeholder="Enter your password"
-                                   @bind-Value="_login.Password" />
-
-                        <button type="button"
-                                class="ha-login-password-toggle"
-                                @onclick="TogglePassword"
-                                tabindex="-1">
-                            <i class="bi @( _showPassword ? "bi-eye-slash" : "bi-eye")"></i>
-                            <span>@(_showPassword ? "Hide" : "Show")</span>
-                        </button>
-                    </div>
-
-                    <button type="submit"
-                            class="ha-login-submit"
-                            disabled="@_isLoading">
-
-                        @if (_isLoading)
-                        {
-                            <span class="ha-login-spinner"></span>
-                        }
-
-                        <span>@(_isLoading ? "Signing in..." : "Log In")</span>
-                    </button>
-                </EditForm>
-
-                <div class="ha-login-footer-note">
-                    Authorized admin access only.
-                </div>
-            </div>
-        </div>
-    </section>
-
-</div>
-
-@code {
-    private LoginDto _login = new();
-    private string? _error;
-    private bool _isLoading = false;
-    private bool _showPassword = false;
-
-    private async Task Login()
-    {
-        _isLoading = true;
-        _error = null;
-
-        var success = await AuthService.LoginAsync(_login);
-
-        _isLoading = false;
-
-        if (success)
-        {
-            Navigation.NavigateTo("/dashboard");
-        }
-        else
-        {
-            _error = "Invalid email or password. Please try again.";
-        }
-    }
-
-    private void TogglePassword()
-    {
-        _showPassword = !_showPassword;
-    }
-}*/
-
 /* =========================================================
-   HEALTHAXIS LOGIN PAGE - BACKGROUND IMAGE LEFT PANEL
+   PATIENTS TOOLBAR ALIGNMENT
+   Search + sort dropdown
    ========================================================= */
 
-.ha-login-page {
-    min-height: 100vh;
-    display: flex;
-    background: linear-gradient(135deg, #edf6fb 0%, #f6fbff 100%);
+.ha-patient-toolbar .input-group,
+.ha-patient-toolbar .form-select {
+    height: 48px;
 }
 
-/* ---------------------------------------------------------
-   LEFT PANEL
---------------------------------------------------------- */
-.ha-login-visual {
-    position: relative;
-    width: 50%;
-    min-height: 100vh;
-    overflow: hidden;
-    /* ✅ actual background image */
-    background-image: linear-gradient(180deg, rgba(7, 34, 57, 0.70), rgba(5, 32, 52, 0.76)), url('/images/login-healthcare-hero.png');
-    background-repeat: no-repeat, no-repeat;
-    background-position: center center, center center;
-    background-size: cover, 78%;
-    background-color: #0b2f4d;
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-start;
-    padding: 56px;
-}
-
-/* extra soft layer for readability */
-.ha-login-visual-overlay {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 38%), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    pointer-events: none;
-}
-
-.ha-login-visual-content {
-    position: relative;
-    z-index: 2;
-    max-width: 520px;
-}
-
-.ha-login-visual-text h1 {
-    margin: 0 0 14px;
-    color: #f8fcff;
-    font-size: 2.35rem;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    text-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
-}
-
-.ha-login-visual-text p {
-    margin: 0;
-    color: #dcecf7;
-    font-size: 1rem;
-    line-height: 1.75;
-    max-width: 460px;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-}
-
-/* ---------------------------------------------------------
-   RIGHT PANEL
---------------------------------------------------------- */
-.ha-login-form-panel {
-    width: 50%;
-    min-height: 100vh;
+.ha-patient-toolbar .input-group-text {
+    height: 48px;
     display: flex;
     align-items: center;
+    border-radius: 12px 0 0 12px !important;
+}
+
+.ha-patient-toolbar .form-control {
+    height: 48px;
+    border-radius: 0 12px 12px 0 !important;
+}
+
+.ha-patient-toolbar .form-select {
+    border-radius: 12px !important;
+    min-width: 220px;
+}
+
+.ha-patient-toolbar .shadow-sm {
+    border-radius: 12px;
+}
+
+/* =========================================================
+   PAGINATION STYLING
+   Shared for Patients / Appointments pages
+   ========================================================= */
+
+.pagination {
+    gap: 4px;
+}
+
+    .pagination .page-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .pagination .page-link {
+        min-width: 42px;
+        height: 38px;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px !important;
+        border: 1px solid #dbe5ef !important;
+        background: #ffffff !important;
+        color: #334155 !important;
+        font-weight: 700;
+        font-size: 0.88rem;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
+        transition: all 0.2s ease;
+    }
+
+        .pagination .page-link:hover {
+            background: #f4f9ff !important;
+            border-color: #93c5fd !important;
+            color: #1d4ed8 !important;
+            transform: translateY(-1px);
+        }
+
+    .pagination .page-item.disabled .page-link {
+        background: #f8fafc !important;
+        color: #94a3b8 !important;
+        border-color: #e2e8f0 !important;
+        box-shadow: none;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+        border-color: #1d4ed8 !important;
+        color: #ffffff !important;
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+/* Page info chip style */
+.ha-page-info {
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
-    padding: 40px;
-    background: radial-gradient(circle at top right, rgba(14,165,233,0.07), transparent 24%), linear-gradient(180deg, #f7fbff 0%, #edf5fb 100%);
+    min-width: 120px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 10px;
+    background: #f8fbfd;
+    border: 1px solid #dbe5ef;
+    color: #334155;
+    font-size: 0.88rem;
+    font-weight: 700;
 }
 
-.ha-login-form-shell {
+/* Footer alignment */
+.ha-pagination-footer {
+    border-top: 1px solid #edf2f7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .pagination .page-link {
+        min-width: 38px;
+        height: 36px;
+        padding: 0 12px;
+        font-size: 0.84rem;
+    }
+
+    .ha-page-info {
+        min-width: 100px;
+        height: 36px;
+        font-size: 0.84rem;
+    }
+}
+
+/* =========================================================
+   DASHBOARD SIMPLE UPGRADE
+   ========================================================= */
+
+.ha-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.ha-dashboard-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ha-dashboard-action-btn {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Extra KPI cards */
+.ha-kpi-card-active-doctors {
+    border-left: 5px solid #16a34a;
+}
+
+    .ha-kpi-card-active-doctors .card-icon {
+        color: #16a34a;
+    }
+
+.ha-kpi-card-active-patients {
+    border-left: 5px solid #0ea5e9;
+}
+
+    .ha-kpi-card-active-patients .card-icon {
+        color: #0ea5e9;
+    }
+
+.ha-kpi-card-pending {
+    border-left: 5px solid #f59e0b;
+}
+
+    .ha-kpi-card-pending .card-icon {
+        color: #f59e0b;
+    }
+
+/* Shared panel heading */
+.ha-panel-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 12px;
+}
+
+.ha-panel-subtitle {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+/* Legend */
+.ha-legend-row,
+.ha-progress-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+    align-items: center;
+}
+
+.ha-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #475569;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.ha-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.ha-dot-green {
+    background: #38b2ac;
+}
+
+.ha-dot-light {
+    background: #dbe5ef;
+}
+
+.ha-dot-pending {
+    background: #f59e0b;
+}
+
+.ha-dot-completed {
+    background: #16a34a;
+}
+
+.ha-dot-other {
+    background: #94a3b8;
+}
+
+/* Mini stats */
+.ha-mini-stat {
+    border-radius: 16px;
+    padding: 18px 18px;
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    background: rgba(248, 251, 255, 0.96);
+    height: 100%;
+}
+
+.ha-mini-stat-label {
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+.ha-mini-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: #172033;
+}
+
+.ha-mini-stat-pending {
+    background: linear-gradient(180deg, #fff8e7 0%, #fff3cf 100%);
+    border-color: rgba(245, 158, 11, 0.24);
+}
+
+    .ha-mini-stat-pending .ha-mini-stat-label {
+        color: #b45309;
+    }
+
+.ha-mini-stat-completed {
+    background: linear-gradient(180deg, #ecfdf5 0%, #dcfce7 100%);
+    border-color: rgba(22, 163, 74, 0.24);
+}
+
+    .ha-mini-stat-completed .ha-mini-stat-label {
+        color: #15803d;
+    }
+
+.ha-mini-stat-other {
+    background: linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%);
+    border-color: rgba(100, 116, 139, 0.20);
+}
+
+    .ha-mini-stat-other .ha-mini-stat-label {
+        color: #475569;
+    }
+
+/* Progress bar */
+.ha-progress-track {
     width: 100%;
-    max-width: 470px;
+    height: 16px;
+    border-radius: 999px;
+    background: #e5edf5;
+    overflow: hidden;
+    display: flex;
 }
 
-.ha-login-form-card {
-    background: rgba(255,255,255,0.90);
-    border: 1px solid rgba(203, 213, 225, 0.65);
-    border-radius: 28px;
-    padding: 34px 32px 26px;
-    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08), 0 8px 18px rgba(15, 23, 42, 0.04);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+.ha-progress-segment {
+    height: 100%;
 }
 
-/* Heading */
-.ha-login-heading-block {
+.ha-progress-pending {
+    background: #f59e0b;
+}
+
+.ha-progress-completed {
+    background: #16a34a;
+}
+
+.ha-progress-other {
+    background: #94a3b8;
+}
+
+/* Insight cards */
+.ha-insight-card {
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ha-insight-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f3b5c;
+    margin-bottom: 14px;
+}
+
+.ha-insight-value {
+    font-size: 2.3rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 10px;
+}
+
+.ha-insight-subtext {
+    color: #64748b;
+    font-size: 0.92rem;
+    line-height: 1.55;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .ha-dashboard-header {
+        align-items: flex-start;
+    }
+}
+
+/* =========================================================
+   HOME PAGE
+   ========================================================= */
+
+.ha-home-page {
+    padding: 12px 4px 8px;
+}
+
+.ha-home-hero {
+    background: linear-gradient(135deg, rgba(255,255,255,0.98), rgba(248,251,255,0.96));
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    border-radius: 24px;
+    padding: 34px 32px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
     margin-bottom: 24px;
 }
 
-    .ha-login-heading-block h2 {
-        margin: 0 0 8px;
-        color: #12263a;
-        font-size: 1.7rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-    }
-
-    .ha-login-heading-block p {
-        margin: 0;
-        color: #62748a;
-        font-size: 0.96rem;
-        line-height: 1.6;
-    }
-
-/* Error */
-.ha-login-alert {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff5f5;
-    border: 1px solid #fecaca;
-    color: #b91c1c;
-    border-radius: 14px;
-    padding: 12px 14px;
-    margin-bottom: 20px;
-    font-size: 0.93rem;
-    font-weight: 600;
-}
-
-/* Fields */
-.ha-login-field {
-    margin-bottom: 20px;
-}
-
-    .ha-login-field label {
-        display: block;
-        margin-bottom: 8px;
-        color: #324a5f;
-        font-size: 0.92rem;
-        font-weight: 700;
-    }
-
-.ha-login-input {
-    height: 56px !important;
-    border-radius: 16px !important;
-    border: 1px solid #d7e3ed !important;
-    background: rgba(248, 251, 253, 0.98) !important;
-    padding: 0 1rem !important;
-    font-size: 1rem;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
-    transition: all 0.22s ease;
-}
-
-    .ha-login-input:focus {
-        border-color: #2b8be6 !important;
-        background: #ffffff !important;
-        box-shadow: 0 0 0 4px rgba(43, 139, 230, 0.12) !important;
-    }
-
-.ha-login-password-field {
-    position: relative;
-}
-
-.ha-login-input-password {
-    padding-right: 108px !important;
-}
-
-.ha-login-password-toggle {
-    position: absolute;
-    right: 14px;
-    top: 39px;
-    height: 34px;
+.ha-home-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    border: none;
-    background: transparent;
-    color: #2563eb;
-    font-size: 0.86rem;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-size: 0.85rem;
     font-weight: 700;
-    cursor: pointer;
+    margin-bottom: 18px;
 }
 
-    .ha-login-password-toggle:hover {
-        color: #1749b9;
-    }
-
-/* Submit */
-.ha-login-submit {
-    width: 100%;
-    height: 58px;
-    margin-top: 8px;
-    border: none;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #2b8be6, #2563eb);
-    color: #ffffff;
-    font-size: 1rem;
+.ha-home-hero h1 {
+    margin: 0 0 14px;
+    font-size: 2.4rem;
     font-weight: 800;
+    color: #172033;
+    letter-spacing: -0.02em;
+}
+
+.ha-home-hero p {
+    margin: 0;
+    max-width: 760px;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #5b6b7d;
+}
+
+.ha-home-actions {
+    margin-top: 24px;
+}
+
+.ha-home-login-btn {
+    min-height: 46px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    cursor: pointer;
+    border-radius: 12px !important;
+    padding: 0 18px !important;
+}
+
+.ha-home-card {
+    height: 100%;
+    background: rgba(255,255,255,0.97);
+    border: 1px solid rgba(203, 213, 225, 0.75);
+    border-radius: 20px;
+    padding: 24px 22px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
     transition: all 0.22s ease;
-    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.18);
 }
 
-    .ha-login-submit:hover:not(:disabled) {
-        transform: translateY(-1px);
-        box-shadow: 0 16px 30px rgba(37, 99, 235, 0.24);
-        background: linear-gradient(135deg, #197be0, #1e4fd9);
-    }
-
-    .ha-login-submit:disabled {
-        opacity: 0.82;
-        cursor: not-allowed;
-    }
-
-.ha-login-spinner {
-    width: 18px;
-    height: 18px;
-    border: 2px solid rgba(255,255,255,0.34);
-    border-top-color: #ffffff;
-    border-radius: 50%;
-    animation: haLoginSpin 0.8s linear infinite;
+.ha-home-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
 }
 
-@keyframes haLoginSpin {
-    to {
-        transform: rotate(360deg);
-    }
+.ha-home-card-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #dbeafe, #eff6ff);
+    color: #2563eb;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 16px;
 }
 
-/* Footer */
-.ha-login-footer-note {
-    margin-top: 18px;
-    text-align: center;
-    color: #72859b;
-    font-size: 0.86rem;
+.ha-home-card h5 {
+    margin: 0 0 10px;
+    color: #1f3b5c;
+    font-weight: 800;
+    font-size: 1.05rem;
 }
 
-/* ---------------------------------------------------------
-   RESPONSIVE
---------------------------------------------------------- */
-@media (max-width: 1100px) {
-    .ha-login-page {
-        flex-direction: column;
-    }
-
-    .ha-login-visual,
-    .ha-login-form-panel {
-        width: 100%;
-    }
-
-    .ha-login-visual {
-        min-height: 340px;
-        padding: 36px 28px;
-        background-size: cover, 56%;
-    }
-
-    .ha-login-visual-text h1 {
-        font-size: 2rem;
-    }
-
-    .ha-login-form-panel {
-        padding: 26px 18px 36px;
-    }
-}
-
-@media (max-width: 768px) {
-    .ha-login-visual {
-        display: none;
-    }
-
-    .ha-login-form-panel {
-        width: 100%;
-        min-height: 100vh;
-        padding: 20px;
-    }
-
-    .ha-login-form-card {
-        padding: 26px 22px 22px;
-        border-radius: 22px;
-    }
-
-    .ha-login-heading-block h2 {
-        font-size: 1.45rem;
-    }
+.ha-home-card p {
+    margin: 0;
+    color: #64748b;
+    line-height: 1.7;
+    font-size: 0.95rem;
 }

@@ -20,11 +20,9 @@ namespace S3_HealthAxisApi.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<AppointmentDetailsDto>>> GetAll()
         {
-            var appointments =
-                await _appointmentService.GetAllAsync();
-
+            var appointments = await _appointmentService.GetAllAsync();
             return Ok(appointments);
         }
 

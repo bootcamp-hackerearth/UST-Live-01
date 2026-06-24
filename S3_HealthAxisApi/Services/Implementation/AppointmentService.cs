@@ -3,6 +3,7 @@ using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Interface;
+using System.ComponentModel.DataAnnotations;
 
 namespace S3_HealthAxisApi.Services.Implementation
 {
@@ -22,11 +23,12 @@ namespace S3_HealthAxisApi.Services.Implementation
             _doctorRepository = doctorRepository;
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAllAsync()
+        // ✅ FIXED: return AppointmentDetailsDto so PatientName / DoctorName are included
+        public async Task<IEnumerable<AppointmentDetailsDto>> GetAllAsync()
         {
             var appointments = await _appointmentRepository.GetAllAsync();
 
-            return appointments.Select(MapToAppointmentDto);
+            return appointments.Select(MapToAppointmentDetailsDto);
         }
 
         public async Task<AppointmentDetailsDto?> GetByIdAsync(int id)
@@ -36,40 +38,25 @@ namespace S3_HealthAxisApi.Services.Implementation
             if (appointment == null)
                 return null;
 
-            return new AppointmentDetailsDto
-            {
-                AppointmentId = appointment.AppointmentId,
-                PatientId = appointment.PatientId,
-                PatientName = appointment.Patient.FullName,
-                DoctorId = appointment.DoctorId,
-                DoctorName = appointment.Doctor.FullName,
-                ScheduledDate = appointment.ScheduledDate,
-                TimeSlot = (int)appointment.TimeSlot,
-                Status = (int)appointment.Status,
-                CancellationReason = appointment.CancellationReason
-            };
+            return MapToAppointmentDetailsDto(appointment);
         }
 
-        public async Task<IEnumerable<PatientAppointmentHistoryDto>>
-            GetPatientHistoryAsync(int patientId)
+        public async Task<IEnumerable<PatientAppointmentHistoryDto>> GetPatientHistoryAsync(int patientId)
         {
-            var appointments =
-                await _appointmentRepository.GetByPatientIdAsync(patientId);
+            var appointments = await _appointmentRepository.GetByPatientIdAsync(patientId);
 
-            return appointments.Select(a =>
-                new PatientAppointmentHistoryDto
-                {
-                    AppointmentId = a.AppointmentId,
-                    ScheduledDate = a.ScheduledDate,
-                    TimeSlot = (int)a.TimeSlot,
-                    DoctorId = a.DoctorId,
-                    DoctorName = a.Doctor.FullName,
-                    Status = (int)a.Status
-                });
+            return appointments.Select(a => new PatientAppointmentHistoryDto
+            {
+                AppointmentId = a.AppointmentId,
+                ScheduledDate = a.ScheduledDate,
+                TimeSlot = (int)a.TimeSlot,
+                DoctorId = a.DoctorId,
+                DoctorName = a.Doctor.FullName,
+                Status = (int)a.Status
+            });
         }
 
-        public async Task<IEnumerable<DoctorScheduleItemDto>>
-            GetDoctorTodayScheduleAsync(int doctorId)
+        public async Task<IEnumerable<DoctorScheduleItemDto>> GetDoctorTodayScheduleAsync(int doctorId)
         {
             var appointments =
                 await _appointmentRepository.GetDoctorTodayScheduleAsync(
@@ -79,11 +66,10 @@ namespace S3_HealthAxisApi.Services.Implementation
             return appointments.Select(MapDoctorScheduleItem);
         }
 
-        public async Task<IEnumerable<DoctorScheduleItemDto>>
-            GetDoctorWeekScheduleAsync(
-                int doctorId,
-                DateOnly startDate,
-                DateOnly endDate)
+        public async Task<IEnumerable<DoctorScheduleItemDto>> GetDoctorWeekScheduleAsync(
+            int doctorId,
+            DateOnly startDate,
+            DateOnly endDate)
         {
             var appointments =
                 await _appointmentRepository.GetDoctorWeekScheduleAsync(
@@ -117,24 +103,18 @@ namespace S3_HealthAxisApi.Services.Implementation
             return MapToAppointmentDto(appointment);
         }
 
-        public async Task UpdateAsync(
-            int id,
-            UpdateAppointmentDto dto)
+        public async Task UpdateAsync(int id, UpdateAppointmentDto dto)
         {
-            var appointment =
-                await _appointmentRepository.GetByIdAsync(id);
+            var appointment = await _appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
-                throw new KeyNotFoundException(
-                    $"Appointment {id} not found.");
+                throw new KeyNotFoundException($"Appointment {id} not found.");
 
             if (appointment.Status == AppointmentStatus.Completed)
-                throw new InvalidOperationException(
-                    "Completed appointments cannot be modified.");
+                throw new InvalidOperationException("Completed appointments cannot be modified.");
 
             if (appointment.Status == AppointmentStatus.Cancelled)
-                throw new InvalidOperationException(
-                    "Cancelled appointments cannot be modified.");
+                throw new InvalidOperationException("Cancelled appointments cannot be modified.");
 
             await ValidateUpdateBookingAsync(
                 appointment.AppointmentId,
@@ -145,116 +125,74 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             appointment.DoctorId = dto.DoctorId;
             appointment.ScheduledDate = dto.ScheduledDate;
-            appointment.TimeSlot =
-                (AppointmentTimeSlot)dto.TimeSlot;
+            appointment.TimeSlot = (AppointmentTimeSlot)dto.TimeSlot;
 
             await _appointmentRepository.UpdateAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task UpdateStatusAsync(
-    int id,
-    UpdateAppointmentStatusDto dto)
+        public async Task UpdateStatusAsync(int id, UpdateAppointmentStatusDto dto)
         {
-            var appointment =
-                await _appointmentRepository.GetByIdAsync(id);
+            var appointment = await _appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
-                throw new KeyNotFoundException(
-                    $"Appointment {id} not found.");
+                throw new KeyNotFoundException($"Appointment {id} not found.");
 
-            if (!Enum.IsDefined(
-                    typeof(AppointmentStatus),
-                    dto.Status))
-            {
-                throw new ArgumentException(
-                    "Invalid appointment status.");
-            }
+            if (!Enum.IsDefined(typeof(AppointmentStatus), dto.Status))
+                throw new ArgumentException("Invalid appointment status.");
 
-            var newStatus =
-                (AppointmentStatus)dto.Status;
+            var newStatus = (AppointmentStatus)dto.Status;
 
             if (appointment.Status == AppointmentStatus.Completed)
-            {
-                throw new InvalidOperationException(
-                    "Completed appointments cannot be modified.");
-            }
+                throw new InvalidOperationException("Completed appointments cannot be modified.");
 
             if (appointment.Status == AppointmentStatus.Cancelled)
-            {
-                throw new InvalidOperationException(
-                    "Cancelled appointments cannot be modified.");
-            }
+                throw new InvalidOperationException("Cancelled appointments cannot be modified.");
 
             switch (newStatus)
             {
                 case AppointmentStatus.Pending:
-                    throw new InvalidOperationException(
-                        "Cannot manually change appointment back to Pending.");
+                    throw new InvalidOperationException("Cannot manually change appointment back to Pending.");
 
                 case AppointmentStatus.Confirmed:
-
                     if (appointment.Status != AppointmentStatus.Pending)
-                    {
-                        throw new InvalidOperationException(
-                            "Only pending appointments can be confirmed.");
-                    }
+                        throw new InvalidOperationException("Only pending appointments can be confirmed.");
 
-                    appointment.Status =
-                        AppointmentStatus.Confirmed;
+                    appointment.Status = AppointmentStatus.Confirmed;
                     break;
 
                 case AppointmentStatus.Completed:
-
                     if (appointment.Status != AppointmentStatus.Confirmed)
-                    {
-                        throw new InvalidOperationException(
-                            "Only confirmed appointments can be completed.");
-                    }
+                        throw new InvalidOperationException("Only confirmed appointments can be completed.");
 
-                    appointment.Status =
-                        AppointmentStatus.Completed;
+                    appointment.Status = AppointmentStatus.Completed;
                     break;
 
                 case AppointmentStatus.Cancelled:
+                    if (string.IsNullOrWhiteSpace(dto.CancellationReason))
+                        throw new ArgumentException("Cancellation reason is required.");
 
-                    if (string.IsNullOrWhiteSpace(
-                            dto.CancellationReason))
-                    {
-                        throw new ArgumentException(
-                            "Cancellation reason is required.");
-                    }
-
-                    appointment.Status =
-                        AppointmentStatus.Cancelled;
-
-                    appointment.CancellationReason =
-                        dto.CancellationReason.Trim();
-
+                    appointment.Status = AppointmentStatus.Cancelled;
+                    appointment.CancellationReason = dto.CancellationReason.Trim();
                     break;
 
                 default:
-                    throw new ArgumentException(
-                        "Invalid appointment status.");
+                    throw new ArgumentException("Invalid appointment status.");
             }
 
-            await _appointmentRepository.UpdateAsync(
-                appointment);
-
+            await _appointmentRepository.UpdateAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
         }
 
         public async Task ConfirmAsync(int id)
         {
-            var appointment =
-                await _appointmentRepository.GetByIdAsync(id);
+            var appointment = await _appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
                 throw new KeyNotFoundException();
 
             if (appointment.Status != AppointmentStatus.Pending)
-                throw new InvalidOperationException(
-                    "Only pending appointments can be confirmed.");
+                throw new InvalidOperationException("Only pending appointments can be confirmed.");
 
             appointment.Status = AppointmentStatus.Confirmed;
 
@@ -264,15 +202,13 @@ namespace S3_HealthAxisApi.Services.Implementation
 
         public async Task CompleteAsync(int id)
         {
-            var appointment =
-                await _appointmentRepository.GetByIdAsync(id);
+            var appointment = await _appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
                 throw new KeyNotFoundException();
 
             if (appointment.Status != AppointmentStatus.Confirmed)
-                throw new InvalidOperationException(
-                    "Only confirmed appointments can be completed.");
+                throw new InvalidOperationException("Only confirmed appointments can be completed.");
 
             appointment.Status = AppointmentStatus.Completed;
 
@@ -280,31 +216,24 @@ namespace S3_HealthAxisApi.Services.Implementation
             await _appointmentRepository.SaveChangesAsync();
         }
 
-        public async Task CancelAsync(
-            int id,
-            CancelAppointmentDto dto)
+        public async Task CancelAsync(int id, CancelAppointmentDto dto)
         {
-            var appointment =
-                await _appointmentRepository.GetByIdAsync(id);
+            var appointment = await _appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
                 throw new KeyNotFoundException();
 
             if (appointment.Status == AppointmentStatus.Completed)
-                throw new InvalidOperationException(
-                    "Completed appointments cannot be cancelled.");
+                throw new InvalidOperationException("Completed appointments cannot be cancelled.");
 
             if (appointment.Status == AppointmentStatus.Cancelled)
-                throw new InvalidOperationException(
-                    "Appointment already cancelled.");
+                throw new InvalidOperationException("Appointment already cancelled.");
 
             if (string.IsNullOrWhiteSpace(dto.CancellationReason))
-                throw new ArgumentException(
-                    "Cancellation reason is required.");
+                throw new ArgumentException("Cancellation reason is required.");
 
             appointment.Status = AppointmentStatus.Cancelled;
-            appointment.CancellationReason =
-                dto.CancellationReason.Trim();
+            appointment.CancellationReason = dto.CancellationReason.Trim();
 
             await _appointmentRepository.UpdateAsync(appointment);
             await _appointmentRepository.SaveChangesAsync();
@@ -312,165 +241,87 @@ namespace S3_HealthAxisApi.Services.Implementation
 
         public async Task<IEnumerable<DoctorScheduleItemDto>> GetDoctorUpcomingScheduleAsync(int doctorId)
         {
-            var startDate =
-                DateOnly.FromDateTime(DateTime.Today);
-
-            var endDate =
-                startDate.AddDays(7);
+            var startDate = DateOnly.FromDateTime(DateTime.Today);
+            var endDate = startDate.AddDays(7);
 
             var appointments =
-                await _appointmentRepository
-                    .GetDoctorWeekScheduleAsync(
-                        doctorId,
-                        startDate,
-                        endDate);
+                await _appointmentRepository.GetDoctorWeekScheduleAsync(
+                    doctorId,
+                    startDate,
+                    endDate);
 
             return appointments.Select(MapDoctorScheduleItem);
         }
 
-        private async Task ValidateBookingAsync(
-            int patientId,
-            int doctorId,
-            DateOnly date,
-            int timeSlot)
+        private async Task ValidateBookingAsync(int patientId, int doctorId, DateOnly date, int timeSlot)
         {
-            var patient =
-                await _patientRepository.GetByIdAsync(patientId);
+            var patient = await _patientRepository.GetByIdAsync(patientId);
 
             if (patient == null)
-                throw new KeyNotFoundException(
-                    "Patient not found.");
+                throw new KeyNotFoundException("Patient not found.");
 
             if (!patient.IsActive)
-                throw new InvalidOperationException(
-                    "Inactive patients cannot book appointments.");
+                throw new InvalidOperationException("Inactive patients cannot book appointments.");
 
-            var doctor =
-                await _doctorRepository.GetByIdAsync(doctorId);
+            var doctor = await _doctorRepository.GetByIdAsync(doctorId);
 
             if (doctor == null)
-                throw new KeyNotFoundException(
-                    "Doctor not found.");
+                throw new KeyNotFoundException("Doctor not found.");
 
             if (!doctor.IsActive)
-                throw new InvalidOperationException(
-                    "Inactive doctor.");
+                throw new InvalidOperationException("Inactive doctor.");
 
             if (date < DateOnly.FromDateTime(DateTime.Today))
-                throw new ArgumentException(
-                    "Appointment date cannot be in the past.");
+                throw new ArgumentException("Appointment date cannot be in the past.");
 
-            if (!Enum.IsDefined(
-                    typeof(AppointmentTimeSlot),
-                    timeSlot))
-            {
-                throw new ArgumentException(
-                    "Invalid appointment slot.");
-            }
+            if (!Enum.IsDefined(typeof(AppointmentTimeSlot), timeSlot))
+                throw new ArgumentException("Invalid appointment slot.");
 
-            if (await _appointmentRepository
-                .ExistsSamePatientSameDoctorSameDateAsync(
-                    patientId,
-                    doctorId,
-                    date))
-            {
-                throw new InvalidOperationException(
-                    "Patient already has an appointment with this doctor on the selected date.");
-            }
+            if (await _appointmentRepository.ExistsSamePatientSameDoctorSameDateAsync(patientId, doctorId, date))
+                throw new InvalidOperationException("Patient already has an appointment with this doctor on the selected date.");
 
-            if (await _appointmentRepository
-                .ExistsSamePatientSameSlotSameDateAsync(
-                    patientId,
-                    date,
-                    timeSlot))
-            {
-                throw new InvalidOperationException(
-                    "Patient already has another appointment in this time slot.");
-            }
+            if (await _appointmentRepository.ExistsSamePatientSameSlotSameDateAsync(patientId, date, timeSlot))
+                throw new InvalidOperationException("Patient already has another appointment in this time slot.");
 
-            if (await _appointmentRepository
-                .ExistsSameDoctorSameSlotSameDateAsync(
-                    doctorId,
-                    date,
-                    timeSlot))
-            {
-                throw new InvalidOperationException(
-                    "Doctor is already booked for this time slot.");
-            }
+            if (await _appointmentRepository.ExistsSameDoctorSameSlotSameDateAsync(doctorId, date, timeSlot))
+                throw new InvalidOperationException("Doctor is already booked for this time slot.");
         }
 
-        private async Task ValidateUpdateBookingAsync(int appointmentId,int patientId,int doctorId,DateOnly date,int timeSlot)
+        private async Task ValidateUpdateBookingAsync(int appointmentId, int patientId, int doctorId, DateOnly date, int timeSlot)
         {
-            var patient =
-                await _patientRepository.GetByIdAsync(patientId);
+            var patient = await _patientRepository.GetByIdAsync(patientId);
 
             if (patient == null)
-                throw new KeyNotFoundException(
-                    "Patient not found.");
+                throw new KeyNotFoundException("Patient not found.");
 
             if (!patient.IsActive)
-                throw new InvalidOperationException(
-                    "Inactive patients cannot book appointments.");
+                throw new InvalidOperationException("Inactive patients cannot book appointments.");
 
-            var doctor =
-                await _doctorRepository.GetByIdAsync(doctorId);
+            var doctor = await _doctorRepository.GetByIdAsync(doctorId);
 
             if (doctor == null)
-                throw new KeyNotFoundException(
-                    "Doctor not found.");
+                throw new KeyNotFoundException("Doctor not found.");
 
             if (!doctor.IsActive)
-                throw new InvalidOperationException(
-                    "Inactive doctor.");
+                throw new InvalidOperationException("Inactive doctor.");
 
             if (date < DateOnly.FromDateTime(DateTime.Today))
-                throw new ArgumentException(
-                    "Appointment date cannot be in the past.");
+                throw new ArgumentException("Appointment date cannot be in the past.");
 
-            if (!Enum.IsDefined(
-                    typeof(AppointmentTimeSlot),
-                    timeSlot))
-            {
-                throw new ArgumentException(
-                    "Invalid appointment slot.");
-            }
+            if (!Enum.IsDefined(typeof(AppointmentTimeSlot), timeSlot))
+                throw new ArgumentException("Invalid appointment slot.");
 
-            if (await _appointmentRepository
-                .ExistsSamePatientSameDoctorSameDateAsync(
-                    patientId,
-                    doctorId,
-                    date,
-                    appointmentId))
-            {
-                throw new InvalidOperationException(
-                    "Patient already has an appointment with this doctor on the selected date.");
-            }
+            if (await _appointmentRepository.ExistsSamePatientSameDoctorSameDateAsync(patientId, doctorId, date, appointmentId))
+                throw new InvalidOperationException("Patient already has an appointment with this doctor on the selected date.");
 
-            if (await _appointmentRepository
-                .ExistsSamePatientSameSlotSameDateAsync(
-                    patientId,
-                    date,
-                    timeSlot,
-                    appointmentId))
-            {
-                throw new InvalidOperationException(
-                    "Patient already has another appointment in this time slot.");
-            }
+            if (await _appointmentRepository.ExistsSamePatientSameSlotSameDateAsync(patientId, date, timeSlot, appointmentId))
+                throw new InvalidOperationException("Patient already has another appointment in this time slot.");
 
-            if (await _appointmentRepository
-                .ExistsSameDoctorSameSlotSameDateAsync(
-                    doctorId,
-                    date,
-                    timeSlot,
-                    appointmentId))
-            {
-                throw new InvalidOperationException(
-                    "Doctor is already booked for this time slot.");
-            }
+            if (await _appointmentRepository.ExistsSameDoctorSameSlotSameDateAsync(doctorId, date, timeSlot, appointmentId))
+                throw new InvalidOperationException("Doctor is already booked for this time slot.");
         }
 
-        private static AppointmentDto MapToAppointmentDto(
-            Appointment appointment)
+        private static AppointmentDto MapToAppointmentDto(Appointment appointment)
         {
             return new AppointmentDto
             {
@@ -484,8 +335,24 @@ namespace S3_HealthAxisApi.Services.Implementation
             };
         }
 
-        private static DoctorScheduleItemDto MapDoctorScheduleItem(
-            Appointment appointment)
+        // ✅ NEW / IMPORTANT: include names in list results
+        private static AppointmentDetailsDto MapToAppointmentDetailsDto(Appointment appointment)
+        {
+            return new AppointmentDetailsDto
+            {
+                AppointmentId = appointment.AppointmentId,
+                PatientId = appointment.PatientId,
+                PatientName = appointment.Patient?.FullName ?? string.Empty,
+                DoctorId = appointment.DoctorId,
+                DoctorName = appointment.Doctor?.FullName ?? string.Empty,
+                ScheduledDate = appointment.ScheduledDate,
+                TimeSlot = (int)appointment.TimeSlot,
+                Status = (int)appointment.Status,
+                CancellationReason = appointment.CancellationReason
+            };
+        }
+
+        private static DoctorScheduleItemDto MapDoctorScheduleItem(Appointment appointment)
         {
             return new DoctorScheduleItemDto
             {

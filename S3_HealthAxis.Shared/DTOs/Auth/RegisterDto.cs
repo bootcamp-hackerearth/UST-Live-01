@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using S3_HealthAxis.Shared.Enums;
-using S3_HealthAxis.Shared.Enums;
 
 namespace S3_HealthAxis.Shared.DTOs.Auth
 {

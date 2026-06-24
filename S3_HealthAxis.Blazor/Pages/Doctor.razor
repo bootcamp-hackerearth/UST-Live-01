@@ -1,12 +1,14 @@
 ﻿@page "/doctors"
 
 @using S3_HealthAxis.Shared.DTOs.Doctor
+@using S3_HealthAxis.Shared.DTOs.Appointment
 @using S3_HealthAxis.Shared.Enums
 @using S3_HealthAxis.Blazor.Services
 @using System.ComponentModel.DataAnnotations
 @using System.Linq
 
 @inject IDoctorService DoctorService
+@inject IAppointmentService AppointmentService
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -38,6 +40,68 @@
     </div>
 }
 
+<!-- SUMMARY CARDS -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-all @GetSummaryCardClass(DoctorStatusFilter.All)"
+                @onclick="() => SetStatusFilter(DoctorStatusFilter.All)">
+            <div class="ha-summary-card-label">Total Doctors</div>
+            <div class="ha-summary-card-value">@TotalDoctors</div>
+        </button>
+    </div>
+
+    <div class="col-md-4">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-active @GetSummaryCardClass(DoctorStatusFilter.Active)"
+                @onclick="() => SetStatusFilter(DoctorStatusFilter.Active)">
+            <div class="ha-summary-card-label">Active Doctors</div>
+            <div class="ha-summary-card-value">@ActiveDoctorsCount</div>
+        </button>
+    </div>
+
+    <div class="col-md-4">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-inactive @GetSummaryCardClass(DoctorStatusFilter.Inactive)"
+                @onclick="() => SetStatusFilter(DoctorStatusFilter.Inactive)">
+            <div class="ha-summary-card-label">Inactive Doctors</div>
+            <div class="ha-summary-card-value">@InactiveDoctorsCount</div>
+        </button>
+    </div>
+</div>
+
+<!-- FILTERS -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label fw-medium">Search by Name</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Search doctor by name..."
+                           @bind="SearchQuery"
+                           @bind:event="oninput" />
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label fw-medium">Filter by Specialisation</label>
+                <InputSelect class="form-select" @bind-Value="SelectedSpecialisation">
+                    <option value="0">All Specialisations</option>
+                    @foreach (DoctorSpecialisation spec in Enum.GetValues(typeof(DoctorSpecialisation)))
+                    {
+                        <option value="@((int)spec)">@GetDisplayName(spec)</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card shadow-sm border-0 ha-data-card">
     <div class="card-body p-0">
         @if (_loading)
@@ -52,6 +116,13 @@
             <div class="text-center p-5 text-muted">
                 <i class="bi bi-person-x fs-1"></i>
                 <p class="mt-2">No doctors found in the system.</p>
+            </div>
+        }
+        else if (!FilteredDoctors.Any())
+        {
+            <div class="text-center p-5 text-muted">
+                <i class="bi bi-search fs-1"></i>
+                <p class="mt-2">No doctors match the selected filters.</p>
             </div>
         }
         else
@@ -70,7 +141,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var doc in _doctors)
+                        @foreach (var doc in FilteredDoctors)
                         {
                             <tr>
                                 <td class="ps-4">
@@ -113,6 +184,12 @@
                                 </td>
 
                                 <td class="text-end pe-4">
+                                    <button class="btn btn-sm btn-outline-info me-2 ha-table-action"
+                                            title="View Schedule"
+                                            @onclick="() => OpenScheduleModal(doc)">
+                                        <i class="bi bi-calendar3"></i>
+                                    </button>
+
                                     <button class="btn btn-sm btn-outline-primary me-2 ha-table-action"
                                             @onclick="() => OpenEditModal(doc)">
                                         <i class="bi bi-pencil"></i>
@@ -142,6 +219,7 @@
     </div>
 </div>
 
+<!-- ADD / EDIT MODAL -->
 @if (_showModal)
 {
     <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
@@ -218,6 +296,101 @@
     </div>
 }
 
+<!-- SCHEDULE MODAL -->
+@if (_showScheduleModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light border-0">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-1">Doctor Schedule</h5>
+                        <div class="text-muted small">
+                            Dr. @_scheduleDoctorName
+                            @if (!string.IsNullOrWhiteSpace(_scheduleDoctorSpecialisation))
+                            {
+                                <span>• @_scheduleDoctorSpecialisation</span>
+                            }
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-close" @onclick="CloseScheduleModal"></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="btn-group shadow-sm" role="group">
+                            <button type="button"
+                                    class="btn btn-sm @(!_showUpcomingSchedule ? "btn-primary" : "btn-outline-primary")"
+                                    @onclick="ShowTodaySchedule">
+                                Today
+                            </button>
+                            <button type="button"
+                                    class="btn btn-sm @(_showUpcomingSchedule ? "btn-primary" : "btn-outline-primary")"
+                                    @onclick="ShowUpcomingSchedule">
+                                Upcoming
+                            </button>
+                        </div>
+                    </div>
+
+                    @if (_scheduleLoading)
+                    {
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary"></div>
+                            <p class="text-muted mt-2 mb-0">Loading schedule...</p>
+                        </div>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(_scheduleError))
+                    {
+                        <div class="alert alert-danger">
+                            @_scheduleError
+                        </div>
+                    }
+                    else if (_doctorSchedule == null || !_doctorSchedule.Any())
+                    {
+                        <div class="text-center p-4 text-muted">
+                            <i class="bi bi-calendar-x fs-1"></i>
+                            <p class="mt-2 mb-0">
+                                No appointments found for this doctor
+                                @(_showUpcomingSchedule ? "in the upcoming schedule." : "today.")
+                            </p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ha-schedule-list">
+                            @foreach (var item in _doctorSchedule)
+                            {
+                                <div class="ha-schedule-item">
+                                    <div class="ha-schedule-item-left">
+                                        <div class="ha-schedule-date">
+                                            @item.ScheduledDate.ToString("MMM dd, yyyy")
+                                        </div>
+                                        <div class="ha-schedule-time">
+                                            <i class="bi bi-clock me-1"></i>
+                                            @GetDisplayName((AppointmentTimeSlot)item.TimeSlot)
+                                        </div>
+                                    </div>
+
+                                    <div class="ha-schedule-item-center">
+                                        <div class="ha-schedule-patient">
+                                            @(string.IsNullOrWhiteSpace(item.PatientName) ? "Unknown Patient" : item.PatientName)
+                                        </div>
+                                    </div>
+
+                                    <div class="ha-schedule-item-right">
+                                        @GetAppointmentStatusBadge(item.Status)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <ConfirmDialog IsOpen="@_showConfirmDialog"
                Title="@_confirmTitle"
                Message="@_confirmMessage"
@@ -246,6 +419,21 @@
     private DoctorFormModel _formData = new();
     private DoctorCreationResultDto? _newDoctorResult;
 
+    // Filters
+    private string _searchQuery = "";
+    private int SelectedSpecialisation { get; set; } = 0;
+    private DoctorStatusFilter CurrentStatusFilter { get; set; } = DoctorStatusFilter.All;
+
+    // Schedule modal
+    private bool _showScheduleModal = false;
+    private bool _scheduleLoading = false;
+    private bool _showUpcomingSchedule = false;
+    private string? _scheduleError;
+    private int _scheduleDoctorId = 0;
+    private string _scheduleDoctorName = "";
+    private string _scheduleDoctorSpecialisation = "";
+    private List<DoctorScheduleItemDto> _doctorSchedule = new();
+
     public class DoctorFormModel
     {
         [Required(ErrorMessage = "Full Name is required")]
@@ -269,6 +457,40 @@
         public decimal ConsultationFee { get; set; }
     }
 
+    private enum DoctorStatusFilter
+    {
+        All,
+        Active,
+        Inactive
+    }
+
+    private int TotalDoctors => _doctors?.Count ?? 0;
+    private int ActiveDoctorsCount => _doctors?.Count(d => d.IsActive) ?? 0;
+    private int InactiveDoctorsCount => _doctors?.Count(d => !d.IsActive) ?? 0;
+
+    private string SearchQuery
+    {
+        get => _searchQuery;
+        set => _searchQuery = value;
+    }
+
+    private IEnumerable<DoctorDto> FilteredDoctors =>
+        (_doctors ?? Enumerable.Empty<DoctorDto>())
+        .Where(doc =>
+            CurrentStatusFilter switch
+            {
+                DoctorStatusFilter.Active => doc.IsActive,
+                DoctorStatusFilter.Inactive => !doc.IsActive,
+                _ => true
+            })
+        .Where(doc =>
+            string.IsNullOrWhiteSpace(SearchQuery)
+            || doc.FullName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
+        .Where(doc =>
+            SelectedSpecialisation == 0
+            || doc.Specialisation == SelectedSpecialisation)
+        .OrderBy(doc => doc.FullName);
+
     protected override async Task OnInitializedAsync()
     {
         await LoadDoctors();
@@ -291,6 +513,14 @@
             _loading = false;
         }
     }
+
+    private void SetStatusFilter(DoctorStatusFilter filter)
+    {
+        CurrentStatusFilter = filter;
+    }
+
+    private string GetSummaryCardClass(DoctorStatusFilter filter) =>
+        CurrentStatusFilter == filter ? "active" : "";
 
     private void OpenAddModal()
     {
@@ -320,6 +550,60 @@
     private void CloseModal()
     {
         _showModal = false;
+    }
+
+    private async Task OpenScheduleModal(DoctorDto doctor)
+    {
+        _scheduleDoctorId = doctor.DoctorId;
+        _scheduleDoctorName = doctor.FullName;
+        _scheduleDoctorSpecialisation = GetDisplayName((DoctorSpecialisation)doctor.Specialisation);
+        _showUpcomingSchedule = false;
+        _showScheduleModal = true;
+
+        await LoadDoctorSchedule();
+    }
+
+    private void CloseScheduleModal()
+    {
+        _showScheduleModal = false;
+        _doctorSchedule = new();
+        _scheduleError = null;
+    }
+
+    private async Task ShowTodaySchedule()
+    {
+        _showUpcomingSchedule = false;
+        await LoadDoctorSchedule();
+    }
+
+    private async Task ShowUpcomingSchedule()
+    {
+        _showUpcomingSchedule = true;
+        await LoadDoctorSchedule();
+    }
+
+    private async Task LoadDoctorSchedule()
+    {
+        try
+        {
+            _scheduleLoading = true;
+            _scheduleError = null;
+
+            var result = _showUpcomingSchedule
+                ? await AppointmentService.GetDoctorUpcomingScheduleAsync(_scheduleDoctorId)
+                : await AppointmentService.GetDoctorTodayScheduleAsync(_scheduleDoctorId);
+
+            _doctorSchedule = result ?? new List<DoctorScheduleItemDto>();
+        }
+        catch (Exception ex)
+        {
+            _scheduleError = $"Failed to load doctor schedule: {ex.Message}";
+            _doctorSchedule = new List<DoctorScheduleItemDto>();
+        }
+        finally
+        {
+            _scheduleLoading = false;
+        }
     }
 
     private string GetDisplayName(Enum enumValue)
@@ -458,4 +742,26 @@
             _pageError = $"Failed to change status: {ex.Message}";
         }
     }
+
+    private RenderFragment GetAppointmentStatusBadge(int status) => builder =>
+    {
+        switch (status)
+        {
+            case 0:
+                builder.AddMarkupContent(0, "<span class='badge bg-warning text-dark ha-table-pill'>Pending</span>");
+                break;
+            case 1:
+                builder.AddMarkupContent(0, "<span class='badge bg-primary ha-table-pill'>Confirmed</span>");
+                break;
+            case 2:
+                builder.AddMarkupContent(0, "<span class='badge bg-danger ha-table-pill'>Cancelled</span>");
+                break;
+            case 3:
+                builder.AddMarkupContent(0, "<span class='badge bg-success ha-table-pill'>Completed</span>");
+                break;
+            default:
+                builder.AddMarkupContent(0, $"<span class='badge bg-secondary ha-table-pill'>Unknown ({status})</span>");
+                break;
+        }
+    };
 }
