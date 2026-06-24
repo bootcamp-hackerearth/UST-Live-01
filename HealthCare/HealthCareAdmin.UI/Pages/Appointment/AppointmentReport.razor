@@ -7,25 +7,27 @@
 <h3 class="mb-3 text-primary fw-bold">📊 Appointment Report</h3>
 
 <!-- ✅ FILTER SECTION -->
-<div class="card shadow mb-4 p-3 border-0 bg-light">
-    <div class="row g-2 align-items-end">
+<div class="card shadow-sm mb-4 p-3 border-0"
+     style="background:#0F172A; color:white;">
+
+    <div class="row g-3 align-items-end">
 
         <!-- Start Date -->
         <div class="col-md-3">
-            <label class="form-label fw-bold">Start Date</label>
-            <InputDate class="form-control" @bind-Value="startDate" />
+            <label class="form-label fw-semibold">Start Date</label>
+            <InputDate class="form-control filter-input" @bind-Value="startDate" />
         </div>
 
         <!-- End Date -->
         <div class="col-md-3">
-            <label class="form-label fw-bold">End Date</label>
-            <InputDate class="form-control" @bind-Value="endDate" />
+            <label class="form-label fw-semibold">End Date</label>
+            <InputDate class="form-control filter-input" @bind-Value="endDate" />
         </div>
 
-        <!-- Search Button -->
+        <!-- Search -->
         <div class="col-md-3">
             <button class="btn btn-primary mt-3" @onclick="LoadReport">
-                🔍 Search
+                Search
             </button>
         </div>
 
@@ -34,7 +36,7 @@
 
 <!-- ✅ TABLE -->
 <table class="table table-hover shadow-sm border">
-    <thead class="table-primary">
+    <thead style="background:#0B5ED7; color:white;">
         <tr>
             <th>Date</th>
             <th>Pending</th>
@@ -65,9 +67,11 @@
             {
                 <tr>
                     <td>@r.Date.ToString("dd MMM yyyy")</td>
-                    <td class="text-warning fw-bold">@r.PendingCount</td>
-                    <td class="text-primary fw-bold">@r.ConfirmedCount</td>
-                    <td class="text-success fw-bold">@r.CompletedCount</td>
+
+                    <td class="text-warning fw-semibold">@r.PendingCount</td>
+                    <td class="text-primary fw-semibold">@r.ConfirmedCount</td>
+                    <td class="text-success fw-semibold">@r.CompletedCount</td>
+
                     <td class="fw-bold">
                         @(r.PendingCount + r.ConfirmedCount + r.CompletedCount)
                     </td>

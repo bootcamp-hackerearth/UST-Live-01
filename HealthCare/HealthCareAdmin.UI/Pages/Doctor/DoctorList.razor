@@ -1,30 +1,30 @@
 ﻿@page "/doctor/list"
 @using Healthcare.Shared.DTOs.Doctor
 
+
 @inject DoctorService DoctorService
 @inject IJSRuntime JS
 
 <h3 class="mb-3 text-primary fw-bold">👨‍⚕️ Doctor Management</h3>
 
 <!-- ✅ FILTER PANEL -->
-<div class="card shadow mb-4 p-3 border-0 bg-light">
-    <div class="row g-2 align-items-end">
+<div class="card shadow-sm mb-4 p-3 border-0"
+     style="background:#0F172A; color:white;">
+
+    <div class="row g-3 align-items-end">
 
         <div class="col-md-3">
-            <label class="form-label fw-bold">Search</label>
-
-            <input class="form-control"
+            <label class="form-label fw-semibold">Search</label>
+            <input class="form-control filter-input"
                    placeholder="Doctor name"
                    @bind="searchText"
                    @bind:event="oninput"
                    @bind:after="ApplyFilters" />
-
         </div>
 
         <div class="col-md-2">
-            <label class="form-label fw-bold">Specialisation</label>
-
-            <select class="form-select"
+            <label class="form-label fw-semibold">Specialisation</label>
+            <select class="form-select filter-input"
                     @bind="selectedSpecialisation"
                     @bind:after="ApplyFilters">
                 <option value="">All</option>
@@ -33,34 +33,31 @@
                     <option value="@s">@s</option>
                 }
             </select>
-
         </div>
 
         <div class="col-md-2">
-            <label class="form-label fw-bold">Experience</label>
+            <label class="form-label fw-semibold">Experience</label>
             <input type="number"
-                        class="form-control"
-                        @bind="minExperience"
-                        @bind:event="oninput"
-                        @bind:after="ApplyFilters" />
+                   class="form-control filter-input"
+                   @bind="minExperience"
+                   @bind:event="oninput"
+                   @bind:after="ApplyFilters" />
         </div>
 
         <div class="col-md-2">
-            <label class="form-label fw-bold">Status</label>
-
-                <select class="form-select"
-                        @bind="statusFilter"
-                        @bind:after="ApplyFilters">
-                    <option value="">All</option>
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
-                </select>
-
+            <label class="form-label fw-semibold">Status</label>
+            <select class="form-select filter-input"
+                    @bind="statusFilter"
+                    @bind:after="ApplyFilters">
+                <option value="">All</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
         </div>
 
         <div class="col-md-3 text-end">
             <button class="btn btn-success mt-3" @onclick="ShowModal">
-                ➕ Register
+                + Register
             </button>
         </div>
 
@@ -68,19 +65,23 @@
 </div>
 
 <!-- ✅ TABLE -->
-<table class="table table-hover shadow-sm border">
-    <thead class="table-primary">
-        <tr>
-            <th>Name</th>
-            <th>Specialisation</th>
-            <th>Experience</th>
-            <th>Fee</th>
-            <th>Status</th>
-            <th class="text-end">Actions</th>
-        </tr>
-    </thead>
+<div class="card shadow-sm border-0">
 
-    <tbody>
+    <table class="table table-hover align-middle mb-0">
+
+        <thead style="background:#0B5ED7; color:white;">
+            <tr>
+                <th>Name</th>
+                <th>Specialisation</th>
+                <th>Experience</th>
+                <th>Fee</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
         @if (isLoading)
         {
             <tr>
@@ -112,26 +113,29 @@
                     </td>
 
                     <td class="text-end">
-                        <button class="btn btn-sm btn-outline-warning me-1"
-                                @onclick="() => EditDoctor(doc.DoctorId)">
-                            ✏️
-                        </button>
 
-                        <button class="btn btn-sm btn-outline-danger me-1"
-                                @onclick="() => ShowDeletePopup(doc.DoctorId)">
-                            🗑️
-                        </button>
+                            <button class="btn btn-sm btn-outline-warning me-1"
+                                    @onclick="() => EditDoctor(doc.DoctorId)">
+                                Edit
+                            </button>
+                        
+                            <button class="btn btn-sm btn-outline-danger me-1"
+                                    @onclick="() => ShowDeletePopup(doc.DoctorId)">
+                                Delete
+                            </button>
 
-                        <button class="btn btn-sm btn-outline-secondary"
-                                @onclick="() => ToggleStatus(doc)">
-                            🔄
-                        </button>
+                            <button class="btn btn-sm btn-outline-secondary"
+                                    @onclick="() => ToggleStatus(doc)">
+                                Toggle
+                            </button>
+
                     </td>
                 </tr>
             }
         }
     </tbody>
 </table>
+</div>
 
 <!-- ✅ PAGINATION -->
 <div class="d-flex justify-content-between mt-3">

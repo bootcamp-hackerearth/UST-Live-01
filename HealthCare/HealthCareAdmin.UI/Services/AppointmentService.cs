@@ -1,5 +1,4 @@
 ﻿
-using Healthcare.Shared.DTOs.Appointment;
 using Healthcare.Shared.DTOs.Appointments;
 using Microsoft.JSInterop;
 using System.Net.Http.Headers;

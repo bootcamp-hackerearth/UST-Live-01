@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Healthcare.Shared.DTOs.Appointment
+namespace Healthcare.Shared.DTOs.Appointments
 {
 
     public class PagedAppointmentResponse
