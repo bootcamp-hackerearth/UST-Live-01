@@ -1,56 +1,90 @@
-﻿using HealthAxisCore_Admin.Models;
+﻿using HealthAxisCore_Admin.Dtos.Auth;
+using HealthAxisCore_Admin.Providers;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
-namespace HealthAxisCore_Admin.Services
+namespace HealthAxisCore_Admin.Services;
+
+public class AuthService
 {
-    public class AuthService
+    private readonly HttpClient _httpClient;
+    private readonly TokenService _tokenService;
+    private readonly ApiAuthenticationStateProvider _authenticationStateProvider;
+
+    public AuthService(
+        HttpClient httpClient,
+        TokenService tokenService,
+        ApiAuthenticationStateProvider authenticationStateProvider)
     {
-        private readonly TokenService _tokenService;
+        _httpClient = httpClient;
+        _tokenService = tokenService;
+        _authenticationStateProvider = authenticationStateProvider;
+    }
 
-        public AuthService(TokenService tokenService)
+    public async Task<bool> LoginAsync(LoginRequestDto loginRequest)
+    {
+        var response = await _httpClient.PostAsJsonAsync(
+            "api/auth/login",
+            loginRequest);
+
+        if (!response.IsSuccessStatusCode)
         {
-            _tokenService = tokenService;
+            return false;
         }
 
-        public async Task<AuthResponseDto> LoginAsync(LoginDto request)
+        var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponseDto>();
+
+        if (loginResponse is null)
         {
-            /*
-             * ============================================================
-             * TEMPORARY DISCONNECTED VERSION
-             * ============================================================
-             * This version does not call the API.
-             * Replace this file later with the connected API version.
-             * ============================================================
-             */
-
-            if (request.Email != "admin@healthcare.com" ||
-                request.Password != "Admin@123")
-            {
-                throw new Exception("Invalid email or password");
-            }
-
-            var result = new AuthResponseDto
-            {
-                UserId = "admin-user-1",
-                PatientId = null,
-                DoctorId = null,
-                FullName = "System Admin",
-                Email = "admin@healthcare.com",
-                Role = "Admin",
-                AccessToken = "hardcoded-admin-token",
-                RefreshToken = "hardcoded-refresh-token",
-                ExpiresIn = 3600
-            };
-
-            await _tokenService.SetTokenAsync(
-                result.AccessToken,
-                result.Role);
-
-            return result;
+            return false;
         }
 
-        public async Task LogoutAsync()
+        if (string.IsNullOrWhiteSpace(loginResponse.AccessToken))
         {
-            await _tokenService.ClearAsync();
+            return false;
         }
+
+        if (!string.Equals(loginResponse.Role, "Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        await _tokenService.SaveTokensAsync(
+            loginResponse.AccessToken,
+            loginResponse.RefreshToken,
+            loginResponse.UserId,
+            loginResponse.Role,
+            loginResponse.FullName,
+            loginResponse.Email);
+
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", loginResponse.AccessToken);
+
+        _authenticationStateProvider.NotifyUserAuthenticated();
+
+        return true;
+    }
+
+    public async Task LogoutAsync()
+    {
+        await _tokenService.ClearTokensAsync();
+
+        _httpClient.DefaultRequestHeaders.Authorization = null;
+
+        _authenticationStateProvider.NotifyUserLoggedOut();
+    }
+
+    public async Task AddBearerTokenAsync()
+    {
+        var token = await _tokenService.GetAccessTokenAsync();
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+            return;
+        }
+
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
     }
 }

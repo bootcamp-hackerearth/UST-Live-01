@@ -1,46 +1,19 @@
-﻿@inherits LayoutComponentBase
-@inject TokenService TokenService
-@inject NavigationManager NavigationManager
+﻿@using HealthAxisCore_Admin.Pages
+@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
 
-@if (isChecking)
-{
-    <div class="loading-screen">
-        Checking admin session...
-    </div>
-}
-else
-{
-    <div class="app-shell">
-        <Sidebar />
+<AuthorizeView>
+    <Authorized>
+        <div class="app-shell">
+            <Sidebar />
 
-        <main class="main-content">
-            @Body
-        </main>
-    </div>
-}
+            <main class="main-content">
+                @Body
+            </main>
+        </div>
+    </Authorized>
 
-@code {
-    private bool isChecking = true;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-        {
-            return;
-        }
-
-        var token = await TokenService.GetTokenAsync();
-
-        var role = await TokenService.GetRoleAsync();
-
-        if (string.IsNullOrWhiteSpace(token) || role != "Admin")
-        {
-            NavigationManager.NavigateTo("/login", true);
-            return;
-        }
-
-        isChecking = false;
-
-        StateHasChanged();
-    }
-}
+    <NotAuthorized>
+        <Login />
+    </NotAuthorized>
+</AuthorizeView>

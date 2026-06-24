@@ -1,66 +1,74 @@
 ﻿@page "/login"
-@layout EmptyLayout
 @inject AuthService AuthService
 @inject NavigationManager NavigationManager
 
 <div class="login-page">
     <div class="login-card glass">
-        <div class="login-title">
-            Admin Login
-        </div>
+        <h1 class="login-title">HealthAxis Admin</h1>
 
-        <div class="form-group">
-            <label class="form-label">Email</label>
-            <input class="form-input"
-                   @bind="email"
-                   placeholder="admin@healthcare.com" />
-        </div>
+        <EditForm Model="@loginRequest"
+                  OnValidSubmit="@LoginAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-        <div class="form-group">
-            <label class="form-label">Password</label>
-            <input class="form-input"
-                   type="password"
-                   @bind="password"
-                   placeholder="Admin@123" />
-        </div>
-
-        <button class="primary-button" @onclick="LoginAsync">
-            Login
-        </button>
-
-        @if (!string.IsNullOrWhiteSpace(errorMessage))
-        {
-            <div class="error-text">
-                @errorMessage
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <InputText class="form-input"
+                           @bind-Value="loginRequest.Email"
+                           placeholder="Enter admin email" />
             </div>
-        }
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <InputText class="form-input"
+                           type="password"
+                           @bind-Value="loginRequest.Password"
+                           placeholder="Enter password" />
+            </div>
+
+            <button class="primary-button"
+                    type="submit"
+                    disabled="@isLoggingIn">
+                @(isLoggingIn ? "Logging in..." : "Login")
+            </button>
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="error-text">
+                    @errorMessage
+                </div>
+            }
+        </EditForm>
     </div>
 </div>
 
 @code {
-    private string email = "admin@healthcare.com";
-
-    private string password = "Admin@123";
+    private LoginRequestDto loginRequest = new();
 
     private string? errorMessage;
 
+    private bool isLoggingIn;
+
     private async Task LoginAsync()
     {
+        errorMessage = null;
+        isLoggingIn = true;
+
         try
         {
-            errorMessage = null;
+            var loginSucceeded = await AuthService.LoginAsync(loginRequest);
 
-            await AuthService.LoginAsync(new LoginDto
+            if (!loginSucceeded)
             {
-                Email = email,
-                Password = password
-            });
+                errorMessage = "Invalid admin credentials";
+                return;
+            }
 
-            NavigationManager.NavigateTo("/dashboard", true);
+            NavigationManager.NavigateTo("/dashboard");
         }
-        catch (Exception ex)
+        finally
         {
-            errorMessage = ex.Message;
+            isLoggingIn = false;
         }
     }
 }

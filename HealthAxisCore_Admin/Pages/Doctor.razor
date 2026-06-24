@@ -1,186 +1,184 @@
 ﻿@page "/doctors"
-@inject DoctorAdminService DoctorService
-@inject IJSRuntime JS
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.JSInterop
+@inject DoctorAdminService DoctorAdminService
+@inject IJSRuntime JSRuntime
 
 <h1 class="page-title">Doctor Management</h1>
 
 <div class="form-card glass">
     <h3>Add Doctor</h3>
 
-    <div class="form-grid">
-        <div class="form-group">
-            <label class="form-label">Doctor Name</label>
-            <input class="form-input" @bind="createDoctor.DoctorName" />
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Specialisation</label>
-            <select class="form-select" @bind="createDoctor.Specialisation">
-                @foreach (var item in specialisations)
-                {
-                    <option value="@item">@item</option>
-                }
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Experience</label>
-            <input class="form-input" type="number" @bind="createDoctor.YearsOfExperience" />
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Fee</label>
-            <input class="form-input" type="number" @bind="createDoctor.ConsultationFee" />
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Email</label>
-            <input class="form-input" @bind="createDoctor.Email" />
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Phone</label>
-            <input class="form-input" @bind="createDoctor.PhoneNumber" />
-        </div>
-
-        <div class="form-group">
-            <label class="form-label">Password</label>
-            <input class="form-input" type="password" @bind="createDoctor.Password" />
-        </div>
-    </div>
-
-    <button class="primary-button" @onclick="AddDoctorAsync">
-        Add Doctor
-    </button>
-
-    @if (!string.IsNullOrWhiteSpace(message))
-    {
-        <div class="success-text">@message</div>
-    }
-</div>
-
-<div class="table-card glass">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Specialisation</th>
-                <th>Experience</th>
-                <th>Fee</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var doctor in doctors)
-            {
-                <tr>
-                    <td>@doctor.DoctorName</td>
-                    <td>@doctor.Specialisation</td>
-                    <td>@doctor.YearsOfExperience</td>
-                    <td>@doctor.ConsultationFee</td>
-                    <td>
-                        <span class="badge @(doctor.IsActive ? "badge-active" : "badge-inactive")">
-                            @(doctor.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
-                    <td class="actions">
-                        <button class="secondary-button" @onclick="@(() => SelectDoctor(doctor))">
-                            Edit
-                        </button>
-
-                        <button class="danger-button" @onclick="@(() => ToggleActiveAsync(doctor))">
-                            Toggle
-                        </button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-@if (selectedDoctor != null)
-{
-    <br />
-
-    <div id="edit-doctor-section" class="form-card glass edit-section">
-        <h3>Edit Doctor</h3>
+    <EditForm Model="@createDoctor"
+              OnValidSubmit="@CreateDoctorAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
 
         <div class="form-grid">
             <div class="form-group">
                 <label class="form-label">Doctor Name</label>
-                <input class="form-input" @bind="editDoctor.DoctorName" />
+                <InputText class="form-input"
+                           @bind-Value="createDoctor.DoctorName" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <InputText class="form-input"
+                           @bind-Value="createDoctor.Email" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <InputText class="form-input"
+                           @bind-Value="createDoctor.PhoneNumber" />
             </div>
 
             <div class="form-group">
                 <label class="form-label">Specialisation</label>
-                <select class="form-select" @bind="editDoctor.Specialisation">
-                    @foreach (var item in specialisations)
-                    {
-                        <option value="@item">@item</option>
-                    }
-                </select>
+                <InputSelect class="form-select"
+                             @bind-Value="createDoctor.Specialisation">
+                    <option value="">Select specialisation</option>
+                    <option value="Endocrinologist">Endocrinologist</option>
+                    <option value="Oncologist">Oncologist</option>
+                    <option value="Gynecologist">Gynecologist</option>
+                    <option value="OrthopedicSurgeon">Orthopedic Surgeon</option>
+                    <option value="Psychiatrist">Psychiatrist</option>
+                    <option value="Pediatrician">Pediatrician</option>
+                    <option value="Neurologist">Neurologist</option>
+                    <option value="Dermatologist">Dermatologist</option>
+                    <option value="Cardiologist">Cardiologist</option>
+                    <option value="GeneralPractitioner">General Practitioner</option>
+                </InputSelect>
             </div>
 
             <div class="form-group">
-                <label class="form-label">Experience</label>
-                <input class="form-input" type="number" @bind="editDoctor.YearsOfExperience" />
+                <label class="form-label">Years Of Experience</label>
+                <InputNumber class="form-input"
+                             @bind-Value="createDoctor.YearsOfExperience" />
             </div>
 
             <div class="form-group">
-                <label class="form-label">Fee</label>
-                <input class="form-input" type="number" @bind="editDoctor.ConsultationFee" />
+                <label class="form-label">Consultation Fee</label>
+                <InputNumber class="form-input"
+                             @bind-Value="createDoctor.ConsultationFee" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <InputText class="form-input"
+                           type="password"
+                           @bind-Value="createDoctor.Password" />
             </div>
         </div>
 
-        <button class="primary-button" @onclick="UpdateDoctorAsync">
-            Save Changes
+        <button class="primary-button"
+                type="submit"
+                disabled="@isSaving">
+            @(isSaving ? "Saving..." : "Add Doctor")
         </button>
+    </EditForm>
 
-        <button class="secondary-button" @onclick="CancelEdit">
-            Cancel
-        </button>
-    </div>
-}
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="@messageCssClass">
+            @message
+        </div>
+    }
+</div>
+
+<!-- ✅ SEARCH + FILTER -->
+<div class="table-controls">
+    <input class="form-input search-box"
+           placeholder="Search by name or specialisation..."
+           @bind="searchText"
+           @bind:event="oninput" />
+
+    <label class="checkbox-container">
+        <input type="checkbox" @bind="showOnlyActive" />
+        Show Active Only
+    </label>
+</div>
+
+<div class="table-card glass">
+    @if (doctors is null)
+    {
+        <p>Loading doctors...</p>
+    }
+    else if (!FilteredDoctors.Any())
+    {
+        <p>No matching doctors found.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Doctor Id</th>
+                    <th>Name</th>
+                    <th>Specialisation</th>
+                    <th>Experience</th>
+                    <th>Fee</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var doctor in FilteredDoctors)
+                {
+                    <tr>
+                        <td>@doctor.DoctorId</td>
+                        <td>@doctor.DoctorName</td>
+                        <td>@doctor.Specialisation</td>
+                        <td>@doctor.YearsOfExperience</td>
+                        <td>@doctor.ConsultationFee</td>
+                        <td>
+                            @if (doctor.IsActive)
+                            {
+                                <span class="badge badge-active">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-inactive">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="doctor-actions-inline">
+                                <button class="secondary-button"
+                                        @onclick="() => StartEditDoctor(doctor)"
+                                        disabled="@isSaving">
+                                    Edit
+                                </button>
+
+                                <button class="@GetToggleButtonClass(doctor)"
+                                        @onclick="() => ToggleDoctorAsync(doctor)"
+                                        disabled="@isSaving">
+                                    @(doctor.IsActive ? "Active" : "Inactive")
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
 
 @code {
-    private List<DoctorDto> doctors = new();
+    private List<AdminDoctorDto>? doctors;
+    private CreateDoctorDto createDoctor = new();
+    private UpdateDoctorDto editDoctor = new();
 
-    private DoctorDto? selectedDoctor;
+    private int editingDoctorId;
 
     private string? message;
+    private string messageCssClass = "success-text";
 
-    private bool shouldScrollToEditSection;
+    private bool isSaving;
 
-    private readonly List<string> specialisations = new()
-    {
-        "Endocrinologist",
-        "Oncologist",
-        "Gynecologist",
-        "OrthopedicSurgeon",
-        "Psychiatrist",
-        "Pediatrician",
-        "Neurologist",
-        "Dermatologist",
-        "Cardiologist",
-        "GeneralPractitioner"
-    };
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-{
-    if (shouldScrollToEditSection && selectedDoctor != null)
-    {
-        shouldScrollToEditSection = false;
-
-        await JS.InvokeVoidAsync(
-            "healthAxisScrollToElement",
-            "edit-doctor-section");
-    }
-}
-    private CreateDoctorDto createDoctor = new();
-
-    private UpdateDoctorDto editDoctor = new();
+    //  NEW
+    private string? searchText;
+    private bool showOnlyActive;
 
     protected override async Task OnInitializedAsync()
     {
@@ -189,74 +187,86 @@
 
     private async Task LoadDoctorsAsync()
     {
-        doctors = await DoctorService.GetDoctorsAsync();
+        doctors = await DoctorAdminService.GetDoctorsAsync();
     }
 
-    private async Task AddDoctorAsync()
+    private async Task CreateDoctorAsync()
     {
-        await DoctorService.CreateDoctorAsync(createDoctor);
-
-        message = "Doctor added successfully";
-
-        createDoctor = new CreateDoctorDto();
-
-        await LoadDoctorsAsync();
-    }
-
-    private void SelectDoctor(DoctorDto doctor)
-{
-    selectedDoctor = doctor;
-
-    editDoctor = new UpdateDoctorDto
-    {
-        DoctorName = doctor.DoctorName,
-        Specialisation = doctor.Specialisation,
-        YearsOfExperience = doctor.YearsOfExperience,
-        ConsultationFee = doctor.ConsultationFee,
-        IsActive = doctor.IsActive
-    };
-
-    shouldScrollToEditSection = true;
-}
-
-    private async Task UpdateDoctorAsync()
-    {
-        if (selectedDoctor == null)
+        isSaving = true;
+        try
         {
-            return;
+            var success = await DoctorAdminService.CreateDoctorAsync(createDoctor);
+
+            if (!success)
+            {
+                messageCssClass = "error-text";
+                message = "Unable to create doctor.";
+                return;
+            }
+
+            createDoctor = new CreateDoctorDto();
+            messageCssClass = "success-text";
+            message = "Doctor created successfully.";
+
+            await LoadDoctorsAsync();
         }
-
-        await DoctorService.UpdateDoctorAsync(
-            selectedDoctor.DoctorId,
-            editDoctor);
-
-        selectedDoctor = null;
-
-        message = "Doctor updated successfully";
-
-        await LoadDoctorsAsync();
+        finally
+        {
+            isSaving = false;
+        }
     }
 
-    private async Task ToggleActiveAsync(DoctorDto doctor)
+    private void StartEditDoctor(AdminDoctorDto doctor)
     {
-        var request = new UpdateDoctorDto
+        editingDoctorId = doctor.DoctorId;
+
+        editDoctor = new UpdateDoctorDto
         {
             DoctorName = doctor.DoctorName,
             Specialisation = doctor.Specialisation,
             YearsOfExperience = doctor.YearsOfExperience,
             ConsultationFee = doctor.ConsultationFee,
-            IsActive = !doctor.IsActive
+            IsActive = doctor.IsActive
         };
-
-        await DoctorService.UpdateDoctorAsync(
-            doctor.DoctorId,
-            request);
-
-        await LoadDoctorsAsync();
     }
 
-    private void CancelEdit()
+    private async Task ToggleDoctorAsync(AdminDoctorDto doctor)
     {
-        selectedDoctor = null;
+        isSaving = true;
+        try
+        {
+            var updateDoctor = new UpdateDoctorDto
+            {
+                DoctorName = doctor.DoctorName,
+                Specialisation = doctor.Specialisation,
+                YearsOfExperience = doctor.YearsOfExperience,
+                ConsultationFee = doctor.ConsultationFee,
+                IsActive = !doctor.IsActive
+            };
+
+            await DoctorAdminService.UpdateDoctorAsync(doctor.DoctorId, updateDoctor);
+            await LoadDoctorsAsync();
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    //  FILTER LOGIC
+    private IEnumerable<AdminDoctorDto> FilteredDoctors =>
+        (doctors ?? Enumerable.Empty<AdminDoctorDto>())
+        .Where(d =>
+            (string.IsNullOrWhiteSpace(searchText) ||
+             d.DoctorName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+             d.Specialisation.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            &&
+            (!showOnlyActive || d.IsActive));
+
+    private static string GetToggleButtonClass(AdminDoctorDto doctor)
+    {
+        return doctor.IsActive
+            ? "doctor-status-toggle doctor-status-toggle-active"
+            : "doctor-status-toggle doctor-status-toggle-inactive";
     }
 }

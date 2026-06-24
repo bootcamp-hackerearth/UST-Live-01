@@ -1,86 +1,31 @@
-﻿using HealthAxisCore_Admin.Models;
+﻿using HealthAxisCore_Admin.Dtos.Users;
+using System.Net.Http.Json;
 
-namespace HealthAxisCore_Admin.Services
+namespace HealthAxisCore_Admin.Services;
+
+public class UserAdminService
 {
-    public class UserAdminService
+    private readonly HttpClient _httpClient;
+    private readonly AuthService _authService;
+
+    public UserAdminService(
+        HttpClient httpClient,
+        AuthService authService)
     {
-        private static readonly List<UserDto> Users = new()
-        {
-            new UserDto
-            {
-                Id = "admin-1",
-                Email = "admin@healthcare.com",
-                Role = "Admin",
-                IsActive = true
-            },
-            new UserDto
-            {
-                Id = "patient-1",
-                Email = "arun.kumar@example.com",
-                Role = "Patient",
-                IsActive = true
-            },
-            new UserDto
-            {
-                Id = "patient-2",
-                Email = "meera.nair@example.com",
-                Role = "Patient",
-                IsActive = true
-            },
-            new UserDto
-            {
-                Id = "patient-3",
-                Email = "rahul.menon@example.com",
-                Role = "Patient",
-                IsActive = true
-            },
-            new UserDto
-            {
-                Id = "doctor-1",
-                Email = "arvind.sharma@healthaxis.com",
-                Role = "Doctor",
-                IsActive = true
-            },
-            new UserDto
-            {
-                Id = "doctor-2",
-                Email = "neha.kapoor@healthaxis.com",
-                Role = "Doctor",
-                IsActive = true
-            },
-            new UserDto
-            {
-                Id = "doctor-3",
-                Email = "inactive.doctor@healthaxis.com",
-                Role = "Doctor",
-                IsActive = false
-            }
-        };
+        _httpClient = httpClient;
+        _authService = authService;
+    }
 
-        public Task<List<UserDto>> GetUsersAsync(string? role = null)
-        {
-            /*
-             * ============================================================
-             * TEMPORARY DISCONNECTED VERSION
-             * ============================================================
-             * Returns hardcoded users instead of calling:
-             * GET api/admin/users
-             * GET api/admin/users?role=Doctor
-             * ============================================================
-             */
+    public async Task<List<AdminUserDto>> GetUsersAsync(string? role = null)
+    {
+        await _authService.AddBearerTokenAsync();
 
-            var result = Users.AsEnumerable();
+        var url = string.IsNullOrWhiteSpace(role)
+            ? "api/admin/users"
+            : $"api/admin/users?role={Uri.EscapeDataString(role)}";
 
-            if (!string.IsNullOrWhiteSpace(role))
-            {
-                result = result.Where(user => user.Role == role);
-            }
+        var users = await _httpClient.GetFromJsonAsync<List<AdminUserDto>>(url);
 
-            return Task.FromResult(
-                result
-                    .OrderBy(user => user.Role)
-                    .ThenBy(user => user.Email)
-                    .ToList());
-        }
+        return users ?? new List<AdminUserDto>();
     }
 }

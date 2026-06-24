@@ -1,46 +1,199 @@
 ﻿@page "/dashboard"
+@attribute [Authorize(Roles = "Admin")]
 @inject DoctorAdminService DoctorService
 @inject UserAdminService UserService
-@inject ReportService ReportService
+@inject AppointmentReportService ReportService
+@implements IDisposable
 
 <h1 class="page-title">Admin Dashboard</h1>
 
-<div class="card-grid">
+<div class="dashboard-clock-grid">
+    <div class="dashboard-clock-card glass">
+        <div class="clock-label">Today</div>
+
+        <div class="clock-date-main">
+            @currentDayName
+        </div>
+
+        <div class="clock-date-sub">
+            @currentDayNumber @currentMonthYear
+        </div>
+    </div>
+
+    <div class="dashboard-clock-card glass">
+        <div class="clock-label">Live Time</div>
+
+        <div class="clock-time-main">
+            @currentTime
+        </div>
+
+        <div class="clock-time-sub">
+            @currentMeridiem
+        </div>
+    </div>
+</div>
+
+<div class="card-grid dashboard-stat-grid">
     <div class="stat-card glass">
         <div class="stat-label">Doctors</div>
         <div class="stat-value">@doctorCount</div>
     </div>
 
     <div class="stat-card glass">
-        <div class="stat-label">Users</div>
-        <div class="stat-value">@userCount</div>
+        <div class="stat-label">Active Doctors</div>
+        <div class="stat-value">@activeDoctorCount</div>
     </div>
 
     <div class="stat-card glass">
-        <div class="stat-label">Completed Appointments</div>
-        <div class="stat-value">@completedCount</div>
+        <div class="stat-label">Patients</div>
+        <div class="stat-value">@patientCount</div>
+    </div>
+
+    <div class="stat-card glass">
+        <div class="stat-label">Appointments Today</div>
+        <div class="stat-value">@todayAppointmentCount</div>
+    </div>
+
+    <div class="stat-card glass">
+        <div class="stat-label">Appointments This Week</div>
+        <div class="stat-value">@currentWeekAppointmentCount</div>
+    </div>
+
+    <div class="stat-card glass">
+        <div class="stat-label">Report Days Available</div>
+        <div class="stat-value">@reportDayCount</div>
     </div>
 </div>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="error-text">
+        @errorMessage
+    </div>
+}
 
 @code {
     private int doctorCount;
 
-    private int userCount;
+    private int activeDoctorCount;
 
-    private int completedCount;
+    private int patientCount;
+
+    private int todayAppointmentCount;
+
+    private int currentWeekAppointmentCount;
+
+    private int reportDayCount;
+
+    private string currentDayName = string.Empty;
+
+    private string currentDayNumber = string.Empty;
+
+    private string currentMonthYear = string.Empty;
+
+    private string currentTime = string.Empty;
+
+    private string currentMeridiem = string.Empty;
+
+    private string? errorMessage;
+
+    private System.Timers.Timer? clockTimer;
 
     protected override async Task OnInitializedAsync()
     {
-        var doctors = await DoctorService.GetDoctorsAsync();
+        UpdateClock();
 
-        var users = await UserService.GetUsersAsync();
+        StartClock();
 
-        var reports = await ReportService.GetAppointmentReportsAsync();
+        await LoadDashboardAsync();
+    }
 
-        doctorCount = doctors.Count;
+    private async Task LoadDashboardAsync()
+    {
+        try
+        {
+            var doctors = await DoctorService.GetDoctorsAsync();
 
-        userCount = users.Count;
+            var users = await UserService.GetUsersAsync();
 
-        completedCount = reports.Sum(r => r.Completed);
+            var reports = await ReportService.GetAppointmentReportsAsync();
+
+            doctorCount = doctors.Count;
+
+            activeDoctorCount = doctors.Count(doctor => doctor.IsActive);
+
+            patientCount = users.Count(user =>
+                string.Equals(user.Role, "Patient", StringComparison.OrdinalIgnoreCase));
+
+            reportDayCount = reports.Count;
+
+            todayAppointmentCount = reports
+                .Where(report => report.Date.Date == DateTime.Today)
+                .Sum(report => GetTotalAppointments(report));
+
+            var weekStartDate = GetCurrentWeekStartDate(DateTime.Today);
+
+            var weekEndDate = weekStartDate.AddDays(6);
+
+            currentWeekAppointmentCount = reports
+                .Where(report =>
+                    report.Date.Date >= weekStartDate &&
+                    report.Date.Date <= weekEndDate)
+                .Sum(report => GetTotalAppointments(report));
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Unable to load dashboard data. {ex.Message}";
+        }
+    }
+
+    private static int GetTotalAppointments(AppointmentReportDto report)
+    {
+        return report.Confirmed + report.Cancelled + report.Completed;
+    }
+
+    private static DateTime GetCurrentWeekStartDate(DateTime date)
+    {
+        var difference = (7 + (date.DayOfWeek - DayOfWeek.Monday)) % 7;
+
+        return date.AddDays(-difference).Date;
+    }
+
+    private void StartClock()
+    {
+        clockTimer = new System.Timers.Timer(1000);
+
+        clockTimer.Elapsed += async (_, _) =>
+        {
+            UpdateClock();
+
+            await InvokeAsync(StateHasChanged);
+        };
+
+        clockTimer.AutoReset = true;
+
+        clockTimer.Start();
+    }
+
+    private void UpdateClock()
+    {
+        var now = DateTime.Now;
+
+        currentDayName = now.ToString("dddd");
+
+        currentDayNumber = now.ToString("dd");
+
+        currentMonthYear = now.ToString("MMM yyyy");
+
+        currentTime = now.ToString("hh:mm:ss");
+
+        currentMeridiem = now.ToString("tt");
+    }
+
+    public void Dispose()
+    {
+        clockTimer?.Stop();
+
+        clockTimer?.Dispose();
     }
 }

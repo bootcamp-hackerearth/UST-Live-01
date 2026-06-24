@@ -1,55 +1,65 @@
 ﻿@page "/users"
-@inject UserAdminService UserService
+@attribute [Authorize(Roles = "Admin")]
+@inject UserAdminService UserAdminService
 
 <h1 class="page-title">User Management</h1>
 
-<div class="form-card glass">
-    <div class="form-group">
-        <label class="form-label">Filter By Role</label>
-        <select class="form-select" @bind="selectedRole">
-            <option value="">All</option>
-            <option value="Admin">Admin</option>
-            <option value="Patient">Patient</option>
-            <option value="Doctor">Doctor</option>
-        </select>
-    </div>
-
-    <button class="primary-button" @onclick="LoadUsersAsync">
-        Apply Filter
-    </button>
+<div class="top-actions">
+    <select class="form-select"
+            @bind="selectedRole"
+            @bind:after="LoadUsersAsync">
+        <option value="">All Roles</option>
+        <option value="Patient">Patient</option>
+        <option value="Doctor">Doctor</option>
+        <option value="Admin">Admin</option>
+    </select>
 </div>
 
 <div class="table-card glass">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach (var user in users)
-            {
+    @if (users is null)
+    {
+        <p>Loading users...</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <thead>
                 <tr>
-                    <td>@user.Email</td>
-                    <td>@user.Role</td>
-                    <td>
-                        <span class="badge @(user.IsActive ? "badge-active" : "badge-inactive")">
-                            @(user.IsActive ? "Active" : "Inactive")
-                        </span>
-                    </td>
+                   
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                       
+                        <td>@user.Email</td>
+                        <td>@user.Role</td>
+                        <td>
+                            @if (user.IsActive)
+                            {
+                                <span class="badge badge-active">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-inactive">Inactive</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 
 @code {
-    private List<UserDto> users = new();
+    private List<AdminUserDto>? users;
 
-    private string? selectedRole;
+    private string selectedRole = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,6 +68,6 @@
 
     private async Task LoadUsersAsync()
     {
-        users = await UserService.GetUsersAsync(selectedRole);
+        users = await UserAdminService.GetUsersAsync(selectedRole);
     }
 }

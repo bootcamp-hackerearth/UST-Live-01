@@ -58,6 +58,10 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             EnsureWithinDoctorWorkingHours(request.TimeSlot);
 
+            EnsureSameDaySlotIsInFuture(
+                request.ScheduledDate,
+                request.TimeSlot);
+
             var isDoctorAlreadyBooked =
                 await appointmentRepository.DoctorHasAppointmentAtSlotAsync(
                     request.DoctorId,
@@ -178,6 +182,28 @@ namespace HealthAxisCore_Api.Services.Implementation
             }
         }
 
+        private static void EnsureSameDaySlotIsInFuture(
+            DateTime scheduledDate,
+            string timeSlot)
+        {
+            var today = DateTime.UtcNow.Date;
+
+            if (scheduledDate.Date != today)
+            {
+                return;
+            }
+
+            var selectedSlot = ParseTimeSlot(timeSlot);
+
+            var currentTime = TimeOnly.FromDateTime(DateTime.UtcNow);
+
+            if (selectedSlot <= currentTime)
+            {
+                throw new InvalidException(
+                    "Cannot book a time slot that has already passed for today");
+            }
+        }
+
         private static void EnsureCancellationAllowed(Appointment appointment)
         {
             var appointmentDateTime = BuildAppointmentDateTime(
@@ -204,7 +230,6 @@ namespace HealthAxisCore_Api.Services.Implementation
                 .AddMinutes(slot.Minute);
         }
 
-
         private static TimeOnly ParseTimeSlot(string timeSlot)
         {
             if (!TimeOnly.TryParse(
@@ -218,6 +243,5 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             return parsedTime;
         }
-
     }
 }

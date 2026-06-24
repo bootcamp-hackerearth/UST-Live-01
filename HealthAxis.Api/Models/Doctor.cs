@@ -20,5 +20,6 @@ namespace HealthAxisCore_Api.Models
         public int ConsultationFee { get; set; }
         [Required]
         public bool IsActive { get; set; }
+        public bool FirstLogin { get; set; } = true;
     }
 }
