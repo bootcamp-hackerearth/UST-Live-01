@@ -29,7 +29,7 @@ public class AppointmentService(
         }
 
         return mapper.Map<List<AppointmentDto>>(
-            await appointmentRepository.GetAllAsync());
+            await appointmentRepository.GetAllWithDetailsAsync());
     }
     public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
     {

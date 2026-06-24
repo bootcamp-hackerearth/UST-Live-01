@@ -50,6 +50,12 @@ public class AdminApiService(HttpClient httpClient)
             ?? new List<UserDto>();
     }
 
+    public async Task<List<AppointmentDto>> GetAppointmentsAsync()
+    {
+        return await httpClient.GetFromJsonAsync<List<AppointmentDto>>("api/appointments")
+            ?? new List<AppointmentDto>();
+    }
+
     public async Task<List<AppointmentReportDto>> GetAppointmentReportsAsync()
     {
         return await httpClient.GetFromJsonAsync<List<AppointmentReportDto>>(

@@ -1,108 +1,147 @@
 @page "/reports/appointments"
 @attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using HealthApp.Shared.DTOs
 @inject AdminApiService AdminApi
+@inject NavigationManager Navigation
 
 <PageTitle>Appointments Report</PageTitle>
 
-<div class="page-header">
-    <div>
-        <h1>Appointments Report</h1>
-        <p>Daily totals for pending, confirmed, cancelled, and completed appointments.</p>
-    </div>
-</div>
-
-@if (isLoading)
-{
-    <section class="panel">
-        <p>Loading appointment reports...</p>
+<div class="appointment-report-page">
+    <section class="report-hero-card">
+        <div>
+            <span class="report-kicker">Admin Report</span>
+            <h1>Appointments Report</h1>
+            <p>Daily totals for pending, confirmed, cancelled, and completed appointments.</p>
+        </div>
     </section>
-}
-else if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <div class="alert alert-error">@errorMessage</div>
-}
-else
-{
-    <div class="stats-grid">
-        <div class="stat-card">
-            <span>Pending</span>
-            <strong>@Reports.Sum(r => r.Pending)</strong>
-        </div>
 
-        <div class="stat-card">
-            <span>Confirmed</span>
-            <strong>@Reports.Sum(r => r.Confirmed)</strong>
-        </div>
+    @if (isLoading)
+    {
+        <section class="report-loading-card">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
 
-        <div class="stat-card">
-            <span>Cancelled</span>
-            <strong>@Reports.Sum(r => r.Cancelled)</strong>
-        </div>
+            <div>
+                <h3>Loading appointment reports</h3>
+                <p>Please wait while the latest report data is loaded.</p>
+            </div>
 
-        <div class="stat-card">
-            <span>Completed</span>
-            <strong>@Reports.Sum(r => r.Completed)</strong>
-        </div>
-    </div>
+            <div class="progress report-progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar"
+                     style="width: 100%">
+                </div>
+            </div>
+        </section>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-error">@errorMessage</div>
+    }
+    else
+    {
+        <section class="report-status-grid">
+            <div class="report-status-card pending">
+                <span>Pending</span>
+                <strong>@TotalPending</strong>
+                <p>Waiting for confirmation</p>
+            </div>
 
-    <section class="panel">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Pending</th>
-                    <th>Confirmed</th>
-                    <th>Cancelled</th>
-                    <th>Completed</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
+            <div class="report-status-card confirmed">
+                <span>Confirmed</span>
+                <strong>@TotalConfirmed</strong>
+                <p>Approved appointments</p>
+            </div>
 
-            <tbody>
-                @if (!Reports.Any())
-                {
-                    <tr>
-                        <td colspan="6">No appointment report data found.</td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var report in Reports)
-                    {
+            <div class="report-status-card cancelled">
+                <span>Cancelled</span>
+                <strong>@TotalCancelled</strong>
+                <p>Cancelled schedules</p>
+            </div>
+
+            <div class="report-status-card completed">
+                <span>Completed</span>
+                <strong>@TotalCompleted</strong>
+                <p>Finished consultations</p>
+            </div>
+        </section>
+
+        <section class="report-table-card">
+            <div class="report-table-header">
+                <div>
+                    <h2>Daily Appointment Summary</h2>
+                    <p>@Reports.Count report day(s) found</p>
+                </div>
+            </div>
+
+            <div class="report-table-wrapper">
+                <table class="report-table">
+                    <thead>
                         <tr>
-                            <td>@report.Date.ToString("dd MMM yyyy")</td>
-
-                            <td>
-                                <span class="badge warning">@report.Pending</span>
-                            </td>
-
-                            <td>
-                                <span class="badge info">@report.Confirmed</span>
-                            </td>
-
-                            <td>
-                                <span class="badge danger">@report.Cancelled</span>
-                            </td>
-
-                            <td>
-                                <span class="badge success">@report.Completed</span>
-                            </td>
-
-                            <td>@GetTotal(report)</td>
+                            <th>Date</th>
+                            <th>Pending</th>
+                            <th>Confirmed</th>
+                            <th>Cancelled</th>
+                            <th>Completed</th>
+                            <th>Total</th>
+                            <th>Action</th>
                         </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    </section>
-}
+                    </thead>
+
+                    <tbody>
+                        @if (!Reports.Any())
+                        {
+                            <tr>
+                                <td colspan="7">
+                                    <div class="report-empty-state">
+                                        <strong>No appointment report data found.</strong>
+                                        <span>Reports will appear here once appointments are available.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var report in Reports.OrderByDescending(r => r.Date))
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="report-date-cell">
+                                            <strong>@report.Date.ToString("dd MMM yyyy")</strong>
+                                            <span>@report.Date.ToString("dddd")</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="report-count pending">@report.Pending</span></td>
+                                    <td><span class="report-count confirmed">@report.Confirmed</span></td>
+                                    <td><span class="report-count cancelled">@report.Cancelled</span></td>
+                                    <td><span class="report-count completed">@report.Completed</span></td>
+                                    <td><strong>@GetTotal(report)</strong></td>
+                                    <td>
+                                        <button class="report-view-button" @onclick="() => ViewDate(report.Date)">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
+</div>
 
 @code {
     private List<AppointmentReportDto> Reports = new();
-
     private bool isLoading = true;
-
     private string? errorMessage;
+
+    private int TotalPending => Reports.Sum(r => r.Pending);
+    private int TotalConfirmed => Reports.Sum(r => r.Confirmed);
+    private int TotalCancelled => Reports.Sum(r => r.Cancelled);
+    private int TotalCompleted => Reports.Sum(r => r.Completed);
 
     protected override async Task OnInitializedAsync()
     {
@@ -123,5 +162,10 @@ else
     private static int GetTotal(AppointmentReportDto report)
     {
         return report.Pending + report.Confirmed + report.Cancelled + report.Completed;
+    }
+
+    private void ViewDate(DateTime date)
+    {
+        Navigation.NavigateTo($"/reports/appointments/details/{date:yyyy-MM-dd}");
     }
 }

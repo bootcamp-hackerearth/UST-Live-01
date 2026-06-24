@@ -30,7 +30,7 @@ public class BookAppointmentDto
     public string TimeSlot { get; set; } = string.Empty;
 }
 
-    public class UpdateAppointmentStatusDto
+public class UpdateAppointmentStatusDto
 {
     [Required] public AppointmentStatus Status { get; set; }
     [MaxLength(200)] public string? CancellationReason { get; set; }

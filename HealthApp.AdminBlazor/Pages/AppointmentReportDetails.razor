@@ -1,0 +1,189 @@
+﻿@page "/reports/appointments/details/{ReportDate}"
+@attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using HealthApp.Shared.DTOs
+@using HealthApp.Shared.Enums
+@inject AdminApiService AdminApi
+@inject NavigationManager Navigation
+
+<PageTitle>Appointment Details</PageTitle>
+
+<div class="appointment-details-page">
+    <section class="details-hero-card">
+        <div>
+            <span class="report-kicker">Appointment Details</span>
+            <h1>@DisplayDate</h1>
+            <p>View appointments for the selected date with search and status filtering.</p>
+        </div>
+
+        <button class="details-back-button" @onclick="BackToReports">
+            Back to Report
+        </button>
+    </section>
+
+    @if (isLoading)
+    {
+        <section class="report-loading-card">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <div>
+                <h3>Loading appointments</h3>
+                <p>Please wait while appointments for the selected date are loaded.</p>
+            </div>
+
+            <div class="progress report-progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar"
+                     style="width: 100%">
+                </div>
+            </div>
+        </section>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-error">@errorMessage</div>
+    }
+    else
+    {
+        <section class="details-filter-card">
+            <div class="details-search-box">
+                <span>⌕</span>
+                <input placeholder="Search by appointment ID, patient, doctor, or slot..."
+                       @bind="searchText"
+                       @bind:event="oninput" />
+            </div>
+
+            <select class="details-status-filter" @bind="statusFilter">
+                <option value="All">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </section>
+
+        <section class="details-table-card">
+            <div class="report-table-header">
+                <div>
+                    <h2>Appointments</h2>
+                    <p>@FilteredAppointments.Count() appointment(s) found for @DisplayDate</p>
+                </div>
+            </div>
+
+            <div class="report-table-wrapper">
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th>Appointment ID</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                            <th>Cancellation Reason</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (!FilteredAppointments.Any())
+                        {
+                            <tr>
+                                <td colspan="6">
+                                    <div class="report-empty-state">
+                                        <strong>No appointments found.</strong>
+                                        <span>Try changing the search text or status filter.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var appointment in FilteredAppointments)
+                            {
+                                <tr>
+                                    <td><strong>#@appointment.AppointmentId</strong></td>
+                                    <td>
+                                        <div class="details-person-cell">
+                                            <strong>@(appointment.PatientName ?? "Unknown Patient")</strong>
+                                            <span>Patient ID: @appointment.PatientId</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="details-person-cell">
+                                            <strong>@(appointment.DoctorName ?? "Unknown Doctor")</strong>
+                                            <span>Doctor ID: @appointment.DoctorId</span>
+                                        </div>
+                                    </td>
+                                    <td>@appointment.TimeSlot</td>
+                                    <td>
+                                        <span class="details-status-pill @appointment.Status.ToString().ToLower()">
+                                            @appointment.Status
+                                        </span>
+                                    </td>
+                                    <td>@(string.IsNullOrWhiteSpace(appointment.CancellationReason) ? "-" : appointment.CancellationReason)</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string? ReportDate { get; set; }
+
+    private List<AppointmentDto> appointments = new();
+    private DateTime selectedDate;
+    private bool isLoading = true;
+    private string? errorMessage;
+    private string searchText = string.Empty;
+    private string statusFilter = "All";
+
+    private string DisplayDate => selectedDate == default
+        ? "Selected Date"
+        : selectedDate.ToString("dd MMM yyyy");
+
+    private IEnumerable<AppointmentDto> FilteredAppointments => appointments
+        .Where(a => a.ScheduledDate.Date == selectedDate.Date)
+        .Where(a => statusFilter == "All" || a.Status.ToString() == statusFilter)
+        .Where(a =>
+            string.IsNullOrWhiteSpace(searchText) ||
+            a.AppointmentId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            a.PatientId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            a.DoctorId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+            (a.PatientName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            (a.DoctorName?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false) ||
+            a.TimeSlot.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(ReportDate) ||
+                !DateTime.TryParse(ReportDate, out selectedDate))
+            {
+                errorMessage = "Invalid report date.";
+                return;
+            }
+
+            appointments = await AdminApi.GetAppointmentsAsync();
+        }
+        catch
+        {
+            errorMessage = "Unable to load appointments. Please check API connection or login again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void BackToReports()
+    {
+        Navigation.NavigateTo("/reports/appointments");
+    }
+}

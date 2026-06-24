@@ -1,212 +1,377 @@
 @page "/doctors"
 @attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using HealthApp.Shared.DTOs
+@using HealthApp.Shared.Enums
 @inject AdminApiService AdminApi
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Doctor Management</PageTitle>
 
-<div class="page-header">
-    <div>
-        <h1>Doctor Management</h1>
-        <p>Register, edit, and toggle active/inactive doctors.</p>
-    </div>
+<div class="doctor-page">
+    <section class="doctor-page-header">
+        <div>
+            <span class="doctor-kicker">Admin Module</span>
+            <h1>Doctor Management</h1>
+            <p>Register, view, edit, and manage doctor availability across HealthApp.</p>
+        </div>
 
-    <button class="btn btn-primary" @onclick="StartCreate">Add Doctor</button>
-</div>
-
-@if (!string.IsNullOrWhiteSpace(message))
-{
-    <div class="alert @(isError ? "alert-error" : "alert-success")">
-        @message
-    </div>
-}
-
-@if (!string.IsNullOrWhiteSpace(generatedTemporaryPassword))
-{
-    <div class="alert alert-success">
-        <strong>Generated Temporary Password:</strong>
-        <span>@generatedTemporaryPassword</span>
-        <p>Share this password securely with the doctor. This password will not be shown again after leaving this page.</p>
-    </div>
-}
-
-<div class="toolbar">
-    <input class="input"
-           placeholder="Search doctors..."
-           @bind="searchText"
-           @bind:event="oninput" />
-
-    <select class="input" @bind="statusFilter">
-        <option value="All">All</option>
-        <option value="Active">Active</option>
-        <option value="Inactive">Inactive</option>
-    </select>
-</div>
-
-@if (showCreateForm)
-{
-    <section class="panel form-panel">
-        <h2>Register Doctor</h2>
-
-        <EditForm Model="createDto" OnValidSubmit="CreateDoctor">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="form-grid">
-                <div>
-                    <label>Full Name</label>
-                    <InputText class="input" @bind-Value="createDto.FullName" />
-                </div>
-
-                <div>
-                    <label>Email</label>
-                    <InputText class="input" @bind-Value="createDto.Email" />
-                </div>
-
-                <div>
-                    <label>Specialisation</label>
-                    <InputSelect class="input" @bind-Value="createDto.Specialisation">
-                        @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
-                        {
-                            <option value="@specialisation">@specialisation</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div>
-                    <label>Practice Start Date</label>
-                    <InputDate class="input" @bind-Value="createDto.PracticeStartDate" />
-                </div>
-
-                <div>
-                    <label>Consultation Fee</label>
-                    <InputNumber class="input" @bind-Value="createDto.ConsultationFee" />
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button class="btn btn-primary" type="submit" disabled="@isSaving">
-                    @(isSaving ? "Saving..." : "Register Doctor")
-                </button>
-
-                <button class="btn btn-secondary" type="button" @onclick="CancelForms">
-                    Cancel
-                </button>
-            </div>
-        </EditForm>
+        <button class="btn doctor-add-button" @onclick="OpenCreateModal">
+            <span class="button-icon">✚</span>
+            <span>Add Doctor</span>
+        </button>
     </section>
-}
 
-@if (editingDoctorId is not null)
-{
-    <section class="panel form-panel">
-        <h2>Edit Doctor</h2>
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="doctor-message-card @(isError ? "error" : "success")">
+            <div>
+                <strong>@(isError ? "Action failed" : "Success")</strong>
+                <span>@message</span>
+            </div>
+        </div>
+    }
 
-        <EditForm Model="updateDto" OnValidSubmit="UpdateDoctor">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
+    @if (!string.IsNullOrWhiteSpace(generatedTemporaryPassword))
+    {
+        <div class="temporary-password-card">
+            <div>
+                <span>Generated Temporary Password</span>
+                <strong>@generatedTemporaryPassword</strong>
+                <p>Share this password securely with the doctor. This password will not be shown again after leaving this page.</p>
+            </div>
 
-            <div class="form-grid">
-                <div>
-                    <label>Full Name</label>
-                    <InputText class="input" @bind-Value="updateDto.FullName" />
+            <button class="copy-password-button" @onclick="CopyTemporaryPassword">
+                <span>⧉</span>
+                Copy
+            </button>
+        </div>
+    }
+
+    <section class="doctor-toolbar-card">
+        <div class="doctor-search-box">
+            <span>⌕</span>
+            <input placeholder="Search doctors by name or specialisation..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
+        </div>
+
+        <select class="doctor-filter-select" @bind="statusFilter">
+            <option value="All">All Doctors</option>
+            <option value="Active">Active Doctors</option>
+            <option value="Inactive">Inactive Doctors</option>
+        </select>
+    </section>
+
+    @if (isLoading)
+    {
+        <section class="doctor-loading-card">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <div>
+                <h3>Loading doctors</h3>
+                <p>Please wait while doctor records are loaded.</p>
+            </div>
+
+            <div class="progress doctor-progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar"
+                     style="width: 100%">
                 </div>
-
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="doctor-table-card">
+            <div class="doctor-table-header">
                 <div>
-                    <label>Specialisation</label>
-                    <InputSelect class="input" @bind-Value="updateDto.Specialisation">
-                        @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
-                        {
-                            <option value="@specialisation">@specialisation</option>
-                        }
-                    </InputSelect>
-                </div>
-
-                <div>
-                    <label>Practice Start Date</label>
-                    <InputDate class="input" @bind-Value="updateDto.PracticeStartDate" />
-                </div>
-
-                <div>
-                    <label>Consultation Fee</label>
-                    <InputNumber class="input" @bind-Value="updateDto.ConsultationFee" />
-                </div>
-
-                <div class="checkbox-row">
-                    <InputCheckbox @bind-Value="updateDto.IsActive" />
-                    <span>Active</span>
+                    <h2>Doctors</h2>
+                    <p>@FilteredDoctors.Count() record(s) found</p>
                 </div>
             </div>
 
-            <div class="form-actions">
-                <button class="btn btn-primary" type="submit" disabled="@isSaving">
-                    @(isSaving ? "Saving..." : "Save Changes")
-                </button>
-
-                <button class="btn btn-secondary" type="button" @onclick="CancelForms">
-                    Cancel
-                </button>
-            </div>
-        </EditForm>
-    </section>
-}
-
-@if (isLoading)
-{
-    <section class="panel">
-        <p>Loading doctors...</p>
-    </section>
-}
-else
-{
-    <section class="panel">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Specialisation</th>
-                    <th>Experience</th>
-                    <th>Fee</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @if (!FilteredDoctors.Any())
-                {
-                    <tr>
-                        <td colspan="6">No doctors found.</td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var doctor in FilteredDoctors)
-                    {
+            <div class="doctor-table-wrapper">
+                <table class="doctor-table">
+                    <thead>
                         <tr>
-                            <td>@doctor.FullName</td>
-                            <td>@doctor.Specialisation</td>
-                            <td>@doctor.YearsOfExperience yrs</td>
-                            <td>₹@doctor.ConsultationFee</td>
-                            <td>
-                                <span class="badge @(doctor.IsActive ? "success" : "muted")">
-                                    @(doctor.IsActive ? "Active" : "Inactive")
-                                </span>
-                            </td>
-                            <td class="action-cell">
-                                <button class="btn btn-small" @onclick="() => StartEdit(doctor.DoctorId)">
-                                    Edit
-                                </button>
-
-                                <button class="btn btn-small btn-secondary" @onclick="() => ToggleStatus(doctor.DoctorId)">
-                                    @(doctor.IsActive ? "Deactivate" : "Activate")
-                                </button>
-                            </td>
+                            <th>Name</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Fee</th>
+                            <th>Status</th>
+                            <th class="doctor-actions-column">Actions</th>
                         </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    </section>
+                    </thead>
+
+                    <tbody>
+                        @if (!FilteredDoctors.Any())
+                        {
+                            <tr>
+                                <td colspan="6">
+                                    <div class="doctor-empty-state">
+                                        <strong>No doctors found</strong>
+                                        <span>Try changing the search text or status filter.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var doctor in FilteredDoctors)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="doctor-name-cell">
+                                            <div class="doctor-avatar-cell">@GetInitials(doctor.FullName)</div>
+                                            <div>
+                                                <strong>@doctor.FullName</strong>
+                                                <span>Doctor ID: @doctor.DoctorId</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>@doctor.Specialisation</td>
+                                    <td>@doctor.YearsOfExperience yrs</td>
+                                    <td>₹@doctor.ConsultationFee</td>
+                                    <td>
+                                        <span class="status-pill @(doctor.IsActive ? "active" : "inactive")">
+                                            @(doctor.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="doctor-action-buttons">
+                                            <button class="doctor-action-btn view" @onclick="() => OpenViewModal(doctor)">
+                                                <span>👁</span>
+                                                View
+                                            </button>
+
+                                            <button class="doctor-action-btn edit" @onclick="() => OpenEditModal(doctor)">
+                                                <span>✎</span>
+                                                Edit
+                                            </button>
+
+                                            <button class="doctor-action-btn @(doctor.IsActive ? "deactivate" : "activate")"
+                                                    @onclick="() => OpenToggleConfirmation(doctor)">
+                                                <span>@(doctor.IsActive ? "⏻" : "✓")</span>
+                                                @(doctor.IsActive ? "Deactivate" : "Activate")
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
+</div>
+
+@if (showCreateModal)
+{
+    <div class="doctor-modal-backdrop">
+        <div class="doctor-modal doctor-form-modal">
+            <div class="doctor-modal-header">
+                <div>
+                    <span>Doctor Registration</span>
+                    <h2>Add Doctor</h2>
+                </div>
+
+                <button class="doctor-modal-x" @onclick="CloseModals">×</button>
+            </div>
+
+            <EditForm Model="createDto" OnValidSubmit="CreateDoctor">
+                <DataAnnotationsValidator />
+
+                <div class="doctor-modal-grid">
+                    <div class="doctor-form-field">
+                        <label>Full Name</label>
+                        <InputText class="doctor-input" @bind-Value="createDto.FullName" />
+                        <ValidationMessage For="@(() => createDto.FullName)" />
+                    </div>
+
+                    <div class="doctor-form-field">
+                        <label>Email</label>
+                        <InputText class="doctor-input" @bind-Value="createDto.Email" />
+                        <ValidationMessage For="@(() => createDto.Email)" />
+                    </div>
+
+                    <div class="doctor-form-field">
+                        <label>Specialisation</label>
+                        <InputSelect class="doctor-input" @bind-Value="createDto.Specialisation">
+                            @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
+                            {
+                                <option value="@specialisation">@specialisation</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => createDto.Specialisation)" />
+                    </div>
+
+                    <div class="doctor-form-field">
+                        <label>Practice Start Date</label>
+                        <InputDate class="doctor-input" @bind-Value="createDto.PracticeStartDate" />
+                        <ValidationMessage For="@(() => createDto.PracticeStartDate)" />
+                    </div>
+
+                    <div class="doctor-form-field">
+                        <label>Consultation Fee</label>
+                        <InputNumber class="doctor-input" @bind-Value="createDto.ConsultationFee" />
+                        <ValidationMessage For="@(() => createDto.ConsultationFee)" />
+                    </div>
+                </div>
+
+                <div class="doctor-modal-actions">
+                    <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
+                    <button class="doctor-primary-action" type="submit" disabled="@isSaving">
+                        @(isSaving ? "Registering..." : "Register Doctor")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (showEditModal)
+{
+    <div class="doctor-modal-backdrop">
+        <div class="doctor-modal doctor-form-modal">
+            <div class="doctor-modal-header">
+                <div>
+                    <span>Doctor Profile</span>
+                    <h2>Edit Doctor</h2>
+                </div>
+
+                <button class="doctor-modal-x" @onclick="CloseModals">×</button>
+            </div>
+
+            <EditForm Model="updateDto" OnValidSubmit="UpdateDoctor">
+                <DataAnnotationsValidator />
+
+                <div class="doctor-modal-grid">
+                    <div class="doctor-form-field">
+                        <label>Full Name</label>
+                        <InputText class="doctor-input" @bind-Value="updateDto.FullName" />
+                        <ValidationMessage For="@(() => updateDto.FullName)" />
+                    </div>
+
+                    <div class="doctor-form-field">
+                        <label>Specialisation</label>
+                        <InputSelect class="doctor-input" @bind-Value="updateDto.Specialisation">
+                            @foreach (var specialisation in Enum.GetValues<SpecialisationType>())
+                            {
+                                <option value="@specialisation">@specialisation</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => updateDto.Specialisation)" />
+                    </div>
+
+                    <div class="doctor-form-field">
+                        <label>Practice Start Date</label>
+                        <InputDate class="doctor-input" @bind-Value="updateDto.PracticeStartDate" />
+                        <ValidationMessage For="@(() => updateDto.PracticeStartDate)" />
+                    </div>
+
+                    <div class="doctor-form-field">
+                        <label>Consultation Fee</label>
+                        <InputNumber class="doctor-input" @bind-Value="updateDto.ConsultationFee" />
+                        <ValidationMessage For="@(() => updateDto.ConsultationFee)" />
+                    </div>
+
+                    <div class="doctor-form-field doctor-checkbox-field">
+                        <label>Status</label>
+                        <div class="doctor-active-toggle">
+                            <InputCheckbox @bind-Value="updateDto.IsActive" />
+                            <span>Doctor is active</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doctor-modal-actions">
+                    <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
+                    <button class="doctor-primary-action" type="submit" disabled="@isSaving">
+                        @(isSaving ? "Saving..." : "Save Changes")
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (selectedDoctor is not null && showViewModal)
+{
+    <div class="doctor-modal-backdrop">
+        <div class="doctor-modal doctor-view-modal">
+            <div class="doctor-modal-header">
+                <div>
+                    <span>Doctor Details</span>
+                    <h2>@selectedDoctor.FullName</h2>
+                </div>
+
+                <button class="doctor-modal-x" @onclick="CloseModals">×</button>
+            </div>
+
+            <div class="doctor-detail-hero">
+                <div class="doctor-detail-avatar">@GetInitials(selectedDoctor.FullName)</div>
+                <div>
+                    <strong>@selectedDoctor.FullName</strong>
+                    <span>@selectedDoctor.Specialisation</span>
+                </div>
+            </div>
+
+            <div class="doctor-detail-grid">
+                <div>
+                    <span>Doctor ID</span>
+                    <strong>@selectedDoctor.DoctorId</strong>
+                </div>
+                <div>
+                    <span>Experience</span>
+                    <strong>@selectedDoctor.YearsOfExperience yrs</strong>
+                </div>
+                <div>
+                    <span>Consultation Fee</span>
+                    <strong>₹@selectedDoctor.ConsultationFee</strong>
+                </div>
+                <div>
+                    <span>Status</span>
+                    <strong>@(selectedDoctor.IsActive ? "Active" : "Inactive")</strong>
+                </div>
+            </div>
+
+            <div class="doctor-modal-actions">
+                <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (pendingToggleDoctor is not null && showConfirmModal)
+{
+    <div class="doctor-modal-backdrop">
+        <div class="doctor-modal doctor-confirm-modal">
+            <div class="doctor-modal-header">
+                <div>
+                    <span>Status Confirmation</span>
+                    <h2>@(pendingToggleDoctor.IsActive ? "Deactivate Doctor" : "Activate Doctor")</h2>
+                </div>
+
+                <button class="doctor-modal-x" @onclick="CloseModals">×</button>
+            </div>
+
+            <p class="doctor-confirm-text">
+                Are you sure you want to @(pendingToggleDoctor.IsActive ? "deactivate" : "activate")
+                <strong>@pendingToggleDoctor.FullName</strong>?
+            </p>
+
+            <div class="doctor-modal-actions">
+                <button class="doctor-close-outline" type="button" @onclick="CloseModals">Close</button>
+                <button class="doctor-danger-action" type="button" @onclick="ConfirmToggleStatus" disabled="@isSaving">
+                    @(isSaving ? "Updating..." : "Confirm")
+                </button>
+            </div>
+        </div>
+    </div>
 }
 
 @code {
@@ -221,8 +386,14 @@ else
     private bool isSaving;
     private bool isError;
 
-    private bool showCreateForm;
+    private bool showCreateModal;
+    private bool showEditModal;
+    private bool showViewModal;
+    private bool showConfirmModal;
+
     private int? editingDoctorId;
+    private DoctorDto? selectedDoctor;
+    private DoctorDto? pendingToggleDoctor;
 
     private CreateDoctorDto createDto = new();
     private UpdateDoctorDto updateDto = new();
@@ -268,13 +439,13 @@ else
         }
     }
 
-    private void StartCreate()
+    private void OpenCreateModal()
     {
-        editingDoctorId = null;
-        showCreateForm = true;
+        CloseModals();
         message = null;
         isError = false;
         generatedTemporaryPassword = null;
+        showCreateModal = true;
 
         createDto = new CreateDoctorDto
         {
@@ -305,7 +476,7 @@ else
             message = response.Message;
             generatedTemporaryPassword = response.TemporaryPassword;
             isError = false;
-            showCreateForm = false;
+            showCreateModal = false;
 
             doctors = await AdminApi.GetDoctorsAsync();
         }
@@ -320,17 +491,11 @@ else
         }
     }
 
-    private void StartEdit(int doctorId)
+    private void OpenEditModal(DoctorDto doctor)
     {
-        var doctor = doctors.FirstOrDefault(d => d.DoctorId == doctorId);
-
-        if (doctor is null)
-        {
-            return;
-        }
-
-        showCreateForm = false;
-        editingDoctorId = doctorId;
+        CloseModals();
+        editingDoctorId = doctor.DoctorId;
+        showEditModal = true;
         message = null;
         isError = false;
         generatedTemporaryPassword = null;
@@ -370,6 +535,7 @@ else
 
             message = "Doctor updated successfully.";
             isError = false;
+            showEditModal = false;
             editingDoctorId = null;
 
             doctors = await AdminApi.GetDoctorsAsync();
@@ -385,14 +551,28 @@ else
         }
     }
 
-    private async Task ToggleStatus(int doctorId)
+    private void OpenViewModal(DoctorDto doctor)
     {
-        var doctor = doctors.FirstOrDefault(d => d.DoctorId == doctorId);
+        CloseModals();
+        selectedDoctor = doctor;
+        showViewModal = true;
+    }
 
-        if (doctor is null)
+    private void OpenToggleConfirmation(DoctorDto doctor)
+    {
+        CloseModals();
+        pendingToggleDoctor = doctor;
+        showConfirmModal = true;
+    }
+
+    private async Task ConfirmToggleStatus()
+    {
+        if (pendingToggleDoctor is null)
         {
             return;
         }
+
+        var doctor = pendingToggleDoctor;
 
         var dto = new UpdateDoctorDto
         {
@@ -405,9 +585,10 @@ else
 
         try
         {
+            isSaving = true;
             generatedTemporaryPassword = null;
 
-            var updatedDoctor = await AdminApi.UpdateDoctorAsync(doctorId, dto);
+            var updatedDoctor = await AdminApi.UpdateDoctorAsync(doctor.DoctorId, dto);
 
             if (updatedDoctor is null)
             {
@@ -418,6 +599,8 @@ else
 
             message = "Doctor status updated successfully.";
             isError = false;
+            showConfirmModal = false;
+            pendingToggleDoctor = null;
 
             doctors = await AdminApi.GetDoctorsAsync();
         }
@@ -426,14 +609,49 @@ else
             message = "Doctor status update failed. Please try again.";
             isError = true;
         }
+        finally
+        {
+            isSaving = false;
+        }
     }
 
-    private void CancelForms()
+    private async Task CopyTemporaryPassword()
     {
-        showCreateForm = false;
-        editingDoctorId = null;
-        message = null;
-        isError = false;
-        generatedTemporaryPassword = null;
+        if (!string.IsNullOrWhiteSpace(generatedTemporaryPassword))
+        {
+            await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", generatedTemporaryPassword);
+            message = "Temporary password copied to clipboard.";
+            isError = false;
+        }
+    }
+
+    private void CloseModals()
+    {
+        showCreateModal = false;
+        showEditModal = false;
+        showViewModal = false;
+        showConfirmModal = false;
+        selectedDoctor = null;
+        pendingToggleDoctor = null;
+    }
+
+    private static string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "DR";
+        }
+
+        var parts = name
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .ToList();
+
+        if (parts.Count == 0)
+        {
+            return "DR";
+        }
+
+        return new string(parts.Select(part => part[0]).ToArray()).ToUpper();
     }
 }

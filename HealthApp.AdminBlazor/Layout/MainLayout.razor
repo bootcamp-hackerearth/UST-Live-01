@@ -1,4 +1,5 @@
 @inherits LayoutComponentBase
+@using System.Security.Claims
 @inject AuthApiService AuthApi
 @inject NavigationManager Navigation
 
@@ -12,51 +13,89 @@
             </div>
         </div>
 
-        <nav class="nav-list">
-            <NavLink href="/dashboard" Match="NavLinkMatch.All">Dashboard</NavLink>
-            <NavLink href="/doctors">Doctor Management</NavLink>
-            <NavLink href="/reports/appointments">Appointments Report</NavLink>
-            <NavLink href="/patients">Patient Management</NavLink>
-        </nav>
+       <nav class="nav-list">
+            <NavLink href="/dashboard" Match="NavLinkMatch.All">
+        <span class="nav-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 11.5L12 4l9 7.5v8.5a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.5z" />
+            </svg>
+        </span>
+        <span>Dashboard</span>
+    </NavLink>
 
-        <div class="sidebar-footer">
-            <AuthorizeView Roles="Admin">
+            <NavLink href="/doctors">
+                <span class="nav-icon">✚</span>
+                <span>Doctor Management</span>
+            </NavLink>
+
+    <NavLink href="/reports/appointments">
+        <span class="nav-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z" />
+                <path d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v9h14v-9H5zm2 2h3v3H7v-3zm5 0h3v3h-3v-3z" />
+            </svg>
+        </span>
+        <span>Appointments Report</span>
+    </NavLink>
+
+    <NavLink href="/patients">
+        <span class="nav-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z" />
+                <path d="M4 21a8 8 0 0 1 16 0H4z" />
+            </svg>
+        </span>
+        <span>Patient Management</span>
+    </NavLink>
+</nav>
+    </aside>
+
+    <section class="main-area">
+        <header class="topbar">
+            <div class="topbar-title">
+                <span>Admin Console</span>
+                <strong>HealthApp Management</strong>
+            </div>
+
+            <AuthorizeView Roles="Admin" Context="authContext">
                 <Authorized>
-                    <div class="admin-chip">
-                        <span>Signed in as</span>
-                        <strong>@GetEmail(context.User)</strong>
-                    </div>
+                    <div class="topbar-actions">
+                        <div class="admin-profile-card">
+                            <div class="admin-avatar">A</div>
+                            <div class="admin-profile-text">
+                                <strong>@GetEmail(authContext.User)</strong>
+                                <span>Administrator</span>
+                            </div>
+                        </div>
 
-                    <button class="btn btn-outline-light" @onclick="Logout">
-                        Logout
-                    </button>
+                        <button class="btn topbar-logout-button" @onclick="Logout">
+                            Logout
+                        </button>
+                    </div>
                 </Authorized>
 
                 <NotAuthorized>
-                    <a class="btn btn-primary" href="/login">
-                        Admin Login
-                    </a>
+                    <a class="btn btn-primary" href="/login">Admin Login</a>
                 </NotAuthorized>
             </AuthorizeView>
-        </div>
-    </aside>
+        </header>
 
-    <main class="main-content">
-        @Body
-    </main>
+        <main class="main-content">
+            @Body
+        </main>
+    </section>
 </div>
 
 @code {
     private async Task Logout()
     {
         await AuthApi.LogoutAsync();
-
         Navigation.NavigateTo("/login", replace: true);
     }
 
-    private static string GetEmail(System.Security.Claims.ClaimsPrincipal user)
+    private static string GetEmail(ClaimsPrincipal user)
     {
-        return user.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+        return user.FindFirst(ClaimTypes.Email)?.Value
             ?? user.FindFirst("email")?.Value
             ?? "Admin";
     }

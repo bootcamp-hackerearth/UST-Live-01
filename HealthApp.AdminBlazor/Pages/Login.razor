@@ -1,41 +1,83 @@
 @page "/login"
 @layout EmptyLayout
+@using HealthApp.AdminBlazor.Services
+@using HealthApp.Shared.DTOs
 @inject AuthApiService AuthApi
 @inject NavigationManager Navigation
 
 <PageTitle>Admin Login</PageTitle>
 
-<section class="login-page">
-    <div class="login-card">
-        <div class="login-brand">H</div>
+<section class="health-login-page">
+    <div class="health-login-card">
+        <div class="login-logo mx-auto">
+            H
+        </div>
 
-        <h1>Admin Login</h1>
+        <div class="login-heading">
+            <h1>Admin Login</h1>
+        </div>
 
         @if (!string.IsNullOrWhiteSpace(errorMessage))
         {
-            <div class="alert alert-error">@errorMessage</div>
+            <div class="alert alert-danger login-alert" role="alert">
+                @errorMessage
+            </div>
         }
 
         <EditForm Model="loginDto" OnValidSubmit="HandleLogin">
             <DataAnnotationsValidator />
-            <ValidationSummary />
 
-            <label>Email</label>
-            <InputText class="input"
-                       @bind-Value="loginDto.Email"
-                       placeholder="Enter admin email" />
+            <div class="login-field">
+                <label>Email address</label>
 
-            <label>Password</label>
-            <InputText class="input"
-                       type="password"
-                       @bind-Value="loginDto.Password"
-                       placeholder="Enter password" />
+                <InputText class="form-control login-control"
+                           @bind-Value="loginDto.Email"
+                           placeholder="Enter admin email"
+                           disabled="@isLoading" />
 
-            <button class="btn btn-primary btn-full" type="submit" disabled="@isLoading">
-                @(isLoading ? "Logging in..." : "Login")
+                <ValidationMessage For="@(() => loginDto.Email)" />
+            </div>
+
+            <div class="login-field">
+                <label>Password</label>
+
+                <InputText class="form-control login-control"
+                           type="password"
+                           @bind-Value="loginDto.Password"
+                           placeholder="Enter password"
+                           disabled="@isLoading" />
+
+                <ValidationMessage For="@(() => loginDto.Password)" />
+            </div>
+
+            <button class="btn login-submit-button"
+                    type="submit"
+                    disabled="@isLoading">
+                Login
             </button>
         </EditForm>
     </div>
+
+    @if (isLoading)
+    {
+        <div class="login-loading-backdrop">
+            <div class="login-loading-box">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+
+                <h3>Signing in</h3>
+                <p>Please wait while we verify your admin access.</p>
+
+                <div class="progress login-popup-progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                         role="progressbar"
+                         style="width: 100%">
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </section>
 
 @code {
@@ -50,16 +92,25 @@
         errorMessage = null;
         isLoading = true;
 
-        var result = await AuthApi.LoginAsync(loginDto);
-
-        isLoading = false;
-
-        if (result is null)
+        try
         {
-            errorMessage = "Invalid admin credentials or this account is not authorized for admin access.";
-            return;
-        }
+            var result = await AuthApi.LoginAsync(loginDto);
 
-        Navigation.NavigateTo("/dashboard", replace: true);
+            if (result is null)
+            {
+                errorMessage = "Invalid admin credentials or this account is not authorized for admin access.";
+                return;
+            }
+
+            Navigation.NavigateTo("/dashboard", replace: true);
+        }
+        catch
+        {
+            errorMessage = "Unable to connect to the server. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 }

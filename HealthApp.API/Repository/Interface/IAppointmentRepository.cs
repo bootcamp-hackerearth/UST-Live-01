@@ -1,4 +1,3 @@
-
 using HealthApp.API.Models;
 using HealthApp.Shared.Enums;
 
@@ -22,5 +21,5 @@ public interface IAppointmentRepository : IRepository<Appointment>
         string timeSlot,
         CancellationToken ct = default);
     Task<Appointment?> GetByIdWithDetailsAsync(int appointmentId, CancellationToken ct = default);
-    
+    Task<List<Appointment>> GetAllWithDetailsAsync(CancellationToken ct = default);
 }

@@ -90,4 +90,10 @@ public class AppointmentRepository(HealthAppDbContext context)
             => WithIncludes()
                 .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId, ct);
 
+    public Task<List<Appointment>> GetAllWithDetailsAsync(
+            CancellationToken ct = default)
+            => WithIncludes()
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlots)
+                .ToListAsync(ct);
 }

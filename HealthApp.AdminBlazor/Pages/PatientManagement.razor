@@ -1,189 +1,236 @@
 @page "/patients"
 @attribute [Authorize(Roles = "Admin")]
+@using Microsoft.AspNetCore.Authorization
+@using HealthApp.Shared.DTOs
+@using HealthApp.Shared.Enums
 @inject AdminApiService AdminApi
 
 <PageTitle>Patient Management</PageTitle>
 
-<div class="page-header">
-    <div>
-        <h1>Patient Management</h1>
-        <p>View patient details, search records, and filter by gender or insurance status.</p>
-    </div>
-</div>
+<div class="patient-page">
+    <section class="patient-page-header">
+        <div>
+            <span class="patient-kicker">Admin Module</span>
+            <h1>Patient Management</h1>
+            <p>View patient details, search records, and filter by gender or insurance status.</p>
+        </div>
+    </section>
 
-@if (!string.IsNullOrWhiteSpace(message))
-{
-    <div class="alert @(isError ? "alert-error" : "alert-success")">
-        @message
-    </div>
-}
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="patient-message-card @(isError ? "error" : "success")">
+            <div>
+                <strong>@(isError ? "Action failed" : "Success")</strong>
+                <span>@message</span>
+            </div>
+        </div>
+    }
 
-<div class="toolbar">
-    <input class="input"
-           placeholder="Search by id, name, email, phone, or insurance id..."
-           @bind="searchText"
-           @bind:event="oninput" />
+    <section class="patient-toolbar-card">
+        <div class="patient-search-box">
+            <span>⌕</span>
+            <input placeholder="Search by id, name, email, phone, or insurance id..."
+                   @bind="searchText"
+                   @bind:event="oninput" />
+        </div>
 
-    <select class="input" @onchange="OnGenderChanged">
-        <option value="All">All Genders</option>
-        @foreach (var gender in Enum.GetValues<GenderType>())
-        {
-            <option value="@gender">@gender</option>
-        }
-    </select>
+        <select class="patient-filter-select" @onchange="OnGenderChanged">
+            <option value="All">All Genders</option>
+            @foreach (var gender in Enum.GetValues<GenderType>())
+            {
+                <option value="@gender">@gender</option>
+            }
+        </select>
 
-    <select class="input" @onchange="OnInsuranceChanged">
-        <option value="All">All Insurance</option>
-        <option value="WithInsurance">With Insurance</option>
-        <option value="WithoutInsurance">Without Insurance</option>
-    </select>
+        <select class="patient-filter-select" @onchange="OnInsuranceChanged">
+            <option value="All">All Insurance</option>
+            <option value="WithInsurance">With Insurance</option>
+            <option value="WithoutInsurance">Without Insurance</option>
+        </select>
 
-    <button class="btn btn-primary" @onclick="SearchPatients">
-        Search
-    </button>
+        <button class="patient-search-button" @onclick="SearchPatients">
+            Search
+        </button>
+    </section>
+
+    @if (isLoading)
+    {
+        <section class="patient-loading-card">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <div>
+                <h3>Loading patients</h3>
+                <p>Please wait while patient records are loaded.</p>
+            </div>
+
+            <div class="progress patient-progress">
+                <div class="progress-bar progress-bar-striped progress-bar-animated"
+                     role="progressbar"
+                     style="width: 100%">
+                </div>
+            </div>
+        </section>
+    }
+    else if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert alert-error">@errorMessage</div>
+    }
+    else
+    {
+        <section class="patient-table-card">
+            <div class="patient-table-header">
+                <div>
+                    <h2>Patients</h2>
+                    <p>@patients.Count record(s) found</p>
+                </div>
+            </div>
+
+            <div class="patient-table-wrapper">
+                <table class="patient-table">
+                    <thead>
+                        <tr>
+                            <th>Patient ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Gender</th>
+                            <th>Insurance</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (!patients.Any())
+                        {
+                            <tr>
+                                <td colspan="7">
+                                    <div class="patient-empty-state">
+                                        <strong>No patients found</strong>
+                                        <span>Try changing the search text or filters.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var patient in patients)
+                            {
+                                <tr>
+                                    <td><strong>#@patient.PatientId</strong></td>
+                                    <td>
+                                        <div class="patient-name-cell">
+                                            <div class="patient-avatar-cell">@GetInitials(patient.FullName)</div>
+                                            <div>
+                                                <strong>@patient.FullName</strong>
+                                                <span>Created @patient.CreatedDate.ToString("dd MMM yyyy")</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>@(patient.Email ?? "Not provided")</td>
+                                    <td>@patient.PhoneNumber</td>
+                                    <td>
+                                        <span class="patient-badge gender">@patient.Gender</span>
+                                    </td>
+                                    <td>
+                                        @if (string.IsNullOrWhiteSpace(patient.InsuranceId))
+                                        {
+                                            <span class="patient-badge muted">Not Available</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="patient-badge insured">@patient.InsuranceId</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="patient-view-button" @onclick="() => ViewPatient(patient)">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    }
 </div>
 
 @if (selectedPatient is not null)
 {
-    <section class="panel form-panel">
-        <div class="panel-header">
-            <h2>Patient Details</h2>
-            <button class="btn btn-secondary" @onclick="CloseDetails">Close</button>
+    <div class="patient-modal-backdrop">
+        <div class="patient-modal">
+            <div class="patient-modal-header">
+                <div>
+                    <span>Patient Details</span>
+                    <h2>@selectedPatient.FullName</h2>
+                </div>
+
+                <button class="patient-modal-x" @onclick="CloseDetails">×</button>
+            </div>
+
+            <div class="patient-detail-hero">
+                <div class="patient-detail-avatar">@GetInitials(selectedPatient.FullName)</div>
+                <div>
+                    <strong>@selectedPatient.FullName</strong>
+                    <span>Patient ID: @selectedPatient.PatientId</span>
+                </div>
+            </div>
+
+            <div class="patient-detail-grid">
+                <div>
+                    <span>Email</span>
+                    <strong>@(selectedPatient.Email ?? "Not provided")</strong>
+                </div>
+
+                <div>
+                    <span>Phone Number</span>
+                    <strong>@selectedPatient.PhoneNumber</strong>
+                </div>
+
+                <div>
+                    <span>Gender</span>
+                    <strong>@selectedPatient.Gender</strong>
+                </div>
+
+                <div>
+                    <span>Date of Birth</span>
+                    <strong>@selectedPatient.DateOfBirth.ToString("dd MMM yyyy")</strong>
+                </div>
+
+                <div>
+                    <span>Insurance ID</span>
+                    <strong>
+                        @(string.IsNullOrWhiteSpace(selectedPatient.InsuranceId)
+                            ? "Not available"
+                            : selectedPatient.InsuranceId)
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Created Date</span>
+                    <strong>@selectedPatient.CreatedDate.ToString("dd MMM yyyy")</strong>
+                </div>
+            </div>
+
+            <div class="patient-modal-actions">
+                <button class="patient-close-outline" type="button" @onclick="CloseDetails">Close</button>
+            </div>
         </div>
-
-        <div class="details-grid">
-            <div>
-                <span>Patient ID</span>
-                <strong>@selectedPatient.PatientId</strong>
-            </div>
-
-            <div>
-                <span>Full Name</span>
-                <strong>@selectedPatient.FullName</strong>
-            </div>
-
-            <div>
-                <span>Email</span>
-                <strong>@(selectedPatient.Email ?? "Not provided")</strong>
-            </div>
-
-            <div>
-                <span>Phone Number</span>
-                <strong>@selectedPatient.PhoneNumber</strong>
-            </div>
-
-            <div>
-                <span>Gender</span>
-                <strong>@selectedPatient.Gender</strong>
-            </div>
-
-            <div>
-                <span>Date of Birth</span>
-                <strong>@selectedPatient.DateOfBirth.ToString("dd MMM yyyy")</strong>
-            </div>
-
-            <div>
-                <span>Insurance ID</span>
-                <strong>
-                    @(string.IsNullOrWhiteSpace(selectedPatient.InsuranceId)
-                        ? "Not available"
-                        : selectedPatient.InsuranceId)
-                </strong>
-            </div>
-
-            <div>
-                <span>Created Date</span>
-                <strong>@selectedPatient.CreatedDate.ToString("dd MMM yyyy")</strong>
-            </div>
-        </div>
-    </section>
-}
-
-@if (isLoading)
-{
-    <section class="panel">
-        <p>Loading patients...</p>
-    </section>
-}
-else if (!string.IsNullOrWhiteSpace(errorMessage))
-{
-    <div class="alert alert-error">@errorMessage</div>
-}
-else
-{
-    <section class="panel">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Patient ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Gender</th>
-                    <th>Insurance</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @if (!patients.Any())
-                {
-                    <tr>
-                        <td colspan="7">No patients found.</td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var patient in patients)
-                    {
-                        <tr>
-                            <td>@patient.PatientId</td>
-                            <td>@patient.FullName</td>
-                            <td>@(patient.Email ?? "Not provided")</td>
-                            <td>@patient.PhoneNumber</td>
-                            <td>
-                                <span class="badge info">@patient.Gender</span>
-                            </td>
-                            <td>
-                                @if (string.IsNullOrWhiteSpace(patient.InsuranceId))
-                                {
-                                    <span class="badge muted">Not Available</span>
-                                }
-                                else
-                                {
-                                    <span class="badge success">@patient.InsuranceId</span>
-                                }
-                            </td>
-                            <td>
-                                <button class="btn btn-small" @onclick="() => ViewPatient(patient)">
-                                    View
-                                </button>
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    </section>
+    </div>
 }
 
 @code {
     private List<PatientDto> patients = new();
-
     private PatientDto? selectedPatient;
-
     private string searchText = string.Empty;
-
     private GenderType? selectedGender;
-
     private bool? hasInsurance;
-
     private bool isLoading = true;
-
     private string? errorMessage;
-
     private string? message;
-
     private bool isError;
 
     protected override async Task OnInitializedAsync()
@@ -258,5 +305,25 @@ else
     private void CloseDetails()
     {
         selectedPatient = null;
+    }
+
+    private static string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "P";
+        }
+
+        var parts = name
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .ToList();
+
+        if (parts.Count == 0)
+        {
+            return "P";
+        }
+
+        return new string(parts.Select(part => part[0]).ToArray()).ToUpper();
     }
 }

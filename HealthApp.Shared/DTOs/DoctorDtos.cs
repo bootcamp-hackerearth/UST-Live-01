@@ -28,7 +28,7 @@ public class CreateDoctorDto
     [Required]
     public DateTime PracticeStartDate { get; set; }
 
-    [Range(0, 100000)]
+    [Range(0, 100000, ErrorMessage = "Consultation fee must be between 0 to 100000.")]
     public int ConsultationFee { get; set; }
 }
 public class UpdateDoctorDto
