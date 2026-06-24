@@ -3284,3 +3284,125 @@ font-weight: 700;
 .ha-popout-sidebar {
     z-index: 3000;
 }
+
+
+
+/* Compact Daily Appointment Status Overview */
+
+.ha-daily-summary-compact {
+    margin: 18px 0 22px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+}
+
+.ha-daily-summary-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+}
+
+    .ha-daily-summary-header h3 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .ha-daily-summary-header p {
+        margin: 4px 0 0;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+.ha-daily-summary-date {
+    width: 170px;
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 14px;
+    border: 1px solid #dbe3ef;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.ha-daily-summary-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ha-daily-summary-item {
+    flex: 1 1 150px;
+    min-height: 46px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+    .ha-daily-summary-item span {
+        color: #475569;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .ha-daily-summary-item strong {
+        color: #0f172a;
+        font-size: 20px;
+        font-weight: 900;
+    }
+
+    .ha-daily-summary-item.total strong {
+        color: #2563eb;
+    }
+
+    .ha-daily-summary-item.pending strong {
+        color: #7c3aed;
+    }
+
+    .ha-daily-summary-item.confirmed strong {
+        color: #059669;
+    }
+
+    .ha-daily-summary-item.completed strong {
+        color: #4f46e5;
+    }
+
+    .ha-daily-summary-item.cancelled strong {
+        color: #dc2626;
+    }
+
+.ha-daily-loading-text {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+@media (max-width: 700px) {
+    .ha-daily-summary-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .ha-daily-summary-date {
+        width: 100%;
+    }
+
+    .ha-daily-summary-item {
+        flex-basis: 100%;
+    }
+}

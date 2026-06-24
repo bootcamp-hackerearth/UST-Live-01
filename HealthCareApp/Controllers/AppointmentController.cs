@@ -45,6 +45,18 @@ namespace HealthCareApp.Controllers
 
             return Ok(filterOptions);
         }
+
+        // Admin only: Get daily appointment status summary
+        [HttpGet("daily-status-summary")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
+        public async Task<IActionResult> GetDailyStatusSummary([FromQuery] DateTime date)
+        {
+            var summary = await service.GetDailyStatusSummaryAsync(date);
+
+            return Ok(summary);
+        }
         // Patient/Doctor: View logged-in user's appointments
         [HttpGet("my")]
         [Authorize(

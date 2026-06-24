@@ -107,7 +107,13 @@
                 </p>
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            @if (SessionExpired)
+            {
+                <div class="hc-alert-error">
+                    Session timeout. Please login again to continue.
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 <div class="hc-alert-error">
                     @errorMessage
@@ -173,6 +179,10 @@
     private bool isSigningIn;
 
     private string? errorMessage;
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "sessionExpired")]
+    public bool SessionExpired { get; set; }
 
     private async Task HandleLogin()
     {

@@ -22,6 +22,27 @@ namespace HealthCareApp.Services.Impl
         private const string AppointmentDetailsRequiredMessage = "Appointment details are required.";
         private const string CancellationDetailsRequiredMessage = "Cancellation details are required.";
 
+        public async Task<AppointmentDailyStatusSummaryDto> GetDailyStatusSummaryAsync(DateTime date)
+        {
+            var selectedDate = date.Date;
+
+            var appointments = await appointmentRepository.GetAppointmentsByDateAsync(selectedDate);
+
+            return new AppointmentDailyStatusSummaryDto
+            {
+                Date = selectedDate.ToString("yyyy-MM-dd"),
+
+                Total = appointments.Count,
+
+                Pending = appointments.Count(a => a.Status == AppointmentStatus.Pending),
+
+                Confirmed = appointments.Count(a => a.Status == AppointmentStatus.Confirmed),
+
+                Completed = appointments.Count(a => a.Status == AppointmentStatus.Completed),
+
+                Cancelled = appointments.Count(a => a.Status == AppointmentStatus.Cancelled)
+            };
+        }
         public async Task<AppointmentFilterOptionsDto> GetAppointmentFilterOptionsAsync()
         {
             var appointments = await appointmentRepository.GetAppointmentsForFilterOptionsAsync();

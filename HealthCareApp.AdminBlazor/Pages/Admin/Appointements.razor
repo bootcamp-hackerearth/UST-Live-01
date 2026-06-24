@@ -34,9 +34,8 @@ else
         <div>
             <h1>Appointments</h1>
 
-            <p>View,filter HealthAxis appointment schedules.</p>
+            <p>View and filter HealthAxis appointment schedules.</p>
         </div>
-
     </div>
 
     <div class="hc-doctor-stat-grid ha-management-stat-grid">
@@ -88,6 +87,64 @@ else
             <div class="ha-stat-card-icon">!</div>
         </div>
     </div>
+
+    <section class="ha-daily-summary-compact">
+        <div class="ha-daily-summary-header">
+            <div>
+                <h3>Daily Status Overview</h3>
+
+                <p>Appointment status count for selected date.</p>
+            </div>
+
+            <input type="date"
+                   class="ha-daily-summary-date"
+                   value="@SelectedDailySummaryDateValue"
+                   @onchange="OnDailySummaryDateChanged" />
+        </div>
+
+        @if (isDailySummaryLoading)
+        {
+            <div class="ha-daily-summary-row">
+                <span class="ha-daily-loading-text">
+                    Loading daily summary...
+                </span>
+            </div>
+        }
+        else
+        {
+            <div class="ha-daily-summary-row">
+                <div class="ha-daily-summary-item total">
+                    <span>Total</span>
+
+                    <strong>@dailyStatusSummary.Total</strong>
+                </div>
+
+                <div class="ha-daily-summary-item pending">
+                    <span>Pending</span>
+
+                    <strong>@dailyStatusSummary.Pending</strong>
+                </div>
+
+                <div class="ha-daily-summary-item confirmed">
+                    <span>Confirmed</span>
+
+                    <strong>@dailyStatusSummary.Confirmed</strong>
+                </div>
+
+                <div class="ha-daily-summary-item completed">
+                    <span>Completed</span>
+
+                    <strong>@dailyStatusSummary.Completed</strong>
+                </div>
+
+                <div class="ha-daily-summary-item cancelled">
+                    <span>Cancelled</span>
+
+                    <strong>@dailyStatusSummary.Cancelled</strong>
+                </div>
+            </div>
+        }
+    </section>
 
     <section class="hc-list-panel ha-management-panel">
         <div class="ha-list-panel-header">
@@ -395,6 +452,12 @@ else
 
     private AppointmentFilterOptionsDto filterOptions = new();
 
+    private AppointmentDailyStatusSummaryDto dailyStatusSummary = new();
+
+    private DateTime selectedDailySummaryDate = DateTime.Today;
+
+    private bool isDailySummaryLoading;
+
     private int currentPage = 1;
 
     private int pageSize = 10;
@@ -603,7 +666,7 @@ else
                 return "Search patient by name or ID...";
             }
 
-            return "Search by patient, doctor, Date, time slot, or cancellation reason...";
+            return "Search by patient, doctor, date, time slot, or cancellation reason...";
         }
     }
 
@@ -637,18 +700,30 @@ else
         }
     }
 
+    private string SelectedDailySummaryDateValue
+    {
+        get
+        {
+            return selectedDailySummaryDate.ToString("yyyy-MM-dd");
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsAuthenticatedAsync();
 
         if (!isAuthenticated)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo(
+                "/login?sessionExpired=true",
+                replace: true);
 
             return;
         }
 
         await LoadAppointmentFilterOptionsAsync();
+
+        await LoadDailyStatusSummaryAsync();
 
         await LoadAppointmentsAsync();
     }
@@ -670,6 +745,39 @@ else
             errorMessage = "Unable to load appointment filter options. Please check whether the API is running.";
 
             filterOptions = new AppointmentFilterOptionsDto();
+        }
+    }
+
+    private async Task LoadDailyStatusSummaryAsync()
+    {
+        try
+        {
+            isDailySummaryLoading = true;
+
+            dailyStatusSummary = await AppointmentService.GetDailyStatusSummaryAsync(
+                selectedDailySummaryDate);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+
+            dailyStatusSummary = new AppointmentDailyStatusSummaryDto
+            {
+                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd")
+            };
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to load daily appointment summary. Please check whether the API is running.";
+
+            dailyStatusSummary = new AppointmentDailyStatusSummaryDto
+            {
+                Date = selectedDailySummaryDate.ToString("yyyy-MM-dd")
+            };
+        }
+        finally
+        {
+            isDailySummaryLoading = false;
         }
     }
 
@@ -789,15 +897,15 @@ else
 
         string[] allowedFormats =
         {
-        "yyyy-MM-dd",
-        "dd-MM-yyyy",
-        "dd/MM/yyyy",
-        "MM/dd/yyyy",
-        "dd MMM yyyy",
-        "dd MMMM yyyy",
-        "MMM dd yyyy",
-        "MMMM dd yyyy"
-    };
+            "yyyy-MM-dd",
+            "dd-MM-yyyy",
+            "dd/MM/yyyy",
+            "MM/dd/yyyy",
+            "dd MMM yyyy",
+            "dd MMMM yyyy",
+            "MMM dd yyyy",
+            "MMMM dd yyyy"
+        };
 
         if (DateTime.TryParseExact(
                 trimmedValue,
@@ -815,6 +923,16 @@ else
         }
 
         return null;
+    }
+
+    private async Task OnDailySummaryDateChanged(ChangeEventArgs args)
+    {
+        if (DateTime.TryParse(args.Value?.ToString(), out var selectedDate))
+        {
+            selectedDailySummaryDate = selectedDate.Date;
+
+            await LoadDailyStatusSummaryAsync();
+        }
     }
 
     private async Task OnSearchChanged(ChangeEventArgs args)
@@ -950,11 +1068,6 @@ else
         currentPage++;
 
         await LoadAppointmentsAsync(showFullPageLoader: false);
-    }
-
-    private void GoToAddAppointment()
-    {
-        Navigation.NavigateTo("/admin/appointments/add");
     }
 
     private void GoToAppointmentDetails(int appointmentId)

@@ -5,6 +5,7 @@ namespace HealthCareApp.Repository.Interface
 {
     public interface IAppointmentRepository : IRepository<Appointment>
     {
+        Task<List<Appointment>> GetAppointmentsByDateAsync(DateTime scheduledDate,CancellationToken ct = default);
         Task<List<Appointment>> GetAppointmentsForFilterOptionsAsync(CancellationToken ct = default);
 
         Task<List<Appointment>> GetByPatientIdAsync(int patientId, CancellationToken ct = default);

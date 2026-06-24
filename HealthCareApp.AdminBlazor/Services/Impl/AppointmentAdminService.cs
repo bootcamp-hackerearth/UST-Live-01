@@ -98,6 +98,29 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             return filterOptions ?? new AppointmentFilterOptionsDto();
         }
 
+        public async Task<AppointmentDailyStatusSummaryDto> GetDailyStatusSummaryAsync(DateTime date)
+        {
+            string endpoint =
+                $"{AppointmentsEndpoint}/daily-status-summary?date={Uri.EscapeDataString(date.ToString("yyyy-MM-dd"))}";
+
+            using var response = await SendAuthorizedRequestAsync(
+                HttpMethod.Get,
+                endpoint);
+
+            EnsureAuthorizedResponse(
+                response,
+                "Your admin session is not authorized to load appointment daily summary.");
+
+            response.EnsureSuccessStatusCode();
+
+            var summary = await response.Content
+                .ReadFromJsonAsync<AppointmentDailyStatusSummaryDto>(JsonOptions);
+
+            return summary ?? new AppointmentDailyStatusSummaryDto
+            {
+                Date = date.ToString("yyyy-MM-dd")
+            };
+        }
         public async Task<AppointmentDto?> GetAppointmentByIdAsync(int appointmentId)
         {
             if (appointmentId <= 0)

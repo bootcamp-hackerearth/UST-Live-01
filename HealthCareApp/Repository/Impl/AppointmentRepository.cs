@@ -14,6 +14,17 @@ namespace HealthCareApp.Repository.Impl
         {
             _context = context;
         }
+        public async Task<List<Appointment>> GetAppointmentsByDateAsync(
+    DateTime scheduledDate,
+    CancellationToken ct = default)
+        {
+            var selectedDate = scheduledDate.Date;
+
+            return await _context.Appointments
+                .AsNoTracking()
+                .Where(a => a.ScheduledDate.Date == selectedDate)
+                .ToListAsync(ct);
+        }
         public async Task<List<Appointment>> GetAppointmentsForFilterOptionsAsync(CancellationToken ct = default)
         {
             return await _context.Appointments

@@ -172,7 +172,9 @@ else if (appointment is not null)
 
         if (!isAuthenticated)
         {
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo(
+                "/login?sessionExpired=true",
+                replace: true);
 
             return;
         }

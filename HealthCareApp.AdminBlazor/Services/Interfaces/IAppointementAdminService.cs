@@ -11,6 +11,9 @@ namespace HealthCareApp.AdminBlazor.Services.Interfaces
 
         Task<AppointmentFilterOptionsDto> GetAppointmentFilterOptionsAsync();
 
+        Task<AppointmentDailyStatusSummaryDto> GetDailyStatusSummaryAsync(DateTime date);
+
+
         Task<AppointmentDto?> GetAppointmentByIdAsync(int appointmentId);
 
         Task<AppointmentDto> CreateAppointmentAsync(BookAppointmentDto request);

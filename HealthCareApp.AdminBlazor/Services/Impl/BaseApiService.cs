@@ -158,7 +158,9 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 "localStorage.removeItem",
                 TokenStorageKey);
 
-            _navigationManager.NavigateTo("/login", replace: true);
+            _navigationManager.NavigateTo(
+                "/login?sessionExpired=true",
+                replace: true);
         }
     }
 }
