@@ -1,18 +1,20 @@
 ﻿using AutoMapper;
-using HealthAxis.Shared.DTO;
-using HealthAxis.Shared.DTO.AdminDtos;
-using HealthAxis.Shared.DTO.DoctorDtos;
-using HealthAxis.Shared.Enums;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
+using HealthAxis.API.Repositories.Implementations;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO;
+using HealthAxis.Shared.DTO.AdminDtos;
+using HealthAxis.Shared.DTO.CommonDtos;
+using HealthAxis.Shared.DTO.DoctorDtos;
+using HealthAxis.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HealthAxis.API.Services.Implementation
@@ -24,6 +26,7 @@ namespace HealthAxis.API.Services.Implementation
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
+        private const int DoctorPageSize = 6;
 
         public AdminService(
             IDoctorRepository doctorRepository,
@@ -212,6 +215,41 @@ namespace HealthAxis.API.Services.Implementation
 
             return reports;
         }
+        public async Task<PagedResponseDto<DoctorDto>> GetDoctorsPagedAsync(
+    PaginationQueryDto paginationQuery)
+        {
+            ArgumentNullException.ThrowIfNull(paginationQuery);
+
+            var pageNumber = Math.Max(paginationQuery.PageNumber, 1);
+
+            var normalizedQuery = new PaginationQueryDto
+            {
+                PageNumber = pageNumber,
+                PageSize = DoctorPageSize
+            };
+
+            var totalRecords = await _doctorRepository.CountAsync();
+
+            var doctors = await _doctorRepository.GetPagedAsync(
+                normalizedQuery,
+                doctor => doctor.DoctorId,
+                descending: true);
+
+            var doctorDtos = new List<DoctorDto>();
+
+            foreach (var doctor in doctors)
+            {
+                doctorDtos.Add(await MapDoctorForAdminAsync(doctor));
+            }
+
+            return new PagedResponseDto<DoctorDto>
+            {
+                Items = doctorDtos,
+                PageNumber = pageNumber,
+                PageSize = DoctorPageSize,
+                TotalRecords = totalRecords
+            };
+        }
 
         public async Task<List<AdminUserDto>> GetUsersAsync()
         {
@@ -279,6 +317,27 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationException(
                     "Consultation fee must be greater than 0");
             }
+        }
+        private async Task<DoctorDto> MapDoctorForAdminAsync(Doctor doctor)
+        {
+            var email = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(doctor.UserId))
+            {
+                var user = await _userManager.FindByIdAsync(doctor.UserId);
+                email = user?.Email ?? string.Empty;
+            }
+
+            return new DoctorDto
+            {
+                DoctorId = doctor.DoctorId,
+                FullName = doctor.FullName,
+                Email = email,
+                Specialisation = doctor.Specialisation,
+                YearsOfExperience = doctor.YearsOfExperience,
+                ConsultationFee = doctor.ConsultationFee,
+                IsActive = doctor.IsActive
+            };
         }
     }
 }

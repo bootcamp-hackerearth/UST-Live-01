@@ -15,12 +15,12 @@ namespace HealthAxis.API.Repositories.Interfaces
 
         Task<T?> DeleteAsync(int id, CancellationToken ct = default);
 
-        //Task<int> CountAsync(CancellationToken ct = default);
+        Task<int> CountAsync(CancellationToken ct = default);
 
-        //Task<List<T>> GetPagedAsync<TKey>(
-        //    PaginationQueryDto paginationQuery,
-        //    Expression<Func<T, TKey>> orderBy,
-        //    bool descending = false,
-        //    CancellationToken ct = default);
+        Task<List<T>> GetPagedAsync<TKey>(
+            PaginationQueryDto paginationQuery,
+            Expression<Func<T, TKey>> orderBy,
+            bool descending = false,
+            CancellationToken ct = default);
     }
 }

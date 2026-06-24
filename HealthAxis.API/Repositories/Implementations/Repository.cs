@@ -71,32 +71,32 @@ namespace HealthAxis.API.Repositories.Implementations
             return existing;
         }
 
-        //public async Task<int> CountAsync(CancellationToken ct = default)
-        //{
-        //    return await _dbSet
-        //        .AsNoTracking()
-        //        .CountAsync(ct);
-        //}
+        public async Task<int> CountAsync(CancellationToken ct = default)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .CountAsync(ct);
+        }
 
-        //public async Task<List<T>> GetPagedAsync<TKey>(
-        //    PaginationQueryDto paginationQuery,
-        //    Expression<Func<T, TKey>> orderBy,
-        //    bool descending = false,
-        //    CancellationToken ct = default)
-        //{
-        //    ArgumentNullException.ThrowIfNull(paginationQuery);
-        //    ArgumentNullException.ThrowIfNull(orderBy);
+        public async Task<List<T>> GetPagedAsync<TKey>(
+            PaginationQueryDto paginationQuery,
+            Expression<Func<T, TKey>> orderBy,
+            bool descending = false,
+            CancellationToken ct = default)
+        {
+            ArgumentNullException.ThrowIfNull(paginationQuery);
+            ArgumentNullException.ThrowIfNull(orderBy);
 
-        //    var query = _dbSet.AsNoTracking();
+            var query = _dbSet.AsNoTracking();
 
-        //    query = descending
-        //        ? query.OrderByDescending(orderBy)
-        //        : query.OrderBy(orderBy);
+            query = descending
+                ? query.OrderByDescending(orderBy)
+                : query.OrderBy(orderBy);
 
-        //    return await query
-        //        .Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize)
-        //        .Take(paginationQuery.PageSize)
-        //        .ToListAsync(ct);
-        //}
+            return await query
+                .Skip((paginationQuery.PageNumber - 1) * paginationQuery.PageSize)
+                .Take(paginationQuery.PageSize)
+                .ToListAsync(ct);
+        }
     }
 }

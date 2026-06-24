@@ -1,8 +1,8 @@
 ﻿namespace HealthAxis.Shared.DTO.CommonDtos
 {
-    public class PagedResponseDto<T>
+    public sealed class PagedResponseDto<T>
     {
-        public List<T> Data { get; set; } = new();
+        public List<T> Items { get; set; } = new();
 
         public int PageNumber { get; set; }
 
@@ -10,7 +10,10 @@
 
         public int TotalRecords { get; set; }
 
-        public int TotalPages { get; set; }
+        public int TotalPages =>
+            PageSize == 0
+                ? 0
+                : (int)Math.Ceiling((double)TotalRecords / PageSize);
 
         public bool HasPreviousPage => PageNumber > 1;
 

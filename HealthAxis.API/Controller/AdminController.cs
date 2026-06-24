@@ -1,4 +1,5 @@
 ﻿using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.CommonDtos;
 using HealthAxis.Shared.DTO.DoctorDtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,15 @@ namespace HealthAxis.API.Controller
         public async Task<IActionResult> GetAllDoctors()
         {
             var doctors = await _adminService.GetAllDoctorsAsync();
+
+            return Ok(doctors);
+        }
+
+        [HttpGet("doctors/paged")]
+        public async Task<IActionResult> GetDoctorsPaged(
+    [FromQuery] PaginationQueryDto paginationQuery)
+        {
+            var doctors = await _adminService.GetDoctorsPagedAsync(paginationQuery);
 
             return Ok(doctors);
         }

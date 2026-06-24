@@ -1,6 +1,6 @@
 ﻿using HealthAxis.Shared.DTO.AdminDtos;
+using HealthAxis.Shared.DTO.CommonDtos;
 using HealthAxis.Shared.DTO.DoctorDtos;
-using HealthAxis.Shared.DTO.AdminDtos;
 
 namespace HealthAxis.API.Services.Interfaces
 {
@@ -15,5 +15,6 @@ namespace HealthAxis.API.Services.Interfaces
         Task<DoctorDto> UpdateDoctorAsync(int id, UpdateDoctorDto doctorDto);
 
         Task<List<AdminDto>> GetAppointmentReportsAsync();
+        Task<PagedResponseDto<DoctorDto>> GetDoctorsPagedAsync(PaginationQueryDto paginationQuery);
     }
 }
