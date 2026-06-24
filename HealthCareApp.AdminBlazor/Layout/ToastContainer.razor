@@ -1,0 +1,105 @@
+﻿@namespace HealthCareApp.AdminBlazor.Layout
+
+@using HealthCareApp.AdminBlazor.Services.Interfaces
+@using HealthCareApp.AdminBlazor.Services.Toast
+
+@implements IDisposable
+
+@inject IToastService ToastService
+
+<div class="ha-toast-container">
+    @foreach (var toast in toastMessages)
+    {
+        <div class="@GetToastClass(toast)">
+            <div class="ha-toast-icon">
+                @GetToastIcon(toast.Type)
+            </div>
+
+            <div class="ha-toast-content">
+                <strong>
+                    @toast.Title
+                </strong>
+
+                <span>
+                    @toast.Message
+                </span>
+            </div>
+
+            <button type="button"
+                    class="ha-toast-close"
+                    @onclick="() => RemoveToast(toast)">
+                ×
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly List<ToastMessage> toastMessages = new();
+
+    protected override void OnInitialized()
+    {
+        ToastService.OnShow += ShowToast;
+    }
+
+    private void ShowToast(ToastMessage toastMessage)
+    {
+        toastMessages.Add(toastMessage);
+
+        InvokeAsync(StateHasChanged);
+
+        _ = RemoveToastAfterDelayAsync(toastMessage);
+    }
+
+    private async Task RemoveToastAfterDelayAsync(ToastMessage toastMessage)
+    {
+        await Task.Delay(toastMessage.DurationInMilliseconds);
+
+        RemoveToast(toastMessage);
+    }
+
+    private void RemoveToast(ToastMessage toastMessage)
+    {
+        if (toastMessages.Remove(toastMessage))
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private static string GetToastClass(ToastMessage toastMessage)
+    {
+        return toastMessage.Type switch
+        {
+            ToastType.Success => "ha-toast ha-toast-success",
+
+            ToastType.Error => "ha-toast ha-toast-error",
+
+            ToastType.Warning => "ha-toast ha-toast-warning",
+
+            ToastType.Info => "ha-toast ha-toast-info",
+
+            _ => "ha-toast"
+        };
+    }
+
+    private static string GetToastIcon(ToastType toastType)
+    {
+        return toastType switch
+        {
+            ToastType.Success => "✓",
+
+            ToastType.Error => "!",
+
+            ToastType.Warning => "⚠",
+
+            ToastType.Info => "i",
+
+            _ => "i"
+        };
+    }
+
+    public void Dispose()
+    {
+        ToastService.OnShow -= ShowToast;
+    }
+}

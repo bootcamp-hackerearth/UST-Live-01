@@ -1,6 +1,7 @@
 ﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
 using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
@@ -11,12 +12,12 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
         private const string DoctorsEndpoint = "api/Doctors";
 
         public DoctorAdminService(
-            HttpClient httpClient,
-            IJSRuntime jsRuntime)
-            : base(httpClient, jsRuntime)
+      HttpClient httpClient,
+      IJSRuntime jsRuntime,
+      NavigationManager navigationManager)
+      : base(httpClient, jsRuntime, navigationManager)
         {
         }
-
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
             var query = new DoctorPaginationQueryDto

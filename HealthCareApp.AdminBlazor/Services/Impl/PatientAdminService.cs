@@ -2,6 +2,7 @@
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Dtos.Patients;
 using HealthCareApp.Shared.Enums;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
@@ -11,9 +12,10 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
         private const string PatientsEndpoint = "api/Patients";
 
         public PatientAdminService(
-            HttpClient httpClient,
-            IJSRuntime jsRuntime)
-            : base(httpClient, jsRuntime)
+       HttpClient httpClient,
+       IJSRuntime jsRuntime,
+       NavigationManager navigationManager)
+       : base(httpClient, jsRuntime, navigationManager)
         {
         }
 

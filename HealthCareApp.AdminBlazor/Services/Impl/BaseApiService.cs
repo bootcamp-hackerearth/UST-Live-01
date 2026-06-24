@@ -1,4 +1,5 @@
-﻿using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -10,14 +11,21 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
         private const string TokenStorageKey = "token";
 
         private readonly HttpClient _httpClient;
+
         private readonly IJSRuntime _jsRuntime;
+
+        private readonly NavigationManager _navigationManager;
 
         protected BaseApiService(
             HttpClient httpClient,
-            IJSRuntime jsRuntime)
+            IJSRuntime jsRuntime,
+            NavigationManager navigationManager)
         {
             _httpClient = httpClient;
+
             _jsRuntime = jsRuntime;
+
+            _navigationManager = navigationManager;
         }
 
         protected async Task<TResponse> GetAuthorizedAsync<TResponse>(
@@ -29,7 +37,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 HttpMethod.Get,
                 endpoint);
 
-            EnsureAuthorizedResponse(response, unauthorizedMessage);
+            await EnsureAuthorizedResponseAsync(response, unauthorizedMessage);
 
             response.EnsureSuccessStatusCode();
 
@@ -49,7 +57,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 endpoint,
                 requestData);
 
-            EnsureAuthorizedResponse(response, unauthorizedMessage);
+            await EnsureAuthorizedResponseAsync(response, unauthorizedMessage);
 
             response.EnsureSuccessStatusCode();
 
@@ -69,7 +77,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 endpoint,
                 requestData);
 
-            EnsureAuthorizedResponse(response, unauthorizedMessage);
+            await EnsureAuthorizedResponseAsync(response, unauthorizedMessage);
 
             response.EnsureSuccessStatusCode();
 
@@ -87,7 +95,7 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 HttpMethod.Delete,
                 endpoint);
 
-            EnsureAuthorizedResponse(response, unauthorizedMessage);
+            await EnsureAuthorizedResponseAsync(response, unauthorizedMessage);
 
             response.EnsureSuccessStatusCode();
 
@@ -105,6 +113,8 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
 
             if (string.IsNullOrWhiteSpace(token))
             {
+                await RedirectToLoginAsync();
+
                 throw new UnauthorizedAccessException(
                     "Authentication token was not found. Please login again.");
             }
@@ -129,15 +139,26 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 TokenStorageKey);
         }
 
-        private static void EnsureAuthorizedResponse(
+        private async Task EnsureAuthorizedResponseAsync(
             HttpResponseMessage response,
             string unauthorizedMessage)
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized ||
                 response.StatusCode == HttpStatusCode.Forbidden)
             {
+                await RedirectToLoginAsync();
+
                 throw new UnauthorizedAccessException(unauthorizedMessage);
             }
+        }
+
+        private async Task RedirectToLoginAsync()
+        {
+            await _jsRuntime.InvokeVoidAsync(
+                "localStorage.removeItem",
+                TokenStorageKey);
+
+            _navigationManager.NavigateTo("/login", replace: true);
         }
     }
 }

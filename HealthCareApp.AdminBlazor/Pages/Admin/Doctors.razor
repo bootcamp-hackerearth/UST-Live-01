@@ -9,6 +9,7 @@
 @inject IAuthService AuthService
 @inject IDoctorAdminService DoctorService
 @inject NavigationManager Navigation
+@inject IToastService ToastService
 
 <PageTitle>Doctors | HealthAxis Admin</PageTitle>
 
@@ -217,7 +218,7 @@ else
                                         </button>
 
                                         <button class="@GetToggleButtonClass(doctor.IsActive)"
-                                                @onclick="() => ToggleDoctorStatus(doctor.DoctorId)">
+                                                @onclick="() => ShowStatusConfirmation(doctor.DoctorId, doctor.FullName, doctor.IsActive)">
                                             @(doctor.IsActive ? "Deactivate" : "Activate")
                                         </button>
                                     </div>
@@ -249,12 +250,59 @@ else
             </div>
         }
     </section>
+
+    @if (showStatusConfirmation)
+    {
+        <div class="ha-modal-backdrop">
+            <div class="ha-logout-modal">
+                <div class="ha-logout-icon">
+                    HA
+                </div>
+
+                <h3>
+                    @(selectedDoctorCurrentStatus ? "Deactivate Doctor?" : "Activate Doctor?")
+                </h3>
+
+                <p>
+                    @(selectedDoctorCurrentStatus
+                        ? $"Doctor {selectedDoctorNameForStatusChange} will be marked as inactive and will not be available as an active doctor."
+                        : $"Doctor {selectedDoctorNameForStatusChange} will be marked as active and available again.")
+                </p>
+
+                <div class="ha-logout-actions">
+                    <button class="ha-modal-secondary-btn"
+                            disabled="@isUpdatingDoctorStatus"
+                            @onclick="HideStatusConfirmation">
+                        Cancel
+                    </button>
+
+                    <button class="@ConfirmStatusButtonClass"
+                            disabled="@isUpdatingDoctorStatus"
+                            @onclick="ConfirmDoctorStatusChange">
+                        @(isUpdatingDoctorStatus
+                            ? "Updating..."
+                            : selectedDoctorCurrentStatus ? "Yes, Deactivate" : "Yes, Activate")
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 }
 
 @code {
     private CancellationTokenSource? searchCancellationTokenSource;
 
     private List<DoctorDto> doctors = new();
+
+    private bool showStatusConfirmation;
+
+    private bool isUpdatingDoctorStatus;
+
+    private int selectedDoctorIdForStatusChange;
+
+    private string selectedDoctorNameForStatusChange = string.Empty;
+
+    private bool selectedDoctorCurrentStatus;
 
     private string searchTerm = string.Empty;
 
@@ -302,6 +350,16 @@ else
         }
     }
 
+    private string ConfirmStatusButtonClass
+    {
+        get
+        {
+            return selectedDoctorCurrentStatus
+                ? "ha-modal-danger-btn"
+                : "hc-page-primary-btn";
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsAuthenticatedAsync();
@@ -344,10 +402,18 @@ else
         catch (UnauthorizedAccessException ex)
         {
             errorMessage = ex.Message;
+
+            ToastService.ShowError(
+                "Authorization Error",
+                ex.Message);
         }
         catch (System.Net.Http.HttpRequestException)
         {
             errorMessage = "Unable to load doctors. Please check whether the API is running.";
+
+            ToastService.ShowError(
+                "Unable to Load Doctors",
+                "Please check whether the API is running.");
         }
         finally
         {
@@ -487,26 +553,86 @@ else
         Navigation.NavigateTo($"/admin/doctors/edit/{doctorId}");
     }
 
-    private async Task ToggleDoctorStatus(int doctorId)
+    private void ShowStatusConfirmation(
+        int doctorId,
+        string doctorName,
+        bool currentStatus)
     {
+        selectedDoctorIdForStatusChange = doctorId;
+
+        selectedDoctorNameForStatusChange = doctorName;
+
+        selectedDoctorCurrentStatus = currentStatus;
+
+        showStatusConfirmation = true;
+    }
+
+    private void HideStatusConfirmation()
+    {
+        if (isUpdatingDoctorStatus)
+        {
+            return;
+        }
+
+        showStatusConfirmation = false;
+
+        selectedDoctorIdForStatusChange = 0;
+
+        selectedDoctorNameForStatusChange = string.Empty;
+
+        selectedDoctorCurrentStatus = false;
+    }
+
+    private async Task ConfirmDoctorStatusChange()
+    {
+        if (isUpdatingDoctorStatus)
+        {
+            return;
+        }
+
         try
         {
+            isUpdatingDoctorStatus = true;
+
             errorMessage = null;
 
-            var updatedDoctor = await DoctorService.ToggleDoctorStatusAsync(doctorId);
+            var wasActive = selectedDoctorCurrentStatus;
+
+            var updatedDoctor = await DoctorService.ToggleDoctorStatusAsync(
+                selectedDoctorIdForStatusChange);
 
             if (updatedDoctor is not null)
             {
                 await LoadDoctorsAsync(showFullPageLoader: false);
+
+                ToastService.ShowSuccess(
+                    wasActive ? "Doctor Deactivated" : "Doctor Activated",
+                    wasActive
+                        ? $"{selectedDoctorNameForStatusChange} is now inactive."
+                        : $"{selectedDoctorNameForStatusChange} is now active.");
             }
+
+            showStatusConfirmation = false;
         }
         catch (UnauthorizedAccessException ex)
         {
             errorMessage = ex.Message;
+
+            ToastService.ShowError(
+                "Authorization Error",
+                ex.Message);
         }
         catch (System.Net.Http.HttpRequestException)
         {
             errorMessage = "Unable to update doctor status. Please try again.";
+
+            ToastService.ShowError(
+                "Status Update Failed",
+                "Unable to update doctor status. Please try again.");
+        }
+        finally
+        {
+            isUpdatingDoctorStatus = false;
         }
     }
 

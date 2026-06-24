@@ -1,6 +1,7 @@
-﻿using HealthCareApp.AdminBlazor.Services.Interfaces;
-using HealthCareApp.Shared.Dtos.Dashboard;
+﻿using HealthCareApp.Shared.Dtos.Dashboard;
 using Microsoft.JSInterop;
+using Microsoft.AspNetCore.Components;
+using HealthCareApp.AdminBlazor.Services.Interfaces;
 
 namespace HealthCareApp.AdminBlazor.Services.Impl
 {
@@ -9,9 +10,10 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
         private const string DashboardEndpoint = "api/Admin/dashboard";
 
         public AdminDashboardService(
-            HttpClient httpClient,
-            IJSRuntime jsRuntime)
-            : base(httpClient, jsRuntime)
+      HttpClient httpClient,
+      IJSRuntime jsRuntime,
+      NavigationManager navigationManager)
+      : base(httpClient, jsRuntime, navigationManager)
         {
         }
 

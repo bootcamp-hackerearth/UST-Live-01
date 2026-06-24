@@ -3,6 +3,7 @@
 
 @using HealthCareApp.Shared.Dtos.Auth
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 
@@ -13,15 +14,25 @@
     {
         <div class="hc-login-overlay">
             <div class="hc-login-overlay-card">
-                <div class="hc-login-overlay-logo">HA</div>
-                <h3>Verifying admin access</h3>
-                <p>Preparing your HealthAxis workspace...</p>
+                <div class="hc-login-overlay-logo">
+                    HA
+                </div>
+
+                <h3>
+                    Verifying admin access
+                </h3>
+
+                <p>
+                    Preparing your HealthAxis workspace...
+                </p>
+
                 <div class="hc-login-overlay-bar">
                     <span></span>
                 </div>
             </div>
         </div>
     }
+
     <section class="hc-login-hero">
         <div class="hc-brand-badge">
             HealthAxis Admin Portal
@@ -36,20 +47,50 @@
             appointments, and health records from one modern HealthAxis dashboard.
         </p>
 
+        <div class="ha-login-ecg-card">
+            <svg class="ha-login-ecg-svg"
+                 viewBox="0 0 520 120"
+                 preserveAspectRatio="none">
+
+                <path class="ha-login-ecg-shadow"
+                      d="M0 65 L70 65 L88 65 L102 45 L118 88 L138 65 L190 65 L212 65 L232 25 L258 98 L282 65 L330 65 L350 65 L365 50 L382 78 L398 65 L455 65 L474 35 L495 92 L520 65" />
+
+                <path class="ha-login-ecg-line"
+                      d="M0 65 L70 65 L88 65 L102 45 L118 88 L138 65 L190 65 L212 65 L232 25 L258 98 L282 65 L330 65 L350 65 L365 50 L382 78 L398 65 L455 65 L474 35 L495 92 L520 65" />
+            </svg>
+
+            <div class="ha-login-ecg-pulse"></div>
+        </div>
+
         <div class="hc-hero-stats">
             <div class="hc-stat-card">
-                <div class="hc-stat-number">Admin</div>
-                <div class="hc-stat-label">Access only</div>
+                <div class="hc-stat-number">
+                    Admin
+                </div>
+
+                <div class="hc-stat-label">
+                    Access only
+                </div>
             </div>
 
             <div class="hc-stat-card">
-                <div class="hc-stat-number">4</div>
-                <div class="hc-stat-label">Core modules</div>
+                <div class="hc-stat-number">
+                    4
+                </div>
+
+                <div class="hc-stat-label">
+                    Core modules
+                </div>
             </div>
 
             <div class="hc-stat-card">
-                <div class="hc-stat-number">JWT</div>
-                <div class="hc-stat-label">Secured access</div>
+                <div class="hc-stat-number">
+                    JWT
+                </div>
+
+                <div class="hc-stat-label">
+                    Secured access
+                </div>
             </div>
         </div>
     </section>
@@ -57,7 +98,10 @@
     <section class="hc-login-panel">
         <div class="hc-login-card">
             <div class="hc-login-card-header">
-                <h2 class="hc-login-card-title">Welcome back</h2>
+                <h2 class="hc-login-card-title">
+                    Welcome back
+                </h2>
+
                 <p class="hc-login-card-subtitle">
                     Sign in as Admin to continue to the HealthAxis management dashboard.
                 </p>
@@ -74,21 +118,29 @@
                 <DataAnnotationsValidator />
 
                 <div class="hc-form-group">
-                    <label class="hc-form-label">Email address</label>
+                    <label class="hc-form-label">
+                        Email address
+                    </label>
+
                     <InputText class="hc-form-control"
                                placeholder="Enter your email"
                                disabled="@isSigningIn"
                                @bind-Value="loginModel.Email" />
+
                     <ValidationMessage For="@(() => loginModel.Email)" />
                 </div>
 
                 <div class="hc-form-group">
-                    <label class="hc-form-label">Password</label>
+                    <label class="hc-form-label">
+                        Password
+                    </label>
+
                     <InputText class="hc-form-control"
                                type="password"
                                placeholder="Enter admin password"
                                disabled="@isSigningIn"
                                @bind-Value="loginModel.Password" />
+
                     <ValidationMessage For="@(() => loginModel.Password)" />
                 </div>
 
@@ -98,7 +150,9 @@
                         Remember me
                     </label>
 
-                    <span>Admin access only</span>
+                    <span>
+                        Admin access only
+                    </span>
                 </div>
 
                 <button type="submit"
@@ -130,6 +184,7 @@
         try
         {
             isSigningIn = true;
+
             errorMessage = null;
 
             var response = await AuthService.LoginAsync(loginModel);
@@ -137,11 +192,11 @@
             if (string.IsNullOrWhiteSpace(response.AccessToken))
             {
                 errorMessage = response.Message;
+
                 return;
             }
 
             await Task.Delay(650);
-
 
             Navigation.NavigateTo("/admin/dashboard");
         }
