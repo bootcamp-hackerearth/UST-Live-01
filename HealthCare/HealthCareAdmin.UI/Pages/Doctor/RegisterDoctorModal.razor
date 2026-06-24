@@ -44,7 +44,17 @@
                     {
                         <div class="mb-2">
                             <label>Email</label>
-                            <InputText class="form-control" @bind-Value="registerDoctor.Email" />
+                            <InputText class="form-control" @bind-Value="registerDoctor.Email" @oninput="() => emailError = null" />
+
+                            <ValidationMessage For="@(() => registerDoctor.Email)" />
+
+                            
+                            @if (!string.IsNullOrEmpty(emailError))
+                            {
+                                <div class="text-danger">@emailError</div>
+                            }
+
+
                         </div>
                     }
 
@@ -152,6 +162,7 @@
     [Parameter] public EventCallback OnSaved { get; set; }
     [Parameter] public int? DoctorId { get; set; }
 
+    private string emailError;
     private bool isEditMode => DoctorId.HasValue;
 
     // ✅ REGISTER MODEL
@@ -203,7 +214,24 @@
                 return;
             }
 
-            await DoctorService.RegisterDoctor(registerDoctor);
+            
+           
+            var error = await DoctorService.RegisterDoctor(registerDoctor);
+
+            if (error != null)
+            {
+                if (error.Contains("Email already exists"))
+                {
+                    emailError = error;
+                }
+                else
+                {
+                    await JS.InvokeVoidAsync("alert", error);
+                }
+                return;
+            }
+
+
         }
 
         await ShowSuccessPopup();

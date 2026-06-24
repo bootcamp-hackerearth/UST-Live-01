@@ -53,20 +53,23 @@ public class DoctorService
     }
 
 
-    public async Task<bool> RegisterDoctor(DoctorRegisterDto dto)
+
+    public async Task<string?> RegisterDoctor(DoctorRegisterDto dto)
     {
         var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-        if (string.IsNullOrEmpty(token))
-            throw new Exception("User not authenticated");
 
         _http.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
 
         var response = await _http.PostAsJsonAsync("api/auth/register-doctor", dto);
 
-        return response.IsSuccessStatusCode;
+        if (response.IsSuccessStatusCode)
+            return null;
+
+        // ✅ get error message from backend
+        return await response.Content.ReadAsStringAsync();
     }
+
 
 
     public async Task UpdateDoctor(int id, UpdateDoctorDto dto)

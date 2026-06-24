@@ -41,10 +41,17 @@ namespace HealthCare.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _authService.RegisterDoctorAsync(dto);
-
-            return Ok(new { message = "Doctor created successfully" });
+            try
+            {
+                await _authService.RegisterDoctorAsync(dto);
+                return Ok(new { message = "Doctor created successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
 
         //  LOGIN (PATIENT / DOCTOR / ADMIN)
         [AllowAnonymous]
