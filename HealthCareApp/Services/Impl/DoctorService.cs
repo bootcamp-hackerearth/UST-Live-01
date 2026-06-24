@@ -321,6 +321,16 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException("Doctor full name is required.");
             }
 
+            string trimmedFullName = fullName.Trim();
+
+            if (!System.Text.RegularExpressions.Regex.IsMatch(
+                    trimmedFullName,
+                    @"^[A-Za-z]+(?: [A-Za-z]+)*$"))
+            {
+                throw new BusinessRuleException(
+                    "Doctor name can contain only letters and single spaces between words.");
+            }
+
             if (email is not null && string.IsNullOrWhiteSpace(email))
             {
                 throw new BusinessRuleException("Doctor email is required.");
@@ -331,9 +341,9 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException("Practice start date cannot be in the future.");
             }
 
-            if (consultationFee < 0)
+            if (consultationFee < 1 || consultationFee > 100000)
             {
-                throw new BusinessRuleException("Consultation fee cannot be negative.");
+                throw new BusinessRuleException("Consultation fee must be between 1 and 100,000.");
             }
         }
 

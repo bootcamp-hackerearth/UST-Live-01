@@ -1,18 +1,20 @@
 ﻿@page "/admin/appointments/details/{appointmentId:int}"
 @layout AdminLayout
 
-@using HealthCareApp.Shared.Dtos.Appointments;
-@using HealthCareApp.Shared.Enums;
+@using HealthCareApp.Shared.Dtos.Appointments
+@using HealthCareApp.Shared.Enums
 @using HealthCareApp.AdminBlazor.Services.Interfaces
+
 @inject IAuthService AuthService
 @inject IAppointmentAdminService AppointmentService
 @inject NavigationManager Navigation
 
-<PageTitle>Appointment Details | HealthCareApp Admin</PageTitle>
+<PageTitle>Appointment Details | HealthAxis Admin</PageTitle>
 
 <div class="hc-page-heading">
     <div>
         <h1>Appointment Details</h1>
+
         <p>Review appointment schedule, patient, doctor, status, and cancellation information.</p>
     </div>
 
@@ -26,6 +28,7 @@
     <div class="hc-page-loading">
         <div class="hc-loading-card">
             <div class="hc-loading-spinner"></div>
+
             <p>Loading appointment details...</p>
         </div>
     </div>
@@ -50,6 +53,7 @@ else if (appointment is not null)
 
             <div>
                 <h2>Appointment #@appointment.AppointmentId</h2>
+
                 <p>@appointment.PatientName with @appointment.DoctorName</p>
 
                 <div class="hc-details-badge-row">
@@ -59,15 +63,21 @@ else if (appointment is not null)
 
                     @if (scheduledDate.Date == DateTime.Today)
                     {
-                        <span class="hc-status-badge confirmed">Today</span>
+                        <span class="hc-status-badge confirmed">
+                            Today
+                        </span>
                     }
                     else if (scheduledDate.Date > DateTime.Today)
                     {
-                        <span class="hc-status-badge pending">Upcoming</span>
+                        <span class="hc-status-badge pending">
+                            Upcoming
+                        </span>
                     }
                     else
                     {
-                        <span class="hc-status-badge completed">Past</span>
+                        <span class="hc-status-badge completed">
+                            Past
+                        </span>
                     }
                 </div>
             </div>
@@ -76,41 +86,49 @@ else if (appointment is not null)
         <div class="hc-details-grid">
             <div class="hc-details-card">
                 <span>Appointment ID</span>
+
                 <strong>@appointment.AppointmentId</strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Patient</span>
+
                 <strong>@appointment.PatientName</strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Patient ID</span>
+
                 <strong>@appointment.PatientId</strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Doctor</span>
+
                 <strong>@appointment.DoctorName</strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Doctor ID</span>
+
                 <strong>@appointment.DoctorId</strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Scheduled Date</span>
-                <strong>@scheduledDate.ToString("dd MMM yyyy")</strong>
+
+                <strong>@FormatDate(scheduledDate)</strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Time Slot</span>
+
                 <strong>@appointment.TimeSlot</strong>
             </div>
 
             <div class="hc-details-card">
                 <span>Status</span>
+
                 <strong>@appointment.Status</strong>
             </div>
         </div>
@@ -119,6 +137,7 @@ else if (appointment is not null)
         {
             <div class="hc-details-note">
                 <span>Cancellation Reason</span>
+
                 <p>
                     @(string.IsNullOrWhiteSpace(appointment.CancellationReason)
                         ? "No cancellation reason provided."
@@ -128,10 +147,6 @@ else if (appointment is not null)
         }
 
         <div class="hc-details-actions">
-            <button class="hc-page-primary-btn" @onclick="EditAppointment">
-                Edit Appointment
-            </button>
-
             <button class="hc-secondary-btn" @onclick="BackToAppointments">
                 Back
             </button>
@@ -158,6 +173,7 @@ else if (appointment is not null)
         if (!isAuthenticated)
         {
             Navigation.NavigateTo("/login");
+
             return;
         }
 
@@ -166,29 +182,38 @@ else if (appointment is not null)
 
     private async Task LoadAppointment()
     {
-        isLoading = true;
-        errorMessage = null;
-
-        appointment = await AppointmentService.GetAppointmentByIdAsync(appointmentId);
-
-        if (appointment is null)
+        try
         {
-            errorMessage = "Appointment was not found.";
+            isLoading = true;
+
+            errorMessage = null;
+
+            appointment = await AppointmentService.GetAppointmentByIdAsync(appointmentId);
+
+            if (appointment is null)
+            {
+                errorMessage = "Appointment was not found.";
+
+                return;
+            }
+
+            if (!DateTime.TryParse(appointment.ScheduledDate, out scheduledDate))
+            {
+                scheduledDate = DateTime.MinValue;
+            }
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+        }
+        catch (HttpRequestException)
+        {
+            errorMessage = "Unable to load appointment details. Please check whether the API is running.";
+        }
+        finally
+        {
             isLoading = false;
-            return;
         }
-
-        if (!DateTime.TryParse(appointment.ScheduledDate, out scheduledDate))
-        {
-            scheduledDate = DateTime.MinValue;
-        }
-
-        isLoading = false;
-    }
-
-    private void EditAppointment()
-    {
-        Navigation.NavigateTo($"/admin/appointments/edit/{appointmentId}");
     }
 
     private void BackToAppointments()
@@ -196,15 +221,34 @@ else if (appointment is not null)
         Navigation.NavigateTo("/admin/appointments");
     }
 
-    private string GetStatusBadgeClass(AppointmentStatus status)
+    private static string FormatDate(DateTime date)
+    {
+        if (date == DateTime.MinValue)
+        {
+            return "Not Available";
+        }
+
+        return date.ToString("dd MMM yyyy");
+    }
+
+    private static string GetStatusBadgeClass(AppointmentStatus status)
     {
         return status switch
         {
-            AppointmentStatus.Pending => "hc-status-badge pending",
-            AppointmentStatus.Confirmed => "hc-status-badge confirmed",
-            AppointmentStatus.Completed => "hc-status-badge completed",
-            AppointmentStatus.Cancelled => "hc-status-badge cancelled",
-            _ => "hc-status-badge"
+            AppointmentStatus.Pending =>
+                "hc-status-badge pending",
+
+            AppointmentStatus.Confirmed =>
+                "hc-status-badge confirmed",
+
+            AppointmentStatus.Completed =>
+                "hc-status-badge completed",
+
+            AppointmentStatus.Cancelled =>
+                "hc-status-badge cancelled",
+
+            _ =>
+                "hc-status-badge"
         };
     }
 }

@@ -1,4 +1,13 @@
-﻿<aside class="@SidebarClass">
+﻿@if (isSidebarOpen)
+{
+    <div class="ha-sidebar-click-overlay"
+         @onclick="CloseSidebar">
+    </div>
+}
+
+
+
+<aside class="@SidebarClass">
     <div class="ha-sidebar-brand">
         <div class="ha-sidebar-logo">
             HA
@@ -83,4 +92,10 @@
     {
         isSidebarOpen = !isSidebarOpen;
     }
+
+    private void CloseSidebar()
+    {
+        isSidebarOpen = false;
+    }
 }
+
