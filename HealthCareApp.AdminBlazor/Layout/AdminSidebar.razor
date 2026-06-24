@@ -1,14 +1,7 @@
 ﻿<aside class="@SidebarClass">
-    <button type="button"
-            class="ha-sidebar-menu-button"
-            @onclick="ToggleSidebar"
-            title="Toggle sidebar">
-        ☰
-    </button>
-
     <div class="ha-sidebar-brand">
         <div class="ha-sidebar-logo">
-            HC
+            HA
         </div>
 
         <div class="ha-sidebar-text">
@@ -21,6 +14,13 @@
             </div>
         </div>
     </div>
+
+    <button type="button"
+            class="ha-sidebar-menu-button"
+            @onclick="ToggleSidebar"
+            title="Toggle sidebar">
+        ☰
+    </button>
 
     <nav class="ha-sidebar-nav">
         <NavLink href="/admin/dashboard"
@@ -40,14 +40,14 @@
 
         <NavLink href="/admin/patients"
                  class="ha-sidebar-link">
-            <span class="ha-sidebar-icon">◉</span>
+            <span class="ha-sidebar-icon">♙</span>
 
             <span class="ha-sidebar-label">Patients</span>
         </NavLink>
 
         <NavLink href="/admin/appointments"
                  class="ha-sidebar-link">
-            <span class="ha-sidebar-icon">◷</span>
+            <span class="ha-sidebar-icon">📅</span>
 
             <span class="ha-sidebar-label">Appointments</span>
         </NavLink>

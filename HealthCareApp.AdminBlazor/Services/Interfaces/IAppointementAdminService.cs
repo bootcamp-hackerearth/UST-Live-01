@@ -9,6 +9,8 @@ namespace HealthCareApp.AdminBlazor.Services.Interfaces
 
         Task<PagedResponse<AppointmentDto>> GetAppointmentsPagedAsync(AppointmentPaginationQueryDto query);
 
+        Task<AppointmentFilterOptionsDto> GetAppointmentFilterOptionsAsync();
+
         Task<AppointmentDto?> GetAppointmentByIdAsync(int appointmentId);
 
         Task<AppointmentDto> CreateAppointmentAsync(BookAppointmentDto request);

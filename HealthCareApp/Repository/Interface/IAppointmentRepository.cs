@@ -5,6 +5,8 @@ namespace HealthCareApp.Repository.Interface
 {
     public interface IAppointmentRepository : IRepository<Appointment>
     {
+        Task<List<Appointment>> GetAppointmentsForFilterOptionsAsync(CancellationToken ct = default);
+
         Task<List<Appointment>> GetByPatientIdAsync(int patientId, CancellationToken ct = default);
 
         Task<List<Appointment>> GetByDoctorIdAsync(int doctorId, CancellationToken ct = default);
@@ -34,5 +36,6 @@ namespace HealthCareApp.Repository.Interface
         Task<bool> PatientHasActiveAppointmentWithDoctorOnDateAsync(int patientId, int doctorId, DateTime date, CancellationToken ct = default);
 
         Task<bool> PatientHasActiveAppointmentOnDateAndSlotAsync(int patientId, DateTime date, string timeSlot, CancellationToken ct = default);
+
     }
 }

@@ -21,6 +21,47 @@ namespace HealthCareApp.Services.Impl
         private const string AppointmentEntityName = "Appointment";
         private const string AppointmentDetailsRequiredMessage = "Appointment details are required.";
         private const string CancellationDetailsRequiredMessage = "Cancellation details are required.";
+
+        public async Task<AppointmentFilterOptionsDto> GetAppointmentFilterOptionsAsync()
+        {
+            var appointments = await appointmentRepository.GetAppointmentsForFilterOptionsAsync();
+
+            var patients = appointments
+                .Where(appointment => appointment.Patient is not null)
+                .GroupBy(appointment => new
+                {
+                    appointment.PatientId,
+                    PatientName = appointment.Patient!.PatientName
+                })
+                .Select(group => new AppointmentFilterPersonDto
+                {
+                    Id = group.Key.PatientId,
+                    Name = group.Key.PatientName
+                })
+                .OrderBy(patient => patient.Name)
+                .ToList();
+
+            var doctors = appointments
+                .Where(appointment => appointment.Doctor is not null)
+                .GroupBy(appointment => new
+                {
+                    appointment.DoctorId,
+                    DoctorName = appointment.Doctor!.DoctorName
+                })
+                .Select(group => new AppointmentFilterPersonDto
+                {
+                    Id = group.Key.DoctorId,
+                    Name = group.Key.DoctorName
+                })
+                .OrderBy(doctor => doctor.Name)
+                .ToList();
+
+            return new AppointmentFilterOptionsDto
+            {
+                Patients = patients,
+                Doctors = doctors
+            };
+        }
         public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
         {
             var appointments = await appointmentRepository.GetAllAsync();

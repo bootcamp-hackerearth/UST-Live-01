@@ -14,6 +14,15 @@ namespace HealthCareApp.Repository.Impl
         {
             _context = context;
         }
+        public async Task<List<Appointment>> GetAppointmentsForFilterOptionsAsync(CancellationToken ct = default)
+        {
+            return await _context.Appointments
+                .AsNoTracking()
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Where(a => a.Patient != null && a.Doctor != null)
+                .ToListAsync(ct);
+        }
 
         public new async Task<List<Appointment>> GetAllAsync(CancellationToken ct = default)
         {

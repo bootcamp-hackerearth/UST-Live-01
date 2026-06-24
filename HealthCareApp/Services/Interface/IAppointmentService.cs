@@ -7,6 +7,7 @@ namespace HealthCareApp.Services
 {
     public interface IAppointmentService
     {
+        Task<AppointmentFilterOptionsDto> GetAppointmentFilterOptionsAsync();
         Task<List<AppointmentDto>> GetAllAppointmentsAsync();
 
         Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId);

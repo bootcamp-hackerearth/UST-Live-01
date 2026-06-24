@@ -34,22 +34,19 @@ else
         <div>
             <h1>Appointments</h1>
 
-            <p>View, create, and filter HealthAxis appointment schedules.</p>
+            <p>View,filter HealthAxis appointment schedules.</p>
         </div>
 
-        <button class="hc-page-primary-btn" @onclick="GoToAddAppointment">
-            + Create Appointment
-        </button>
     </div>
 
     <div class="hc-doctor-stat-grid ha-management-stat-grid">
         <div class="hc-doctor-stat-card blue ha-management-stat-card">
             <div class="ha-stat-card-content">
-                <span>Total Matching Appointments</span>
+                <span>@PrimaryCardTitle</span>
 
-                <strong>@totalRecords</strong>
+                <strong>@PrimaryCardCount</strong>
 
-                <small>Appointment records matching current filters</small>
+                <small>@PrimaryCardText</small>
             </div>
 
             <div class="ha-stat-card-icon">◷</div>
@@ -61,7 +58,7 @@ else
 
                 <strong>@TodayAppointmentsOnPage</strong>
 
-                <small>Scheduled today in current page</small>
+                <small>Scheduled today in current appointment page</small>
             </div>
 
             <div class="ha-stat-card-icon">▣</div>
@@ -73,7 +70,7 @@ else
 
                 <strong>@UpcomingAppointmentsOnPage</strong>
 
-                <small>Future appointments in current page</small>
+                <small>Future appointments in current appointment page</small>
             </div>
 
             <div class="ha-stat-card-icon">→</div>
@@ -85,7 +82,7 @@ else
 
                 <strong>@currentPage / @totalPages</strong>
 
-                <small>Backend paginated result</small>
+                <small>Backend paginated appointment result</small>
             </div>
 
             <div class="ha-stat-card-icon">!</div>
@@ -97,11 +94,11 @@ else
             <div>
                 <h3>Appointment Directory</h3>
 
-                <p>Search, filter, and review patient-doctor appointment activity.</p>
+                <p>@DirectoryDescription</p>
             </div>
 
             <span class="ha-result-count">
-                Showing @StartRecord to @EndRecord of @totalRecords
+                @ResultSummary
             </span>
         </div>
 
@@ -109,7 +106,7 @@ else
             <div class="hc-search-box">
                 <span>⌕</span>
 
-                <input placeholder="Search by patient, doctor, time slot, or cancellation reason..."
+                <input placeholder="@SearchPlaceholder"
                        value="@searchTerm"
                        @oninput="OnSearchChanged" />
             </div>
@@ -131,6 +128,16 @@ else
 
                 <option value="cancelled">Cancelled</option>
             </select>
+
+            <select class="hc-filter-select"
+                    value="@selectedFilterType"
+                    @onchange="OnFilterTypeChanged">
+                <option value="all">Roles</option>
+
+                <option value="doctors">Doctors</option>
+
+                <option value="patients">Patients</option>
+            </select>
         </div>
 
         <div class="hc-form-actions" style="margin-top: 0; margin-bottom: 20px;">
@@ -151,127 +158,204 @@ else
                     @onclick="ClearFilters">
                 Clear Filters
             </button>
+
+            @if (IsViewingPersonAppointments)
+            {
+                <button type="button"
+                        class="hc-secondary-btn"
+                        @onclick="BackToPeopleList">
+                    @BackButtonText
+                </button>
+            }
         </div>
 
-        @if (!appointments.Any())
+        @if (IsShowingPeopleList)
         {
-            <div class="hc-empty-state ha-empty-state">
-                <div class="hc-empty-icon">◷</div>
+            @if (!FilteredPeople.Any())
+            {
+                <div class="hc-empty-state ha-empty-state">
+                    <div class="hc-empty-icon">◉</div>
 
-                <h3>No appointment records found</h3>
+                    <h3>No records found</h3>
 
-                <p>Try adjusting search text or status filters.</p>
-            </div>
+                    <p>Try changing the search text or filter type.</p>
+                </div>
+            }
+            else
+            {
+                <div class="hc-table-wrapper">
+                    <table class="hc-admin-table ha-management-table">
+                        <thead>
+                            <tr>
+                                <th>@PeopleColumnTitle</th>
+
+                                <th>ID</th>
+
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var person in FilteredPeople)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="hc-doctor-cell">
+                                            <div class="hc-patient-avatar ha-appointment-avatar">
+                                                @GetInitials(person.Name)
+                                            </div>
+
+                                            <div>
+                                                <strong>@person.Name</strong>
+
+                                                <span>@PeopleIdLabel: @person.Id</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-table-strong-text">
+                                            @person.Id
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="hc-table-actions">
+                                            <button class="hc-action-btn view"
+                                                    @onclick="() => ViewPersonAppointments(person.Id)">
+                                                View
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
         }
         else
         {
-            <div class="hc-table-wrapper">
-                <table class="hc-admin-table ha-management-table">
-                    <thead>
-                        <tr>
-                            <th>Appointment</th>
+            @if (!appointments.Any())
+            {
+                <div class="hc-empty-state ha-empty-state">
+                    <div class="hc-empty-icon">◷</div>
 
-                            <th>Patient</th>
+                    <h3>No appointment records found</h3>
 
-                            <th>Doctor</th>
-
-                            <th>Date</th>
-
-                            <th>Time Slot</th>
-
-                            <th>Status</th>
-
-                            <th class="text-end">Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (var appointment in appointments)
-                        {
-                            var scheduledDate = ParseDate(appointment.ScheduledDate);
-
+                    <p>Try adjusting search text, status, or filter type.</p>
+                </div>
+            }
+            else
+            {
+                <div class="hc-table-wrapper">
+                    <table class="hc-admin-table ha-management-table">
+                        <thead>
                             <tr>
-                                <td>
-                                    <div class="ha-appointment-id-card">
-                                        <strong>#@appointment.AppointmentId</strong>
+                                <th>Appointment</th>
 
-                                        <span>Appointment record</span>
-                                    </div>
-                                </td>
+                                <th>Patient</th>
 
-                                <td>
-                                    <div class="hc-doctor-cell">
-                                        <div class="hc-patient-avatar ha-appointment-avatar">
-                                            @GetInitials(appointment.PatientName)
-                                        </div>
+                                <th>Doctor</th>
 
-                                        <div>
-                                            <strong>@appointment.PatientName</strong>
+                                <th>Date</th>
 
-                                            <span>Patient ID: @appointment.PatientId</span>
-                                        </div>
-                                    </div>
-                                </td>
+                                <th>Time Slot</th>
 
-                                <td>
-                                    <div class="ha-doctor-reference">
-                                        <strong>@appointment.DoctorName</strong>
+                                <th>Status</th>
 
-                                        <span>Doctor ID: @appointment.DoctorId</span>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <span class="ha-table-strong-text">
-                                        @FormatDate(scheduledDate)
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span class="ha-time-pill">
-                                        @appointment.TimeSlot
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span class="@GetStatusBadgeClass(appointment.Status)">
-                                        @appointment.Status
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="hc-table-actions">
-                                        <button class="hc-action-btn view"
-                                                @onclick="() => GoToAppointmentDetails(appointment.AppointmentId)">
-                                            View
-                                        </button>
-                                    </div>
-                                </td>
+                                <th class="text-end">Actions</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
 
-            <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
-                <button type="button"
-                        class="hc-secondary-btn"
-                        disabled="@(currentPage <= 1)"
-                        @onclick="PreviousPage">
-                    Previous
-                </button>
+                        <tbody>
+                            @foreach (var appointment in appointments)
+                            {
+                                var scheduledDate = ParseDate(appointment.ScheduledDate);
 
-                <div style="font-weight: 900; color: #334155;">
-                    Page @currentPage of @totalPages
+                                <tr>
+                                    <td>
+                                        <div class="ha-appointment-id-card">
+                                            <strong>#@appointment.AppointmentId</strong>
+
+                                            <span>Appointment record</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="hc-doctor-cell">
+                                            <div class="hc-patient-avatar ha-appointment-avatar">
+                                                @GetInitials(appointment.PatientName)
+                                            </div>
+
+                                            <div>
+                                                <strong>@appointment.PatientName</strong>
+
+                                                <span>Patient ID: @appointment.PatientId</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <div class="ha-doctor-reference">
+                                            <strong>@appointment.DoctorName</strong>
+
+                                            <span>Doctor ID: @appointment.DoctorId</span>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-table-strong-text">
+                                            @FormatDate(scheduledDate)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="ha-time-pill">
+                                            @appointment.TimeSlot
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="@GetStatusBadgeClass(appointment.Status)">
+                                            @appointment.Status
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div class="hc-table-actions">
+                                            <button class="hc-action-btn view"
+                                                    @onclick="() => GoToAppointmentDetails(appointment.AppointmentId)">
+                                                View
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
 
-                <button type="button"
-                        class="hc-secondary-btn"
-                        disabled="@(currentPage >= totalPages)"
-                        @onclick="NextPage">
-                    Next
-                </button>
-            </div>
+                <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage <= 1)"
+                            @onclick="PreviousPage">
+                        Previous
+                    </button>
+
+                    <div style="font-weight: 900; color: #334155;">
+                        Page @currentPage of @totalPages
+                    </div>
+
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage >= totalPages)"
+                            @onclick="NextPage">
+                        Next
+                    </button>
+                </div>
+            }
         }
     </section>
 }
@@ -293,11 +377,23 @@ else
 
     private const string CancelledFilter = "cancelled";
 
+    private const string FilterTypeAll = "all";
+
+    private const string FilterTypePatients = "patients";
+
+    private const string FilterTypeDoctors = "doctors";
+
     private List<AppointmentDto> appointments = new();
 
     private string searchTerm = string.Empty;
 
     private string selectedStatusFilter = AllStatusFilter;
+
+    private string selectedFilterType = FilterTypeAll;
+
+    private int? selectedFilterPersonId;
+
+    private AppointmentFilterOptionsDto filterOptions = new();
 
     private int currentPage = 1;
 
@@ -310,6 +406,24 @@ else
     private bool isLoading = true;
 
     private string? errorMessage;
+
+    private bool IsShowingPeopleList
+    {
+        get
+        {
+            return selectedFilterType != FilterTypeAll &&
+                   selectedFilterPersonId is null;
+        }
+    }
+
+    private bool IsViewingPersonAppointments
+    {
+        get
+        {
+            return selectedFilterType != FilterTypeAll &&
+                   selectedFilterPersonId is not null;
+        }
+    }
 
     private int TodayAppointmentsOnPage
     {
@@ -355,6 +469,174 @@ else
         }
     }
 
+    private List<AppointmentFilterPersonDto> CurrentPeople
+    {
+        get
+        {
+            if (selectedFilterType == FilterTypeDoctors)
+            {
+                return filterOptions.Doctors;
+            }
+
+            if (selectedFilterType == FilterTypePatients)
+            {
+                return filterOptions.Patients;
+            }
+
+            return new List<AppointmentFilterPersonDto>();
+        }
+    }
+
+    private IEnumerable<AppointmentFilterPersonDto> FilteredPeople
+    {
+        get
+        {
+            var people = CurrentPeople.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                people = people.Where(person =>
+                    person.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    person.Id.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return people.OrderBy(person => person.Name);
+        }
+    }
+
+    private string PrimaryCardTitle
+    {
+        get
+        {
+            if (IsShowingPeopleList && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Doctors With Appointments";
+            }
+
+            if (IsShowingPeopleList && selectedFilterType == FilterTypePatients)
+            {
+                return "Patients With Appointments";
+            }
+
+            return "Total Matching Appointments";
+        }
+    }
+
+    private int PrimaryCardCount
+    {
+        get
+        {
+            if (IsShowingPeopleList)
+            {
+                return FilteredPeople.Count();
+            }
+
+            return totalRecords;
+        }
+    }
+
+    private string PrimaryCardText
+    {
+        get
+        {
+            if (IsShowingPeopleList)
+            {
+                return "Records available for appointment filtering";
+            }
+
+            return "Appointment records matching current filters";
+        }
+    }
+
+    private string DirectoryDescription
+    {
+        get
+        {
+            if (IsShowingPeopleList && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Select a doctor to view that doctor's appointment records.";
+            }
+
+            if (IsShowingPeopleList && selectedFilterType == FilterTypePatients)
+            {
+                return "Select a patient to view that patient's appointment records.";
+            }
+
+            if (IsViewingPersonAppointments && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Showing appointments for the selected doctor.";
+            }
+
+            if (IsViewingPersonAppointments && selectedFilterType == FilterTypePatients)
+            {
+                return "Showing appointments for the selected patient.";
+            }
+
+            return "Search, filter, and review patient-doctor appointment activity.";
+        }
+    }
+
+    private string ResultSummary
+    {
+        get
+        {
+            if (IsShowingPeopleList)
+            {
+                return $"Showing {FilteredPeople.Count()} of {CurrentPeople.Count}";
+            }
+
+            return $"Showing {StartRecord} to {EndRecord} of {totalRecords}";
+        }
+    }
+
+    private string SearchPlaceholder
+    {
+        get
+        {
+            if (IsShowingPeopleList && selectedFilterType == FilterTypeDoctors)
+            {
+                return "Search doctor by name or ID...";
+            }
+
+            if (IsShowingPeopleList && selectedFilterType == FilterTypePatients)
+            {
+                return "Search patient by name or ID...";
+            }
+
+            return "Search by patient, doctor, Date, time slot, or cancellation reason...";
+        }
+    }
+
+    private string PeopleColumnTitle
+    {
+        get
+        {
+            return selectedFilterType == FilterTypeDoctors
+                ? "Doctor"
+                : "Patient";
+        }
+    }
+
+    private string PeopleIdLabel
+    {
+        get
+        {
+            return selectedFilterType == FilterTypeDoctors
+                ? "Doctor ID"
+                : "Patient ID";
+        }
+    }
+
+    private string BackButtonText
+    {
+        get
+        {
+            return selectedFilterType == FilterTypeDoctors
+                ? "Back to Doctors"
+                : "Back to Patients";
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsAuthenticatedAsync();
@@ -366,7 +648,29 @@ else
             return;
         }
 
+        await LoadAppointmentFilterOptionsAsync();
+
         await LoadAppointmentsAsync();
+    }
+
+    private async Task LoadAppointmentFilterOptionsAsync()
+    {
+        try
+        {
+            filterOptions = await AppointmentService.GetAppointmentFilterOptionsAsync();
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            errorMessage = ex.Message;
+
+            filterOptions = new AppointmentFilterOptionsDto();
+        }
+        catch (System.Net.Http.HttpRequestException)
+        {
+            errorMessage = "Unable to load appointment filter options. Please check whether the API is running.";
+
+            filterOptions = new AppointmentFilterOptionsDto();
+        }
     }
 
     private async Task LoadAppointmentsAsync(bool showFullPageLoader = true)
@@ -417,13 +721,15 @@ else
 
     private AppointmentPaginationQueryDto BuildAppointmentQuery()
     {
+        DateTime? searchDate = TryParseSearchDate(searchTerm);
+
         var query = new AppointmentPaginationQueryDto
         {
             PageNumber = currentPage,
 
             PageSize = pageSize,
 
-            SearchTerm = string.IsNullOrWhiteSpace(searchTerm)
+            SearchTerm = IsShowingPeopleList || searchDate is not null || string.IsNullOrWhiteSpace(searchTerm)
                 ? null
                 : searchTerm.Trim()
         };
@@ -453,7 +759,62 @@ else
             query.Status = AppointmentStatus.Cancelled;
         }
 
+        if (searchDate is not null &&
+            selectedStatusFilter != TodayFilter &&
+            selectedStatusFilter != UpcomingFilter)
+        {
+            query.ScheduledDate = searchDate.Value.Date;
+        }
+
+        if (selectedFilterType == FilterTypePatients && selectedFilterPersonId is not null)
+        {
+            query.PatientId = selectedFilterPersonId.Value;
+        }
+        else if (selectedFilterType == FilterTypeDoctors && selectedFilterPersonId is not null)
+        {
+            query.DoctorId = selectedFilterPersonId.Value;
+        }
+
         return query;
+    }
+
+    private static DateTime? TryParseSearchDate(string searchValue)
+    {
+        if (string.IsNullOrWhiteSpace(searchValue))
+        {
+            return null;
+        }
+
+        string trimmedValue = searchValue.Trim();
+
+        string[] allowedFormats =
+        {
+        "yyyy-MM-dd",
+        "dd-MM-yyyy",
+        "dd/MM/yyyy",
+        "MM/dd/yyyy",
+        "dd MMM yyyy",
+        "dd MMMM yyyy",
+        "MMM dd yyyy",
+        "MMMM dd yyyy"
+    };
+
+        if (DateTime.TryParseExact(
+                trimmedValue,
+                allowedFormats,
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None,
+                out var exactDate))
+        {
+            return exactDate.Date;
+        }
+
+        if (DateTime.TryParse(trimmedValue, out var parsedDate))
+        {
+            return parsedDate.Date;
+        }
+
+        return null;
     }
 
     private async Task OnSearchChanged(ChangeEventArgs args)
@@ -470,7 +831,14 @@ else
         {
             await Task.Delay(400, searchCancellationTokenSource.Token);
 
-            await LoadAppointmentsAsync(showFullPageLoader: false);
+            if (IsShowingPeopleList)
+            {
+                await InvokeAsync(StateHasChanged);
+            }
+            else
+            {
+                await LoadAppointmentsAsync(showFullPageLoader: false);
+            }
         }
         catch (TaskCanceledException)
         {
@@ -484,7 +852,50 @@ else
 
         currentPage = 1;
 
+        if (!IsShowingPeopleList)
+        {
+            await LoadAppointmentsAsync(showFullPageLoader: false);
+        }
+    }
+
+    private async Task OnFilterTypeChanged(ChangeEventArgs args)
+    {
+        selectedFilterType = args.Value?.ToString() ?? FilterTypeAll;
+
+        selectedFilterPersonId = null;
+
+        currentPage = 1;
+
+        appointments = new List<AppointmentDto>();
+
+        if (selectedFilterType == FilterTypeAll)
+        {
+            await LoadAppointmentsAsync(showFullPageLoader: false);
+        }
+        else
+        {
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task ViewPersonAppointments(int personId)
+    {
+        selectedFilterPersonId = personId;
+
+        currentPage = 1;
+
         await LoadAppointmentsAsync(showFullPageLoader: false);
+    }
+
+    private async Task BackToPeopleList()
+    {
+        selectedFilterPersonId = null;
+
+        appointments = new List<AppointmentDto>();
+
+        currentPage = 1;
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
@@ -495,7 +906,10 @@ else
 
             currentPage = 1;
 
-            await LoadAppointmentsAsync(showFullPageLoader: false);
+            if (!IsShowingPeopleList)
+            {
+                await LoadAppointmentsAsync(showFullPageLoader: false);
+            }
         }
     }
 
@@ -504,6 +918,10 @@ else
         searchTerm = string.Empty;
 
         selectedStatusFilter = AllStatusFilter;
+
+        selectedFilterType = FilterTypeAll;
+
+        selectedFilterPersonId = null;
 
         currentPage = 1;
 
@@ -565,7 +983,7 @@ else
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {
-            return "PT";
+            return "NA";
         }
 
         var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);

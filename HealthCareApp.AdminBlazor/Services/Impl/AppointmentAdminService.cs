@@ -79,6 +79,24 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
             };
         }
 
+        public async Task<AppointmentFilterOptionsDto> GetAppointmentFilterOptionsAsync()
+        {
+            using var response = await SendAuthorizedRequestAsync(
+                HttpMethod.Get,
+                $"{AppointmentsEndpoint}/filter-options");
+
+            EnsureAuthorizedResponse(
+                response,
+                "Your admin session is not authorized to load appointment filter options.");
+
+            response.EnsureSuccessStatusCode();
+
+            var filterOptions = await response.Content
+                .ReadFromJsonAsync<AppointmentFilterOptionsDto>(JsonOptions);
+
+            return filterOptions ?? new AppointmentFilterOptionsDto();
+        }
+
         public async Task<AppointmentDto?> GetAppointmentByIdAsync(int appointmentId)
         {
             if (appointmentId <= 0)

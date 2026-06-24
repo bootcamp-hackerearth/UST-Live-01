@@ -19,6 +19,8 @@ namespace HealthCareApp.Controllers
         private const string PatientRoleName = "Patient";
         private const string DoctorRoleName = "Doctor";
 
+
+
         // Admin only: View all appointments
         [HttpGet]
         [Authorize(
@@ -31,6 +33,18 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
+        // Admin only: Get appointment filter options
+        // Returns only patients and doctors who have appointment records.
+        [HttpGet("filter-options")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
+        public async Task<IActionResult> GetAppointmentFilterOptions()
+        {
+            var filterOptions = await service.GetAppointmentFilterOptionsAsync();
+
+            return Ok(filterOptions);
+        }
         // Patient/Doctor: View logged-in user's appointments
         [HttpGet("my")]
         [Authorize(
