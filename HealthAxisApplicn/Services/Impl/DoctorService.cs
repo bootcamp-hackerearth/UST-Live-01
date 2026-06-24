@@ -3,6 +3,7 @@ using HealthAxisApplicn.Dto.Doctors;
 using HealthAxisApplicn.Mappings;
 using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxisApplicn.Services.Impl
 {
@@ -76,5 +77,26 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<DoctorDto?>(updated);
 
         }
+
+        public async Task<bool> ToggleActiveAsync(int id)
+        {
+            var doctor = await repository.GetByIdAsync(id);
+
+            if (doctor == null)
+                return false;
+
+            doctor.IsActive = !doctor.IsActive;
+
+            await repository.UpdateAsync(id, doctor);
+
+            return true;
+        }
+        public async Task<List<DoctorDto>> SearchAsync(string query)
+        {
+            var doctors = await repository.SearchAsync(query);
+            return mapper.Map<List<DoctorDto>>(doctors);
+        }
+
+
     }
 }

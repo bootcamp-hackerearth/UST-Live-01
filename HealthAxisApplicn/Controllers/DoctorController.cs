@@ -28,6 +28,19 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
+        [HttpPut("toggle/{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> ToggleActive(int id)
+        {
+            var result = await service.ToggleActiveAsync(id);
+
+            if (!result)
+                return NotFound();
+
+            return NoContent();
+        }
+
+
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateDoctorDto entity)
@@ -73,5 +86,15 @@ namespace HealthAxisApplicn.Controllers
             var result = await service.SearchBySpecialisationAsync(specialisation);
             return result.Count == 0 ? NotFound() : Ok(result);
         }
+
+
+        [HttpGet("search")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdminOrPatient")]
+        public async Task<IActionResult> Search([FromQuery] string query)
+        {
+            var doctors = await service.SearchAsync(query);
+            return Ok(doctors);
+        }
+
     }
 }

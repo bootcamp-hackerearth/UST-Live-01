@@ -56,7 +56,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOrPatient", policy =>
+        policy.RequireRole("Admin", "Patient"));
+});
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc(
@@ -104,6 +108,18 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<MappingProfile>();
 });
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7235")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -126,6 +142,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowBlazor");
 app.UseAuthentication();
 app.UseAuthorization();
 

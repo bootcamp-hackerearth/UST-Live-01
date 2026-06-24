@@ -1,45 +1,45 @@
 ﻿@page "/"
+@inject NavigationManager NavManager
 
-<div class="container">
 
-    <!-- Header -->
-    <div class="mb-4">
-        <h3 class="fw-bold">Admin Dashboard</h3>
-        <p class="text-muted">Overview of Patients, Doctors, and Appointments</p>
-    </div>
+<div class="container mt-4">
+
+    <h2 class="text-center fw-bold mb-5" style="letter-spacing:1px;">
+        Admin Control Panel
+    </h2>
+
 
     <div class="row g-3">
 
-        <!-- Patients -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="text-muted">Patients</h6>
-                    <h2 class="fw-bold text-primary">@PatientCount</h2>
-                    <small class="text-muted">Total registered patients</small>
-                </div>
-            </div>
-        </div>
-
         <!-- Doctors -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="text-muted">Doctors</h6>
-                    <h2 class="fw-bold text-success">@DoctorCount</h2>
-                    <small class="text-muted">Active doctors in system</small>
+        <div class="col-md-6">
+            <div class="glass-card p-4 text-center"
+                 @onclick="@(() => NavigateTo("/admin/doctors"))">
+
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-user-doctor fa-3x text-success mb-3"></i>
+
+                    <h4 class="fw-semibold">Doctors</h4>
+                    <p class="text-muted">Manage medical professionals</p>
                 </div>
+
             </div>
         </div>
 
-        <!-- Appointments -->
-        <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h6 class="text-muted">Completed Appointments</h6>
-                    <h2 class="fw-bold text-info">@CompletedAppointments</h2>
-                    <small class="text-muted">Appointments completed</small>
+        <!-- Patients -->
+        <div class="col-md-6">
+            <div class="glass-card p-4 text-center"
+                @onclick="@(() => NavigateTo("/admin/patients"))">
+                
+
+                <div class="card-body text-center">
+                    <i class="fa-solid fa-hospital-user fa-3x text-primary mb-3"></i>
+
+                    <h4 class="fw-semibold">Patients</h4>
+                    <p class="text-muted">Manage patient records</p>
+
                 </div>
+
             </div>
         </div>
 
@@ -47,8 +47,10 @@
 
 </div>
 
+
 @code {
-    int PatientCount = 150;
-    int DoctorCount = 25;
-    int CompletedAppointments = 320;
+    void NavigateTo(string url)
+    {
+        NavManager.NavigateTo(url);
+    }
 }

@@ -1,0 +1,80 @@
+﻿@page "/login"
+
+@inject IAuthApiService authService
+@inject NavigationManager NavManager
+
+<div class="container" style="max-width:400px; margin-top:100px;">
+
+    <div class="card p-4 shadow-sm">
+
+        <h4 class="mb-3 text-center">Admin Login</h4>
+
+        <div class="mb-3">
+            <label>Username</label>
+            <input class="form-control" @bind="username" />
+        </div>
+
+        <div class="mb-3">
+            <label>Password</label>
+            <input type="password" class="form-control" @bind="password" />
+        </div>
+
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="text-danger mb-2">@error</div>
+        }
+
+        <!-- ✅ IMPORTANT: type="button" -->
+        <button type="button" class="btn btn-primary w-100" @onclick="HandleLogin">
+            Login
+        </button>
+
+    </div>
+
+</div>
+
+@code {
+    string username = "";
+    string password = "";
+    string error = "";
+
+    async Task HandleLogin()
+    {
+        var dto = new LoginDto
+        {
+            Email = username,
+            Password = password
+        };
+
+        var result = await authService.LoginAsync(dto);
+
+        if (result == null)
+        {
+            error = "Invalid username or password";
+            return;
+        }
+
+        // ✅ Decode JWT to extract role
+        var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(result.AccessToken);
+
+        var role = token.Claims
+            .FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)
+            ?.Value;
+
+        // ✅ THIS is the missing part
+        if (role != "Admin")
+        {
+            error = "You are not authorized to access the Admin Portal";
+            return;
+        }
+
+        // ✅ Store token
+        TokenStore.AccessToken = result.AccessToken;
+
+        // ✅ Navigate
+        NavManager.NavigateTo("/");
+
+    }
+
+}

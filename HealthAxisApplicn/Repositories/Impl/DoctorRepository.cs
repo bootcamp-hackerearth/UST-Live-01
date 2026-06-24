@@ -29,5 +29,15 @@ namespace HealthAxisApplicn.Repositories.Impl
             var existing = await _context.Set<Doctor>().Where(d => d.DoctorName.ToLower().Contains(name.ToLower())).ToListAsync(ct);
             return existing;
         }
+
+        public async Task<List<Doctor>> SearchAsync(string query, CancellationToken ct = default)
+        {
+            query = query.ToLower();
+
+            return await _context.Doctors
+                .Where(d => d.DoctorName.ToLower().Contains(query)
+                         || d.Specialisation.ToLower().Contains(query))
+                .ToListAsync(ct);
+        }
     }
 }

@@ -26,19 +26,34 @@ namespace HealthAxisApplicn.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto request)
         {
-            var (success, message, token, expiry) = await authService.LoginAsync(request);
-
-            if(!success)
+            var (success, message, token, expiry, refreshToken) = await authService.LoginAsync(request);
+            if (!success)
             {
                 return Unauthorized(new { message });
             }
 
+
             AuthResponse response = new AuthResponse
             {
                 AccessToken = token,
+                RefreshToken = refreshToken,
                 Message = message,
                 ExpiresIn = expiry
             };
+
+
+            return Ok(response);
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] string refreshToken)
+        {
+            var response = await authService.RefreshAsync(refreshToken);
+
+            if (response == null)
+            {
+                return Unauthorized(new { message = "Invalid or expired refresh token" });
+            }
 
             return Ok(response);
         }

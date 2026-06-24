@@ -1,31 +1,57 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
 
-<div class="d-flex">
+@code {
+    bool IsLoginPage =>
+        NavManager.ToBaseRelativePath(NavManager.Uri).StartsWith("login");
 
-    <!-- Sidebar -->
-    <div class="bg-dark text-white p-3" style="width:200px; min-height:100vh;">
-        <h4>HealthAxis</h4>
+    void Logout()
+    {
+        NavManager.NavigateTo("/login", true);
+    }
 
-        <ul class="nav flex-column">
+}
 
-            <li class="nav-item">
-                <NavLink href="/" class="nav-link text-white" Match="NavLinkMatch.All">
-                    Dashboard
-                </NavLink>
-            </li>
+@if (IsLoginPage)
+{
+    @Body
+}
+else
+{
+    <div class="d-flex">
 
-            <li class="nav-item">
-                <NavLink href="/users" class="nav-link text-white">
-                    Users
-                </NavLink>
-            </li>
+        <!-- Sidebar -->
+        <div class="bg-dark text-white p-3" style="width:200px; min-height:100vh;">
+            <h4>HealthAxis</h4>
 
-        </ul>
+            <ul class="nav flex-column">
+
+                <li class="nav-item">
+                    <NavLink class="nav-link text-white" href="/" Match="NavLinkMatch.All">
+                        Dashboard
+                    </NavLink>
+                </li>
+
+                <li class="nav-item">
+                    <NavLink class="nav-link text-white" href="/users">
+                        Users
+                    </NavLink>
+                </li>
+
+                <li class="nav-item mt-3">
+                    <button class="btn btn-sm btn-light w-100" @onclick="Logout">
+                        Logout
+                    </button>
+                </li>
+
+
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1 p-4">
+            @Body
+        </div>
+
     </div>
-
-    <!-- Main Content -->
-    <div class="flex-grow-1 p-4">
-        @Body
-    </div>
-
-</div>
+}

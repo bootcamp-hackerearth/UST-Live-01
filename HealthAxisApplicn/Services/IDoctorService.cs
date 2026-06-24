@@ -13,5 +13,7 @@ namespace HealthAxisApplicn.Services
         Task<List<DoctorDto>> GetActiveDoctorsAsync();
         Task<List<DoctorDto>> SearchBySpecialisationAsync(string specialisation);
         Task<DoctorDto> DeactivateDoctorAsync(int id);
+        Task<bool> ToggleActiveAsync(int id);
+        Task<List<DoctorDto>> SearchAsync(string query);
     }
 }

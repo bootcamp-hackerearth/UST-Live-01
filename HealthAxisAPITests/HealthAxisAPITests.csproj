@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HealthAxisApplicn\HealthAxisApplicn.csproj" />
+    <ProjectReference Include="..\HealthAxisWebApp.Shared\HealthAxisWebApp.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
