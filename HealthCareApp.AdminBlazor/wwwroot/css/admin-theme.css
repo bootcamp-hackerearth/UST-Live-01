@@ -2199,3 +2199,708 @@ font-weight: 700;
     font-weight: 800;
 }
 
+
+
+
+
+
+
+
+
+/* HealthAxis Fixed Collapsible Sidebar - Corrected Safe Override */
+
+.hc-admin-shell {
+    display: block !important;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.hc-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 1100;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at top right, rgba(20, 184, 166, 0.18), transparent 34%), linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    transition: width 0.24s ease, box-shadow 0.24s ease;
+}
+
+.hc-sidebar-collapsed {
+    width: 78px !important;
+}
+
+.hc-sidebar-expanded {
+    width: 280px !important;
+    box-shadow: 18px 0 48px rgba(15, 23, 42, 0.32);
+}
+
+.hc-admin-main {
+    display: block !important;
+    min-height: 100vh;
+    margin-left: 78px !important;
+    width: calc(100% - 78px) !important;
+    max-width: none !important;
+    background: #f8fafc;
+}
+
+.hc-admin-content {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: calc(100vh - 84px);
+    padding: 28px 32px;
+}
+
+.hc-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    width: 100% !important;
+    max-width: none !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.hc-sidebar-toggle {
+    width: 48px;
+    height: 48px;
+    margin: 18px 15px 18px;
+    border: 0;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+    .hc-sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+.hc-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 0 18px 22px;
+    white-space: nowrap;
+}
+
+.hc-sidebar-logo {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 15px;
+    color: #ffffff;
+    font-weight: 900;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 16px 32px rgba(20, 184, 166, 0.22);
+}
+
+.hc-sidebar-brand-text {
+    overflow: hidden;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.hc-sidebar-collapsed .hc-sidebar-brand-text {
+    opacity: 0;
+    transform: translateX(-8px);
+    pointer-events: none;
+}
+
+.hc-sidebar-expanded .hc-sidebar-brand-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.hc-sidebar-title {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+.hc-sidebar-subtitle {
+    margin-top: 3px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.hc-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 8px 14px;
+}
+
+.hc-nav-link {
+    position: relative;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-radius: 16px;
+    padding: 0 14px;
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 850;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+    .hc-nav-link:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hc-nav-link.active {
+        color: #ffffff;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        box-shadow: 0 14px 30px rgba(37, 99, 235, 0.26);
+    }
+
+        .hc-nav-link.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            width: 4px;
+            height: 26px;
+            border-radius: 999px;
+            background: #22d3ee;
+        }
+
+.hc-nav-icon {
+    width: 26px;
+    min-width: 26px;
+    display: grid;
+    place-items: center;
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.hc-nav-text {
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.hc-sidebar-collapsed .hc-nav-text {
+    opacity: 0;
+    transform: translateX(-8px);
+    pointer-events: none;
+}
+
+.hc-sidebar-expanded .hc-nav-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.hc-sidebar-footer {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 18px;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.hc-sidebar-collapsed .hc-sidebar-footer {
+    opacity: 0;
+    transform: translateX(-8px);
+    pointer-events: none;
+}
+
+.hc-sidebar-expanded .hc-sidebar-footer {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.hc-sidebar-footer-card {
+    padding: 14px;
+    border-radius: 18px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.hc-footer-label {
+    font-size: 12px;
+    font-weight: 900;
+    color: #67e8f9;
+}
+
+.hc-footer-text {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+}
+
+@media (max-width: 760px) {
+    .hc-admin-main {
+        margin-left: 78px !important;
+        width: calc(100% - 78px) !important;
+    }
+
+    .hc-sidebar-expanded {
+        width: 260px !important;
+    }
+}
+
+/* HealthAxis Fixed Popout Sidebar - Final Override */
+
+.hc-admin-shell {
+    display: block !important;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.hc-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 3000;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at top right, rgba(20, 184, 166, 0.18), transparent 34%), linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    transition: width 0.24s ease, box-shadow 0.24s ease;
+}
+
+.ha-sidebar-collapsed {
+    width: 92px !important;
+}
+
+.ha-sidebar-expanded {
+    width: 310px !important;
+    box-shadow: 24px 0 55px rgba(15, 23, 42, 0.34);
+}
+
+.hc-admin-main {
+    display: block !important;
+    min-height: 100vh;
+    margin-left: 92px !important;
+    width: calc(100% - 92px) !important;
+    max-width: none !important;
+    background: #f8fafc;
+}
+
+.hc-admin-content {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: calc(100vh - 84px);
+}
+
+.hc-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.ha-sidebar-toggle {
+    width: 48px;
+    height: 48px;
+    margin: 22px 22px 18px;
+    border: 0;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+    .ha-sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+.ha-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 62px;
+    padding: 0 22px 22px;
+    white-space: nowrap;
+}
+
+.ha-sidebar-logo {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    color: #ffffff;
+    font-weight: 900;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 16px 32px rgba(20, 184, 166, 0.22);
+}
+
+.ha-sidebar-brand-text {
+    overflow: hidden;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ha-sidebar-collapsed .ha-sidebar-brand-text {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.ha-sidebar-expanded .ha-sidebar-brand-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ha-sidebar-title {
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.ha-sidebar-subtitle {
+    margin-top: 3px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ha-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.ha-side-link {
+    position: relative;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-radius: 18px;
+    padding: 0 16px;
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 850;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+    .ha-side-link:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.09);
+    }
+
+    .ha-side-link.active {
+        color: #ffffff;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        box-shadow: 0 14px 30px rgba(37, 99, 235, 0.26);
+    }
+
+        .ha-side-link.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            width: 5px;
+            height: 28px;
+            border-radius: 999px;
+            background: #22d3ee;
+        }
+
+.ha-side-icon {
+    width: 28px;
+    min-width: 28px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.ha-side-text {
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ha-sidebar-collapsed .ha-side-text {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.ha-sidebar-expanded .ha-side-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ha-sidebar-footer {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ha-sidebar-collapsed .ha-sidebar-footer {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.ha-sidebar-expanded .ha-sidebar-footer {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ha-sidebar-footer-card {
+    padding: 14px;
+    border-radius: 18px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ha-footer-label {
+    font-size: 12px;
+    font-weight: 900;
+    color: #67e8f9;
+}
+
+.ha-footer-text {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+}
+
+/* HealthAxis Popout Sidebar - Isolated Final Version */
+
+.hc-admin-shell {
+    display: block !important;
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.hc-admin-main {
+    display: block !important;
+    min-height: 100vh;
+    margin-left: 92px !important;
+    width: calc(100% - 92px) !important;
+    max-width: none !important;
+    background: #f8fafc;
+}
+
+.hc-admin-content {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.hc-topbar {
+    width: 100% !important;
+    max-width: none !important;
+    position: sticky;
+    top: 0;
+    z-index: 900;
+}
+
+.ha-popout-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    z-index: 3000;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at top right, rgba(20, 184, 166, 0.18), transparent 34%), linear-gradient(180deg, #0f172a 0%, #111827 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    transition: width 0.24s ease, box-shadow 0.24s ease;
+}
+
+.ha-popout-sidebar-closed {
+    width: 92px !important;
+}
+
+.ha-popout-sidebar-open {
+    width: 310px !important;
+    box-shadow: 24px 0 55px rgba(15, 23, 42, 0.34);
+}
+
+.ha-sidebar-menu-button {
+    width: 48px;
+    height: 48px;
+    margin: 22px 22px 18px;
+    border: 0;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+    font-size: 22px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+    .ha-sidebar-menu-button:hover {
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+.ha-sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 62px;
+    padding: 0 22px 22px;
+    white-space: nowrap;
+}
+
+.ha-sidebar-logo {
+    width: 46px;
+    height: 46px;
+    min-width: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+    color: #ffffff;
+    font-weight: 900;
+    background: linear-gradient(135deg, #14b8a6, #8b5cf6);
+    box-shadow: 0 16px 32px rgba(20, 184, 166, 0.22);
+}
+
+.ha-sidebar-text {
+    overflow: hidden;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ha-popout-sidebar-closed .ha-sidebar-text {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.ha-popout-sidebar-open .ha-sidebar-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ha-sidebar-title {
+    color: #ffffff;
+    font-size: 17px;
+    font-weight: 900;
+}
+
+.ha-sidebar-subtitle {
+    margin-top: 3px;
+    color: #cbd5e1;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ha-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 16px;
+}
+
+.ha-sidebar-link {
+    position: relative;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-radius: 18px;
+    padding: 0 16px;
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 850;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+    .ha-sidebar-link:hover {
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.09);
+    }
+
+    .ha-sidebar-link.active {
+        color: #ffffff;
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        box-shadow: 0 14px 30px rgba(37, 99, 235, 0.26);
+    }
+
+        .ha-sidebar-link.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            width: 5px;
+            height: 28px;
+            border-radius: 999px;
+            background: #22d3ee;
+        }
+
+.ha-sidebar-icon {
+    width: 28px;
+    min-width: 28px;
+    display: grid;
+    place-items: center;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.ha-sidebar-label {
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ha-popout-sidebar-closed .ha-sidebar-label {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.ha-popout-sidebar-open .ha-sidebar-label {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ha-sidebar-footer {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 20px;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ha-popout-sidebar-closed .ha-sidebar-footer {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.ha-popout-sidebar-open .ha-sidebar-footer {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.ha-sidebar-footer-card {
+    padding: 14px;
+    border-radius: 18px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.ha-sidebar-footer-title {
+    font-size: 12px;
+    font-weight: 900;
+    color: #67e8f9;
+}
+
+.ha-sidebar-footer-text {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+}

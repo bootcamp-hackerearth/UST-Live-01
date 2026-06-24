@@ -1,42 +1,86 @@
-﻿@inject NavigationManager Navigation
+﻿<aside class="@SidebarClass">
+    <button type="button"
+            class="ha-sidebar-menu-button"
+            @onclick="ToggleSidebar"
+            title="Toggle sidebar">
+        ☰
+    </button>
 
-<aside class="hc-sidebar">
-    <div class="hc-sidebar-brand">
-        <div class="hc-sidebar-logo">HC</div>
-        <div>
-            <div class="hc-sidebar-title">HealthAxis</div>
-            <div class="hc-sidebar-subtitle">Admin Portal</div>
+    <div class="ha-sidebar-brand">
+        <div class="ha-sidebar-logo">
+            HC
+        </div>
+
+        <div class="ha-sidebar-text">
+            <div class="ha-sidebar-title">
+                HealthAxis
+            </div>
+
+            <div class="ha-sidebar-subtitle">
+                Admin Portal
+            </div>
         </div>
     </div>
 
-    <nav class="hc-sidebar-nav">
-        <NavLink href="/admin/dashboard" class="hc-nav-link" Match="NavLinkMatch.All">
-            <span>▣</span>
-            Dashboard
+    <nav class="ha-sidebar-nav">
+        <NavLink href="/admin/dashboard"
+                 class="ha-sidebar-link"
+                 Match="NavLinkMatch.All">
+            <span class="ha-sidebar-icon">▣</span>
+
+            <span class="ha-sidebar-label">Dashboard</span>
         </NavLink>
 
-        <NavLink href="/admin/doctors" class="hc-nav-link">
-            <span>✚</span>
-            Doctors
+        <NavLink href="/admin/doctors"
+                 class="ha-sidebar-link">
+            <span class="ha-sidebar-icon">✚</span>
+
+            <span class="ha-sidebar-label">Doctors</span>
         </NavLink>
 
-        <NavLink href="/admin/patients" class="hc-nav-link">
-            <span>◉</span>
-            Patients
+        <NavLink href="/admin/patients"
+                 class="ha-sidebar-link">
+            <span class="ha-sidebar-icon">◉</span>
+
+            <span class="ha-sidebar-label">Patients</span>
         </NavLink>
 
-        <NavLink href="/admin/appointments" class="hc-nav-link">
-            <span>◷</span>
-            Appointments
-        </NavLink>
+        <NavLink href="/admin/appointments"
+                 class="ha-sidebar-link">
+            <span class="ha-sidebar-icon">◷</span>
 
-     
+            <span class="ha-sidebar-label">Appointments</span>
+        </NavLink>
     </nav>
 
-    <div class="hc-sidebar-footer">
-        <div class="hc-sidebar-footer-card">
-            <div class="hc-footer-label">System</div>
-            <div class="hc-footer-text">Admin workspace active</div>
+    <div class="ha-sidebar-footer">
+        <div class="ha-sidebar-footer-card">
+            <div class="ha-sidebar-footer-title">
+                System
+            </div>
+
+            <div class="ha-sidebar-footer-text">
+                Admin workspace active
+            </div>
         </div>
     </div>
 </aside>
+
+@code {
+    private bool isSidebarOpen;
+
+    private string SidebarClass
+    {
+        get
+        {
+            return isSidebarOpen
+                ? "ha-popout-sidebar ha-popout-sidebar-open"
+                : "ha-popout-sidebar ha-popout-sidebar-closed";
+        }
+    }
+
+    private void ToggleSidebar()
+    {
+        isSidebarOpen = !isSidebarOpen;
+    }
+}
