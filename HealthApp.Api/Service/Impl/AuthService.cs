@@ -35,12 +35,7 @@ namespace HealthApp.Api.Service.Impl
             var roles = await userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault() ?? string.Empty;
 
-            // ✅ Only Admin can enter Blazor admin portal
-            if (!roles.Contains("Admin"))
-            {
-                return (false, "Only Admin can access this portal", string.Empty, 0, string.Empty);
-            }
-
+           
             var token = await GenerateJwtToken(user);
 
             var jwtSection = config.GetSection("Jwt");

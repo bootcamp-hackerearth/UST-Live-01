@@ -19,7 +19,8 @@ namespace HealthApp.Api.Controllers
 
         // GET ALL
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [AllowAnonymous]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var data = await _service.GetAllAppointments();
@@ -46,7 +47,7 @@ namespace HealthApp.Api.Controllers
 
         // CANCEL
         [HttpPut("{id}/cancel")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Doctor")]
         public async Task<IActionResult> Cancel(int id, [FromQuery] string reason)
         {
             await _service.CancelAppointment(id, reason);
@@ -82,7 +83,7 @@ namespace HealthApp.Api.Controllers
 
         // CHECK IF SLOT IS BOOKED
         [HttpGet("slot-booked")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
         public async Task<IActionResult> IsSlotBooked([FromQuery] int doctorId, [FromQuery] DateTime date, [FromQuery] string timeSlot)
         {
             var data = await _service.IsSlotBooked(doctorId, date, timeSlot);

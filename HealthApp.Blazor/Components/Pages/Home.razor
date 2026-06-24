@@ -8,7 +8,7 @@
 @using HealthApp.Blazor.Components.Services
 @inject IDoctorService DoctorService
 @inject IPatientService PatientService
-@* @inject AppointmentService AppointmentService *@
+@inject IAppointmentService AppointmentService
 
 
 
@@ -57,36 +57,7 @@
         </div>
     </section>
 
-    <section class="dashboard-actions">
-        <div class="dashboard-card">
-            <div class="card-header-line">
-                <h2>Doctors</h2>
-                <span class="card-badge blue-badge">Manage</span>
-            </div>
-            <p>View and manage doctor data, specialisations, and active status.</p>
-            <a href="/doctors" class="dashboard-btn blue-btn">Manage Doctors</a>
-        </div>
-
-        <div class="dashboard-card">
-            <div class="card-header-line">
-                <h2>Patients</h2>
-                <span class="card-badge purple-badge">View</span>
-            </div>
-            <p>Review patient details, contact information, insurance identifiers, and history links.</p>
-            <a href="/patients" class="dashboard-btn purple-btn">View Patients</a>
-        </div>
-
-        <div class="dashboard-card">
-            <div class="card-header-line">
-                <h2>Appointments</h2>
-                <span class="card-badge green-badge">Schedule</span>
-            </div>
-            <p>Track appointment schedules, upcoming visits, and consultation flow.</p>
-            <a href="/appointments" class="dashboard-btn green-btn">View Appointments</a>
-        </div>
-
-    </section>
-
+   
     <section class="dashboard-lower-grid">
         <div class="wide-panel">
             <div class="panel-header">
@@ -514,7 +485,7 @@
 
         doctorCount = await DoctorService.GetDoctorCountAsync();
         patientCount = await PatientService.GetPatientCountAsync();
-        // appointmentCount = await AppointmentService.GetAppointmentCountAsync();
+        appointmentCount = await AppointmentService.GetAppointmentCountAsync();
 
 
     }

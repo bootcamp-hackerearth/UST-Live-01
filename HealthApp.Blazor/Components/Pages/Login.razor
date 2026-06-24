@@ -180,7 +180,7 @@
 
         var result = await AuthService.LoginAsync(loginModel);
 
-        
+
         if (result is not null && result.Success && result.Role == "Admin")
         {
             Navigation.NavigateTo("/");

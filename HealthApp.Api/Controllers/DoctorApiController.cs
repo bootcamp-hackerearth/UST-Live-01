@@ -29,8 +29,8 @@ namespace HealthApp.Api.Controllers
 
         // GET all doctors
         [HttpGet("all")]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+       
         public async Task<IActionResult> GetAll()
         {
             var data = await _service.GetAllDoctorsAsync();
