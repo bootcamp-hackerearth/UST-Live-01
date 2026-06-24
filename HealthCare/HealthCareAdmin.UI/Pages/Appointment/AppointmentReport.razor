@@ -1,0 +1,118 @@
+﻿@page "/appointments/report"
+@using Healthcare.Shared.DTOs.Appointments;
+
+@inject AppointmentService AppointmentService
+@inject IJSRuntime JS
+
+<h3 class="mb-3 text-primary fw-bold">📊 Appointment Report</h3>
+
+<!-- ✅ FILTER SECTION -->
+<div class="card shadow mb-4 p-3 border-0 bg-light">
+    <div class="row g-2 align-items-end">
+
+        <!-- Start Date -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Start Date</label>
+            <InputDate class="form-control" @bind-Value="startDate" />
+        </div>
+
+        <!-- End Date -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">End Date</label>
+            <InputDate class="form-control" @bind-Value="endDate" />
+        </div>
+
+        <!-- Search Button -->
+        <div class="col-md-3">
+            <button class="btn btn-primary mt-3" @onclick="LoadReport">
+                🔍 Search
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ✅ TABLE -->
+<table class="table table-hover shadow-sm border">
+    <thead class="table-primary">
+        <tr>
+            <th>Date</th>
+            <th>Pending</th>
+            <th>Confirmed</th>
+            <th>Completed</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (isLoading)
+        {
+            <tr>
+                <td colspan="5" class="text-center">Loading...</td>
+            </tr>
+        }
+        else if (reports.Count == 0)
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted">
+                    No data found
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var r in reports)
+            {
+                <tr>
+                    <td>@r.Date.ToString("dd MMM yyyy")</td>
+                    <td class="text-warning fw-bold">@r.PendingCount</td>
+                    <td class="text-primary fw-bold">@r.ConfirmedCount</td>
+                    <td class="text-success fw-bold">@r.CompletedCount</td>
+                    <td class="fw-bold">
+                        @(r.PendingCount + r.ConfirmedCount + r.CompletedCount)
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+
+    private List<AppointmentReportDto> reports = new();
+
+    private DateTime startDate;
+    private DateTime endDate;
+
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // ✅ Default last 7 days
+        endDate = DateTime.Today;
+        startDate = endDate.AddDays(-6);
+
+        await LoadReport();
+    }
+
+    private async Task LoadReport()
+    {
+        // ✅ Validate max 7 days
+        if ((endDate - startDate).TotalDays > 6)
+        {
+            await JS.InvokeVoidAsync("alert", "Max 7 days allowed");
+            return;
+        }
+
+        try
+        {
+            isLoading = true;
+
+            reports = await AppointmentService.GetAppointmentReport(startDate, endDate);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

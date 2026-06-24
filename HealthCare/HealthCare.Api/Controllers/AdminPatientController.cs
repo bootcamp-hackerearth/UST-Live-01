@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-[Route("api/patients")]
+[Route("api/admin")]
 public class AdminPatientController : ControllerBase
 {
     private readonly IPatientService _patientService;
@@ -28,7 +28,7 @@ public class AdminPatientController : ControllerBase
     }
 
     //Get All pat
-    [HttpGet]
+    [HttpGet("patients")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> GetAllPatient(PatientFilter filter)
     {

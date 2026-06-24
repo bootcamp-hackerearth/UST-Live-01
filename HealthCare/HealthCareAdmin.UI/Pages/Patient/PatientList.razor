@@ -1,29 +1,320 @@
-﻿@page "/users"
+﻿@page "/patient/list"
+@using Healthcare.Shared.DTOs.Patient
+
+@inject PatientService PatientService
+@inject IJSRuntime JS
+
+<h3 class="mb-3 text-primary fw-bold">🧑‍⚕️ Patient Management</h3>
+
+<!--  FILTER PANEL -->
+<div class="card shadow mb-4 p-3 border-0 bg-light">
+    <div class="row g-2 align-items-end">
+
+        <!--  Search Name -->
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Search</label>
+            <input class="form-control"
+                   placeholder="Patient name"
+                   @bind="searchText"
+                   @bind:event="oninput"
+                   @bind:after="ApplyFilters" />
+        </div>
+
+        <!--  Insurance Filter -->
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Insurance</label>
+            <select class="form-select"
+                    @bind="insuranceFilter"
+                    @bind:after="ApplyFilters">
+                <option value="">All</option>
+                <option value="true">Insured</option>
+                <option value="false">Not Insured</option>
+            </select>
+        </div>
+
+        @* Status *@
+
+        <div class="col-md-3">
+            <label class="form-label fw-bold">Status</label>
+            <select class="form-select"
+                    @bind="statusFilter"
+                    @bind:after="ApplyFilters">
+                <option value="">All</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+            </select>
+        </div>
+
+
+        @* <!--  Register -->
+        <div class="col-md-5 text-end">
+            <button class="btn btn-success mt-3">
+                ➕ Register Patient
+            </button>
+        </div> *@
+
+    </div>
+</div>
+
+<!-- ✅ TABLE -->
+<table class="table table-hover shadow-sm border">
+    <thead class="table-primary">
+        <tr>
+            <th>Name</th>
+            @* <th>Email</th> *@
+            <th>Phone</th>
+            <th>Gender</th>
+            <th>Insurance</th>
+            <th>Status</th>
+            <th class="text-end">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (isLoading)
+        {
+            <tr>
+                <td colspan="6" class="text-center">Loading...</td>
+            </tr>
+        }
+        else if (paginatedPatients.Count == 0)
+        {
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    No patients found
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var p in paginatedPatients)
+            {
+                <tr>
+                    <td>@p.FullName</td>
+                    @* <td>@p.Email</td> *@
+                    <td>@p.PhoneNumber</td>
+                    <td>@p.Gender</td>
+
+                    <!-- ✅ Insurance Badge -->
+                    <td>
+                        <span class="badge @(p.HasInsurance ? "bg-success" : "bg-secondary")">
+                            @(p.HasInsurance ? "Insured" : "No Insurance")
+                        </span>
+                    </td>
+                    
+                    @* Status *@
+                    <td>
+                        <span class="badge @(p.IsActive ? "bg-success" : "bg-danger")">
+                            @(p.IsActive ? "Active" : "Inactive")
+                        </span>
+                    </td>
+
+
+                    <!-- ✅ ACTIONS -->
+                    <td class="text-end">
+                        <!-- Toggle Insurance -->
+                        <button class="btn btn-sm btn-outline-primary me-1"
+                                @onclick="() => ToggleInsurance(p)">
+                            🔄
+                        </button>
+
+                        
+                        <!-- Toggle Status -->
+
+                       
+                        <button class="btn btn-sm @(p.IsActive ? "btn-outline-success" : "btn-outline-danger") me-1"
+                                @onclick="() => ToggleStatus(p)">
+                            <i class="bi @(p.IsActive ? "bi-check-circle" : "bi-x-circle")"></i>
+                        </button>
+
+
+
+
+                        <!-- Delete -->
+                        <button class="btn btn-sm btn-outline-danger"
+                                @onclick="() => ShowDeletePopup(p.PatientId)">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<!-- ✅ PAGINATION -->
+<div class="d-flex justify-content-between mt-3">
+    <button class="btn btn-outline-primary"
+            disabled="@(_currentPage == 1)"
+            @onclick="PrevPage">
+        ⬅ Prev
+    </button>
+
+    <span class="fw-bold">
+        Page @_currentPage / @TotalPages
+    </span>
+
+    <button class="btn btn-outline-primary"
+            disabled="@(_currentPage == TotalPages)"
+            @onclick="NextPage">
+        Next ➡
+    </button>
+</div>
+
+@if (showDeletePopup)
+{
+    <div class="modal-backdrop fade show"></div>
+
+    <div class="modal show d-block">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-4">
+
+                <h5 class="text-danger mb-3">⚠️ Confirm Delete</h5>
+
+                <p>Are you sure you want to delete this patient?</p>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">
+                        Yes, Delete
+                    </button>
+
+                    <button class="btn btn-secondary" @onclick="CancelDelete">
+                        Cancel
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
 
 @code {
 
-    private List<UserDto> users = new();
+    private List<PatientListDto> patients = new();
+    private List<PatientListDto> filteredPatients = new();
+    private List<PatientListDto> paginatedPatients = new();
 
-    private string selectedRole = "";
+    private bool isLoading = true;
+    private bool showDeletePopup = false;
+    private int deletePatientId;
 
-    private IEnumerable<UserDto> filteredUsers =>
-        string.IsNullOrEmpty(selectedRole)
-            ? users
-            : users.Where(x => x.Role == selectedRole);
 
-    protected override void OnInitialized()
+    private string searchText = "";
+    private string insuranceFilter = "";
+    private string statusFilter = "";
+
+    private int _currentPage = 1;
+    private int pageSize = 5;
+
+    private int TotalPages =>
+        (int)Math.Ceiling(filteredPatients.Count / (double)pageSize);
+
+    protected override async Task OnInitializedAsync()
     {
-        users = new List<UserDto>
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        try
         {
-            new UserDto { Email = "admin@test.com", Role = "Admin" },
-            new UserDto { Email = "doc@test.com", Role = "Doctor" },
-            new UserDto { Email = "user@test.com", Role = "Patient" }
-        };
+            isLoading = true;
+
+            var result = await PatientService.GetPatients();
+
+            patients = result.Items;
+
+            ApplyFilters();
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
-    public class UserDto
+    private void ApplyFilters()
     {
-        public string Email { get; set; }
-        public string Role { get; set; }
+        filteredPatients = patients
+            .Where(p => string.IsNullOrEmpty(searchText) || p.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+
+            .Where(p => string.IsNullOrEmpty(insuranceFilter) || p.HasInsurance.ToString().ToLower() == insuranceFilter)
+
+            .Where(p => string.IsNullOrEmpty(statusFilter) || p.IsActive.ToString().ToLower() == statusFilter)
+
+            .ToList();
+
+        _currentPage = 1;
+        ApplyPagination();
     }
+
+    private void ApplyPagination()
+    {
+        paginatedPatients = filteredPatients
+            .Skip((_currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
+
+    private void NextPage()
+    {
+        if (_currentPage < TotalPages)
+        {
+            _currentPage++;
+            ApplyPagination();
+        }
+    }
+
+    private void PrevPage()
+    {
+        if (_currentPage > 1)
+        {
+            _currentPage--;
+            ApplyPagination();
+        }
+    }
+
+    private async Task ToggleInsurance(PatientListDto patient)
+    {
+        await PatientService.UpdateInsuranceStatus(patient.PatientId, !patient.HasInsurance);
+        await LoadPatients();
+    }
+    
+    private async Task ToggleStatus(PatientListDto patient)
+    {
+        try
+        {
+            await PatientService.UpdateStatus(patient.PatientId, !patient.IsActive);
+            patient.IsActive = !patient.IsActive;
+
+            StateHasChanged(); 
+        }
+        catch
+        {
+            await JS.InvokeVoidAsync("alert", "Failed to update status");
+        }
+    }
+
+    private void ShowDeletePopup(int id)
+    {
+        deletePatientId = id;
+        showDeletePopup = true;
+    }
+
+    private async Task ConfirmDelete()
+    {
+        await PatientService.DeletePatient(deletePatientId);
+
+        showDeletePopup = false;
+
+        await LoadPatients();
+    }
+
+    private void CancelDelete()
+    {
+        showDeletePopup = false;
+    }
+
+
+
 }
