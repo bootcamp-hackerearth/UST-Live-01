@@ -9,6 +9,7 @@ using HealthCare.Api.Data;
 using Healthcare.Shared.DTOs.Authentication;
 using HealthCare.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Healthcare.Shared.DTOs.Patient;
 
 namespace HealthCare.Api.Tests
 {
@@ -125,7 +126,7 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task RegisterPatientAsync_ShouldCreatePatient()
         {
-            var dto = new PatientRegisterDto
+            var dto = new CreatePatientDto
             {
                 Email = "test@test.com",
                 Password = "123",
@@ -154,7 +155,7 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task RegisterPatientAsync_ShouldThrow_WhenPasswordMismatch()
         {
-            var dto = new PatientRegisterDto
+            var dto = new CreatePatientDto
             {
                 Email = "test@test.com",
                 Password = "123",

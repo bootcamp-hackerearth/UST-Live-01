@@ -27,11 +27,14 @@ namespace Healthcare.Shared.DTOs.Authentication
         [Required]
         public string Password { get; set; } = null!;
 
-        [Required]
-        public string ?ConfirmPassword { get; set; }
 
         [Required]
-        public List<string> ?TimeSlots { get; set; }
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
+        public string ConfirmPassword { get; set; } = null!;
+
+
+        [Required]
+        public List<string> ?TimeSlots { get; set; }=new List<string>();
 
     }
 }

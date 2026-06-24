@@ -40,6 +40,7 @@ public class DoctorService
         await _http.DeleteAsync($"api/admin/doctors/{id}");
     }
 
+
     public async Task<bool> RegisterDoctor(DoctorRegisterDto dto)
     {
         var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
@@ -54,6 +55,7 @@ public class DoctorService
 
         return response.IsSuccessStatusCode;
     }
+
 
     public async Task UpdateStatus(int id, bool status)
     {

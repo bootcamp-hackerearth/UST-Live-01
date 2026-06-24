@@ -14,8 +14,9 @@
 
                 <h4 class="text-center mb-3 text-primary">Doctor Registration</h4>
 
-                <EditForm Model="@doctor" OnValidSubmit="HandleSave">
+               <EditForm EditContext="@editContext" OnValidSubmit="HandleSave">
                     <DataAnnotationsValidator />
+                    <ValidationSummary />
 
                     <!-- Name -->
                     <div class="mb-2">
@@ -74,8 +75,8 @@
                         {
                             <div class="form-check">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       @onchange="(e) => ToggleSlot(slot, e.Value)" />
+                                class="form-check-input"
+                                @oninput="(e) => ToggleSlot(slot, e.Value ?? false)" />
 
                                 <label class="form-check-label">@slot</label>
                             </div>
@@ -110,49 +111,81 @@
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
     [Parameter] public EventCallback OnSaved { get; set; }
+ 
+    private DoctorRegisterDto doctor = new()
+    {
+        TimeSlots = new List<string>()
+    };
 
-    private DoctorRegisterDto doctor = new();
-    private List<string> selectedSlots = new();
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(doctor);
+    }
+
+
+    //private List<string> selectedSlots = new();
     private bool slotError = false;
 
     private List<string> availableSlots = new()
     {
-        "09:00-10:00",
-        "10:00-11:00",
-        "11:00-12:00",
-        "14:00-15:00"
+        "09:00",
+        "10:00",
+        "11:00",
+        "02:00",
+        "04:00"
     };
 
-    private void ToggleSlot(string slot, object value)
-    {
-        bool isChecked = value?.ToString() == "true";
 
-        if (isChecked)
+    private async Task HandleSave()
+    {
+        if (doctor.TimeSlots == null || doctor.TimeSlots.Count == 0)
         {
-            if (!selectedSlots.Contains(slot))
-                selectedSlots.Add(slot);
+            slotError = true;
+            return;
+        }
+
+        slotError = false;
+
+        Console.WriteLine(string.Join(",", doctor.TimeSlots));
+        var success = await DoctorService.RegisterDoctor(doctor);
+
+        if (success)
+        {
+            await ShowSuccessPopup();
+            await OnSaved.InvokeAsync();
+            await CloseAndReset();
         }
         else
         {
-            selectedSlots.Remove(slot);
+            await JS.InvokeVoidAsync("alert", "❌ Failed to register doctor");
         }
     }
 
-    public async Task<bool> RegisterDoctor(DoctorRegisterDto dto)
+    private void ToggleSlot(string slot, object value)
     {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
+        bool isChecked = value is bool b && b;
 
-        if (string.IsNullOrEmpty(token))
-            throw new Exception("User not authenticated");
+        doctor.TimeSlots ??= new List<string>();
 
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
+        if (isChecked)
+        {
+            if (!doctor.TimeSlots.Contains(slot))
+                doctor.TimeSlots.Add(slot);
+        }
+        else
+        {
+            doctor.TimeSlots.Remove(slot);
+        }
 
-        var response = await _http.PostAsJsonAsync("api/auth/register-doctor", dto);
+        editContext.NotifyFieldChanged(
+            new FieldIdentifier(doctor, nameof(doctor.TimeSlots))
+        );
 
-        return response.IsSuccessStatusCode;
+        slotError = false;
     }
-
+   
     /* ✅ SUCCESS POPUP CENTER */
     private async Task ShowSuccessPopup()
     {
@@ -172,12 +205,19 @@
         }
     }
 
+   
     private async Task CloseAndReset()
     {
-        doctor = new DoctorRegisterDto();
-        selectedSlots = new List<string>();
-        slotError = false;
+        doctor = new DoctorRegisterDto
+        {
+            TimeSlots = new List<string>()
+        };
+
+        editContext = new EditContext(doctor);
 
         await IsVisibleChanged.InvokeAsync(false);
     }
+
+
+
 }
