@@ -57,7 +57,7 @@ namespace Healthcare.netcore.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("HealthAxis.API.Models.Auth.ApplicationUser", b =>
@@ -155,7 +155,7 @@ namespace Healthcare.netcore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("HealthAxis.API.Models.Doctor", b =>
@@ -189,7 +189,7 @@ namespace Healthcare.netcore.Migrations
 
                     b.HasKey("DoctorId");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctors", (string)null);
 
                     b.HasData(
                         new
@@ -283,7 +283,7 @@ namespace Healthcare.netcore.Migrations
 
                     b.HasIndex("PatientId");
 
-                    b.ToTable("HealthRecords");
+                    b.ToTable("HealthRecords", (string)null);
                 });
 
             modelBuilder.Entity("HealthAxis.API.Models.Patient", b =>
@@ -326,7 +326,7 @@ namespace Healthcare.netcore.Migrations
 
                     b.HasKey("PatientId");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
 
                     b.HasData(
                         new

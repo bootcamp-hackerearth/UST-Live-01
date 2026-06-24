@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
-using HealthAxis.Shared.DTOs.Common;
-using HealthAxis.Shared.DTOs.Patient;
-using HealthAxis.Shared.DTOs.HealthRecord;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.HealthRecord;
+using HealthAxis.Shared.DTOs.Patient;
 
 namespace HealthAxis.API.Services.Implementations
 {
@@ -128,8 +128,65 @@ namespace HealthAxis.API.Services.Implementations
             return _mapper.Map<PatientDto>(patient);
         }
 
+        public async Task<PatientDto> AddAsync(CreatePatientDto dto)
+        {
+            if (dto.DateOfBirth.Date > DateTime.Today)
+            {
+                throw new ValidationException("Date of birth cannot be in the future.");
+            }
+
+            if (dto.DateOfBirth.Date < new DateTime(1900, 1, 1))
+            {
+                throw new ValidationException("Date of birth must be after 01 Jan 1900.");
+            }
+
+            var existingPatients = await _patientRepository.GetAllAsync();
+
+            var emailExists = existingPatients.Any(patient =>
+                patient.Email.Equals(dto.Email, StringComparison.OrdinalIgnoreCase));
+
+            if (emailExists)
+            {
+                throw new ValidationException("Patient email already exists.");
+            }
+
+            var phoneExists = existingPatients.Any(patient =>
+                patient.PhoneNumber == dto.PhoneNumber);
+
+            if (phoneExists)
+            {
+                throw new ValidationException("Patient phone number already exists.");
+            }
+
+            var patient = new Patient
+            {
+                UserId = null,
+                FullName = dto.FullName,
+                DateOfBirth = dto.DateOfBirth,
+                Gender = dto.Gender,
+                PhoneNumber = dto.PhoneNumber,
+                Email = dto.Email,
+                InsuranceId = null,
+                CreatedDate = DateTime.Today
+            };
+
+            var savedPatient = await _patientRepository.AddAsync(patient);
+
+            return _mapper.Map<PatientDto>(savedPatient);
+        }
+
         public async Task<PatientDto> UpdateAsync(int id, UpdatePatientDto dto)
         {
+            if (dto.DateOfBirth.Date > DateTime.Today)
+            {
+                throw new ValidationException("Date of birth cannot be in the future.");
+            }
+
+            if (dto.DateOfBirth.Date < new DateTime(1900, 1, 1))
+            {
+                throw new ValidationException("Date of birth must be after 01 Jan 1900.");
+            }
+
             var patient = await _patientRepository.GetByIdAsync(id);
 
             if (patient == null)
@@ -137,7 +194,32 @@ namespace HealthAxis.API.Services.Implementations
                 throw new NotFoundException("Patient not found");
             }
 
-            _mapper.Map(dto, patient);
+            var existingPatients = await _patientRepository.GetAllAsync();
+
+            var emailExists = existingPatients.Any(existingPatient =>
+                existingPatient.PatientId != id &&
+                existingPatient.Email.Equals(dto.Email, StringComparison.OrdinalIgnoreCase));
+
+            if (emailExists)
+            {
+                throw new ValidationException("Patient email already exists.");
+            }
+
+            var phoneExists = existingPatients.Any(existingPatient =>
+                existingPatient.PatientId != id &&
+                existingPatient.PhoneNumber == dto.PhoneNumber);
+
+            if (phoneExists)
+            {
+                throw new ValidationException("Patient phone number already exists.");
+            }
+
+            patient.FullName = dto.FullName;
+            patient.DateOfBirth = dto.DateOfBirth;
+            patient.Gender = dto.Gender;
+            patient.PhoneNumber = dto.PhoneNumber;
+            patient.Email = dto.Email;
+            patient.InsuranceId = null;
 
             await _patientRepository.UpdateAsync(id, patient, CancellationToken.None);
 

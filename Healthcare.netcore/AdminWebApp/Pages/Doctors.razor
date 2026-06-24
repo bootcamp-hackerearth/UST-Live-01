@@ -3,9 +3,14 @@
 
 @using AdminWebApp.Services
 @using HealthAxis.Shared.DTOs.Doctor
+@using HealthAxis.Shared.DTOs.Appointment
+@using HealthAxis.Shared.DTOs.Patient
 @using HealthAxis.Shared.Enums
 
 @inject DoctorService DoctorApi
+@inject AppointmentService AppointmentApi
+@inject PatientService PatientApi
+@inject IJSRuntime JS
 
 <div class="doctor-page">
 
@@ -14,10 +19,10 @@
         <div>
             <span class="eyebrow">DOCTOR MANAGEMENT</span>
             <h1>Doctors</h1>
-            <p>View doctors, apply filters, and register new doctor accounts.</p>
+            <p>View doctors, apply filters, register accounts, and review doctor appointments.</p>
         </div>
 
-        <button class="primary-btn" @onclick="OpenAddModal">
+        <button type="button" class="primary-btn" @onclick="OpenAddModal">
             + Add Doctor
         </button>
     </div>
@@ -38,9 +43,9 @@
                 <select class="form-control" @bind="SelectedSpecialisation">
                     <option value="">All</option>
 
-                    @foreach (var s in Enum.GetValues<Specialisation>())
+                    @foreach (var specialisation in Enum.GetValues<Specialisation>())
                     {
-                        <option value="@s">@s</option>
+                        <option value="@specialisation">@specialisation</option>
                     }
                 </select>
             </div>
@@ -59,23 +64,31 @@
     <!-- ALERTS -->
     @if (!string.IsNullOrWhiteSpace(SuccessMessage))
     {
-        <div class="doctor-alert success-alert">@SuccessMessage</div>
+        <div class="doctor-alert success-alert">
+            @SuccessMessage
+        </div>
     }
 
     @if (!string.IsNullOrWhiteSpace(ErrorMessage))
     {
-        <div class="doctor-alert error-alert">@ErrorMessage</div>
+        <div class="doctor-alert error-alert">
+            @ErrorMessage
+        </div>
     }
 
-    <!-- TABLE -->
+    <!-- DOCTOR TABLE -->
     <div class="doctor-table-card">
         @if (IsLoading)
         {
-            <div class="empty-state">Loading doctors...</div>
+            <div class="empty-state">
+                Loading doctors...
+            </div>
         }
         else if (!FilteredDoctors.Any())
         {
-            <div class="empty-state">No doctors found.</div>
+            <div class="empty-state">
+                No doctors found.
+            </div>
         }
         else
         {
@@ -88,29 +101,47 @@
                         <th>Fee</th>
                         <th>Status</th>
                         <th>Appointments</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach (var d in FilteredDoctors)
+                    @foreach (var doctor in PagedDoctors)
                     {
                         <tr>
                             <td>
-                                <div class="doctor-name">@d.FullName</div>
-                                <div class="doctor-id">ID: @d.DoctorId</div>
+                                <div class="doctor-name">@doctor.FullName</div>
                             </td>
 
-                            <td>@d.Specialisation</td>
-                            <td>@d.YearsOfExperience years</td>
-                            <td>@d.ConsultationFee</td>
+                            <td>@doctor.Specialisation</td>
+
+                            <td>@doctor.YearsOfExperience years</td>
+
+                            <td>@doctor.ConsultationFee</td>
 
                             <td>
-                                <span class="status-badge @(d.IsActive ? "active" : "inactive")">
-                                    @(d.IsActive ? "Active" : "Inactive")
+                                <span class="status-badge @(doctor.IsActive ? "active" : "inactive")">
+                                    @(doctor.IsActive ? "Active" : "Inactive")
                                 </span>
                             </td>
 
-                            <td>@d.UpcomingAppointmentCount</td>
+                            <td>@doctor.UpcomingAppointmentCount</td>
+
+                            <td>
+                                <div class="doctor-action-group">
+                                    <button type="button"
+                                            class="secondary-btn"
+                                            @onclick="() => OpenEditModal(doctor)">
+                                        Edit
+                                    </button>
+
+                                    <button type="button"
+                                            class="view-more-btn"
+                                            @onclick="() => ViewDoctorAppointments(doctor)">
+                                        View Appointments
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -118,9 +149,144 @@
         }
     </div>
 
+    <!-- DOCTOR PAGINATION -->
+    @if (!IsLoading && FilteredDoctors.Any())
+    {
+        <div class="report-pagination">
+            <button type="button"
+                    class="secondary-btn"
+                    disabled="@(DoctorPageNumber == 1)"
+                    @onclick="PreviousDoctorPage">
+                Previous
+            </button>
+
+            <span>Page @DoctorPageNumber of @TotalDoctorPages</span>
+
+            <button type="button"
+                    class="secondary-btn"
+                    disabled="@(DoctorPageNumber == TotalDoctorPages)"
+                    @onclick="NextDoctorPage">
+                Next
+            </button>
+        </div>
+    }
+
+    <!-- SELECTED DOCTOR APPOINTMENTS -->
+    @if (SelectedDoctorId.HasValue)
+    {
+        <div class="appointment-detail-card doctor-appointments-panel">
+
+            <div class="appointment-detail-header">
+                <div>
+                    <h2>Appointments for @SelectedDoctorName</h2>
+                    <p>View appointment schedule and update appointment status when allowed.</p>
+                </div>
+
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="CloseDoctorAppointments">
+                    Close
+                </button>
+            </div>
+
+            @if (!SelectedDoctorAppointments.Any())
+            {
+                <div class="empty-state">
+                    No appointments found for this doctor.
+                </div>
+            }
+            else
+            {
+                <table class="appointment-detail-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Status</th>
+                            <th>Cancellation Reason</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in SelectedDoctorAppointments)
+                        {
+                            <tr>
+                                <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
+
+                                <td>@appointment.TimeSlot</td>
+
+                                <td>@GetPatientName(appointment.PatientId)</td>
+
+                                <td>
+                                    <span class="appointment-status @appointment.Status.ToString().ToLower()">
+                                        @appointment.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(appointment.CancellationReason))
+                                    {
+                                        @appointment.CancellationReason
+                                    }
+                                    else
+                                    {
+                                        <span class="doctor-id">—</span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="appointment-actions">
+                                        @if (appointment.Status == AppointmentStatus.Pending)
+                                        {
+                                            <button type="button"
+                                                    class="mini-action-btn confirm"
+                                                    @onclick="() => UpdateAppointmentStatus(appointment.AppointmentId, AppointmentStatus.Confirmed)">
+                                                Confirm
+                                            </button>
+
+                                            <button type="button"
+                                                    class="mini-action-btn cancel"
+                                                    @onclick="() => CancelAppointment(appointment.AppointmentId)">
+                                                Cancel
+                                            </button>
+                                        }
+                                        else if (appointment.Status == AppointmentStatus.Confirmed)
+                                        {
+                                            <button type="button"
+                                                    class="mini-action-btn complete"
+                                                    @onclick="() => UpdateAppointmentStatus(appointment.AppointmentId, AppointmentStatus.Completed)">
+                                                Complete
+                                            </button>
+
+                                            <button type="button"
+                                                    class="mini-action-btn cancel"
+                                                    @onclick="() => CancelAppointment(appointment.AppointmentId)">
+                                                Cancel
+                                            </button>
+                                        }
+                                        else if (appointment.Status == AppointmentStatus.Completed)
+                                        {
+                                            <span class="doctor-id">Locked</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="doctor-id">—</span>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
+
 </div>
 
-<!-- ✅ MODAL -->
+<!-- ADD DOCTOR MODAL -->
 @if (ShowAddModal)
 {
     <div class="modal-backdrop">
@@ -132,7 +298,9 @@
                     <p>Create a doctor profile.</p>
                 </div>
 
-                <button class="modal-close-btn" @onclick="CloseAddModal">×</button>
+                <button type="button" class="modal-close-btn" @onclick="CloseAddModal">
+                    ×
+                </button>
             </div>
 
             <EditForm Model="NewDoctor" OnValidSubmit="SaveDoctor">
@@ -140,47 +308,170 @@
 
                 <div class="modal-form-grid">
 
-                    <InputText class="form-control" placeholder="Full Name"
-                               @bind-Value="NewDoctor.FullName" />
+                    <div class="form-group full-width">
+                        <label>Full Name</label>
+                        <InputText class="form-control"
+                                   placeholder="Full Name"
+                                   @bind-Value="NewDoctor.FullName" />
+                        <ValidationMessage For="() => NewDoctor.FullName" />
+                    </div>
 
-                    <InputText class="form-control" placeholder="Email"
-                               @bind-Value="NewDoctor.Email" />
+                    <div class="form-group">
+                        <label>Email</label>
+                        <InputText class="form-control"
+                                   placeholder="Email"
+                                   @bind-Value="NewDoctor.Email" />
+                        <ValidationMessage For="() => NewDoctor.Email" />
+                    </div>
 
-                    <InputText type="password" class="form-control"
-                               placeholder="Password"
-                               @bind-Value="NewDoctor.TemporaryPassword" />
+                    <div class="form-group">
+                        <label>Password</label>
+                        <InputText type="password"
+                                   class="form-control"
+                                   placeholder="Password"
+                                   @bind-Value="NewDoctor.TemporaryPassword" />
+                        <ValidationMessage For="() => NewDoctor.TemporaryPassword" />
+                    </div>
 
-                    <InputSelect class="form-control"
-                                 @bind-Value="NewDoctor.Specialisation">
-                        @foreach (var s in Enum.GetValues<Specialisation>())
-                        {
-                            <option value="@s">@s</option>
-                        }
-                    </InputSelect>
+                    <div class="form-group">
+                        <label>Specialisation</label>
+                        <InputSelect class="form-control"
+                                     @bind-Value="NewDoctor.Specialisation">
+                            @foreach (var specialisation in Enum.GetValues<Specialisation>())
+                            {
+                                <option value="@specialisation">@specialisation</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => NewDoctor.Specialisation" />
+                    </div>
 
-                    <InputNumber class="form-control"
-                                 @bind-Value="NewDoctor.YearsOfExperience" />
+                    <div class="form-group">
+                        <label>Years of Experience</label>
+                        <InputNumber class="form-control"
+                                     @bind-Value="NewDoctor.YearsOfExperience" />
+                        <ValidationMessage For="() => NewDoctor.YearsOfExperience" />
+                    </div>
 
-                    <InputNumber class="form-control"
-                                 @bind-Value="NewDoctor.ConsultationFee" />
+                    <div class="form-group">
+                        <label>Consultation Fee</label>
+                        <InputNumber class="form-control"
+                                     @bind-Value="NewDoctor.ConsultationFee" />
+                        <ValidationMessage For="() => NewDoctor.ConsultationFee" />
+                    </div>
 
                 </div>
 
                 @if (!string.IsNullOrWhiteSpace(ModalErrorMessage))
                 {
-                    <div class="doctor-alert error-alert">@ModalErrorMessage</div>
+                    <div class="doctor-alert error-alert">
+                        @ModalErrorMessage
+                    </div>
                 }
 
                 <div class="modal-actions">
                     <button type="button"
                             class="secondary-btn"
-                            @onclick="CloseAddModal">
+                            @onclick="CloseAddModal"
+                            disabled="@IsSaving">
                         Cancel
                     </button>
 
                     <button type="submit"
-                            class="primary-btn">
-                        Save
+                            class="primary-btn"
+                            disabled="@IsSaving">
+                        @(IsSaving ? "Saving..." : "Save")
+                    </button>
+                </div>
+            </EditForm>
+
+        </div>
+    </div>
+}
+
+<!-- EDIT DOCTOR MODAL -->
+@if (ShowEditModal)
+{
+    <div class="modal-backdrop">
+        <div class="doctor-modal">
+
+            <div class="doctor-modal-header">
+                <div>
+                    <h2>Edit Doctor</h2>
+                    <p>Update doctor profile and availability.</p>
+                </div>
+
+                <button type="button" class="modal-close-btn" @onclick="CloseEditModal">
+                    ×
+                </button>
+            </div>
+
+            <EditForm Model="EditDoctor" OnValidSubmit="SaveEditedDoctor">
+                <DataAnnotationsValidator />
+
+                <div class="modal-form-grid">
+
+                    <div class="form-group full-width">
+                        <label>Full Name</label>
+                        <InputText class="form-control"
+                                   placeholder="Full Name"
+                                   @bind-Value="EditDoctor.FullName" />
+                        <ValidationMessage For="() => EditDoctor.FullName" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Specialisation</label>
+                        <InputSelect class="form-control"
+                                     @bind-Value="EditDoctor.Specialisation">
+                            @foreach (var specialisation in Enum.GetValues<Specialisation>())
+                            {
+                                <option value="@specialisation">@specialisation</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="() => EditDoctor.Specialisation" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Years of Experience</label>
+                        <InputNumber class="form-control"
+                                     @bind-Value="EditDoctor.YearsOfExperience" />
+                        <ValidationMessage For="() => EditDoctor.YearsOfExperience" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Consultation Fee</label>
+                        <InputNumber class="form-control"
+                                     @bind-Value="EditDoctor.ConsultationFee" />
+                        <ValidationMessage For="() => EditDoctor.ConsultationFee" />
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>
+                            <InputCheckbox @bind-Value="EditDoctor.IsActive" />
+                            Active Doctor
+                        </label>
+                    </div>
+
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(EditModalErrorMessage))
+                {
+                    <div class="doctor-alert error-alert">
+                        @EditModalErrorMessage
+                    </div>
+                }
+
+                <div class="modal-actions">
+                    <button type="button"
+                            class="secondary-btn"
+                            @onclick="CloseEditModal"
+                            disabled="@IsUpdating">
+                        Cancel
+                    </button>
+
+                    <button type="submit"
+                            class="primary-btn"
+                            disabled="@IsUpdating">
+                        @(IsUpdating ? "Updating..." : "Update")
                     </button>
                 </div>
             </EditForm>
@@ -190,50 +481,154 @@
 }
 
 @code {
-    private List<DoctorDto> Doctor = new();
+    private List<DoctorDto> DoctorList = new();
+    private List<AppointmentDto> AppointmentList = new();
+    private List<PatientDto> PatientList = new();
 
     private CreateDoctorDto NewDoctor = new();
+    private UpdateDoctorDto EditDoctor = new();
+
+    private int EditingDoctorId;
 
     private bool IsLoading;
     private bool ShowAddModal;
+    private bool ShowEditModal;
     private bool IsSaving;
+    private bool IsUpdating;
 
-    private string SearchText = "";
-    private string SelectedSpecialisation = "";
-    private string SelectedStatus = "";
+    private int DoctorPageNumber = 1;
+    private int DoctorPageSize = 5;
 
-    private string ErrorMessage = "";
-    private string SuccessMessage = "";
-    private string ModalErrorMessage = "";
+    private string _searchText = string.Empty;
+    private string _selectedSpecialisation = string.Empty;
+    private string _selectedStatus = string.Empty;
 
-    private IEnumerable<DoctorDto> FilteredDoctors =>
-        Doctor.Where(d =>
-            (string.IsNullOrWhiteSpace(SearchText) ||
-             d.FullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase)) &&
-            (string.IsNullOrWhiteSpace(SelectedSpecialisation) ||
-             d.Specialisation.ToString() == SelectedSpecialisation) &&
-            (SelectedStatus == "" ||
-             (SelectedStatus == "active" && d.IsActive) ||
-             (SelectedStatus == "inactive" && !d.IsActive))
-        );
+    private string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            _searchText = value;
+            DoctorPageNumber = 1;
+        }
+    }
+
+    private string SelectedSpecialisation
+    {
+        get => _selectedSpecialisation;
+        set
+        {
+            _selectedSpecialisation = value;
+            DoctorPageNumber = 1;
+        }
+    }
+
+    private string SelectedStatus
+    {
+        get => _selectedStatus;
+        set
+        {
+            _selectedStatus = value;
+            DoctorPageNumber = 1;
+        }
+    }
+
+    private string ErrorMessage = string.Empty;
+    private string SuccessMessage = string.Empty;
+    private string ModalErrorMessage = string.Empty;
+    private string EditModalErrorMessage = string.Empty;
+
+    private int? SelectedDoctorId;
+    private string SelectedDoctorName = string.Empty;
+
+    private IEnumerable<DoctorDto> FilteredDoctors
+    {
+        get
+        {
+            IEnumerable<DoctorDto> query = DoctorList;
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var search = SearchText.Trim();
+
+                query = query.Where(doctor =>
+                    doctor.FullName.Contains(search, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(SelectedSpecialisation) &&
+                Enum.TryParse<Specialisation>(SelectedSpecialisation, out var selectedSpecialisation))
+            {
+                query = query.Where(doctor =>
+                    doctor.Specialisation == selectedSpecialisation);
+            }
+
+            if (SelectedStatus == "active")
+            {
+                query = query.Where(doctor => doctor.IsActive);
+            }
+            else if (SelectedStatus == "inactive")
+            {
+                query = query.Where(doctor => !doctor.IsActive);
+            }
+
+            return query;
+        }
+    }
+
+    private int TotalDoctorPages =>
+        Math.Max(1, (int)Math.Ceiling(FilteredDoctors.Count() / (double)DoctorPageSize));
+
+    private IEnumerable<DoctorDto> PagedDoctors
+    {
+        get
+        {
+            if (DoctorPageNumber > TotalDoctorPages)
+            {
+                DoctorPageNumber = TotalDoctorPages;
+            }
+
+            return FilteredDoctors
+                .Skip((DoctorPageNumber - 1) * DoctorPageSize)
+                .Take(DoctorPageSize);
+        }
+    }
+
+    private IEnumerable<AppointmentDto> SelectedDoctorAppointments
+    {
+        get
+        {
+            if (!SelectedDoctorId.HasValue)
+            {
+                return Enumerable.Empty<AppointmentDto>();
+            }
+
+            return AppointmentList
+                .Where(appointment => appointment.DoctorId == SelectedDoctorId.Value)
+                .OrderByDescending(appointment => appointment.ScheduledDate)
+                .ThenBy(appointment => appointment.TimeSlot);
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadDoctors();
+        await LoadAppointmentSupportData();
     }
 
     private async Task LoadDoctors()
     {
         IsLoading = true;
+        ErrorMessage = string.Empty;
 
         try
         {
             var response = await DoctorApi.GetDoctorsAsync(1, 100);
-            Doctor = response?.Items ?? new List<DoctorDto>();
+
+            DoctorList = response?.Items ?? new List<DoctorDto>();
         }
         catch (Exception ex)
         {
-            ErrorMessage = ex.Message;
+            ErrorMessage = "Unable to load doctors. " + ex.Message;
         }
         finally
         {
@@ -241,30 +636,264 @@
         }
     }
 
+    private async Task LoadAppointmentSupportData()
+    {
+        try
+        {
+            var appointments = await AppointmentApi.GetAppointmentsAsync();
+            var patients = await PatientApi.GetPatientsAsync(1, 100);
+
+            AppointmentList = appointments ?? new List<AppointmentDto>();
+            PatientList = patients?.Items ?? new List<PatientDto>();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Unable to load appointment details. " + ex.Message;
+        }
+    }
+
+    private void PreviousDoctorPage()
+    {
+        if (DoctorPageNumber > 1)
+        {
+            DoctorPageNumber--;
+        }
+    }
+
+    private void NextDoctorPage()
+    {
+        if (DoctorPageNumber < TotalDoctorPages)
+        {
+            DoctorPageNumber++;
+        }
+    }
+
     private void OpenAddModal()
     {
+        NewDoctor = new CreateDoctorDto
+        {
+            FullName = string.Empty,
+            Email = string.Empty,
+            TemporaryPassword = string.Empty,
+            Specialisation = Enum.GetValues<Specialisation>().First(),
+            YearsOfExperience = 0,
+            ConsultationFee = 0
+        };
+
+        ModalErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
         ShowAddModal = true;
     }
 
     private void CloseAddModal()
     {
         ShowAddModal = false;
-        ModalErrorMessage = "";
+        ModalErrorMessage = string.Empty;
     }
 
     private async Task SaveDoctor()
     {
-        var response = await DoctorApi.AddDoctorAsync(NewDoctor);
+        IsSaving = true;
+        ModalErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
 
-        if (response.IsSuccessStatusCode)
+        try
         {
+            var response = await DoctorApi.AddDoctorAsync(NewDoctor);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var apiMessage = await response.Content.ReadAsStringAsync();
+
+                ModalErrorMessage =
+                    "Failed to save doctor. Status: " +
+                    ((int)response.StatusCode) +
+                    ". " +
+                    apiMessage;
+
+                return;
+            }
+
             ShowAddModal = false;
             SuccessMessage = "Doctor added successfully.";
+
             await LoadDoctors();
         }
-        else
+        catch (Exception ex)
         {
-            ModalErrorMessage = "Failed to save doctor.";
+            ModalErrorMessage = "Failed to save doctor. " + ex.Message;
+        }
+        finally
+        {
+            IsSaving = false;
+        }
+    }
+
+    private void OpenEditModal(DoctorDto doctor)
+    {
+        EditingDoctorId = doctor.DoctorId;
+
+        EditDoctor = new UpdateDoctorDto
+        {
+            FullName = doctor.FullName,
+            Specialisation = doctor.Specialisation,
+            YearsOfExperience = doctor.YearsOfExperience,
+            ConsultationFee = doctor.ConsultationFee,
+            IsActive = doctor.IsActive
+        };
+
+        EditModalErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+        ShowEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        ShowEditModal = false;
+        EditModalErrorMessage = string.Empty;
+    }
+
+    private async Task SaveEditedDoctor()
+    {
+        IsUpdating = true;
+        EditModalErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        try
+        {
+            var response = await DoctorApi.UpdateDoctorAsync(EditingDoctorId, EditDoctor);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var apiMessage = await response.Content.ReadAsStringAsync();
+
+                EditModalErrorMessage =
+                    "Failed to update doctor. Status: " +
+                    ((int)response.StatusCode) +
+                    ". " +
+                    apiMessage;
+
+                return;
+            }
+
+            ShowEditModal = false;
+            SuccessMessage = "Doctor updated successfully.";
+
+            await LoadDoctors();
+        }
+        catch (Exception ex)
+        {
+            EditModalErrorMessage = "Failed to update doctor. " + ex.Message;
+        }
+        finally
+        {
+            IsUpdating = false;
+        }
+    }
+
+    private void ViewDoctorAppointments(DoctorDto doctor)
+    {
+        SelectedDoctorId = doctor.DoctorId;
+        SelectedDoctorName = doctor.FullName;
+    }
+
+    private void CloseDoctorAppointments()
+    {
+        SelectedDoctorId = null;
+        SelectedDoctorName = string.Empty;
+    }
+
+    private string GetPatientName(int patientId)
+    {
+        var patient = PatientList.FirstOrDefault(patient => patient.PatientId == patientId);
+
+        return patient?.FullName ?? "Patient";
+    }
+
+    private async Task UpdateAppointmentStatus(int appointmentId, AppointmentStatus status)
+    {
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = status
+        };
+
+        try
+        {
+            var response = await AppointmentApi.UpdateAppointmentStatusAsync(appointmentId, dto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var apiMessage = await response.Content.ReadAsStringAsync();
+
+                ErrorMessage =
+                    "Failed to update appointment. Status: " +
+                    ((int)response.StatusCode) +
+                    ". " +
+                    apiMessage;
+
+                return;
+            }
+
+            SuccessMessage = "Appointment updated successfully.";
+
+            await LoadAppointmentSupportData();
+            await LoadDoctors();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to update appointment. " + ex.Message;
+        }
+    }
+
+    private async Task CancelAppointment(int appointmentId)
+    {
+        var reason = await JS.InvokeAsync<string?>(
+            "prompt",
+            "Enter cancellation reason:");
+
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            ErrorMessage = "Cancellation reason is required.";
+            return;
+        }
+
+        ErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        var dto = new UpdateAppointmentStatusDto
+        {
+            Status = AppointmentStatus.Cancelled,
+            CancellationReason = reason
+        };
+
+        try
+        {
+            var response = await AppointmentApi.UpdateAppointmentStatusAsync(appointmentId, dto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var apiMessage = await response.Content.ReadAsStringAsync();
+
+                ErrorMessage =
+                    "Failed to cancel appointment. Status: " +
+                    ((int)response.StatusCode) +
+                    ". " +
+                    apiMessage;
+
+                return;
+            }
+
+            SuccessMessage = "Appointment cancelled successfully.";
+
+            await LoadAppointmentSupportData();
+            await LoadDoctors();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Failed to cancel appointment. " + ex.Message;
         }
     }
 }

@@ -4,8 +4,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxis.Shared.DTOs.Patient
 {
-    public class CreatePatientDto
+    public class CreatePatientDto : IValidatableObject
     {
+        private static readonly DateTime MinimumDateOfBirth = new(1900, 1, 1);
+
         [Required(ErrorMessage = ValidationMessages.FullNameRequired)]
         [StringLength(ValidationLimits.FullNameLength)]
         [RegularExpression(
@@ -28,11 +30,27 @@ namespace HealthAxis.Shared.DTOs.Patient
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = ValidationMessages.EmailRequired)]
-        [EmailAddress(
-            ErrorMessage = ValidationMessages.InvalidEmailFormat)]
+        [EmailAddress(ErrorMessage = ValidationMessages.InvalidEmailFormat)]
         [StringLength(ValidationLimits.EmailLength)]
         public string Email { get; set; } = string.Empty;
 
         public string? InsuranceId { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (DateOfBirth.Date > DateTime.Today)
+            {
+                yield return new ValidationResult(
+                    "Date of birth cannot be in the future.",
+                    new[] { nameof(DateOfBirth) });
+            }
+
+            if (DateOfBirth.Date < MinimumDateOfBirth.Date)
+            {
+                yield return new ValidationResult(
+                    "Date of birth must be after 01 Jan 1900.",
+                    new[] { nameof(DateOfBirth) });
+            }
+        }
     }
 }

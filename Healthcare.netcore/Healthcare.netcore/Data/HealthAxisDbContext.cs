@@ -26,8 +26,6 @@ namespace HealthAxis.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // ✅ UserId should be nullable because seeded patients/doctors
-            // do not have Identity login users.
             modelBuilder.Entity<Patient>()
                 .Property(p => p.UserId)
                 .IsRequired(false);

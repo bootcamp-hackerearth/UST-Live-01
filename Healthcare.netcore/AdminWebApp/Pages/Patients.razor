@@ -3,18 +3,22 @@
 
 @using AdminWebApp.Services
 @using HealthAxis.Shared.DTOs.Patient
+@using HealthAxis.Shared.DTOs.Appointment
+@using HealthAxis.Shared.DTOs.Doctor
 @using HealthAxis.Shared.Enums
+@using Microsoft.AspNetCore.Components.Forms
 
 @inject PatientService PatientApi
+@inject AppointmentService AppointmentApi
+@inject DoctorService DoctorApi
 
 <div class="doctor-page">
 
-    <!-- HEADER -->
     <div class="doctor-page-header">
         <div>
             <span class="eyebrow">PATIENT MANAGEMENT</span>
             <h1>Patients</h1>
-            <p>View patients, apply filters, and register new patient profiles.</p>
+            <p>View patients, apply filters, register new patient profiles, and review appointments.</p>
         </div>
 
         <button type="button" class="primary-btn" @onclick="OpenAddModal">
@@ -22,7 +26,6 @@
         </button>
     </div>
 
-    <!-- FILTERS -->
     <div class="doctor-filter-card">
         <div class="doctor-filter-grid">
             <div class="form-group">
@@ -44,19 +47,9 @@
                     }
                 </select>
             </div>
-
-            <div class="form-group">
-                <label>Insurance</label>
-                <select class="form-control" @bind="SelectedInsuranceStatus">
-                    <option value="">All</option>
-                    <option value="insured">With Insurance</option>
-                    <option value="not-insured">Without Insurance</option>
-                </select>
-            </div>
         </div>
     </div>
 
-    <!-- ALERTS -->
     @if (!string.IsNullOrWhiteSpace(SuccessMessage))
     {
         <div class="doctor-alert success-alert">
@@ -71,7 +64,6 @@
         </div>
     }
 
-    <!-- TABLE -->
     <div class="doctor-table-card">
         @if (IsLoading)
         {
@@ -95,17 +87,16 @@
                         <th>Age</th>
                         <th>Date of Birth</th>
                         <th>Contact</th>
-                        <th>Insurance</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
 
                 <tbody>
-                    @foreach (var patient in FilteredPatients)
+                    @foreach (var patient in PagedPatients)
                     {
                         <tr>
                             <td>
                                 <div class="doctor-name">@patient.FullName</div>
-                                <div class="doctor-id">ID: @patient.PatientId</div>
                             </td>
 
                             <td>@patient.Gender</td>
@@ -120,18 +111,19 @@
                             </td>
 
                             <td>
-                                @if (!string.IsNullOrWhiteSpace(patient.InsuranceId))
-                                {
-                                    <span class="status-badge active">
-                                        @patient.InsuranceId
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="status-badge inactive">
-                                        Not Provided
-                                    </span>
-                                }
+                                <div class="doctor-action-group">
+                                    <button type="button"
+                                            class="secondary-btn"
+                                            @onclick="() => OpenEditModal(patient)">
+                                        Edit
+                                    </button>
+
+                                    <button type="button"
+                                            class="view-more-btn"
+                                            @onclick="() => ViewPatientAppointments(patient)">
+                                        View Appointments
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -139,6 +131,97 @@
             </table>
         }
     </div>
+
+    @if (!IsLoading && FilteredPatients.Any())
+    {
+        <div class="report-pagination">
+            <button type="button"
+                    class="secondary-btn"
+                    disabled="@(PatientPageNumber == 1)"
+                    @onclick="PreviousPatientPage">
+                Previous
+            </button>
+
+            <span>Page @PatientPageNumber of @TotalPatientPages</span>
+
+            <button type="button"
+                    class="secondary-btn"
+                    disabled="@(PatientPageNumber == TotalPatientPages)"
+                    @onclick="NextPatientPage">
+                Next
+            </button>
+        </div>
+    }
+
+    @if (SelectedPatientId.HasValue)
+    {
+        <div class="appointment-detail-card doctor-appointments-panel">
+
+            <div class="appointment-detail-header">
+                <div>
+                    <h2>Appointments for @SelectedPatientName</h2>
+                    <p>View appointment schedule and current appointment status.</p>
+                </div>
+
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="ClosePatientAppointments">
+                    Close
+                </button>
+            </div>
+
+            @if (!SelectedPatientAppointments.Any())
+            {
+                <div class="empty-state">
+                    No appointments found for this patient.
+                </div>
+            }
+            else
+            {
+                <table class="appointment-detail-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Doctor</th>
+                            <th>Status</th>
+                            <th>Cancellation Reason</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var appointment in SelectedPatientAppointments)
+                        {
+                            <tr>
+                                <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
+
+                                <td>@appointment.TimeSlot</td>
+
+                                <td>@GetDoctorName(appointment.DoctorId)</td>
+
+                                <td>
+                                    <span class="appointment-status @appointment.Status.ToString().ToLower()">
+                                        @appointment.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @if (!string.IsNullOrWhiteSpace(appointment.CancellationReason))
+                                    {
+                                        @appointment.CancellationReason
+                                    }
+                                    else
+                                    {
+                                        <span class="doctor-id">—</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    }
 
 </div>
 
@@ -159,85 +242,184 @@
                 </button>
             </div>
 
-            <EditForm Model="NewPatient" OnValidSubmit="SavePatient">
-                <DataAnnotationsValidator />
+            @if (AddPatientEditContext is not null)
+            {
+                <EditForm EditContext="AddPatientEditContext" OnSubmit="SavePatient">
+                    <DataAnnotationsValidator />
 
-                <div class="modal-form-grid">
+                    <div class="modal-form-grid">
 
-                    <div class="form-group full-width">
-                        <label>Full Name</label>
-                        <InputText class="form-control"
-                                   placeholder="Enter patient full name"
-                                   @bind-Value="NewPatient.FullName" />
-                        <ValidationMessage For="() => NewPatient.FullName" />
+                        <div class="form-group full-width">
+                            <label>Full Name</label>
+                            <InputText class="form-control"
+                                       placeholder="Enter patient full name"
+                                       @bind-Value="NewPatient.FullName" />
+                            <ValidationMessage For="() => NewPatient.FullName" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <InputDate class="form-control"
+                                       min="@MinimumDateOfBirthString"
+                                       max="@MaximumDateOfBirthString"
+                                       @bind-Value="NewPatient.DateOfBirth"
+                                       @onblur="() => ValidateAddDateOfBirth()" />
+                            <ValidationMessage For="() => NewPatient.DateOfBirth" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <InputSelect class="form-control"
+                                         @bind-Value="NewPatient.Gender">
+                                @foreach (var gender in Enum.GetValues<Gender>())
+                                {
+                                    <option value="@gender">@gender</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => NewPatient.Gender" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <InputText class="form-control"
+                                       placeholder="Enter phone number"
+                                       @bind-Value="NewPatient.PhoneNumber" />
+                            <ValidationMessage For="() => NewPatient.PhoneNumber" />
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Email</label>
+                            <InputText class="form-control"
+                                       placeholder="patient@email.com"
+                                       @bind-Value="NewPatient.Email" />
+                            <ValidationMessage For="() => NewPatient.Email" />
+                        </div>
+
                     </div>
 
-                    <div class="form-group">
-                        <label>Date of Birth</label>
-                        <InputDate class="form-control"
-                                   @bind-Value="NewPatient.DateOfBirth" />
-                        <ValidationMessage For="() => NewPatient.DateOfBirth" />
-                    </div>
+                    @if (!string.IsNullOrWhiteSpace(ModalErrorMessage))
+                    {
+                        <div class="doctor-alert error-alert">
+                            @ModalErrorMessage
+                        </div>
+                    }
 
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <InputSelect class="form-control"
-                                     @bind-Value="NewPatient.Gender">
-                            @foreach (var gender in Enum.GetValues<Gender>())
-                            {
-                                <option value="@gender">@gender</option>
-                            }
-                        </InputSelect>
-                        <ValidationMessage For="() => NewPatient.Gender" />
-                    </div>
+                    <div class="modal-actions">
+                        <button type="button"
+                                class="secondary-btn"
+                                @onclick="CloseAddModal"
+                                disabled="@IsSaving">
+                            Cancel
+                        </button>
 
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <InputText class="form-control"
-                                   placeholder="Enter phone number"
-                                   @bind-Value="NewPatient.PhoneNumber" />
-                        <ValidationMessage For="() => NewPatient.PhoneNumber" />
+                        <button type="submit"
+                                class="primary-btn"
+                                disabled="@IsSaving">
+                            @(IsSaving ? "Saving..." : "Save Patient")
+                        </button>
                     </div>
+                </EditForm>
+            }
 
-                    <div class="form-group">
-                        <label>Email</label>
-                        <InputText class="form-control"
-                                   placeholder="patient@email.com"
-                                   @bind-Value="NewPatient.Email" />
-                        <ValidationMessage For="() => NewPatient.Email" />
-                    </div>
+        </div>
+    </div>
+}
 
-                    <div class="form-group full-width">
-                        <label>Insurance ID</label>
-                        <InputText class="form-control"
-                                   placeholder="Optional insurance ID"
-                                   @bind-Value="NewPatient.InsuranceId" />
-                    </div>
+<!-- EDIT PATIENT MODAL -->
+@if (ShowEditModal)
+{
+    <div class="modal-backdrop">
+        <div class="doctor-modal">
 
+            <div class="doctor-modal-header">
+                <div>
+                    <h2>Edit Patient</h2>
+                    <p>Update patient profile details.</p>
                 </div>
 
-                @if (!string.IsNullOrWhiteSpace(ModalErrorMessage))
-                {
-                    <div class="doctor-alert error-alert">
-                        @ModalErrorMessage
+                <button type="button" class="modal-close-btn" @onclick="CloseEditModal">
+                    ×
+                </button>
+            </div>
+
+            @if (EditPatientEditContext is not null)
+            {
+                <EditForm EditContext="EditPatientEditContext" OnSubmit="SaveEditedPatient">
+                    <DataAnnotationsValidator />
+
+                    <div class="modal-form-grid">
+
+                        <div class="form-group full-width">
+                            <label>Full Name</label>
+                            <InputText class="form-control"
+                                       placeholder="Enter patient full name"
+                                       @bind-Value="EditPatient.FullName" />
+                            <ValidationMessage For="() => EditPatient.FullName" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Date of Birth</label>
+                            <InputDate class="form-control"
+                                       min="@MinimumDateOfBirthString"
+                                       max="@MaximumDateOfBirthString"
+                                       @bind-Value="EditPatient.DateOfBirth"
+                                       @onblur="() => ValidateEditDateOfBirth()" />
+                            <ValidationMessage For="() => EditPatient.DateOfBirth" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <InputSelect class="form-control"
+                                         @bind-Value="EditPatient.Gender">
+                                @foreach (var gender in Enum.GetValues<Gender>())
+                                {
+                                    <option value="@gender">@gender</option>
+                                }
+                            </InputSelect>
+                            <ValidationMessage For="() => EditPatient.Gender" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <InputText class="form-control"
+                                       placeholder="Enter phone number"
+                                       @bind-Value="EditPatient.PhoneNumber" />
+                            <ValidationMessage For="() => EditPatient.PhoneNumber" />
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>Email</label>
+                            <InputText class="form-control"
+                                       placeholder="patient@email.com"
+                                       @bind-Value="EditPatient.Email" />
+                            <ValidationMessage For="() => EditPatient.Email" />
+                        </div>
+
                     </div>
-                }
 
-                <div class="modal-actions">
-                    <button type="button"
-                            class="secondary-btn"
-                            @onclick="CloseAddModal"
-                            disabled="@IsSaving">
-                        Cancel
-                    </button>
+                    @if (!string.IsNullOrWhiteSpace(EditModalErrorMessage))
+                    {
+                        <div class="doctor-alert error-alert">
+                            @EditModalErrorMessage
+                        </div>
+                    }
 
-                    <button type="submit"
-                            class="primary-btn"
-                            disabled="@IsSaving">
-                        @(IsSaving ? "Saving..." : "Save Patient")
-                    </button>
-                </div>
-            </EditForm>
+                    <div class="modal-actions">
+                        <button type="button"
+                                class="secondary-btn"
+                                @onclick="CloseEditModal"
+                                disabled="@IsUpdating">
+                            Cancel
+                        </button>
+
+                        <button type="submit"
+                                class="primary-btn"
+                                disabled="@IsUpdating">
+                            @(IsUpdating ? "Updating..." : "Update Patient")
+                        </button>
+                    </div>
+                </EditForm>
+            }
 
         </div>
     </div>
@@ -245,20 +427,70 @@
 
 @code {
     private List<PatientDto> PatientList = new();
+    private List<AppointmentDto> AppointmentList = new();
+    private List<DoctorDto> DoctorList = new();
 
     private CreatePatientDto NewPatient = new();
+    private UpdatePatientDto EditPatient = new();
+
+    private EditContext? AddPatientEditContext;
+    private ValidationMessageStore? AddPatientValidationStore;
+
+    private EditContext? EditPatientEditContext;
+    private ValidationMessageStore? EditPatientValidationStore;
+
+    private int EditingPatientId;
 
     private bool IsLoading;
     private bool IsSaving;
+    private bool IsUpdating;
     private bool ShowAddModal;
+    private bool ShowEditModal;
 
-    private string SearchText = string.Empty;
-    private string SelectedGender = string.Empty;
-    private string SelectedInsuranceStatus = string.Empty;
+    private int PatientPageNumber = 1;
+    private int PatientPageSize = 5;
+
+    private string _searchText = string.Empty;
+    private string _selectedGender = string.Empty;
+
+    private string SearchText
+    {
+        get => _searchText;
+        set
+        {
+            _searchText = value;
+            PatientPageNumber = 1;
+        }
+    }
+
+    private string SelectedGender
+    {
+        get => _selectedGender;
+        set
+        {
+            _selectedGender = value;
+            PatientPageNumber = 1;
+        }
+    }
 
     private string ErrorMessage = string.Empty;
     private string SuccessMessage = string.Empty;
     private string ModalErrorMessage = string.Empty;
+    private string EditModalErrorMessage = string.Empty;
+
+    private int? SelectedPatientId;
+    private string SelectedPatientName = string.Empty;
+
+    private readonly DateTime MinimumDateOfBirth = new(1900, 1, 1);
+
+    private DateTime MaximumDateOfBirth =>
+        DateTime.Today;
+
+    private string MinimumDateOfBirthString =>
+        MinimumDateOfBirth.ToString("yyyy-MM-dd");
+
+    private string MaximumDateOfBirthString =>
+        MaximumDateOfBirth.ToString("yyyy-MM-dd");
 
     private IEnumerable<PatientDto> FilteredPatients
     {
@@ -268,10 +500,12 @@
 
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
+                var search = SearchText.Trim();
+
                 query = query.Where(patient =>
-                    patient.FullName.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    patient.Email.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                    patient.PhoneNumber.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+                    patient.FullName.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    patient.Email.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                    patient.PhoneNumber.Contains(search, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.IsNullOrWhiteSpace(SelectedGender) &&
@@ -280,23 +514,48 @@
                 query = query.Where(patient => patient.Gender == gender);
             }
 
-            if (SelectedInsuranceStatus == "insured")
-            {
-                query = query.Where(patient => !string.IsNullOrWhiteSpace(patient.InsuranceId));
-            }
-
-            if (SelectedInsuranceStatus == "not-insured")
-            {
-                query = query.Where(patient => string.IsNullOrWhiteSpace(patient.InsuranceId));
-            }
-
             return query;
+        }
+    }
+
+    private int TotalPatientPages =>
+        Math.Max(1, (int)Math.Ceiling(FilteredPatients.Count() / (double)PatientPageSize));
+
+    private IEnumerable<PatientDto> PagedPatients
+    {
+        get
+        {
+            if (PatientPageNumber > TotalPatientPages)
+            {
+                PatientPageNumber = TotalPatientPages;
+            }
+
+            return FilteredPatients
+                .Skip((PatientPageNumber - 1) * PatientPageSize)
+                .Take(PatientPageSize);
+        }
+    }
+
+    private IEnumerable<AppointmentDto> SelectedPatientAppointments
+    {
+        get
+        {
+            if (!SelectedPatientId.HasValue)
+            {
+                return Enumerable.Empty<AppointmentDto>();
+            }
+
+            return AppointmentList
+                .Where(appointment => appointment.PatientId == SelectedPatientId.Value)
+                .OrderByDescending(appointment => appointment.ScheduledDate)
+                .ThenBy(appointment => appointment.TimeSlot);
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadPatients();
+        await LoadAppointmentSupportData();
     }
 
     private async Task LoadPatients()
@@ -321,6 +580,22 @@
         }
     }
 
+    private async Task LoadAppointmentSupportData()
+    {
+        try
+        {
+            var appointments = await AppointmentApi.GetAppointmentsAsync();
+            var doctors = await DoctorApi.GetDoctorsAsync(1, 100);
+
+            AppointmentList = appointments ?? new List<AppointmentDto>();
+            DoctorList = doctors?.Items ?? new List<DoctorDto>();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "Unable to load appointment details. " + ex.Message;
+        }
+    }
+
     private void OpenAddModal()
     {
         NewPatient = new CreatePatientDto
@@ -330,7 +605,23 @@
             FullName = string.Empty,
             PhoneNumber = string.Empty,
             Email = string.Empty,
-            InsuranceId = string.Empty
+            InsuranceId = null
+        };
+
+        AddPatientEditContext = new EditContext(NewPatient);
+        AddPatientValidationStore = new ValidationMessageStore(AddPatientEditContext);
+
+        AddPatientEditContext.OnValidationRequested += (_, _) =>
+        {
+            ValidateAddDateOfBirth();
+        };
+
+        AddPatientEditContext.OnFieldChanged += (_, args) =>
+        {
+            if (args.FieldIdentifier.FieldName == nameof(NewPatient.DateOfBirth))
+            {
+                ValidateAddDateOfBirth();
+            }
         };
 
         ModalErrorMessage = string.Empty;
@@ -342,9 +633,110 @@
     {
         ShowAddModal = false;
         ModalErrorMessage = string.Empty;
+        AddPatientEditContext = null;
+        AddPatientValidationStore = null;
     }
 
-    private async Task SavePatient()
+    private void OpenEditModal(PatientDto patient)
+    {
+        EditingPatientId = patient.PatientId;
+
+        EditPatient = new UpdatePatientDto
+        {
+            FullName = patient.FullName,
+            DateOfBirth = patient.DateOfBirth,
+            Gender = patient.Gender,
+            PhoneNumber = patient.PhoneNumber,
+            Email = patient.Email,
+            InsuranceId = null
+        };
+
+        EditPatientEditContext = new EditContext(EditPatient);
+        EditPatientValidationStore = new ValidationMessageStore(EditPatientEditContext);
+
+        EditPatientEditContext.OnValidationRequested += (_, _) =>
+        {
+            ValidateEditDateOfBirth();
+        };
+
+        EditPatientEditContext.OnFieldChanged += (_, args) =>
+        {
+            if (args.FieldIdentifier.FieldName == nameof(EditPatient.DateOfBirth))
+            {
+                ValidateEditDateOfBirth();
+            }
+        };
+
+        EditModalErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+        ShowEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        ShowEditModal = false;
+        EditModalErrorMessage = string.Empty;
+        EditPatientEditContext = null;
+        EditPatientValidationStore = null;
+    }
+
+    private void ValidateAddDateOfBirth()
+    {
+        if (AddPatientEditContext is null || AddPatientValidationStore is null)
+        {
+            return;
+        }
+
+        var field = AddPatientEditContext.Field(nameof(NewPatient.DateOfBirth));
+
+        AddPatientValidationStore.Clear(field);
+
+        if (NewPatient.DateOfBirth.Date > MaximumDateOfBirth.Date)
+        {
+            AddPatientValidationStore.Add(
+                field,
+                "Date of birth cannot be in the future.");
+        }
+
+        if (NewPatient.DateOfBirth.Date < MinimumDateOfBirth.Date)
+        {
+            AddPatientValidationStore.Add(
+                field,
+                "Date of birth must be after 01 Jan 1900.");
+        }
+
+        AddPatientEditContext.NotifyValidationStateChanged();
+    }
+
+    private void ValidateEditDateOfBirth()
+    {
+        if (EditPatientEditContext is null || EditPatientValidationStore is null)
+        {
+            return;
+        }
+
+        var field = EditPatientEditContext.Field(nameof(EditPatient.DateOfBirth));
+
+        EditPatientValidationStore.Clear(field);
+
+        if (EditPatient.DateOfBirth.Date > MaximumDateOfBirth.Date)
+        {
+            EditPatientValidationStore.Add(
+                field,
+                "Date of birth cannot be in the future.");
+        }
+
+        if (EditPatient.DateOfBirth.Date < MinimumDateOfBirth.Date)
+        {
+            EditPatientValidationStore.Add(
+                field,
+                "Date of birth must be after 01 Jan 1900.");
+        }
+
+        EditPatientEditContext.NotifyValidationStateChanged();
+    }
+
+    private async Task SavePatient(EditContext editContext)
     {
         IsSaving = true;
         ModalErrorMessage = string.Empty;
@@ -352,6 +744,15 @@
 
         try
         {
+            var isValid = editContext.Validate();
+
+            if (!isValid)
+            {
+                return;
+            }
+
+            NewPatient.InsuranceId = null;
+
             var response = await PatientApi.AddPatientAsync(NewPatient);
 
             if (!response.IsSuccessStatusCode)
@@ -369,6 +770,10 @@
 
             ShowAddModal = false;
             SuccessMessage = "Patient added successfully.";
+            PatientPageNumber = 1;
+
+            AddPatientEditContext = null;
+            AddPatientValidationStore = null;
 
             await LoadPatients();
         }
@@ -379,6 +784,93 @@
         finally
         {
             IsSaving = false;
+        }
+    }
+
+    private async Task SaveEditedPatient(EditContext editContext)
+    {
+        IsUpdating = true;
+        EditModalErrorMessage = string.Empty;
+        SuccessMessage = string.Empty;
+
+        try
+        {
+            var isValid = editContext.Validate();
+
+            if (!isValid)
+            {
+                return;
+            }
+
+            EditPatient.InsuranceId = null;
+
+            var response = await PatientApi.UpdatePatientAsync(
+                EditingPatientId,
+                EditPatient);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var apiMessage = await response.Content.ReadAsStringAsync();
+
+                EditModalErrorMessage =
+                    "Unable to update patient. Status: " +
+                    ((int)response.StatusCode) +
+                    ". " +
+                    apiMessage;
+
+                return;
+            }
+
+            ShowEditModal = false;
+            SuccessMessage = "Patient updated successfully.";
+
+            EditPatientEditContext = null;
+            EditPatientValidationStore = null;
+
+            await LoadPatients();
+        }
+        catch (Exception ex)
+        {
+            EditModalErrorMessage = "Unable to update patient. " + ex.Message;
+        }
+        finally
+        {
+            IsUpdating = false;
+        }
+    }
+
+    private void ViewPatientAppointments(PatientDto patient)
+    {
+        SelectedPatientId = patient.PatientId;
+        SelectedPatientName = patient.FullName;
+    }
+
+    private void ClosePatientAppointments()
+    {
+        SelectedPatientId = null;
+        SelectedPatientName = string.Empty;
+    }
+
+    private string GetDoctorName(int doctorId)
+    {
+        var doctor = DoctorList.FirstOrDefault(doctor => doctor.DoctorId == doctorId);
+
+        return doctor?.FullName ?? "Doctor";
+    }
+
+    private void PreviousPatientPage()
+    {
+        if (PatientPageNumber > 1)
+        {
+            PatientPageNumber--;
+        }
+    }
+
+    private void NextPatientPage()
+    {
+        if (PatientPageNumber < TotalPatientPages)
+        {
+            PatientPageNumber++;
         }
     }
 }

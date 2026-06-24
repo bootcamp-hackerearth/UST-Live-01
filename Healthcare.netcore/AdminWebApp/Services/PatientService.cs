@@ -34,6 +34,17 @@ namespace AdminWebApp.Services
             return await _http.PostAsJsonAsync("api/patients", patient);
         }
 
+        public async Task<HttpResponseMessage> UpdatePatientAsync(
+            int patientId,
+            UpdatePatientDto patient)
+        {
+            await AttachTokenAsync();
+
+            return await _http.PutAsJsonAsync(
+                $"api/patients/{patientId}",
+                patient);
+        }
+
         private async Task AttachTokenAsync()
         {
             var token = await _js.InvokeAsync<string>(

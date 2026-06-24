@@ -20,8 +20,6 @@ namespace HealthAxis.API.Controllers
             _service = service;
         }
 
-        // ✅ Admin can see all patients with pagination
-        // GET /api/patients?pageNumber=1&pageSize=10
         [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] PaginationParams paginationParams)
@@ -30,8 +28,6 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ Doctor can see only patients who have appointments with that doctor
-        // GET /api/patients/doctor?pageNumber=1&pageSize=10
         [Authorize(Roles = "Doctor")]
         [HttpGet("doctor")]
         public async Task<IActionResult> GetDoctorPatients([FromQuery] PaginationParams paginationParams)
@@ -47,8 +43,6 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ Patient can view only own profile
-        // GET /api/patients/{id}
         [Authorize(Roles = "Patient")]
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
@@ -71,12 +65,26 @@ namespace HealthAxis.API.Controllers
             return Ok(patient);
         }
 
-        // ✅ Patient can update only own profile
-        // PUT /api/patients/{id}
-        [Authorize(Roles = "Patient")]
+        // ✅ Admin can create patient
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        public async Task<IActionResult> Create(CreatePatientDto dto)
+        {
+            var result = await _service.AddAsync(dto);
+            return Ok(result);
+        }
+
+        // ✅ Patient can update own profile, Admin can update any patient
+        [Authorize(Roles = "Patient,Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdatePatientDto dto)
         {
+            if (User.IsInRole("Admin"))
+            {
+                var adminResult = await _service.UpdateAsync(id, dto);
+                return Ok(adminResult);
+            }
+
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
@@ -95,8 +103,6 @@ namespace HealthAxis.API.Controllers
             return Ok(result);
         }
 
-        // ✅ Patient can view only own health records
-        // GET /api/patients/{id}/health-records
         [Authorize(Roles = "Patient")]
         [HttpGet("{id}/health-records")]
         public async Task<IActionResult> GetHealthRecords(int id)

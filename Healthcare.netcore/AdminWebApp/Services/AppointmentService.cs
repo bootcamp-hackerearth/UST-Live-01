@@ -1,5 +1,4 @@
 ﻿using HealthAxis.Shared.DTOs.Appointment;
-using HealthAxis.Shared.DTOs.Common;
 using Microsoft.JSInterop;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -17,21 +16,23 @@ namespace AdminWebApp.Services
             _js = js;
         }
 
-        public async Task<PagedResponse<AppointmentDto>?> GetAppointmentsAsync(
-            int pageNumber = 1,
-            int pageSize = 100)
+        public async Task<List<AppointmentDto>?> GetAppointmentsAsync()
         {
             await AttachTokenAsync();
 
-            return await _http.GetFromJsonAsync<PagedResponse<AppointmentDto>>(
-                $"api/appointment?pageNumber={pageNumber}&pageSize={pageSize}");
+            return await _http.GetFromJsonAsync<List<AppointmentDto>>(
+                "api/appointments");
         }
 
-        public async Task<HttpResponseMessage> AddAppointmentAsync(CreateAppointmentDto appointment)
+        public async Task<HttpResponseMessage> UpdateAppointmentStatusAsync(
+            int appointmentId,
+            UpdateAppointmentStatusDto dto)
         {
             await AttachTokenAsync();
 
-            return await _http.PostAsJsonAsync("api/appointment", appointment);
+            return await _http.PutAsJsonAsync(
+                $"api/appointments/{appointmentId}/status",
+                dto);
         }
 
         private async Task AttachTokenAsync()

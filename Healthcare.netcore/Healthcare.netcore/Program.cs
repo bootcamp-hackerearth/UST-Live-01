@@ -112,6 +112,16 @@ builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 // ✅ Auth
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddCors(p =>
+{
+    p.AddPolicy("CorsPolicy", cfg =>
+    {
+        cfg.WithOrigins("https://localhost:7273")
+
+        .AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 // ✅ AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 

@@ -39,13 +39,15 @@ namespace HealthAxis.API.Controllers
 
         // ✅ PUT /api/appointments/{id}/status
         // Patient can cancel, Doctor can confirm/complete/cancel
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, UpdateAppointmentStatusDto dto)
         {
             var result = await _service.UpdateStatusAsync(id, dto);
             return Ok(result);
         }
+
 
         // ✅ DELETE /api/appointments/{id}
         // Requirement has DELETE endpoint; keep Patient only

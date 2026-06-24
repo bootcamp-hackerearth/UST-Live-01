@@ -37,7 +37,7 @@ h1 {
     outline: none !important;
 }
 
-/* ================= LOGIN PAGE ================= */
+/* ================= LOGIN ================= */
 
 .login-container {
     display: grid;
@@ -47,9 +47,7 @@ h1 {
 }
 
 .login-left {
-    position: relative;
-    overflow: hidden;
-    background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.35), transparent 35%), radial-gradient(circle at 80% 70%, rgba(37, 99, 235, 0.35), transparent 35%), linear-gradient(135deg, #0f172a, #1e3a8a);
+    background: linear-gradient(135deg, #0f172a, #1e3a8a);
     color: white;
     padding: 90px;
     display: flex;
@@ -57,54 +55,23 @@ h1 {
     justify-content: center;
 }
 
-    .login-left::before {
-        content: "";
-        position: absolute;
-        width: 260px;
-        height: 260px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        top: -80px;
-        right: -70px;
-    }
-
-    .login-left::after {
-        content: "";
-        position: absolute;
-        width: 180px;
-        height: 180px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        bottom: 80px;
-        left: 70px;
-    }
-
     .login-left h2 {
-        position: relative;
-        z-index: 1;
         font-size: 44px;
         line-height: 1.1;
         margin-bottom: 18px;
-        max-width: 520px;
     }
 
     .login-left p {
-        position: relative;
-        z-index: 1;
         color: rgba(255, 255, 255, 0.86);
         font-size: 18px;
-        max-width: 520px;
         margin-bottom: 28px;
     }
 
     .login-left ul {
-        position: relative;
-        z-index: 1;
         list-style: none;
         padding: 0;
         display: grid;
         gap: 14px;
-        font-size: 17px;
     }
 
     .login-left li {
@@ -112,7 +79,6 @@ h1 {
         border: 1px solid rgba(255,255,255,0.18);
         padding: 14px 16px;
         border-radius: 14px;
-        backdrop-filter: blur(10px);
     }
 
 .login-right {
@@ -120,7 +86,7 @@ h1 {
     align-items: center;
     justify-content: center;
     padding: 40px;
-    background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.25), transparent 35%), linear-gradient(135deg, #f8fafc, #e0f2fe);
+    background: linear-gradient(135deg, #f8fafc, #e0f2fe);
 }
 
 .admin-login-card {
@@ -128,9 +94,7 @@ h1 {
     padding: 42px;
     border-radius: 28px;
     background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(18px);
     box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
-    border: 1px solid rgba(255,255,255,0.65);
 }
 
 .login-logo {
@@ -144,7 +108,6 @@ h1 {
     justify-content: center;
     font-weight: 900;
     margin-bottom: 20px;
-    box-shadow: 0 12px 28px rgba(2, 132, 199, 0.4);
 }
 
 .login-brand h1 {
@@ -166,7 +129,6 @@ h1 {
         display: block;
         font-weight: 800;
         margin-bottom: 8px;
-        color: #0f172a;
     }
 
 .login-input {
@@ -177,7 +139,6 @@ h1 {
     padding: 0 15px;
     font-size: 15px;
     background: white;
-    transition: 0.2s;
 }
 
     .login-input:focus {
@@ -197,13 +158,10 @@ h1 {
     font-weight: 800;
     cursor: pointer;
     margin-top: 8px;
-    box-shadow: 0 14px 30px rgba(2, 132, 199, 0.35);
-    transition: 0.25s;
 }
 
     .login-button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 18px 40px rgba(2, 132, 199, 0.45);
     }
 
     .login-button:disabled {
@@ -236,11 +194,11 @@ h1 {
     min-height: 100vh;
     display: grid;
     grid-template-columns: 300px 1fr;
-    background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.25), transparent 30%), radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.18), transparent 35%), linear-gradient(135deg, #eef2ff 0%, #f8fafc 45%, #e0f2fe 100%);
+    background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 50%, #e0f2fe 100%);
 }
 
 .sidebar {
-    background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.24), transparent 35%), linear-gradient(180deg, #020617, #0f172a 55%, #111827);
+    background: linear-gradient(180deg, #020617, #0f172a 55%, #111827);
     color: white;
     padding: 28px 22px;
     display: flex;
@@ -267,14 +225,11 @@ h1 {
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    color: white;
-    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.35);
 }
 
 .sidebar-brand h3 {
     margin: 0;
     font-size: 24px;
-    color: white;
 }
 
 .sidebar-brand span {
@@ -301,9 +256,8 @@ h1 {
 
     .sidebar-link:hover,
     .sidebar-link.active {
-        background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(37,99,235,0.25));
+        background: rgba(37, 99, 235, 0.25);
         color: white;
-        border-color: rgba(148, 163, 184, 0.25);
         transform: translateX(4px);
     }
 
@@ -338,33 +292,62 @@ h1 {
         color: #94a3b8;
     }
 
-/* Main content area */
+/* ================= MAIN HEADER ================= */
 
 .dashboard-main {
-    padding: 26px 34px;
+    padding: 24px 34px;
     min-width: 0;
 }
 
 .dashboard-header {
-    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    padding: 14px 22px;
+    border-radius: 24px;
+    border: 1px solid rgba(191, 219, 254, 0.8);
+    background: linear-gradient(135deg, #e0f2fe, #eef2ff);
+    box-shadow: 0 14px 35px rgba(15, 23, 42, 0.08);
 }
 
-    .dashboard-header h2,
-    .dashboard-main h2 {
-        color: #020617;
+    .dashboard-header .eyebrow {
+        color: #2563eb;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.14em;
     }
 
-/* ================= DASHBOARD PAGE ================= */
+    .dashboard-header h2 {
+        margin: 6px 0 0;
+        color: #020617;
+        font-size: 26px;
+        font-weight: 900;
+    }
+
+.env-badge {
+    background: linear-gradient(135deg, #2563eb, #0284c7);
+    color: white;
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.page-content {
+    width: 100%;
+}
+
+/* ================= DASHBOARD ================= */
 
 .dashboard-content {
     max-width: 1320px;
     margin: 0 auto;
     padding: 42px;
     border-radius: 34px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.72));
+    background: rgba(255,255,255,0.9);
     border: 1px solid rgba(255,255,255,0.85);
     box-shadow: 0 30px 80px rgba(15, 23, 42, 0.14);
-    backdrop-filter: blur(16px);
 }
 
     .dashboard-content h1 {
@@ -378,6 +361,23 @@ h1 {
         color: #475569;
         font-size: 17px;
         margin-bottom: 28px;
+    }
+
+.dashboard-section-title {
+    margin-bottom: 28px;
+}
+
+    .dashboard-section-title h1 {
+        font-size: 42px;
+        font-weight: 900;
+        color: #020617;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-section-title p {
+        color: #334155;
+        font-size: 17px;
+        margin-bottom: 0;
     }
 
 .stats-grid {
@@ -398,28 +398,6 @@ h1 {
     box-shadow: 0 22px 45px rgba(15, 23, 42, 0.20);
 }
 
-    .stat-card::after {
-        content: "";
-        position: absolute;
-        width: 150px;
-        height: 150px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.17);
-        right: -45px;
-        top: -45px;
-    }
-
-    .stat-card::before {
-        content: "";
-        position: absolute;
-        width: 80px;
-        height: 80px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.12);
-        right: 35px;
-        bottom: 25px;
-    }
-
     .stat-card:nth-child(1) {
         background: linear-gradient(135deg, #2563eb, #1e40af);
     }
@@ -437,15 +415,7 @@ h1 {
     }
 
     .stat-card:hover {
-        transform: translateY(-7px) scale(1.01);
-        box-shadow: 0 28px 60px rgba(15, 23, 42, 0.28);
-    }
-
-    .stat-card h4,
-    .stat-card h2,
-    .stat-card p {
-        position: relative;
-        z-index: 1;
+        transform: translateY(-7px);
     }
 
     .stat-card h4 {
@@ -468,8 +438,6 @@ h1 {
     }
 
 .info-card {
-    position: relative;
-    overflow: hidden;
     margin-top: 30px;
     padding: 32px;
     border-radius: 26px;
@@ -478,45 +446,119 @@ h1 {
     box-shadow: 0 24px 55px rgba(15, 23, 42, 0.22);
 }
 
-    .info-card::after {
-        content: "";
-        position: absolute;
-        width: 240px;
-        height: 240px;
-        border-radius: 999px;
-        background: rgba(56, 189, 248, 0.18);
-        right: -60px;
-        top: -80px;
-    }
-
     .info-card h3 {
-        position: relative;
-        z-index: 1;
         font-size: 24px;
         margin-bottom: 12px;
         color: white;
     }
 
     .info-card p {
-        position: relative;
-        z-index: 1;
         color: #dbeafe;
         font-size: 17px;
         margin: 0;
     }
 
-/* Old panel-card support */
+/* ================= DASHBOARD LOWER ================= */
 
-.panel-card,
-.auth-message-card {
-    background: rgba(255,255,255,0.88);
-    border-radius: 26px;
-    padding: 32px;
-    box-shadow: 0 24px 55px rgba(15, 23, 42, 0.14);
-    border: 1px solid rgba(255,255,255,0.75);
+.dashboard-lower-grid {
+    display: grid;
+    grid-template-columns: 1fr 0.85fr;
+    gap: 24px;
+    margin-top: 28px;
 }
 
-/* ================= DOCTOR PAGE ================= */
+.dashboard-card {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    border: 1px solid #e2e8f0;
+}
+
+    .dashboard-card h3 {
+        font-size: 24px;
+        font-weight: 900;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .dashboard-card > p {
+        color: #64748b;
+        font-size: 16px;
+        margin-bottom: 22px;
+    }
+
+.shortcut-list {
+    display: grid;
+    gap: 14px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    background: linear-gradient(135deg, #eff6ff, #ffffff);
+    border: 1px solid #dbeafe;
+    color: #0f172a;
+    font-weight: 900;
+    padding: 17px 20px;
+    border-radius: 18px;
+}
+
+    .shortcut-item:hover {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1d4ed8;
+    }
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #334155;
+    font-weight: 800;
+    margin-top: 18px;
+    margin-bottom: 8px;
+}
+
+    .status-row strong {
+        background: #eef2ff;
+        color: #3730a3;
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-size: 14px;
+    }
+
+.status-track {
+    width: 100%;
+    height: 12px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.status-fill {
+    height: 100%;
+    border-radius: 999px;
+}
+
+    .status-fill.confirmed {
+        background: #22c55e;
+    }
+
+    .status-fill.pending {
+        background: #facc15;
+    }
+
+    .status-fill.cancelled {
+        background: #fb7185;
+    }
+
+    .status-fill.completed {
+        background: #8b5cf6;
+    }
+
+/* ================= DOCTOR / PATIENT PAGE ================= */
 
 .doctor-page {
     max-width: 1360px;
@@ -526,7 +568,6 @@ h1 {
     background: linear-gradient(135deg, rgba(255,255,255,0.88), rgba(239,246,255,0.82));
     border: 1px solid rgba(255,255,255,0.85);
     box-shadow: 0 30px 80px rgba(15, 23, 42, 0.13);
-    backdrop-filter: blur(16px);
 }
 
 .doctor-page-header {
@@ -551,8 +592,6 @@ h1 {
     color: #020617;
     font-weight: 900;
     margin-bottom: 10px;
-    border: none !important;
-    outline: none !important;
 }
 
 .doctor-page-header p {
@@ -570,13 +609,10 @@ h1 {
     font-size: 15px;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 14px 30px rgba(2, 132, 199, 0.32);
-    transition: 0.22s;
 }
 
     .primary-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 18px 38px rgba(2, 132, 199, 0.42);
     }
 
 .secondary-btn {
@@ -627,7 +663,6 @@ h1 {
     background: white;
     color: #0f172a;
     font-size: 15px;
-    transition: 0.2s;
 }
 
     .form-control:focus {
@@ -636,7 +671,7 @@ h1 {
         box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
     }
 
-/* Doctor table */
+/* Tables */
 
 .doctor-table-card {
     overflow: hidden;
@@ -658,17 +693,8 @@ h1 {
         background: linear-gradient(135deg, #0f172a, #1e3a8a);
         color: white;
         font-size: 15px;
-        letter-spacing: 0.02em;
         font-weight: 900;
     }
-
-        .doctor-table th:first-child {
-            border-top-left-radius: 24px;
-        }
-
-        .doctor-table th:last-child {
-            border-top-right-radius: 24px;
-        }
 
     .doctor-table td {
         padding: 18px 20px;
@@ -682,13 +708,9 @@ h1 {
         background: #f8fbff;
     }
 
-    .doctor-table tbody tr {
-        transition: 0.2s;
+    .doctor-table tbody tr:hover td {
+        background: #eff6ff;
     }
-
-        .doctor-table tbody tr:hover td {
-            background: #eff6ff;
-        }
 
 .doctor-name {
     font-weight: 900;
@@ -720,6 +742,8 @@ h1 {
         background: #fecaca;
         color: #991b1b;
     }
+
+/* Alerts */
 
 .doctor-alert {
     padding: 14px 16px;
@@ -767,7 +791,6 @@ h1 {
     padding: 28px;
     border-radius: 28px;
     box-shadow: 0 30px 90px rgba(0,0,0,0.35);
-    border: 1px solid rgba(255,255,255,0.7);
 }
 
 .doctor-modal-header {
@@ -806,15 +829,313 @@ h1 {
     gap: 16px;
 }
 
-    .modal-form-grid .form-control:first-child {
-        grid-column: 1 / -1;
-    }
-
 .modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 12px;
     margin-top: 22px;
+}
+
+/* ================= APPOINTMENT REPORTS / DETAILS ================= */
+
+.appointment-report-page {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 38px;
+    border-radius: 34px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.88), rgba(239,246,255,0.82));
+    border: 1px solid rgba(255,255,255,0.85);
+    box-shadow: 0 30px 80px rgba(15, 23, 42, 0.13);
+}
+
+.appointment-report-header h1 {
+    font-size: 40px;
+    color: #020617;
+    font-weight: 900;
+    margin-bottom: 8px;
+}
+
+.appointment-report-header p {
+    color: #475569;
+    font-size: 17px;
+    margin-bottom: 28px;
+}
+
+.appointment-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+    margin-bottom: 28px;
+}
+
+.appointment-summary-card {
+    min-height: 130px;
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+.summary-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    flex-shrink: 0;
+}
+
+.appointment-summary-card h4 {
+    margin-bottom: 8px;
+    color: #334155;
+    font-weight: 900;
+}
+
+.appointment-summary-card h2 {
+    margin-bottom: 6px;
+    font-size: 30px;
+    font-weight: 900;
+    color: #020617;
+}
+
+.appointment-summary-card p {
+    margin: 0;
+    color: #64748b;
+}
+
+.pending-card {
+    background: linear-gradient(135deg, #fff7ed, #fef3c7);
+}
+
+    .pending-card .summary-icon {
+        background: #facc15;
+    }
+
+.confirmed-card {
+    background: linear-gradient(135deg, #ecfdf5, #dcfce7);
+}
+
+    .confirmed-card .summary-icon {
+        background: #22c55e;
+    }
+
+.cancelled-card {
+    background: linear-gradient(135deg, #fff1f2, #fee2e2);
+}
+
+    .cancelled-card .summary-icon {
+        background: #fb7185;
+    }
+
+.completed-card {
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+
+    .completed-card .summary-icon {
+        background: #8b5cf6;
+    }
+
+.appointment-table-card,
+.appointment-detail-card {
+    overflow: hidden;
+    background: white;
+    border-radius: 28px;
+    box-shadow: 0 24px 55px rgba(15, 23, 42, 0.12);
+    border: 1px solid #e2e8f0;
+    margin-top: 24px;
+}
+
+.appointment-detail-card {
+    padding: 24px;
+}
+
+.appointment-report-table,
+.appointment-detail-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .appointment-report-table th,
+    .appointment-detail-table th {
+        text-align: left;
+        padding: 18px 20px;
+        background: linear-gradient(135deg, #0f172a, #1e3a8a);
+        color: white;
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+
+    .appointment-report-table td,
+    .appointment-detail-table td {
+        padding: 18px 20px;
+        border-bottom: 1px solid #e2e8f0;
+        color: #0f172a;
+    }
+
+.appointment-detail-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+    .appointment-detail-header h2 {
+        font-size: 24px;
+        font-weight: 900;
+        color: #020617;
+        margin-bottom: 8px;
+    }
+
+    .appointment-detail-header p {
+        color: #64748b;
+        margin: 0;
+    }
+
+.count-pill {
+    min-width: 54px;
+    display: inline-flex;
+    justify-content: center;
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-weight: 900;
+}
+
+    .count-pill.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .count-pill.confirmed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .count-pill.cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .count-pill.completed {
+        background: #e0e7ff;
+        color: #3730a3;
+    }
+
+.appointment-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+    .appointment-status.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .appointment-status.confirmed {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .appointment-status.completed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .appointment-status.cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+.report-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 18px 0 8px;
+    color: #475569;
+    font-weight: 800;
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.doctor-action-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.doctor-appointments-panel {
+    margin-top: 28px;
+}
+
+.view-more-btn {
+    border: 1px solid #c7d2fe;
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+    .view-more-btn:hover {
+        background: #c7d2fe;
+    }
+
+.appointment-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.mini-action-btn {
+    border: none;
+    padding: 7px 10px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+    .mini-action-btn.confirm {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .mini-action-btn.complete {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .mini-action-btn.cancel {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+/* ================= VALIDATION ================= */
+
+.validation-message {
+    color: #dc2626;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 6px;
+    display: block;
+}
+
+.invalid,
+.input-validation-error {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12) !important;
+}
+
+.valid.modified:not([type=checkbox]) {
+    border-color: #16a34a;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -829,6 +1150,14 @@ h1 {
     }
 
     .doctor-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .appointment-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-lower-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -856,7 +1185,8 @@ h1 {
     }
 
     .doctor-page,
-    .dashboard-content {
+    .dashboard-content,
+    .appointment-report-page {
         padding: 24px;
         border-radius: 24px;
     }
@@ -869,34 +1199,18 @@ h1 {
     .modal-form-grid {
         grid-template-columns: 1fr;
     }
-}
-.appointment-status {
-    display: inline-flex;
-    align-items: 92400e;
-    align-items: center;
-}
 
-    .appointment-status.confirmed {
-        background: #dbeafe;
-        color: #1d4ed8;
+    .appointment-summary-grid {
+        grid-template-columns: 1fr;
     }
 
-    .appointment-status.completed {
-        background: #dcfce7;
-        color: #166534;
+    .appointment-report-table,
+    .appointment-detail-table {
+        min-width: 900px;
     }
 
-    .appointment-status.cancelled {
-        background: #fee2e2;
-        color: #991b1b;
+    .appointment-table-card,
+    .appointment-detail-card {
+        overflow-x: auto;
     }
-
-justify-content: center;
-padding: 7px 13px;
-border-radius: 999px;
-font-size: 13px;
-font-weight: 900;
 }
-
-.appointment-status.pending {
-    background: #fef3c7;

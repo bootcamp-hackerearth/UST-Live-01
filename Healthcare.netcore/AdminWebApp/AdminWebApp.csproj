@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EmployeeApp.Shared\HealthcareAxis.Shared.csproj" />
+    <ProjectReference Include="..\HealthcareAxis.Shared\HealthcareAxis.Shared.csproj" />
   </ItemGroup>
 
 </Project>

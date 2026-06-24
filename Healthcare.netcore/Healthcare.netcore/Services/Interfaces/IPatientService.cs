@@ -16,6 +16,8 @@ namespace HealthAxis.API.Services.Interfaces
 
         Task<PatientDto?> GetByIdAsync(int id);
 
+        Task<PatientDto> AddAsync(CreatePatientDto dto);
+
         Task<PatientDto> UpdateAsync(int id, UpdatePatientDto dto);
 
         Task<IEnumerable<HealthRecordDto>> GetHealthRecordsAsync(int patientId);

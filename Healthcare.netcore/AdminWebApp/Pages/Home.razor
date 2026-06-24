@@ -1,44 +1,282 @@
 ﻿@page "/dashboard"
 @attribute [Authorize(Roles = "Admin")]
 
+@using AdminWebApp.Services
+@using HealthAxis.Shared.DTOs.Doctor
+@using HealthAxis.Shared.DTOs.Patient
+@using HealthAxis.Shared.DTOs.Appointment
+@using HealthAxis.Shared.Enums
+
+@inject DoctorService DoctorApi
+@inject PatientService PatientApi
+@inject AppointmentService AppointmentApi
+
 <div class="dashboard-content">
 
-    <h1>Dashboard</h1>
-    <p>Welcome to HealthAxis Admin Console.</p>
-
-    <!-- STATS -->
-    <div class="stats-grid">
-
-        <div class="stat-card">
-            <h4>Total Doctors</h4>
-            <h2>12</h2>
-            <p>Registered doctors</p>
-        </div>
-
-        <div class="stat-card">
-            <h4>Total Patients</h4>
-            <h2>50</h2>
-            <p>Active patients</p>
-        </div>
-
-        <div class="stat-card">
-            <h4>Appointments</h4>
-            <h2>18</h2>
-            <p>Upcoming</p>
-        </div>
-
-        <div class="stat-card">
-            <h4>Staff</h4>
-            <h2>6</h2>
-            <p>Active staff</p>
-        </div>
-
+    <div class="dashboard-section-title">
+        <span class="eyebrow">OVERVIEW</span>
+        <h1>Admin Dashboard</h1>
+        <p>Monitor doctors, patients, appointments, reports, and operational activity from one place.</p>
     </div>
 
-    <!-- INFO -->
-    <div class="info-card">
-        <h3>Hospital Information</h3>
-        <p>Manage your healthcare system efficiently.</p>
-    </div>
+    @if (LoadWarnings.Any())
+    {
+        <div class="doctor-alert error-alert">
+            @foreach (var warning in LoadWarnings)
+            {
+                <div>@warning</div>
+            }
+        </div>
+    }
+
+    @if (IsLoading)
+    {
+        <div class="info-card">
+            <h3>Loading dashboard data...</h3>
+            <p>Please wait while we fetch live backend data.</p>
+        </div>
+    }
+    else
+    {
+        <!-- STATS -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <h4>Total Doctors</h4>
+                <h2>@TotalDoctorsCount</h2>
+                <p>@ActiveDoctorsCount active doctors</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Total Patients</h4>
+                <h2>@TotalPatientsCount</h2>
+                <p>Registered patients</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Appointments</h4>
+                <h2>@TotalAppointmentsCount</h2>
+                <p>@UpcomingAppointmentsCount upcoming</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>Completed Visits</h4>
+                <h2>@CompletedAppointmentsCount</h2>
+                <p>Health records created</p>
+            </div>
+
+        </div>
+
+        <!-- LOWER DASHBOARD -->
+        <div class="dashboard-lower-grid">
+
+            <div class="dashboard-card">
+                <h3>Operational Shortcuts</h3>
+                <p>Common admin actions for HealthAxis.</p>
+
+                <div class="shortcut-list">
+                    <a class="shortcut-item" href="/doctors">
+                        Manage doctor profiles
+                    </a>
+
+                    <a class="shortcut-item" href="/patients">
+                        View patient records
+                    </a>
+
+                    <a class="shortcut-item" href="/appointments">
+                        View appointment reports
+                    </a>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <h3>Today's Status</h3>
+                <p>Live appointment activity for today.</p>
+
+                <div class="status-row">
+                    <span>Confirmed appointments</span>
+                    <strong>@TodaysConfirmedCount</strong>
+                </div>
+                <div class="status-track">
+                    <div class="status-fill confirmed" style="@GetStatusWidthStyle(TodaysConfirmedCount)"></div>
+                </div>
+
+                <div class="status-row">
+                    <span>Pending appointments</span>
+                    <strong>@TodaysPendingCount</strong>
+                </div>
+                <div class="status-track">
+                    <div class="status-fill pending" style="@GetStatusWidthStyle(TodaysPendingCount)"></div>
+                </div>
+
+                <div class="status-row">
+                    <span>Cancelled appointments</span>
+                    <strong>@TodaysCancelledCount</strong>
+                </div>
+                <div class="status-track">
+                    <div class="status-fill cancelled" style="@GetStatusWidthStyle(TodaysCancelledCount)"></div>
+                </div>
+
+                <div class="status-row">
+                    <span>Completed appointments</span>
+                    <strong>@TodaysCompletedCount</strong>
+                </div>
+                <div class="status-track">
+                    <div class="status-fill completed" style="@GetStatusWidthStyle(TodaysCompletedCount)"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- INFO -->
+        <div class="info-card">
+            <h3>Hospital Information</h3>
+            <p>
+                HealthAxis Admin Console helps monitor doctors, patients, appointments,
+                and daily operational activity from a single dashboard.
+            </p>
+        </div>
+    }
 
 </div>
+
+@code {
+    private List<DoctorDto> DoctorList = new();
+    private List<PatientDto> PatientList = new();
+    private List<AppointmentDto> AppointmentList = new();
+
+    private bool IsLoading = true;
+
+    private List<string> LoadWarnings = new();
+
+    private int TotalDoctorsCount =>
+        DoctorList.Count;
+
+    private int ActiveDoctorsCount =>
+        DoctorList.Count(doctor => doctor.IsActive);
+
+    private int TotalPatientsCount =>
+        PatientList.Count;
+
+    private int TotalAppointmentsCount =>
+        AppointmentList.Count;
+
+    private int UpcomingAppointmentsCount =>
+        AppointmentList.Count(appointment =>
+            appointment.ScheduledDate.Date >= DateTime.Today &&
+            appointment.Status != AppointmentStatus.Cancelled);
+
+    private int CompletedAppointmentsCount =>
+        AppointmentList.Count(appointment =>
+            appointment.Status == AppointmentStatus.Completed);
+
+    private int TodaysAppointmentsCount =>
+        AppointmentList.Count(appointment =>
+            appointment.ScheduledDate.Date == DateTime.Today);
+
+    private int TodaysConfirmedCount =>
+        AppointmentList.Count(appointment =>
+            appointment.ScheduledDate.Date == DateTime.Today &&
+            appointment.Status == AppointmentStatus.Confirmed);
+
+    private int TodaysPendingCount =>
+        AppointmentList.Count(appointment =>
+            appointment.ScheduledDate.Date == DateTime.Today &&
+            appointment.Status == AppointmentStatus.Pending);
+
+    private int TodaysCancelledCount =>
+        AppointmentList.Count(appointment =>
+            appointment.ScheduledDate.Date == DateTime.Today &&
+            appointment.Status == AppointmentStatus.Cancelled);
+
+    private int TodaysCompletedCount =>
+        AppointmentList.Count(appointment =>
+            appointment.ScheduledDate.Date == DateTime.Today &&
+            appointment.Status == AppointmentStatus.Completed);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDashboardData();
+    }
+
+    private async Task LoadDashboardData()
+    {
+        IsLoading = true;
+        LoadWarnings.Clear();
+
+        await LoadDoctors();
+        await LoadPatients();
+        await LoadAppointments();
+
+        IsLoading = false;
+    }
+
+    private async Task LoadDoctors()
+    {
+        try
+        {
+            var doctorResponse = await DoctorApi.GetDoctorsAsync(1, 100);
+            DoctorList = doctorResponse?.Items ?? new List<DoctorDto>();
+        }
+        catch (Exception ex)
+        {
+            DoctorList = new List<DoctorDto>();
+            LoadWarnings.Add("Unable to load doctors. " + ex.Message);
+        }
+    }
+
+    private async Task LoadPatients()
+    {
+        try
+        {
+            var patientResponse = await PatientApi.GetPatientsAsync(1, 100);
+            PatientList = patientResponse?.Items ?? new List<PatientDto>();
+        }
+        catch (Exception ex)
+        {
+            PatientList = new List<PatientDto>();
+            LoadWarnings.Add("Unable to load patients. " + ex.Message);
+        }
+    }
+
+    private async Task LoadAppointments()
+    {
+        try
+        {
+            var appointmentResponse = await AppointmentApi.GetAppointmentsAsync();
+            AppointmentList = appointmentResponse ?? new List<AppointmentDto>();
+        }
+        catch (Exception ex)
+        {
+            AppointmentList = new List<AppointmentDto>();
+            LoadWarnings.Add("Unable to load appointments. " + ex.Message);
+        }
+    }
+
+    private string GetStatusWidthStyle(int count)
+    {
+        return $"width:{GetStatusWidth(count)}%;";
+    }
+
+    private int GetStatusWidth(int count)
+    {
+        if (TodaysAppointmentsCount == 0)
+        {
+            return 0;
+        }
+
+        var percentage = (count * 100) / TodaysAppointmentsCount;
+
+        if (percentage < 5 && count > 0)
+        {
+            return 5;
+        }
+
+        if (percentage > 100)
+        {
+            return 100;
+        }
+
+        return percentage;
+    }
+}
