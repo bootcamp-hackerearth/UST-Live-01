@@ -12,7 +12,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DoctorService>();
 builder.Services.AddScoped<AuthHandler>();
-builder.Services.AddScoped<PatientService>();
+//builder.Services.AddScoped<PatientService>();
 
 
 builder.Services.AddScoped(sp =>

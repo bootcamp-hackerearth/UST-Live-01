@@ -155,6 +155,7 @@
 <!-- ✅ REGISTER MODAL -->
 <RegisterDoctorModal 
     IsVisible="showModal"
+    DoctorId="selectedDoctorId"
     IsVisibleChanged="@(v => showModal = v)"
     OnSaved="LoadDoctors" />
 
@@ -166,6 +167,7 @@
 
     private bool isLoading = true;
 
+    private int? selectedDoctorId;
     private string searchText = "";
     private string selectedSpecialisation = "";
     private int? minExperience;
@@ -266,13 +268,18 @@
         await LoadDoctors();
     }
 
+  
     private void EditDoctor(int id)
     {
-        // Future implementation
-    }
-
-    private void ShowModal()
-    {
+        selectedDoctorId = id;
         showModal = true;
     }
-}
+
+
+  
+    private void ShowModal()
+    {
+        selectedDoctorId = null;
+        showModal = true;
+    }
+ }
