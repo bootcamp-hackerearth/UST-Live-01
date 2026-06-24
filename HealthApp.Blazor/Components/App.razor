@@ -1,32 +1,18 @@
-﻿@using HealthApp.Blazor.Components.Services
-@inject NavigationManager Navigation
-@inject AuthService AuthService
+﻿<!DOCTYPE html>
+<html lang="en">
 
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/login" />
 
-        @{
-            var isLoginPage = Navigation.Uri.Contains("/login", StringComparison.OrdinalIgnoreCase);
-        }
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
 
-        @if (isLoginPage)
-        {
-            <RouteView RouteData="@routeData" />
-        }
-        else if (AuthService.IsLoggedIn)
-        {
-            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        }
-        else
-        {
-            <RedirectToLogin />
-        }
+<body>
+    <Routes @rendermode="InteractiveServer" />
 
-    </Found>
+    <script src="_framework/blazor.web.js"></script>
+</body>
 
-    <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <h3>Page not found</h3>
-        </LayoutView>
-    </NotFound>
-</Router>
+</html>

@@ -1,7 +1,7 @@
-﻿using HealthApp.Api.Dto;
-using HealthApp.Api.Model;
+﻿using HealthApp.Api.Model;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;
+using HealthApp.Shared.Dto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,23 +10,35 @@ using System.Text;
 
 namespace HealthApp.Api.Service.Impl
 {
-    public class AuthService(UserManager<IdentityUser> userManager, IConfiguration config,
-        IPatientRepository patientRepository, IDoctorRepository doctorRepository) : IAuthService
+    public class AuthService(
+        UserManager<IdentityUser> userManager,
+        IConfiguration config,
+        IPatientRepository patientRepository,
+        IDoctorRepository doctorRepository) : IAuthService
     {
-        public async Task<(bool success, string message, string token, int ExpiresIn)> Login(LoginDto register)
+        public async Task<(bool success, string message, string accessToken, int expiresIn, string role)> Login(LoginDto login)
         {
-            var user = await userManager.FindByEmailAsync(register.Email);
+            var user = await userManager.FindByEmailAsync(login.Email);
 
             if (user is null)
             {
-                return (false, "Invalid credentials", string.Empty, 0);
+                return (false, "Invalid credentials", string.Empty, 0, string.Empty);
             }
 
-            var isPasswordValid = await userManager.CheckPasswordAsync(user, register.Password);
+            var isPasswordValid = await userManager.CheckPasswordAsync(user, login.Password);
 
             if (!isPasswordValid)
             {
-                return (false, "Invalid credentials", string.Empty, 0);
+                return (false, "Invalid credentials", string.Empty, 0, string.Empty);
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault() ?? string.Empty;
+
+            // ✅ Only Admin can enter Blazor admin portal
+            if (!roles.Contains("Admin"))
+            {
+                return (false, "Only Admin can access this portal", string.Empty, 0, string.Empty);
             }
 
             var token = await GenerateJwtToken(user);
@@ -39,7 +51,7 @@ namespace HealthApp.Api.Service.Impl
 
             var expiry = int.Parse(expiryStr);
 
-            return (true, "Login successful", token, expiry);
+            return (true, "Login successful", token, expiry, role);
         }
 
         public async Task<(bool success, string message, string userId)> Register(RegisterDto register)
@@ -153,8 +165,7 @@ namespace HealthApp.Api.Service.Impl
             return (true, "Patient account created successfully", user.Id);
         }
 
-        public async Task<(bool success, string message, string userId, string temporaryPassword)>
-            RegisterDoctorByAdminAsync(DoctorRegisterDto request)
+        public async Task<(bool success, string message, string userId, string temporaryPassword)> RegisterDoctorByAdminAsync(DoctorRegisterDto request)
         {
             const string temporaryPassword = "Doctor@01";
 

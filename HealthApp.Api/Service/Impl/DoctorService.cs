@@ -115,7 +115,7 @@ namespace HealthApp.Api.Service.Impl
             existingDoctor.PracticeStartDate = doctorDto.PracticeStartDate!.Value.Date;
             existingDoctor.ConsultationFee = doctorDto.ConsultationFee ?? 0;
             existingDoctor.DoctorPhoneNumber = doctorDto.DoctorPhoneNumber;
-            existingDoctor.IsActive = doctorDto.IsActive ?? existingDoctor.IsActive;
+            existingDoctor.IsActive = doctorDto.IsActive ?? false;
 
             var updatedDoctor = await _repo.updateAsync(id, existingDoctor);
 

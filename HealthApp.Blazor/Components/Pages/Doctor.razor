@@ -1,195 +1,118 @@
 ﻿@page "/doctors"
 @rendermode InteractiveServer
 
-@using DoctorModel = HealthApp.Blazor.Components.Models.Doctor
-@using HealthApp.Blazor.Components.Services
-@inject DoctorService DoctorService
+@using HealthApp.Shared.Dto
+@using HealthApp.Blazor.Components.service.Interface
+
+@inject IDoctorService DoctorService
 
 <PageTitle>Doctors</PageTitle>
 
-<div class="container-fluid">
+<div class="page-block">
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <!-- HEADER -->
+    <div class="page-header">
         <div>
-            <h3 class="text-primary fw-bold mb-0">Doctors</h3>
-            <p class="text-muted mb-0">Manage doctor information</p>
+            <h2>Doctors</h2>
+            <p>Manage doctor information</p>
         </div>
 
-        <button class="btn btn-primary" @onclick="ShowAddForm">
+        <button class="page-btn primary" @onclick="ShowAddForm">
             + Add Doctor
         </button>
     </div>
 
-    <!-- Search -->
-    <div class="mb-3 d-flex gap-2">
-        <input class="form-control"
-               placeholder="Search by name..."
-               @bind="searchText" />
-
-        <button class="btn btn-outline-primary" @onclick="Search">
-            Search
-        </button>
-
-        <button class="btn btn-outline-secondary" @onclick="Reset">
-            Reset
-        </button>
+    <!-- SEARCH -->
+    <div class="toolbar">
+        <input class="search-input" placeholder="Search by name..." @bind="searchText" />
+        <button class="page-btn secondary" @onclick="Search">Search</button>
+        <button class="page-btn light" @onclick="Reset">Reset</button>
     </div>
 
-    <!-- Add/Edit Form -->
+    <!-- FORM -->
     @if (showForm)
     {
-        <div class="card mb-3 shadow-sm">
-            <div class="card-body">
-                <h5>@(editMode ? "Edit Doctor" : "Add Doctor")</h5>
+        <div class="form-card">
+            <h3>@(editMode ? "Edit Doctor" : "Add Doctor")</h3>
 
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <input class="form-control" placeholder="Full Name" @bind="formDoctor.FullName" />
-                    </div>
+            <div class="form-grid">
+                <input class="field-input" placeholder="Full Name" @bind="formDoctor.FullName" />
+                <input class="field-input" placeholder="Specialisation" @bind="formDoctor.Specialisation" />
+                <input class="field-input" placeholder="Email" @bind="formDoctor.Email" />
+                <input class="field-input" placeholder="Phone" @bind="formDoctor.DoctorPhoneNumber" />
+                <input class="field-input" type="number" placeholder="Fee" @bind="formDoctor.ConsultationFee" />
+                <input class="field-input" type="date" @bind="formDoctor.PracticeStartDate" />
+            </div>
 
-                    <div class="col-md-4">
-                        <input class="form-control" placeholder="Specialisation" @bind="formDoctor.Specialisation" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <input class="form-control" placeholder="Email" @bind="formDoctor.Email" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <input class="form-control" placeholder="Phone" @bind="formDoctor.DoctorPhoneNumber" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <input type="number" class="form-control" placeholder="Fee" @bind="formDoctor.ConsultationFee" />
-                    </div>
-
-                    <div class="col-md-4">
-                        <input type="date" class="form-control" @bind="formDoctor.PracticeStartDate" />
-                    </div>
-
-                    <div class="col-md-12 d-flex gap-2">
-                        <button class="btn btn-success" @onclick="SaveDoctor">Save</button>
-                        <button class="btn btn-secondary" @onclick="CancelForm">Cancel</button>
-                    </div>
-                </div>
+            <div class="action-row">
+                <button class="page-btn success" @onclick="SaveDoctor">Save</button>
+                <button class="page-btn light" @onclick="CancelForm">Cancel</button>
             </div>
         </div>
     }
 
-    <!-- Table -->
+    <!-- LIST -->
     @if (isLoading)
     {
-        <p>Loading doctors...</p>
+        <div class="empty-state">Loading doctors...</div>
     }
     else if (!doctors.Any())
     {
-        <div class="alert alert-warning">No doctors found.</div>
+        <div class="empty-state">No doctors found.</div>
     }
     else
     {
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Specialisation</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Fee</th>
-                                <th>Status</th>
-                                <th style="width:150px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var doctor in doctors)
-                            {
-                                <tr>
-                                    <td>@doctor.DoctorId</td>
-                                    <td>@doctor.FullName</td>
-                                    <td>@doctor.Specialisation</td>
-                                    <td>@doctor.Email</td>
-                                    <td>@doctor.DoctorPhoneNumber</td>
-                                    <td>₹@doctor.ConsultationFee</td>
-                                    <td>
-                                        @if (doctor.IsActive == true)
-                                        {
-                                            <span class="badge bg-success">Active</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">Inactive</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info me-1"
-                                                @onclick="() => ViewDoctor(doctor)">
-                                            View
-                                        </button>
+        <div class="table-card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Specialisation</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Fee</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
-                                        <button class="btn btn-sm btn-warning"
-                                                @onclick="() => EditDoctor(doctor)">
-                                            Edit
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                <tbody>
+                    @foreach (var doctor in doctors)
+                    {
+                        <tr>
+                            <td>@doctor.DoctorId</td>
+                            <td>@doctor.FullName</td>
+                            <td>@doctor.Specialisation</td>
+                            <td>@doctor.Email</td>
+                            <td>@doctor.DoctorPhoneNumber</td>
+                            <td>₹@doctor.ConsultationFee</td>
+
+                            <td>
+                                <button class="mini-btn info" @onclick="() => ViewDoctor(doctor)">View</button>
+                                <button class="mini-btn warn" @onclick="() => EditDoctor(doctor)">Edit</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     }
 
-    <!-- ✅ View Modal -->
+    <!-- MODAL -->
     @if (viewDoctor != null)
     {
-        <div class="modal d-block" style="background:rgba(0,0,0,0.3)">
-            <div class="modal-dialog">
-                <div class="modal-content p-3">
+        <div class="modal-backdrop">
+            <div class="modal-card">
+                <h3>Doctor Details</h3>
 
-                    <h5>Doctor Details</h5>
+                <p><strong>Name:</strong> @viewDoctor.FullName</p>
+                <p><strong>Email:</strong> @viewDoctor.Email</p>
+                <p><strong>Specialisation:</strong> @viewDoctor.Specialisation</p>
+                <p><strong>Phone:</strong> @viewDoctor.DoctorPhoneNumber</p>
+                <p><strong>Fee:</strong> ₹@viewDoctor.ConsultationFee</p>
+                <p><strong>Start Date:</strong> @viewDoctor.PracticeStartDate?.ToString("dd-MM-yyyy")</p>
 
-                    <p><b>ID:</b> @viewDoctor.DoctorId</p>
-                    <p><b>Name:</b> @viewDoctor.FullName</p>
-                    <p><b>Specialisation:</b> @viewDoctor.Specialisation</p>
-                    <p><b>Email:</b> @viewDoctor.Email</p>
-                    <p><b>Phone:</b> @viewDoctor.DoctorPhoneNumber</p>
-
-                    <!-- ✅ Added Fee -->
-                    <p><b>Consultation Fee:</b> ₹@viewDoctor.ConsultationFee</p>
-
-                    <!-- ✅ Added Experience -->
-                    <p>
-                        <b>Experience:</b>
-                        @GetExperience(viewDoctor.PracticeStartDate)
-                        @((GetExperience(viewDoctor.PracticeStartDate) == 1) ? " year" : " years")
-                    </p>
-
-                    <!-- ✅ Start Date -->
-                    <p><b>Start Date:</b> @viewDoctor.PracticeStartDate.ToString("dd-MM-yyyy")</p>
-
-                    <!-- ✅ Status -->
-                    <p>
-                        <b>Status:</b>
-                        @if (viewDoctor.IsActive == true)
-                        {
-                            <span class="badge bg-success">Active</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">Inactive</span>
-                        }
-                    </p>
-
-                    <button class="btn btn-secondary mt-2" @onclick="CloseView">
-                        Close
-                    </button>
-
-                </div>
+                <button class="page-btn light" @onclick="CloseView">Close</button>
             </div>
         </div>
     }
@@ -197,33 +120,43 @@
 </div>
 
 @code {
-    private List<DoctorModel> doctors = new();
-    private List<DoctorModel> allDoctors = new();
-    private bool isLoading = true;
 
+    private List<DoctorDto> doctors = new();
+    private List<DoctorDto> allDoctors = new();
+
+    private bool isLoading = true;
     private string searchText = "";
 
     private bool showForm = false;
     private bool editMode = false;
 
-    private DoctorModel formDoctor = new();
-
-    private DoctorModel? viewDoctor;
+    private DoctorDto formDoctor = new();
+    private DoctorDto? viewDoctor;
 
     protected override async Task OnInitializedAsync()
     {
-        allDoctors = await DoctorService.GetAllDoctorsAsync();
-        doctors = allDoctors.ToList();
-        isLoading = false;
+        await LoadDoctors();
     }
 
-    /* ✅ SEARCH */
+    private async Task LoadDoctors()
+    {
+        isLoading = true;
+        await InvokeAsync(StateHasChanged);   // ✅ FORCE UI UPDATE
+
+        allDoctors = await DoctorService.GetAllDoctorsAsync();
+        doctors = allDoctors.ToList();
+
+        Console.WriteLine($"Loaded doctors: {doctors.Count}");
+
+        isLoading = false;
+        await InvokeAsync(StateHasChanged);   // ✅ FORCE UI UPDATE
+    }
+
     private void Search()
     {
-        if (string.IsNullOrWhiteSpace(searchText)) return;
-
         doctors = allDoctors
-            .Where(d => d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+            .Where(d => d.FullName != null &&
+                        d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
             .ToList();
     }
 
@@ -233,18 +166,16 @@
         doctors = allDoctors.ToList();
     }
 
-    /* ✅ ADD */
     private void ShowAddForm()
     {
-        formDoctor = new DoctorModel();
+        formDoctor = new DoctorDto();
         editMode = false;
         showForm = true;
     }
 
-    /* ✅ EDIT */
-    private void EditDoctor(DoctorModel d)
+    private void EditDoctor(DoctorDto d)
     {
-        formDoctor = new DoctorModel
+        formDoctor = new DoctorDto
         {
             DoctorId = d.DoctorId,
             FullName = d.FullName,
@@ -252,64 +183,261 @@
             Email = d.Email,
             DoctorPhoneNumber = d.DoctorPhoneNumber,
             ConsultationFee = d.ConsultationFee,
-            PracticeStartDate = d.PracticeStartDate,
-            IsActive = d.IsActive
+            PracticeStartDate = d.PracticeStartDate
         };
 
         editMode = true;
         showForm = true;
     }
 
-    /* ✅ SAVE */
-    private void SaveDoctor()
+    private async Task SaveDoctor()
     {
+        bool success;
+
         if (editMode)
-        {
-            var existing = allDoctors.First(x => x.DoctorId == formDoctor.DoctorId);
-
-            existing.FullName = formDoctor.FullName;
-            existing.Specialisation = formDoctor.Specialisation;
-            existing.Email = formDoctor.Email;
-            existing.DoctorPhoneNumber = formDoctor.DoctorPhoneNumber;
-            existing.ConsultationFee = formDoctor.ConsultationFee;
-            existing.PracticeStartDate = formDoctor.PracticeStartDate;
-        }
+            success = await DoctorService.UpdateDoctorAsync(formDoctor.DoctorId, formDoctor);
         else
-        {
-            formDoctor.DoctorId = allDoctors.Any() ? allDoctors.Max(x => x.DoctorId) + 1 : 1;
-            formDoctor.IsActive = true;
-            allDoctors.Add(formDoctor);
+            success = await DoctorService.CreateDoctorAsync(formDoctor);
+
+        if (success)
+            await LoadDoctors();
+        else
+            Console.WriteLine("Save failed");
+
+        showForm = false;
+    }
+
+    private void CancelForm() => showForm = false;
+
+    private void ViewDoctor(DoctorDto d) => viewDoctor = d;
+
+    private void CloseView() => viewDoctor = null;
+}
+
+
+
+
+
+
+<style>
+    .page-block {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+    }
+
+        .page-header h2 {
+            margin: 0;
+            font-size: 36px;
+            color: #111827;
+            font-weight: 800;
         }
 
-        doctors = allDoctors.ToList();
-        showForm = false;
+        .page-header p {
+            margin: 6px 0 0 0;
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+    .toolbar {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
     }
 
-    private void CancelForm()
-    {
-        showForm = false;
+    .search-input,
+    .field-input {
+        border: 1px solid #d8e0ec;
+        background: white;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
     }
 
-    /* ✅ VIEW */
-    private void ViewDoctor(DoctorModel d)
-    {
-        viewDoctor = d;
+    .search-input {
+        min-width: 320px;
     }
 
-    private void CloseView()
-    {
-        viewDoctor = null;
+    .page-btn {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-weight: 700;
+        cursor: pointer;
     }
 
-    /* ✅ EXPERIENCE CALC */
-    private int GetExperience(DateTime startDate)
-    {
-        var today = DateTime.Today;
-        int years = today.Year - startDate.Year;
+        .page-btn.primary {
+            background: #1d4ed8;
+            color: white;
+        }
 
-        if (startDate.Date > today.AddYears(-years))
-            years--;
+        .page-btn.secondary {
+            background: #e8f0ff;
+            color: #1d4ed8;
+        }
 
-        return years;
+        .page-btn.light {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .page-btn.success {
+            background: #16a34a;
+            color: white;
+        }
+
+    .form-card,
+    .table-card {
+        background: white;
+        border: 1px solid #e7edf6;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.05);
     }
-}
+
+        .form-card h3 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            font-size: 22px;
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .action-row {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .data-table th,
+        .data-table td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+            font-size: 15px;
+        }
+
+        .data-table th {
+            color: #475569;
+            background: #f8fafc;
+            font-weight: 800;
+        }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+        .status-badge.active {
+            background: #e8f8ef;
+            color: #15803d;
+        }
+
+        .status-badge.inactive {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+    .table-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .mini-btn {
+        border: none;
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .mini-btn.info {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .mini-btn.warn {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+    .empty-state {
+        background: white;
+        border: 1px dashed #d8e0ec;
+        border-radius: 18px;
+        padding: 28px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.35);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+    }
+
+    .modal-card {
+        width: 100%;
+        max-width: 520px;
+        background: white;
+        border-radius: 18px;
+        padding: 24px;
+        box-shadow: 0 18px 40px rgba(0,0,0,0.2);
+    }
+
+        .modal-card h3 {
+            margin-top: 0;
+        }
+
+    @@media (max-width: 992px) {
+        .form-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .search-input {
+            min-width: 100%;
+            width: 100%;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .table-card {
+            overflow-x: auto;
+        }
+    }
+</style>

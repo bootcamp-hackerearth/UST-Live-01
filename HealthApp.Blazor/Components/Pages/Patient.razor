@@ -1,144 +1,131 @@
 ﻿@page "/patients"
 @rendermode InteractiveServer
 
-@using PatientModel = HealthApp.Blazor.Components.Models.Patient
-@using HealthApp.Blazor.Components.Services
-@inject PatientService PatientService
+@using HealthApp.Shared.Dto
+@using HealthApp.Blazor.Components.service.Interface
+
+@inject IPatientService PatientService
 
 <PageTitle>Patients</PageTitle>
 
-<div class="container-fluid">
-
-    <!-- Header -->
-    <div class="mb-3">
-        <h3 class="text-primary fw-bold">Patients</h3>
-        <p class="text-muted">Manage patient information</p>
+<div class="page-block">
+    <div class="page-header">
+        <div>
+            <h2>Patients</h2>
+            <p>Manage patient information</p>
+        </div>
     </div>
 
-    <!-- ✅ Search -->
-    <div class="mb-3 d-flex gap-2">
-        <input class="form-control"
+    <div class="toolbar">
+        <input class="search-input"
                placeholder="Search by ID or Name..."
                @bind="searchText" />
 
-        <button class="btn btn-outline-primary" @onclick="Search">
-            Search
-        </button>
-
-        <button class="btn btn-outline-secondary" @onclick="Reset">
-            Reset
-        </button>
+        <button class="page-btn secondary" @onclick="Search">Search</button>
+        <button class="page-btn light" @onclick="Reset">Reset</button>
     </div>
 
-    <!-- Table -->
     @if (isLoading)
     {
-        <p>Loading patients...</p>
+        <div class="empty-state">Loading patients...</div>
     }
     else if (!patients.Any())
     {
-        <div class="alert alert-warning">No patients found.</div>
+        <div class="empty-state">No patients found.</div>
     }
     else
     {
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Gender</th>
-                                <th>DOB</th>
-                                <th>Insurance</th>
-                                <th style="width:120px;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var patient in patients)
-                            {
-                                <tr>
-                                    <td>@patient.PatientId</td>
-                                    <td>@patient.FullName</td>
-                                    <td>@patient.Email</td>
-                                    <td>@patient.PhoneNumber</td>
-                                    <td>@patient.Gender</td>
-                                    <td>@patient.DateOfBirth.ToString("dd-MM-yyyy")</td>
-                                    <td>@patient.InsuranceId</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-info"
-                                                @onclick="() => ViewPatient(patient)">
-                                            View
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="table-card">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Gender</th>
+                        <th>DOB</th>
+                        <th>Insurance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var patient in patients)
+                    {
+                        <tr>
+                            <td>@patient.PatientId</td>
+                            <td>@patient.FullName</td>
+                            <td>@patient.Email</td>
+                            <td>@patient.PhoneNumber</td>
+                            <td>@patient.Gender</td>
+                            <td>@patient.DateOfBirth?.ToString("dd-MM-yyyy")</td>
+                            <td>@patient.InsuranceId</td>
+                            <td>
+                                <button class="mini-btn" @onclick="() => ViewPatient(patient)">
+                                    View
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     }
 
-    <!-- ✅ View Modal -->
-    @if (viewPatient != null)
+    @if (viewPatient is not null)
     {
-        <div class="modal d-block" style="background:rgba(0,0,0,0.3)">
-            <div class="modal-dialog">
-                <div class="modal-content p-3">
+        <div class="modal-backdrop">
+            <div class="modal-card">
+                <h3>Patient Details</h3>
 
-                    <h5>Patient Details</h5>
+                <p><strong>Name:</strong> @viewPatient!.FullName</p>
+                <p><strong>Email:</strong> @viewPatient!.Email</p>
+                <p><strong>Phone:</strong> @viewPatient!.PhoneNumber</p>
+                <p><strong>Gender:</strong> @viewPatient!.Gender</p>
 
-                    <p><b>ID:</b> @viewPatient.PatientId</p>
-                    <p><b>Name:</b> @viewPatient.FullName</p>
-                    <p><b>Email:</b> @viewPatient.Email</p>
-                    <p><b>Phone:</b> @viewPatient.PhoneNumber</p>
-                    <p><b>Gender:</b> @viewPatient.Gender</p>
-                    <p><b>Date of Birth:</b> @viewPatient.DateOfBirth.ToString("dd-MM-yyyy")</p>
-                    <p><b>Insurance ID:</b> @viewPatient.InsuranceId</p>
-                    <p><b>Created Date:</b> @viewPatient.CreatedDate?.ToString("dd-MM-yyyy")</p>
+                <p>
+                    <strong>DOB:</strong>
+                    @viewPatient!.DateOfBirth?.ToString("dd-MM-yyyy")
+                </p>
 
-                    <!-- ✅ Age calculation -->
-                    <p><b>Age:</b> @GetAge(viewPatient.DateOfBirth) years</p>
+                <p>
+                    <strong>Age:</strong>
+                    @(viewPatient!.DateOfBirth is not null
+                        ? GetAge(viewPatient.DateOfBirth.Value)
+                        : 0) years
+                </p>
 
-                    <button class="btn btn-secondary mt-2" @onclick="CloseView">
-                        Close
-                    </button>
-
-                </div>
+                <button class="page-btn light" @onclick="CloseView">Close</button>
             </div>
         </div>
     }
-
 </div>
 
 @code {
-    private List<PatientModel> patients = new();
-    private List<PatientModel> allPatients = new();
-
+    private List<PatientDto> patients = new();
+    private List<PatientDto> allPatients = new();
     private bool isLoading = true;
     private string searchText = "";
-
-    private PatientModel? viewPatient;
+    private PatientDto? viewPatient;
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
+
         allPatients = await PatientService.GetAllPatientsAsync();
         patients = allPatients.ToList();
+
         isLoading = false;
     }
 
-    /* ✅ SEARCH */
     private void Search()
     {
         if (string.IsNullOrWhiteSpace(searchText))
             return;
 
         patients = allPatients.Where(p =>
-            p.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase)
+            (!string.IsNullOrWhiteSpace(p.FullName) &&
+             p.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
             || p.PatientId.ToString().Contains(searchText)
         ).ToList();
     }
@@ -149,8 +136,7 @@
         patients = allPatients.ToList();
     }
 
-    /* ✅ VIEW */
-    private void ViewPatient(PatientModel p)
+    private void ViewPatient(PatientDto p)
     {
         viewPatient = p;
     }
@@ -160,15 +146,137 @@
         viewPatient = null;
     }
 
-    /* ✅ AGE CALC */
     private int GetAge(DateTime dob)
     {
         var today = DateTime.Today;
         int age = today.Year - dob.Year;
 
-        if (dob.Date > today.AddYears(-age))
+        if (dob > today.AddYears(-age))
             age--;
 
         return age;
     }
 }
+
+<style>
+.page-block {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.page-header p {
+    margin-top: 6px;
+    color: #64748b;
+}
+
+.toolbar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    min-width: 300px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #dbe3ef;
+    font-size: 14px;
+}
+
+.page-btn {
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+}
+
+.page-btn.secondary {
+    background: #e8f0ff;
+    color: #1d4ed8;
+}
+
+.page-btn.light {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.table-card {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #e5eaf2;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: #f8fafc;
+    font-size: 13px;
+    text-transform: uppercase;
+    color: #64748b;
+    padding: 12px;
+    text-align: left;
+}
+
+.data-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eef2f7;
+    font-size: 14px;
+}
+
+.mini-btn {
+    padding: 7px 12px;
+    border-radius: 10px;
+    border: none;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    border-radius: 18px;
+    border: 1px dashed #dbe3ef;
+    color: #64748b;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-card {
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    width: 100%;
+    max-width: 480px;
+}
+
+/* ✅ IMPORTANT FIX */
+@@media (max-width: 768px) {
+    .search-input {
+        width: 100%;
+        min-width: unset;
+    }
+}
+</style>

@@ -6,10 +6,10 @@
 
 
 @using HealthApp.Blazor.Components.Services
-@inject DoctorService DoctorService
-@inject PatientService PatientService
-@inject AppointmentService AppointmentService
-@inject HealthRecordService HealthRecordService
+@inject IDoctorService DoctorService
+@inject IPatientService PatientService
+@* @inject AppointmentService AppointmentService *@
+
 
 
 
@@ -55,15 +55,6 @@
             <h3>@appointmentCount</h3>
             <p>Upcoming scheduled consultations and follow-ups.</p>
         </div>
-
-        <div class="stat-card cyan">
-            <div class="stat-card-top">
-                <span class="stat-label">Health Records</span>
-                <span class="stat-icon">🧾</span>
-            </div>
-            <h3>@healthRecordCount</h3>
-            <p>Medical entries and supporting healthcare information.</p>
-        </div>
     </section>
 
     <section class="dashboard-actions">
@@ -94,14 +85,6 @@
             <a href="/appointments" class="dashboard-btn green-btn">View Appointments</a>
         </div>
 
-        <div class="dashboard-card">
-            <div class="card-header-line">
-                <h2>Health Records</h2>
-                <span class="card-badge cyan-badge">Secure</span>
-            </div>
-            <p>Access and review healthcare records across registered patient profiles.</p>
-            <a href="/healthrecords" class="dashboard-btn cyan-btn">View Records</a>
-        </div>
     </section>
 
     <section class="dashboard-lower-grid">
@@ -138,13 +121,6 @@
                     <a href="/appointments">Open</a>
                 </div>
 
-                <div class="quick-row">
-                    <div>
-                        <strong>Health Records Module</strong>
-                        <span>Access medical summaries and healthcare history.</span>
-                    </div>
-                    <a href="/healthrecords">Open</a>
-                </div>
             </div>
         </div>
 
@@ -535,9 +511,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+
         doctorCount = await DoctorService.GetDoctorCountAsync();
         patientCount = await PatientService.GetPatientCountAsync();
-        appointmentCount = await AppointmentService.GetAppointmentCountAsync();
-        healthRecordCount = await HealthRecordService.GetHealthRecordCountAsync();
+        // appointmentCount = await AppointmentService.GetAppointmentCountAsync();
+
+
     }
 }

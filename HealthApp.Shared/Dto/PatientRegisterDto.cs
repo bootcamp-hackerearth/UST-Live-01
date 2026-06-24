@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+namespace HealthApp.Shared.Dto
 
-namespace HealthApp.Api.Dto
 {
     public class PatientRegisterDto
     {

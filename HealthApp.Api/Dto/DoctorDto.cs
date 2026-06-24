@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+
 namespace HealthApp.Api.Dto
 {
     public class DoctorDto

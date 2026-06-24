@@ -19,7 +19,7 @@ namespace HealthApp.Api.Controllers
 
         // GET ALL
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var data = await _service.GetAllAppointments();
@@ -37,7 +37,7 @@ namespace HealthApp.Api.Controllers
 
         // CREATE
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
         public async Task<IActionResult> Add([FromBody] AppointmentDto dto)
         {
             await _service.Add(dto);
@@ -55,7 +55,7 @@ namespace HealthApp.Api.Controllers
 
         // CONFIRM
         [HttpPut("{id}/confirm")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Confirm(int id)
         {
             await _service.ConfirmAppointment(id);
@@ -64,7 +64,7 @@ namespace HealthApp.Api.Controllers
 
         // COMPLETE
         [HttpPut("{id}/complete")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Complete(int id)
         {
             await _service.CompleteAppointment(id);

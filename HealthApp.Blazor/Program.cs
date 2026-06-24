@@ -1,4 +1,6 @@
 using HealthApp.Blazor.Components;
+using HealthApp.Blazor.Components.service.Impl;
+using HealthApp.Blazor.Components.service.Interface;
 using HealthApp.Blazor.Components.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,12 +8,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<DoctorService>();
-builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<AppointmentService>();
-builder.Services.AddScoped<HealthRecordService>();
 
-builder.Services.AddSingleton<AuthService>();
+builder.Services.AddScoped<IPatientService, PatientService>();
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+
+
+
+
+
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("https://localhost:7066/")
+});
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 

@@ -29,7 +29,8 @@ namespace HealthApp.Api.Controllers
 
         // GET all doctors
         [HttpGet("all")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
             var data = await _service.GetAllDoctorsAsync();
@@ -78,5 +79,6 @@ namespace HealthApp.Api.Controllers
             var result = await _service.UpdateDoctorByIdAsync(id, dto);
             return Ok(result);
         }
+
     }
 }

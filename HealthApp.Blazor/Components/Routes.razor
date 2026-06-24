@@ -1,6 +1,51 @@
-﻿<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
-    <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
-    </Found>
-</Router>
+﻿@using HealthApp.Blazor.Components.Pages
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+
+@if (!_ready)
+{
+    <div></div>
+}
+else
+{
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            @{
+                var isLoginPage = Navigation.Uri.Contains("/login", StringComparison.OrdinalIgnoreCase);
+            }
+
+            @if (isLoginPage)
+            {
+                <RouteView RouteData="@routeData" />
+            }
+            else if (AuthService.IsLoggedIn)
+            {
+                <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            }
+            else
+            {
+                <RedirectToLogin />
+            }
+        </Found>
+
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <h1>Page Not Found</h1>
+            </LayoutView>
+        </NotFound>
+    </Router>
+}
+
+@code {
+    private bool _ready;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthService.InitializeAsync(); 
+            _ready = true;
+            StateHasChanged(); 
+        }
+    }
+}

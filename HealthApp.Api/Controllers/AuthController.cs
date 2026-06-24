@@ -1,6 +1,5 @@
-﻿using HealthApp.Api.Dto;
-using HealthApp.Api.Model;
-using HealthApp.Api.Service.Interface;
+﻿using HealthApp.Api.Service.Interface;
+using HealthApp.Shared.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +14,8 @@ namespace HealthApp.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> PatientRegister([FromBody] PatientRegisterDto request)
         {
-            var (success, message, userId) = await authService.RegisterPatientAsync(request);
+            var result = await authService.RegisterPatientAsync(request);
+            var (success, message, userId) = result;
 
             if (!success)
             {
@@ -29,7 +29,8 @@ namespace HealthApp.Api.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> DoctorRegister([FromBody] DoctorRegisterDto request)
         {
-            var (success, message, userId, temporaryPassword) = await authService.RegisterDoctorByAdminAsync(request);
+            var result = await authService.RegisterDoctorByAdminAsync(request);
+            var (success, message, userId, temporaryPassword) = result;
 
             if (!success)
             {
@@ -48,7 +49,8 @@ namespace HealthApp.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
         {
-            var (success, message, userId) = await authService.Register(register);
+            var result = await authService.Register(register);
+            var (success, message, userId) = result;
 
             if (!success)
             {
@@ -58,24 +60,34 @@ namespace HealthApp.Api.Controllers
             return Ok(new { message, userId });
         }
 
-
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto login)
         {
-            var (success, message, accessToken, expiresIn) = await authService.Login(login);
-
-            if (!success)
+            try
             {
-                return BadRequest(message);
+                var (success, message, accessToken, expiresIn, role) =
+                    await authService.Login(login);
+
+                return Ok(new LoginResponseDto
+                {
+                    Success = success,
+                    Message = message,
+                    AccessToken = accessToken,
+                    ExpiresIn = expiresIn,
+                    Role = role
+                });
             }
-
-            return Ok(new AuthResponse
+            catch (Exception ex)
             {
-                AccessToken = accessToken,
-                ExpiresIn = expiresIn,
-                message = message
-            });
+                return Ok(new LoginResponseDto
+                {
+                    Success = false,
+                    Message = "SERVER ERROR: " + ex.Message
+                });
+            }
         }
+
+
     }
 }

@@ -1,23 +1,25 @@
 ﻿@inherits LayoutComponentBase
 @using HealthApp.Blazor.Components.Services
 
-@inject AuthService AuthService
+@inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<div class="healthapp-shell">
-
-    <aside class="healthapp-sidebar">
+<div class="app-shell">
+    <aside class="app-sidebar">
         <NavMenu />
     </aside>
 
-    <div class="healthapp-main">
-
+    <div class="app-main">
         <header class="top-bar">
-            <h4>HealthApp Dashboard</h4>
+            <div class="top-bar-left">
+                <h1>HealthApp Dashboard</h1>
+            </div>
 
-            <div class="menu-links">
-                <NavLink href="/doctors">Doctors</NavLink>
-                <NavLink href="/patients">Patients</NavLink>
+            <div class="top-bar-right">
+                <NavLink href="/doctors" class="top-link">Doctors</NavLink>
+                <NavLink href="/patients" class="top-link">Patients</NavLink>
+                <NavLink href="/appointments" class="top-link">Appointments</NavLink>
+                
 
                 <button class="logout-btn" @onclick="Logout">
                     Logout
@@ -25,73 +27,121 @@
             </div>
         </header>
 
-        <main class="content">
+        <main class="main-content">
             @Body
         </main>
-
     </div>
-
 </div>
 
+@code {
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/login");
+    }
+}
+
 <style>
-    .healthapp-shell {
+    .app-shell {
         display: flex;
         min-height: 100vh;
+        background: #f3f6fb;
     }
 
-    .healthapp-sidebar {
-        width: 250px;
-        background: #0d6efd;
+    .app-sidebar {
+        width: 290px;
+        min-width: 290px;
+        background: linear-gradient(180deg, #1565f7 0%, #1f6fe5 100%);
         color: white;
+        box-shadow: 4px 0 18px rgba(0, 0, 0, 0.08);
     }
 
-    .healthapp-main {
+    .app-main {
         flex: 1;
-        background: #f5f7fa;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
     }
 
     .top-bar {
+        background: white;
+        padding: 18px 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 15px 25px;
-        background: white;
-        box-shadow: 0 2px 8px rgba(0,0,0,.08);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        border-bottom: 1px solid #e9eef7;
     }
 
-    .menu-links {
+    .top-bar-left h1 {
+        margin: 0;
+        font-size: 30px;
+        font-weight: 800;
+        color: #111827;
+    }
+
+    .top-bar-right {
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 14px;
+        flex-wrap: wrap;
     }
 
-        .menu-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
+    .top-link {
+        text-decoration: none;
+        color: #1f2937;
+        font-weight: 600;
+        padding: 10px 14px;
+        border-radius: 10px;
+        transition: 0.2s ease;
+    }
+
+        .top-link:hover {
+            background: #eef4ff;
+            color: #1565f7;
+        }
+
+        .top-link.active {
+            background: #e8f0ff;
+            color: #1565f7;
         }
 
     .logout-btn {
-        background: #dc3545;
-        color: white;
         border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
+        background: #ef4444;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 10px;
+        font-weight: 700;
         cursor: pointer;
     }
 
-    .content {
-        padding: 20px;
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+    .main-content {
+        padding: 28px;
+    }
+
+    @@media (max-width: 1080px) {
+        .app-shell {
+            flex-direction: column;
+        }
+
+        .app-sidebar {
+            width: 100%;
+            min-width: 100%;
+        }
+
+        .top-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 14px;
+        }
+
+        .main-content {
+            padding: 18px;
+        }
     }
 </style>
-
-@code {
-
-    private void Logout()
-    {
-        AuthService.Logout();
-
-        Navigation.NavigateTo("/login");
-    }
-
-}
