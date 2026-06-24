@@ -5,23 +5,19 @@ namespace HealthAxisApplicn.Dto.Patients
     public class PatientDto
     {
         public int PatientId { get; set; }
-        [Required]
-        [RegularExpression(@"[A-Z][A-Za-z\s]+", ErrorMessage = "Name should only contain alphabets")]
-        [MinLength(2)]
+
         public string PatientName { get; set; } = string.Empty;
-        [Required]
+
         public DateTime DateOfBirth { get; set; }
-        [Required]
-        [RegularExpression("(Male|Female|Transgender|Other)")]
+
         public string Gender { get; set; } = string.Empty;
-        [Required]
-        [EmailAddress]
+
         public string Email { get; set; } = string.Empty;
-        [Required]
-        [Phone]
+
         public string PhoneNo { get; set; } = string.Empty;
+
         public string? InsuranceID { get; set; }
-        [Required]
+
         public bool IsActive { get; set; }
     }
 
@@ -29,14 +25,15 @@ namespace HealthAxisApplicn.Dto.Patients
     {
         [Required]
         [MinLength(2)]
-        [RegularExpression(@"^[A-Z][A-Za-z\s]+$")]
+        [RegularExpression(@"^[A-Za-z\s]{2,50}$", ErrorMessage = "Name should contain only alphabets and spaces")]
         public string PatientName { get; set; } = string.Empty;
 
         [Required]
+        [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        [RegularExpression("^(Male|Female|Transgender|Other)$")]
+        [RegularExpression(@"^(Male|Female|Transgender|Other)$", ErrorMessage = "Invalid gender")]
         public string Gender { get; set; } = string.Empty;
 
         [Required]
@@ -44,10 +41,39 @@ namespace HealthAxisApplicn.Dto.Patients
         public string Email { get; set; } = string.Empty;
 
         [Required]
-        [Phone]
+        [RegularExpression(@"^\+\d{10,15}$", ErrorMessage = "Enter valid number with country code (e.g. +919876543210)")]
         public string PhoneNo { get; set; } = string.Empty;
 
         [RegularExpression(@"^$|^INS\d{4}$")]
         public string? InsuranceID { get; set; }
     }
+
+
+    public class UpdatePatientDto
+    {
+        [Required]
+        [MinLength(2)]
+        [RegularExpression(@"^[A-Za-z\s]{2,50}$", ErrorMessage = "Name should contain only alphabets and spaces")]
+        public string PatientName { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime DateOfBirth { get; set; }
+
+        [Required]
+        [RegularExpression(@"^(Male|Female|Transgender|Other)$", ErrorMessage = "Invalid gender")]
+        public string Gender { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        [Required]
+        [RegularExpression(@"^\+\d{10,15}$", ErrorMessage = "Enter valid number with country code (e.g. +919876543210)")]
+        public string PhoneNo { get; set; }
+
+        [RegularExpression(@"^$|^INS\d{4}$")]
+        public string? InsuranceID { get; set; }
+    }
+
 }

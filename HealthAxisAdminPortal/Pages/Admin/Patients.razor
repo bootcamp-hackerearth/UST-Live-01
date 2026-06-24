@@ -1,0 +1,203 @@
+﻿@page "/admin/patients"
+@inject IPatientApiService patientService
+@inject IJSRuntime JS
+
+<div class="glass-card p-4">
+
+    <h2 class="text-center fw-bold mb-4">
+        🧑‍🤝‍🧑 Patient Management
+    </h2>
+
+    <!-- 🔍 SEARCH -->
+    <div class="row mb-3">
+
+        <div class="col-md-6">
+            <input class="form-control stylish-input"
+                   placeholder="🔍 Search by name"
+                   @oninput="OnNameSearch" />
+        </div>
+
+        <div class="col-md-6">
+            <input class="form-control stylish-input"
+                   placeholder="📞 Search by phone"
+                   @oninput="OnPhoneSearch" />
+        </div>
+
+    </div>
+
+    @if (patients == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!patients.Any())
+    {
+        <p>No patients found</p>
+    }
+    else
+    {
+        <table class="table custom-table">
+
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var patient in patients)
+                {
+                    <tr>
+                        <td>@patient.PatientName</td>
+                        <td>@patient.Email</td>
+                        <td>@patient.PhoneNo</td>
+
+                        
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       checked="@patient.IsActive"
+                                       @onclick="() => Toggle(patient)" />
+                            </div>
+                        </td>
+
+
+                        <td>
+                            <button class="btn btn-sm btn-warning"
+                                    @onclick="() => OpenEdit(patient)">
+                                ✏️ Edit
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+
+    <!-- ✏️ EDIT FORM -->
+    @if (showEdit)
+    {
+        <div class="glass-card p-3 mb-4">
+
+            <h5>Edit Patient</h5>
+
+            <input class="form-control stylish-input mb-2"
+                   @bind="editPatient.PatientName" />
+
+            <input type="date"
+                   class="form-control stylish-input mb-2"
+                   @bind="editPatient.DateOfBirth" />
+
+            <input class="form-control stylish-input mb-2"
+                   @bind="editPatient.Gender" />
+
+            <input class="form-control stylish-input mb-2"
+                   @bind="editPatient.Email" />
+
+            <input class="form-control stylish-input mb-2"
+                   @bind="editPatient.PhoneNo" />
+
+            <input class="form-control stylish-input mb-2"
+                   @bind="editPatient.InsuranceID" />
+
+            <button class="btn btn-success me-2" @onclick="UpdatePatient">Save</button>
+            <button class="btn btn-secondary" @onclick="() => showEdit = false">Cancel</button>
+
+        </div>
+    }
+
+</div> <!-- ✅ THIS WAS MISSING -->
+@code {
+    private List<PatientDto>? patients;
+
+    private string nameSearch = "";
+    private string phoneSearch = "";
+
+    private bool showEdit = false;
+    private UpdatePatientDto editPatient = new();
+    private int editingId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await patientService.GetAllAsync();
+    }
+
+    private async Task OnNameSearch(ChangeEventArgs e)
+    {
+        nameSearch = e.Value?.ToString() ?? "";
+        await FilterPatients();
+    }
+
+    private async Task OnPhoneSearch(ChangeEventArgs e)
+    {
+        phoneSearch = e.Value?.ToString() ?? "";
+        await FilterPatients();
+    }
+
+    private async Task FilterPatients()
+    {
+        if (string.IsNullOrWhiteSpace(nameSearch) &&
+            string.IsNullOrWhiteSpace(phoneSearch))
+        {
+            patients = await patientService.GetAllAsync();
+        }
+        else
+        {
+            patients = await patientService.SearchAsync(nameSearch, phoneSearch);
+        }
+    }
+
+    private async Task Toggle(PatientDto patient)
+    {
+        var confirm = await JS.InvokeAsync<bool>(
+            "confirm",
+            patient.IsActive ? "Deactivate this patient?" : "Activate this patient?"
+        );
+
+        if (!confirm) return;
+
+        var success = await patientService.ToggleAsync(patient.PatientId);
+
+        if (success)
+        {
+            patient.IsActive = !patient.IsActive;
+        }
+    }
+
+    void OpenEdit(PatientDto patient)
+    {
+        editingId = patient.PatientId;
+
+        editPatient = new UpdatePatientDto
+        {
+            PatientName = patient.PatientName,
+            DateOfBirth = patient.DateOfBirth,
+            Gender = patient.Gender,
+            Email = patient.Email,
+            PhoneNo = patient.PhoneNo,
+            InsuranceID = patient.InsuranceID
+        };
+
+        showEdit = true;
+    }
+
+    private async Task UpdatePatient()
+    {
+        var success = await patientService.UpdateAsync(editingId, editPatient);
+
+        if (success)
+        {
+            showEdit = false;
+            patients = await patientService.GetAllAsync();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Update failed");
+        }
+    }
+}

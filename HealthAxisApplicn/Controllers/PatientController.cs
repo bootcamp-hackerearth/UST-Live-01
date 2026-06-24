@@ -30,7 +30,7 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
+        [AllowAnonymous]
         public async Task<IActionResult> Create([FromBody] CreatePatientDto entity)
         {
             if(!ModelState.IsValid)
@@ -42,9 +42,10 @@ namespace HealthAxisApplicn.Controllers
             return CreatedAtAction("GetById", new {id = result.PatientId}, result);
         }
 
+
         [HttpPut("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> Update(int id, [FromBody] CreatePatientDto entity)
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdatePatientDto entity)
         {
             if(!ModelState.IsValid)
             {
@@ -55,16 +56,11 @@ namespace HealthAxisApplicn.Controllers
             return Ok(result);
         }
 
-        [HttpPut("deactivate/{id:int}")]
+        [HttpPut("toggle/{id:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> Deactivate(int id)
+        public async Task<IActionResult> Toggle(int id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
             var result = await service.DeactivatePatientAsync(id);
-            if (result is null) return NotFound();
             return Ok(result);
         }
 
@@ -75,6 +71,16 @@ namespace HealthAxisApplicn.Controllers
             var result = await service.SearchByPatientNameAsync(name);
             if (result.Count == 0) return NotFound();
             return Ok(result);
+        }
+
+        [HttpGet("search")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> Search(
+        [FromQuery] string? name,
+        [FromQuery] string? phone)
+        {
+        var result = await service.SearchAsync(name, phone);
+        return Ok(result);
         }
 
 

@@ -11,6 +11,7 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped<IDoctorApiService, DoctorApiService>();
 builder.Services.AddScoped<IAuthApiService, AuthApiService>();
+builder.Services.AddScoped<IPatientApiService, PatientApiService>();
 
 builder.Services.AddScoped(sp =>
 {

@@ -22,10 +22,8 @@ namespace HealthAxisApplicn.Services.Impl
 
             if (existing == null)
                 throw new Exception("Patient Not Found");
-            if (!existing.IsActive)
-                throw new Exception("Cannot update inactive patient");
 
-            existing.IsActive = false;
+            existing.IsActive = !existing.IsActive;
 
             var updated = await repository.UpdateAsync(id, existing);
 
@@ -63,8 +61,21 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<PatientDto>(patient);
         }
 
-        public async Task<PatientDto?> UpdateAsync(int id, CreatePatientDto entity)
+        public async Task<PatientDto?> UpdateAsync(int id, UpdatePatientDto entity)
         {
+
+            if (entity.DateOfBirth > DateTime.Today)
+            {
+                throw new Exception("Invalid date of birth");
+            }
+
+            var existingEmail = await repository.SearchByEmailAsync(entity.Email);
+
+            if (existingEmail != null && existingEmail.PatientId != id)
+            {
+                throw new Exception("Email already exists");
+            }
+
 
             var existing = await repository.GetByIdAsync(id);
             if (existing == null)
@@ -82,5 +93,12 @@ namespace HealthAxisApplicn.Services.Impl
             return mapper.Map<PatientDto>(updated);
 
         }
+
+        public async Task<List<PatientDto>> SearchAsync(string? name, string? phone)
+        {
+            var patients = await repository.SearchAsync(name, phone);
+            return mapper.Map<List<PatientDto>>(patients);
+        }
+
     }
 }

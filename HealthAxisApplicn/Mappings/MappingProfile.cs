@@ -7,22 +7,26 @@ using HealthAxisApplicn.Models;
 
 namespace HealthAxisApplicn.Mappings
 {
-    public class MappingProfile: Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {
+            CreateMap<CreatePatientDto, Patient>();  
+            CreateMap<UpdatePatientDto, Patient>();   
             CreateMap<Patient, PatientDto>().ReverseMap();
 
+            
             CreateMap<Doctor, DoctorDto>().ReverseMap();
             CreateMap<CreateDoctorDto, Doctor>();
             CreateMap<UpdateDoctorDto, Doctor>();
 
+         
             CreateMap<Appointment, AppointmentDto>().ReverseMap();
             CreateMap<CreateAppointmentDto, Appointment>();
             CreateMap<UpdateAppointmentStatusDto, Appointment>();
 
+            
             CreateMap<HealthRecord, HealthRecordDto>().ReverseMap();
         }
-        
     }
 }
