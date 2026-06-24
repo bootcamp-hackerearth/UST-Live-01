@@ -273,6 +273,8 @@ else
 }
 
 @code {
+    private CancellationTokenSource? searchCancellationTokenSource;
+
     private List<PatientDto> patients = new();
 
     private string searchTerm = string.Empty;
@@ -335,11 +337,14 @@ else
         await LoadPatientsAsync();
     }
 
-    private async Task LoadPatientsAsync()
+    private async Task LoadPatientsAsync(bool showFullPageLoader = true)
     {
         try
         {
-            isLoading = true;
+            if (showFullPageLoader)
+            {
+                isLoading = true;
+            }
 
             errorMessage = null;
 
@@ -361,13 +366,16 @@ else
         {
             errorMessage = ex.Message;
         }
-        catch (HttpRequestException)
+        catch (System.Net.Http.HttpRequestException)
         {
             errorMessage = "Unable to load patients. Please check whether the API is running.";
         }
         finally
         {
-            isLoading = false;
+            if (showFullPageLoader)
+            {
+                isLoading = false;
+            }
         }
     }
 
@@ -407,7 +415,20 @@ else
 
         currentPage = 1;
 
-        await LoadPatientsAsync();
+        searchCancellationTokenSource?.Cancel();
+
+        searchCancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(400, searchCancellationTokenSource.Token);
+
+            await LoadPatientsAsync(showFullPageLoader: false);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancelled search request.
+        }
     }
 
     private async Task OnGenderChanged(ChangeEventArgs args)
@@ -416,7 +437,7 @@ else
 
         currentPage = 1;
 
-        await LoadPatientsAsync();
+        await LoadPatientsAsync(showFullPageLoader: false);
     }
 
     private async Task OnInsuranceStatusChanged(ChangeEventArgs args)
@@ -425,7 +446,7 @@ else
 
         currentPage = 1;
 
-        await LoadPatientsAsync();
+        await LoadPatientsAsync(showFullPageLoader: false);
     }
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
@@ -436,7 +457,7 @@ else
 
             currentPage = 1;
 
-            await LoadPatientsAsync();
+            await LoadPatientsAsync(showFullPageLoader: false);
         }
     }
 
@@ -450,7 +471,7 @@ else
 
         currentPage = 1;
 
-        await LoadPatientsAsync();
+        await LoadPatientsAsync(showFullPageLoader: false);
     }
 
     private async Task PreviousPage()
@@ -462,7 +483,7 @@ else
 
         currentPage--;
 
-        await LoadPatientsAsync();
+        await LoadPatientsAsync(showFullPageLoader: false);
     }
 
     private async Task NextPage()
@@ -474,7 +495,7 @@ else
 
         currentPage++;
 
-        await LoadPatientsAsync();
+        await LoadPatientsAsync(showFullPageLoader: false);
     }
 
     private void GoToPatientDetails(int patientId)

@@ -277,6 +277,8 @@ else
 }
 
 @code {
+    private CancellationTokenSource? searchCancellationTokenSource;
+
     private const string AllStatusFilter = "all";
 
     private const string TodayFilter = "today";
@@ -367,11 +369,14 @@ else
         await LoadAppointmentsAsync();
     }
 
-    private async Task LoadAppointmentsAsync()
+    private async Task LoadAppointmentsAsync(bool showFullPageLoader = true)
     {
         try
         {
-            isLoading = true;
+            if (showFullPageLoader)
+            {
+                isLoading = true;
+            }
 
             errorMessage = null;
 
@@ -403,7 +408,10 @@ else
         }
         finally
         {
-            isLoading = false;
+            if (showFullPageLoader)
+            {
+                isLoading = false;
+            }
         }
     }
 
@@ -454,7 +462,20 @@ else
 
         currentPage = 1;
 
-        await LoadAppointmentsAsync();
+        searchCancellationTokenSource?.Cancel();
+
+        searchCancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(400, searchCancellationTokenSource.Token);
+
+            await LoadAppointmentsAsync(showFullPageLoader: false);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancelled search request.
+        }
     }
 
     private async Task OnStatusFilterChanged(ChangeEventArgs args)
@@ -463,7 +484,7 @@ else
 
         currentPage = 1;
 
-        await LoadAppointmentsAsync();
+        await LoadAppointmentsAsync(showFullPageLoader: false);
     }
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
@@ -474,7 +495,7 @@ else
 
             currentPage = 1;
 
-            await LoadAppointmentsAsync();
+            await LoadAppointmentsAsync(showFullPageLoader: false);
         }
     }
 
@@ -486,7 +507,7 @@ else
 
         currentPage = 1;
 
-        await LoadAppointmentsAsync();
+        await LoadAppointmentsAsync(showFullPageLoader: false);
     }
 
     private async Task PreviousPage()
@@ -498,7 +519,7 @@ else
 
         currentPage--;
 
-        await LoadAppointmentsAsync();
+        await LoadAppointmentsAsync(showFullPageLoader: false);
     }
 
     private async Task NextPage()
@@ -510,7 +531,7 @@ else
 
         currentPage++;
 
-        await LoadAppointmentsAsync();
+        await LoadAppointmentsAsync(showFullPageLoader: false);
     }
 
     private void GoToAddAppointment()

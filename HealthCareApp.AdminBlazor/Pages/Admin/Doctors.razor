@@ -252,6 +252,8 @@ else
 }
 
 @code {
+    private CancellationTokenSource? searchCancellationTokenSource;
+
     private List<DoctorDto> doctors = new();
 
     private string searchTerm = string.Empty;
@@ -314,11 +316,14 @@ else
         await LoadDoctorsAsync();
     }
 
-    private async Task LoadDoctorsAsync()
+    private async Task LoadDoctorsAsync(bool showFullPageLoader = true)
     {
         try
         {
-            isLoading = true;
+            if (showFullPageLoader)
+            {
+                isLoading = true;
+            }
 
             errorMessage = null;
 
@@ -346,7 +351,10 @@ else
         }
         finally
         {
-            isLoading = false;
+            if (showFullPageLoader)
+            {
+                isLoading = false;
+            }
         }
     }
 
@@ -386,7 +394,20 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        searchCancellationTokenSource?.Cancel();
+
+        searchCancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(400, searchCancellationTokenSource.Token);
+
+            await LoadDoctorsAsync(showFullPageLoader: false);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancelled search request.
+        }
     }
 
     private async Task OnSpecialisationChanged(ChangeEventArgs args)
@@ -395,7 +416,7 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task OnStatusChanged(ChangeEventArgs args)
@@ -404,7 +425,7 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
@@ -415,7 +436,7 @@ else
 
             currentPage = 1;
 
-            await LoadDoctorsAsync();
+            await LoadDoctorsAsync(showFullPageLoader: false);
         }
     }
 
@@ -429,7 +450,7 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task PreviousPage()
@@ -441,7 +462,7 @@ else
 
         currentPage--;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task NextPage()
@@ -453,7 +474,7 @@ else
 
         currentPage++;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private void GoToAddDoctor()
@@ -476,7 +497,7 @@ else
 
             if (updatedDoctor is not null)
             {
-                await LoadDoctorsAsync();
+                await LoadDoctorsAsync(showFullPageLoader: false);
             }
         }
         catch (UnauthorizedAccessException ex)
