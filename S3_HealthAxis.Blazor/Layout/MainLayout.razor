@@ -181,7 +181,7 @@
         Navigation.NavigateTo("/login", forceLoad: true);
     }
 
-    private string GetInitials(string name)
+    private static string GetInitials(string name)
     {
         if (string.IsNullOrWhiteSpace(name))
             return "A";

@@ -17,30 +17,34 @@ namespace HealthAxis.API.Data
         public DbSet<Doctor> Doctors => Set<Doctor>();
         public DbSet<Appointment> Appointments => Set<Appointment>();
         public DbSet<HealthRecord> HealthRecords => Set<HealthRecord>();
-#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
-        public DbSet<User> Users => Set<User>();
-#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        // Keep custom users separate from IdentityDbContext.Users
+        public DbSet<User> AppUsers => Set<User>();
+
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(builder);
+
+            // IMPORTANT:
+            // Keep the custom User entity mapped to the existing Users table
+            // even though the DbSet property name is AppUsers.
+            builder.Entity<User>().ToTable("Users");
 
             // Appointment Relationships
-
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
                 .HasOne(a => a.Patient)
                 .WithMany(p => p.Appointments)
                 .HasForeignKey(a => a.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
                 .HasOne(a => a.Doctor)
                 .WithMany(d => d.Appointments)
                 .HasForeignKey(a => a.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Prevent doctor double-booking
-            modelBuilder.Entity<Appointment>()
+            builder.Entity<Appointment>()
                 .HasIndex(a => new
                 {
                     a.DoctorId,
@@ -50,40 +54,36 @@ namespace HealthAxis.API.Data
                 .IsUnique();
 
             // Health Record Relationships
- 
-
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                 .HasOne(hr => hr.Appointment)
                 .WithOne(a => a.HealthRecord)
                 .HasForeignKey<HealthRecord>(hr => hr.AppointmentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                 .HasOne(hr => hr.Patient)
                 .WithMany(p => p.HealthRecords)
                 .HasForeignKey(hr => hr.PatientId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                 .HasOne(hr => hr.Doctor)
                 .WithMany(d => d.HealthRecords)
                 .HasForeignKey(hr => hr.DoctorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // One Health Record per Appointment
-            modelBuilder.Entity<HealthRecord>()
+            builder.Entity<HealthRecord>()
                 .HasIndex(hr => hr.AppointmentId)
                 .IsUnique();
 
             // Doctor Configuration
-
-            modelBuilder.Entity<Doctor>()
+            builder.Entity<Doctor>()
                 .Property(d => d.ConsultationFee)
                 .HasPrecision(10, 2);
 
             // Seed Patients
-
-            modelBuilder.Entity<Patient>().HasData(
+            builder.Entity<Patient>().HasData(
                 new Patient
                 {
                     PatientId = 1,
@@ -111,8 +111,7 @@ namespace HealthAxis.API.Data
             );
 
             // Seed Doctors
-
-            modelBuilder.Entity<Doctor>().HasData(
+            builder.Entity<Doctor>().HasData(
                 new Doctor
                 {
                     DoctorId = 1,
@@ -133,11 +132,8 @@ namespace HealthAxis.API.Data
                 }
             );
 
-            // ==========================
             // Seed Appointments
-            // ==========================
-
-            modelBuilder.Entity<Appointment>().HasData(
+            builder.Entity<Appointment>().HasData(
                 new Appointment
                 {
                     AppointmentId = 1,

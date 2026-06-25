@@ -236,7 +236,7 @@
     private string GetUserCardClass(UserFilter filter) =>
         CurrentFilter == filter ? "active" : "";
 
-    private string GetRoleBadgeClass(string role)
+    private static string GetRoleBadgeClass(string role)
     {
         return role switch
         {

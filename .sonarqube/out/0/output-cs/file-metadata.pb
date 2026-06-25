@@ -15,9 +15,9 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\Pa
 dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\DeactivatePatientDto.csutf-8i
 `C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\CreatePatientDto.csutf-8s
 jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\UpdateHealthRecordDto.csutf-8m
-dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\HealthRecordDto.csutf-8g
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\UpdateDoctorDto.csutf-8s
-jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\CreateHealthRecordDto.csutf-8a
+dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\HealthRecordDto.csutf-8s
+jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\CreateHealthRecordDto.csutf-8g
+^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\UpdateDoctorDto.csutf-8a
 XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\DoctorDto.csutf-8o
 fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\DoctorCreationResultDto.csutf-8g
 ^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\CreateDoctorDto.csutf-8]
@@ -30,9 +30,9 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\Creat
 \C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\AuthResponseDto.csutf-8w
 nC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\UpdateAppointmentStatusDto.csutf-8q
 hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\UpdateAppointmentDto.csutf-8y
-pC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\PatientAppointmentHistoryDto.csutf-8r
+pC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\PatientAppointmentHistoryDto.csutf-8q
+hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.csutf-8r
 iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\DoctorScheduleItemDto.csutf-8q
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.csutf-8q
 hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.csutf-8k
 bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDto.csutf-8r
 iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDetailsDto.csutf-8h

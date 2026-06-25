@@ -1104,68 +1104,7 @@ dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthReco
 ;' (
 }) *
 } 
-} È
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\UpdateDoctorDto.cs
-	namespace 	
-S3_HealthAxis
- 
-. 
-Shared 
-. 
-DTOs #
-.# $
-Doctor$ *
-{ 
-public 
-
-class 
-UpdateDoctorDto  
-{ 
-public 
-string 
-FullName 
-{  
-get! $
-;$ %
-set& )
-;) *
-}+ ,
-=- .
-string/ 5
-.5 6
-Empty6 ;
-;; <
-public 
-int 
-Specialisation !
-{" #
-get$ '
-;' (
-set) ,
-;, -
-}. /
-public 
-int 
-YearsOfExperience $
-{% &
-get' *
-;* +
-set, /
-;/ 0
-}1 2
-public 
-decimal 
-ConsultationFee &
-{' (
-get) ,
-;, -
-set. 1
-;1 2
-}3 4
-}		 
-}
-
- ß
+} ß
 
 jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
 	namespace 	
@@ -1261,7 +1200,68 @@ jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthReco
 
 ) *
 } 
-} Ü
+} È
+^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\UpdateDoctorDto.cs
+	namespace 	
+S3_HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs #
+.# $
+Doctor$ *
+{ 
+public 
+
+class 
+UpdateDoctorDto  
+{ 
+public 
+string 
+FullName 
+{  
+get! $
+;$ %
+set& )
+;) *
+}+ ,
+=- .
+string/ 5
+.5 6
+Empty6 ;
+;; <
+public 
+int 
+Specialisation !
+{" #
+get$ '
+;' (
+set) ,
+;, -
+}. /
+public 
+int 
+YearsOfExperience $
+{% &
+get' *
+;* +
+set, /
+;/ 0
+}1 2
+public 
+decimal 
+ConsultationFee &
+{' (
+get) ,
+;, -
+set. 1
+;1 2
+}3 4
+}		 
+}
+
+ Ü
 XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\DoctorDto.cs
 	namespace 	
 S3_HealthAxis
@@ -2303,7 +2303,61 @@ DoctorName		  
 
 & '
 } 
-} ‡
+} ö
+hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.cs
+	namespace 	
+S3_HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs #
+.# $
+Appointment$ /
+{ 
+public 
+
+class  
+CreateAppointmentDto %
+{ 
+public 
+int 
+	PatientId 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
+public 
+int 
+DoctorId 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+public 
+DateOnly 
+ScheduledDate %
+{& '
+get( +
+;+ ,
+set- 0
+;0 1
+}2 3
+public 
+int 
+TimeSlot 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+}		 
+} ‡
 iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\DoctorScheduleItemDto.cs
 	namespace 	
 S3_HealthAxis
@@ -2398,61 +2452,7 @@ iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 
 & '
 } 
-} ö
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.cs
-	namespace 	
-S3_HealthAxis
- 
-. 
-Shared 
-. 
-DTOs #
-.# $
-Appointment$ /
-{ 
-public 
-
-class  
-CreateAppointmentDto %
-{ 
-public 
-int 
-	PatientId 
-{ 
-get "
-;" #
-set$ '
-;' (
-}) *
-public 
-int 
-DoctorId 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-public 
-DateOnly 
-ScheduledDate %
-{& '
-get( +
-;+ ,
-set- 0
-;0 1
-}2 3
-public 
-int 
-TimeSlot 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-}		 
-} 
+} 
 hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.cs
 	namespace 	
 S3_HealthAxis

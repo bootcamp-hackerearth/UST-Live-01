@@ -606,7 +606,7 @@
         }
     }
 
-    private string GetDisplayName(Enum enumValue)
+    private static string GetDisplayName(Enum enumValue)
     {
         var displayAttribute = enumValue.GetType()
             .GetMember(enumValue.ToString())
@@ -743,7 +743,7 @@
         }
     }
 
-    private RenderFragment GetAppointmentStatusBadge(int status) => builder =>
+    private static RenderFragment GetAppointmentStatusBadge(int status) => builder =>
     {
         switch (status)
         {
