@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="HealthApp.AdminPortal/HealthApp.AdminPortal.csproj" Id="75f8320c-56be-4a95-9859-b23320c3401a" />
   <Project Path="HealthApp.Api.Tests/HealthApp.Api.Tests.csproj" Id="2dc966a6-9922-49f1-91c0-dea2e0c9ca4b" />
   <Project Path="HealthApp.Api/HealthApp.Api.csproj" />
+  <Project Path="HealthApp.Shared/HealthApp.Shared.csproj" Id="354b51f4-3ba6-4ee8-91a6-3574356fb361" />
 </Solution>

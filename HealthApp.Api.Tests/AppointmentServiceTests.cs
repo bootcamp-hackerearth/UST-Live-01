@@ -274,26 +274,75 @@ namespace HealthApp.Api.Tests.Services
         [Fact]
         public async Task GetAppointments_ShouldReturnAppointments()
         {
-            var list = new List<Appointment>
+            // Arrange
+            var filter = new AppointmentFilterDto
+            {
+                DoctorId = null,
+                PatientId = null,
+                Status = null,
+                Date = null,
+                FromDate = null,
+                ToDate = null,
+                OnlyUpcoming = false
+            };
+
+            var appointments = new List<Appointment>
     {
-        new Appointment { PatientId = 1, DoctorId = 1 }
+        new Appointment
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 1
+        }
     };
 
-            _appointmentRepo.Setup(x => x.GetAppointmentsAsync(null, null, false))
-                .ReturnsAsync(list);
+            var appointmentDtos = new List<AppointmentDto>
+    {
+        new AppointmentDto
+        {
+            AppointmentId = 1,
+            PatientId = 1,
+            DoctorId = 1
+        }
+    };
 
-            _patientRepo.Setup(x => x.GetByIdAsync(1))
+            _appointmentRepo
+                .Setup(repo => repo.GetAppointmentsAsync(
+                    It.Is<AppointmentFilterDto>(f =>
+                        f.DoctorId == null &&
+                        f.PatientId == null &&
+                        f.Status == null &&
+                        f.Date == null &&
+                        f.FromDate == null &&
+                        f.ToDate == null &&
+                        f.OnlyUpcoming == false),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(appointments);
+
+            _patientRepo
+                .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(Patient());
 
-            _doctorRepo.Setup(x => x.GetByIdAsync(1))
+            _doctorRepo
+                .Setup(repo => repo.GetByIdAsync(1))
                 .ReturnsAsync(Doctor());
 
-            _mapper.Setup(x => x.Map<IEnumerable<AppointmentDto>>(list))
-                .Returns(new List<AppointmentDto> { new AppointmentDto() });
+            _mapper
+                .Setup(mapper => mapper.Map<IEnumerable<AppointmentDto>>(
+                    It.IsAny<IEnumerable<Appointment>>()))
+                .Returns(appointmentDtos);
 
-            var result = await _service.GetAppointmentsAsync();
+            // Act
+            var result = await _service.GetAppointmentsAsync(filter);
 
+            // Assert
             Assert.NotNull(result);
+            Assert.Single(result);
+
+            _appointmentRepo.Verify(repo => repo.GetAppointmentsAsync(
+                It.IsAny<AppointmentFilterDto>(),
+                It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         [Fact]
