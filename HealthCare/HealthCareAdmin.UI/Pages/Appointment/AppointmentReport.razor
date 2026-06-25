@@ -40,9 +40,11 @@
         <tr>
             <th>Date</th>
             <th>Pending</th>
+            <th>Cancelled</th>
             <th>Confirmed</th>
             <th>Completed</th>
             <th>Total</th>
+            <th>Revenue</th>
         </tr>
     </thead>
 
@@ -66,20 +68,24 @@
             @foreach (var r in reports)
             {
                 <tr>
-                    <td>@r.Date.ToString("dd MMM yyyy")</td>
+                    <td>@r.Date</td>
 
                     <td class="text-warning fw-semibold">@r.PendingCount</td>
+                    <td class="text-primary fw-semibold">@r.CancelledCount</td>
                     <td class="text-primary fw-semibold">@r.ConfirmedCount</td>
                     <td class="text-success fw-semibold">@r.CompletedCount</td>
-
-                    <td class="fw-bold">
-                        @(r.PendingCount + r.ConfirmedCount + r.CompletedCount)
-                    </td>
+                    <td class="fw-bold"> @(r.PendingCount + r.ConfirmedCount + r.CompletedCount + r.CancelledCount)</td>
+                    <td class="fw-bold text-success">₹@r.DailyRevenue</td>
+       
                 </tr>
             }
         }
     </tbody>
 </table>
+
+<h5 class="text-success">
+    Total Revenue: ₹@reports.Sum(r => r.DailyRevenue)
+</h5>
 
 @code {
 
@@ -101,7 +107,6 @@
 
     private async Task LoadReport()
     {
-        // ✅ Validate max 7 days
         if ((endDate - startDate).TotalDays > 6)
         {
             await JS.InvokeVoidAsync("alert", "Max 7 days allowed");
@@ -112,7 +117,24 @@
         {
             isLoading = true;
 
-            reports = await AppointmentService.GetAppointmentReport(startDate, endDate);
+            reports = await AppointmentService
+                .GetAppointmentReport(startDate, endDate);
+
+            Console.WriteLine($"Records Count = {reports.Count}");
+
+            foreach (var r in reports)
+            {
+                Console.WriteLine(
+                    $"{r.Date} | P:{r.PendingCount} | C:{r.ConfirmedCount}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+
+            await JS.InvokeVoidAsync(
+                "alert",
+                "Error loading report");
         }
         finally
         {

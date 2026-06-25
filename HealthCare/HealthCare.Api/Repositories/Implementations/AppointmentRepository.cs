@@ -30,19 +30,28 @@ namespace HealthCare.Api.Repositories.Implementations
             return !exists;
         }
 
-        public async Task<List<AppointmentReportDto>> GetDailyReport() =>
-            await _dbSet
+        public async Task<List<AppointmentReportDto>> GetDailyReport(DateOnly startDate, DateOnly endDate)
+        {
+            return await _dbSet
+                .Where(a =>
+                    a.ScheduledDate >= startDate &&
+                    a.ScheduledDate <= endDate)
+
                 .GroupBy(a => a.ScheduledDate)
+
                 .Select(g => new AppointmentReportDto
                 {
                     Date = g.Key,
                     PendingCount = g.Count(a => a.Status == "Pending"),
                     ConfirmedCount = g.Count(a => a.Status == "Confirmed"),
                     CancelledCount = g.Count(a => a.Status == "Cancelled"),
-                    CompletedCount = g.Count(a => a.Status == "Completed")
+                    CompletedCount = g.Count(a => a.Status == "Completed"),
+                    DailyRevenue = g .Where(a => a.Status == "Completed").Sum(a => a.Doctor.ConsultationFee)
                 })
+
                 .OrderBy(r => r.Date)
                 .ToListAsync();
+        }
 
         public async Task<List<AppointmentListDto>> GetDoctorSchedule(DateOnly date, int id) =>
             await _dbSet

@@ -7,5 +7,6 @@
         public int ConfirmedCount { get; set; }
         public int CancelledCount { get; set; }
         public int CompletedCount { get; set; }
+        public decimal DailyRevenue { get; set; }
     }
 }

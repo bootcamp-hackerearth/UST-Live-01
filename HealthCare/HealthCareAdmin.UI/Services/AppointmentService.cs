@@ -15,19 +15,17 @@ public class AppointmentService
         _js = js;
     }
 
-    public async Task<List<AppointmentReportDto>> GetAppointmentReport(DateTime start, DateTime end)
+    public async Task<List<AppointmentReportDto>>GetAppointmentReport(DateTime start, DateTime end)
     {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
+        var token = await _js.InvokeAsync<string>( "localStorage.getItem", "token");
 
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
+        _http.DefaultRequestHeaders.Authorization =new AuthenticationHeaderValue("Bearer", token);
 
-        var url = $"appointments?StartDate={start:yyyy-MM-dd}&EndDate={end:yyyy-MM-dd}";
+        var url = $"api/admin/appointments/report" + $"?startDate={start:yyyy-MM-dd}" + $"&endDate={end:yyyy-MM-dd}";
 
+        var result = await _http.GetFromJsonAsync<List<AppointmentReportDto>>(url);
 
-        var result = await _http.GetFromJsonAsync<PagedAppointmentResponse>(url);
-        return result?.Items ?? new List<AppointmentReportDto>();
-
+        return result ?? new List<AppointmentReportDto>();
     }
 
 

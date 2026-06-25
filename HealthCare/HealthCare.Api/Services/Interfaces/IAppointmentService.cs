@@ -13,7 +13,9 @@ namespace HealthCare.Api.Services.Interfaces
         Task<AppointmentListDto?> GetByIdAsync(int id);
         Task<PagedResult<AppointmentListDto>> GetAllAsync(AppointmentFilter filter);
         Task<bool> IsAvailable(DateOnly date, int doctorId, string timeSlot);
-        Task<List<AppointmentReportDto>> GetDailyReport();
+        //Task<List<AppointmentReportDto>> GetDailyReport();
+
+        Task<List<AppointmentReportDto>> GetDailyReport(DateOnly startDate, DateOnly endDate);
         Task<List<string>> AvailableTimeSlots(DateOnly date, int doctorId);
         Task<List<AppointmentListDto>> GetDoctorSchedule(DateOnly date, int id);
         Task<List<AppointmentListDto>> GetPatientSchedule(DateOnly date, int id);

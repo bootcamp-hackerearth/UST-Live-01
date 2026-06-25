@@ -19,7 +19,7 @@ namespace HealthCare.Api.Controllers
             _appointmentService = appointmentService;
         }
 
-        [HttpGet("/appointments")]
+        [HttpGet("appointments")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAllAppointment([FromQuery] AppointmentFilter filter)
         {
@@ -30,12 +30,14 @@ namespace HealthCare.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("/appointments/report")]
+        [HttpGet("appointments/report")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> GetDailyReport()
+        public async Task<IActionResult> GetDailyReport([FromQuery] DateOnly startDate, [FromQuery] DateOnly endDate)
         {
-            var result = await _appointmentService.GetDailyReport();
+            var result = await _appointmentService
+                .GetDailyReport(startDate, endDate);
+
             return Ok(result);
         }
 
