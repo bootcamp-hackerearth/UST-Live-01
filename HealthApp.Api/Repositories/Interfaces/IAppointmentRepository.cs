@@ -23,7 +23,7 @@ namespace HealthApp.Api.Repositories.Interfaces
             DateOnly date,
             CancellationToken ct = default);
 
-        Task<IEnumerable<Appointment>> GetAppointmentsAsync(
+        Task<(IEnumerable<Appointment> Items, int TotalCount)> GetAppointmentsAsync(
             AppointmentFilterDto filter,
             CancellationToken ct = default);
     }

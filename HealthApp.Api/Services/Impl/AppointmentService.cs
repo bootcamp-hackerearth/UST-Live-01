@@ -11,7 +11,6 @@ namespace HealthApp.Api.Services.Impl
 {
     public class AppointmentService : IAppointmentService
     {
-
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IPatientRepository _patientRepository;
         private readonly IDoctorRepository _doctorRepository;
@@ -29,11 +28,13 @@ namespace HealthApp.Api.Services.Impl
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsAsync(AppointmentFilterDto filter)
+        public async Task<PagedResultDto<AppointmentDto>> GetAppointmentsAsync(
+            AppointmentFilterDto filter)
         {
             filter ??= new AppointmentFilterDto();
 
-            if (filter.Date.HasValue && (filter.FromDate.HasValue || filter.ToDate.HasValue))
+            if (filter.Date.HasValue &&
+                (filter.FromDate.HasValue || filter.ToDate.HasValue))
             {
                 throw new InvalidRequestException(
                     "Use either exact date or date range, not both.");
@@ -47,14 +48,24 @@ namespace HealthApp.Api.Services.Impl
                     "From date cannot be greater than to date.");
             }
 
-            var appointments = await _appointmentRepository.GetAppointmentsAsync(filter);
+            var (appointments, totalCount) =
+                await _appointmentRepository.GetAppointmentsAsync(filter);
 
             foreach (var appointment in appointments)
             {
                 await LoadAppointmentNavigationDataAsync(appointment);
             }
 
-            return _mapper.Map<IEnumerable<AppointmentDto>>(appointments);
+            var appointmentDtos =
+                _mapper.Map<List<AppointmentDto>>(appointments);
+
+            return new PagedResultDto<AppointmentDto>
+            {
+                Items = appointmentDtos,
+                PageNumber = filter.PageNumber,
+                PageSize = filter.PageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<AppointmentDto> GetAppointmentByIdAsync(int id)
@@ -267,15 +278,6 @@ namespace HealthApp.Api.Services.Impl
             return availableSlots;
         }
 
-        private async Task LoadAppointmentNavigationDataAsync(Appointment appointment)
-        {
-            appointment.Patient ??= await _patientRepository.GetByIdAsync(
-                appointment.PatientId);
-
-            appointment.Doctor ??= await _doctorRepository.GetByIdAsync(
-                appointment.DoctorId);
-        }
-
         public async Task DeleteAppointmentAsync(int id)
         {
             if (id <= 0)
@@ -303,6 +305,15 @@ namespace HealthApp.Api.Services.Impl
                 throw new BusinessRuleViolationException(
                     "Unable to delete appointment.");
             }
+        }
+
+        private async Task LoadAppointmentNavigationDataAsync(Appointment appointment)
+        {
+            appointment.Patient ??= await _patientRepository.GetByIdAsync(
+                appointment.PatientId);
+
+            appointment.Doctor ??= await _doctorRepository.GetByIdAsync(
+                appointment.DoctorId);
         }
     }
 }

@@ -6,14 +6,16 @@ namespace HealthApp.AdminPortal.Services.Interface
 {
     public interface IAppointmentService
     {
-        Task<ApiResult<List<AppointmentDto>>> GetAppointments(
+        Task<ApiResult<PagedResultDto<AppointmentDto>>> GetAppointments(
             int? doctorId = null,
             int? patientId = null,
             AppointmentStatus? status = null,
             DateOnly? date = null,
             DateOnly? fromDate = null,
             DateOnly? toDate = null,
-            bool onlyUpcoming = false);
+            bool onlyUpcoming = false,
+            int pageNumber = 1,
+            int pageSize = 10);
 
         Task<ApiResult<AppointmentDto>> GetById(int id);
 

@@ -208,9 +208,7 @@ else
 
         if (appointmentResult.IsSuccess)
         {
-            todayAppointments = appointmentResult.Data?
-                .Count(appointment => appointment.ScheduledDate.Date == DateTime.Today)
-                ?? 0;
+            todayAppointments = appointmentResult.Data!.TotalCount;
         }
         else
         {

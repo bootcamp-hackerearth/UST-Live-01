@@ -3,7 +3,6 @@
 
 @using HealthApp.Shared.Dtos
 @using HealthApp.Shared.Enums
-
 @inject IAppointmentService AppointmentService
 @inject IDoctorService DoctorService
 @inject IPatientService PatientService
@@ -59,6 +58,7 @@
                    placeholder="Search doctor"
                    @bind="DoctorSearchText"
                    @bind:event="oninput" />
+
             <datalist id="doctorSuggestions">
                 @foreach (var doctor in Doctors)
                 {
@@ -97,7 +97,6 @@
         </div>
 
         <div class="col-lg-12 col-md-12">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
 
                 <div class="form-check">
                     <input class="form-check-input"
@@ -130,7 +129,6 @@
         </div>
 
     </div>
-</div>
 
 <div class="table-card">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
@@ -138,8 +136,22 @@
             <h5 class="fw-bold mb-1">Appointment List</h5>
 
             <p class="text-muted small fw-semibold mb-0">
-                Showing @AppointmentsList.Count appointment(s)
+                Showing @AppointmentsList.Count of @TotalCount appointment(s)
             </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <label class="text-muted small fw-semibold mb-0">Page size</label>
+
+            <select class="form-select form-select-sm"
+                    style="width: 90px;"
+                    value="@PageSize"
+                    @onchange="OnPageSizeChanged">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
         </div>
     </div>
 
@@ -271,30 +283,39 @@
             </tbody>
         </table>
     </div>
+
+    <Pagination CurrentPage="@CurrentPage"
+                PageSize="@PageSize"
+                TotalItems="@TotalCount"
+                IsLoading="@isLoading"
+                CurrentPageChanged="OnPageChanged" />
 </div>
 
 @code {
     private DateTime? FilterDate;
-
     private DateTime? FromDate;
-
     private DateTime? ToDate;
 
     private string SelectedStatusValue { get; set; } = string.Empty;
-
     private bool OnlyUpcoming { get; set; }
 
     private List<AppointmentDto> AppointmentsList = new();
-
     private List<DoctorDto> Doctors = new();
-
     private List<PatientDto> Patients = new();
 
     private bool isLoading = true;
 
     private string DoctorSearchText { get; set; } = string.Empty;
-
     private string PatientSearchText { get; set; } = string.Empty;
+
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 10;
+    private int TotalCount { get; set; }
+
+    private int TotalPages =>
+        PageSize <= 0
+            ? 0
+            : (int)Math.Ceiling((double)TotalCount / PageSize);
 
     private int? SelectedDoctorId
     {
@@ -333,18 +354,6 @@
             return patient?.PatientId;
         }
     }
-
-    private string GetDoctorDisplayText(DoctorDto doctor)
-    {
-        return $"{doctor.FullName} - DOC-{doctor.DoctorId:000}";
-    }
-
-    private string GetPatientDisplayText(PatientDto patient)
-    {
-        return $"{patient.FullName} - PAT-{patient.PatientId:000}";
-    }
-
-    
 
     private AppointmentStatus? SelectedStatus =>
         string.IsNullOrWhiteSpace(SelectedStatusValue)
@@ -415,18 +424,30 @@
             FilterDateOnly,
             FromDateOnly,
             ToDateOnly,
-            OnlyUpcoming);
+            OnlyUpcoming,
+            CurrentPage,
+            PageSize);
 
-        if (result.IsSuccess)
+        if (result.IsSuccess && result.Data is not null)
         {
-            AppointmentsList = result.Data ?? new List<AppointmentDto>();
+            AppointmentsList = result.Data.Items ?? new List<AppointmentDto>();
+            TotalCount = result.Data.TotalCount;
+
+            if (CurrentPage > TotalPages && TotalPages > 0)
+            {
+                CurrentPage = TotalPages;
+                isLoading = false;
+
+                await LoadAppointments();
+                return;
+            }
         }
         else
         {
             AppointmentsList = new List<AppointmentDto>();
+            TotalCount = 0;
 
             NotificationService.Error(result.Message);
-
             RedirectToLoginIfSessionExpired(result.Message);
         }
 
@@ -461,6 +482,8 @@
             return;
         }
 
+        CurrentPage = 1;
+
         await LoadAppointments();
     }
 
@@ -475,8 +498,37 @@
         SelectedStatusValue = string.Empty;
 
         OnlyUpcoming = false;
+        CurrentPage = 1;
 
         await LoadAppointments();
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        CurrentPage = page;
+
+        await LoadAppointments();
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var pageSize))
+        {
+            PageSize = pageSize;
+            CurrentPage = 1;
+
+            await LoadAppointments();
+        }
+    }
+
+    private string GetDoctorDisplayText(DoctorDto doctor)
+    {
+        return $"{doctor.FullName} - DOC-{doctor.DoctorId:000}";
+    }
+
+    private string GetPatientDisplayText(PatientDto patient)
+    {
+        return $"{patient.FullName} - PAT-{patient.PatientId:000}";
     }
 
     private string GetStatusClass(string? status)

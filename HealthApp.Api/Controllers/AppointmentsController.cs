@@ -1,5 +1,4 @@
-﻿
-using HealthApp.Api.Exceptions;
+﻿using HealthApp.Api.Exceptions;
 using HealthApp.Api.Extensions;
 using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Dtos;
@@ -17,8 +16,11 @@ namespace HealthApp.Api.Controllers
     {
         private readonly IAppointmentService _appointmentService;
 
-        private const string PatientNotLinked = "Patient profile is not linked to this user.";
-        private const string DoctorNotLinked = "Doctor profile is not linked to this user.";
+        private const string PatientNotLinked =
+            "Patient profile is not linked to this user.";
+
+        private const string DoctorNotLinked =
+            "Doctor profile is not linked to this user.";
 
         public AppointmentsController(IAppointmentService appointmentService)
         {
@@ -28,7 +30,7 @@ namespace HealthApp.Api.Controllers
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAppointmentsForAdmin(
-    [FromQuery] AppointmentFilterDto filter)
+            [FromQuery] AppointmentFilterDto filter)
         {
             var appointments = await _appointmentService.GetAppointmentsAsync(filter);
 
@@ -37,7 +39,8 @@ namespace HealthApp.Api.Controllers
 
         [HttpGet("my")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor")]
-        public async Task<IActionResult> GetMyAppointments([FromQuery] bool onlyUpcoming = false)
+        public async Task<IActionResult> GetMyAppointments(
+            [FromQuery] bool onlyUpcoming = false)
         {
             int? patientId = null;
             int? doctorId = null;
@@ -67,10 +70,12 @@ namespace HealthApp.Api.Controllers
                 {
                     DoctorId = doctorId,
                     PatientId = patientId,
-                    OnlyUpcoming = onlyUpcoming
+                    OnlyUpcoming = onlyUpcoming,
+                    PageNumber = 1,
+                    PageSize = 100
                 });
 
-            return Ok(appointments);
+            return Ok(appointments.Items);
         }
 
         [HttpGet("my/upcoming")]
@@ -105,10 +110,12 @@ namespace HealthApp.Api.Controllers
                 {
                     DoctorId = doctorId,
                     PatientId = patientId,
-                    OnlyUpcoming = true
+                    OnlyUpcoming = true,
+                    PageNumber = 1,
+                    PageSize = 100
                 });
 
-            return Ok(appointments);
+            return Ok(appointments.Items);
         }
 
         [HttpGet("{id:int}")]
@@ -134,7 +141,8 @@ namespace HealthApp.Api.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> BookAppointment([FromBody] AppointmentBookingDto dto)
+        public async Task<IActionResult> BookAppointment(
+            [FromBody] AppointmentBookingDto dto)
         {
             var loggedInPatientId = User.GetPatientId();
 

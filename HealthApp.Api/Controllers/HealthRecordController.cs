@@ -225,7 +225,7 @@ namespace HealthApp.Api.Controllers
                     OnlyUpcoming = false
                 });
 
-            var hasTreatmentRelationship = appointments.Any(appointment =>
+            var hasTreatmentRelationship = appointments.Items.Any(appointment =>
                 appointment.Status == "Confirmed" ||
                 appointment.Status == "Completed");
 

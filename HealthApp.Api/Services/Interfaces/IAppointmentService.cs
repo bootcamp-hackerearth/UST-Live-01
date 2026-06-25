@@ -5,7 +5,7 @@ namespace HealthApp.Api.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<AppointmentDto>> GetAppointmentsAsync(AppointmentFilterDto filter);
+        Task<PagedResultDto<AppointmentDto>> GetAppointmentsAsync(AppointmentFilterDto filter);
 
         Task<AppointmentDto> GetAppointmentByIdAsync(int id);
 

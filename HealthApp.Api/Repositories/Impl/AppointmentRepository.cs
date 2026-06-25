@@ -10,7 +10,7 @@ namespace HealthApp.Api.Repositories.Impl
     public class AppointmentRepository(HealthAppDbContext context)
         : Repository<Appointment>(context), IAppointmentRepository
     {
-        public async Task<IEnumerable<Appointment>> GetAppointmentsAsync(
+        public async Task<(IEnumerable<Appointment> Items, int TotalCount)> GetAppointmentsAsync(
             AppointmentFilterDto filter,
             CancellationToken ct = default)
         {
@@ -60,10 +60,16 @@ namespace HealthApp.Api.Repositories.Impl
                 query = query.Where(a => a.ScheduledDate >= today);
             }
 
-            return await query
+            var totalCount = await query.CountAsync(ct);
+
+            var items = await query
                 .OrderBy(a => a.ScheduledDate)
                 .ThenBy(a => a.TimeSlot)
+                .Skip((filter.PageNumber - 1) * filter.PageSize)
+                .Take(filter.PageSize)
                 .ToListAsync(ct);
+
+            return (items, totalCount);
         }
 
         public async Task<bool> HasAppointmentWithDoctorOnSameDayAsync(

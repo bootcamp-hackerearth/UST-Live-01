@@ -1,0 +1,109 @@
+﻿@if (TotalItems > 0 && TotalPages > 1)
+{
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
+
+        <div class="text-muted small fw-semibold">
+            Page @CurrentPage of @TotalPages,
+            total @TotalItems record(s)
+        </div>
+
+        <div class="d-flex flex-wrap gap-2">
+
+            <button type="button"
+                    class="btn btn-outline-secondary rounded-pill px-3"
+                    disabled="@(CurrentPage == 1 || IsLoading)"
+                    @onclick="GoToPreviousPage">
+                Previous
+            </button>
+
+            @foreach (var pageNumber in VisiblePages)
+            {
+                <button type="button"
+                        class="btn @(pageNumber == CurrentPage ? ActiveButtonClass : InactiveButtonClass) rounded-pill px-3"
+                        disabled="@IsLoading"
+                        @onclick="() => GoToPage(pageNumber)">
+                    @pageNumber
+                </button>
+            }
+
+            <button type="button"
+                    class="btn btn-outline-secondary rounded-pill px-3"
+                    disabled="@(CurrentPage == TotalPages || IsLoading)"
+                    @onclick="GoToNextPage">
+                Next
+            </button>
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+
+    [Parameter]
+    public int TotalItems { get; set; }
+
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public EventCallback<int> CurrentPageChanged { get; set; }
+
+    [Parameter]
+    public string ActiveButtonClass { get; set; } = "btn-health";
+
+    [Parameter]
+    public string InactiveButtonClass { get; set; } = "btn-outline-secondary";
+
+    private int TotalPages =>
+        PageSize <= 0
+            ? 0
+            : (int)Math.Ceiling((double)TotalItems / PageSize);
+
+    private IEnumerable<int> VisiblePages
+    {
+        get
+        {
+            const int maxVisiblePages = 5;
+
+            if (TotalPages <= 0)
+            {
+                return Enumerable.Empty<int>();
+            }
+
+            var start = Math.Max(1, CurrentPage - 2);
+            var end = Math.Min(TotalPages, start + maxVisiblePages - 1);
+
+            if (end - start < maxVisiblePages - 1)
+            {
+                start = Math.Max(1, end - maxVisiblePages + 1);
+            }
+
+            return Enumerable.Range(start, end - start + 1);
+        }
+    }
+
+    private async Task GoToPage(int pageNumber)
+    {
+        if (pageNumber < 1 || pageNumber > TotalPages || pageNumber == CurrentPage)
+        {
+            return;
+        }
+
+        await CurrentPageChanged.InvokeAsync(pageNumber);
+    }
+
+    private async Task GoToPreviousPage()
+    {
+        await GoToPage(CurrentPage - 1);
+    }
+
+    private async Task GoToNextPage()
+    {
+        await GoToPage(CurrentPage + 1);
+    }
+}

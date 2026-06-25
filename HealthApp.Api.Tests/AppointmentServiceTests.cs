@@ -283,7 +283,9 @@ namespace HealthApp.Api.Tests.Services
                 Date = null,
                 FromDate = null,
                 ToDate = null,
-                OnlyUpcoming = false
+                OnlyUpcoming = false,
+                PageNumber = 1,
+                PageSize = 10
             };
 
             var appointments = new List<Appointment>
@@ -306,6 +308,9 @@ namespace HealthApp.Api.Tests.Services
         }
     };
 
+            (IEnumerable<Appointment> Items, int TotalCount) repositoryResult =
+                (appointments, appointments.Count);
+
             _appointmentRepo
                 .Setup(repo => repo.GetAppointmentsAsync(
                     It.Is<AppointmentFilterDto>(f =>
@@ -315,20 +320,26 @@ namespace HealthApp.Api.Tests.Services
                         f.Date == null &&
                         f.FromDate == null &&
                         f.ToDate == null &&
-                        f.OnlyUpcoming == false),
+                        f.OnlyUpcoming == false &&
+                        f.PageNumber == 1 &&
+                        f.PageSize == 10),
                     It.IsAny<CancellationToken>()))
-                .ReturnsAsync(appointments);
+                .Returns(Task.FromResult(repositoryResult));
 
             _patientRepo
-                .Setup(repo => repo.GetByIdAsync(1))
+                .Setup(repo => repo.GetByIdAsync(
+                    1,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Patient());
 
             _doctorRepo
-                .Setup(repo => repo.GetByIdAsync(1))
+                .Setup(repo => repo.GetByIdAsync(
+                    1,
+                    It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Doctor());
 
             _mapper
-                .Setup(mapper => mapper.Map<IEnumerable<AppointmentDto>>(
+                .Setup(mapper => mapper.Map<List<AppointmentDto>>(
                     It.IsAny<IEnumerable<Appointment>>()))
                 .Returns(appointmentDtos);
 
@@ -337,11 +348,17 @@ namespace HealthApp.Api.Tests.Services
 
             // Assert
             Assert.NotNull(result);
-            Assert.Single(result);
+            Assert.NotNull(result.Items);
+
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(10, result.PageSize);
+            Assert.Equal(1, result.Items.First().AppointmentId);
 
             _appointmentRepo.Verify(repo => repo.GetAppointmentsAsync(
-                It.IsAny<AppointmentFilterDto>(),
-                It.IsAny<CancellationToken>()),
+                    It.IsAny<AppointmentFilterDto>(),
+                    It.IsAny<CancellationToken>()),
                 Times.Once);
         }
 
