@@ -190,7 +190,7 @@ else
 
         if (patientResult.IsSuccess)
         {
-            totalPatients = patientResult.Data?.Count ?? 0;
+            totalPatients = patientResult.Data?.TotalCount ?? 0;
         }
         else
         {

@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
@@ -53,22 +57,25 @@ namespace HealthApp.Api.Services.Impl
 
             ValidatePatient(dto);
 
-            if (dto.DateOfBirth > DateOnly.FromDateTime(DateTime.Today))
+            if (dto.DateOfBirth.HasValue &&
+                dto.DateOfBirth.Value > DateOnly.FromDateTime(DateTime.Today))
             {
                 throw new BusinessRuleViolationException("Future date is not allowed.");
             }
 
             string email = dto.Email.Trim();
 
-            var patientsWithEmail = await _patientRepository.GetPatientsAsync(null, email);
+            var allPatients = await _patientRepository.GetAllAsync();
 
-            bool emailExists = patientsWithEmail.Any(p =>
-                string.Equals(p.Email, email, StringComparison.OrdinalIgnoreCase));
+            bool emailExists = allPatients.Any(p =>
+                string.Equals(
+                    p.Email,
+                    email,
+                    StringComparison.OrdinalIgnoreCase));
 
             if (emailExists)
             {
-                throw new DuplicateEntityException(
-                    "A patient with this email already exists.");
+                throw new DuplicateEntityException("A patient with this email already exists.");
             }
 
             bool duplicatePatient = await _patientRepository.IsDuplicatePatient(
@@ -78,14 +85,13 @@ namespace HealthApp.Api.Services.Impl
 
             if (duplicatePatient)
             {
-                throw new DuplicateEntityException(
-                    "A patient with same name, date of birth and email already exists.");
+                throw new DuplicateEntityException("A patient with same name, date of birth and email already exists.");
             }
 
             var patient = _mapper.Map<Patient>(dto);
 
             patient.FullName = dto.FullName.Trim();
-            patient.DateOfBirth = (DateOnly)dto.DateOfBirth!;
+            patient.DateOfBirth = dto.DateOfBirth!.Value;
             patient.Gender = dto.Gender.Trim();
             patient.PhoneNumber = dto.PhoneNumber.Trim();
             patient.Email = email;
@@ -109,7 +115,8 @@ namespace HealthApp.Api.Services.Impl
 
             ValidatePatient(dto);
 
-            if (dto.DateOfBirth > DateOnly.FromDateTime(DateTime.Today))
+            if (dto.DateOfBirth.HasValue &&
+                dto.DateOfBirth.Value > DateOnly.FromDateTime(DateTime.Today))
             {
                 throw new BusinessRuleViolationException("Future date is not allowed.");
             }
@@ -123,20 +130,22 @@ namespace HealthApp.Api.Services.Impl
 
             string email = dto.Email.Trim();
 
-            var patientsWithEmail = await _patientRepository.GetPatientsAsync(null, email);
+            var allPatients = await _patientRepository.GetAllAsync();
 
-            bool emailUsedByAnotherPatient = patientsWithEmail.Any(p =>
+            bool emailUsedByAnotherPatient = allPatients.Any(p =>
                 p.PatientId != id &&
-                string.Equals(p.Email, email, StringComparison.OrdinalIgnoreCase));
+                string.Equals(
+                    p.Email,
+                    email,
+                    StringComparison.OrdinalIgnoreCase));
 
             if (emailUsedByAnotherPatient)
             {
-                throw new DuplicateEntityException(
-                    "Another patient already uses this email.");
+                throw new DuplicateEntityException("Another patient already uses this email.");
             }
 
             patient.FullName = dto.FullName.Trim();
-            patient.DateOfBirth = (DateOnly)dto.DateOfBirth!;
+            patient.DateOfBirth = dto.DateOfBirth!.Value;
             patient.Gender = dto.Gender.Trim();
             patient.PhoneNumber = dto.PhoneNumber.Trim();
             patient.Email = email;
@@ -145,13 +154,37 @@ namespace HealthApp.Api.Services.Impl
             await _patientRepository.Update(id, patient);
         }
 
-        public async Task<IEnumerable<PatientDto>> SearchPatientsAsync(
+        public async Task<PagedResultDto<PatientDto>> SearchPatientsAsync(
             string? name,
-            string? email)
+            string? email,
+            int pageNumber,
+            int pageSize)
         {
-            var patients = await _patientRepository.GetPatientsAsync(name, email);
+            if (pageNumber <= 0)
+            {
+                throw new InvalidRequestException("Page number must be greater than 0.");
+            }
 
-            return _mapper.Map<IEnumerable<PatientDto>>(patients);
+            if (pageSize <= 0 || pageSize > 100)
+            {
+                throw new InvalidRequestException("Page size must be between 1 and 100.");
+            }
+
+            var (items, totalCount) = await _patientRepository.GetPatientsAsync(
+                name,
+                email,
+                pageNumber,
+                pageSize);
+
+            var patientDtos = _mapper.Map<List<PatientDto>>(items);
+
+            return new PagedResultDto<PatientDto>
+            {
+                Items = patientDtos,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
         }
 
         private static void ValidatePatient(PatientCreateDto dto)
@@ -161,7 +194,7 @@ namespace HealthApp.Api.Services.Impl
                 throw new InvalidRequestException("Patient name is required.");
             }
 
-            if (dto.DateOfBirth == default)
+            if (!dto.DateOfBirth.HasValue)
             {
                 throw new InvalidRequestException("Date of birth is required.");
             }
@@ -173,7 +206,9 @@ namespace HealthApp.Api.Services.Impl
 
             string gender = dto.Gender.Trim();
 
-            if (gender != "Male" && gender != "Female" && gender != "Other")
+            if (gender != "Male" &&
+                gender != "Female" &&
+                gender != "Other")
             {
                 throw new InvalidRequestException("Invalid gender.");
             }

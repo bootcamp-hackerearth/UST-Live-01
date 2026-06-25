@@ -5,10 +5,17 @@ namespace HealthApp.AdminPortal.Services.Interface
 {
     public interface IPatientService
     {
-        Task<ApiResult<List<PatientDto>>> GetAll();
+        Task<ApiResult<PagedResultDto<PatientDto>>> GetAll(
+            int pageNumber = 1,
+            int pageSize = 10);
 
-        Task<ApiResult<PatientDto>> GetById(int id);
+        Task<ApiResult<PatientDto>> GetById(
+            int id);
 
-        Task<ApiResult<List<PatientDto>>> Search(string? name, string? email);
+        Task<ApiResult<PagedResultDto<PatientDto>>> Search(
+            string? name,
+            string? email,
+            int pageNumber = 1,
+            int pageSize = 10);
     }
 }

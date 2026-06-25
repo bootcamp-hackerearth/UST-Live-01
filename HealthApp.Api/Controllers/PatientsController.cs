@@ -1,8 +1,9 @@
-﻿using HealthApp.Api.Services.Interfaces;
-using HealthApp.Shared.Dtos;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using HealthApp.Api.Services.Interfaces;
+using HealthApp.Shared.Dtos;
 
 namespace HealthApp.Api.Controllers
 {
@@ -19,16 +20,26 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> GetAllPatients()
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
+        public async Task<IActionResult> GetAllPatients(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var patients = await _patientService.GetAllPatientsAsync();
+            var patients = await _patientService.SearchPatientsAsync(
+                name: null,
+                email: null,
+                pageNumber,
+                pageSize);
 
             return Ok(patients);
         }
 
         [HttpGet("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Doctor,Admin")]
         public async Task<IActionResult> GetPatientById(int id)
         {
             var patient = await _patientService.GetPatientByIdAsync(id);
@@ -37,7 +48,9 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpPut("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
         public async Task<IActionResult> UpdatePatient(
             int id,
             [FromBody] PatientCreateDto dto)
@@ -51,14 +64,20 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpGet("search")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Doctor,Admin")]
         public async Task<IActionResult> SearchPatients(
             [FromQuery] string? name,
-            [FromQuery] string? email)
+            [FromQuery] string? email,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
             var patients = await _patientService.SearchPatientsAsync(
                 name,
-                email);
+                email,
+                pageNumber,
+                pageSize);
 
             return Ok(patients);
         }

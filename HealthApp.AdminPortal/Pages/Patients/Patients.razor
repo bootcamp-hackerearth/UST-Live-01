@@ -1,5 +1,10 @@
 ﻿@page "/patients"
 @attribute [Authorize(Roles = "Admin")]
+
+@using HealthApp.Shared.Dtos
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components
+
 @inject IPatientService PatientService
 @inject INotificationService NotificationService
 @inject NavigationManager NavigationManager
@@ -22,12 +27,10 @@
 
         <div class="col-lg-4 col-md-6">
             <label class="form-label fw-semibold">Name</label>
-
             <div class="input-group">
                 <span class="input-group-text bg-white">
                     <i class="bi bi-search text-muted"></i>
                 </span>
-
                 <input class="form-control"
                        placeholder="Search patient by name"
                        @bind="SearchName"
@@ -37,12 +40,10 @@
 
         <div class="col-lg-4 col-md-6">
             <label class="form-label fw-semibold">Email</label>
-
             <div class="input-group">
                 <span class="input-group-text bg-white">
                     <i class="bi bi-envelope text-muted"></i>
                 </span>
-
                 <input class="form-control"
                        placeholder="Search patient by email"
                        @bind="SearchEmail"
@@ -52,7 +53,6 @@
 
         <div class="col-lg-3 col-md-6">
             <label class="form-label fw-semibold">Gender</label>
-
             <select class="form-select" @bind="SelectedGender">
                 <option value="">All Genders</option>
                 <option>Male</option>
@@ -65,6 +65,7 @@
             <button type="button"
                     class="btn btn-health rounded-pill patient-clear-btn w-100 mb-2"
                     title="Search"
+                    disabled="@isLoading"
                     @onclick="SearchPatients">
                 <i class="bi bi-search"></i>
             </button>
@@ -72,6 +73,7 @@
             <button type="button"
                     class="btn btn-outline-secondary rounded-pill patient-clear-btn w-100"
                     title="Clear filters"
+                    disabled="@isLoading"
                     @onclick="ClearFilters">
                 <i class="bi bi-arrow-clockwise"></i>
             </button>
@@ -82,12 +84,27 @@
 
 <div class="table-card">
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
             <h5 class="fw-bold mb-1">Patient List</h5>
             <p class="text-muted small mb-0">
-                Showing @FilteredPatients.Count() of @PatientsList.Count patient(s)
+                Showing @FilteredPatients.Count() patient(s) of @TotalCount total
             </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <label class="text-muted small fw-semibold mb-0">
+                Page size
+            </label>
+            <select class="form-select form-select-sm w-auto"
+                    value="@PageSize"
+                    disabled="@isLoading"
+                    @onchange="OnPageSizeChanged">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
         </div>
     </div>
 
@@ -97,7 +114,6 @@
             <div class="spinner-border text-health" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-
             <p class="text-muted fw-semibold mt-3 mb-0">
                 Loading patients...
             </p>
@@ -107,7 +123,6 @@
     {
         <div class="table-responsive">
             <table class="table align-middle custom-table patients-table">
-
                 <thead class="table-light">
                     <tr>
                         <th>Patient</th>
@@ -118,7 +133,6 @@
                         <th class="text-center" style="width: 120px;">Action</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @if (!FilteredPatients.Any())
                     {
@@ -144,40 +158,36 @@
                                         <div class="patient-avatar">
                                             <i class="bi bi-person"></i>
                                         </div>
-
                                         <div>
-                                            <div class="fw-bold">@patient.FullName</div>
+                                            <div class="fw-bold">
+                                                @patient.FullName
+                                            </div>
                                             <small class="text-muted">
                                                 ID: PAT-@patient.PatientId.ToString("000")
                                             </small>
                                         </div>
                                     </div>
                                 </td>
-
                                 <td>
                                     <div class="fw-semibold">
                                         @patient.Email
                                     </div>
                                 </td>
-
                                 <td>
                                     <div class="fw-semibold">
                                         @patient.PhoneNumber
                                     </div>
                                 </td>
-
                                 <td>
                                     <span class="patient-gender-badge">
                                         @patient.Gender
                                     </span>
                                 </td>
-
                                 <td>
                                     <div class="fw-semibold">
                                         @patient.DateOfBirth.ToString("dd MMM yyyy")
                                     </div>
                                 </td>
-
                                 <td class="text-center">
                                     <NavLink href="@($"/patients/{patient.PatientId}")"
                                              class="btn btn-health btn-sm action-btn"
@@ -189,102 +199,110 @@
                         }
                     }
                 </tbody>
-
             </table>
         </div>
+
+        <Pagination CurrentPage="@CurrentPage"
+                    PageSize="@PageSize"
+                    TotalItems="@TotalCount"
+                    IsLoading="@isLoading"
+                    CurrentPageChanged="OnPageChanged" />
     }
 
 </div>
 
 @code {
-    @code {
-        private List<PatientDto> PatientsList = new();
+    private List<PatientDto> PatientsList = new();
+    private bool isLoading = true;
+    private string SearchName = string.Empty;
+    private string SearchEmail = string.Empty;
+    private string SelectedGender = string.Empty;
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 10;
+    private int TotalCount { get; set; }
 
-        private bool isLoading = true;
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
 
-        private string SearchName = string.Empty;
+    private async Task LoadPatients()
+    {
+        isLoading = true;
 
-        private string SearchEmail = string.Empty;
+        var result = await PatientService.Search(
+            SearchName,
+            SearchEmail,
+            CurrentPage,
+            PageSize);
 
-        private string SelectedGender = string.Empty;
-
-        protected override async Task OnInitializedAsync()
+        if (result.IsSuccess)
         {
+            PatientsList = result.Data?.Items ?? new List<PatientDto>();
+            TotalCount = result.Data?.TotalCount ?? 0;
+            CurrentPage = result.Data?.PageNumber ?? CurrentPage;
+            PageSize = result.Data?.PageSize ?? PageSize;
+        }
+        else
+        {
+            PatientsList = new List<PatientDto>();
+            TotalCount = 0;
+
+            NotificationService.Error(result.Message);
+            RedirectToLoginIfSessionExpired(result.Message);
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SearchPatients()
+    {
+        CurrentPage = 1;
+        await LoadPatients();
+    }
+
+    private IEnumerable<PatientDto> FilteredPatients =>
+        PatientsList.Where(patient =>
+            string.IsNullOrWhiteSpace(SelectedGender)
+            || string.Equals(
+                patient.Gender,
+                SelectedGender,
+                StringComparison.OrdinalIgnoreCase));
+
+    private async Task ClearFilters()
+    {
+        SearchName = string.Empty;
+        SearchEmail = string.Empty;
+        SelectedGender = string.Empty;
+        CurrentPage = 1;
+
+        await LoadPatients();
+    }
+
+    private async Task OnPageChanged(int pageNumber)
+    {
+        CurrentPage = pageNumber;
+        await LoadPatients();
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var selectedPageSize))
+        {
+            PageSize = selectedPageSize;
+            CurrentPage = 1;
+
             await LoadPatients();
         }
+    }
 
-        private async Task LoadPatients()
+    private void RedirectToLoginIfSessionExpired(string message)
+    {
+        if (message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("please login", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("login again", StringComparison.OrdinalIgnoreCase))
         {
-            isLoading = true;
-
-            var result = await PatientService.GetAll();
-
-            if (result.IsSuccess)
-            {
-                PatientsList = result.Data ?? new List<PatientDto>();
-            }
-            else
-            {
-                PatientsList = new List<PatientDto>();
-
-                NotificationService.Error(result.Message);
-
-                RedirectToLoginIfSessionExpired(result.Message);
-            }
-
-            isLoading = false;
-        }
-
-        private async Task SearchPatients()
-        {
-            isLoading = true;
-
-            var result = await PatientService.Search(SearchName, SearchEmail);
-
-            if (result.IsSuccess)
-            {
-                PatientsList = result.Data ?? new List<PatientDto>();
-            }
-            else
-            {
-                PatientsList = new List<PatientDto>();
-
-                NotificationService.Error(result.Message);
-
-                RedirectToLoginIfSessionExpired(result.Message);
-            }
-
-            isLoading = false;
-        }
-
-        private IEnumerable<PatientDto> FilteredPatients =>
-            PatientsList.Where(patient =>
-                string.IsNullOrWhiteSpace(SelectedGender)
-                || string.Equals(
-                    patient.Gender,
-                    SelectedGender,
-                    StringComparison.OrdinalIgnoreCase)
-            );
-
-        private async Task ClearFilters()
-        {
-            SearchName = string.Empty;
-            SearchEmail = string.Empty;
-            SelectedGender = string.Empty;
-
-            await LoadPatients();
-        }
-
-        private void RedirectToLoginIfSessionExpired(string message)
-        {
-            if (
-                message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
-                || message.Contains("please login", StringComparison.OrdinalIgnoreCase)
-                || message.Contains("login again", StringComparison.OrdinalIgnoreCase)
-            )
-            {
-                NavigationManager.NavigateTo("/login");
-            }
+            NavigationManager.NavigateTo("/login");
         }
     }
 }

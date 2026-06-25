@@ -404,7 +404,7 @@
 
         if (patientResult.IsSuccess)
         {
-            Patients = patientResult.Data ?? new List<PatientDto>();
+            Patients = patientResult.Data?.Items ?? new List<PatientDto>();
         }
         else
         {

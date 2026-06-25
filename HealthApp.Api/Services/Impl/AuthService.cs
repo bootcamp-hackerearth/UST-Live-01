@@ -1,25 +1,44 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using HealthApp.Api.Exceptions;
 using HealthApp.Api.Models;
-using HealthApp.Api.Repositories.Impl;
 using HealthApp.Api.Repositories.Interfaces;
 using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Dtos;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace HealthApp.Api.Services.Impl
 {
-    public class AuthService(
-        UserManager<ApplicationUser> userManager,
-        IConfiguration config,
-        IMapper mapper,
-        IPatientRepository patientRepository,
-        IDoctorRepository doctorRepository) : IAuthService
+    public class AuthService : IAuthService
     {
+        private readonly UserManager<ApplicationUser> userManager;
+        private readonly IConfiguration config;
+        private readonly IMapper mapper;
+        private readonly IPatientRepository patientRepository;
+        private readonly IDoctorRepository doctorRepository;
+
+        public AuthService(
+            UserManager<ApplicationUser> userManager,
+            IConfiguration config,
+            IMapper mapper,
+            IPatientRepository patientRepository,
+            IDoctorRepository doctorRepository)
+        {
+            this.userManager = userManager;
+            this.config = config;
+            this.mapper = mapper;
+            this.patientRepository = patientRepository;
+            this.doctorRepository = doctorRepository;
+        }
+
         public async Task<(bool success, string message, string userId)> RegisterPatient(
             RegisterPatientDto request)
         {
@@ -35,13 +54,13 @@ namespace HealthApp.Api.Services.Impl
                 return (false, "Email is already registered.", string.Empty);
             }
 
-            var existingPatients = await patientRepository.GetPatientsAsync(
-                null,
-                request.Email);
+            var existingPatients = await patientRepository.GetAllAsync();
 
             if (existingPatients.Any(p =>
                     p.Email != null &&
-                    p.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase)))
+                    p.Email.Equals(
+                        request.Email,
+                        StringComparison.OrdinalIgnoreCase)))
             {
                 return (false, "Patient email is already registered.", string.Empty);
             }
@@ -58,23 +77,29 @@ namespace HealthApp.Api.Services.Impl
                 DoctorId = null
             };
 
-            var createUserResult = await userManager.CreateAsync(user, request.Password);
+            var createUserResult = await userManager.CreateAsync(
+                user,
+                request.Password);
 
             if (!createUserResult.Succeeded)
             {
-                var errors = string.Join(", ",
+                var errors = string.Join(
+                    ", ",
                     createUserResult.Errors.Select(e => e.Description));
 
                 return (false, errors, string.Empty);
             }
 
-            var roleResult = await userManager.AddToRoleAsync(user, "Patient");
+            var roleResult = await userManager.AddToRoleAsync(
+                user,
+                "Patient");
 
             if (!roleResult.Succeeded)
             {
                 await userManager.DeleteAsync(user);
 
-                var errors = string.Join(", ",
+                var errors = string.Join(
+                    ", ",
                     roleResult.Errors.Select(e => e.Description));
 
                 return (false, errors, string.Empty);
@@ -83,22 +108,23 @@ namespace HealthApp.Api.Services.Impl
             return (true, "Patient registered successfully.", user.Id);
         }
 
-        public async Task<(bool success, string message, string userId, string temporaryPassword)> RegisterDoctor(DoctorCreateDto request)
+        public async Task<(bool success, string message, string userId, string temporaryPassword)> RegisterDoctor(
+            DoctorCreateDto request)
         {
-            var existingIdentityUser = await userManager.FindByEmailAsync(request.DoctorEmail);
+            var existingIdentityUser = await userManager.FindByEmailAsync(
+                request.DoctorEmail);
 
             if (existingIdentityUser != null)
             {
-
                 throw new DuplicateEntityException(
                     $"User with email '{request.DoctorEmail}' already exists.");
             }
 
-            var doctorEmailExists = await doctorRepository.ExistsByEmailAsync(request.DoctorEmail);
+            var doctorEmailExists = await doctorRepository.ExistsByEmailAsync(
+                request.DoctorEmail);
 
             if (doctorEmailExists)
             {
-
                 throw new DuplicateEntityException(
                     $"Doctor with email '{request.DoctorEmail}' already exists.");
             }
@@ -107,7 +133,8 @@ namespace HealthApp.Api.Services.Impl
 
             await doctorRepository.Add(doctor);
 
-            var temporaryPassword = GenerateTemporaryDoctorPassword(request.FullName);
+            var temporaryPassword = GenerateTemporaryDoctorPassword(
+                request.FullName);
 
             var user = new ApplicationUser
             {
@@ -117,19 +144,29 @@ namespace HealthApp.Api.Services.Impl
                 DoctorId = doctor.DoctorId
             };
 
-            var createResult = await userManager.CreateAsync(user, temporaryPassword);
+            var createResult = await userManager.CreateAsync(
+                user,
+                temporaryPassword);
 
             if (!createResult.Succeeded)
             {
-                var errors = string.Join(" ", createResult.Errors.Select(error => error.Description));
+                var errors = string.Join(
+                    " ",
+                    createResult.Errors.Select(error => error.Description));
+
                 throw new BusinessRuleViolationException(errors);
             }
 
-            var roleResult = await userManager.AddToRoleAsync(user, "Doctor");
+            var roleResult = await userManager.AddToRoleAsync(
+                user,
+                "Doctor");
 
             if (!roleResult.Succeeded)
             {
-                var errors = string.Join(" ", roleResult.Errors.Select(error => error.Description));
+                var errors = string.Join(
+                    " ",
+                    roleResult.Errors.Select(error => error.Description));
+
                 throw new BusinessRuleViolationException(errors);
             }
 
@@ -139,27 +176,6 @@ namespace HealthApp.Api.Services.Impl
                 user.Id,
                 temporaryPassword
             );
-        }
-
-        private static string GenerateTemporaryDoctorPassword(string doctorName)
-        {
-            if (string.IsNullOrWhiteSpace(doctorName))
-            {
-                throw new InvalidRequestException("Doctor name is required to generate temporary password.");
-            }
-
-            var cleanName = doctorName.Trim();
-
-            if (cleanName.Length < 3)
-            {
-                throw new InvalidRequestException("Doctor name must contain at least 3 characters.");
-            }
-
-            var firstThreeLetters = cleanName.Substring(0, 3);
-
-            var currentYear = DateTime.Now.Year;
-
-            return $"{firstThreeLetters}@{currentYear}";
         }
 
         public async Task<(bool success, string message, string token, int expiresIn)> Login(
@@ -189,26 +205,32 @@ namespace HealthApp.Api.Services.Impl
             return (true, "User logged in successfully.", token, expiry);
         }
 
-        public async Task ChangePasswordAsync(string userId, ChangePasswordDto request)
+        public async Task ChangePasswordAsync(
+            string userId,
+            ChangePasswordDto request)
         {
             if (string.IsNullOrWhiteSpace(userId))
             {
-                throw new UnauthorizedAccessAppException("Please login to continue.");
+                throw new UnauthorizedAccessAppException(
+                    "Please login to continue.");
             }
 
             if (request == null)
             {
-                throw new InvalidRequestException("Password details are required.");
+                throw new InvalidRequestException(
+                    "Password details are required.");
             }
 
             if (request.NewPassword != request.ConfirmNewPassword)
             {
-                throw new InvalidRequestException("New password and confirm password do not match.");
+                throw new InvalidRequestException(
+                    "New password and confirm password do not match.");
             }
 
             if (request.CurrentPassword == request.NewPassword)
             {
-                throw new InvalidRequestException("New password must be different from current password.");
+                throw new InvalidRequestException(
+                    "New password must be different from current password.");
             }
 
             var user = await userManager.FindByIdAsync(userId);
@@ -225,15 +247,40 @@ namespace HealthApp.Api.Services.Impl
 
             if (!result.Succeeded)
             {
-                var errors = string.Join(" ",
+                var errors = string.Join(
+                    " ",
                     result.Errors.Select(error => error.Description));
 
                 throw new InvalidRequestException(errors);
             }
         }
 
+        private static string GenerateTemporaryDoctorPassword(
+            string doctorName)
+        {
+            if (string.IsNullOrWhiteSpace(doctorName))
+            {
+                throw new InvalidRequestException(
+                    "Doctor name is required to generate temporary password.");
+            }
 
-        private async Task<string> GenerateToken(ApplicationUser user)
+            var cleanName = doctorName.Trim();
+
+            if (cleanName.Length < 3)
+            {
+                throw new InvalidRequestException(
+                    "Doctor name must contain at least 3 characters.");
+            }
+
+            var firstThreeLetters = cleanName.Substring(0, 3);
+
+            var currentYear = DateTime.Now.Year;
+
+            return $"{firstThreeLetters}@{currentYear}";
+        }
+
+        private async Task<string> GenerateToken(
+            ApplicationUser user)
         {
             var jwtSettings = config.GetSection("Jwt");
 
@@ -259,12 +306,16 @@ namespace HealthApp.Api.Services.Impl
 
             if (user.PatientId.HasValue)
             {
-                claims.Add(new Claim("PatientId", user.PatientId.Value.ToString()));
+                claims.Add(new Claim(
+                    "PatientId",
+                    user.PatientId.Value.ToString()));
             }
 
             if (user.DoctorId.HasValue)
             {
-                claims.Add(new Claim("DoctorId", user.DoctorId.Value.ToString()));
+                claims.Add(new Claim(
+                    "DoctorId",
+                    user.DoctorId.Value.ToString()));
             }
 
             claims.Add(new Claim(
