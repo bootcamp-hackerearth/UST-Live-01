@@ -218,9 +218,12 @@ namespace HealthApp.Api.Controllers
         private async Task EnsureDoctorTreatsPatientAsync(int doctorId, int patientId)
         {
             var appointments = await _appointmentService.GetAppointmentsAsync(
-                doctorId,
-                patientId,
-                false);
+                new AppointmentFilterDto
+                {
+                    DoctorId = doctorId,
+                    PatientId = patientId,
+                    OnlyUpcoming = false
+                });
 
             var hasTreatmentRelationship = appointments.Any(appointment =>
                 appointment.Status == "Confirmed" ||

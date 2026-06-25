@@ -1,4 +1,5 @@
 ﻿using HealthApp.Api.Models;
+using HealthApp.Shared.Dtos;
 
 namespace HealthApp.Api.Repositories.Interfaces
 {
@@ -15,21 +16,15 @@ namespace HealthApp.Api.Repositories.Interfaces
             DateOnly date,
             string slot,
             CancellationToken ct = default);
-            
 
         Task<bool> HasAppointmentWithDoctorOnSameDayAsync(
             int patientId,
             int doctorId,
             DateOnly date,
-            CancellationToken ct = default
-            );
+            CancellationToken ct = default);
 
         Task<IEnumerable<Appointment>> GetAppointmentsAsync(
-            int? doctorId = null,
-            int? patientId = null,
-            bool onlyUpcoming = false,
-            CancellationToken ct = default
-        );
+            AppointmentFilterDto filter,
+            CancellationToken ct = default);
     }
 }
-

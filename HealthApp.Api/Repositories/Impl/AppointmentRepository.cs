@@ -1,37 +1,63 @@
 ﻿using HealthApp.Api.Data;
 using HealthApp.Api.Models;
 using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthApp.Api.Repositories.Impl
 {
-    public class AppointmentRepository(HealthAppDbContext context) : Repository<Appointment>(context), IAppointmentRepository
+    public class AppointmentRepository(HealthAppDbContext context)
+        : Repository<Appointment>(context), IAppointmentRepository
     {
         public async Task<IEnumerable<Appointment>> GetAppointmentsAsync(
-            int? doctorId = null,
-            int? patientId = null,
-            bool onlyUpcoming = false,
+            AppointmentFilterDto filter,
             CancellationToken ct = default)
         {
+            filter ??= new AppointmentFilterDto();
+
             var query = context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
                 .AsQueryable();
 
-            if (doctorId.HasValue)
+            if (filter.DoctorId.HasValue)
             {
-                query = query.Where(a => a.DoctorId == doctorId.Value);
+                query = query.Where(a => a.DoctorId == filter.DoctorId.Value);
             }
 
-            if (patientId.HasValue)
+            if (filter.PatientId.HasValue)
             {
-                query = query.Where(a => a.PatientId == patientId.Value);
+                query = query.Where(a => a.PatientId == filter.PatientId.Value);
             }
 
-            if (onlyUpcoming)
+            if (filter.Status.HasValue)
             {
-                query = query.Where(a => a.ScheduledDate >= DateOnly.FromDateTime(DateTime.Today));
+                query = query.Where(a => a.Status == filter.Status.Value);
+            }
+
+            if (filter.Date.HasValue)
+            {
+                query = query.Where(a => a.ScheduledDate == filter.Date.Value);
+            }
+            else
+            {
+                if (filter.FromDate.HasValue)
+                {
+                    query = query.Where(a => a.ScheduledDate >= filter.FromDate.Value);
+                }
+
+                if (filter.ToDate.HasValue)
+                {
+                    query = query.Where(a => a.ScheduledDate <= filter.ToDate.Value);
+                }
+            }
+
+            if (filter.OnlyUpcoming)
+            {
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
+                query = query.Where(a => a.ScheduledDate >= today);
             }
 
             return await query
@@ -39,7 +65,6 @@ namespace HealthApp.Api.Repositories.Impl
                 .ThenBy(a => a.TimeSlot)
                 .ToListAsync(ct);
         }
-
 
         public async Task<bool> HasAppointmentWithDoctorOnSameDayAsync(
             int patientId,
@@ -56,7 +81,6 @@ namespace HealthApp.Api.Repositories.Impl
                     ct);
         }
 
-
         public async Task<bool> HasPatientSlotConflictAsync(
             int patientId,
             DateOnly date,
@@ -71,7 +95,6 @@ namespace HealthApp.Api.Repositories.Impl
                     a.Status != AppointmentStatus.Cancelled,
                     ct);
         }
-
 
         public async Task<bool> IsDoctorSlotBookedAsync(
             int doctorId,

@@ -1,15 +1,11 @@
-﻿
-using HealthApp.Shared.Dtos;
+﻿using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
 
 namespace HealthApp.Api.Services.Interfaces
 {
     public interface IAppointmentService
     {
-        Task<IEnumerable<AppointmentDto>> GetAppointmentsAsync(
-            int? doctorId = null,
-            int? patientId = null,
-            bool onlyUpcoming = false);
+        Task<IEnumerable<AppointmentDto>> GetAppointmentsAsync(AppointmentFilterDto filter);
 
         Task<AppointmentDto> GetAppointmentByIdAsync(int id);
 

@@ -29,15 +29,25 @@ namespace HealthApp.Api.Services.Impl
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsAsync(
-            int? doctorId = null,
-            int? patientId = null,
-            bool onlyUpcoming = false)
+        public async Task<IEnumerable<AppointmentDto>> GetAppointmentsAsync(AppointmentFilterDto filter)
         {
-            var appointments = await _appointmentRepository.GetAppointmentsAsync(
-                doctorId,
-                patientId,
-                onlyUpcoming);
+            filter ??= new AppointmentFilterDto();
+
+            if (filter.Date.HasValue && (filter.FromDate.HasValue || filter.ToDate.HasValue))
+            {
+                throw new InvalidRequestException(
+                    "Use either exact date or date range, not both.");
+            }
+
+            if (filter.FromDate.HasValue &&
+                filter.ToDate.HasValue &&
+                filter.FromDate.Value > filter.ToDate.Value)
+            {
+                throw new InvalidRequestException(
+                    "From date cannot be greater than to date.");
+            }
+
+            var appointments = await _appointmentRepository.GetAppointmentsAsync(filter);
 
             foreach (var appointment in appointments)
             {

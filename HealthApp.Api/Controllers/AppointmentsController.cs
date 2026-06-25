@@ -28,14 +28,9 @@ namespace HealthApp.Api.Controllers
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAppointmentsForAdmin(
-            [FromQuery] int? doctorId,
-            [FromQuery] int? patientId,
-            [FromQuery] bool onlyUpcoming = false)
+    [FromQuery] AppointmentFilterDto filter)
         {
-            var appointments = await _appointmentService.GetAppointmentsAsync(
-                doctorId,
-                patientId,
-                onlyUpcoming);
+            var appointments = await _appointmentService.GetAppointmentsAsync(filter);
 
             return Ok(appointments);
         }
@@ -68,9 +63,12 @@ namespace HealthApp.Api.Controllers
             }
 
             var appointments = await _appointmentService.GetAppointmentsAsync(
-                doctorId,
-                patientId,
-                onlyUpcoming);
+                new AppointmentFilterDto
+                {
+                    DoctorId = doctorId,
+                    PatientId = patientId,
+                    OnlyUpcoming = onlyUpcoming
+                });
 
             return Ok(appointments);
         }
@@ -103,9 +101,12 @@ namespace HealthApp.Api.Controllers
             }
 
             var appointments = await _appointmentService.GetAppointmentsAsync(
-                doctorId,
-                patientId,
-                true);
+                new AppointmentFilterDto
+                {
+                    DoctorId = doctorId,
+                    PatientId = patientId,
+                    OnlyUpcoming = true
+                });
 
             return Ok(appointments);
         }
