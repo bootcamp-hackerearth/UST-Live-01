@@ -4,4 +4,3 @@
 {"dotnetenterprise.s4net.build.deterministic.cnt":"true"}
 {"dotnetenterprise.s4net.build.nuget_project_style.cnt":"PackageReference"}
 {"dotnetenterprise.s4net.build.netcore_sdk_version.cnt":"10.0.301"}
-{"dotnetenterprise.s4net.build.exclusion_file.cnt":"true"}

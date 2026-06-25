@@ -1,0 +1,249 @@
+﻿@page "/users"
+
+@using S3_HealthAxis.Shared.DTOs.Admin
+@using S3_HealthAxis.Blazor.Services
+@using System.Linq
+
+@inject IAdminService AdminService
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="mb-1 fw-bold text-dark">Registered Accounts</h3>
+        <p class="text-muted mb-0">View all registered application accounts and filter them by role.</p>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(_pageError))
+{
+    <div class="alert alert-danger shadow-sm mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>Error:</strong> @_pageError
+    </div>
+}
+
+<!-- SUMMARY CARDS -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-all @GetUserCardClass(UserFilter.All)"
+                @onclick="() => SetUserFilter(UserFilter.All)">
+            <div class="ha-summary-card-label">Total Accounts</div>
+            <div class="ha-summary-card-value">@TotalUsersCount</div>
+        </button>
+    </div>
+
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-admin @GetUserCardClass(UserFilter.Admin)"
+                @onclick="() => SetUserFilter(UserFilter.Admin)">
+            <div class="ha-summary-card-label">Admins</div>
+            <div class="ha-summary-card-value">@AdminUsersCount</div>
+        </button>
+    </div>
+
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-doctor @GetUserCardClass(UserFilter.Doctor)"
+                @onclick="() => SetUserFilter(UserFilter.Doctor)">
+            <div class="ha-summary-card-label">Doctors</div>
+            <div class="ha-summary-card-value">@DoctorUsersCount</div>
+        </button>
+    </div>
+
+    <div class="col-md-3">
+        <button type="button"
+                class="ha-summary-card ha-summary-card-patient @GetUserCardClass(UserFilter.Patient)"
+                @onclick="() => SetUserFilter(UserFilter.Patient)">
+            <div class="ha-summary-card-label">Patients</div>
+            <div class="ha-summary-card-value">@PatientUsersCount</div>
+        </button>
+    </div>
+</div>
+
+<!-- FILTER -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-medium">Filter by Role</label>
+                <InputSelect class="form-select" @bind-Value="SelectedRole">
+                    <option value="">All Roles</option>
+                    @foreach (var role in AvailableRoles)
+                    {
+                        <option value="@role">@role</option>
+                    }
+                </InputSelect>
+            </div>
+
+            <div class="col-md-4">
+                <div class="ha-users-filter-summary">
+                    <span class="text-muted">Showing:</span>
+                    <strong>@FilteredUsers.Count()</strong>
+                    <span class="text-muted">account(s)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 ha-data-card">
+    <div class="card-body p-0">
+        @if (_loading)
+        {
+            <div class="text-center p-5">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-2 text-muted">Loading accounts...</p>
+            </div>
+        }
+        else if (_users == null || !_users.Any())
+        {
+            <div class="text-center p-5 text-muted">
+                <i class="bi bi-people fs-1"></i>
+                <p class="mt-2">No registered accounts found.</p>
+            </div>
+        }
+        else if (!FilteredUsers.Any())
+        {
+            <div class="text-center p-5 text-muted">
+                <i class="bi bi-search fs-1"></i>
+                <p class="mt-2">No accounts match the selected filter.</p>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 ha-data-table ha-users-table">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Email Address</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in FilteredUsers)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="ha-user-email">@user.Email</span>
+                                </td>
+
+                                <td>
+                                    <span class="@GetRoleBadgeClass(user.Role)">
+                                        @user.Role
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success ha-table-pill">
+                                            Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger ha-table-pill">
+                                            Inactive
+                                        </span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<UserManagementDto>? _users;
+    private bool _loading = true;
+    private string? _pageError = null;
+
+    private string _selectedRole = string.Empty;
+    private UserFilter CurrentFilter { get; set; } = UserFilter.All;
+
+    private enum UserFilter
+    {
+        All,
+        Admin,
+        Doctor,
+        Patient
+    }
+
+    private string SelectedRole
+    {
+        get => _selectedRole;
+        set => _selectedRole = value;
+    }
+
+    private IEnumerable<string> AvailableRoles =>
+        (_users ?? new List<UserManagementDto>())
+            .Select(u => u.Role)
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .Distinct()
+            .OrderBy(r => r);
+
+    private int TotalUsersCount => _users?.Count ?? 0;
+    private int AdminUsersCount => _users?.Count(u => u.Role == "Admin") ?? 0;
+    private int DoctorUsersCount => _users?.Count(u => u.Role == "Doctor") ?? 0;
+    private int PatientUsersCount => _users?.Count(u => u.Role == "Patient") ?? 0;
+
+    private IEnumerable<UserManagementDto> FilteredUsers =>
+        (_users ?? Enumerable.Empty<UserManagementDto>())
+            .Where(u =>
+                CurrentFilter switch
+                {
+                    UserFilter.Admin => u.Role == "Admin",
+                    UserFilter.Doctor => u.Role == "Doctor",
+                    UserFilter.Patient => u.Role == "Patient",
+                    _ => true
+                })
+            .Where(u => string.IsNullOrWhiteSpace(SelectedRole) || u.Role == SelectedRole)
+            .OrderBy(u => u.Role)
+            .ThenBy(u => u.Email);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            _loading = true;
+            _pageError = null;
+            _users = await AdminService.GetUsersAsync();
+        }
+        catch (Exception ex)
+        {
+            _pageError = $"Could not load accounts: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void SetUserFilter(UserFilter filter)
+    {
+        CurrentFilter = filter;
+    }
+
+    private string GetUserCardClass(UserFilter filter) =>
+        CurrentFilter == filter ? "active" : "";
+
+    private string GetRoleBadgeClass(string role)
+    {
+        return role switch
+        {
+            "Admin" => "badge bg-primary ha-table-pill",
+            "Doctor" => "badge bg-success ha-table-pill",
+            "Patient" => "badge bg-info text-dark ha-table-pill",
+            _ => "badge bg-secondary ha-table-pill"
+        };
+    }
+}

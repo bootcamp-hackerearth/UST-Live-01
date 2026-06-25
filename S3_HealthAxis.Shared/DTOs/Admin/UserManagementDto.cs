@@ -8,6 +8,6 @@
 
         public string Role { get; set; } = string.Empty;
 
-        public int? ReferenceId { get; set; }
+        public bool IsActive { get; set; }
     }
 }

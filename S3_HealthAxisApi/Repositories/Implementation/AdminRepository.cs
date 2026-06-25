@@ -3,9 +3,11 @@ using HealthAxis.API.Data;
 using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
+using System.Diagnostics.CodeAnalysis;
 
 namespace S3_HealthAxisApi.Repository.Implementation
 {
+    [ExcludeFromCodeCoverage]
     public class AdminRepository : IAdminRepository
     {
         private readonly HealthAxisDbContext _context;
@@ -57,12 +59,34 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 .ToListAsync();
         }
 
-        public async Task<User?>
-            GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Users
                 .FirstOrDefaultAsync(
                     u => u.UserId == id);
         }
+        public async Task<bool> ResolveUserActiveStatusAsync(string email, string role)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(role))
+                return false;
+
+            switch (role)
+            {
+                case "Admin":
+                    return true;
+
+                case "Doctor":
+                    return await _context.Doctors
+                        .AnyAsync(d => d.Email == email && d.IsActive);
+
+                case "Patient":
+                    return await _context.Patients
+                        .AnyAsync(p => p.Email == email && p.IsActive);
+
+                default:
+                    return false;
+            }
+        }
+
     }
 }

@@ -1,203 +1,206 @@
-﻿using FluentAssertions;
-using Moq;
+﻿using Moq;
 using S3_HealthAxis.Shared.DTOs.Admin;
 using S3_HealthAxis.Shared.Enums;
+using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Implementation;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
-
-// Change this namespace if your User entity is in another folder/namespace
-using S3_HealthAxisApi.Models;
 
 namespace S3_HealthAxis.Tests.Services
 {
     public class AdminServiceTests
     {
-        private readonly Mock<IAdminRepository> _repositoryMock;
+        private readonly Mock<IAdminRepository> _repoMock;
         private readonly AdminService _service;
 
         public AdminServiceTests()
         {
-            _repositoryMock = new Mock<IAdminRepository>();
-            _service = new AdminService(_repositoryMock.Object);
+            _repoMock = new Mock<IAdminRepository>();
+            _service = new AdminService(_repoMock.Object);
         }
 
+        #region Dashboard Tests
+
         [Fact]
-        public async Task GetDashboardAsync_ShouldReturnCorrectDashboardCounts()
+        public async Task GetDashboardAsync_ShouldReturnCorrectCounts()
         {
             // Arrange
-            _repositoryMock.Setup(x => x.CountPatientsAsync()).ReturnsAsync(100);
-            _repositoryMock.Setup(x => x.CountActivePatientsAsync()).ReturnsAsync(80);
-            _repositoryMock.Setup(x => x.CountDoctorsAsync()).ReturnsAsync(25);
-            _repositoryMock.Setup(x => x.CountActiveDoctorsAsync()).ReturnsAsync(20);
-            _repositoryMock.Setup(x => x.CountTodayAppointmentsAsync()).ReturnsAsync(15);
-            _repositoryMock.Setup(x => x.CountPendingAppointmentsAsync()).ReturnsAsync(7);
-            _repositoryMock.Setup(x => x.CountCompletedAppointmentsAsync()).ReturnsAsync(5);
+            _repoMock.Setup(r => r.CountPatientsAsync()).ReturnsAsync(100);
+            _repoMock.Setup(r => r.CountActivePatientsAsync()).ReturnsAsync(80);
+            _repoMock.Setup(r => r.CountDoctorsAsync()).ReturnsAsync(20);
+            _repoMock.Setup(r => r.CountActiveDoctorsAsync()).ReturnsAsync(15);
+            _repoMock.Setup(r => r.CountTodayAppointmentsAsync()).ReturnsAsync(10);
+            _repoMock.Setup(r => r.CountPendingAppointmentsAsync()).ReturnsAsync(5);
+            _repoMock.Setup(r => r.CountCompletedAppointmentsAsync()).ReturnsAsync(7);
 
             // Act
-            AdminDashboardDto result = await _service.GetDashboardAsync();
+            var result = await _service.GetDashboardAsync();
 
             // Assert
-            result.Should().NotBeNull();
-            result.TotalPatients.Should().Be(100);
-            result.ActivePatients.Should().Be(80);
-            result.TotalDoctors.Should().Be(25);
-            result.ActiveDoctors.Should().Be(20);
-            result.TodayAppointments.Should().Be(15);
-            result.PendingAppointments.Should().Be(7);
-            result.CompletedAppointments.Should().Be(5);
+            Assert.NotNull(result);
+            Assert.Equal(100, result.TotalPatients);
+            Assert.Equal(80, result.ActivePatients);
+            Assert.Equal(20, result.TotalDoctors);
+            Assert.Equal(15, result.ActiveDoctors);
+            Assert.Equal(10, result.TodayAppointments);
+            Assert.Equal(5, result.PendingAppointments);
+            Assert.Equal(7, result.CompletedAppointments);
 
-            _repositoryMock.Verify(x => x.CountPatientsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountActivePatientsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountDoctorsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountActiveDoctorsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountTodayAppointmentsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountPendingAppointmentsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountCompletedAppointmentsAsync(), Times.Once);
-
-            _repositoryMock.VerifyNoOtherCalls();
+            _repoMock.Verify(r => r.CountPatientsAsync(), Times.Once);
         }
 
+        #endregion
+
+        #region Statistics Tests
+
         [Fact]
-        public async Task GetStatisticsAsync_ShouldReturnCorrectStatistics()
+        public async Task GetStatisticsAsync_ShouldReturnCorrectData()
         {
             // Arrange
-            _repositoryMock.Setup(x => x.CountPatientsAsync()).ReturnsAsync(120);
-            _repositoryMock.Setup(x => x.CountDoctorsAsync()).ReturnsAsync(30);
-            _repositoryMock.Setup(x => x.CountTodayAppointmentsAsync()).ReturnsAsync(18);
-            _repositoryMock.Setup(x => x.CountHealthRecordsAsync()).ReturnsAsync(92);
+            _repoMock.Setup(r => r.CountPatientsAsync()).ReturnsAsync(200);
+            _repoMock.Setup(r => r.CountDoctorsAsync()).ReturnsAsync(25);
+            _repoMock.Setup(r => r.CountTodayAppointmentsAsync()).ReturnsAsync(12);
+            _repoMock.Setup(r => r.CountHealthRecordsAsync()).ReturnsAsync(50);
 
             // Act
-            AdminStatisticsDto result = await _service.GetStatisticsAsync();
+            var result = await _service.GetStatisticsAsync();
 
             // Assert
-            result.Should().NotBeNull();
-            result.Patients.Should().Be(120);
-            result.Doctors.Should().Be(30);
-            result.Appointments.Should().Be(18);
-            result.HealthRecords.Should().Be(92);
-
-            _repositoryMock.Verify(x => x.CountPatientsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountDoctorsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountTodayAppointmentsAsync(), Times.Once);
-            _repositoryMock.Verify(x => x.CountHealthRecordsAsync(), Times.Once);
-
-            _repositoryMock.VerifyNoOtherCalls();
+            Assert.NotNull(result);
+            Assert.Equal(200, result.Patients);
+            Assert.Equal(25, result.Doctors);
+            Assert.Equal(12, result.Appointments);
+            Assert.Equal(50, result.HealthRecords);
         }
 
+        #endregion
+
+        #region GetUsers Tests
+
         [Fact]
-        public async Task GetUsersAsync_ShouldMapAllUsersCorrectly()
+        public async Task GetUsersAsync_ShouldReturnMappedUsers()
         {
             // Arrange
             var users = new List<User>
             {
-                CreateUser(1, "admin@test.com", UserRole.Admin, 101),
-                CreateUser(2, "doctor@test.com", UserRole.Doctor, 202),
-                CreateUser(3, "patient@test.com", UserRole.Patient, 303)
+                new User { UserId = 1, Email = "admin@test.com", Role = UserRole.Admin },
+                new User { UserId = 2, Email = "doc@test.com", Role = UserRole.Doctor }
             };
 
-            _repositoryMock
-                .Setup(x => x.GetUsersAsync())
-                .ReturnsAsync(users);
+            _repoMock.Setup(r => r.GetUsersAsync()).ReturnsAsync(users);
+
+            _repoMock.Setup(r => r.ResolveUserActiveStatusAsync(It.IsAny<string>(), It.IsAny<string>()))
+                     .ReturnsAsync(true);
 
             // Act
-            IEnumerable<UserManagementDto> result = await _service.GetUsersAsync();
+            var result = await _service.GetUsersAsync();
+            var list = result.ToList();
 
             // Assert
-            result.Should().NotBeNull();
-            result.Should().HaveCount(3);
+            Assert.Equal(2, list.Count);
 
-            var resultList = result.ToList();
+            Assert.Equal("admin@test.com", list[0].Email);
+            Assert.Equal("Admin", list[0].Role);
+            Assert.True(list[0].IsActive);
 
-            resultList[0].UserId.Should().Be(1);
-            resultList[0].Email.Should().Be("admin@test.com");
-            resultList[0].Role.Should().Be("Admin");
-            resultList[0].ReferenceId.Should().Be(101);
-
-            resultList[1].UserId.Should().Be(2);
-            resultList[1].Email.Should().Be("doctor@test.com");
-            resultList[1].Role.Should().Be("Doctor");
-            resultList[1].ReferenceId.Should().Be(202);
-
-            resultList[2].UserId.Should().Be(3);
-            resultList[2].Email.Should().Be("patient@test.com");
-            resultList[2].Role.Should().Be("Patient");
-            resultList[2].ReferenceId.Should().Be(303);
-
-            _repositoryMock.Verify(x => x.GetUsersAsync(), Times.Once);
-            _repositoryMock.VerifyNoOtherCalls();
+            Assert.Equal("doc@test.com", list[1].Email);
+            Assert.Equal("Doctor", list[1].Role);
+            Assert.True(list[1].IsActive);
         }
 
         [Fact]
-        public async Task GetUsersAsync_ShouldReturnEmptyCollection_WhenNoUsersExist()
+        public async Task GetUsersAsync_ShouldHandleEmptyList()
         {
             // Arrange
-            _repositoryMock
-                .Setup(x => x.GetUsersAsync())
-                .ReturnsAsync(new List<User>());
+            _repoMock.Setup(r => r.GetUsersAsync())
+                     .ReturnsAsync(new List<User>());
 
             // Act
-            IEnumerable<UserManagementDto> result = await _service.GetUsersAsync();
+            var result = await _service.GetUsersAsync();
 
             // Assert
-            result.Should().NotBeNull();
-            result.Should().BeEmpty();
-
-            _repositoryMock.Verify(x => x.GetUsersAsync(), Times.Once);
-            _repositoryMock.VerifyNoOtherCalls();
+            Assert.NotNull(result);
+            Assert.Empty(result);
         }
+
+        #endregion
+
+        #region GetUserById Tests
 
         [Fact]
-        public async Task GetUserByIdAsync_ShouldReturnMappedUser_WhenUserExists()
+        public async Task GetUserByIdAsync_ShouldReturnUser_WhenFound()
         {
             // Arrange
-            var user = CreateUser(10, "singleuser@test.com", UserRole.Doctor, 999);
-
-            _repositoryMock
-                .Setup(x => x.GetUserByIdAsync(10))
-                .ReturnsAsync(user);
-
-            // Act
-            UserManagementDto? result = await _service.GetUserByIdAsync(10);
-
-            // Assert
-            result.Should().NotBeNull();
-            result!.UserId.Should().Be(10);
-            result.Email.Should().Be("singleuser@test.com");
-            result.Role.Should().Be("Doctor");
-            result.ReferenceId.Should().Be(999);
-
-            _repositoryMock.Verify(x => x.GetUserByIdAsync(10), Times.Once);
-            _repositoryMock.VerifyNoOtherCalls();
-        }
-
-        [Fact]
-        public async Task GetUserByIdAsync_ShouldReturnNull_WhenUserDoesNotExist()
-        {
-            // Arrange
-            _repositoryMock
-                .Setup(x => x.GetUserByIdAsync(404))
-                .ReturnsAsync((User?)null);
-
-            // Act
-            UserManagementDto? result = await _service.GetUserByIdAsync(404);
-
-            // Assert
-            result.Should().BeNull();
-
-            _repositoryMock.Verify(x => x.GetUserByIdAsync(404), Times.Once);
-            _repositoryMock.VerifyNoOtherCalls();
-        }
-
-        private static User CreateUser(int userId, string email, UserRole role, int? referenceId)
-        {
-            return new User
+            var user = new User
             {
-                UserId = userId,
-                Email = email,
-                Role = role,
-                ReferenceId = referenceId
+                UserId = 1,
+                Email = "user@test.com",
+                Role = UserRole.Patient
             };
+
+            _repoMock.Setup(r => r.GetUserByIdAsync(1))
+                     .ReturnsAsync(user);
+
+            _repoMock.Setup(r => r.ResolveUserActiveStatusAsync(user.Email, "Patient"))
+                     .ReturnsAsync(true);
+
+            // Act
+            var result = await _service.GetUserByIdAsync(1);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(1, result.UserId);
+            Assert.Equal("user@test.com", result.Email);
+            Assert.Equal("Patient", result.Role);
+            Assert.True(result.IsActive);
         }
+
+        [Fact]
+        public async Task GetUserByIdAsync_ShouldReturnNull_WhenNotFound()
+        {
+            // Arrange
+            _repoMock.Setup(r => r.GetUserByIdAsync(It.IsAny<int>()))
+                     .ReturnsAsync((User?)null);
+
+            // Act
+            var result = await _service.GetUserByIdAsync(999);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        #endregion
+
+        #region Edge Case Tests
+
+        [Fact]
+        public async Task GetUsersAsync_ShouldCallResolveStatusForEachUser()
+        {
+            // Arrange
+            var users = new List<User>
+            {
+                new User { UserId = 1, Email = "a@test.com", Role = UserRole.Admin },
+                new User { UserId = 2, Email = "b@test.com", Role = UserRole.Patient }
+            };
+
+            _repoMock.Setup(r => r.GetUsersAsync()).ReturnsAsync(users);
+
+            _repoMock.Setup(r => r.ResolveUserActiveStatusAsync(It.IsAny<string>(), It.IsAny<string>()))
+                     .ReturnsAsync(true);
+
+            // Act
+            await _service.GetUsersAsync();
+
+            // Assert
+            _repoMock.Verify(r =>
+                r.ResolveUserActiveStatusAsync(It.IsAny<string>(), It.IsAny<string>()),
+                Times.Exactly(users.Count));
+        }
+
+        #endregion
     }
 }

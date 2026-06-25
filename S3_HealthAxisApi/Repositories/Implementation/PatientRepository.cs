@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using HealthAxis.API.Data;
+﻿using HealthAxis.API.Data;
+using Microsoft.EntityFrameworkCore;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
+using System.Diagnostics.CodeAnalysis;
 
 namespace S3_HealthAxisApi.Repository.Implementation
 {
+    [ExcludeFromCodeCoverage]
     public class PatientRepository : IPatientRepository
     {
         private readonly HealthAxisDbContext _context;

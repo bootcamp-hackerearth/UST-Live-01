@@ -21,6 +21,8 @@ namespace S3_HealthAxisApi.Repository.Interface
         Task<int> CountHealthRecordsAsync();
 
         Task<IEnumerable<User>> GetUsersAsync();
+        Task<bool> ResolveUserActiveStatusAsync(string email, string role);
+
 
         Task<User?> GetUserByIdAsync(int id);
     }

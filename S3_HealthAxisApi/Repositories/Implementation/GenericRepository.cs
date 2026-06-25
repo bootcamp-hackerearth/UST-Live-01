@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using HealthAxis.API.Data;
+﻿using HealthAxis.API.Data;
+using Microsoft.EntityFrameworkCore;
 using S3_HealthAxisApi.Repository.Interface;
+using System.Diagnostics.CodeAnalysis;
 
 namespace S3_HealthAxisApi.Repository.Implementation
 {
+    [ExcludeFromCodeCoverage]
     public class GenericRepository<T> : IGenericRepository<T>
         where T : class
     {

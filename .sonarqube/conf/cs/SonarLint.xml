@@ -2,8 +2,8 @@
 <AnalysisInput>
   <Settings>
     <Setting>
-      <Key>sonar.cs.vscoveragexml.reportsPaths</Key>
-      <Value>coverage.xml</Value>
+      <Key>sonar.cs.cobertura.reportsPaths</Key>
+      <Value>**/TestResults/**/coverage.cobertura.xml</Value>
     </Setting>
     <Setting>
       <Key>sonar.cs.ignoreHeaderComments</Key>

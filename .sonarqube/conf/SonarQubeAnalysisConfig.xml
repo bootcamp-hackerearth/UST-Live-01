@@ -149,12 +149,11 @@
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZ5PHq6ekpK8xEY3MImo</Property>
-    <Property Name="sonar.core.startTime">22-06-2026 11:54:32</Property>
+    <Property Name="sonar.core.startTime">25-06-2026 14:33:26</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.cs.vscoveragexml.reportsPaths">coverage.xml</Property>
-    <Property Name="sonar.exclusions">coverage.xml</Property>
+    <Property Name="sonar.cs.cobertura.reportsPaths">**/TestResults/**/coverage.cobertura.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>
@@ -166,9 +165,6 @@
         <AnalyzerPlugin Key="csharp" Version="10.17.0.131074" StaticResourceName="SonarAnalyzer-csharp-10.17.0.131074.zip">
           <AssemblyPaths>
             <Path>C:\Users\287766\AppData\Local\Temp\.sonarqube\resources\0\SonarAnalyzer.CSharp.dll</Path>
-            <Path>C:\Users\287766\AppData\Local\Temp\.sonarqube\resources\0\licenses\LICENSE.txt</Path>
-            <Path>C:\Users\287766\AppData\Local\Temp\.sonarqube\resources\0\licenses\THIRD_PARTY_LICENSES\Google.Protobuf-LICENSE.txt</Path>
-            <Path>C:\Users\287766\AppData\Local\Temp\.sonarqube\resources\0\licenses\THIRD_PARTY_LICENSES\StyleCop.Analyzers-LICENSE.txt</Path>
           </AssemblyPaths>
         </AnalyzerPlugin>
       </AnalyzerPlugins>

@@ -2360,3 +2360,128 @@ code {
     line-height: 1.7;
     font-size: 0.95rem;
 }
+
+/* =========================================================
+   USER MANAGEMENT PAGE
+   ========================================================= */
+
+.ha-users-table thead th {
+    background: linear-gradient(180deg, #f8fcff 0%, #f1f8fd 100%) !important;
+    color: #57718d !important;
+}
+
+.ha-users-table tbody td {
+    padding-top: 1.08rem !important;
+    padding-bottom: 1.08rem !important;
+}
+
+.ha-user-display-name {
+    font-weight: 700;
+    color: #1f3b5c;
+    letter-spacing: 0.1px;
+}
+
+.ha-user-email {
+    font-weight: 600;
+    color: #314863;
+}
+
+.ha-users-filter-summary {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #334155;
+    font-size: 0.95rem;
+}
+
+/* User summary cards */
+.ha-summary-card-patient .ha-summary-card-label {
+    color: #06b6d4;
+}
+
+.ha-summary-card-patient.active {
+    border-color: rgba(6, 182, 212, 0.28);
+    background: linear-gradient(180deg, rgba(236, 254, 255, 0.96) 0%, rgba(207, 250, 254, 0.96) 100%);
+    box-shadow: 0 14px 28px rgba(6, 182, 212, 0.14);
+}
+
+.ha-summary-card-doctor .ha-summary-card-label {
+    color: #15803d;
+}
+
+.ha-summary-card-doctor.active {
+    border-color: rgba(21, 128, 61, 0.28);
+    background: linear-gradient(180deg, rgba(236, 253, 245, 0.96) 0%, rgba(220, 252, 231, 0.96) 100%);
+    box-shadow: 0 14px 28px rgba(21, 128, 61, 0.14);
+}
+
+.ha-summary-card-admin .ha-summary-card-label {
+    color: #2563eb;
+}
+
+.ha-summary-card-admin.active {
+    border-color: rgba(37, 99, 235, 0.28);
+    background: linear-gradient(180deg, rgba(239, 246, 255, 0.96) 0%, rgba(219, 234, 254, 0.96) 100%);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.14);
+}
+
+/* =========================================================
+   REGISTERED ACCOUNTS PAGE
+   ========================================================= */
+
+.ha-users-table thead th {
+    background: linear-gradient(180deg, #f8fcff 0%, #f1f8fd 100%) !important;
+    color: #57718d !important;
+}
+
+.ha-users-table tbody td {
+    padding-top: 1.08rem !important;
+    padding-bottom: 1.08rem !important;
+}
+
+.ha-user-email {
+    font-weight: 700;
+    color: #1f3b5c;
+    letter-spacing: 0.1px;
+}
+
+.ha-users-filter-summary {
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #334155;
+    font-size: 0.95rem;
+}
+
+/* Role summary cards */
+.ha-summary-card-patient .ha-summary-card-label {
+    color: #06b6d4;
+}
+
+.ha-summary-card-patient.active {
+    border-color: rgba(6, 182, 212, 0.28);
+    background: linear-gradient(180deg, rgba(236, 254, 255, 0.96) 0%, rgba(207, 250, 254, 0.96) 100%);
+    box-shadow: 0 14px 28px rgba(6, 182, 212, 0.14);
+}
+
+.ha-summary-card-doctor .ha-summary-card-label {
+    color: #15803d;
+}
+
+.ha-summary-card-doctor.active {
+    border-color: rgba(21, 128, 61, 0.28);
+    background: linear-gradient(180deg, rgba(236, 253, 245, 0.96) 0%, rgba(220, 252, 231, 0.96) 100%);
+    box-shadow: 0 14px 28px rgba(21, 128, 61, 0.14);
+}
+
+.ha-summary-card-admin .ha-summary-card-label {
+    color: #2563eb;
+}
+
+.ha-summary-card-admin.active {
+    border-color: rgba(37, 99, 235, 0.28);
+    background: linear-gradient(180deg, rgba(239, 246, 255, 0.96) 0%, rgba(219, 234, 254, 0.96) 100%);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.14);
+}
