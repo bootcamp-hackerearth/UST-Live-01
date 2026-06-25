@@ -50,7 +50,7 @@ else if (dashboardReport is not null)
         </div>
 
         <div class="hc-report-card hc-report-teal ha-dashboard-report-card">
-            <div class="hc-report-icon ha-dashboard-report-icon">◉</div>
+            <div class="hc-report-icon ha-dashboard-report-icon">♙</div>
             <div>
                 <p>Total Patients</p>
                 <h2>@dashboardReport.TotalPatients</h2>
@@ -59,7 +59,7 @@ else if (dashboardReport is not null)
         </div>
 
         <div class="hc-report-card hc-report-purple ha-dashboard-report-card">
-            <div class="hc-report-icon ha-dashboard-report-icon">◷</div>
+            <div class="hc-report-icon ha-dashboard-report-icon">📅</div>
             <div>
                 <p>Total Appointments</p>
                 <h2>@dashboardReport.TotalAppointments</h2>
@@ -137,7 +137,7 @@ else if (dashboardReport is not null)
                 </button>
 
                 <button class="hc-action-card ha-action-card" @onclick="GoToPatients">
-                    <span>◉</span>
+                    <span>♙</span>
                     <div>
                         <strong>View Patients</strong>
                         <p>Review patient profiles and demographic details.</p>
@@ -145,7 +145,7 @@ else if (dashboardReport is not null)
                 </button>
 
                 <button class="hc-action-card ha-action-card" @onclick="GoToAppointments">
-                    <span>◷</span>
+                    <span>📅</span>
                     <div>
                         <strong>Manage Appointments</strong>
                         <p>Book appointments and review appointment status.</p>

@@ -50,26 +50,50 @@ else
 
             <div class="ha-stat-card-icon">◉</div>
         </div>
+<div class="hc-doctor-stat-card green ha-management-stat-card ha-compact-stat-card">
+    <div class="ha-stat-card-content">
+        <span>Gender On Page</span>
 
-        <div class="hc-doctor-stat-card green ha-management-stat-card">
-            <div class="ha-stat-card-content">
-                <span>With Insurance On Page</span>
-
-                <strong>@patients.Count(p => !string.IsNullOrWhiteSpace(p.InsuranceId))</strong>
-
-                <small>Insurance-linked records on this page</small>
+        <div class="ha-compact-stat-row">
+            <div class="ha-compact-stat-pill">
+                <small>Male</small>
+                <strong>@MalePatientsOnPage</strong>
             </div>
 
-            <div class="ha-stat-card-icon">✓</div>
+            <div class="ha-compact-stat-pill">
+                <small>Female</small>
+                <strong>@FemalePatientsOnPage</strong>
+            </div>
+
+            <div class="ha-compact-stat-pill">
+                <small>Others</small>
+                <strong>@OtherPatientsOnPage</strong>
+            </div>
         </div>
 
-        <div class="hc-doctor-stat-card red ha-management-stat-card">
+        <small>Patient gender split on this page</small>
+    </div>
+
+    <div class="ha-stat-card-icon">♙</div>
+</div>
+
+        <div class="hc-doctor-stat-card red ha-management-stat-card ha-compact-stat-card">
             <div class="ha-stat-card-content">
-                <span>Without Insurance On Page</span>
+                <span>Insurance On Page</span>
 
-                <strong>@patients.Count(p => string.IsNullOrWhiteSpace(p.InsuranceId))</strong>
+                <div class="ha-compact-stat-row two">
+                    <div class="ha-compact-stat-pill">
+                        <small>With</small>
+                        <strong>@WithInsuranceOnPage</strong>
+                    </div>
 
-                <small>Records without insurance ID on this page</small>
+                    <div class="ha-compact-stat-pill">
+                        <small>Without</small>
+                        <strong>@WithoutInsuranceOnPage</strong>
+                    </div>
+                </div>
+
+                <small>Insurance availability on this page</small>
             </div>
 
             <div class="ha-stat-card-icon">!</div>
@@ -322,7 +346,57 @@ else
             return calculatedEnd;
         }
     }
+    private int MalePatientsOnPage
+    {
+        get
+        {
+            return patients.Count(patient => IsGender(patient, "Male"));
+        }
+    }
 
+    private int FemalePatientsOnPage
+    {
+        get
+        {
+            return patients.Count(patient => IsGender(patient, "Female"));
+        }
+    }
+
+    private int OtherPatientsOnPage
+    {
+        get
+        {
+            return patients.Count(patient =>
+                !IsGender(patient, "Male") &&
+                !IsGender(patient, "Female"));
+        }
+    }
+
+    private int WithInsuranceOnPage
+    {
+        get
+        {
+            return patients.Count(patient =>
+                !string.IsNullOrWhiteSpace(patient.InsuranceId));
+        }
+    }
+
+    private int WithoutInsuranceOnPage
+    {
+        get
+        {
+            return patients.Count(patient =>
+                string.IsNullOrWhiteSpace(patient.InsuranceId));
+        }
+    }
+
+    private static bool IsGender(PatientDto patient, string gender)
+    {
+        return string.Equals(
+            Convert.ToString(patient.Gender),
+            gender,
+            StringComparison.OrdinalIgnoreCase);
+    }
     protected override async Task OnInitializedAsync()
     {
         var isAuthenticated = await AuthService.IsAuthenticatedAsync();

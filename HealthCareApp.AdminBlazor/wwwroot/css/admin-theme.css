@@ -3406,3 +3406,118 @@ font-weight: 700;
         flex-basis: 100%;
     }
 }
+
+
+
+
+/* Compact patient stat cards */
+
+.ha-compact-stat-card {
+    overflow: hidden;
+}
+
+    .ha-compact-stat-card .ha-stat-card-content {
+        min-width: 0;
+        width: 100%;
+    }
+
+.ha-compact-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 12px 0 10px;
+    max-width: 100%;
+}
+
+    .ha-compact-stat-row.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+.ha-compact-stat-pill {
+    min-width: 0;
+    padding: 8px 9px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    overflow: hidden;
+}
+
+    .ha-compact-stat-pill small {
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 11px;
+        font-weight: 900;
+        line-height: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ha-compact-stat-pill strong {
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 950;
+        line-height: 1;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+.ha-compact-stat-card .ha-stat-card-content > small {
+    display: block;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+    .ha-compact-stat-row,
+    .ha-compact-stat-row.two {
+        grid-template-columns: 1fr;
+    }
+
+    .ha-compact-stat-pill strong {
+        font-size: 18px;
+    }
+}
+
+
+/* Login admin access text alignment */
+
+.hc-login-access-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 10px 0 22px;
+}
+
+.hc-login-access-row span {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+/* Login admin access text - right aligned */
+
+.hc-login-card .hc-login-access-row {
+    width: 100%;
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center;
+    margin: 8px 0 22px;
+    padding: 0;
+    text-align: right;
+}
+
+    .hc-login-card .hc-login-access-row span {
+        display: inline-block;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 800;
+        white-space: nowrap;
+        text-align: right;
+    }
