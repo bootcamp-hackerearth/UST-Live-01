@@ -29,9 +29,12 @@ aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\A
 gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\Auth\ChangePasswordDto.csutf-8n
 eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\Auth\AuthResponseDto.csutf-8}
 tC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\UpdateAppointmentDto.csutf-8~
-uC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\ConfirmAppointmentDto.csutf-8
-vC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CompleteAppointmentDto.csutf-8}
-tC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CancelAppointmentDto.csutf-8{
-rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\BookAppointmentDto.csutf-8w
-nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentDto.csutf-8h
+uC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\ConfirmAppointmentDto.csutf-8„
+{C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterOptionsDto.csutf-8z
+qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDailyStatusSummaryDto.csutf-8ƒ
+zC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterPersonDto.csutf-8w
+nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentDto.csutf-8
+vC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CompleteAppointmentDto.csutf-8{
+rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\BookAppointmentDto.csutf-8}
+tC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CancelAppointmentDto.csutf-8h
 _C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Constants\TimeSlots.csutf-8

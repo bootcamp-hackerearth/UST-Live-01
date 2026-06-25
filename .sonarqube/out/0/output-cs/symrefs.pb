@@ -121,16 +121,20 @@ iC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\P
 
 		 !
 
- ¶
-tC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\Pagination\DoctorPaginationQueryDto.cs
+ ¥
+jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\DoctorDto\UpdateDoctorDto.cs
 
- )
+  
 
-# 1
+ 
 
-		 
+" 0
 
- !œ
+ )
+
+ &
+
+!! œ
 yC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\Pagination\AppointmentPaginationQueryDto.cs
 
  .
@@ -200,20 +204,16 @@ sC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\H
 
  $
 
-!! !¥
-jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\DoctorDto\UpdateDoctorDto.cs
+!! !¶
+tC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\Pagination\DoctorPaginationQueryDto.cs
 
-  
+ )
 
- 
+# 1
 
-" 0
+		 
 
- )
-
- &
-
- ∆
+ !∆
 dC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\DoctorDto\DoctorDto.cs
 
  
@@ -248,17 +248,17 @@ sC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\D
  ¥
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\DoctorDto\CreateDoctorDto.cs
 
-  
+  
 
- 
+ 
 
- 
+ 
 
-" 0
+" 0
 
- )
+ )
 
- &‡
+&& &‡
 rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\Dashboard\AdminDashboardReportDto.cs
 
  (
@@ -341,30 +341,36 @@ uC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\A
 
  &
 
-		 ê
-vC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CompleteAppointmentDto.cs
+		 °
+{C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterOptionsDto.cs
 
- '
+ ,
 
-		 ö
-tC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CancelAppointmentDto.cs
+0 8
 
- %
+0 7«
+qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDailyStatusSummaryDto.cs
 
-		  
+ 1
 
- %∞
-rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\BookAppointmentDto.cs
+ 
 
- #
+ 
+
+		 
 
  
 
- 
+ 
 
- %
+ †
+zC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterPersonDto.cs
 
- Ë
+ +
+
+ 
+
+ Ë
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentDto.cs
 
  
@@ -387,7 +393,30 @@ nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\A
 
 ! '
 
- )y
+ )ê
+vC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CompleteAppointmentDto.cs
+
+ '
+
+		 ∞
+rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\BookAppointmentDto.cs
+
+ #
+
+ 
+
+ 
+
+ %
+
+ ö
+tC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CancelAppointmentDto.cs
+
+ %
+
+		  
+
+ %y
 _C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Constants\TimeSlots.cs
 
  !

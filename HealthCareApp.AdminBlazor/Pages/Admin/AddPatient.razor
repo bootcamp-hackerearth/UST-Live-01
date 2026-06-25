@@ -109,7 +109,7 @@
 </section>
 
 @code {
-    private CreatePatientDto patient = new CreatePatientDto
+    private readonly CreatePatientDto patient = new CreatePatientDto
     {
         DateOfBirth = DateTime.Today.AddYears(-18)
     };

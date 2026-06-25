@@ -1,5 +1,8 @@
 ﻿C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Constants\TimeSlots.cs
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDailyStatusSummaryDto.cs
 C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentDto.cs
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterOptionsDto.cs
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterPersonDto.cs
 C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\BookAppointmentDto.cs
 C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CancelAppointmentDto.cs
 C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\CompleteAppointmentDto.cs

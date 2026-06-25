@@ -228,7 +228,7 @@
 
     private string? errorMessage;
 
-    private string TodayDateInputValue
+    private static string TodayDateInputValue
     {
         get
         {
@@ -238,7 +238,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        InitializeEditContext();
+        
 
         var isAuthenticated = await AuthService.IsAuthenticatedAsync();
 
@@ -251,6 +251,7 @@
 
             return;
         }
+        InitializeEditContext();
     }
 
     private void InitializeEditContext()
