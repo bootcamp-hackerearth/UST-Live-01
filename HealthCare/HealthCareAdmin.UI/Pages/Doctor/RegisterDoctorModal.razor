@@ -22,18 +22,23 @@
                 <!-- FORM -->
                 <EditForm Model="@(isEditMode ? editDoctor : registerDoctor)" OnValidSubmit="HandleSave">
                     <DataAnnotationsValidator />
-                    <ValidationSummary /> <!-- ✅ FIXED -->
+                    
                     <!-- NAME -->
-                    <div class="mb-2">
-                        <label>Name</label>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
 
                         @if (isEditMode)
                         {
-                            <InputText class="form-control" @bind-Value="editDoctor.FullName" />
+                            <InputText class="form-control"
+                                       @bind-Value="editDoctor.FullName" />
                         }
                         else
                         {
-                            <InputText class="form-control" @bind-Value="registerDoctor.FullName" />
+                            <InputText class="form-control"
+                                       @bind-Value="registerDoctor.FullName" />
+
+                            <!-- ✅ Validation -->
+                            <ValidationMessage For="@(() => registerDoctor.FullName)" />
                         }
                     </div>
 
@@ -57,8 +62,8 @@
                     }
 
                     <!-- SPECIALISATION -->
-                    <div class="mb-2">
-                        <label>Specialisation</label>
+                    <div class="mb-3">
+                        <label class="form-label">Specialisation</label>
 
                         @if (isEditMode)
                         {
@@ -79,48 +84,66 @@
                                     <option value="@s">@s</option>
                                 }
                             </select>
+
+                            <ValidationMessage For="@(() => registerDoctor.Specialisation)" />
                         }
                     </div>
 
                     <!-- EXPERIENCE -->
-                    <div class="mb-2">
-                        <label>Experience</label>
+                    <div class="mb-3">
+                        <label class="form-label">Experience</label>
 
                         @if (isEditMode)
                         {
-                            <InputNumber class="form-control" @bind-Value="editDoctor.YearsOfExperience" />
+                            <InputNumber class="form-control"
+                                         @bind-Value="editDoctor.YearsOfExperience" />
                         }
                         else
                         {
-                            <InputNumber class="form-control" @bind-Value="registerDoctor.YearsOfExperience" />
+                            <InputNumber class="form-control"
+                                         @bind-Value="registerDoctor.YearsOfExperience" />
+
+                            <ValidationMessage For="@(() => registerDoctor.YearsOfExperience)" />
                         }
                     </div>
 
                     <!-- FEE -->
-                    <div class="mb-2">
-                        <label>Consultation Fee</label>
+                    <div class="mb-3">
+                        <label class="form-label">Consultation Fee</label>
 
                         @if (isEditMode)
                         {
-                            <InputNumber class="form-control" @bind-Value="editDoctor.ConsultationFee" />
+                            <InputNumber class="form-control"
+                                         @bind-Value="editDoctor.ConsultationFee" />
                         }
                         else
                         {
-                            <InputNumber class="form-control" @bind-Value="registerDoctor.ConsultationFee" />
+                            <InputNumber class="form-control"
+                                         @bind-Value="registerDoctor.ConsultationFee" />
+
+                            <ValidationMessage For="@(() => registerDoctor.ConsultationFee)" />
                         }
                     </div>
 
                     <!-- PASSWORD -->
                     @if (!isEditMode)
                     {
-                        <div class="mb-2">
-                            <label>Password</label>
-                            <InputText type="password" class="form-control" @bind-Value="registerDoctor.Password" />
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <InputText type="password"
+                                       class="form-control"
+                                       @bind-Value="registerDoctor.Password" />
+
+                            <ValidationMessage For="@(() => registerDoctor.Password)" />
                         </div>
 
-                        <div class="mb-2">
-                            <label>Confirm Password</label>
-                            <InputText type="password" class="form-control" @bind-Value="registerDoctor.ConfirmPassword" />
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <InputText type="password"
+                                       class="form-control"
+                                       @bind-Value="registerDoctor.ConfirmPassword" />
+
+                            <ValidationMessage For="@(() => registerDoctor.ConfirmPassword)" />
                         </div>
                     }
 
@@ -165,6 +188,7 @@
         </div>
     </div>
 }
+
 
 <!-- ✅ SUCCESS POPUP -->
 @if (showSuccessPopup)

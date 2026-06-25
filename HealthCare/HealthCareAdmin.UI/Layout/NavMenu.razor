@@ -1,4 +1,8 @@
-﻿<div>
+﻿@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div>
+
     <div class="logo">🏥 Admin</div>
 
     <NavLink href="/dashboard" class="nav-item">
@@ -16,4 +20,77 @@
     <NavLink href="/appointments/report" class="nav-item">
         Reports
     </NavLink>
+
+    <!-- ✅ LOGOUT BUTTON -->
+
+    <button class="nav-item btn text-start w-100 mt-3 text-danger"
+            @onclick="ShowLogoutPopup">
+        Logout
+    </button>
+
 </div>
+
+@if (showLogoutPopup)
+{
+    <div class="modal-backdrop fade show"></div>
+
+    <div class="modal show d-block">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center p-4">
+
+                <h5 class="text-danger mb-3">Confirm Logout</h5>
+
+                <p class="text-muted">
+                    Are you sure you want to logout?
+                </p>
+
+                <div class="d-flex justify-content-center gap-2 mt-3">
+
+                    <button class="btn btn-danger" @onclick="Logout">
+                        Logout
+                    </button>
+
+                    <button class="btn btn-outline-secondary" @onclick="CancelLogout">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+
+    private bool showLogoutPopup = false;
+
+    private void ShowLogoutPopup()
+    {
+        showLogoutPopup = true;
+
+        JS.InvokeVoidAsync("document.body.classList.add", "modal-open");
+    }
+
+    private void CancelLogout()
+    {
+        showLogoutPopup = false;
+
+        JS.InvokeVoidAsync("document.body.classList.remove", "modal-open");
+    }
+
+
+   
+    private async Task Logout()
+    {
+        showLogoutPopup = false;
+
+        await JS.InvokeVoidAsync("document.body.classList.remove", "modal-open");
+
+        await JS.InvokeVoidAsync("localStorage.removeItem", "token");
+
+        Navigation.NavigateTo("/login", true);
+    }
+
+}
