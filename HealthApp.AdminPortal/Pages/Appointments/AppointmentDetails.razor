@@ -1,0 +1,215 @@
+﻿@page "/appointments/{Id:int}"
+@attribute [Authorize(Roles = "Admin")]
+
+@inject IAppointmentService AppointmentService
+@inject INotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Appointment Details - HealthApp Admin</PageTitle>
+
+<div class="page-header-box mb-4">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h2 class="page-title mb-1">Appointment Details</h2>
+            <div class="text-muted fw-semibold">
+                View appointment schedule, patient and doctor information
+            </div>
+        </div>
+
+        <NavLink href="/appointments" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back
+        </NavLink>
+    </div>
+</div>
+
+@if (Appointment == null)
+{
+    <div class="table-card text-center py-5">
+        <div class="spinner-border text-health" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <p class="mt-3 mb-0 text-muted fw-semibold">
+            Loading appointment...
+        </p>
+    </div>
+}
+else
+{
+    <div class="appointment-details-card admin-full-card">
+
+        <div class="appointment-details-header">
+            <div class="appointment-details-icon">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+
+            <div>
+                <div class="details-info-label mb-1">Appointment Reference</div>
+
+                <h5 class="fw-bold mb-2">
+                    Appointment #APT-@Appointment.AppointmentId.ToString("000")
+                </h5>
+
+                <span class="appointment-status-badge @GetStatusClass(Appointment.Status)">
+                    <i class="@GetStatusIcon(Appointment.Status)"></i>
+                    @Appointment.Status
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+
+            <div class="col-lg-6 col-md-6">
+                <div class="details-info-box">
+                    <div class="details-info-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+
+                    <div>
+                        <div class="details-info-label">Patient Name</div>
+                        <div class="details-info-value">@Appointment.PatientName</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="details-info-box">
+                    <div class="details-info-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </div>
+
+                    <div>
+                        <div class="details-info-label">Doctor Name</div>
+                        <div class="details-info-value">@Appointment.DoctorName</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="details-info-box">
+                    <div class="details-info-icon">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+
+                    <div>
+                        <div class="details-info-label">Scheduled Date</div>
+
+                        <div class="details-info-value">
+                            @Appointment.ScheduledDate.ToString("dd MMM yyyy")
+                        </div>
+
+                        <small class="text-muted fw-semibold">
+                            @Appointment.ScheduledDate.ToString("dddd")
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="details-info-box">
+                    <div class="details-info-icon">
+                        <i class="bi bi-clock"></i>
+                    </div>
+
+                    <div>
+                        <div class="details-info-label">Time Slot</div>
+                        <div class="details-info-value">@Appointment.TimeSlot</div>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(Appointment.CancellationReason))
+            {
+                <div class="col-12">
+                    <div class="details-info-box reason-box">
+                        <div class="details-info-icon danger-soft-icon">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+
+                        <div>
+                            <div class="details-info-label">Cancellation Reason</div>
+
+                            <div class="details-info-value">
+                                @Appointment.CancellationReason
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+        <div class="restricted-alert mt-4">
+            <div class="restricted-alert-icon">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+
+            <div>
+                <div class="fw-bold">Restricted Health Information</div>
+
+                <div class="small fw-semibold">
+                    Diagnosis, prescription, medical notes and health records are not available for Admin users.
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-top">
+            <NavLink href="/appointments" class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Appointments
+            </NavLink>
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private AppointmentDto? Appointment;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await AppointmentService.GetById(Id);
+
+        if (result.IsSuccess)
+        {
+            Appointment = result.Data;
+        }
+        else
+        {
+            NotificationService.Error(result.Message);
+            if (result.Message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+                    || result.Message.Contains("login", StringComparison.OrdinalIgnoreCase))
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+    }
+
+    private string GetStatusClass(string status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "completed" => "appointment-status-completed",
+            "cancelled" => "appointment-status-cancelled",
+            "confirmed" => "appointment-status-confirmed",
+            "pending" => "appointment-status-pending",
+            _ => "appointment-status-confirmed"
+        };
+    }
+
+    private string GetStatusIcon(string status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "completed" => "bi bi-check-circle-fill",
+            "cancelled" => "bi bi-x-circle-fill",
+            "confirmed" => "bi bi-calendar-check-fill",
+            "pending" => "bi bi-clock-fill",
+            _ => "bi bi-info-circle-fill"
+        };
+    }
+}

@@ -1,0 +1,17 @@
+﻿@inject NavigationManager NavigationManager
+@inject INotificationService NotificationService
+@inject AuthRedirectState AuthRedirectState
+
+@code {
+    protected override void OnInitialized()
+    {
+        var message = AuthRedirectState.ConsumeMessage();
+
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            NotificationService.Warning(message);
+        }
+
+        NavigationManager.NavigateTo("/login");
+    }
+}

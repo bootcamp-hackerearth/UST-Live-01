@@ -1,0 +1,148 @@
+﻿@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <i class="bi bi-heart-pulse-fill"></i>
+                </div>
+
+                <div class="sidebar-brand-text">
+                    <div class="sidebar-brand-title">
+                        Health<span>Admin</span>
+                    </div>
+
+                    <div class="sidebar-brand-subtitle">
+                        Admin Portal
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+
+                <NavLink href="/dashboard"
+                         Match="NavLinkMatch.All"
+                         class="sidebar-link">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
+                </NavLink>
+
+                <div class="menu-title">
+                    Management
+                </div>
+
+                <NavLink href="/doctors"
+                         class="sidebar-link">
+                    <i class="bi bi-person-badge"></i>
+                    <span>Doctors</span>
+                </NavLink>
+
+                <NavLink href="/patients"
+                         class="sidebar-link">
+                    <i class="bi bi-person-heart"></i>
+                    <span>Patients</span>
+                </NavLink>
+
+                <NavLink href="/appointments"
+                         class="sidebar-link">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Appointments</span>
+                </NavLink>
+
+                <NavLink href="/reports"
+                         class="sidebar-link">
+                    <i class="bi bi-bar-chart"></i>
+                    <span>Reports</span>
+                </NavLink>
+
+                <div class="menu-title">
+                    Account
+                </div>
+
+                <NavLink href="/profile"
+                         class="sidebar-link">
+                    <i class="bi bi-person-circle"></i>
+                    <span>Profile</span>
+                </NavLink>
+
+                <div class="sidebar-logout">
+                    <button type="button"
+                            class="nav-link sidebar-link sidebar-logout-button"
+                            @onclick="ShowLogoutConfirm">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Logout</span>
+                    </button>
+                </div>
+
+            </nav>
+        </aside>
+
+        @if (showLogoutConfirm)
+        {
+            <div class="logout-modal-backdrop">
+                <div class="logout-confirm-modal">
+
+                    <div class="logout-confirm-icon">
+                        <i class="bi bi-door-open-fill"></i>
+                    </div>
+
+                    <h5 class="fw-bold mb-2">
+                        Logout Confirmation
+                    </h5>
+
+                    <p class="text-muted mb-4">
+                        Are you sure you want to logout from HealthApp Admin?
+                    </p>
+
+                    <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                        <button type="button"
+                                class="btn btn-outline-secondary rounded-pill px-4"
+                                @onclick="CancelLogout">
+                            <i class="bi bi-x-circle me-2"></i>
+                            Cancel
+                        </button>
+
+                        <button type="button"
+                                class="btn btn-danger rounded-pill px-4"
+                                @onclick="ConfirmLogout">
+                            <i class="bi bi-box-arrow-right me-2"></i>
+                            Yes, Logout
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        }
+
+    </Authorized>
+
+    <NotAuthorized>
+        @* Sidebar hidden before login *@
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private bool showLogoutConfirm = false;
+
+    private void ShowLogoutConfirm()
+    {
+        showLogoutConfirm = true;
+    }
+
+    private void CancelLogout()
+    {
+        showLogoutConfirm = false;
+    }
+
+    private async Task ConfirmLogout()
+    {
+        showLogoutConfirm = false;
+
+        await AuthService.Logout();
+
+        NavigationManager.NavigateTo("/login", true);
+    }
+}

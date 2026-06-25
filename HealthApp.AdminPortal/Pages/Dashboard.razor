@@ -1,0 +1,342 @@
+﻿@page "/dashboard"
+@attribute [Authorize(Roles = "Admin")]
+@inject IPatientService PatientService
+@inject IDoctorService DoctorService
+@inject IAppointmentService AppointmentService
+@inject IReportService ReportService
+@inject INotificationService NotificationService
+
+<PageTitle>Dashboard - HealthApp Admin</PageTitle>
+
+<div class="page-header-box dashboard-header mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+        <div>
+            <h2 class="page-title mb-1">Dashboard</h2>
+            <p class="text-muted mb-0">
+                Welcome to HealthApp Admin Portal.
+            </p>
+        </div>
+    </div>
+</div>
+
+@if (isLoading)
+{
+    <div class="table-card text-center py-5">
+        <div class="spinner-border text-health" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <p class="text-muted fw-semibold mt-3 mb-0">
+            Loading dashboard...
+        </p>
+    </div>
+}
+else
+{
+    <div class="row g-4 mb-4">
+        @foreach (var metric in DashboardMetrics)
+        {
+            <div class="col-sm-6 col-xl-3">
+                <div class="dashboard-metric-card @metric.CardClass">
+                    <div class="metric-icon">
+                        <i class="@metric.Icon"></i>
+                    </div>
+
+                    <div>
+                        <div class="metric-value">@metric.Value</div>
+                        <div class="metric-label">@metric.Label</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-xl-8">
+            <div class="table-card dashboard-section-card">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="fw-bold mb-1">Recent Activities</h5>
+                        <p class="text-muted small mb-0">
+                            Quick overview of admin portal activity.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="activity-list">
+
+                    <div class="activity-item">
+                        <div class="activity-icon bg-health">
+                            <i class="bi bi-people"></i>
+                        </div>
+
+                        <div>
+                            <div class="fw-bold">Users Overview</div>
+                            <div class="text-muted small">
+                                @totalUsers total users are registered in the system.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon metric-blue">
+                            <i class="bi bi-person-heart"></i>
+                        </div>
+
+                        <div>
+                            <div class="fw-bold">Patient Registrations</div>
+                            <div class="text-muted small">
+                                @totalPatients patient account(s) are currently available.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon metric-cyan">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+
+                        <div>
+                            <div class="fw-bold">Doctor Profiles</div>
+                            <div class="text-muted small">
+                                @totalDoctors doctor profile(s) are registered.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon metric-amber">
+                            <i class="bi bi-calendar-day"></i>
+                        </div>
+
+                        <div>
+                            <div class="fw-bold">Today’s Appointments</div>
+                            <div class="text-muted small">
+                                @todayAppointments appointment(s) are scheduled for today.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-xl-4">
+            <div class="table-card dashboard-section-card">
+
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-1">Appointment Summary</h5>
+                    <p class="text-muted small mb-0">
+                        Status-wise appointment count.
+                    </p>
+                </div>
+
+                <div class="appointment-summary-list">
+
+                    @foreach (var item in AppointmentSummary)
+                    {
+                        <div class="appointment-summary-card @item.CardClass">
+                            <div class="summary-icon">
+                                <i class="@item.Icon"></i>
+                            </div>
+
+                            <div class="summary-content">
+                                <div class="summary-count">@item.Count</div>
+                                <div class="summary-label">@item.Label</div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+
+                <div class="mt-4 pt-4 border-top">
+                    <NavLink href="/appointments"
+                             class="btn btn-health rounded-pill w-100">
+                        <i class="bi bi-calendar-check me-2"></i>
+                        View Appointments
+                    </NavLink>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+}
+
+@code {
+    private bool isLoading = true;
+
+    private int totalUsers;
+    private int totalPatients;
+    private int totalDoctors;
+    private int todayAppointments;
+
+    private int confirmed;
+    private int completed;
+    private int cancelled;
+    private int pending;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+
+        var patientResult = await PatientService.GetAll();
+        var doctorResult = await DoctorService.GetAll();
+        var appointmentResult = await AppointmentService.GetAppointments();
+        var reportResult = await ReportService.GetAppointmentReports();
+
+        if (patientResult.IsSuccess)
+        {
+            totalPatients = patientResult.Data?.Count ?? 0;
+        }
+        else
+        {
+            NotificationService.Error(patientResult.Message);
+        }
+
+        if (doctorResult.IsSuccess)
+        {
+            totalDoctors = doctorResult.Data?.Count ?? 0;
+        }
+        else
+        {
+            NotificationService.Error(doctorResult.Message);
+        }
+
+        if (appointmentResult.IsSuccess)
+        {
+            todayAppointments = appointmentResult.Data?
+                .Count(appointment => appointment.ScheduledDate.Date == DateTime.Today)
+                ?? 0;
+        }
+        else
+        {
+            NotificationService.Error(appointmentResult.Message);
+        }
+
+        if (reportResult.IsSuccess)
+        {
+            var reports = reportResult.Data ?? new List<AppointmentReportDto>();
+
+            confirmed = reports.Sum(report => report.Confirmed);
+            completed = reports.Sum(report => report.Completed);
+            cancelled = reports.Sum(report => report.Cancelled);
+            pending = reports.Sum(report => report.Pending);
+        }
+        else
+        {
+            NotificationService.Error(reportResult.Message);
+        }
+
+        totalUsers = totalPatients + totalDoctors;
+
+        isLoading = false;
+    }
+
+    private List<DashboardMetric> DashboardMetrics => new()
+    {
+        new DashboardMetric
+        {
+            Label = "Total Users",
+            Value = totalUsers.ToString(),
+            Icon = "bi bi-people",
+            CardClass = "metric-teal"
+        },
+        new DashboardMetric
+        {
+            Label = "Patients",
+            Value = totalPatients.ToString(),
+            Icon = "bi bi-person-heart",
+            CardClass = "metric-blue"
+        },
+        new DashboardMetric
+        {
+            Label = "Doctors",
+            Value = totalDoctors.ToString(),
+            Icon = "bi bi-person-badge",
+            CardClass = "metric-cyan"
+        },
+        new DashboardMetric
+        {
+            Label = "Today’s Appointments",
+            Value = todayAppointments.ToString(),
+            Icon = "bi bi-calendar-day",
+            CardClass = "metric-amber"
+        }
+    };
+
+    private List<AppointmentSummaryItem> AppointmentSummary => new()
+    {
+        new AppointmentSummaryItem
+        {
+            Label = "Pending",
+            Count = pending,
+            Icon = "bi bi-clock-history",
+            CardClass = "summary-warning"
+        },
+        new AppointmentSummaryItem
+        {
+            Label = "Completed",
+            Count = completed,
+            Icon = "bi bi-check-circle",
+            CardClass = "summary-success"
+        },
+        new AppointmentSummaryItem
+        {
+            Label = "Cancelled",
+            Count = cancelled,
+            Icon = "bi bi-x-circle",
+            CardClass = "summary-danger"
+        }
+    };
+
+    private List<RecentActivity> RecentActivities = new()
+    {
+        new RecentActivity
+        {
+            Title = "System ready",
+            Description = "Admin dashboard data loaded from API.",
+            Time = "Now",
+            Icon = "bi bi-check2-circle",
+            IconBackground = "bg-success"
+        }
+    };
+
+    private class DashboardMetric
+    {
+        public string Label { get; set; } = string.Empty;
+
+        public string Value { get; set; } = string.Empty;
+
+        public string Icon { get; set; } = string.Empty;
+
+        public string CardClass { get; set; } = string.Empty;
+    }
+
+    private class AppointmentSummaryItem
+    {
+        public string Label { get; set; } = string.Empty;
+
+        public int Count { get; set; }
+
+        public string Icon { get; set; } = string.Empty;
+
+        public string CardClass { get; set; } = string.Empty;
+    }
+
+    private class RecentActivity
+    {
+        public string Title { get; set; } = string.Empty;
+
+        public string Description { get; set; } = string.Empty;
+
+        public string Time { get; set; } = string.Empty;
+
+        public string Icon { get; set; } = string.Empty;
+
+        public string IconBackground { get; set; } = string.Empty;
+    }
+}

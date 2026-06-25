@@ -1,0 +1,290 @@
+﻿@page "/patients"
+@attribute [Authorize(Roles = "Admin")]
+@inject IPatientService PatientService
+@inject INotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Patients - HealthApp Admin</PageTitle>
+
+<div class="page-header-box mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+        <div>
+            <h2 class="page-title mb-1">Patients</h2>
+            <p class="text-muted mb-0">
+                View registered patients and basic account details.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="filter-card mb-4">
+    <div class="row g-3 align-items-end">
+
+        <div class="col-lg-4 col-md-6">
+            <label class="form-label fw-semibold">Name</label>
+
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+
+                <input class="form-control"
+                       placeholder="Search patient by name"
+                       @bind="SearchName"
+                       @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6">
+            <label class="form-label fw-semibold">Email</label>
+
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-envelope text-muted"></i>
+                </span>
+
+                <input class="form-control"
+                       placeholder="Search patient by email"
+                       @bind="SearchEmail"
+                       @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">Gender</label>
+
+            <select class="form-select" @bind="SelectedGender">
+                <option value="">All Genders</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+        </div>
+
+        <div class="col-lg-1 col-md-6">
+            <button type="button"
+                    class="btn btn-health rounded-pill patient-clear-btn w-100 mb-2"
+                    title="Search"
+                    @onclick="SearchPatients">
+                <i class="bi bi-search"></i>
+            </button>
+
+            <button type="button"
+                    class="btn btn-outline-secondary rounded-pill patient-clear-btn w-100"
+                    title="Clear filters"
+                    @onclick="ClearFilters">
+                <i class="bi bi-arrow-clockwise"></i>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div class="table-card">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+        <div>
+            <h5 class="fw-bold mb-1">Patient List</h5>
+            <p class="text-muted small mb-0">
+                Showing @FilteredPatients.Count() of @PatientsList.Count patient(s)
+            </p>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center py-5">
+            <div class="spinner-border text-health" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+
+            <p class="text-muted fw-semibold mt-3 mb-0">
+                Loading patients...
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle custom-table patients-table">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Patient</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Gender</th>
+                        <th>Date of Birth</th>
+                        <th class="text-center" style="width: 120px;">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (!FilteredPatients.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="bi bi-person-x"></i>
+                                    <h6 class="fw-bold mt-3 mb-1">No patients found</h6>
+                                    <p class="text-muted mb-0">
+                                        Try changing your search or filters.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var patient in FilteredPatients)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="patient-name-cell">
+                                        <div class="patient-avatar">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+
+                                        <div>
+                                            <div class="fw-bold">@patient.FullName</div>
+                                            <small class="text-muted">
+                                                ID: PAT-@patient.PatientId.ToString("000")
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        @patient.Email
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        @patient.PhoneNumber
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="patient-gender-badge">
+                                        @patient.Gender
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        @patient.DateOfBirth.ToString("dd MMM yyyy")
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <NavLink href="@($"/patients/{patient.PatientId}")"
+                                             class="btn btn-health btn-sm action-btn"
+                                             title="View patient">
+                                        <i class="bi bi-eye"></i>
+                                    </NavLink>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+
+            </table>
+        </div>
+    }
+
+</div>
+
+@code {
+    @code {
+        private List<PatientDto> PatientsList = new();
+
+        private bool isLoading = true;
+
+        private string SearchName = string.Empty;
+
+        private string SearchEmail = string.Empty;
+
+        private string SelectedGender = string.Empty;
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadPatients();
+        }
+
+        private async Task LoadPatients()
+        {
+            isLoading = true;
+
+            var result = await PatientService.GetAll();
+
+            if (result.IsSuccess)
+            {
+                PatientsList = result.Data ?? new List<PatientDto>();
+            }
+            else
+            {
+                PatientsList = new List<PatientDto>();
+
+                NotificationService.Error(result.Message);
+
+                RedirectToLoginIfSessionExpired(result.Message);
+            }
+
+            isLoading = false;
+        }
+
+        private async Task SearchPatients()
+        {
+            isLoading = true;
+
+            var result = await PatientService.Search(SearchName, SearchEmail);
+
+            if (result.IsSuccess)
+            {
+                PatientsList = result.Data ?? new List<PatientDto>();
+            }
+            else
+            {
+                PatientsList = new List<PatientDto>();
+
+                NotificationService.Error(result.Message);
+
+                RedirectToLoginIfSessionExpired(result.Message);
+            }
+
+            isLoading = false;
+        }
+
+        private IEnumerable<PatientDto> FilteredPatients =>
+            PatientsList.Where(patient =>
+                string.IsNullOrWhiteSpace(SelectedGender)
+                || string.Equals(
+                    patient.Gender,
+                    SelectedGender,
+                    StringComparison.OrdinalIgnoreCase)
+            );
+
+        private async Task ClearFilters()
+        {
+            SearchName = string.Empty;
+            SearchEmail = string.Empty;
+            SelectedGender = string.Empty;
+
+            await LoadPatients();
+        }
+
+        private void RedirectToLoginIfSessionExpired(string message)
+        {
+            if (
+                message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+                || message.Contains("please login", StringComparison.OrdinalIgnoreCase)
+                || message.Contains("login again", StringComparison.OrdinalIgnoreCase)
+            )
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+    }
+}

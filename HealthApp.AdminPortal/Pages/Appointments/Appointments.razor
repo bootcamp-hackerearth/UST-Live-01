@@ -1,0 +1,517 @@
+﻿@page "/appointments"
+@attribute [Authorize(Roles = "Admin")]
+
+@using HealthApp.Shared.Dtos
+@using HealthApp.Shared.Enums
+
+@inject IAppointmentService AppointmentService
+@inject IDoctorService DoctorService
+@inject IPatientService PatientService
+@inject INotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Appointments - HealthApp Admin</PageTitle>
+
+<div class="page-header-box mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+        <div>
+            <h2 class="page-title mb-1">Appointments</h2>
+
+            <p class="text-muted fw-semibold mb-0">
+                View, filter and manage appointment bookings.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="filter-card mb-4">
+    <div class="row g-3 align-items-end">
+
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">Date</label>
+
+            <input type="date"
+                   class="form-control"
+                   @bind="FilterDate" />
+        </div>
+
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">From Date</label>
+
+            <input type="date"
+                   class="form-control"
+                   @bind="FromDate" />
+        </div>
+
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">To Date</label>
+
+            <input type="date"
+                   class="form-control"
+                   @bind="ToDate" />
+        </div>
+
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">Doctor</label>
+
+            <input class="form-control"
+                   list="doctorSuggestions"
+                   placeholder="Search doctor"
+                   @bind="DoctorSearchText"
+                   @bind:event="oninput" />
+            <datalist id="doctorSuggestions">
+                @foreach (var doctor in Doctors)
+                {
+                    <option value="@GetDoctorDisplayText(doctor)"></option>
+                }
+            </datalist>
+        </div>
+
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">Patient</label>
+
+            <input class="form-control"
+                   list="patientSuggestions"
+                   placeholder="Search patient"
+                   @bind="PatientSearchText"
+                   @bind:event="oninput" />
+
+            <datalist id="patientSuggestions">
+                @foreach (var patient in Patients)
+                {
+                    <option value="@GetPatientDisplayText(patient)"></option>
+                }
+            </datalist>
+        </div>
+
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">Status</label>
+
+            <select class="form-select" @bind="SelectedStatusValue">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Completed">Completed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+
+        <div class="col-lg-12 col-md-12">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+
+                <div class="form-check">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           id="onlyUpcomingCheck"
+                           @bind="OnlyUpcoming" />
+
+                    <label class="form-check-label fw-semibold" for="onlyUpcomingCheck">
+                        Only Upcoming
+                    </label>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button"
+                            class="btn btn-health rounded-pill px-4"
+                            @onclick="ApplyFilters">
+                        <i class="bi bi-filter me-2"></i>
+                        Apply Filters
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-outline-secondary rounded-pill px-4"
+                            @onclick="ClearFilters">
+                        <i class="bi bi-arrow-clockwise me-2"></i>
+                        Clear
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="table-card">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+        <div>
+            <h5 class="fw-bold mb-1">Appointment List</h5>
+
+            <p class="text-muted small fw-semibold mb-0">
+                Showing @AppointmentsList.Count appointment(s)
+            </p>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle custom-table appointments-table">
+            <thead class="table-light">
+                <tr>
+                    <th>Appointment</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th class="text-center" style="width: 120px;">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (isLoading)
+                {
+                    <tr>
+                        <td colspan="7">
+                            <LoadingView Message="Loading appointments..." />
+                        </td>
+                    </tr>
+                }
+                else if (!AppointmentsList.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <div class="empty-state">
+                                <i class="bi bi-calendar-x"></i>
+
+                                <h6 class="fw-bold mt-3 mb-1">
+                                    No appointments found
+                                </h6>
+
+                                <p class="text-muted mb-0">
+                                    Try changing your filters.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var appointment in AppointmentsList)
+                    {
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">
+                                    #APT-@appointment.AppointmentId.ToString("000")
+                                </div>
+
+                                <small class="text-muted fw-semibold">
+                                    Appointment ID
+                                </small>
+                            </td>
+
+                            <td>
+                                <div class="appointment-person-cell">
+                                    <div class="appointment-avatar patient-avatar">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+
+                                    <div>
+                                        <div class="fw-bold">
+                                            @appointment.PatientName
+                                        </div>
+
+                                        <small class="text-muted fw-semibold">
+                                            Patient
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="appointment-person-cell">
+                                    <div class="appointment-avatar doctor-avatar-small">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+
+                                    <div>
+                                        <div class="fw-bold">
+                                            @appointment.DoctorName
+                                        </div>
+
+                                        <small class="text-muted fw-semibold">
+                                            Doctor
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold">
+                                    @appointment.ScheduledDate.ToString("dd MMM yyyy")
+                                </div>
+
+                                <small class="text-muted fw-semibold">
+                                    @appointment.ScheduledDate.ToString("dddd")
+                                </small>
+                            </td>
+
+                            <td>
+                                <div class="fw-semibold">
+                                    @appointment.TimeSlot
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="appointment-status-badge @GetStatusClass(appointment.Status)">
+                                    <i class="@GetStatusIcon(appointment.Status)"></i>
+                                    @appointment.Status
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                <NavLink href="@($"/appointments/{appointment.AppointmentId}")"
+                                         class="btn btn-health btn-sm action-btn"
+                                         title="View appointment">
+                                    <i class="bi bi-eye"></i>
+                                </NavLink>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private DateTime? FilterDate;
+
+    private DateTime? FromDate;
+
+    private DateTime? ToDate;
+
+    private string SelectedStatusValue { get; set; } = string.Empty;
+
+    private bool OnlyUpcoming { get; set; }
+
+    private List<AppointmentDto> AppointmentsList = new();
+
+    private List<DoctorDto> Doctors = new();
+
+    private List<PatientDto> Patients = new();
+
+    private bool isLoading = true;
+
+    private string DoctorSearchText { get; set; } = string.Empty;
+
+    private string PatientSearchText { get; set; } = string.Empty;
+
+    private int? SelectedDoctorId
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(DoctorSearchText))
+            {
+                return null;
+            }
+
+            var doctor = Doctors.FirstOrDefault(doctor =>
+                string.Equals(
+                    GetDoctorDisplayText(doctor),
+                    DoctorSearchText,
+                    StringComparison.OrdinalIgnoreCase));
+
+            return doctor?.DoctorId;
+        }
+    }
+
+    private int? SelectedPatientId
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(PatientSearchText))
+            {
+                return null;
+            }
+
+            var patient = Patients.FirstOrDefault(patient =>
+                string.Equals(
+                    GetPatientDisplayText(patient),
+                    PatientSearchText,
+                    StringComparison.OrdinalIgnoreCase));
+
+            return patient?.PatientId;
+        }
+    }
+
+    private string GetDoctorDisplayText(DoctorDto doctor)
+    {
+        return $"{doctor.FullName} - DOC-{doctor.DoctorId:000}";
+    }
+
+    private string GetPatientDisplayText(PatientDto patient)
+    {
+        return $"{patient.FullName} - PAT-{patient.PatientId:000}";
+    }
+
+    
+
+    private AppointmentStatus? SelectedStatus =>
+        string.IsNullOrWhiteSpace(SelectedStatusValue)
+            ? null
+            : Enum.TryParse<AppointmentStatus>(
+                SelectedStatusValue,
+                true,
+                out var status)
+                    ? status
+                    : null;
+
+    private DateOnly? FilterDateOnly =>
+        FilterDate.HasValue
+            ? DateOnly.FromDateTime(FilterDate.Value)
+            : null;
+
+    private DateOnly? FromDateOnly =>
+        FromDate.HasValue
+            ? DateOnly.FromDateTime(FromDate.Value)
+            : null;
+
+    private DateOnly? ToDateOnly =>
+        ToDate.HasValue
+            ? DateOnly.FromDateTime(ToDate.Value)
+            : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDropdownData();
+        await LoadAppointments();
+    }
+
+    private async Task LoadDropdownData()
+    {
+        var doctorResult = await DoctorService.GetAll();
+
+        if (doctorResult.IsSuccess)
+        {
+            Doctors = doctorResult.Data ?? new List<DoctorDto>();
+        }
+        else
+        {
+            NotificationService.Error(doctorResult.Message);
+            RedirectToLoginIfSessionExpired(doctorResult.Message);
+        }
+
+        var patientResult = await PatientService.GetAll();
+
+        if (patientResult.IsSuccess)
+        {
+            Patients = patientResult.Data ?? new List<PatientDto>();
+        }
+        else
+        {
+            NotificationService.Error(patientResult.Message);
+            RedirectToLoginIfSessionExpired(patientResult.Message);
+        }
+    }
+
+    private async Task LoadAppointments()
+    {
+        isLoading = true;
+
+        var result = await AppointmentService.GetAppointments(
+            SelectedDoctorId,
+            SelectedPatientId,
+            SelectedStatus,
+            FilterDateOnly,
+            FromDateOnly,
+            ToDateOnly,
+            OnlyUpcoming);
+
+        if (result.IsSuccess)
+        {
+            AppointmentsList = result.Data ?? new List<AppointmentDto>();
+        }
+        else
+        {
+            AppointmentsList = new List<AppointmentDto>();
+
+            NotificationService.Error(result.Message);
+
+            RedirectToLoginIfSessionExpired(result.Message);
+        }
+
+        isLoading = false;
+    }
+
+    private async Task ApplyFilters()
+    {
+        if (FilterDate.HasValue && (FromDate.HasValue || ToDate.HasValue))
+        {
+            NotificationService.Warning("Use either exact date or date range, not both.");
+            return;
+        }
+
+        if (FromDate.HasValue &&
+            ToDate.HasValue &&
+            FromDate.Value.Date > ToDate.Value.Date)
+        {
+            NotificationService.Warning("From Date cannot be greater than To Date.");
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(DoctorSearchText) && SelectedDoctorId == null)
+        {
+            NotificationService.Warning("Please select a valid doctor from the suggestions.");
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(PatientSearchText) && SelectedPatientId == null)
+        {
+            NotificationService.Warning("Please select a valid patient from the suggestions.");
+            return;
+        }
+
+        await LoadAppointments();
+    }
+
+    private async Task ClearFilters()
+    {
+        FilterDate = null;
+        FromDate = null;
+        ToDate = null;
+
+        DoctorSearchText = string.Empty;
+        PatientSearchText = string.Empty;
+        SelectedStatusValue = string.Empty;
+
+        OnlyUpcoming = false;
+
+        await LoadAppointments();
+    }
+
+    private string GetStatusClass(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "confirmed" => "appointment-status-confirmed",
+            "completed" => "appointment-status-completed",
+            "cancelled" => "appointment-status-cancelled",
+            "pending" => "appointment-status-pending",
+            _ => "appointment-status-pending"
+        };
+    }
+
+    private string GetStatusIcon(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "confirmed" => "bi bi-calendar-check-fill",
+            "completed" => "bi bi-check-circle-fill",
+            "cancelled" => "bi bi-x-circle-fill",
+            "pending" => "bi bi-clock-fill",
+            _ => "bi bi-info-circle-fill"
+        };
+    }
+
+    private void RedirectToLoginIfSessionExpired(string message)
+    {
+        if (
+            message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("please login", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("login again", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

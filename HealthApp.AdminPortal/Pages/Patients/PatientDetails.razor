@@ -1,0 +1,183 @@
+﻿@page "/patients/{Id:int}"
+@attribute [Authorize(Roles = "Admin")]
+@inject IPatientService PatientService
+@inject INotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Patient Details - HealthApp Admin</PageTitle>
+
+<div class="page-header-box mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+        <div>
+            <h2 class="page-title mb-1">Patient Details</h2>
+            <p class="text-muted mb-0">
+                View registered patient account information.
+            </p>
+        </div>
+
+        <NavLink href="/patients" class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to Patients
+        </NavLink>
+    </div>
+</div>
+
+@if (Patient == null)
+{
+    <div class="table-card text-center py-5">
+        <div class="spinner-border text-health" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <p class="mt-3 mb-0 text-muted fw-semibold">
+            Loading patient...
+        </p>
+    </div>
+}
+else
+{
+    <div class="patient-details-card w-100" style="max-width: none;">
+
+        <div class="patient-details-header">
+            <div class="patient-details-avatar">
+                <i class="bi bi-person-heart"></i>
+            </div>
+
+            <div>
+                <div class="patient-details-info-label mb-1">Patient Profile</div>
+
+                <h4 class="fw-bold mb-2">
+                    @Patient.FullName
+                </h4>
+
+                <span class="patient-gender-badge">
+                    <i class="bi bi-person-vcard me-2"></i>
+                    @Patient.Gender
+                </span>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+
+            <div class="col-lg-6 col-md-6">
+                <div class="patient-details-info-box">
+                    <div class="patient-details-info-icon">
+                        <i class="bi bi-person"></i>
+                    </div>
+
+                    <div>
+                        <div class="patient-details-info-label">Full Name</div>
+                        <div class="patient-details-info-value">@Patient.FullName</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="patient-details-info-box">
+                    <div class="patient-details-info-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+
+                    <div>
+                        <div class="patient-details-info-label">Email</div>
+                        <div class="patient-details-info-value">@Patient.Email</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="patient-details-info-box">
+                    <div class="patient-details-info-icon">
+                        <i class="bi bi-telephone"></i>
+                    </div>
+
+                    <div>
+                        <div class="patient-details-info-label">Phone Number</div>
+                        <div class="patient-details-info-value">@Patient.PhoneNumber</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="patient-details-info-box">
+                    <div class="patient-details-info-icon">
+                        <i class="bi bi-person-vcard"></i>
+                    </div>
+
+                    <div>
+                        <div class="patient-details-info-label">Gender</div>
+                        <div class="patient-details-info-value">@Patient.Gender</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="patient-details-info-box">
+                    <div class="patient-details-info-icon">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+
+                    <div>
+                        <div class="patient-details-info-label">Date of Birth</div>
+                        <div class="patient-details-info-value">
+                            @Patient.DateOfBirth.ToString("dd MMM yyyy")
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="patient-details-info-box">
+                    <div class="patient-details-info-icon">
+                        <i class="bi bi-card-checklist"></i>
+                    </div>
+
+                    <div>
+                        <div class="patient-details-info-label">Insurance ID</div>
+                        <div class="patient-details-info-value">
+                            @(string.IsNullOrWhiteSpace(Patient.InsuranceId)
+                                ? "Not provided"
+                                : Patient.InsuranceId)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-4 pt-4 border-top">
+            <NavLink href="/patients"
+                     class="btn btn-outline-secondary rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>
+                Back to Patients
+            </NavLink>
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private PatientDto? Patient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await PatientService.GetById(Id);
+
+        if (result.IsSuccess)
+        {
+            Patient = result.Data;
+        }
+        else
+        {
+            NotificationService.Error(result.Message);
+            if (result.Message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+                    || result.Message.Contains("login", StringComparison.OrdinalIgnoreCase))
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+    }
+}

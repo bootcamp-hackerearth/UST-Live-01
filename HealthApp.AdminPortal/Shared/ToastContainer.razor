@@ -1,0 +1,80 @@
+﻿@implements IDisposable
+
+@inject INotificationService NotificationService
+
+<div class="toast-wrapper">
+    @foreach (var toast in Toasts)
+    {
+        <div class="app-toast @GetToastClass(toast.Type)">
+            <div class="app-toast-icon">
+                <i class="@GetIcon(toast.Type)"></i>
+            </div>
+
+            <div class="app-toast-message">
+                @toast.Message
+            </div>
+
+            <button type="button"
+                    class="app-toast-close"
+                    @onclick="() => RemoveToast(toast)">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly List<ToastNotification> Toasts = new();
+
+    protected override void OnInitialized()
+    {
+        NotificationService.OnShow += ShowToast;
+    }
+
+    private async void ShowToast(ToastNotification toast)
+    {
+        Toasts.Add(toast);
+
+        await InvokeAsync(StateHasChanged);
+
+        await Task.Delay(3500);
+
+        Toasts.Remove(toast);
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void RemoveToast(ToastNotification toast)
+    {
+        Toasts.Remove(toast);
+    }
+
+    private string GetToastClass(ToastType type)
+    {
+        return type switch
+        {
+            ToastType.Success => "app-toast-success",
+            ToastType.Error => "app-toast-error",
+            ToastType.Warning => "app-toast-warning",
+            ToastType.Info => "app-toast-info",
+            _ => "app-toast-info"
+        };
+    }
+
+    private string GetIcon(ToastType type)
+    {
+        return type switch
+        {
+            ToastType.Success => "bi bi-check-circle-fill",
+            ToastType.Error => "bi bi-x-circle-fill",
+            ToastType.Warning => "bi bi-exclamation-triangle-fill",
+            ToastType.Info => "bi bi-info-circle-fill",
+            _ => "bi bi-info-circle-fill"
+        };
+    }
+
+    public void Dispose()
+    {
+        NotificationService.OnShow -= ShowToast;
+    }
+}

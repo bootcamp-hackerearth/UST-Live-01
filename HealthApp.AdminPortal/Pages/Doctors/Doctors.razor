@@ -1,0 +1,445 @@
+﻿@page "/doctors"
+@attribute [Authorize(Roles = "Admin")]
+
+@using HealthApp.Shared.Dtos
+@using HealthApp.Shared.Enums
+
+@inject IDoctorService DoctorService
+@inject INotificationService NotificationService
+@inject NavigationManager NavigationManager
+
+<PageTitle>Doctors - HealthApp Admin</PageTitle>
+
+<div class="page-header-box mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+        <div>
+            <h2 class="page-title mb-1">Doctors</h2>
+            <p class="text-muted mb-0">
+                Manage doctor profiles, specialisations, consultation fees, and availability.
+            </p>
+        </div>
+
+        <NavLink href="/doctors/add" class="btn btn-health rounded-pill px-4 doctor-add-btn">
+            <i class="bi bi-plus-circle me-2"></i>
+            Add Doctor
+        </NavLink>
+    </div>
+</div>
+
+<div class="filter-card mb-4">
+    <div class="row g-3 align-items-end">
+
+        <div class="col-lg-4 col-md-6">
+            <label class="form-label fw-semibold">Search</label>
+
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <i class="bi bi-search text-muted"></i>
+                </span>
+
+                <input class="form-control"
+                       placeholder="Search doctor by name or email"
+                       @bind="SearchText"
+                       @bind:event="oninput" />
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <label class="form-label fw-semibold">Specialisation</label>
+
+            <select class="form-select" @bind="SelectedSpecialisationValue">
+                <option value="">All Specialisations</option>
+
+                @foreach (var spec in Enum.GetValues<SpecialisationType>())
+                {
+                    <option value="@spec">@spec</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-lg-2 col-md-6">
+            <label class="form-label fw-semibold">Status</label>
+
+            <select class="form-select" @bind="SelectedActiveStatusValue">
+                <option value="">All Status</option>
+                <option value="true">Available</option>
+                <option value="false">Not Available</option>
+            </select>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+            <div class="d-flex gap-2">
+                <button type="button"
+                        class="btn btn-health rounded-pill px-4 flex-fill"
+                        @onclick="SearchDoctors">
+                    <i class="bi bi-search me-2"></i>
+                    Search
+                </button>
+
+                <button type="button"
+                        class="btn btn-outline-secondary rounded-pill px-4"
+                        title="Clear filters"
+                        @onclick="ClearFilters">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="table-card">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+        <div>
+            <h5 class="fw-bold mb-1">Doctor List</h5>
+            <p class="text-muted small mb-0">
+                Showing @FilteredDoctors.Count() doctor(s)
+            </p>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <LoadingView Message="Loading doctors..." />
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table align-middle custom-table doctors-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Specialisation</th>
+                        <th>Email</th>
+                        <th>Experience</th>
+                        <th>Fee</th>
+                        <th>Status</th>
+                        <th class="text-center" style="width: 150px;">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (!FilteredDoctors.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <div class="empty-state">
+                                    <i class="bi bi-person-x"></i>
+                                    <h6 class="fw-bold mt-3 mb-1">No doctors found</h6>
+                                    <p class="text-muted mb-0">Try changing your search or filters.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var doctor in FilteredDoctors)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="doctor-name-cell">
+                                        <div class="doctor-avatar">
+                                            <i class="bi bi-person-badge"></i>
+                                        </div>
+
+                                        <div>
+                                            <div class="fw-bold">@doctor.FullName</div>
+                                            <small class="text-muted">
+                                                ID: DOC-@doctor.DoctorId.ToString("000")
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">@doctor.Specialisation</div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">@doctor.DoctorEmail</div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        @doctor.YearsOfExperience years
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        ₹ @doctor.ConsultationFee.ToString("0.00")
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="doctor-status-badge @(doctor.IsActive ? "status-active" : "status-inactive")">
+                                        <i class="bi @(doctor.IsActive ? "bi-check-circle-fill" : "bi-clock-fill")"></i>
+                                        @(doctor.IsActive ? "Available" : "Not Available")
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+
+                                        <button type="button"
+                                                class="btn @(doctor.IsActive ? "btn-danger" : "btn-success") btn-sm action-btn"
+                                                title="@(doctor.IsActive ? "Mark as unavailable" : "Mark as available")"
+                                                @onclick="() => OpenStatusModal(doctor)">
+                                            <i class="bi @(doctor.IsActive ? "bi-clock-history" : "bi-check-circle")"></i>
+                                        </button>
+
+                                        <NavLink href="@($"/doctors/edit/{doctor.DoctorId}")"
+                                                 class="btn btn-warning btn-sm action-btn"
+                                                 title="Edit doctor">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </NavLink>
+
+                                        <NavLink href="@($"/doctors/{doctor.DoctorId}")"
+                                                 class="btn btn-info btn-sm action-btn"
+                                                 title="View doctor">
+                                            <i class="bi bi-eye"></i>
+                                        </NavLink>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    }
+
+</div>
+
+@if (showStatusConfirm && selectedDoctor != null)
+{
+    <div class="doctor-status-modal-backdrop">
+        <div class="doctor-status-confirm-modal">
+
+            <div class="doctor-status-confirm-icon @(selectedDoctor.IsActive ? "status-confirm-danger-icon" : "status-confirm-success-icon")">
+                <i class="bi @(selectedDoctor.IsActive ? "bi-clock-history" : "bi-check-circle-fill")"></i>
+            </div>
+
+            <h5 class="fw-bold mb-2">
+                @(selectedDoctor.IsActive ? "Mark Doctor Unavailable?" : "Mark Doctor Available?")
+            </h5>
+
+            <p class="text-muted mb-4">
+                Are you sure you want to change
+                <strong>@selectedDoctor.FullName</strong>'s status to
+                <strong>@(selectedDoctor.IsActive ? "Not Available" : "Available")</strong>?
+            </p>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+                <button type="button"
+                        class="btn btn-outline-secondary rounded-pill px-4"
+                        disabled="@isChangingStatus"
+                        @onclick="CloseStatusModal">
+                    <i class="bi bi-arrow-left me-2"></i>
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn @(selectedDoctor.IsActive ? "btn-danger" : "btn-success") rounded-pill px-4"
+                        disabled="@isChangingStatus"
+                        @onclick="ConfirmDoctorStatusChange">
+
+                    @if (isChangingStatus)
+                    {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                        <span>Updating...</span>
+                    }
+                    else
+                    {
+                        <i class="bi @(selectedDoctor.IsActive ? "bi-clock-history" : "bi-check-circle-fill") me-2"></i>
+                        <span>
+                            @(selectedDoctor.IsActive ? "Yes, Mark Unavailable" : "Yes, Mark Available")
+                        </span>
+                    }
+
+                </button>
+            </div>
+
+        </div>
+    </div>
+}
+
+@code {
+    private string SearchText { get; set; } = string.Empty;
+
+    private string SelectedSpecialisationValue { get; set; } = string.Empty;
+
+    private string SelectedActiveStatusValue { get; set; } = string.Empty;
+
+    private List<DoctorDto> doctors = new();
+
+    private bool isLoading = true;
+
+    private bool showStatusConfirm = false;
+
+    private bool isChangingStatus = false;
+
+    private DoctorDto? selectedDoctor;
+
+    private SpecialisationType? SelectedSpecialisation
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(SelectedSpecialisationValue))
+            {
+                return null;
+            }
+
+            return Enum.TryParse<SpecialisationType>(
+                SelectedSpecialisationValue,
+                true,
+                out var specialisation)
+                ? specialisation
+                : null;
+        }
+    }
+
+    private bool? SelectedActiveStatus
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(SelectedActiveStatusValue))
+            {
+                return null;
+            }
+
+            return bool.TryParse(SelectedActiveStatusValue, out var status)
+                ? status
+                : null;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDoctors();
+    }
+
+    private async Task LoadDoctors()
+    {
+        isLoading = true;
+
+        var result = await DoctorService.GetAll();
+
+        if (result.IsSuccess)
+        {
+            doctors = result.Data ?? new List<DoctorDto>();
+        }
+        else
+        {
+            doctors = new List<DoctorDto>();
+
+            NotificationService.Error(result.Message);
+
+            RedirectToLoginIfSessionExpired(result.Message);
+        }
+
+        isLoading = false;
+    }
+
+    private async Task SearchDoctors()
+    {
+        isLoading = true;
+
+        var result = await DoctorService.Search(
+            SearchText,
+            SelectedSpecialisation,
+            SelectedActiveStatus);
+
+        if (result.IsSuccess)
+        {
+            doctors = result.Data ?? new List<DoctorDto>();
+        }
+        else
+        {
+            doctors = new List<DoctorDto>();
+
+            NotificationService.Error(result.Message);
+
+            RedirectToLoginIfSessionExpired(result.Message);
+        }
+
+        isLoading = false;
+    }
+
+    private IEnumerable<DoctorDto> FilteredDoctors => doctors;
+
+    private async Task ClearFilters()
+    {
+        SearchText = string.Empty;
+        SelectedSpecialisationValue = string.Empty;
+        SelectedActiveStatusValue = string.Empty;
+
+        await LoadDoctors();
+    }
+
+    private void OpenStatusModal(DoctorDto doctor)
+    {
+        selectedDoctor = doctor;
+        showStatusConfirm = true;
+    }
+
+    private void CloseStatusModal()
+    {
+        if (isChangingStatus)
+        {
+            return;
+        }
+
+        selectedDoctor = null;
+        showStatusConfirm = false;
+    }
+
+    private async Task ConfirmDoctorStatusChange()
+    {
+        if (selectedDoctor == null)
+        {
+            return;
+        }
+
+        isChangingStatus = true;
+
+        var newStatus = !selectedDoctor.IsActive;
+
+        var result = await DoctorService.ChangeStatus(
+            selectedDoctor.DoctorId,
+            newStatus);
+
+        if (result.IsSuccess)
+        {
+            selectedDoctor.IsActive = newStatus;
+
+            NotificationService.Success(result.Message);
+        }
+        else
+        {
+            NotificationService.Error(result.Message);
+
+            RedirectToLoginIfSessionExpired(result.Message);
+        }
+
+        isChangingStatus = false;
+        showStatusConfirm = false;
+        selectedDoctor = null;
+    }
+
+    private void RedirectToLoginIfSessionExpired(string message)
+    {
+        if (
+            message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("please login", StringComparison.OrdinalIgnoreCase)
+            || message.Contains("login again", StringComparison.OrdinalIgnoreCase)
+        )
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

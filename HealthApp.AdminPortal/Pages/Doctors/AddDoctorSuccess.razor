@@ -1,0 +1,169 @@
+﻿@page "/doctors/success"
+@inject NavigationManager NavigationManager
+@inject INotificationService NotificationService
+@inject IJSRuntime JS
+@attribute [Authorize(Roles = "Admin")]
+
+<PageTitle>Doctor Created - HealthApp Admin</PageTitle>
+
+<div class="page-header-box mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
+        <div>
+            <h2 class="page-title mb-1">Doctor Created</h2>
+            <p class="text-muted mb-0">
+                New doctor profile has been created successfully.
+            </p>
+        </div>
+
+        <NavLink href="/doctors"
+                 class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to Doctors
+        </NavLink>
+    </div>
+</div>
+
+<div class="appointment-details-card admin-full-card">
+
+    <div class="appointment-details-header">
+        <div class="appointment-details-icon">
+            <i class="bi bi-check-circle-fill"></i>
+        </div>
+
+        <div>
+            <div class="details-info-label mb-1">Doctor Account Created</div>
+
+            <h4 class="fw-bold mb-2">
+                Doctor Created Successfully
+            </h4>
+
+            <span class="doctor-status-badge status-active">
+                <i class="bi bi-shield-check"></i>
+                Credentials Generated
+            </span>
+        </div>
+    </div>
+
+    <div class="restricted-alert mt-4">
+        <div class="restricted-alert-icon">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+
+        <div>
+            <div class="fw-bold">Important</div>
+            <div class="small fw-semibold">
+                Please save these credentials now. The temporary password will not be shown again.
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-2">
+
+        <div class="col-lg-6 col-md-6">
+            <div class="details-info-box">
+                <div class="details-info-icon">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+
+                <div>
+                    <div class="details-info-label">Doctor Name</div>
+                    <div class="details-info-value">
+                        @(string.IsNullOrWhiteSpace(Name) ? "Not available" : Name)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6">
+            <div class="details-info-box">
+                <div class="details-info-icon">
+                    <i class="bi bi-envelope"></i>
+                </div>
+
+                <div>
+                    <div class="details-info-label">Email</div>
+                    <div class="details-info-value">
+                        @(string.IsNullOrWhiteSpace(Email) ? "Not available" : Email)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="details-info-box reason-box">
+                <div class="details-info-icon">
+                    <i class="bi bi-key-fill"></i>
+                </div>
+
+                <div class="w-100">
+                    <div class="details-info-label">Temporary Password</div>
+
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                        <div class="details-info-value">
+                            @(string.IsNullOrWhiteSpace(Password) ? "Not available" : Password)
+                        </div>
+
+                        <button type="button"
+                                class="btn btn-outline-secondary rounded-pill px-4"
+                                @onclick="CopyPassword">
+                            <i class="bi bi-clipboard me-2"></i>
+                            Copy Password
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="mt-4 pt-4 border-top d-flex flex-column flex-sm-row gap-2">
+        <button type="button"
+                class="btn btn-health rounded-pill px-4"
+                @onclick="GoBack">
+            <i class="bi bi-arrow-left me-2"></i>
+            Back to Doctors
+        </button>
+
+        <NavLink href="/doctors/add"
+                 class="btn btn-outline-secondary rounded-pill px-4">
+            <i class="bi bi-plus-circle me-2"></i>
+            Add Another Doctor
+        </NavLink>
+    </div>
+
+</div>
+
+@code {
+    private string? Name;
+    private string? Email;
+    private string? Password;
+    private string? CopyMessage;
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        Name = query["name"];
+        Email = query["email"];
+        Password = query["password"];
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/doctors");
+    }
+
+    private async Task CopyPassword()
+    {
+        if (string.IsNullOrWhiteSpace(Password))
+        {
+            NotificationService.Warning("No password available to copy.");
+            return;
+        }
+
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", Password);
+
+        NotificationService.Success("Password copied. Please store it securely.");
+    }
+}
