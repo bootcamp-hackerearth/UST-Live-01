@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using HealthApp.Shared.DTOs
 @using HealthApp.Shared.Enums
+@using System.Net
 @inject AdminApiService AdminApi
 
 <PageTitle>Patient Management</PageTitle>
@@ -12,7 +13,6 @@
         <div>
             <span class="patient-kicker">Admin Module</span>
             <h1>Patient Management</h1>
-            <p>View patient details, search records, and filter by gender or insurance status.</p>
         </div>
     </section>
 
@@ -75,15 +75,24 @@
     }
     else if (!string.IsNullOrWhiteSpace(errorMessage))
     {
-        <div class="alert alert-error">@errorMessage</div>
+        <div class="admin-message-card error">
+            <div>
+                <strong>Action Failed</strong>
+                <span>@errorMessage</span>
+            </div>
+        </div>
     }
     else
     {
         <section class="patient-table-card">
-            <div class="patient-table-header">
+            <div class="patient-table-header patient-table-header-paged">
                 <div>
                     <h2>Patients</h2>
-                    <p>@patients.Count record(s) found</p>
+                    <p>@totalCount total record(s), showing @patients.Count on this page</p>
+                </div>
+
+                <div class="patient-page-size-pill">
+                    5 per page
                 </div>
             </div>
 
@@ -153,6 +162,25 @@
                         }
                     </tbody>
                 </table>
+            </div>
+
+            <div class="patient-pagination-bar">
+                <button class="patient-pagination-button"
+                        disabled="@(!hasPreviousPage || isLoading)"
+                        @onclick="PreviousPage">
+                    Previous
+                </button>
+
+                <div class="patient-pagination-info">
+                    <strong>Page @pageNumber of @SafeTotalPages</strong>
+                    <span>@totalCount total records</span>
+                </div>
+
+                <button class="patient-pagination-button"
+                        disabled="@(!hasNextPage || isLoading)"
+                        @onclick="NextPage">
+                    Next
+                </button>
             </div>
         </section>
     }
@@ -233,6 +261,15 @@
     private string? message;
     private bool isError;
 
+    private int pageNumber = 1;
+    private const int PageSize = 5;
+    private int totalCount;
+    private int totalPages;
+    private bool hasPreviousPage;
+    private bool hasNextPage;
+
+    private int SafeTotalPages => totalPages < 1 ? 1 : totalPages;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadPatientsAsync();
@@ -240,6 +277,7 @@
 
     private async Task SearchPatients()
     {
+        pageNumber = 1;
         await LoadPatientsAsync();
     }
 
@@ -256,6 +294,7 @@
             selectedGender = gender;
         }
 
+        pageNumber = 1;
         await LoadPatientsAsync();
     }
 
@@ -270,6 +309,7 @@
             _ => null
         };
 
+        pageNumber = 1;
         await LoadPatientsAsync();
     }
 
@@ -282,10 +322,23 @@
             message = null;
             isError = false;
 
-            patients = await AdminApi.GetPatientsAsync(
+            var result = await AdminApi.GetPatientsAsync(
                 searchText,
                 selectedGender,
-                hasInsurance);
+                hasInsurance,
+                pageNumber,
+                PageSize);
+
+            patients = result.Items;
+            pageNumber = result.PageNumber;
+            totalCount = result.TotalCount;
+            totalPages = result.TotalPages;
+            hasPreviousPage = result.HasPreviousPage;
+            hasNextPage = result.HasNextPage;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            errorMessage = "Session expired. Please login again.";
         }
         catch
         {
@@ -295,6 +348,28 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (!hasPreviousPage)
+        {
+            return;
+        }
+
+        pageNumber--;
+        await LoadPatientsAsync();
+    }
+
+    private async Task NextPage()
+    {
+        if (!hasNextPage)
+        {
+            return;
+        }
+
+        pageNumber++;
+        await LoadPatientsAsync();
     }
 
     private void ViewPatient(PatientDto patient)

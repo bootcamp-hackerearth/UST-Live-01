@@ -2,6 +2,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using HealthApp.Shared.DTOs
+@using System.Net
 @inject AdminApiService AdminApi
 
 <PageTitle>Admin Dashboard</PageTitle>
@@ -41,8 +42,11 @@
     }
     else if (!string.IsNullOrWhiteSpace(errorMessage))
     {
-        <div class="alert alert-error">
-            @errorMessage
+        <div class="admin-message-card error">
+            <div>
+                <strong>Action Failed</strong>
+                <span>@errorMessage</span>
+            </div>
         </div>
     }
     else
@@ -50,7 +54,7 @@
         <section class="metric-strip">
             <div class="metric-card metric-doctors">
                 <span>Total Doctors</span>
-                <strong>@doctors.Count</strong>
+                <strong>@totalDoctorsCount</strong>
             </div>
 
             <div class="metric-card metric-active">
@@ -60,7 +64,7 @@
 
             <div class="metric-card metric-patients">
                 <span>Total Patients</span>
-                <strong>@patients.Count</strong>
+                <strong>@totalPatientsCount</strong>
             </div>
 
             <div class="metric-card metric-appointments">
@@ -148,7 +152,8 @@
 
 @code {
     private List<DoctorDto> doctors = new();
-    private List<PatientDto> patients = new();
+    private int totalDoctorsCount;
+    private int totalPatientsCount;
     private List<AppointmentReportDto> reports = new();
 
     private bool isLoading = true;
@@ -164,9 +169,28 @@
     {
         try
         {
-            doctors = await AdminApi.GetDoctorsAsync();
-            patients = await AdminApi.GetPatientsAsync();
-            reports = await AdminApi.GetAppointmentReportsAsync();
+            var doctorResult = await AdminApi.GetDoctorsAsync(
+                        pageNumber: 1,
+                        pageSize: 50);
+
+            doctors = doctorResult.Items;
+            totalDoctorsCount = doctorResult.TotalCount;
+
+            var patientResult = await AdminApi.GetPatientsAsync(
+                pageNumber: 1,
+                pageSize: 5);
+
+            totalPatientsCount = patientResult.TotalCount;
+            
+            var reportResult = await AdminApi.GetAppointmentReportsAsync(
+                pageNumber: 1,
+                pageSize: 50);
+
+            reports = reportResult.Items;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            errorMessage = "Session expired. Please login again.";
         }
         catch
         {

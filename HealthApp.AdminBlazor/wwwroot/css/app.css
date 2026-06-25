@@ -2811,3 +2811,1109 @@ a {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* ==================================================
+   PREMIUM INITIAL APP LOADING SCREEN
+   Append this to the bottom of app.css
+================================================== */
+
+.initial-loading-page {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    background: radial-gradient(circle at 18% 18%, rgba(59, 130, 246, 0.28), transparent 30%), radial-gradient(circle at 85% 80%, rgba(124, 58, 237, 0.22), transparent 32%), linear-gradient(135deg, #0f172a 0%, #172554 48%, #111827 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+    .initial-loading-page::before,
+    .initial-loading-page::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(26px);
+    }
+
+    .initial-loading-page::before {
+        width: 520px;
+        height: 520px;
+        background: rgba(37, 99, 235, 0.16);
+        top: -190px;
+        left: -160px;
+    }
+
+    .initial-loading-page::after {
+        width: 480px;
+        height: 480px;
+        background: rgba(20, 184, 166, 0.14);
+        right: -170px;
+        bottom: -170px;
+    }
+
+.initial-loading-card {
+    width: min(420px, 100%);
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 30px;
+    padding: 34px 32px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    box-shadow: 0 34px 90px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.initial-loading-logo {
+    width: 78px;
+    height: 78px;
+    margin: 0 auto 22px;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #2563eb, #14b8a6, #22c55e);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    font-weight: 950;
+    box-shadow: 0 18px 34px rgba(37, 99, 235, 0.35);
+}
+
+.initial-loading-card h1 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 30px;
+    font-weight: 950;
+    letter-spacing: -0.04em;
+}
+
+.initial-loading-card p {
+    margin: 10px 0 22px;
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.initial-loading-spinner {
+    width: 46px;
+    height: 46px;
+    margin: 0 auto 20px;
+    border-radius: 999px;
+    border: 5px solid #e0e7ff;
+    border-top-color: #2563eb;
+    animation: initial-loading-spin 0.85s linear infinite;
+}
+
+.initial-loading-progress {
+    height: 9px;
+    width: 100%;
+    border-radius: 999px;
+    background: #e5e7eb;
+    overflow: hidden;
+}
+
+.initial-loading-progress-bar {
+    height: 100%;
+    width: 45%;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed, #14b8a6);
+    animation: initial-loading-progress 1.35s ease-in-out infinite;
+}
+
+.initial-loading-caption {
+    display: block;
+    margin-top: 14px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+@keyframes initial-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes initial-loading-progress {
+    0% {
+        transform: translateX(-120%);
+        width: 42%;
+    }
+
+    50% {
+        width: 58%;
+    }
+
+    100% {
+        transform: translateX(245%);
+        width: 42%;
+    }
+}
+
+@media (max-width: 576px) {
+    .initial-loading-card {
+        padding: 30px 24px;
+        border-radius: 26px;
+    }
+
+        .initial-loading-card h1 {
+            font-size: 26px;
+        }
+
+    .initial-loading-logo {
+        width: 68px;
+        height: 68px;
+        font-size: 31px;
+    }
+}
+/* ==================================================
+   STATIC SIDEBAR + GLASS TOPBAR FIX
+   Add this file after css/app.css in wwwroot/index.html
+================================================== */
+
+html,
+body,
+#app {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background: #f4f7fb;
+}
+
+.app-shell {
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 285px minmax(0, 1fr);
+    background: #f4f7fb;
+    overflow: hidden;
+}
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 285px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 80;
+}
+
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background: rgba(148, 163, 184, 0.28);
+        border-radius: 999px;
+    }
+
+.main-area {
+    min-width: 0;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 84px minmax(0, 1fr);
+    overflow: hidden;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 70;
+    min-height: 84px;
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.72);
+    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+}
+
+    .topbar::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.12)), radial-gradient(circle at 85% 20%, rgba(37, 99, 235, 0.08), transparent 30%);
+        z-index: -1;
+    }
+
+.main-content {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 32px;
+    scroll-behavior: smooth;
+}
+
+    .main-content::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .main-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .main-content::-webkit-scrollbar-thumb {
+        background: rgba(100, 116, 139, 0.28);
+        border-radius: 999px;
+        border: 2px solid #f4f7fb;
+    }
+
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.42);
+        }
+
+/* Keep modal overlays above static topbar/sidebar */
+.doctor-modal-backdrop,
+.patient-modal-backdrop,
+.login-loading-backdrop {
+    z-index: 9999;
+}
+
+/* Responsive: keep natural page scroll on small screens */
+@media (max-width: 900px) {
+    html,
+    body,
+    #app {
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    .app-shell {
+        height: auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .main-area {
+        height: auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+    }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+        min-height: auto;
+    }
+
+    .main-content {
+        height: auto;
+        overflow: visible;
+        padding: 22px;
+    }
+}
+/* ==================================================
+   STRONG GLASS TOPBAR OVERRIDE
+   Makes content scroll under topbar so blur is visible
+================================================== */
+
+.main-area {
+    position: relative !important;
+    height: 100vh !important;
+    display: block !important;
+    overflow: hidden !important;
+    min-width: 0 !important;
+}
+
+.topbar {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 120 !important;
+    min-height: 84px !important;
+    background: rgba(255, 255, 255, 0.58) !important;
+    backdrop-filter: blur(24px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.55) !important;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.55) !important;
+}
+
+    .topbar::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.50), rgba(255, 255, 255, 0.14)), radial-gradient(circle at 82% 20%, rgba(37, 99, 235, 0.12), transparent 34%);
+    }
+
+.main-content {
+    height: 100vh !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    /* Top padding creates space initially, then content scrolls behind topbar */
+    padding: 116px 32px 32px !important;
+    scroll-behavior: smooth;
+}
+
+/* Keep topbar profile readable on glass background */
+.admin-profile-card {
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(16px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+}
+
+/* Mobile safety */
+@media (max-width: 900px) {
+    .main-area {
+        height: auto !important;
+        overflow: visible !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .topbar {
+        position: sticky !important;
+        top: 0 !important;
+    }
+
+    .main-content {
+        height: auto !important;
+        overflow: visible !important;
+        padding: 22px !important;
+    }
+}
+
+/* ==================================================
+   COLLAPSIBLE SIDEBAR - OVERLAY FINAL VERSION
+   Main page never moves. Expanded sidebar overlays page.
+================================================== */
+
+/* Always reserve only collapsed sidebar width */
+.app-shell,
+.app-shell.sidebar-collapsed {
+    display: grid !important;
+    grid-template-columns: 92px minmax(0, 1fr) !important;
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
+/* Main page always stays in same place */
+.main-area {
+    grid-column: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+}
+
+/* Sidebar base */
+.sidebar {
+    z-index: 180 !important;
+    transition: width 0.22s ease, padding 0.22s ease, box-shadow 0.22s ease !important;
+}
+
+    /* ==================================================
+   COLLAPSED SIDEBAR
+================================================== */
+
+    .sidebar.collapsed {
+        position: sticky !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 92px !important;
+        height: 100vh !important;
+        padding: 26px 14px !important;
+        align-items: center !important;
+        box-shadow: 18px 0 40px rgba(15, 23, 42, 0.16) !important;
+    }
+
+        /* Collapsed brand stack */
+        .sidebar.collapsed .brand-row {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 14px !important;
+            margin-bottom: 24px !important;
+        }
+
+        /* Hide texts in collapsed mode */
+        .sidebar.collapsed .brand-text,
+        .sidebar.collapsed .nav-text {
+            display: none !important;
+        }
+
+        /* Collapsed logo */
+        .sidebar.collapsed .brand-logo {
+            width: 56px !important;
+            height: 56px !important;
+            margin: 0 !important;
+        }
+
+        /* Collapsed nav */
+        .sidebar.collapsed .nav-list {
+            width: 100% !important;
+            display: grid !important;
+            justify-items: center !important;
+            gap: 10px !important;
+            margin-top: 0 !important;
+        }
+
+            /* Collapsed nav item */
+            .sidebar.collapsed .nav-list a {
+                width: 58px !important;
+                height: 58px !important;
+                padding: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0 !important;
+                border-radius: 18px !important;
+            }
+
+        /* Collapsed icon */
+        .sidebar.collapsed .nav-icon {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 13px !important;
+            display: grid !important;
+            place-items: center !important;
+        }
+
+            .sidebar.collapsed .nav-icon svg {
+                width: 19px !important;
+                height: 19px !important;
+            }
+
+        /* Collapsed active item */
+        .sidebar.collapsed .nav-list a.active {
+            width: 58px !important;
+            height: 58px !important;
+            background: linear-gradient(135deg, #2563eb, #7c3aed) !important;
+            box-shadow: 0 14px 30px rgba(37, 99, 235, 0.28) !important;
+        }
+
+    /* ==================================================
+   EXPANDED SIDEBAR AS OVERLAY
+================================================== */
+
+    .sidebar:not(.collapsed) {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 285px !important;
+        height: 100vh !important;
+        padding: 26px 22px !important;
+        align-items: stretch !important;
+        box-shadow: 24px 0 55px rgba(15, 23, 42, 0.30) !important;
+    }
+
+        /* Expanded brand row */
+        .sidebar:not(.collapsed) .brand-row {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 14px !important;
+            margin-bottom: 0 !important;
+        }
+
+        /* Show texts in expanded mode */
+        .sidebar:not(.collapsed) .brand-text,
+        .sidebar:not(.collapsed) .nav-text {
+            display: block !important;
+            opacity: 1 !important;
+            width: auto !important;
+            transform: none !important;
+        }
+
+        /* Expanded nav */
+        .sidebar:not(.collapsed) .nav-list {
+            width: 100% !important;
+            display: grid !important;
+            justify-items: stretch !important;
+            gap: 10px !important;
+            margin-top: 0 !important;
+        }
+
+            /* Expanded nav item */
+            .sidebar:not(.collapsed) .nav-list a {
+                width: auto !important;
+                height: auto !important;
+                padding: 13px 14px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                gap: 12px !important;
+                border-radius: 14px !important;
+            }
+
+/* ==================================================
+   TOGGLE BUTTON
+================================================== */
+
+.sidebar-toggle-button {
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 14px !important;
+    border: 1px solid rgba(148, 163, 184, 0.28) !important;
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: #ffffff !important;
+    display: grid !important;
+    place-items: center !important;
+    font-size: 24px !important;
+    font-weight: 950 !important;
+    line-height: 1 !important;
+    box-shadow: none !important;
+    transition: 0.18s ease !important;
+}
+
+    .sidebar-toggle-button:hover {
+        background: rgba(255, 255, 255, 0.14) !important;
+        border-color: rgba(191, 219, 254, 0.42) !important;
+        color: #ffffff !important;
+        transform: translateY(-1px) !important;
+    }
+
+/* Expanded toggle beside title */
+.sidebar:not(.collapsed) .sidebar-toggle-button {
+    margin-left: auto !important;
+}
+
+/* Collapsed toggle below logo */
+.sidebar.collapsed .sidebar-toggle-button {
+    margin: 0 !important;
+}
+
+/* ==================================================
+   CLICK OUTSIDE TO COLLAPSE
+================================================== */
+
+.sidebar-click-away {
+    position: fixed !important;
+    top: 0 !important;
+    left: 285px !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 150 !important;
+    background: transparent !important;
+}
+
+/* Sidebar above click-away */
+.sidebar {
+    z-index: 180 !important;
+}
+
+/* Topbar below expanded sidebar but above content */
+.topbar {
+    z-index: 120 !important;
+}
+
+/* ==================================================
+   MOBILE SAFETY
+================================================== */
+
+@media (max-width: 900px) {
+    .app-shell,
+    .app-shell.sidebar-collapsed {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .main-area {
+        grid-column: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .sidebar,
+    .sidebar.collapsed,
+    .sidebar:not(.collapsed) {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        padding: 26px 22px !important;
+        align-items: stretch !important;
+        box-shadow: 18px 0 40px rgba(15, 23, 42, 0.16) !important;
+    }
+
+        .sidebar.collapsed .brand-row,
+        .sidebar:not(.collapsed) .brand-row {
+            flex-direction: row !important;
+            justify-content: flex-start !important;
+            margin-bottom: 0 !important;
+        }
+
+        .sidebar.collapsed .brand-text,
+        .sidebar.collapsed .nav-text,
+        .sidebar:not(.collapsed) .brand-text,
+        .sidebar:not(.collapsed) .nav-text {
+            display: inline !important;
+            opacity: 1 !important;
+            width: auto !important;
+            transform: none !important;
+        }
+
+        .sidebar.collapsed .sidebar-toggle-button,
+        .sidebar:not(.collapsed) .sidebar-toggle-button {
+            margin-left: auto !important;
+        }
+
+        .sidebar.collapsed .nav-list,
+        .sidebar:not(.collapsed) .nav-list {
+            justify-items: stretch !important;
+            gap: 10px !important;
+        }
+
+            .sidebar.collapsed .nav-list a,
+            .sidebar:not(.collapsed) .nav-list a {
+                width: auto !important;
+                height: auto !important;
+                padding: 13px 14px !important;
+                justify-content: flex-start !important;
+                gap: 12px !important;
+            }
+
+    .sidebar-click-away {
+        display: none !important;
+    }
+}
+
+
+/* ==================================================
+   PATIENT PAGINATION UI
+================================================== */
+
+.patient-table-header-paged {
+    align-items: center;
+    gap: 14px;
+}
+
+.patient-page-size-pill {
+    background: #eef2ff;
+    color: #3730a3;
+    border: 1px solid #c7d2fe;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.patient-pagination-bar {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.patient-pagination-info {
+    min-width: 155px;
+    text-align: center;
+    display: grid;
+    gap: 2px;
+}
+
+    .patient-pagination-info strong {
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 950;
+    }
+
+    .patient-pagination-info span {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+.patient-pagination-button {
+    border: 1px solid #c7d2fe;
+    border-radius: 14px;
+    padding: 10px 15px;
+    background: #ffffff;
+    color: #3730a3;
+    font-size: 13px;
+    font-weight: 950;
+    transition: 0.18s ease;
+}
+
+    .patient-pagination-button:hover:not(:disabled) {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #ffffff;
+        border-color: transparent;
+        transform: translateY(-1px);
+    }
+
+    .patient-pagination-button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+@media (max-width: 700px) {
+    .patient-pagination-bar {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .patient-page-size-pill {
+        width: fit-content;
+    }
+}
+/* ==================================================
+   DOCTOR PAGINATION UI
+================================================== */
+
+.doctor-table-header-paged {
+    align-items: center;
+    gap: 14px;
+}
+
+.doctor-page-size-pill {
+    background: #eef2ff;
+    color: #3730a3;
+    border: 1px solid #c7d2fe;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.doctor-pagination-bar {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.doctor-pagination-info {
+    min-width: 155px;
+    text-align: center;
+    display: grid;
+    gap: 2px;
+}
+
+    .doctor-pagination-info strong {
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 950;
+    }
+
+    .doctor-pagination-info span {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+.doctor-pagination-button {
+    border: 1px solid #c7d2fe;
+    border-radius: 14px;
+    padding: 10px 15px;
+    background: #ffffff;
+    color: #3730a3;
+    font-size: 13px;
+    font-weight: 950;
+    transition: 0.18s ease;
+}
+
+    .doctor-pagination-button:hover:not(:disabled) {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #ffffff;
+        border-color: transparent;
+        transform: translateY(-1px);
+    }
+
+    .doctor-pagination-button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+@media (max-width: 700px) {
+    .doctor-pagination-bar {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .doctor-page-size-pill {
+        width: fit-content;
+    }
+}
+/* ==================================================
+   APPOINTMENT REPORT PAGINATION UI
+================================================== */
+
+.report-table-header-paged {
+    align-items: center;
+    gap: 14px;
+}
+
+.report-page-size-pill {
+    background: #f5f3ff;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.report-pagination-bar {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.report-pagination-info {
+    min-width: 175px;
+    text-align: center;
+    display: grid;
+    gap: 2px;
+}
+
+    .report-pagination-info strong {
+        color: #0f172a;
+        font-size: 14px;
+        font-weight: 950;
+    }
+
+    .report-pagination-info span {
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+.report-pagination-button {
+    border: 1px solid #ddd6fe;
+    border-radius: 14px;
+    padding: 10px 15px;
+    background: #ffffff;
+    color: #6d28d9;
+    font-size: 13px;
+    font-weight: 950;
+    transition: 0.18s ease;
+}
+
+    .report-pagination-button:hover:not(:disabled) {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: #ffffff;
+        border-color: transparent;
+        transform: translateY(-1px);
+    }
+
+    .report-pagination-button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+@media (max-width: 700px) {
+    .report-pagination-bar {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .report-page-size-pill {
+        width: fit-content;
+    }
+}
+/* ==================================================
+   LOGOUT CONFIRMATION MODAL
+================================================== */
+
+.logout-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 9999;
+}
+
+.logout-confirm-modal {
+    width: min(520px, 100%);
+    background: #ffffff;
+    border-radius: 30px;
+    padding: 28px;
+    box-shadow: 0 34px 90px rgba(0, 0, 0, 0.38);
+    border: 1px solid rgba(255, 255, 255, 0.72);
+}
+
+.logout-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+    .logout-modal-header span {
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .logout-modal-header h2 {
+        margin: 6px 0 0;
+        color: #0f172a;
+        font-size: 30px;
+        font-weight: 950;
+        letter-spacing: -0.03em;
+    }
+
+.logout-modal-x {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+    border: 1px solid #fecaca;
+    background: #ffffff;
+    color: #dc2626;
+    font-size: 24px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+    .logout-modal-x:hover,
+    .logout-close-outline:hover {
+        background: #dc2626;
+        color: #ffffff;
+        border-color: #dc2626;
+    }
+
+.logout-confirm-text {
+    margin: 0;
+    color: #475569;
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.6;
+}
+
+    .logout-confirm-text strong {
+        color: #0f172a;
+        font-weight: 950;
+    }
+
+.logout-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 26px;
+}
+
+.logout-close-outline {
+    border: 1px solid #dc2626;
+    color: #dc2626;
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 11px 18px;
+    font-weight: 950;
+    transition: 0.18s ease;
+}
+
+.logout-confirm-button {
+    border: 0;
+    color: #ffffff;
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    border-radius: 15px;
+    padding: 11px 20px;
+    font-weight: 950;
+    box-shadow: 0 14px 28px rgba(220, 38, 38, 0.24);
+    transition: 0.18s ease;
+}
+
+    .logout-confirm-button:hover {
+        color: #ffffff;
+        transform: translateY(-1px);
+        background: linear-gradient(135deg, #b91c1c, #dc2626);
+    }
+
+@media (max-width: 576px) {
+    .logout-confirm-modal {
+        padding: 24px;
+        border-radius: 26px;
+    }
+
+    .logout-modal-actions {
+        flex-direction: column;
+    }
+
+    .logout-close-outline,
+    .logout-confirm-button {
+        width: 100%;
+    }
+}
+/* ==================================================
+   COMMON ADMIN MESSAGE CARD
+   Use this instead of plain alert boxes
+================================================== */
+
+.admin-message-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    padding: 22px 24px;
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
+}
+
+    .admin-message-card.error {
+        border-left: 7px solid #dc2626;
+    }
+
+    .admin-message-card.success {
+        border-left: 7px solid #16a34a;
+    }
+
+    .admin-message-card strong {
+        display: block;
+        color: #64748b;
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .admin-message-card span {
+        display: block;
+        margin-top: 7px;
+        color: #0f172a;
+        font-size: 18px;
+        font-weight: 950;
+    }

@@ -6,28 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HealthApp.AdminBlazor</title>
     <base href="/" />
-
     <link rel="preload" id="webassembly" />
-
     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="HealthApp.AdminBlazor.styles.css" rel="stylesheet" />
-
     <script type="importmap"></script>
 </head>
 
 <body>
     <div id="app">
-        <div class="app-loading-screen">
-            <div class="app-loading-logo">H</div>
+        <div class="initial-loading-page">
+            <div class="initial-loading-card">
+                <div class="initial-loading-logo">H</div>
 
-            <div class="app-loading-content">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
+                <h1>HealthApp Admin</h1>
+                <p>Preparing your admin console...</p>
+
+                <div class="initial-loading-spinner" aria-hidden="true"></div>
+
+                <div class="initial-loading-progress">
+                    <div class="initial-loading-progress-bar"></div>
                 </div>
 
-                <p>Loading HealthApp Admin Console...</p>
+                <span class="initial-loading-caption">Loading application resources</span>
             </div>
         </div>
     </div>

@@ -5,7 +5,8 @@ namespace HealthApp.API.Service.Interface;
 
 public interface IAdminService
 {
-    Task<List<DoctorDto>> GetDoctorsAsync();
+    Task<PagedResultDto<DoctorDto>> GetDoctorsAsync(
+            PaginationQueryDto? pagination = null);
 
     Task<CreateDoctorResponseDto> CreateDoctorAsync(CreateDoctorDto dto);
 
@@ -13,12 +14,14 @@ public interface IAdminService
         int doctorId,
         UpdateDoctorDto dto);
 
-    Task<List<AppointmentReportDto>> GetAppointmentReportsAsync();
-
+    Task<PagedResultDto<AppointmentReportDto>> GetAppointmentReportsAsync(
+        PaginationQueryDto? pagination = null);
+   
     Task<List<UserDto>> GetUsersAsync(string? role = null);
 
-    Task<List<PatientDto>> GetPatientsAsync(
+    Task<PagedResultDto<PatientDto>> GetPatientsAsync(
         string? search = null,
         GenderType? gender = null,
-        bool? hasInsurance = null);
+        bool? hasInsurance = null,
+        PaginationQueryDto? pagination = null);
 }

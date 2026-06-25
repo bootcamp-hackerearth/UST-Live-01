@@ -6,10 +6,20 @@ namespace HealthApp.AdminBlazor.Services;
 
 public class AdminApiService(HttpClient httpClient)
 {
-    public async Task<List<DoctorDto>> GetDoctorsAsync()
+    public async Task<PagedResultDto<DoctorDto>> GetDoctorsAsync(
+        int pageNumber = 1,
+        int pageSize = 5)
     {
-        return await httpClient.GetFromJsonAsync<List<DoctorDto>>("api/admin/doctors")
-            ?? new List<DoctorDto>();
+        var url = $"api/admin/doctors?pageNumber={pageNumber}&pageSize={pageSize}";
+
+        return await httpClient.GetFromJsonAsync<PagedResultDto<DoctorDto>>(url)
+            ?? new PagedResultDto<DoctorDto>
+            {
+                Items = new List<DoctorDto>(),
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = 0
+            };
     }
 
     public async Task<CreateDoctorResponseDto?> CreateDoctorAsync(CreateDoctorDto dto)
@@ -56,19 +66,34 @@ public class AdminApiService(HttpClient httpClient)
             ?? new List<AppointmentDto>();
     }
 
-    public async Task<List<AppointmentReportDto>> GetAppointmentReportsAsync()
+    public async Task<PagedResultDto<AppointmentReportDto>> GetAppointmentReportsAsync(
+        int pageNumber = 1,
+        int pageSize = 5)
     {
-        return await httpClient.GetFromJsonAsync<List<AppointmentReportDto>>(
-                "api/admin/reports/appointments")
-            ?? new List<AppointmentReportDto>();
+        var url = $"api/admin/reports/appointments?pageNumber={pageNumber}&pageSize={pageSize}";
+
+        return await httpClient.GetFromJsonAsync<PagedResultDto<AppointmentReportDto>>(url)
+            ?? new PagedResultDto<AppointmentReportDto>
+            {
+                Items = new List<AppointmentReportDto>(),
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = 0
+            };
     }
 
-    public async Task<List<PatientDto>> GetPatientsAsync(
+    public async Task<PagedResultDto<PatientDto>> GetPatientsAsync(
         string? search = null,
         GenderType? gender = null,
-        bool? hasInsurance = null)
+        bool? hasInsurance = null,
+        int pageNumber = 1,
+        int pageSize = 5)
     {
-        var queryParams = new List<string>();
+        var queryParams = new List<string>
+        {
+            $"pageNumber={pageNumber}",
+            $"pageSize={pageSize}"
+        };
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -85,11 +110,15 @@ public class AdminApiService(HttpClient httpClient)
             queryParams.Add($"hasInsurance={hasInsurance.Value.ToString().ToLower()}");
         }
 
-        var url = queryParams.Count == 0
-            ? "api/admin/patients"
-            : $"api/admin/patients?{string.Join("&", queryParams)}";
+        var url = $"api/admin/patients?{string.Join("&", queryParams)}";
 
-        return await httpClient.GetFromJsonAsync<List<PatientDto>>(url)
-            ?? new List<PatientDto>();
+        return await httpClient.GetFromJsonAsync<PagedResultDto<PatientDto>>(url)
+            ?? new PagedResultDto<PatientDto>
+            {
+                Items = new List<PatientDto>(),
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = 0
+            };
     }
 }

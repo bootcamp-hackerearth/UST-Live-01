@@ -20,8 +20,23 @@ public class AdminService(
     UserManager<ApplicationUser> userManager,
     IMapper mapper) : IAdminService
 {
-    public async Task<List<DoctorDto>> GetDoctorsAsync()
-        => mapper.Map<List<DoctorDto>>(await doctorRepository.GetAllAsync());
+    public async Task<PagedResultDto<DoctorDto>> GetDoctorsAsync(
+     PaginationQueryDto? pagination = null)
+    {
+        pagination ??= new PaginationQueryDto();
+
+        var result = await doctorRepository.GetPagedAsync(
+            pagination.PageNumber,
+            pagination.PageSize);
+
+        return new PagedResultDto<DoctorDto>
+        {
+            Items = mapper.Map<List<DoctorDto>>(result.Items),
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize,
+            TotalCount = result.TotalCount
+        };
+    }
 
     public async Task<CreateDoctorResponseDto> CreateDoctorAsync(CreateDoctorDto dto)
     {
@@ -159,13 +174,16 @@ public class AdminService(
         return mapper.Map<DoctorDto>(updated);
     }
 
-    public async Task<List<AppointmentReportDto>> GetAppointmentReportsAsync()
+    public async Task<PagedResultDto<AppointmentReportDto>> GetAppointmentReportsAsync(
+    PaginationQueryDto? pagination = null)
     {
+        pagination ??= new PaginationQueryDto();
+
         var all = await appointmentRepository.GetAllAsync();
 
-        return all
+        var reports = all
             .GroupBy(a => a.ScheduledDate.Date)
-            .OrderBy(g => g.Key)
+            .OrderByDescending(g => g.Key)
             .Select(g => new AppointmentReportDto
             {
                 Date = g.Key,
@@ -175,6 +193,21 @@ public class AdminService(
                 Completed = g.Count(a => a.Status == AppointmentStatus.Completed.ToString())
             })
             .ToList();
+
+        var totalCount = reports.Count;
+
+        var items = reports
+            .Skip((pagination.PageNumber - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToList();
+
+        return new PagedResultDto<AppointmentReportDto>
+        {
+            Items = items,
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize,
+            TotalCount = totalCount
+        };
     }
 
     private static int CalculateExperience(DateTime start)
@@ -304,10 +337,11 @@ public class AdminService(
         return result;
     }
 
-    public async Task<List<PatientDto>> GetPatientsAsync(
+    public async Task<PagedResultDto<PatientDto>> GetPatientsAsync(
     string? search = null,
     GenderType? gender = null,
-    bool? hasInsurance = null)
+    bool? hasInsurance = null,
+    PaginationQueryDto? pagination = null)
     {
         if (gender.HasValue &&
             !Enum.IsDefined(typeof(GenderType), gender.Value))
@@ -315,11 +349,21 @@ public class AdminService(
             throw new BusinessRuleException("Invalid gender filter.");
         }
 
-        var patients = await patientRepository.GetFilteredAsync(
+        pagination ??= new PaginationQueryDto();
+
+        var result = await patientRepository.GetFilteredPagedAsync(
             search,
             gender,
-            hasInsurance);
+            hasInsurance,
+            pagination.PageNumber,
+            pagination.PageSize);
 
-        return mapper.Map<List<PatientDto>>(patients);
+        return new PagedResultDto<PatientDto>
+        {
+            Items = mapper.Map<List<PatientDto>>(result.Items),
+            PageNumber = pagination.PageNumber,
+            PageSize = pagination.PageSize,
+            TotalCount = result.TotalCount
+        };
     }
 }

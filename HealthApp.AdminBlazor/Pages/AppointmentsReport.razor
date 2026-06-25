@@ -2,6 +2,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using HealthApp.Shared.DTOs
+@using System.Net
 @inject AdminApiService AdminApi
 @inject NavigationManager Navigation
 
@@ -12,7 +13,6 @@
         <div>
             <span class="report-kicker">Admin Report</span>
             <h1>Appointments Report</h1>
-            <p>Daily totals for pending, confirmed, cancelled, and completed appointments.</p>
         </div>
     </section>
 
@@ -38,7 +38,12 @@
     }
     else if (!string.IsNullOrWhiteSpace(errorMessage))
     {
-        <div class="alert alert-error">@errorMessage</div>
+        <div class="admin-message-card error">
+            <div>
+                <strong>Action Failed</strong>
+                <span>@errorMessage</span>
+            </div>
+        </div>
     }
     else
     {
@@ -46,33 +51,33 @@
             <div class="report-status-card pending">
                 <span>Pending</span>
                 <strong>@TotalPending</strong>
-                <p>Waiting for confirmation</p>
             </div>
 
             <div class="report-status-card confirmed">
                 <span>Confirmed</span>
                 <strong>@TotalConfirmed</strong>
-                <p>Approved appointments</p>
             </div>
 
             <div class="report-status-card cancelled">
                 <span>Cancelled</span>
                 <strong>@TotalCancelled</strong>
-                <p>Cancelled schedules</p>
             </div>
 
             <div class="report-status-card completed">
                 <span>Completed</span>
                 <strong>@TotalCompleted</strong>
-                <p>Finished consultations</p>
             </div>
         </section>
 
         <section class="report-table-card">
-            <div class="report-table-header">
+            <div class="report-table-header report-table-header-paged">
                 <div>
                     <h2>Daily Appointment Summary</h2>
-                    <p>@Reports.Count report day(s) found</p>
+                    <p>@totalCount total report day(s), showing @Reports.Count on this page</p>
+                </div>
+
+                <div class="report-page-size-pill">
+                    5 per page
                 </div>
             </div>
 
@@ -104,7 +109,7 @@
                         }
                         else
                         {
-                            @foreach (var report in Reports.OrderByDescending(r => r.Date))
+                            @foreach (var report in Reports)
                             {
                                 <tr>
                                     <td>
@@ -129,25 +134,85 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="report-pagination-bar">
+                <button class="report-pagination-button"
+                        disabled="@(!hasPreviousPage || isLoading)"
+                        @onclick="PreviousPage">
+                    Previous
+                </button>
+
+                <div class="report-pagination-info">
+                    <strong>Page @pageNumber of @SafeTotalPages</strong>
+                    <span>@totalCount total report days</span>
+                </div>
+
+                <button class="report-pagination-button"
+                        disabled="@(!hasNextPage || isLoading)"
+                        @onclick="NextPage">
+                    Next
+                </button>
+            </div>
         </section>
     }
 </div>
 
 @code {
     private List<AppointmentReportDto> Reports = new();
+    private List<AppointmentReportDto> summaryReports = new();
+
     private bool isLoading = true;
     private string? errorMessage;
 
-    private int TotalPending => Reports.Sum(r => r.Pending);
-    private int TotalConfirmed => Reports.Sum(r => r.Confirmed);
-    private int TotalCancelled => Reports.Sum(r => r.Cancelled);
-    private int TotalCompleted => Reports.Sum(r => r.Completed);
+    private int pageNumber = 1;
+    private const int PageSize = 5;
+    private int totalCount;
+    private int totalPages;
+    private bool hasPreviousPage;
+    private bool hasNextPage;
+
+    private int SafeTotalPages => totalPages < 1 ? 1 : totalPages;
+
+    private int TotalPending => summaryReports.Sum(r => r.Pending);
+    private int TotalConfirmed => summaryReports.Sum(r => r.Confirmed);
+    private int TotalCancelled => summaryReports.Sum(r => r.Cancelled);
+    private int TotalCompleted => summaryReports.Sum(r => r.Completed);
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadReportsAsync(loadSummary: true);
+    }
+
+    private async Task LoadReportsAsync(bool loadSummary = false)
+    {
         try
         {
-            Reports = await AdminApi.GetAppointmentReportsAsync();
+            isLoading = true;
+            errorMessage = null;
+
+            if (loadSummary)
+            {
+                var summaryResult = await AdminApi.GetAppointmentReportsAsync(
+                    pageNumber: 1,
+                    pageSize: 50);
+
+                summaryReports = summaryResult.Items;
+            }
+
+            var result = await AdminApi.GetAppointmentReportsAsync(
+                pageNumber,
+                PageSize);
+
+            Reports = result.Items;
+            pageNumber = result.PageNumber;
+            totalCount = result.TotalCount;
+            totalPages = result.TotalPages;
+            hasPreviousPage = result.HasPreviousPage;
+            hasNextPage = result.HasNextPage;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            errorMessage = "Session expired. Please login again.";
         }
         catch
         {
@@ -157,6 +222,28 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (!hasPreviousPage)
+        {
+            return;
+        }
+
+        pageNumber--;
+        await LoadReportsAsync();
+    }
+
+    private async Task NextPage()
+    {
+        if (!hasNextPage)
+        {
+            return;
+        }
+
+        pageNumber++;
+        await LoadReportsAsync();
     }
 
     private static int GetTotal(AppointmentReportDto report)

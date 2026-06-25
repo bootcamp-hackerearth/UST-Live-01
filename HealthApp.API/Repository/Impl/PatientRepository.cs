@@ -37,6 +37,49 @@ public class PatientRepository(HealthAppDbContext context)
         bool? hasInsurance = null,
         CancellationToken ct = default)
     {
+        var query = BuildFilteredQuery(search, gender, hasInsurance);
+
+        return await query
+            .OrderBy(p => p.PatientName)
+            .ToListAsync(ct);
+    }
+
+    public async Task<(List<Patient> Items, int TotalCount)> GetFilteredPagedAsync(
+        string? search = null,
+        GenderType? gender = null,
+        bool? hasInsurance = null,
+        int pageNumber = 1,
+        int pageSize = 5,
+        CancellationToken ct = default)
+    {
+        if (pageNumber < 1)
+        {
+            pageNumber = 1;
+        }
+
+        if (pageSize < 1)
+        {
+            pageSize = 5;
+        }
+
+        var query = BuildFilteredQuery(search, gender, hasInsurance);
+
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
+            .OrderBy(p => p.PatientId)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+
+        return (items, totalCount);
+    }
+
+    private IQueryable<Patient> BuildFilteredQuery(
+        string? search,
+        GenderType? gender,
+        bool? hasInsurance)
+    {
         var query = context.Patients.AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -48,6 +91,16 @@ public class PatientRepository(HealthAppDbContext context)
                 (p.Email != null && p.Email.ToLower().Contains(keyword)) ||
                 p.PhoneNumber.Contains(keyword) ||
                 (p.InsuranceId != null && p.InsuranceId.ToLower().Contains(keyword)));
+
+            if (int.TryParse(keyword, out var patientId))
+            {
+                query = query.Where(p =>
+                    p.PatientId == patientId ||
+                    p.PatientName.ToLower().Contains(keyword) ||
+                    (p.Email != null && p.Email.ToLower().Contains(keyword)) ||
+                    p.PhoneNumber.Contains(keyword) ||
+                    (p.InsuranceId != null && p.InsuranceId.ToLower().Contains(keyword)));
+            }
         }
 
         if (gender.HasValue)
@@ -57,18 +110,11 @@ public class PatientRepository(HealthAppDbContext context)
 
         if (hasInsurance.HasValue)
         {
-            if (hasInsurance.Value)
-            {
-                query = query.Where(p => !string.IsNullOrWhiteSpace(p.InsuranceId));
-            }
-            else
-            {
-                query = query.Where(p => string.IsNullOrWhiteSpace(p.InsuranceId));
-            }
+            query = hasInsurance.Value
+                ? query.Where(p => p.InsuranceId != null && p.InsuranceId != "")
+                : query.Where(p => p.InsuranceId == null || p.InsuranceId == "");
         }
 
-        return await query
-            .OrderBy(p => p.PatientName)
-            .ToListAsync(ct);
+        return query;
     }
 }

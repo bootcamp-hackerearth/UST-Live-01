@@ -2,7 +2,7 @@
 @attribute [Authorize(Roles = "Admin")]
 @using Microsoft.AspNetCore.Authorization
 @using HealthApp.Shared.DTOs
-@using HealthApp.Shared.Enums
+@using System.Net
 @inject AdminApiService AdminApi
 @inject NavigationManager Navigation
 
@@ -13,7 +13,6 @@
         <div>
             <span class="report-kicker">Appointment Details</span>
             <h1>@DisplayDate</h1>
-            <p>View appointments for the selected date with search and status filtering.</p>
         </div>
 
         <button class="details-back-button" @onclick="BackToReports">
@@ -43,7 +42,12 @@
     }
     else if (!string.IsNullOrWhiteSpace(errorMessage))
     {
-        <div class="alert alert-error">@errorMessage</div>
+        <div class="admin-message-card error">
+            <div>
+                <strong>Action Failed</strong>
+                <span>@errorMessage</span>
+            </div>
+        </div>
     }
     else
     {
@@ -171,6 +175,10 @@
             }
 
             appointments = await AdminApi.GetAppointmentsAsync();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            errorMessage = "Session expired. Please login again.";
         }
         catch
         {

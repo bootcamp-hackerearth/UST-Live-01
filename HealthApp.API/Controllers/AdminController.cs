@@ -13,8 +13,9 @@ namespace HealthApp.API.Controllers;
 public class AdminController(IAdminService adminService) : ControllerBase
 {
     [HttpGet("doctors")]
-    public async Task<ActionResult<List<DoctorDto>>> Doctors()
-        => Ok(await adminService.GetDoctorsAsync());
+    public async Task<ActionResult<PagedResultDto<DoctorDto>>> Doctors(
+    [FromQuery] PaginationQueryDto pagination)
+    => Ok(await adminService.GetDoctorsAsync(pagination));
 
     [HttpPost("doctors")]
     public async Task<ActionResult<CreateDoctorResponseDto>> CreateDoctor(CreateDoctorDto dto)
@@ -25,18 +26,24 @@ public class AdminController(IAdminService adminService) : ControllerBase
         => Ok(await adminService.UpdateDoctorAsync(id, dto));
 
     [HttpGet("reports/appointments")]
-    public async Task<ActionResult<List<AppointmentReportDto>>> Reports()
-        => Ok(await adminService.GetAppointmentReportsAsync());
+    public async Task<ActionResult<PagedResultDto<AppointmentReportDto>>> Reports(
+    [FromQuery] PaginationQueryDto pagination)
+    => Ok(await adminService.GetAppointmentReportsAsync(pagination));
 
     [HttpGet("users")]
     public async Task<ActionResult<List<UserDto>>> GetUsers([FromQuery] string? role)
             => Ok(await adminService.GetUsersAsync(role));
 
     [HttpGet("patients")]
-    public async Task<ActionResult<List<PatientDto>>> GetPatients(
+    public async Task<ActionResult<PagedResultDto<PatientDto>>> GetPatients(
     [FromQuery] string? search,
     [FromQuery] GenderType? gender,
-    [FromQuery] bool? hasInsurance)
-    => Ok(await adminService.GetPatientsAsync(search, gender, hasInsurance));
+    [FromQuery] bool? hasInsurance,
+    [FromQuery] PaginationQueryDto pagination)
+    => Ok(await adminService.GetPatientsAsync(
+        search,
+        gender,
+        hasInsurance,
+        pagination));
 
 }

@@ -22,4 +22,12 @@ public interface IPatientRepository : IRepository<Patient>
         GenderType? gender = null,
         bool? hasInsurance = null,
         CancellationToken ct = default);
+
+    Task<(List<Patient> Items, int TotalCount)> GetFilteredPagedAsync(
+    string? search = null,
+    GenderType? gender = null,
+    bool? hasInsurance = null,
+    int pageNumber = 1,
+    int pageSize = 5,
+    CancellationToken ct = default);
 }

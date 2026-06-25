@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using HealthApp.Shared.DTOs
 @using HealthApp.Shared.Enums
+@using System.Net
 @inject AdminApiService AdminApi
 @inject IJSRuntime JsRuntime
 
@@ -13,7 +14,6 @@
         <div>
             <span class="doctor-kicker">Admin Module</span>
             <h1>Doctor Management</h1>
-            <p>Register, view, edit, and manage doctor availability across HealthApp.</p>
         </div>
 
         <button class="btn doctor-add-button" @onclick="OpenCreateModal">
@@ -86,10 +86,14 @@
     else
     {
         <section class="doctor-table-card">
-            <div class="doctor-table-header">
+            <div class="doctor-table-header doctor-table-header-paged">
                 <div>
                     <h2>Doctors</h2>
-                    <p>@FilteredDoctors.Count() record(s) found</p>
+                    <p>@totalCount total record(s), showing @FilteredDoctors.Count() on this page</p>
+                </div>
+
+                <div class="doctor-page-size-pill">
+                    5 per page
                 </div>
             </div>
 
@@ -113,7 +117,7 @@
                                 <td colspan="6">
                                     <div class="doctor-empty-state">
                                         <strong>No doctors found</strong>
-                                        <span>Try changing the search text or status filter.</span>
+                                        <span>Try changing the search text, status filter, or page.</span>
                                     </div>
                                 </td>
                             </tr>
@@ -164,6 +168,25 @@
                         }
                     </tbody>
                 </table>
+            </div>
+
+            <div class="doctor-pagination-bar">
+                <button class="doctor-pagination-button"
+                        disabled="@(!hasPreviousPage || isLoading)"
+                        @onclick="PreviousPage">
+                    Previous
+                </button>
+
+                <div class="doctor-pagination-info">
+                    <strong>Page @pageNumber of @SafeTotalPages</strong>
+                    <span>@totalCount total records</span>
+                </div>
+
+                <button class="doctor-pagination-button"
+                        disabled="@(!hasNextPage || isLoading)"
+                        @onclick="NextPage">
+                    Next
+                </button>
             </div>
         </section>
     }
@@ -398,6 +421,15 @@
     private CreateDoctorDto createDto = new();
     private UpdateDoctorDto updateDto = new();
 
+    private int pageNumber = 1;
+    private const int PageSize = 5;
+    private int totalCount;
+    private int totalPages;
+    private bool hasPreviousPage;
+    private bool hasNextPage;
+
+    private int SafeTotalPages => totalPages < 1 ? 1 : totalPages;
+
     private IEnumerable<DoctorDto> FilteredDoctors => doctors
         .Where(d =>
             string.IsNullOrWhiteSpace(searchText) ||
@@ -426,7 +458,21 @@
                 generatedTemporaryPassword = null;
             }
 
-            doctors = await AdminApi.GetDoctorsAsync();
+            var result = await AdminApi.GetDoctorsAsync(
+                pageNumber,
+                PageSize);
+
+            doctors = result.Items;
+            pageNumber = result.PageNumber;
+            totalCount = result.TotalCount;
+            totalPages = result.TotalPages;
+            hasPreviousPage = result.HasPreviousPage;
+            hasNextPage = result.HasNextPage;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            message = "Session expired. Please login again.";
+            isError = true;
         }
         catch
         {
@@ -437,6 +483,28 @@
         {
             isLoading = false;
         }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (!hasPreviousPage)
+        {
+            return;
+        }
+
+        pageNumber--;
+        await LoadDoctorsAsync();
+    }
+
+    private async Task NextPage()
+    {
+        if (!hasNextPage)
+        {
+            return;
+        }
+
+        pageNumber++;
+        await LoadDoctorsAsync();
     }
 
     private void OpenCreateModal()
@@ -477,8 +545,14 @@
             generatedTemporaryPassword = response.TemporaryPassword;
             isError = false;
             showCreateModal = false;
+            pageNumber = 1;
 
-            doctors = await AdminApi.GetDoctorsAsync();
+            await LoadDoctorsAsync();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            message = "Session expired. Please login again.";
+            isError = true;
         }
         catch
         {
@@ -538,7 +612,12 @@
             showEditModal = false;
             editingDoctorId = null;
 
-            doctors = await AdminApi.GetDoctorsAsync();
+            await LoadDoctorsAsync();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            message = "Session expired. Please login again.";
+            isError = true;
         }
         catch
         {
@@ -602,11 +681,16 @@
             showConfirmModal = false;
             pendingToggleDoctor = null;
 
-            doctors = await AdminApi.GetDoctorsAsync();
+            await LoadDoctorsAsync();
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            message = "Session expired. Please login again.";
+            isError = true;
         }
         catch
         {
-            message = "Doctor status update failed. Please try again.";
+            message = "Doctor update failed. Please try again.";
             isError = true;
         }
         finally
