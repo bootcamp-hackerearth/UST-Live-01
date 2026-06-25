@@ -1,6 +1,6 @@
 ﻿@page "/admin/appointments"
 @layout AdminLayout
-
+@implements IDisposable
 
 @using HealthCareApp.Shared.Dtos.Appointments
 @using HealthCareApp.Shared.Dtos.Pagination
@@ -80,9 +80,9 @@ else
             <div class="ha-stat-card-content">
                 <span>Page</span>
 
-                <strong>@currentPage / @totalPages</strong>
+                <strong>@currentPage / @DisplayTotalPages</strong>
 
-                <small>Backend paginated appointment result</small>
+                <small>@PageCardText</small>
             </div>
 
             <div class="ha-stat-card-icon">!</div>
@@ -254,7 +254,7 @@ else
                         </thead>
 
                         <tbody>
-                            @foreach (var person in FilteredPeople)
+                            @foreach (var person in PagedFilteredPeople)
                             {
                                 <tr>
                                     <td>
@@ -289,6 +289,26 @@ else
                             }
                         </tbody>
                     </table>
+                </div>
+
+                <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage <= 1)"
+                            @onclick="PreviousPage">
+                        Previous
+                    </button>
+
+                    <div style="font-weight: 900; color: #334155;">
+                        Page @currentPage of @PeopleTotalPages
+                    </div>
+
+                    <button type="button"
+                            class="hc-secondary-btn"
+                            disabled="@(currentPage >= PeopleTotalPages)"
+                            @onclick="NextPage">
+                        Next
+                    </button>
                 </div>
             }
         }
@@ -568,6 +588,93 @@ else
         }
     }
 
+    private List<AppointmentFilterPersonDto> FilteredPeopleList
+    {
+        get
+        {
+            return FilteredPeople.ToList();
+        }
+    }
+
+    private int PeopleTotalRecords
+    {
+        get
+        {
+            return FilteredPeopleList.Count;
+        }
+    }
+
+    private int PeopleTotalPages
+    {
+        get
+        {
+            if (PeopleTotalRecords == 0)
+            {
+                return 1;
+            }
+
+            return (int)Math.Ceiling(PeopleTotalRecords / (double)pageSize);
+        }
+    }
+
+    private int PeopleStartRecord
+    {
+        get
+        {
+            if (PeopleTotalRecords == 0)
+            {
+                return 0;
+            }
+
+            return ((currentPage - 1) * pageSize) + 1;
+        }
+    }
+
+    private int PeopleEndRecord
+    {
+        get
+        {
+            int calculatedEnd = currentPage * pageSize;
+
+            if (calculatedEnd > PeopleTotalRecords)
+            {
+                return PeopleTotalRecords;
+            }
+
+            return calculatedEnd;
+        }
+    }
+
+    private IEnumerable<AppointmentFilterPersonDto> PagedFilteredPeople
+    {
+        get
+        {
+            return FilteredPeopleList
+                .Skip((currentPage - 1) * pageSize)
+                .Take(pageSize);
+        }
+    }
+
+    private int DisplayTotalPages
+    {
+        get
+        {
+            return IsShowingPeopleList
+                ? PeopleTotalPages
+                : totalPages;
+        }
+    }
+
+    private string PageCardText
+    {
+        get
+        {
+            return IsShowingPeopleList
+                ? "Paginated role filter result"
+                : "Backend paginated appointment result";
+        }
+    }
+
     private string PrimaryCardTitle
     {
         get
@@ -592,7 +699,7 @@ else
         {
             if (IsShowingPeopleList)
             {
-                return FilteredPeople.Count();
+                return PeopleTotalRecords;
             }
 
             return totalRecords;
@@ -646,7 +753,7 @@ else
         {
             if (IsShowingPeopleList)
             {
-                return $"Showing {FilteredPeople.Count()} of {CurrentPeople.Count}";
+                return $"Showing {PeopleStartRecord} to {PeopleEndRecord} of {PeopleTotalRecords}";
             }
 
             return $"Showing {StartRecord} to {EndRecord} of {totalRecords}";
@@ -875,11 +982,13 @@ else
             query.ScheduledDate = searchDate.Value.Date;
         }
 
-        if (selectedFilterType == FilterTypePatients && selectedFilterPersonId is not null)
+        if (selectedFilterType == FilterTypePatients &&
+            selectedFilterPersonId is not null)
         {
             query.PatientId = selectedFilterPersonId.Value;
         }
-        else if (selectedFilterType == FilterTypeDoctors && selectedFilterPersonId is not null)
+        else if (selectedFilterType == FilterTypeDoctors &&
+                 selectedFilterPersonId is not null)
         {
             query.DoctorId = selectedFilterPersonId.Value;
         }
@@ -944,11 +1053,15 @@ else
 
         searchCancellationTokenSource?.Cancel();
 
+        searchCancellationTokenSource?.Dispose();
+
         searchCancellationTokenSource = new CancellationTokenSource();
+
+        var currentSearchToken = searchCancellationTokenSource.Token;
 
         try
         {
-            await Task.Delay(400, searchCancellationTokenSource.Token);
+            await Task.Delay(400, currentSearchToken);
 
             if (IsShowingPeopleList)
             {
@@ -1025,10 +1138,14 @@ else
 
             currentPage = 1;
 
-            if (!IsShowingPeopleList)
+            if (IsShowingPeopleList)
             {
-                await LoadAppointmentsAsync(showFullPageLoader: false);
+                await InvokeAsync(StateHasChanged);
+
+                return;
             }
+
+            await LoadAppointmentsAsync(showFullPageLoader: false);
         }
     }
 
@@ -1056,17 +1173,35 @@ else
 
         currentPage--;
 
+        if (IsShowingPeopleList)
+        {
+            await InvokeAsync(StateHasChanged);
+
+            return;
+        }
+
         await LoadAppointmentsAsync(showFullPageLoader: false);
     }
 
     private async Task NextPage()
     {
-        if (currentPage >= totalPages)
+        int maxPages = IsShowingPeopleList
+            ? PeopleTotalPages
+            : totalPages;
+
+        if (currentPage >= maxPages)
         {
             return;
         }
 
         currentPage++;
+
+        if (IsShowingPeopleList)
+        {
+            await InvokeAsync(StateHasChanged);
+
+            return;
+        }
 
         await LoadAppointmentsAsync(showFullPageLoader: false);
     }
@@ -1134,5 +1269,12 @@ else
             _ =>
                 "hc-status-badge ha-appointment-status"
         };
+    }
+
+    public void Dispose()
+    {
+        searchCancellationTokenSource?.Cancel();
+
+        searchCancellationTokenSource?.Dispose();
     }
 }

@@ -153,7 +153,8 @@
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.exclusions">**/Migrations/**/*,**/app.css,**/admin-theme.css</Property>
+    <Property Name="sonar.exclusions">**/Migrations/**</Property>
+    <Property Name="sonar.cs.cobertura.reportsPaths">**/coverage.cobertura.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>

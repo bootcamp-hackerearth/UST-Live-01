@@ -1,0 +1,443 @@
+:host {
+  display: block;
+}
+
+/* Main page */
+
+.ha-home-page {
+  height: 100vh;
+  width: 100%;
+  padding: 24px 56px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 34%), radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 38%), linear-gradient(135deg, #f8fbff 0%, #eef7ff 48%, #f5f9ff 100%);
+  color: #0f172a;
+}
+
+/* Top navbar */
+
+.ha-home-nav {
+  width: 100%;
+  max-width: 1220px;
+  height: 78px;
+  margin: 0 auto;
+  padding: 0 18px;
+  box-sizing: border-box;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 16px 42px rgba(37, 99, 235, 0.12);
+  backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ha-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ha-logo-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 950;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.24);
+}
+
+.ha-brand h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 21px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.ha-brand span {
+  display: block;
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ha-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ha-nav-link,
+.ha-nav-primary {
+  height: 42px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.ha-nav-link {
+  color: #334155;
+  background: #f8fafc;
+}
+
+.ha-nav-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.22);
+}
+
+/* Hero section */
+
+.ha-hero-section {
+  max-width: 1220px;
+  height: calc(100vh - 126px);
+  margin: 24px auto 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 520px;
+  align-items: center;
+  gap: 70px;
+  box-sizing: border-box;
+}
+
+.ha-hero-content {
+  max-width: 610px;
+}
+
+.ha-kicker {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 13px;
+  margin-bottom: 22px;
+  border-radius: 999px;
+  background: rgba(14, 165, 233, 0.09);
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+  .ha-kicker span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 7px rgba(34, 197, 94, 0.15);
+  }
+
+.ha-hero-content h1 {
+  margin: 0;
+  color: #0f172a;
+  font-size: clamp(48px, 4.6vw, 70px);
+  line-height: 0.96;
+  letter-spacing: -3px;
+  font-weight: 950;
+}
+
+.ha-hero-content p {
+  margin: 24px 0 0;
+  color: #334155;
+  font-size: 16px;
+  line-height: 1.75;
+  font-weight: 750;
+  max-width: 610px;
+}
+
+/* Hero buttons */
+
+.ha-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 30px;
+}
+
+.ha-hero-primary,
+.ha-hero-secondary {
+  height: 50px;
+  min-width: 174px;
+  padding: 0 24px;
+  border-radius: 17px;
+  border: 0;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.ha-hero-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+}
+
+.ha-hero-secondary {
+  color: #0f172a;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+/* Trust row */
+
+.ha-trust-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+  max-width: 520px;
+}
+
+  .ha-trust-row div {
+    min-height: 68px;
+    padding: 15px 16px;
+    box-sizing: border-box;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid #dbeafe;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+  }
+
+  .ha-trust-row strong {
+    display: block;
+    color: #0f172a;
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 950;
+  }
+
+  .ha-trust-row span {
+    display: block;
+    margin-top: 8px;
+    color: #475569;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+/* Right visual */
+
+.ha-hero-visual {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ha-health-card {
+  width: 520px;
+  min-height: 430px;
+  padding: 26px;
+  box-sizing: border-box;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 28px 70px rgba(37, 99, 235, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.ha-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.ha-pulse-logo {
+  width: 58px;
+  height: 58px;
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  background: #d1fae5;
+  color: #0284c7;
+  font-size: 30px;
+  font-weight: 950;
+}
+
+.ha-card-header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 950;
+}
+
+.ha-card-header p {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* ECG */
+
+.ha-ecg-line {
+  height: 118px;
+  margin-top: 30px;
+  border-radius: 22px;
+  background: #f8fafc;
+  border: 1px solid #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+  .ha-ecg-line svg {
+    width: 82%;
+    height: 72px;
+  }
+
+  .ha-ecg-line path {
+    fill: none;
+    stroke: #38bdf8;
+    stroke-width: 6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+/* Module cards */
+
+.ha-module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.ha-module-card {
+  min-height: 118px;
+  padding: 18px;
+  box-sizing: border-box;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.05);
+}
+
+  .ha-module-card div {
+    width: 43px;
+    height: 43px;
+    margin-bottom: 14px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 950;
+  }
+
+  .ha-module-card.patient div {
+    background: linear-gradient(135deg, #22c55e, #0ea5e9);
+  }
+
+  .ha-module-card.doctor div {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+  }
+
+  .ha-module-card strong {
+    display: block;
+    color: #0f172a;
+    font-size: 16px;
+    font-weight: 950;
+  }
+
+  .ha-module-card span {
+    display: block;
+    margin-top: 8px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+/* Status strip */
+
+.ha-status-strip {
+  height: 47px;
+  margin-top: 18px;
+  padding: 0 16px;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #2563eb;
+  background: #eff6ff;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+  .ha-status-strip span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+  }
+
+/* Responsive */
+
+@media (max-width: 1100px) {
+  .ha-home-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .ha-hero-section {
+    height: auto;
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
+
+  .ha-hero-visual {
+    justify-content: flex-start;
+  }
+
+  .ha-health-card {
+    width: min(100%, 520px);
+  }
+}
+
+@media (max-width: 650px) {
+  .ha-home-nav {
+    height: auto;
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .ha-nav-actions {
+    width: 100%;
+  }
+
+  .ha-nav-link,
+  .ha-nav-primary {
+    flex: 1;
+  }
+
+  .ha-hero-content h1 {
+    font-size: 42px;
+    letter-spacing: -2px;
+  }
+
+  .ha-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ha-hero-primary,
+  .ha-hero-secondary {
+    width: 100%;
+  }
+
+  .ha-trust-row,
+  .ha-module-grid {
+    grid-template-columns: 1fr;
+  }
+}
