@@ -10,9 +10,7 @@ namespace HealthApp.Shared.Dtos
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required.")]
-        [MinLength(8, ErrorMessage = "Password must be at least 8 characters long.")]
-        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$",
-            ErrorMessage = "Password must contain at least one uppercase letter, one number, and one special character.")]
+        [StringLength(100, ErrorMessage = "Password cannot exceed 100 characters.")]
         public string Password { get; set; } = string.Empty;
     }
 }
