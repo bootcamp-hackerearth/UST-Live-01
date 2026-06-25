@@ -13,7 +13,7 @@
 <div class="page-header-box mb-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 w-100">
         <div>
-            <h2 class="page-title mb-1">Doctors</h2>
+            <h2>Doctors</h2>
             <p class="text-muted mb-0">
                 Manage doctor profiles, specialisations, consultation fees, and availability.
             </p>
@@ -31,12 +31,10 @@
 
         <div class="col-lg-4 col-md-6">
             <label class="form-label fw-semibold">Search</label>
-
             <div class="input-group">
                 <span class="input-group-text bg-white">
                     <i class="bi bi-search text-muted"></i>
                 </span>
-
                 <input class="form-control"
                        placeholder="Search doctor by name or email"
                        @bind="SearchText"
@@ -46,10 +44,8 @@
 
         <div class="col-lg-3 col-md-6">
             <label class="form-label fw-semibold">Specialisation</label>
-
             <select class="form-select" @bind="SelectedSpecialisationValue">
                 <option value="">All Specialisations</option>
-
                 @foreach (var spec in Enum.GetValues<SpecialisationType>())
                 {
                     <option value="@spec">@spec</option>
@@ -59,7 +55,6 @@
 
         <div class="col-lg-2 col-md-6">
             <label class="form-label fw-semibold">Status</label>
-
             <select class="form-select" @bind="SelectedActiveStatusValue">
                 <option value="">All Status</option>
                 <option value="true">Available</option>
@@ -71,6 +66,7 @@
             <div class="d-flex gap-2">
                 <button type="button"
                         class="btn btn-health rounded-pill px-4 flex-fill"
+                        disabled="@isLoading"
                         @onclick="SearchDoctors">
                     <i class="bi bi-search me-2"></i>
                     Search
@@ -79,6 +75,7 @@
                 <button type="button"
                         class="btn btn-outline-secondary rounded-pill px-4"
                         title="Clear filters"
+                        disabled="@isLoading"
                         @onclick="ClearFilters">
                     <i class="bi bi-arrow-clockwise"></i>
                 </button>
@@ -90,12 +87,27 @@
 
 <div class="table-card">
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
         <div>
             <h5 class="fw-bold mb-1">Doctor List</h5>
             <p class="text-muted small mb-0">
-                Showing @FilteredDoctors.Count() doctor(s)
+                Showing @doctors.Count doctor(s) of @TotalCount total
             </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <label class="text-muted small fw-semibold mb-0">
+                Page size
+            </label>
+            <select class="form-select form-select-sm w-auto"
+                    value="@PageSize"
+                    disabled="@isLoading"
+                    @onchange="OnPageSizeChanged">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+            </select>
         </div>
     </div>
 
@@ -120,22 +132,23 @@
                 </thead>
 
                 <tbody>
-
-                    @if (!FilteredDoctors.Any())
+                    @if (!doctors.Any())
                     {
                         <tr>
                             <td colspan="7" class="text-center py-5">
                                 <div class="empty-state">
                                     <i class="bi bi-person-x"></i>
                                     <h6 class="fw-bold mt-3 mb-1">No doctors found</h6>
-                                    <p class="text-muted mb-0">Try changing your search or filters.</p>
+                                    <p class="text-muted mb-0">
+                                        Try changing your search or filters.
+                                    </p>
                                 </div>
                             </td>
                         </tr>
                     }
                     else
                     {
-                        @foreach (var doctor in FilteredDoctors)
+                        @foreach (var doctor in doctors)
                         {
                             <tr>
                                 <td>
@@ -143,46 +156,44 @@
                                         <div class="doctor-avatar">
                                             <i class="bi bi-person-badge"></i>
                                         </div>
-
                                         <div>
-                                            <div class="fw-bold">@doctor.FullName</div>
+                                            <div class="fw-bold">
+                                                @doctor.FullName
+                                            </div>
                                             <small class="text-muted">
                                                 ID: DOC-@doctor.DoctorId.ToString("000")
                                             </small>
                                         </div>
                                     </div>
                                 </td>
-
                                 <td>
-                                    <div class="fw-semibold">@doctor.Specialisation</div>
+                                    <div class="fw-semibold">
+                                        @doctor.Specialisation
+                                    </div>
                                 </td>
-
                                 <td>
-                                    <div class="fw-semibold">@doctor.DoctorEmail</div>
+                                    <div class="fw-semibold">
+                                        @doctor.DoctorEmail
+                                    </div>
                                 </td>
-
                                 <td>
                                     <div class="fw-semibold">
                                         @doctor.YearsOfExperience years
                                     </div>
                                 </td>
-
                                 <td>
                                     <div class="fw-semibold">
                                         ₹ @doctor.ConsultationFee.ToString("0.00")
                                     </div>
                                 </td>
-
                                 <td>
                                     <span class="doctor-status-badge @(doctor.IsActive ? "status-active" : "status-inactive")">
                                         <i class="bi @(doctor.IsActive ? "bi-check-circle-fill" : "bi-clock-fill")"></i>
                                         @(doctor.IsActive ? "Available" : "Not Available")
                                     </span>
                                 </td>
-
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
-
                                         <button type="button"
                                                 class="btn @(doctor.IsActive ? "btn-danger" : "btn-success") btn-sm action-btn"
                                                 title="@(doctor.IsActive ? "Mark as unavailable" : "Mark as available")"
@@ -201,16 +212,20 @@
                                                  title="View doctor">
                                             <i class="bi bi-eye"></i>
                                         </NavLink>
-
                                     </div>
                                 </td>
                             </tr>
                         }
                     }
-
                 </tbody>
             </table>
         </div>
+
+        <Pagination CurrentPage="@CurrentPage"
+                    PageSize="@PageSize"
+                    TotalItems="@TotalCount"
+                    IsLoading="@isLoading"
+                    CurrentPageChanged="OnPageChanged" />
     }
 
 </div>
@@ -247,7 +262,6 @@
                         class="btn @(selectedDoctor.IsActive ? "btn-danger" : "btn-success") rounded-pill px-4"
                         disabled="@isChangingStatus"
                         @onclick="ConfirmDoctorStatusChange">
-
                     @if (isChangingStatus)
                     {
                         <span class="spinner-border spinner-border-sm me-2"></span>
@@ -260,7 +274,6 @@
                             @(selectedDoctor.IsActive ? "Yes, Mark Unavailable" : "Yes, Mark Available")
                         </span>
                     }
-
                 </button>
             </div>
 
@@ -270,19 +283,15 @@
 
 @code {
     private string SearchText { get; set; } = string.Empty;
-
     private string SelectedSpecialisationValue { get; set; } = string.Empty;
-
     private string SelectedActiveStatusValue { get; set; } = string.Empty;
-
     private List<DoctorDto> doctors = new();
-
+    private int CurrentPage { get; set; } = 1;
+    private int PageSize { get; set; } = 10;
+    private int TotalCount { get; set; }
     private bool isLoading = true;
-
     private bool showStatusConfirm = false;
-
     private bool isChangingStatus = false;
-
     private DoctorDto? selectedDoctor;
 
     private SpecialisationType? SelectedSpecialisation
@@ -312,7 +321,9 @@
                 return null;
             }
 
-            return bool.TryParse(SelectedActiveStatusValue, out var status)
+            return bool.TryParse(
+                SelectedActiveStatusValue,
+                out var status)
                 ? status
                 : null;
         }
@@ -327,18 +338,26 @@
     {
         isLoading = true;
 
-        var result = await DoctorService.GetAll();
+        var result = await DoctorService.Search(
+            SearchText,
+            SelectedSpecialisation,
+            SelectedActiveStatus,
+            CurrentPage,
+            PageSize);
 
         if (result.IsSuccess)
         {
-            doctors = result.Data ?? new List<DoctorDto>();
+            doctors = result.Data?.Items ?? new List<DoctorDto>();
+            TotalCount = result.Data?.TotalCount ?? 0;
+            CurrentPage = result.Data?.PageNumber ?? CurrentPage;
+            PageSize = result.Data?.PageSize ?? PageSize;
         }
         else
         {
             doctors = new List<DoctorDto>();
+            TotalCount = 0;
 
             NotificationService.Error(result.Message);
-
             RedirectToLoginIfSessionExpired(result.Message);
         }
 
@@ -347,38 +366,33 @@
 
     private async Task SearchDoctors()
     {
-        isLoading = true;
-
-        var result = await DoctorService.Search(
-            SearchText,
-            SelectedSpecialisation,
-            SelectedActiveStatus);
-
-        if (result.IsSuccess)
-        {
-            doctors = result.Data ?? new List<DoctorDto>();
-        }
-        else
-        {
-            doctors = new List<DoctorDto>();
-
-            NotificationService.Error(result.Message);
-
-            RedirectToLoginIfSessionExpired(result.Message);
-        }
-
-        isLoading = false;
+        CurrentPage = 1;
+        await LoadDoctors();
     }
-
-    private IEnumerable<DoctorDto> FilteredDoctors => doctors;
 
     private async Task ClearFilters()
     {
         SearchText = string.Empty;
         SelectedSpecialisationValue = string.Empty;
         SelectedActiveStatusValue = string.Empty;
-
+        CurrentPage = 1;
         await LoadDoctors();
+    }
+
+    private async Task OnPageChanged(int pageNumber)
+    {
+        CurrentPage = pageNumber;
+        await LoadDoctors();
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var selectedPageSize))
+        {
+            PageSize = selectedPageSize;
+            CurrentPage = 1;
+            await LoadDoctors();
+        }
     }
 
     private void OpenStatusModal(DoctorDto doctor)
@@ -406,7 +420,6 @@
         }
 
         isChangingStatus = true;
-
         var newStatus = !selectedDoctor.IsActive;
 
         var result = await DoctorService.ChangeStatus(
@@ -415,14 +428,12 @@
 
         if (result.IsSuccess)
         {
-            selectedDoctor.IsActive = newStatus;
-
             NotificationService.Success(result.Message);
+            await LoadDoctors();
         }
         else
         {
             NotificationService.Error(result.Message);
-
             RedirectToLoginIfSessionExpired(result.Message);
         }
 
@@ -433,11 +444,9 @@
 
     private void RedirectToLoginIfSessionExpired(string message)
     {
-        if (
-            message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
+        if (message.Contains("session has expired", StringComparison.OrdinalIgnoreCase)
             || message.Contains("please login", StringComparison.OrdinalIgnoreCase)
-            || message.Contains("login again", StringComparison.OrdinalIgnoreCase)
-        )
+            || message.Contains("login again", StringComparison.OrdinalIgnoreCase))
         {
             NavigationManager.NavigateTo("/login");
         }

@@ -199,7 +199,7 @@ else
 
         if (doctorResult.IsSuccess)
         {
-            totalDoctors = doctorResult.Data?.Count ?? 0;
+            totalDoctors = doctorResult.Data?.TotalCount ?? 0;
         }
         else
         {

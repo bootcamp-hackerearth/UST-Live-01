@@ -1,5 +1,6 @@
 ﻿using HealthApp.Api.Services.Interfaces;
 using HealthApp.Shared.Dtos;
+using HealthApp.Shared.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,9 @@ namespace HealthApp.Api.Controllers
 {
     [ApiController]
     [Route("api/admin/doctors")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(
+        AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+        Roles = "Admin")]
     public class AdminDoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
@@ -19,9 +22,19 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDoctors()
+        public async Task<IActionResult> GetDoctors(
+            [FromQuery] string? search,
+            [FromQuery] SpecialisationType? specialisation,
+            [FromQuery] bool? isActive,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var doctors = await _doctorService.GetAllDoctorsAsync();
+            var doctors = await _doctorService.SearchDoctorsAsync(
+                search,
+                specialisation,
+                isActive,
+                pageNumber,
+                pageSize);
 
             return Ok(doctors);
         }

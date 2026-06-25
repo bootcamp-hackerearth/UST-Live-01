@@ -239,7 +239,7 @@ else
 
         if (result.IsSuccess)
         {
-            Doctor = result.Data?
+            Doctor = result.Data?.Items
                 .FirstOrDefault(doctor => doctor.DoctorId == Id);
 
             if (Doctor == null)

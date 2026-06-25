@@ -56,10 +56,7 @@ namespace HealthApp.Api.Services.Impl
 
             string email = dto.DoctorEmail.Trim();
 
-            var allDoctors = await _doctorRepository.SearchDoctorsAsync(
-                null,
-                null,
-                null);
+            var allDoctors = await _doctorRepository.GetAllAsync();
 
             bool emailExists = allDoctors.Any(d =>
                 string.Equals(
@@ -109,10 +106,7 @@ namespace HealthApp.Api.Services.Impl
 
             string email = dto.DoctorEmail.Trim();
 
-            var allDoctors = await _doctorRepository.SearchDoctorsAsync(
-                null,
-                null,
-                null);
+            var allDoctors = await _doctorRepository.GetAllAsync();
 
             bool emailUsedByAnotherDoctor = allDoctors.Any(d =>
                 d.DoctorId != id &&
@@ -165,25 +159,38 @@ namespace HealthApp.Api.Services.Impl
         public async Task<IEnumerable<DoctorDto>> GetDoctorsBySpecialisationAsync(
             SpecialisationType specialisation)
         {
-            var doctors = await _doctorRepository.SearchDoctorsAsync(
-                null,
-                specialisation,
-                true);
+            var allDoctors = await _doctorRepository.GetAllAsync();
+
+            var doctors = allDoctors.Where(d =>
+                d.Specialisation == specialisation &&
+                d.IsActive);
 
             return _mapper.Map<IEnumerable<DoctorDto>>(doctors);
         }
 
-        public async Task<IEnumerable<DoctorDto>> SearchDoctorsAsync(
+        public async Task<PagedResultDto<DoctorDto>> SearchDoctorsAsync(
             string? search,
             SpecialisationType? specialisation,
-            bool? isActive)
+            bool? isActive,
+            int pageNumber,
+            int pageSize)
         {
-            var doctors = await _doctorRepository.SearchDoctorsAsync(
+            var (items, totalCount) = await _doctorRepository.SearchDoctorsAsync(
                 search,
                 specialisation,
-                isActive);
+                isActive,
+                pageNumber,
+                pageSize);
 
-            return _mapper.Map<IEnumerable<DoctorDto>>(doctors);
+            var doctorDtos = _mapper.Map<List<DoctorDto>>(items);
+
+            return new PagedResultDto<DoctorDto>
+            {
+                Items = doctorDtos,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
         }
 
         private static void ValidateDoctor(DoctorCreateDto dto)

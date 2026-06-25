@@ -16,9 +16,7 @@ namespace HealthApp.Api.Controllers
     {
         private readonly IDoctorService _doctorService;
 
-        public DoctorsController(
-            IDoctorService doctorService,
-            IAppointmentService appointmentService)
+        public DoctorsController(IDoctorService doctorService)
         {
             _doctorService = doctorService;
         }
@@ -29,12 +27,14 @@ namespace HealthApp.Api.Controllers
             [FromQuery] SpecialisationType? specialisation,
             [FromQuery] bool? isActive = true)
         {
-            var doctors = await _doctorService.SearchDoctorsAsync(
+            var pagedDoctors = await _doctorService.SearchDoctorsAsync(
                 search,
                 specialisation,
-                isActive);
+                isActive,
+                pageNumber: 1,
+                pageSize: 100);
 
-            return Ok(doctors);
+            return Ok(pagedDoctors.Items);
         }
 
         [HttpGet("{id:int}")]

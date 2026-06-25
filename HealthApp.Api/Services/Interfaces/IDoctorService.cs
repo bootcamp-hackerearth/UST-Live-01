@@ -1,5 +1,4 @@
-﻿
-using HealthApp.Shared.Dtos;
+﻿using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
 
 namespace HealthApp.Api.Services.Interfaces
@@ -19,9 +18,11 @@ namespace HealthApp.Api.Services.Interfaces
         Task<IEnumerable<DoctorDto>> GetDoctorsBySpecialisationAsync(
             SpecialisationType specialisation);
 
-        Task<IEnumerable<DoctorDto>> SearchDoctorsAsync(
+        Task<PagedResultDto<DoctorDto>> SearchDoctorsAsync(
             string? search,
             SpecialisationType? specialisation,
-            bool? isActive);
+            bool? isActive,
+            int pageNumber,
+            int pageSize);
     }
 }

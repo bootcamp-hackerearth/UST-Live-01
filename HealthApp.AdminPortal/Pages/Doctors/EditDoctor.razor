@@ -174,7 +174,7 @@ else
 
         if (result.IsSuccess)
         {
-            var existingDoctor = result.Data?
+            var existingDoctor = result.Data?.Items
                 .FirstOrDefault(doctor => doctor.DoctorId == Id);
 
             if (existingDoctor is null)

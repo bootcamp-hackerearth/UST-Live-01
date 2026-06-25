@@ -27,13 +27,17 @@ namespace HealthApp.Api.Repositories.Impl
             return await _context.SaveChangesAsync(ct)>0;
         }
 
-        public async Task<IEnumerable<Doctor>> SearchDoctorsAsync(
-            string? search,
-            SpecialisationType? specialisation,
-            bool? isActive,
-            CancellationToken ct = default)
+        public async Task<(IEnumerable<Doctor> Items, int TotalCount)> SearchDoctorsAsync(
+    string? search,
+    SpecialisationType? specialisation,
+    bool? isActive,
+    int pageNumber,
+    int pageSize,
+    CancellationToken ct = default)
         {
-            var query = _context.Doctors.AsQueryable();
+            var query = _context.Doctors
+                .AsNoTracking()
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -49,10 +53,20 @@ namespace HealthApp.Api.Repositories.Impl
 
             if (isActive.HasValue)
             {
-                query = query.Where(d => d.IsActive == isActive.Value);
+                query = query.Where(d =>
+                    d.IsActive == isActive.Value);
             }
 
-            return await query.ToListAsync(ct);
+            var totalCount = await query.CountAsync(ct);
+
+            query = query.OrderBy(d => d.DoctorId);
+
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            return (items, totalCount);
         }
 
         public async Task<bool> ExistsByEmailAsync(string email)
