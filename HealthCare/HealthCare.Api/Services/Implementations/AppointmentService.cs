@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using HealthCare.Api.Data;
 using Healthcare.Shared.DTOs;
-using Healthcare.Shared.DTOs.Appointment;
 using Healthcare.Shared.DTOs.Appointments;
+using HealthCare.Api.Data;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace HealthCare.Api.Services.Implementations
@@ -17,7 +17,7 @@ namespace HealthCare.Api.Services.Implementations
         private readonly IDoctorService _doctorService;
         private readonly IMapper _mapper;
         private readonly HealthCareDbContext _context;
-
+      
         public AppointmentService(IAppointmentRepository repository, IDoctorService doctorService, HealthCareDbContext context, IMapper mapper)
         {
             _repository = repository;
@@ -26,7 +26,7 @@ namespace HealthCare.Api.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task AddAsync(CreateAppointmentDto dto,int id)
+        public async Task AddAsync(CreateAppointmentDto dto, int id)
         {
             var appointment = _mapper.Map<Appointment>(dto);
             await _repository.AddAsync(appointment);
@@ -171,6 +171,37 @@ namespace HealthCare.Api.Services.Implementations
         {
             await _repository.CancelAppointmentsByDoctorDate(doctorId, date);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<AppointmentSummaryDto> GetSummaryAsync()
+        {
+            var doctors = await _context.Doctors.CountAsync();
+            var patients = await _context.Patients.CountAsync();
+
+            var totalAppointments = await _context.Appointments.CountAsync();
+
+            var pending = await _context.Appointments.CountAsync(a => a.Status == "Pending");
+            var confirmed = await _context.Appointments.CountAsync(a => a.Status == "Confirmed");
+            var completed = await _context.Appointments.CountAsync(a => a.Status == "Completed");
+            var cancelled = await _context.Appointments.CountAsync(a => a.Status == "Cancelled");
+
+            var revenue = await _context.Appointments
+                .Where(a => a.Status == "Completed")
+                .SumAsync(a => a.Doctor.ConsultationFee);
+
+            return new AppointmentSummaryDto
+            {
+                TotalDoctors = doctors,
+                TotalPatients = patients,
+                TotalAppointments = totalAppointments,
+
+                PendingCount = pending,
+                ConfirmedCount = confirmed,
+                CompletedCount = completed,
+                CancelledCount = cancelled,
+
+                TotalRevenue = revenue
+            };
         }
     }
 }

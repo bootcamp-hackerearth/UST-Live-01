@@ -1,4 +1,4 @@
-﻿namespace Healthcare.Shared.DTOs.Appointment
+﻿namespace Healthcare.Shared.DTOs.Appointments
 {
     public class AppointmentFilter : PaginationParam
     {

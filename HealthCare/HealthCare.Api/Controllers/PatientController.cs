@@ -1,11 +1,7 @@
-﻿using Healthcare.Shared.DTOs.Appointment;
-using Healthcare.Shared.DTOs.Patient;
-using HealthCare.Api.Models;
-using HealthCare.Api.Services.Implementations;
+﻿using Healthcare.Shared.DTOs.Patient;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCare.Api.Controllers

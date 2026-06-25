@@ -29,4 +29,17 @@ public class AppointmentService
         return result?.Items ?? new List<AppointmentReportDto>();
 
     }
+
+
+    public async Task<AppointmentSummaryDto> GetDashboard()
+    {
+        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
+
+        _http.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", token);
+
+        return await _http.GetFromJsonAsync<AppointmentSummaryDto>("api/admin/dashboard")
+               ?? new AppointmentSummaryDto();
+    }
+
 }

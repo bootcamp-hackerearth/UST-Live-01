@@ -1,5 +1,4 @@
 ﻿using Healthcare.Shared.DTOs;
-using Healthcare.Shared.DTOs.Appointment;
 using Healthcare.Shared.DTOs.Appointments;
 
 namespace HealthCare.Api.Services.Interfaces
@@ -21,5 +20,6 @@ namespace HealthCare.Api.Services.Interfaces
         Task<List<AppointmentListDto>> GetAppointmentByPatient(int id);
         Task<List<AppointmentListDto>> GetAppointmentByDoctor(int id);
         Task CancelAppointmentsByDoctorDate(int doctorId, DateOnly date);
+        Task<AppointmentSummaryDto> GetSummaryAsync();
     }
 }

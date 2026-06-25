@@ -1,4 +1,5 @@
 ﻿@page "/dashboard"
+@using Healthcare.Shared.DTOs.Appointments
 
 @inject DoctorService DoctorService
 @inject PatientService PatientService
@@ -15,7 +16,7 @@
     <div class="col-12">
         <div class="card shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted small">Total Patients</div>
-            <h4 class="fw-bold">@totalPatients</h4>
+            <h4 class="fw-bold">@dashboard.TotalPatients</h4>
            
         </div>
     </div>
@@ -24,7 +25,7 @@
     <div class="col-12">
         <div class="card shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted small">Total Doctors</div>
-            <h4 class="fw-bold">@totalDoctors</h4>
+            <h4 class="fw-bold">@dashboard.TotalDoctors</h4>
            
         </div>
     </div>
@@ -38,7 +39,7 @@
     <div class="col-md-6">
         <div class="card shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted small">Appointments</div>
-            <h4 class="fw-bold">@totalAppointments</h4>
+            <h4 class="fw-bold">@dashboard.TotalAppointments</h4>
  
         </div>
     </div>
@@ -49,8 +50,8 @@
              style="background:#0B5ED7;">
 
             <div class="small">Total Revenue</div>
-            <h3>₹18,42,500</h3>
-            <small>+12.4% vs last month</small>
+            <h3>₹@dashboard.TotalRevenue</h3>
+            @* <small>+12.4% vs last month</small> *@
         </div>
     </div>
 
@@ -62,28 +63,28 @@
     <div class="col-md-3">
         <div class="card text-center shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted">Pending</div>
-            <h4 class="text-warning">@pending</h4>
+            <h4 class="text-warning">@dashboard.PendingCount</h4>
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card text-center shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted">Confirmed</div>
-            <h4 class="text-primary">@confirmed</h4>
+            <h4 class="text-primary">@dashboard.ConfirmedCount</h4>
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card text-center shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted">Completed</div>
-            <h4 class="text-success">@completed</h4>
+            <h4 class="text-success">@dashboard.CompletedCount</h4>
         </div>
     </div>
 
     <div class="col-md-3">
         <div class="card text-center shadow-sm p-3 border-0 rounded-3">
             <div class="text-muted">Cancelled</div>
-            <h4 class="text-danger">@cancelled</h4>
+            <h4 class="text-danger">@dashboard.CancelledCount</h4>
         </div>
     </div>
 
@@ -92,6 +93,8 @@
 
 
 @code {
+
+    private AppointmentSummaryDto dashboard = new();
     private int totalDoctors;
     private int totalPatients;
     private int totalAppointments;
@@ -105,17 +108,20 @@
     [Inject] IJSRuntime JS { get; set; }
 
    
+  
     protected override async Task OnInitializedAsync()
     {
         var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
 
+        // ✅ Auth check
         if (string.IsNullOrEmpty(token))
         {
             Nav.NavigateTo("/login");
             return;
         }
 
-        await LoadDashboard();
+        // ✅ Load dashboard data
+        dashboard = await AppointmentService.GetDashboard();
     }
 
     private async Task LoadDashboard()
