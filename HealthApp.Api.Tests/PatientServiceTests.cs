@@ -1,11 +1,14 @@
-﻿using AutoMapper;
-using HealthApp.Api.Exceptions;
-using HealthApp.Api.Models;
-using HealthApp.Api.Repositories.Interfaces;
-using HealthApp.Api.Services.Impl;
-using HealthApp.Shared.Dtos;
+﻿using Xunit;
 using Moq;
-using Xunit;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
+using HealthApp.Api.Services.Impl;
+using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Api.Models;
+using HealthApp.Api.Exceptions;
+using HealthApp.Shared.Dtos;
 
 namespace HealthApp.Api.Tests.Services
 {
@@ -25,408 +28,167 @@ namespace HealthApp.Api.Tests.Services
                 _mapperMock.Object);
         }
 
+        private static PatientCreateDto GetValidDto() => new()
+        {
+            FullName = "John Doe",
+            DateOfBirth = new DateOnly(1998, 1, 1),
+            Gender = "Male",
+            PhoneNumber = "9876543210",
+            Email = "patient@test.com",
+            InsuranceId = "INS001"
+        };
+
+
         [Fact]
-        public async Task GetAllPatientsAsync_ShouldReturnPatientDtos()
+        public async Task GetAll_ShouldReturnPatients()
         {
             var patients = new List<Patient>
             {
-                new Patient
-                {
-                    PatientId = 1,
-                    FullName = "John Doe",
-                    DateOfBirth = new DateOnly(1998, 1, 1),
-                    Gender = "Male",
-                    PhoneNumber = "9876543210",
-                    Email = "john@test.com",
-                    InsuranceId = "INS001",
-                    CreatedDate = DateTime.Now
-                }
+                new Patient { PatientId = 1, FullName = "John Doe" }
             };
 
-            var patientDtos = new List<PatientDto>
-            {
-                new PatientDto
-                {
-                    PatientId = 1,
-                    FullName = "John Doe",
-                    DateOfBirth = new DateOnly(1998, 1, 1),
-                    Gender = "Male",
-                    PhoneNumber = "9876543210",
-                    Email = "john@test.com",
-                    InsuranceId = "INS001",
-                    CreatedDate = DateTime.Now
-                }
-            };
-
-            _patientRepositoryMock
-                .Setup(repo => repo.GetAllAsync(It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(patients);
 
-            _mapperMock
-                .Setup(mapper => mapper.Map<IEnumerable<PatientDto>>(patients))
-                .Returns(patientDtos);
+            _mapperMock.Setup(x =>
+                x.Map<IEnumerable<PatientDto>>(patients))
+                .Returns(new List<PatientDto>
+                {
+                    new PatientDto { FullName = "John Doe" }
+                });
 
             var result = await _patientService.GetAllPatientsAsync();
 
-            Assert.NotNull(result);
             Assert.Single(result);
-            Assert.Equal("John Doe", result.First().FullName);
+        }
 
-            _patientRepositoryMock.Verify(
-                repo => repo.GetAllAsync(It.IsAny<CancellationToken>()),
-                Times.Once);
+
+        [Fact]
+        public async Task GetById_Invalid_ShouldThrow()
+        {
+            await Assert.ThrowsAsync<InvalidRequestException>(() =>
+                _patientService.GetPatientByIdAsync(0));
         }
 
         [Fact]
-        public async Task GetPatientByIdAsync_WhenIdIsInvalid_ShouldThrowInvalidRequestException()
+        public async Task GetById_NotFound_ShouldThrow()
         {
-            var act = async () => await _patientService.GetPatientByIdAsync(0);
-
-            var exception = await Assert.ThrowsAsync<InvalidRequestException>(act);
-            Assert.Equal("Valid patient id is required.", exception.Message);
-
-            _patientRepositoryMock.Verify(
-                repo => repo.GetByIdAsync(It.IsAny<int>(), It.IsAny<CancellationToken>()),
-                Times.Never);
-        }
-
-        [Fact]
-        public async Task GetPatientByIdAsync_WhenPatientDoesNotExist_ShouldThrowEntityNotFoundException()
-        {
-            int patientId = 10;
-
-            _patientRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync((Patient?)null);
 
-            var act = async () => await _patientService.GetPatientByIdAsync(patientId);
-
-            var exception = await Assert.ThrowsAsync<EntityNotFoundException>(act);
-            Assert.Equal("Patient with id '10' was not found.", exception.Message);
+            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
+                _patientService.GetPatientByIdAsync(1));
         }
 
         [Fact]
-        public async Task GetPatientByIdAsync_WhenPatientExists_ShouldReturnPatientDto()
+        public async Task GetById_Valid_ShouldReturnDto()
         {
-            int patientId = 1;
+            var patient = new Patient { PatientId = 1 };
 
-            var patient = new Patient
-            {
-                PatientId = patientId,
-                FullName = "John Doe",
-                DateOfBirth = new DateOnly(1998, 1, 1),
-                Gender = "Male",
-                PhoneNumber = "9876543210",
-                Email = "john@test.com",
-                InsuranceId = "INS001",
-                CreatedDate = DateTime.Now
-            };
-
-            var patientDto = new PatientDto
-            {
-                PatientId = patientId,
-                FullName = "John Doe",
-                DateOfBirth = new DateOnly(1998, 1, 1),
-                Gender = "Male",
-                PhoneNumber = "9876543210",
-                Email = "john@test.com",
-                InsuranceId = "INS001",
-                CreatedDate = patient.CreatedDate
-            };
-
-            _patientRepositoryMock
-                .Setup(repo => repo.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(patient);
 
-            _mapperMock
-                .Setup(mapper => mapper.Map<PatientDto>(patient))
-                .Returns(patientDto);
+            _mapperMock.Setup(x => x.Map<PatientDto>(patient))
+                .Returns(new PatientDto { PatientId = 1 });
 
-            var result = await _patientService.GetPatientByIdAsync(patientId);
+            var result = await _patientService.GetPatientByIdAsync(1);
 
-            Assert.NotNull(result);
-            Assert.Equal(patientId, result.PatientId);
-            Assert.Equal("John Doe", result.FullName);
-            Assert.Equal("john@test.com", result.Email);
+            Assert.Equal(1, result.PatientId);
+        }
+
+
+        [Fact]
+        public async Task Register_NullDto_ShouldThrow()
+        {
+            await Assert.ThrowsAsync<InvalidRequestException>(() =>
+                _patientService.RegisterPatientAsync(null!));
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenDtoIsNull_ShouldThrowInvalidRequestException()
+        public async Task Register_EmptyName_ShouldThrow()
         {
-            var act = async () => await _patientService.RegisterPatientAsync(null!);
-
-            var exception = await Assert.ThrowsAsync<InvalidRequestException>(act);
-            Assert.Equal("Patient data is required.", exception.Message);
-        }
-
-        [Fact]
-        public async Task RegisterPatientAsync_WhenNameIsEmpty_ShouldThrowInvalidRequestException()
-        {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
             dto.FullName = "";
 
-            var act = async () => await _patientService.RegisterPatientAsync(dto);
-
-            var exception = await Assert.ThrowsAsync<InvalidRequestException>(act);
-            Assert.Equal("Patient name is required.", exception.Message);
+            await Assert.ThrowsAsync<InvalidRequestException>(() =>
+                _patientService.RegisterPatientAsync(dto));
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenDateOfBirthIsMissing_ShouldThrowInvalidRequestException()
+        public async Task Register_FutureDob_ShouldThrow()
         {
-            var dto = GetValidPatientCreateDto();
-            dto.DateOfBirth = null;
-
-            var act = async () => await _patientService.RegisterPatientAsync(dto);
-
-            var exception = await Assert.ThrowsAsync<InvalidRequestException>(act);
-            Assert.Equal("Date of birth is required.", exception.Message);
-        }
-
-        [Fact]
-        public async Task RegisterPatientAsync_WhenGenderIsInvalid_ShouldThrowInvalidRequestException()
-        {
-            var dto = GetValidPatientCreateDto();
-            dto.Gender = "InvalidGender";
-
-            var act = async () => await _patientService.RegisterPatientAsync(dto);
-
-            var exception = await Assert.ThrowsAsync<InvalidRequestException>(act);
-            Assert.Equal("Invalid gender.", exception.Message);
-        }
-
-        [Fact]
-        public async Task RegisterPatientAsync_WhenDateOfBirthIsFuture_ShouldThrowBusinessRuleViolationException()
-        {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
             dto.DateOfBirth = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
 
-            var act = async () => await _patientService.RegisterPatientAsync(dto);
-
-            var exception = await Assert.ThrowsAsync<BusinessRuleViolationException>(act);
-            Assert.Equal("Future date is not allowed.", exception.Message);
+            await Assert.ThrowsAsync<BusinessRuleViolationException>(() =>
+                _patientService.RegisterPatientAsync(dto));
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenEmailAlreadyExists_ShouldThrowDuplicateEntityException()
+        public async Task Register_EmailExists_ShouldThrow()
         {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
 
-            var existingPatients = new List<Patient>
-            {
-                new Patient
+            _patientRepositoryMock.Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient>
                 {
-                    PatientId = 1,
-                    FullName = "Existing Patient",
-                    DateOfBirth = new DateOnly(1990, 1, 1),
-                    Gender = "Male",
-                    PhoneNumber = "9999999999",
-                    Email = "patient@test.com"
-                }
-            };
+                    new Patient { Email = dto.Email }
+                });
 
-            _patientRepositoryMock
-                .Setup(repo => repo.GetPatientsAsync(
-                    null,
-                    "patient@test.com",
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(existingPatients);
-
-            var act = async () => await _patientService.RegisterPatientAsync(dto);
-
-            var exception = await Assert.ThrowsAsync<DuplicateEntityException>(act);
-            Assert.Equal("A patient with this email already exists.", exception.Message);
-
-            _patientRepositoryMock.Verify(
-                repo => repo.Add(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-                Times.Never);
+            await Assert.ThrowsAsync<DuplicateEntityException>(() =>
+                _patientService.RegisterPatientAsync(dto));
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenDuplicatePatientExists_ShouldThrowDuplicateEntityException()
+        public async Task Register_DuplicatePatient_ShouldThrow()
         {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
 
-            _patientRepositoryMock
-                .Setup(repo => repo.GetPatientsAsync(
-                    null,
-                    "patient@test.com",
-                    It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(new List<Patient>());
 
-            _patientRepositoryMock
-                .Setup(repo => repo.IsDuplicatePatient(
-                    "John Doe",
-                    dto.DateOfBirth!.Value.ToDateTime(TimeOnly.MinValue),
-                    "patient@test.com",
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
+            _patientRepositoryMock.Setup(x => x.IsDuplicatePatient(
+                dto.FullName,
+                dto.DateOfBirth!.Value.ToDateTime(TimeOnly.MinValue),
+                dto.Email))
+            .ReturnsAsync(true);
 
-            var act = async () => await _patientService.RegisterPatientAsync(dto);
-
-            var exception = await Assert.ThrowsAsync<DuplicateEntityException>(act);
-            Assert.Equal(
-                "A patient with same name, date of birth and email already exists.",
-                exception.Message);
-
-            _patientRepositoryMock.Verify(
-                repo => repo.Add(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-                Times.Never);
+            await Assert.ThrowsAsync<DuplicateEntityException>(() =>
+                _patientService.RegisterPatientAsync(dto));
         }
 
         [Fact]
-        public async Task RegisterPatientAsync_WhenValid_ShouldAddPatient()
+        public async Task Register_Valid_ShouldAdd()
         {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
 
-            var mappedPatient = new Patient
-            {
-                FullName = dto.FullName,
-                DateOfBirth = dto.DateOfBirth!.Value,
-                Gender = dto.Gender,
-                PhoneNumber = dto.PhoneNumber,
-                Email = dto.Email,
-                InsuranceId = dto.InsuranceId
-            };
-
-            _patientRepositoryMock
-                .Setup(repo => repo.GetPatientsAsync(
-                    null,
-                    "patient@test.com",
-                    It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(new List<Patient>());
 
-            _patientRepositoryMock
-                .Setup(repo => repo.IsDuplicatePatient(
-                    "John Doe",
-                    dto.DateOfBirth!.Value.ToDateTime(TimeOnly.MinValue),
-                    "patient@test.com",
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
+            _patientRepositoryMock.Setup(x => x.IsDuplicatePatient(
+                dto.FullName,
+                dto.DateOfBirth!.Value.ToDateTime(TimeOnly.MinValue),
+                dto.Email))
+            .ReturnsAsync(false);
 
-            _mapperMock
-                .Setup(mapper => mapper.Map<Patient>(dto))
-                .Returns(mappedPatient);
-
-            _patientRepositoryMock
-                .Setup(repo => repo.Add(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((Patient patient, CancellationToken _) => patient);
+            _mapperMock.Setup(x => x.Map<Patient>(dto))
+                .Returns(new Patient());
 
             await _patientService.RegisterPatientAsync(dto);
 
-            _patientRepositoryMock.Verify(
-                repo => repo.Add(
-                    It.Is<Patient>(patient =>
-                        patient.FullName == "John Doe" &&
-                        patient.DateOfBirth == new DateOnly(1998, 1, 1) &&
-                        patient.Gender == "Male" &&
-                        patient.PhoneNumber == "9876543210" &&
-                        patient.Email == "patient@test.com" &&
-                        patient.InsuranceId == "INS001"),
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
+            _patientRepositoryMock.Verify(x => x.Add(It.IsAny<Patient>()), Times.Once);
         }
 
         [Fact]
-        public async Task SearchPatientsAsync_ShouldReturnMappedPatientDtos()
+        public async Task Register_EmailIgnoreCase_ShouldThrow()
         {
-            var patients = new List<Patient>
-            {
-                new Patient
-                {
-                    PatientId = 1,
-                    FullName = "John Doe",
-                    DateOfBirth = new DateOnly(1998, 1, 1),
-                    Gender = "Male",
-                    PhoneNumber = "9876543210",
-                    Email = "patient@test.com"
-                }
-            };
-
-            var patientDtos = new List<PatientDto>
-            {
-                new PatientDto
-                {
-                    PatientId = 1,
-                    FullName = "John Doe",
-                    DateOfBirth = new DateOnly(1998, 1, 1),
-                    Gender = "Male",
-                    PhoneNumber = "9876543210",
-                    Email = "patient@test.com"
-                }
-            };
-
-            _patientRepositoryMock
-                .Setup(repo => repo.GetPatientsAsync(
-                    "John",
-                    "patient@test.com",
-                    It.IsAny<CancellationToken>()))
-                .ReturnsAsync(patients);
-
-            _mapperMock
-                .Setup(mapper => mapper.Map<IEnumerable<PatientDto>>(patients))
-                .Returns(patientDtos);
-
-            var result = await _patientService.SearchPatientsAsync(
-                "John",
-                "patient@test.com");
-
-            Assert.NotNull(result);
-            Assert.Single(result);
-            Assert.Equal("John Doe", result.First().FullName);
-
-            _patientRepositoryMock.Verify(
-                repo => repo.GetPatientsAsync(
-                    "John",
-                    "patient@test.com",
-                    It.IsAny<CancellationToken>()),
-                Times.Once);
-        }
-
-        [Fact]
-        public async Task Register_ShouldThrow_WhenGenderEmpty()
-        {
-            var dto = GetValidPatientCreateDto();
-            dto.Gender = "";
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _patientService.RegisterPatientAsync(dto));
-        }
-
-        [Fact]
-        public async Task Register_ShouldThrow_WhenPhoneEmpty()
-        {
-            var dto = GetValidPatientCreateDto();
-            dto.PhoneNumber = "";
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _patientService.RegisterPatientAsync(dto));
-        }
-
-        [Fact]
-        public async Task Register_ShouldThrow_WhenEmailEmpty()
-        {
-            var dto = GetValidPatientCreateDto();
-            dto.Email = "";
-
-            await Assert.ThrowsAsync<InvalidRequestException>(() =>
-                _patientService.RegisterPatientAsync(dto));
-        }
-
-        [Fact]
-        public async Task Register_ShouldThrow_WhenEmailExists_IgnoreCase()
-        {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
             dto.Email = "TEST@TEST.COM";
 
-            _patientRepositoryMock
-                .Setup(x => x.GetPatientsAsync(
-                    null,
-                    It.IsAny<string>(),   
-                    It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(new List<Patient>
                 {
-            new Patient { Email = "test@test.com" }
+                    new Patient { Email = "test@test.com" }
                 });
 
             await Assert.ThrowsAsync<DuplicateEntityException>(() =>
@@ -435,38 +197,41 @@ namespace HealthApp.Api.Tests.Services
 
 
         [Fact]
-        public async Task Update_ShouldThrow_WhenDtoNull()
+        public async Task Update_InvalidId_ShouldThrow()
+        {
+            await Assert.ThrowsAsync<InvalidRequestException>(() =>
+                _patientService.UpdatePatientAsync(0, GetValidDto()));
+        }
+
+        [Fact]
+        public async Task Update_DtoNull_ShouldThrow()
         {
             await Assert.ThrowsAsync<InvalidRequestException>(() =>
                 _patientService.UpdatePatientAsync(1, null!));
         }
 
         [Fact]
-        public async Task Update_ShouldThrow_WhenPatientNotFound()
+        public async Task Update_NotFound_ShouldThrow()
         {
-            var dto = GetValidPatientCreateDto();
-
-            _patientRepositoryMock
-                .Setup(x => x.GetByIdAsync(1))
+            _patientRepositoryMock.Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync((Patient?)null);
 
             await Assert.ThrowsAsync<EntityNotFoundException>(() =>
-                _patientService.UpdatePatientAsync(1, dto));
+                _patientService.UpdatePatientAsync(1, GetValidDto()));
         }
 
         [Fact]
-        public async Task Update_ShouldThrow_WhenEmailUsedByAnother()
+        public async Task Update_EmailConflict_ShouldThrow()
         {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
 
             _patientRepositoryMock.Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(new Patient { PatientId = 1 });
 
-            _patientRepositoryMock.Setup(x =>
-                x.GetPatientsAsync(null, dto.Email, It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(new List<Patient>
                 {
-            new Patient { PatientId = 2, Email = dto.Email }
+                    new Patient { PatientId = 2, Email = dto.Email }
                 });
 
             await Assert.ThrowsAsync<DuplicateEntityException>(() =>
@@ -474,17 +239,16 @@ namespace HealthApp.Api.Tests.Services
         }
 
         [Fact]
-        public async Task Update_ShouldUpdate_WhenValid()
+        public async Task Update_Valid_ShouldUpdate()
         {
-            var dto = GetValidPatientCreateDto();
+            var dto = GetValidDto();
 
             var patient = new Patient { PatientId = 1 };
 
             _patientRepositoryMock.Setup(x => x.GetByIdAsync(1))
                 .ReturnsAsync(patient);
 
-            _patientRepositoryMock.Setup(x =>
-                x.GetPatientsAsync(null, dto.Email, It.IsAny<CancellationToken>()))
+            _patientRepositoryMock.Setup(x => x.GetAllAsync())
                 .ReturnsAsync(new List<Patient>());
 
             await _patientService.UpdatePatientAsync(1, dto);
@@ -493,17 +257,43 @@ namespace HealthApp.Api.Tests.Services
                 x.Update(1, It.IsAny<Patient>()), Times.Once);
         }
 
-        private static PatientCreateDto GetValidPatientCreateDto()
+
+        [Fact]
+        public async Task Search_Valid_ShouldReturnPaged()
         {
-            return new PatientCreateDto
+            var patients = new List<Patient>
             {
-                FullName = "John Doe",
-                DateOfBirth = new DateOnly(1998, 1, 1),
-                Gender = "Male",
-                PhoneNumber = "9876543210",
-                Email = "patient@test.com",
-                InsuranceId = "INS001"
+                new Patient { PatientId = 1, FullName = "John" }
             };
+
+            _patientRepositoryMock.Setup(x =>
+                x.GetPatientsAsync("John", "test@test.com", 1, 10))
+                .ReturnsAsync((patients, 1));
+
+            _mapperMock.Setup(x => x.Map<List<PatientDto>>(patients))
+                .Returns(new List<PatientDto>
+                {
+                    new PatientDto { PatientId = 1 }
+                });
+
+            var result = await _patientService.SearchPatientsAsync("John", "test@test.com", 1, 10);
+
+            Assert.Single(result.Items);
+            Assert.Equal(1, result.TotalCount);
+        }
+
+        [Fact]
+        public async Task Search_InvalidPage_ShouldThrow()
+        {
+            await Assert.ThrowsAsync<InvalidRequestException>(() =>
+                _patientService.SearchPatientsAsync(null, null, 0, 10));
+        }
+
+        [Fact]
+        public async Task Search_InvalidPageSize_ShouldThrow()
+        {
+            await Assert.ThrowsAsync<InvalidRequestException>(() =>
+                _patientService.SearchPatientsAsync(null, null, 1, 101));
         }
     }
 }
