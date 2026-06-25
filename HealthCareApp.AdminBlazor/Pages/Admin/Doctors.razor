@@ -44,28 +44,49 @@ else
 
     <div class="hc-doctor-stat-grid">
         <div class="hc-doctor-stat-card blue">
-            <span>Total Matching Doctors</span>
-
-            <strong>@totalRecords</strong>
+            <div class="hc-stat-content">
+                <span>Total Matching Doctors</span>
+                <strong>@totalRecords</strong>
+            </div>
+            <div class="hc-stat-icon" aria-hidden="true">
+                <!-- doctors icon -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5z" fill="#fff" opacity="0.95" />
+                    <path d="M2 20c0-3.31 4.03-6 10-6s10 2.69 10 6" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                </svg>
+            </div>
         </div>
 
         <div class="hc-doctor-stat-card green">
-            <span>Active On This Page</span>
-
-            <strong>@doctors.Count(d => d.IsActive)</strong>
+            <div class="hc-stat-content">
+                <span>Active On This Page</span>
+                <strong>@doctors.Count(d => d.IsActive)</strong>
+            </div>
+            <div class="hc-stat-icon" aria-hidden="true">
+                <!-- active user icon -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="9" cy="8" r="3" fill="#fff" opacity="0.95" />
+                    <path d="M2 20c1.5-2.5 6-3 6-3s4.5 0.5 6 3" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+                </svg>
+            </div>
         </div>
 
         <div class="hc-doctor-stat-card red">
-            <span>Inactive On This Page</span>
-
-            <strong>@doctors.Count(d => !d.IsActive)</strong>
+            <div class="hc-stat-content">
+                <span>Inactive On This Page</span>
+                <strong>@doctors.Count(d => !d.IsActive)</strong>
+            </div>
+            <div class="hc-stat-icon" aria-hidden="true">
+                <!-- inactive / warning icon -->
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2l10 18H2L12 2z" fill="#fff" opacity="0.95" />
+                    <path d="M12 8v5" stroke="#fff" stroke-width="1.4" stroke-linecap="round" />
+                    <circle cx="12" cy="17" r="1" fill="#fff" />
+                </svg>
+            </div>
         </div>
 
-        <div class="hc-doctor-stat-card purple">
-            <span>Page</span>
-
-            <strong>@currentPage / @totalPages</strong>
-        </div>
+        <!-- pagination stat card removed per design; remaining three cards will auto-align -->
     </div>
 
     <section class="hc-list-panel">
@@ -252,6 +273,8 @@ else
 }
 
 @code {
+    private CancellationTokenSource? searchCancellationTokenSource;
+
     private List<DoctorDto> doctors = new();
 
     private string searchTerm = string.Empty;
@@ -314,11 +337,14 @@ else
         await LoadDoctorsAsync();
     }
 
-    private async Task LoadDoctorsAsync()
+    private async Task LoadDoctorsAsync(bool showFullPageLoader = true)
     {
         try
         {
-            isLoading = true;
+            if (showFullPageLoader)
+            {
+                isLoading = true;
+            }
 
             errorMessage = null;
 
@@ -346,7 +372,10 @@ else
         }
         finally
         {
-            isLoading = false;
+            if (showFullPageLoader)
+            {
+                isLoading = false;
+            }
         }
     }
 
@@ -386,7 +415,20 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        searchCancellationTokenSource?.Cancel();
+
+        searchCancellationTokenSource = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(400, searchCancellationTokenSource.Token);
+
+            await LoadDoctorsAsync(showFullPageLoader: false);
+        }
+        catch (TaskCanceledException)
+        {
+            // Ignore cancelled search request.
+        }
     }
 
     private async Task OnSpecialisationChanged(ChangeEventArgs args)
@@ -395,7 +437,7 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task OnStatusChanged(ChangeEventArgs args)
@@ -404,7 +446,7 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task OnPageSizeChanged(ChangeEventArgs args)
@@ -415,7 +457,7 @@ else
 
             currentPage = 1;
 
-            await LoadDoctorsAsync();
+            await LoadDoctorsAsync(showFullPageLoader: false);
         }
     }
 
@@ -429,7 +471,7 @@ else
 
         currentPage = 1;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task PreviousPage()
@@ -441,7 +483,7 @@ else
 
         currentPage--;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private async Task NextPage()
@@ -453,7 +495,7 @@ else
 
         currentPage++;
 
-        await LoadDoctorsAsync();
+        await LoadDoctorsAsync(showFullPageLoader: false);
     }
 
     private void GoToAddDoctor()
@@ -476,7 +518,7 @@ else
 
             if (updatedDoctor is not null)
             {
-                await LoadDoctorsAsync();
+                await LoadDoctorsAsync(showFullPageLoader: false);
             }
         }
         catch (UnauthorizedAccessException ex)
