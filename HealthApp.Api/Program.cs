@@ -8,14 +8,13 @@ using HealthApp.Api.Services.Impl;
 using HealthApp.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Serilog;
 using System.Text;
-using Microsoft.AspNetCore.Authorization.Policy;
-
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -29,12 +28,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog();
 
-
-// Add controllers
+// Controllers
 builder.Services.AddControllers();
 
 // Swagger / OpenAPI
 builder.Services.AddOpenApi();
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(options =>
@@ -59,7 +58,6 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-
 // Database
 builder.Services.AddDbContext<HealthAppDbContext>(options =>
 {
@@ -80,15 +78,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<HealthAppDbContext>()
 .AddDefaultTokenProviders();
 
+// CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowBlazor",
+    options.AddPolicy(
+        "AllowBlazor",
         policy =>
         {
-            policy.WithOrigins("https://localhost:7028") 
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
+            policy.WithOrigins("https://localhost:7028")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -121,12 +121,12 @@ builder.Services.AddAuthorization();
 
 // Global Exception Handler
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 builder.Services.AddProblemDetails();
 
 builder.Services.AddSingleton<
     IAuthorizationMiddlewareResultHandler,
     CustomAuthorizationMiddlewareResultHandler>();
-
 
 // Repository registrations
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
@@ -151,15 +151,17 @@ builder.Services.AddAutoMapper(cfg =>
 
 var app = builder.Build();
 
-// Seed roles
-
+// Seed roles and admin user
 using (var scope = app.Services.CreateScope())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = scope.ServiceProvider
+        .GetRequiredService<RoleManager<IdentityRole>>();
 
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var userManager = scope.ServiceProvider
+        .GetRequiredService<UserManager<ApplicationUser>>();
 
-    var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    var configuration = scope.ServiceProvider
+        .GetRequiredService<IConfiguration>();
 
     await RoleSeeder.SeedRolesAndAdminAsync(
         roleManager,
@@ -167,6 +169,9 @@ using (var scope = app.Services.CreateScope())
         configuration);
 }
 
+// Seed login users for seeded doctors and patients
+await DemoUserSeeder.SeedDoctorAndPatientUsersAsync(
+    app.Services);
 
 // Configure HTTP pipeline
 if (app.Environment.IsDevelopment())
