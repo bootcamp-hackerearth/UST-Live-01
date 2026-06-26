@@ -58,10 +58,11 @@ else
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h5 class="fw-bold mb-1">Recent Activities</h5>
+                        <h5 class="fw-bold mb-1">System Overview</h5>
                         <p class="text-muted small mb-0">
-                            Quick overview of admin portal activity.
+                            Quick summary of users, doctors, patients, and appointments.
                         </p>
+
                     </div>
                 </div>
 
@@ -182,10 +183,12 @@ else
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+        DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
         var patientResult = await PatientService.GetAll();
         var doctorResult = await DoctorService.GetAll();
         var appointmentResult = await AppointmentService.GetAppointments();
+        var todayAppointment = await AppointmentService.GetAppointments(null,null,null,today,null,null);
         var reportResult = await ReportService.GetAppointmentReports();
 
         if (patientResult.IsSuccess)
@@ -208,7 +211,7 @@ else
 
         if (appointmentResult.IsSuccess)
         {
-            todayAppointments = appointmentResult.Data!.TotalCount;
+            todayAppointments = todayAppointment.Data!.TotalCount;
         }
         else
         {
