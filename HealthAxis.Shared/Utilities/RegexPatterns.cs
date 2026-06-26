@@ -1,14 +1,14 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace HealthAxis.API.Utilities
+﻿namespace HealthAxis.API.Utilities
 {
-
-    [ExcludeFromCodeCoverage]
     public static class RegexPatterns
     {
+        public const string FullName =
+            @"^[A-Za-z]+(?:[ .'’-][A-Za-z]+)*$";
 
-        public const string FullName = @"^[a-zA-Z\s]+$";
+        public const string PhoneNumber =
+            @"^[6-9]\d{9}$";
 
-        public const string PhoneNumber = @"^\d{10}$";
+        public const string StrictEmail =
+            @"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$";
     }
 }

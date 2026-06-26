@@ -1,8 +1,6 @@
 ﻿using HealthAxis.API.Enums;
 using HealthAxis.API.Utilities;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection;
-using System.Reflection.Metadata;
 
 namespace HealthAxis.API.DTOs.Patients
 {
@@ -17,6 +15,8 @@ namespace HealthAxis.API.DTOs.Patients
 
         [Required(ErrorMessage = Helpers.DateOfBirthRequired)]
         [DataType(DataType.Date)]
+        [DateOfBirthValidation(
+            ErrorMessage = Helpers.InvalidDateOfBirthRange)]
         public DateTime DateOfBirth { get; set; }
 
         [Required(ErrorMessage = Helpers.GenderRequired)]
@@ -30,8 +30,11 @@ namespace HealthAxis.API.DTOs.Patients
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = Helpers.EmailRequired)]
-        [EmailAddress(ErrorMessage = Helpers.InvalidEmailFormat)]
         [StringLength(ValidationLimits.EmailLength)]
+        [RegularExpression(
+            RegexPatterns.StrictEmail,
+            ErrorMessage = Helpers.InvalidStrictEmailFormat)]
         public string Email { get; set; } = string.Empty;
     }
 }
+

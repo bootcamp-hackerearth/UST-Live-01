@@ -1,6 +1,5 @@
 ﻿@page "/doctors"
 
-
 @inject HttpClient Http
 @inject IJSRuntime Js
 @inject NavigationManager NavigationManager
@@ -8,7 +7,7 @@
 <div class="page-title-row">
     <div>
         <h2>Doctor Management</h2>
-        <p>Add, edit, activate, or deactivate doctors.</p>
+        <p>Add, edit, activate, deactivate, search, or filter doctors.</p>
     </div>
 
     <button class="primary-btn" @onclick="ShowAddForm">
@@ -25,6 +24,66 @@
 {
     <div class="alert-success">@successMessage</div>
 }
+
+<div class="page-card doctor-search-card">
+    <div class="doctor-filter-wrapper">
+        <div class="doctor-search-box">
+            <span>⌕</span>
+            <input placeholder="Search doctor by name or ID"
+                   value="@searchText"
+                   @oninput="OnSearchInputChanged"
+                   @onkeyup="HandleSearchKeyUp" />
+        </div>
+
+        <div class="doctor-filter-select">
+            <select class="form-control"
+                    value="@selectedSpecialisation"
+                    @onchange="OnSpecialisationChanged">
+                <option value="">All specialisations</option>
+
+                @foreach (Specialisation item in Enum.GetValues<Specialisation>())
+                {
+                    <option value="@((int)item)">
+                        @item
+                    </option>
+                }
+            </select>
+        </div>
+
+        <button class="primary-btn" @onclick="ApplyFiltersAsync">
+            Search
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(appliedSearchText) ||
+             !string.IsNullOrWhiteSpace(appliedSpecialisation))
+        {
+            <button class="secondary-btn" @onclick="ClearFiltersAsync">
+                Clear
+            </button>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(appliedSearchText) ||
+         !string.IsNullOrWhiteSpace(appliedSpecialisation))
+    {
+        <p class="search-result-text">
+            Showing results
+            @if (!string.IsNullOrWhiteSpace(appliedSearchText))
+            {
+                <span>
+                    for <strong>@appliedSearchText</strong>
+                </span>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(appliedSpecialisation))
+            {
+                <span>
+                    in <strong>@GetSpecialisationName(appliedSpecialisation)</strong>
+                </span>
+            }
+        </p>
+    }
+</div>
 
 @if (isLoading)
 {
@@ -260,6 +319,11 @@ else
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
 
+    private string searchText = string.Empty;
+    private string appliedSearchText = string.Empty;
+    private string selectedSpecialisation = string.Empty;
+    private string appliedSpecialisation = string.Empty;
+
     private int editingDoctorId;
 
     private int currentPage = 1;
@@ -296,9 +360,21 @@ else
 
         try
         {
+            string url =
+                $"api/admin/doctors?pageNumber={currentPage}&pageSize={PageSize}";
+
+            if (!string.IsNullOrWhiteSpace(appliedSearchText))
+            {
+                url += $"&searchTerm={Uri.EscapeDataString(appliedSearchText)}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(appliedSpecialisation))
+            {
+                url += $"&specialisation={appliedSpecialisation}";
+            }
+
             PagedResultDto<DoctorReadDto> result =
-                await GetFromApiWithRefreshAsync<PagedResultDto<DoctorReadDto>>(
-                    $"api/admin/doctors?pageNumber={currentPage}&pageSize={PageSize}");
+                await GetFromApiWithRefreshAsync<PagedResultDto<DoctorReadDto>>(url);
 
             doctors = result.Items;
             totalCount = result.TotalCount;
@@ -326,6 +402,57 @@ else
         {
             isLoading = false;
         }
+    }
+
+    private void OnSearchInputChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private void OnSpecialisationChanged(ChangeEventArgs e)
+    {
+        selectedSpecialisation = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private async Task HandleSearchKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await ApplyFiltersAsync();
+        }
+    }
+
+    private async Task ApplyFiltersAsync()
+    {
+        appliedSearchText = searchText.Trim();
+        appliedSpecialisation = selectedSpecialisation;
+        currentPage = 1;
+        showForm = false;
+
+        await LoadDoctorsAsync();
+    }
+
+    private async Task ClearFiltersAsync()
+    {
+        searchText = string.Empty;
+        appliedSearchText = string.Empty;
+        selectedSpecialisation = string.Empty;
+        appliedSpecialisation = string.Empty;
+        currentPage = 1;
+        showForm = false;
+
+        await LoadDoctorsAsync();
+    }
+
+    private static string GetSpecialisationName(string value)
+    {
+        if (int.TryParse(value, out int specialisationValue) &&
+            Enum.IsDefined(typeof(Specialisation), specialisationValue))
+        {
+            return ((Specialisation)specialisationValue).ToString();
+        }
+
+        return "All specialisations";
     }
 
     private void ShowAddForm()

@@ -46,16 +46,30 @@ namespace HealthAxis.API.Services
             List<Patient> patients =
                 await _patientRepository.GetAllAsync(ct);
 
-            List<Patient> orderedPatients =
+            IEnumerable<Patient> query =
                 patients
-                    .OrderBy(patient => patient.PatientId)
-                    .ToList();
+                    .OrderBy(patient => patient.PatientId);
+
+            if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+            {
+                string searchTerm =
+                    pagination.SearchTerm.Trim();
+
+                query = query.Where(patient =>
+                    patient.PatientId.ToString().Contains(searchTerm) ||
+                    patient.FullName.Contains(
+                        searchTerm,
+                        StringComparison.OrdinalIgnoreCase));
+            }
+
+            List<Patient> filteredPatients =
+                query.ToList();
 
             int totalCount =
-                orderedPatients.Count;
+                filteredPatients.Count;
 
             List<Patient> pagedPatients =
-                orderedPatients
+                filteredPatients
                     .Skip((pagination.PageNumber - 1) * pagination.PageSize)
                     .Take(pagination.PageSize)
                     .ToList();
@@ -99,16 +113,41 @@ namespace HealthAxis.API.Services
             List<Doctor> doctors =
                 await _doctorRepository.GetAllAsync(ct);
 
-            List<Doctor> orderedDoctors =
-                doctors
-                    .OrderBy(doctor => doctor.DoctorId)
-                    .ToList();
+            IEnumerable<Doctor> query =
+                doctors.OrderBy(doctor => doctor.DoctorId);
+
+            if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+            {
+                string searchTerm =
+                    pagination.SearchTerm.Trim();
+
+                query = query.Where(doctor =>
+                    doctor.DoctorId.ToString().Contains(searchTerm) ||
+                    doctor.FullName.Contains(
+                        searchTerm,
+                        StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (pagination.Specialisation.HasValue &&
+                Enum.IsDefined(
+                    typeof(Specialisation),
+                    pagination.Specialisation.Value))
+            {
+                Specialisation selectedSpecialisation =
+                    (Specialisation)pagination.Specialisation.Value;
+
+                query = query.Where(doctor =>
+                    doctor.Specialisation == selectedSpecialisation);
+            }
+
+            List<Doctor> filteredDoctors =
+                query.ToList();
 
             int totalCount =
-                orderedDoctors.Count;
+                filteredDoctors.Count;
 
             List<Doctor> pagedDoctors =
-                orderedDoctors
+                filteredDoctors
                     .Skip((pagination.PageNumber - 1) * pagination.PageSize)
                     .Take(pagination.PageSize)
                     .ToList();
@@ -269,6 +308,122 @@ namespace HealthAxis.API.Services
             return _mapper.Map<HealthRecordReadDto>(healthRecord);
         }
 
+        public async Task<List<AppointmentDetailDto>> GetAppointmentDetailsByDateAsync(
+            DateTime date,
+            CancellationToken ct = default)
+        {
+            List<Appointment> appointments =
+                await _appointmentRepository.GetAllAsync(ct);
+
+            List<Patient> patients =
+                await _patientRepository.GetAllAsync(ct);
+
+            List<Doctor> doctors =
+                await _doctorRepository.GetAllAsync(ct);
+
+            List<AppointmentDetailDto> details =
+                appointments
+                    .Where(appointment =>
+                        appointment.ScheduledDate.Date == date.Date)
+                    .OrderBy(appointment =>
+                        appointment.TimeSlot)
+                    .Select(appointment =>
+                    {
+                        Patient? patient =
+                            patients.FirstOrDefault(patient =>
+                                patient.PatientId == appointment.PatientId);
+
+                        Doctor? doctor =
+                            doctors.FirstOrDefault(doctor =>
+                                doctor.DoctorId == appointment.DoctorId);
+
+                        return new AppointmentDetailDto
+                        {
+                            AppointmentId = appointment.AppointmentId,
+                            Date = appointment.ScheduledDate.Date,
+                            TimeSlot = appointment.TimeSlot,
+                            Status = appointment.Status,
+                            CancellationReason = appointment.CancellationReason,
+                            PatientId = appointment.PatientId,
+                            PatientName = patient?.FullName ?? "Unknown Patient",
+                            DoctorId = appointment.DoctorId,
+                            DoctorName = doctor?.FullName ?? "Unknown Doctor"
+                        };
+                    })
+                    .ToList();
+
+            return details;
+        }
+
+        public async Task<AppointmentDetailDto> ConfirmAppointmentAsync(
+            int appointmentId,
+            CancellationToken ct = default)
+        {
+            Appointment? appointment =
+                await _appointmentRepository.GetByIdAsync(
+                    appointmentId,
+                    ct);
+
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment not found.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Scheduled)
+            {
+                throw new BadRequestException(
+                    "Only scheduled appointments can be confirmed.");
+            }
+
+            appointment.Status = AppointmentStatus.Confirmed;
+            appointment.CancellationReason = string.Empty;
+
+            await _appointmentRepository.SaveChangesAsync(ct);
+
+            List<AppointmentDetailDto> details =
+                await GetAppointmentDetailsByDateAsync(
+                    appointment.ScheduledDate.Date,
+                    ct);
+
+            return details.First(detail =>
+                detail.AppointmentId == appointment.AppointmentId);
+        }
+
+        public async Task<AppointmentDetailDto> CancelAppointmentAsync(
+            int appointmentId,
+            CancelAppointmentDto dto,
+            CancellationToken ct = default)
+        {
+            Appointment? appointment =
+                await _appointmentRepository.GetByIdAsync(
+                    appointmentId,
+                    ct);
+
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment not found.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Scheduled)
+            {
+                throw new BadRequestException(
+                    "Only scheduled appointments can be cancelled.");
+            }
+
+            appointment.Status = AppointmentStatus.Cancelled;
+            appointment.CancellationReason = dto.CancellationReason;
+
+            await _appointmentRepository.SaveChangesAsync(ct);
+
+            List<AppointmentDetailDto> details =
+                await GetAppointmentDetailsByDateAsync(
+                    appointment.ScheduledDate.Date,
+                    ct);
+
+            return details.First(detail =>
+                detail.AppointmentId == appointment.AppointmentId);
+        }
+
         public async Task<PagedResultDto<AppointmentReportDto>> GetAppointmentReportAsync(
             PaginationQueryDto pagination,
             CancellationToken ct = default)
@@ -318,6 +473,7 @@ namespace HealthAxis.API.Services
                 PageNumber = pagination.PageNumber,
                 PageSize = pagination.PageSize
             };
+
         }
     }
 }

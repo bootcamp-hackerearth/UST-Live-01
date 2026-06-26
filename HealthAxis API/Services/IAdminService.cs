@@ -39,5 +39,19 @@ namespace HealthAxis.API.Services
         Task<PagedResultDto<AppointmentReportDto>> GetAppointmentReportAsync(
             PaginationQueryDto pagination,
             CancellationToken ct = default);
+
+        Task<List<AppointmentDetailDto>> GetAppointmentDetailsByDateAsync(
+            DateTime date,
+            CancellationToken ct = default);
+
+        Task<AppointmentDetailDto> ConfirmAppointmentAsync(
+            int appointmentId,
+            CancellationToken ct = default);
+
+        Task<AppointmentDetailDto> CancelAppointmentAsync(
+            int appointmentId,
+            CancelAppointmentDto dto,
+            CancellationToken ct = default);
+
     }
 }
