@@ -7,7 +7,7 @@
 <div class="page-title-row">
     <div>
         <h2>Appointment Reports</h2>
-        <p>Daily appointment summary by status from backend data.</p>
+        <p>Daily appointment summary .</p>
     </div>
 
     <button class="secondary-btn" @onclick="LoadReportsAsync" disabled="@isLoading">
@@ -68,6 +68,7 @@ else
                         <th>Confirmed</th>
                         <th>Cancelled</th>
                         <th>Completed</th>
+                        <th>Details</th>
                     </tr>
                 </thead>
 
@@ -81,6 +82,12 @@ else
                             <td>@report.ConfirmedCount</td>
                             <td>@report.CancelledCount</td>
                             <td>@report.CompletedCount</td>
+                            <td>
+                                <button class="link-btn"
+                                        @onclick="() => NavigateToDetails(report.Date)">
+                                    View Details
+                                </button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -189,6 +196,12 @@ else
         {
             isLoading = false;
         }
+    }
+
+    private void NavigateToDetails(DateTime date)
+    {
+        NavigationManager.NavigateTo(
+            $"/appointment-reports/details/{date:yyyy-MM-dd}");
     }
 
     private async Task PreviousPageAsync()

@@ -15,6 +15,8 @@ namespace HealthAxis.API.DTOs.Auth
 
         [Required(ErrorMessage = Helpers.DateOfBirthRequired)]
         [DataType(DataType.Date)]
+        [DateOfBirthValidation(
+            ErrorMessage = Helpers.InvalidDateOfBirthRange)]
         public DateTime DateOfBirth { get; set; }
 
         [Required(ErrorMessage = Helpers.GenderRequired)]
@@ -28,16 +30,20 @@ namespace HealthAxis.API.DTOs.Auth
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = Helpers.EmailRequired)]
-        [EmailAddress(ErrorMessage = Helpers.InvalidEmailFormat)]
         [StringLength(ValidationLimits.EmailLength)]
+        [RegularExpression(
+            RegexPatterns.StrictEmail,
+            ErrorMessage = Helpers.InvalidStrictEmailFormat)]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = Helpers.PasswordRequired)]
         [MinLength(8)]
         public string Password { get; set; } = string.Empty;
 
-        [Required]
-        [Compare(nameof(Password), ErrorMessage = "Password and confirm password do not match.")]
+        [Required(ErrorMessage = "Confirm Password is required.")]
+        [Compare(
+            nameof(Password),
+            ErrorMessage = "Password and confirm password do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
 }

@@ -5,6 +5,7 @@
 @using HealthAxis.API.DTOs.Patients
 @using HealthAxis.API.Enums
 @using HealthAxis.Shared.DTOs.Auth
+@using Microsoft.AspNetCore.Components.Web
 @using System.Net
 @using System.Net.Http.Headers
 @using System.Net.Http.Json
@@ -16,7 +17,7 @@
 
 <div class="page-title">
     <h2>Patient Management</h2>
-    <p>View and update registered patient details.</p>
+    <p>View, search, and update registered patient details.</p>
 </div>
 
 @if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -28,6 +29,36 @@
 {
     <div class="alert-success">@successMessage</div>
 }
+
+<div class="page-card patient-search-card">
+    <div class="patient-search-wrapper">
+        <div class="patient-search-box">
+            <span>⌕</span>
+            <input placeholder="Search patient by name or ID"
+                   value="@searchText"
+                   @oninput="OnSearchInputChanged"
+                   @onkeyup="HandleSearchKeyUp" />
+        </div>
+
+        <button class="primary-btn" @onclick="ApplySearchAsync">
+            Search
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(appliedSearchText))
+        {
+            <button class="secondary-btn" @onclick="ClearSearchAsync">
+                Clear
+            </button>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(appliedSearchText))
+    {
+        <p class="search-result-text">
+            Showing results for: <strong>@appliedSearchText</strong>
+        </p>
+    }
+</div>
 
 @if (isLoading)
 {
@@ -180,6 +211,9 @@ else
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
 
+    private string searchText = string.Empty;
+    private string appliedSearchText = string.Empty;
+
     private int editingPatientId;
 
     private int currentPage = 1;
@@ -214,9 +248,16 @@ else
 
         try
         {
+            string url =
+                $"api/admin/patients?pageNumber={currentPage}&pageSize={PageSize}";
+
+            if (!string.IsNullOrWhiteSpace(appliedSearchText))
+            {
+                url += $"&searchTerm={Uri.EscapeDataString(appliedSearchText)}";
+            }
+
             PagedResultDto<PatientReadDto> result =
-                await GetFromApiWithRefreshAsync<PagedResultDto<PatientReadDto>>(
-                    $"api/admin/patients?pageNumber={currentPage}&pageSize={PageSize}");
+                await GetFromApiWithRefreshAsync<PagedResultDto<PatientReadDto>>(url);
 
             patients = result.Items;
             totalCount = result.TotalCount;
@@ -241,6 +282,38 @@ else
         {
             isLoading = false;
         }
+    }
+
+    private void OnSearchInputChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? string.Empty;
+    }
+
+    private async Task HandleSearchKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await ApplySearchAsync();
+        }
+    }
+
+    private async Task ApplySearchAsync()
+    {
+        appliedSearchText = searchText.Trim();
+        currentPage = 1;
+        showEditForm = false;
+
+        await LoadPatientsAsync();
+    }
+
+    private async Task ClearSearchAsync()
+    {
+        searchText = string.Empty;
+        appliedSearchText = string.Empty;
+        currentPage = 1;
+        showEditForm = false;
+
+        await LoadPatientsAsync();
     }
 
     private void EditPatient(PatientReadDto patient)
@@ -316,7 +389,9 @@ else
 
     private async Task GoToPageAsync(int pageNumber)
     {
-        if (pageNumber < 1 || pageNumber > totalPages || pageNumber == currentPage)
+        if (pageNumber < 1 ||
+            pageNumber > totalPages ||
+            pageNumber == currentPage)
         {
             return;
         }

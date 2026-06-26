@@ -1,20 +1,27 @@
 ﻿@inherits LayoutComponentBase
 
-@using HealthAxis.Admin.Services
-
-@inject AuthService AuthService
+@inject IJSRuntime Js
 @inject NavigationManager NavigationManager
 
 <div class="admin-shell">
     <aside class="admin-sidebar">
-        <div class="brand">
-            <div class="brand-mark">
-                <span>H</span>
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">H</div>
+
+            <div>
+                <h2>HealthAxis</h2>
+                <p>Admin Console</p>
+            </div>
+        </div>
+
+        <div class="sidebar-user-card">
+            <div class="sidebar-user-avatar">
+                @userInitial
             </div>
 
-            <div class="brand-copy">
-                <h2>HealthAxis</h2>
-                <span>Admin Console</span>
+            <div class="sidebar-user-info">
+                <strong>@displayName</strong>
+                <span>@userRole</span>
             </div>
         </div>
 
@@ -26,11 +33,8 @@
     </aside>
 
     <main class="admin-main">
-        <header class="admin-header">
-            <div>
-                <h1>Admin Portal</h1>
-                <p>Manage whole-health operations with clarity and confidence.</p>
-            </div>
+        <header class="admin-header admin-header-minimal">
+            <h1 class="top-page-title">Dashboard</h1>
 
             <button class="logout-btn" @onclick="LogoutAsync">
                 Logout
@@ -44,9 +48,86 @@
 </div>
 
 @code {
+    private string displayName = "admin";
+    private string userRole = "Admin";
+    private string userInitial = "A";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        string? email =
+            await Js.InvokeAsync<string?>(
+                "localStorage.getItem",
+                "healthaxis_user_email");
+
+        string? role =
+            await Js.InvokeAsync<string?>(
+                "localStorage.getItem",
+                "healthaxis_user_role");
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            displayName = GetNameBeforeAt(email);
+            userInitial = displayName[..1].ToUpperInvariant();
+        }
+
+        if (!string.IsNullOrWhiteSpace(role))
+        {
+            userRole = role;
+        }
+
+        StateHasChanged();
+    }
+
+    private static string GetNameBeforeAt(string email)
+    {
+        string namePart = email.Split('@')[0];
+
+        if (string.IsNullOrWhiteSpace(namePart))
+        {
+            return "admin";
+        }
+
+        string firstName =
+            namePart
+                .Split('.', '_', '-')
+                .FirstOrDefault() ?? namePart;
+
+        return firstName;
+    }
+
     private async Task LogoutAsync()
     {
-        await AuthService.LogoutAsync();
-        NavigationManager.NavigateTo("/login", replace: true);
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_access_token");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_refresh_token");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_user_role");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_user_email");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_user_id");
+
+        await Js.InvokeVoidAsync(
+            "localStorage.removeItem",
+            "healthaxis_reference_id");
+
+        NavigationManager.NavigateTo(
+            "/login",
+            replace: true);
     }
 }

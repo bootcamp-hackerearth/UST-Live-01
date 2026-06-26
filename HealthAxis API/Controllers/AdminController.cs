@@ -1,4 +1,5 @@
 ﻿using HealthAxis.API.DTOs.Admin;
+using HealthAxis.API.DTOs.Appointments;
 using HealthAxis.API.DTOs.CommonDtos;
 using HealthAxis.API.DTOs.Doctors;
 using HealthAxis.API.DTOs.HealthRecords;
@@ -120,6 +121,47 @@ namespace HealthAxis.API.Controllers
                     ct);
 
             return Ok(report);
+        }
+
+        [HttpGet("reports/appointments/details")]
+        public async Task<IActionResult> GetAppointmentDetailsByDate(
+            [FromQuery] DateTime date,
+            CancellationToken ct)
+        {
+            var details =
+                await _adminService.GetAppointmentDetailsByDateAsync(
+                    date,
+                    ct);
+
+            return Ok(details);
+        }
+
+        [HttpPut("appointments/{id:int}/confirm")]
+        public async Task<IActionResult> ConfirmAppointment(
+            int id,
+            CancellationToken ct)
+        {
+            var appointment =
+                await _adminService.ConfirmAppointmentAsync(
+                    id,
+                    ct);
+
+            return Ok(appointment);
+        }
+
+        [HttpPut("appointments/{id:int}/cancel")]
+        public async Task<IActionResult> CancelAppointment(
+            int id,
+            CancelAppointmentDto request,
+            CancellationToken ct)
+        {
+            var appointment =
+                await _adminService.CancelAppointmentAsync(
+                    id,
+                    request,
+                    ct);
+
+            return Ok(appointment);
         }
     }
 }
