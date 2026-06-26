@@ -1,5 +1,6 @@
-﻿using HealthAxisCore_Api.DTOs.Appointment;
-using HealthAxisCore_Api.Enums;
+﻿using HealthAxis.Shared.DTOs.Appointment;
+using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.Enums;
 
 namespace HealthAxisCore_Api.Services.Interfaces
 {
@@ -20,10 +21,20 @@ namespace HealthAxisCore_Api.Services.Interfaces
         Task<IEnumerable<AppointmentResponseDTO>> FilterAsync(
             AppointmentStatus? status,
             DateTime? startDate,
-            DateTime? endDate);
+            DateTime? endDate
+        );
+
+        Task<bool> ConfirmAsync(int id);
 
         Task<bool> CancelAsync(int id, string reason);
 
-        Task<bool> ConfirmAsync(int id);
+        Task<PagedResponseDTO<AppointmentResponseDTO>> GetPagedAsync(
+            int pageNumber,
+            int pageSize,
+            string? search,
+            AppointmentStatus? status,
+            DateTime? startDate,
+            DateTime? endDate
+        );
     }
 }

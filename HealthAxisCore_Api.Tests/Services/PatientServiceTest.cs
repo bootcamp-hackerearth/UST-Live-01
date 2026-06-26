@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using HealthAxisCore_Api.DTOs.Patient;
-using HealthAxisCore_Api.Enums;
+using HealthAxis.Shared.Enums;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Implementations;
 using HealthAxisCore_Api.Tests.Helpers;
 using Moq;
+using HealthAxis.Shared.DTOs.Patient;
 
 namespace HealthAxisCore_Api.Tests.Services
 {

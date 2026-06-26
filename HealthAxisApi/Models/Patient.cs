@@ -1,4 +1,4 @@
-﻿using HealthAxisCore_Api.Enums;
+﻿using HealthAxis.Shared.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace HealthAxisCore_Api.Models

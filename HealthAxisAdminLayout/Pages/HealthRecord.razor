@@ -1,14 +1,13 @@
 ﻿@page "/admin/health-records"
-@layout HealthAxisAdminLayout.Layout.AdminLayout
-@using HealthAxisAdminLayout.DTOs.HealthRecord
+@attribute [Authorize(Roles = "Admin")]
+
+@using Microsoft.AspNetCore.Authorization
+@using HealthAxis.Shared.DTOs.HealthRecord
 @using HealthAxisAdminLayout.Services.Interfaces
 
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+
 @inject IHealthRecordApiService HealthRecordService
-@inject IAuthService AuthService
-@inject NavigationManager Navigation
-
-
-@using HealthAxisAdminLayout.DTOs.Appointment
 
 <h3 class="page-title">Health Records</h3>
 <p class="page-subtitle">View and manage patient health records</p>
@@ -21,7 +20,11 @@
 }
 
 <div class="table-card">
-    @if (records.Count == 0)
+    @if (isLoading)
+    {
+        <p>Loading health records...</p>
+    }
+    else if (records.Count == 0)
     {
         <p>No health records found.</p>
     }
@@ -56,7 +59,8 @@
                         <td>@(record.Notes ?? "-")</td>
                         <td>
                             <button class="btn btn-sm btn-danger"
-                                    @onclick="() => DeleteHealthRecordAsync(record.HealthRecordId)">
+                                    @onclick="@(() => DeleteHealthRecord(record.HealthRecordId))"
+                                    disabled="@isLoading">
                                 Delete
                             </button>
                         </td>
@@ -69,43 +73,59 @@
 
 @code {
     private List<HealthRecordResponseDTO> records = new();
-
     private string message = string.Empty;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await AuthService.IsAdminAsync();
-
-        if (!isAdmin)
-        {
-            Navigation.NavigateTo("/login");
-            return;
-        }
-
-        await LoadHealthRecordsAsync();
+        await LoadHealthRecords();
     }
 
-    private async Task LoadHealthRecordsAsync()
+    private async Task LoadHealthRecords()
     {
-        records = await HealthRecordService.GetHealthRecordsAsync();
-    }
-
-    private async Task DeleteHealthRecordAsync(int healthRecordId)
-    {
+        isLoading = true;
         message = string.Empty;
 
-        var success = await HealthRecordService.DeleteHealthRecordAsync(healthRecordId);
-
-        if (success)
+        try
         {
-            message = "Health record deleted successfully.";
-            await LoadHealthRecordsAsync();
+            records = await HealthRecordService.GetHealthRecordsAsync();
         }
-        else
+        catch
         {
-            message = "Failed to delete health record.";
+            message = "Failed to load health records.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task DeleteHealthRecord(int healthRecordId)
+    {
+        message = string.Empty;
+        isLoading = true;
+
+        try
+        {
+            var success = await HealthRecordService.DeleteHealthRecordAsync(healthRecordId);
+
+            if (success)
+            {
+                message = "Health record deleted successfully.";
+                await LoadHealthRecords();
+            }
+            else
+            {
+                message = "Failed to delete health record.";
+            }
+        }
+        catch
+        {
+            message = "Error occurred while deleting record.";
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }
-
-

@@ -1,5 +1,6 @@
 ﻿using HealthAxisAdminLayout.DTOs.Dashboard;
 using HealthAxisAdminLayout.Services.Interfaces;
+using HealthAxis.Shared.Enums;
 
 namespace HealthAxisAdminLayout.Services.Implementations
 {
@@ -35,9 +36,11 @@ namespace HealthAxisAdminLayout.Services.Implementations
                 ActiveDoctors = doctors.Count(d => d.IsActive),
                 TotalPatients = patients.Count,
                 TotalAppointments = appointments.Count,
-                PendingAppointments = appointments.Count(a => a.Status == 0),
-                ConfirmedAppointments = appointments.Count(a => a.Status == 1),
-                CancelledAppointments = appointments.Count(a => a.Status == 2),
+
+                PendingAppointments = appointments.Count(a => a.Status == AppointmentStatus.Pending),
+                ConfirmedAppointments = appointments.Count(a => a.Status == AppointmentStatus.Confirmed),
+                CancelledAppointments = appointments.Count(a => a.Status == AppointmentStatus.Cancelled),
+
                 TotalHealthRecords = records.Count
             };
         }

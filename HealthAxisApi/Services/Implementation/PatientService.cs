@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using HealthAxisCore_Api.DTOs.Patient;
+using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Patient;
+using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Interfaces;
-using HealthAxisCore_Api.Exceptions;
 
 namespace HealthAxisCore_Api.Services.Implementations
 {
@@ -25,6 +26,75 @@ namespace HealthAxisCore_Api.Services.Implementations
         {
             var patients = await _repository.GetAllAsync();
             return _mapper.Map<IEnumerable<PatientResponseDTO>>(patients);
+        }
+
+        public async Task<PagedResponseDTO<PatientResponseDTO>> GetPagedAsync(
+    int pageNumber,
+    int pageSize,
+    string? search,
+    string? gender)
+        {
+            if (pageNumber < 1)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize < 1)
+            {
+                pageSize = 10;
+            }
+
+            if (pageSize > 100)
+            {
+                pageSize = 100;
+            }
+
+            var patients = await _repository.GetAllAsync();
+
+            var query = patients.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(p =>
+                    (!string.IsNullOrWhiteSpace(p.PatientName) &&
+                     p.PatientName.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
+
+                    (!string.IsNullOrWhiteSpace(p.Email) &&
+                     p.Email.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
+
+                    (!string.IsNullOrWhiteSpace(p.PhoneNumber) &&
+                     p.PhoneNumber.Contains(search, StringComparison.OrdinalIgnoreCase)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(gender) && gender != "All")
+            {
+                query = query.Where(p =>
+                    p.Gender.ToString().Equals(
+                        gender,
+                        StringComparison.OrdinalIgnoreCase
+                    ));
+            }
+
+            var totalCount = query.Count();
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            var pagedPatients = query
+                .OrderBy(p => p.PatientName)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var patientDtos = _mapper.Map<List<PatientResponseDTO>>(pagedPatients);
+
+            return new PagedResponseDTO<PatientResponseDTO>
+            {
+                Items = patientDtos,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages
+            };
         }
 
         // ✅ Get Patient by Id

@@ -1,103 +1,218 @@
 ﻿@page "/admin/dashboard"
-@layout HealthAxisAdminLayout.Layout.AdminLayout
+@attribute [Authorize(Roles = "Admin")]
 
+@using Microsoft.AspNetCore.Authorization
 @using HealthAxisAdminLayout.DTOs.Dashboard
 @using HealthAxisAdminLayout.Services.Interfaces
 
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+
 @inject IDashboardService DashboardService
-@inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<h3 class="page-title">Admin Dashboard</h3>
-<p class="page-subtitle">Overview of HealthAxis Healthcare System</p>
+<div class="hx-dashboard">
 
-@if (dashboard == null)
-{
-    <div class="loading-box">
-        Loading dashboard data...
-    </div>
-}
-else
-{
-    <div class="dashboard-grid">
-        <div class="stat-card">
-            <div class="stat-label">Total Doctors</div>
-            <div class="stat-value">@dashboard.TotalDoctors</div>
+    <div class="hx-dashboard-header">
+        <div>
+            <div class="hx-kicker">Admin Console</div>
+
+            <h1>Dashboard</h1>
+
+            <p>
+                Monitor HealthAxis operations and manage admin activity.
+            </p>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-label">Active Doctors</div>
-            <div class="stat-value">@dashboard.ActiveDoctors</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Total Patients</div>
-            <div class="stat-value">@dashboard.TotalPatients</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Total Appointments</div>
-            <div class="stat-value">@dashboard.TotalAppointments</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Pending Appointments</div>
-            <div class="stat-value">@dashboard.PendingAppointments</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Confirmed Appointments</div>
-            <div class="stat-value">@dashboard.ConfirmedAppointments</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Cancelled Appointments</div>
-            <div class="stat-value">@dashboard.CancelledAppointments</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Health Records</div>
-            <div class="stat-value">@dashboard.TotalHealthRecords</div>
+        <div class="hx-date-card">
+            <span>Today</span>
+            <strong>@DateTime.Now.ToString("dd MMM yyyy")</strong>
         </div>
     </div>
 
-    <div class="dashboard-actions">
-        <h5>Quick Actions</h5>
-
-        <div class="quick-actions">
-            <button class="action-card" @onclick="GoToDoctors">
-                Manage Doctors
-            </button>
-
-            <button class="action-card" @onclick="GoToPatients">
-                View Patients
-            </button>
-
-            <button class="action-card" @onclick="GoToAppointments">
-                View Appointments
-            </button>
-
-            <button class="action-card" @onclick="GoToHealthRecords">
-                View Health Records
-            </button>
+    @if (!string.IsNullOrWhiteSpace(message))
+    {
+        <div class="alert alert-danger">
+            @message
         </div>
-    </div>
-}
+    }
+
+    @if (isLoading)
+    {
+        <div class="loading-box">
+            Loading dashboard data...
+        </div>
+    }
+    else if (dashboard == null)
+    {
+        <div class="loading-box">
+            No dashboard data available.
+        </div>
+    }
+    else
+    {
+        <div class="hx-stat-grid">
+
+            <div class="hx-stat-card hx-blue">
+                <div class="hx-stat-icon">+</div>
+
+                <div>
+                    <span>Total Doctors</span>
+                    <h2>@dashboard.TotalDoctors</h2>
+                    <p>Registered doctor profiles</p>
+                </div>
+            </div>
+
+            <div class="hx-stat-card hx-teal">
+                <div class="hx-stat-icon">●</div>
+
+                <div>
+                    <span>Total Patients</span>
+                    <h2>@dashboard.TotalPatients</h2>
+                    <p>Patient records managed</p>
+                </div>
+            </div>
+
+            <div class="hx-stat-card hx-purple">
+                <div class="hx-stat-icon">◷</div>
+
+                <div>
+                    <span>Total Appointments</span>
+                    <h2>@dashboard.TotalAppointments</h2>
+                    <p>Overall appointment activity</p>
+                </div>
+            </div>
+
+            <div class="hx-stat-card hx-orange">
+                <div class="hx-stat-icon">□</div>
+
+                <div>
+                    <span>Health Records</span>
+                    <h2>@dashboard.TotalHealthRecords</h2>
+                    <p>Medical records available</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="hx-dashboard-main">
+
+            <div class="hx-panel">
+                <div class="hx-panel-header">
+                    <h3>Today’s Overview</h3>
+
+                    <p>
+                        Live operational summary for the current admin workspace.
+                    </p>
+                </div>
+
+                <div class="hx-overview-grid">
+
+                    <div class="hx-overview-card">
+                        <span>Active Doctors</span>
+                        <h3>@dashboard.ActiveDoctors</h3>
+                        <p>Currently active doctor profiles</p>
+                    </div>
+
+                    <div class="hx-overview-card">
+                        <span>Pending Appointments</span>
+                        <h3>@dashboard.PendingAppointments</h3>
+                        <p>Waiting for confirmation</p>
+                    </div>
+
+                    <div class="hx-overview-card">
+                        <span>Confirmed Appointments</span>
+                        <h3>@dashboard.ConfirmedAppointments</h3>
+                        <p>Confirmed schedule count</p>
+                    </div>
+
+                    <div class="hx-overview-card">
+                        <span>Cancelled Appointments</span>
+                        <h3>@dashboard.CancelledAppointments</h3>
+                        <p>Cancelled appointment count</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="hx-panel">
+                <div class="hx-panel-header">
+                    <h3>Quick Actions</h3>
+
+                    <p>
+                        Jump into frequent HealthAxis admin tasks.
+                    </p>
+                </div>
+
+                <button class="hx-action-row" @onclick="GoToDoctors">
+                    <span class="hx-action-icon">+</span>
+
+                    <div>
+                        <strong>Manage Doctors</strong>
+                        <p>Add, update, activate, and deactivate doctor profiles.</p>
+                    </div>
+                </button>
+
+                <button class="hx-action-row" @onclick="GoToPatients">
+                    <span class="hx-action-icon">●</span>
+
+                    <div>
+                        <strong>Manage Patients</strong>
+                        <p>View registered patient details and records.</p>
+                    </div>
+                </button>
+
+                <button class="hx-action-row" @onclick="GoToAppointments">
+                    <span class="hx-action-icon">◷</span>
+
+                    <div>
+                        <strong>View Appointments</strong>
+                        <p>Review appointment schedules and appointment status.</p>
+                    </div>
+                </button>
+
+                <button class="hx-action-row" @onclick="GoToHealthRecords">
+                    <span class="hx-action-icon">□</span>
+
+                    <div>
+                        <strong>Health Records</strong>
+                        <p>Manage patient health record information.</p>
+                    </div>
+                </button>
+
+            </div>
+
+        </div>
+    }
+
+</div>
 
 @code {
     private AdminDashboardDTO? dashboard;
+    private string message = string.Empty;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await AuthService.IsAdminAsync();
+        await LoadDashboardAsync();
+    }
 
-        if (!isAdmin)
+    private async Task LoadDashboardAsync()
+    {
+        isLoading = true;
+        message = string.Empty;
+
+        try
         {
-            Navigation.NavigateTo("/login");
-            return;
+            dashboard = await DashboardService.GetDashboardAsync();
         }
-
-        dashboard = await DashboardService.GetDashboardAsync();
+        catch
+        {
+            message = "Failed to load dashboard data.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
     }
 
     private void GoToDoctors()

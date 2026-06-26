@@ -1,83 +1,93 @@
-﻿using HealthAxisAdminLayout.DTOs.Doctor;
+﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Doctor;
 using HealthAxisAdminLayout.Services.Interfaces;
+using System.Net.Http.Json;
 
 namespace HealthAxisAdminLayout.Services.Implementations
 {
     public class DoctorApiService : IDoctorApiService
     {
-        private readonly List<DoctorResponseDTO> _doctors = new()
+        private readonly HttpClient _http;
+
+        public DoctorApiService(HttpClient http)
         {
-            new DoctorResponseDTO
+            _http = http;
+        }
+
+        public async Task<List<DoctorResponseDTO>> GetDoctorsAsync()
+        {
+            var result = await _http.GetFromJsonAsync<List<DoctorResponseDTO>>("api/doctor");
+
+            return result ?? new List<DoctorResponseDTO>();
+        }
+        public async Task<PagedResponseDTO<DoctorResponseDTO>> GetDoctorsPagedAsync(
+    int pageNumber,
+    int pageSize,
+    string? search,
+    string? specialisation,
+    string? status)
+        {
+            var query = new List<string>
+    {
+        $"pageNumber={pageNumber}",
+        $"pageSize={pageSize}"
+    };
+
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                DoctorId = 1,
-                DoctorName = "Rahul Sharma",
-                Email = "rahul.doctor@test.com",
-                Specialisation = 0,
-                YearsOfExperience = 5,
-                ConsultationFee = 500,
-                IsActive = true
-            },
-            new DoctorResponseDTO
-            {
-                DoctorId = 2,
-                DoctorName = "Mily Srivastava",
-                Email = "mily@example.com",
-                Specialisation = 1,
-                YearsOfExperience = 6,
-                ConsultationFee = 1000,
-                IsActive = true
+                query.Add($"search={Uri.EscapeDataString(search)}");
             }
-        };
 
-        public Task<List<DoctorResponseDTO>> GetDoctorsAsync()
-        {
-            return Task.FromResult(_doctors.ToList());
-        }
-
-        public Task<DoctorResponseDTO?> GetDoctorByIdAsync(int id)
-        {
-            var doctor = _doctors.FirstOrDefault(d => d.DoctorId == id);
-            return Task.FromResult(doctor);
-        }
-
-        public Task<bool> CreateDoctorAsync(CreateDoctorDTO dto)
-        {
-            var newDoctor = new DoctorResponseDTO
+            if (!string.IsNullOrWhiteSpace(specialisation) && specialisation != "All")
             {
-                DoctorId = _doctors.Any() ? _doctors.Max(d => d.DoctorId) + 1 : 1,
-                DoctorName = dto.DoctorName,
-                Email = dto.Email,
-                Specialisation = dto.Specialisation,
-                YearsOfExperience = dto.YearsOfExperience,
-                ConsultationFee = dto.ConsultationFee,
-                IsActive = dto.IsActive
-            };
+                query.Add($"specialisation={Uri.EscapeDataString(specialisation)}");
+            }
 
-            _doctors.Add(newDoctor);
+            if (!string.IsNullOrWhiteSpace(status) && status != "All")
+            {
+                query.Add($"status={Uri.EscapeDataString(status)}");
+            }
 
-            return Task.FromResult(true);
+            var url = $"api/doctor/paged?{string.Join("&", query)}";
+
+            var result = await _http.GetFromJsonAsync<PagedResponseDTO<DoctorResponseDTO>>(url);
+
+            return result ?? new PagedResponseDTO<DoctorResponseDTO>();
+        }
+        public async Task<DoctorResponseDTO?> GetDoctorByIdAsync(int id)
+        {
+            return await _http.GetFromJsonAsync<DoctorResponseDTO>($"api/doctor/{id}");
         }
 
-        public Task<bool> DeleteDoctorAsync(int id)
+        public async Task<bool> CreateDoctorAsync(CreateDoctorDTO dto)
         {
-            var doctor = _doctors.FirstOrDefault(d => d.DoctorId == id);
+            var response = await _http.PostAsJsonAsync("api/doctor", dto);
 
-            if (doctor == null)
-                return Task.FromResult(false);
-
-            _doctors.Remove(doctor);
-            return Task.FromResult(true);
+            return response.IsSuccessStatusCode;
         }
 
-        public Task<bool> SetDoctorStatusAsync(int doctorId, bool status)
+        public async Task<bool> UpdateDoctorAsync(int id, CreateDoctorDTO dto)
         {
-            var doctor = _doctors.FirstOrDefault(d => d.DoctorId == doctorId);
+            var response = await _http.PutAsJsonAsync($"api/doctor/{id}", dto);
 
-            if (doctor == null)
-                return Task.FromResult(false);
+            return response.IsSuccessStatusCode;
+        }
 
-            doctor.IsActive = status;
-            return Task.FromResult(true);
+        public async Task<bool> DeleteDoctorAsync(int id)
+        {
+            var response = await _http.DeleteAsync($"api/doctor/{id}");
+
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> SetDoctorStatusAsync(int doctorId, bool status)
+        {
+            var response = await _http.PatchAsync(
+                $"api/doctor/status/{doctorId}?status={status}",
+                null
+            );
+
+            return response.IsSuccessStatusCode;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using HealthAxisCore_Api.Models;
-using HealthAxisCore_Api.Enums;
+using HealthAxis.Shared.Enums;
 
 namespace HealthAxisCore_Api.Repositories
 {

@@ -1,58 +1,85 @@
 ﻿@inherits LayoutComponentBase
-@inject HealthAxisAdminLayout.Services.Interfaces.IAuthService AuthService
+
+@using HealthAxisAdminLayout.Services.Interfaces
+
+@inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<div class="admin-container">
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h4 class="brand-title">HealthAxis</h4>
-            <p class="brand-subtitle">Admin Portal</p>
+<div class="hx-admin-layout">
+
+    <aside class="hx-sidebar">
+
+        <div class="hx-sidebar-brand">
+            <div class="hx-brand-logo">HC</div>
+
+            <div>
+                <h3>HealthAxis</h3>
+                <p>Admin Portal</p>
+            </div>
         </div>
 
-        <nav class="admin-nav">
-            <NavLink class="nav-link" href="/admin/dashboard">
+        <nav class="hx-sidebar-nav">
+
+            <NavLink class="hx-nav-link" href="/admin/dashboard" Match="NavLinkMatch.All">
+                <span class="hx-nav-icon">▣</span>
                 <span>Dashboard</span>
             </NavLink>
 
-            <NavLink class="nav-link" href="/admin/doctors">
+            <NavLink class="hx-nav-link" href="/admin/doctors">
+                <span class="hx-nav-icon">+</span>
                 <span>Doctors</span>
             </NavLink>
 
-            <NavLink class="nav-link" href="/admin/patients">
+            <NavLink class="hx-nav-link" href="/admin/patients">
+                <span class="hx-nav-icon">●</span>
                 <span>Patients</span>
             </NavLink>
 
-            <NavLink class="nav-link" href="/admin/appointments">
+            <NavLink class="hx-nav-link" href="/admin/appointments">
+                <span class="hx-nav-icon">◷</span>
                 <span>Appointments</span>
             </NavLink>
 
-            <NavLink class="nav-link" href="/admin/health-records">
-                <span>Health Records</span>
-            </NavLink>
+            
+
         </nav>
 
-        <div class="sidebar-footer">
-            <button class="logout-btn" @onclick="Logout">
-                Logout
-            </button>
-        </div>
     </aside>
 
-    <main class="main-section">
-        <header class="topbar">
+    <main class="hx-main">
+
+        <header class="hx-topbar">
+
             <div>
-                <h5 class="topbar-title">HealthAxis Admin Dashboard</h5>
+                <h4>HealthAxis Management</h4>
+                <p>Admin Dashboard</p>
             </div>
 
-            <div class="topbar-user">
-                <span>@adminEmail</span>
+            <div class="hx-topbar-actions">
+
+                <div class="hx-user-pill">
+                    <div class="hx-user-avatar">A</div>
+
+                    <div>
+                        <strong>@adminEmail</strong>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+
+                <button class="hx-logout-btn" @onclick="Logout">
+                    Logout
+                </button>
+
             </div>
+
         </header>
 
-        <section class="page-content">
+        <section class="hx-page-content">
             @Body
         </section>
+
     </main>
+
 </div>
 
 @code {
@@ -60,21 +87,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await AuthService.IsAdminAsync();
-
-        if (!isAdmin)
-        {
-            Navigation.NavigateTo("/login");
-            return;
-        }
-
         adminEmail = await AuthService.GetEmailAsync() ?? "Admin";
     }
 
     private async Task Logout()
     {
         await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateTo("/login", true);
     }
 }
-``

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using HealthAxisCore_Api.DTOs.Doctor;
-using HealthAxisCore_Api.Enums;
+using HealthAxis.Shared.Enums;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
@@ -11,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using HealthAxis.Shared.DTOs.Doctor;
 
 namespace HealthAxisCore_Api.Tests.Services
 {

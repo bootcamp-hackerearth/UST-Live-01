@@ -1,5 +1,6 @@
-﻿using HealthAxisCore_Api.DTOs.Doctor;
-using HealthAxisCore_Api.Enums;
+﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Doctor;
+using HealthAxis.Shared.Enums;
 
 namespace HealthAxisCore_Api.Services.Interfaces
 {
@@ -18,5 +19,13 @@ namespace HealthAxisCore_Api.Services.Interfaces
         Task<IEnumerable<DoctorResponseDTO>> FilterAsync(string? name, SpecialisationType? specialization, bool? isActive);
 
         Task<bool> SetStatusAsync(int doctorId, bool status);
+
+        Task<PagedResponseDTO<DoctorResponseDTO>> GetPagedAsync(
+    int pageNumber,
+    int pageSize,
+    string? search,
+    string? specialisation,
+    string? status
+);
     }
 }

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
-using HealthAxisCore_Api.DTOs.Doctor;
+using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Doctor;
+using HealthAxis.Shared.Enums;
+using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Interfaces;
-using HealthAxisCore_Api.Enums;
-using HealthAxisCore_Api.Exceptions;
-
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxisCore_Api.Services.Implementations
 {
@@ -15,6 +16,7 @@ namespace HealthAxisCore_Api.Services.Implementations
         private readonly IDoctorRepository _repository;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
+
 
         public DoctorService(
             IDoctorRepository repository,
@@ -26,7 +28,86 @@ namespace HealthAxisCore_Api.Services.Implementations
             _userManager = userManager;
         }
 
-       
+        public async Task<PagedResponseDTO<DoctorResponseDTO>> GetPagedAsync(
+     int pageNumber,
+     int pageSize,
+     string? search,
+     string? specialisation,
+     string? status)
+        {
+            if (pageNumber < 1)
+            {
+                pageNumber = 1;
+            }
+
+            if (pageSize < 1)
+            {
+                pageSize = 10;
+            }
+
+            if (pageSize > 100)
+            {
+                pageSize = 100;
+            }
+
+            var doctors = await _repository.GetAllAsync();
+
+            var query = doctors.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(d =>
+                    (!string.IsNullOrWhiteSpace(d.DoctorName) &&
+                     d.DoctorName.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
+
+                    (!string.IsNullOrWhiteSpace(d.Email) &&
+                     d.Email.Contains(search, StringComparison.OrdinalIgnoreCase)) ||
+
+                    d.Specialisation.ToString().Contains(search, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(specialisation) && specialisation != "All")
+            {
+                query = query.Where(d =>
+                    d.Specialisation.ToString().Equals(
+                        specialisation,
+                        StringComparison.OrdinalIgnoreCase
+                    ));
+            }
+
+            if (!string.IsNullOrWhiteSpace(status) && status != "All")
+            {
+                if (status.Equals("Active", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(d => d.IsActive);
+                }
+                else if (status.Equals("Inactive", StringComparison.OrdinalIgnoreCase))
+                {
+                    query = query.Where(d => !d.IsActive);
+                }
+            }
+
+            var totalCount = query.Count();
+
+            var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            var pagedDoctors = query
+                .OrderBy(d => d.DoctorName)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var doctorDtos = _mapper.Map<List<DoctorResponseDTO>>(pagedDoctors);
+
+            return new PagedResponseDTO<DoctorResponseDTO>
+            {
+                Items = doctorDtos,
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalPages = totalPages
+            };
+        }
         public async Task<IEnumerable<DoctorResponseDTO>> GetAllAsync()
         {
             var doctors = await _repository.GetAllAsync();

@@ -1,44 +1,47 @@
-﻿using HealthAxisAdminLayout.DTOs.Auth;
+﻿using HealthAxis.Shared.DTOs.Auth;
+using HealthAxis.Shared.DTOs.User;
 using HealthAxisAdminLayout.Services.Interfaces;
+using System.Net.Http.Json;
 
 namespace HealthAxisAdminLayout.Services.Implementations
 {
     public class AuthService : IAuthService
     {
         private readonly IAuthStateService _authState;
+        private readonly HttpClient _http;
 
-        public AuthService(IAuthStateService authState)
+        public AuthService(IAuthStateService authState, HttpClient http)
         {
             _authState = authState;
+            _http = http;
         }
 
-        public Task<AuthResponseDTO?> LoginAsync(LoginDTO loginDto)
+        public async Task<AuthResponseDTO?> LoginAsync(LoginDTO loginDto)
         {
-            // Mock admin login for frontend-only development
-            if (loginDto.Email == "admin@healthaxis.com" &&
-                loginDto.Password == "Admin@123")
+            var response = await _http.PostAsJsonAsync(
+                "api/auth/login",
+                loginDto
+            );
+
+            if (!response.IsSuccessStatusCode)
             {
-                var result = new AuthResponseDTO
-                {
-                    Token = "mock-admin-jwt-token",
-                    Email = loginDto.Email,
-                    Role = "Admin",
-                    ReferenceId = null,
-                    IsFirstLogin = false
-                };
-
-                _authState.SetLogin(result);
-
-                return Task.FromResult<AuthResponseDTO?>(result);
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
             }
 
-            return Task.FromResult<AuthResponseDTO?>(null);
+            var result = await response.Content.ReadFromJsonAsync<AuthResponseDTO>();
+
+            if (result != null)
+            {
+                await _authState.SetLoginAsync(result);
+            }
+
+            return result;
         }
 
-        public Task LogoutAsync()
+        public async Task LogoutAsync()
         {
-            _authState.Logout();
-            return Task.CompletedTask;
+            await _authState.LogoutAsync();
         }
 
         public Task<string?> GetTokenAsync()

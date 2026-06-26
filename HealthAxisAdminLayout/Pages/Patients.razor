@@ -1,65 +1,444 @@
 ﻿@page "/admin/patients"
-@layout HealthAxisAdminLayout.Layout.AdminLayout
+@attribute [Authorize(Roles = "Admin")]
 
-@using HealthAxisAdminLayout.DTOs.Patient
+@using Microsoft.AspNetCore.Authorization
+@using HealthAxis.Shared.DTOs.Patient
+@using HealthAxis.Shared.Enums
 @using HealthAxisAdminLayout.Services.Interfaces
 
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+
 @inject IPatientApiService PatientService
-@inject IAuthService AuthService
-@inject NavigationManager Navigation
 
-<h3 class="page-title">Patients</h3>
-<p class="page-subtitle">View registered patients</p>
+<div class="patient-page">
 
-<div class="table-card">
-    @if (patients.Count == 0)
+    <div class="patient-hero">
+        <div>
+            <div class="dashboard-kicker">Patient Management</div>
+
+            <h1>Patients</h1>
+
+            <p>
+                View registered HealthAxis patient details and profile information.
+            </p>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(message))
     {
-        <p>No patients found.</p>
+        <div class="alert alert-info">
+            @message
+        </div>
     }
-    else
-    {
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Date of Birth</th>
-                    <th>Gender</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                </tr>
-            </thead>
 
-            <tbody>
-                @foreach (var patient in patients)
-                {
-                    <tr>
-                        <td>@patient.PatientId</td>
-                        <td>@patient.PatientName</td>
-                        <td>@patient.DateOfBirth.ToString("dd-MMM-yyyy")</td>
-                        <td>@patient.Gender</td>
-                        <td>@patient.Email</td>
-                        <td>@patient.PhoneNumber</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
+    <div class="patient-stat-grid">
+
+        <div class="patient-stat-card patient-stat-blue">
+            <div>
+                <span>Total Patients</span>
+                <h2>@TotalPatients</h2>
+                <p>Registered patient profiles</p>
+            </div>
+
+            <div class="patient-stat-icon">●</div>
+        </div>
+
+        <div class="patient-stat-card patient-stat-teal">
+            <div>
+                <span>Male Patients</span>
+                <h2>@MalePatients</h2>
+                <p>Visible on current page</p>
+            </div>
+
+            <div class="patient-stat-icon">M</div>
+        </div>
+
+        <div class="patient-stat-card patient-stat-purple">
+            <div>
+                <span>Female Patients</span>
+                <h2>@FemalePatients</h2>
+                <p>Visible on current page</p>
+            </div>
+
+            <div class="patient-stat-icon">F</div>
+        </div>
+
+        <div class="patient-stat-card patient-stat-green">
+            <div>
+                <span>Other</span>
+                <h2>@OtherPatients</h2>
+                <p>Visible on current page</p>
+            </div>
+
+            <div class="patient-stat-icon">○</div>
+        </div>
+
+    </div>
+
+    <div class="patient-master-detail-grid">
+
+        <div class="patient-directory">
+
+            <div class="patient-directory-header">
+                <div>
+                    <h3>Patient Directory</h3>
+                    <p>Search and select a patient to view profile details.</p>
+                </div>
+
+                <span class="patient-count-pill">
+                    Showing @patients.Count of @totalCount
+                </span>
+            </div>
+
+            <div class="patient-filter-row patient-filter-row-simple">
+
+                <div class="patient-search-box">
+                    <span>⌕</span>
+
+                    <input placeholder="Search patient by name, email, or phone..."
+                           value="@searchText"
+                           @oninput="OnSearchChanged" />
+                </div>
+
+                <select class="patient-filter-select"
+                        value="@selectedGender"
+                        @onchange="OnGenderChanged">
+                    <option value="All">All Gender</option>
+
+                    @foreach (var gender in Enum.GetValues<GenderType>())
+                    {
+                        <option value="@gender.ToString()">@gender</option>
+                    }
+                </select>
+
+            </div>
+
+            @if (isLoading && patients.Count == 0)
+            {
+                <p>Loading patients...</p>
+            }
+            else if (!patients.Any())
+            {
+                <p>No patients found.</p>
+            }
+            else
+            {
+                <div class="patient-table-wrapper">
+
+                    <table class="patient-table patient-simple-table">
+
+                        <colgroup>
+                            <col class="patient-col-name-only" />
+                            <col class="patient-col-view-only" />
+                        </colgroup>
+
+                        <thead>
+                            <tr>
+                                <th>Patient</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var patient in patients)
+                            {
+                                <tr class="@(selectedPatient?.PatientId == patient.PatientId ? "patient-selected-row" : "")">
+                                    <td>
+                                        <div class="patient-profile-cell">
+                                            <div class="patient-avatar">
+                                                @GetInitials(patient.PatientName)
+                                            </div>
+
+                                            <div class="patient-profile-text">
+                                                <strong>@patient.PatientName</strong>
+                                                <span>ID: @patient.PatientId</span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <button class="patient-view-btn"
+                                                @onclick="@(() => ViewPatient(patient))"
+                                                disabled="@isLoading">
+                                            View
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+
+                    <div class="hx-pagination">
+
+                        <div class="hx-pagination-info">
+                            Showing @GetStartItemIndex() - @GetEndItemIndex() of @totalCount
+                        </div>
+
+                        <div class="hx-pagination-actions">
+
+                            <select class="hx-page-size-select"
+                                    value="@pageSize"
+                                    @onchange="OnPageSizeChanged">
+                                @foreach (var size in pageSizeOptions)
+                                {
+                                    <option value="@size">@size / page</option>
+                                }
+                            </select>
+
+                            <button @onclick="PreviousPage"
+                                    disabled="@(currentPage <= 1)">
+                                Previous
+                            </button>
+
+                            <span>
+                                Page @currentPage of @(totalPages == 0 ? 1 : totalPages)
+                            </span>
+
+                            <button @onclick="NextPage"
+                                    disabled="@(currentPage >= totalPages)">
+                                Next
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+        <div class="patient-detail-panel patient-detail-sticky">
+
+            @if (selectedPatient == null)
+            {
+                <div class="patient-empty-detail">
+                    <h3>Patient Details</h3>
+                    <p>Select a patient from the directory to view full details.</p>
+                </div>
+            }
+            else
+            {
+                <div class="patient-detail-header">
+                    <div>
+                        <h3>Patient Details</h3>
+                        <p>Detailed patient profile information.</p>
+                    </div>
+
+                    <button class="patient-outline-btn" @onclick="CloseDetails">
+                        Close
+                    </button>
+                </div>
+
+                <div class="patient-detail-grid patient-detail-grid-single">
+
+                    <div>
+                        <span>Patient Id</span>
+                        <strong>@selectedPatient.PatientId</strong>
+                    </div>
+
+                    <div>
+                        <span>Name</span>
+                        <strong>@selectedPatient.PatientName</strong>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong>@selectedPatient.Email</strong>
+                    </div>
+
+                    <div>
+                        <span>Phone</span>
+                        <strong>@selectedPatient.PhoneNumber</strong>
+                    </div>
+
+                    <div>
+                        <span>Date of Birth</span>
+                        <strong>@selectedPatient.DateOfBirth.ToString("dd-MMM-yyyy")</strong>
+                    </div>
+
+                    <div>
+                        <span>Gender</span>
+                        <strong>@GetGenderText(selectedPatient.Gender)</strong>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
 </div>
 
 @code {
     private List<PatientResponseDTO> patients = new();
 
+    private PatientResponseDTO? selectedPatient;
+
+    private string message = string.Empty;
+
+    private string searchText = string.Empty;
+
+    private string selectedGender = "All";
+
+    private bool isLoading = false;
+
+    private int currentPage = 1;
+
+    private int pageSize = 10;
+
+    private int totalCount = 0;
+
+    private int totalPages = 0;
+
+    private readonly int[] pageSizeOptions = new[] { 5, 10, 20 };
+
+    private int TotalPatients => totalCount;
+
+    private int MalePatients => patients.Count(p => p.Gender == GenderType.Male);
+
+    private int FemalePatients => patients.Count(p => p.Gender == GenderType.Female);
+
+    private int OtherPatients => patients.Count(p => p.Gender == GenderType.Other);
+
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await AuthService.IsAdminAsync();
+        await LoadPatients();
+    }
 
-        if (!isAdmin)
+    private async Task LoadPatients()
+    {
+        isLoading = true;
+        message = string.Empty;
+
+        try
         {
-            Navigation.NavigateTo("/login");
-            return;
+            var result = await PatientService.GetPatientsPagedAsync(
+                currentPage,
+                pageSize,
+                searchText,
+                selectedGender
+            );
+
+            patients = result.Items;
+            totalCount = result.TotalCount;
+            totalPages = result.TotalPages;
+
+            if (selectedPatient != null &&
+                !patients.Any(p => p.PatientId == selectedPatient.PatientId))
+            {
+                selectedPatient = null;
+            }
+        }
+        catch
+        {
+            message = "Failed to load patients.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task OnSearchChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? string.Empty;
+        currentPage = 1;
+        await LoadPatients();
+    }
+
+    private async Task OnGenderChanged(ChangeEventArgs e)
+    {
+        selectedGender = e.Value?.ToString() ?? "All";
+        currentPage = 1;
+        await LoadPatients();
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var selectedSize))
+        {
+            pageSize = selectedSize;
+            currentPage = 1;
+            await LoadPatients();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadPatients();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadPatients();
+        }
+    }
+
+    private int GetStartItemIndex()
+    {
+        if (totalCount == 0)
+        {
+            return 0;
         }
 
-        patients = await PatientService.GetPatientsAsync();
+        return ((currentPage - 1) * pageSize) + 1;
+    }
+
+    private int GetEndItemIndex()
+    {
+        var end = currentPage * pageSize;
+
+        return end > totalCount ? totalCount : end;
+    }
+
+    private void ViewPatient(PatientResponseDTO patient)
+    {
+        selectedPatient = patient;
+        message = string.Empty;
+    }
+
+    private void CloseDetails()
+    {
+        selectedPatient = null;
+    }
+
+    private string GetInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "PT";
+        }
+
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length >= 2
+                ? parts[0][..2].ToUpper()
+                : parts[0].ToUpper();
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+
+    private string GetGenderText(GenderType gender)
+    {
+        return gender switch
+        {
+            GenderType.Male => "Male",
+            GenderType.Female => "Female",
+            GenderType.Other => "Other",
+            _ => "Unknown"
+        };
     }
 }

@@ -1,39 +1,34 @@
-﻿using HealthAxisAdminLayout.DTOs.HealthRecord;
+﻿using System.Net.Http.Json;
+using HealthAxis.Shared.DTOs.HealthRecord;
 using HealthAxisAdminLayout.Services.Interfaces;
 
 namespace HealthAxisAdminLayout.Services.Implementations
 {
     public class HealthRecordApiService : IHealthRecordApiService
     {
-        private readonly List<HealthRecordResponseDTO> _records = new()
-        {
-            new HealthRecordResponseDTO
-            {
-                HealthRecordId = 1,
-                PatientId = 1,
-                DoctorId = 1,
-                AppointmentId = 1,
-                VisitDate = DateTime.Today,
-                Diagnosis = "Fever",
-                Prescription = "Paracetamol",
-                Notes = "Drink water and rest"
-            }
-        };
+        private readonly HttpClient _http;
 
-        public Task<List<HealthRecordResponseDTO>> GetHealthRecordsAsync()
+        public HealthRecordApiService(HttpClient http)
         {
-            return Task.FromResult(_records.ToList());
+            _http = http;
         }
 
-        public Task<bool> DeleteHealthRecordAsync(int id)
+        public async Task<List<HealthRecordResponseDTO>> GetHealthRecordsAsync()
         {
-            var record = _records.FirstOrDefault(r => r.HealthRecordId == id);
+            var result = await _http.GetFromJsonAsync<List<HealthRecordResponseDTO>>(
+                "api/healthrecord"
+            );
 
-            if (record == null)
-                return Task.FromResult(false);
+            return result ?? new List<HealthRecordResponseDTO>();
+        }
 
-            _records.Remove(record);
-            return Task.FromResult(true);
+        public async Task<bool> DeleteHealthRecordAsync(int id)
+        {
+            var response = await _http.DeleteAsync(
+                $"api/healthrecord/{id}"
+            );
+
+            return response.IsSuccessStatusCode;
         }
     }
 }

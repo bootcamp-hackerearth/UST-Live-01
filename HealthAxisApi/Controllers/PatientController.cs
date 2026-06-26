@@ -1,4 +1,4 @@
-﻿using HealthAxisCore_Api.DTOs.Patient;
+﻿using HealthAxis.Shared.DTOs.Patient;
 using HealthAxisCore_Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -32,8 +32,24 @@ namespace HealthAxisCore_Api.Controllers
         {
             return Ok(await _service.GetAllAsync());
         }
+        [HttpGet("paged")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetPaged(
+    int pageNumber = 1,
+    int pageSize = 10,
+    string? search = null,
+    string? gender = null)
+        {
+            var result = await _service.GetPagedAsync(
+                pageNumber,
+                pageSize,
+                search,
+                gender
+            );
 
-        
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Admin,Doctor")]
         public async Task<IActionResult> GetById(int id)

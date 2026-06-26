@@ -117,6 +117,19 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+const string BlazorCorsPolicy = "BlazorCorsPolicy";
+
+builder.Services.AddCors(options => {
+    options.AddPolicy(BlazorCorsPolicy, policy =>
+    {
+       policy.WithOrigins("https://localhost:7107")
+      .AllowAnyHeader()
+      .AllowAnyMethod()
+      .AllowCredentials();
+
+    });
+});
+
 var app = builder.Build();
 
 //  ROLE SEEDER + ADMIN SEEDER
@@ -140,6 +153,9 @@ app.UseHttpsRedirection();
 
 // ✅ Global Exception Handler
 app.UseMiddleware<GlobalExceptionHandler>();
+
+app.UseCors(BlazorCorsPolicy);
+
 
 app.UseAuthentication();
 app.UseAuthorization();

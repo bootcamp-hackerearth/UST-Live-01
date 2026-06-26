@@ -1,8 +1,8 @@
-﻿using HealthAxisAdminLayout.DTOs.Auth;
+﻿using HealthAxis.Shared.DTOs.Auth;
+using HealthAxis.Shared.DTOs.User;
 
 namespace HealthAxisAdminLayout.Services.Interfaces
 {
-    using HealthAxisAdminLayout.DTOs.Auth;
         public interface IAuthService
         {
             Task<AuthResponseDTO?> LoginAsync(LoginDTO loginDto);

@@ -1,5 +1,5 @@
-﻿using HealthAxisCore_Api.DTOs.Appointment;
-using HealthAxisCore_Api.Enums;
+﻿using HealthAxis.Shared.DTOs.Appointment;
+using HealthAxis.Shared.Enums;
 using HealthAxisCore_Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -25,8 +25,29 @@ namespace HealthAxisCore_Api.Controllers
         {
             return Ok(await _service.GetAllAsync());
         }
+        [HttpGet("paged")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetPaged(
+    int pageNumber = 1,
+    int pageSize = 10,
+    string? search = null,
+    AppointmentStatus? status = null,
+    DateTime? startDate = null,
+    DateTime? endDate = null)
+        {
+            var result = await _service.GetPagedAsync(
+                pageNumber,
+                pageSize,
+                search,
+                status,
+                startDate,
+                endDate
+            );
 
-       
+            return Ok(result);
+        }
+
+
         [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetById(int id)

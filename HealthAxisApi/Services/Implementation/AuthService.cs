@@ -1,15 +1,21 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 using HealthAxisCore_Api.DTOs.User;
+
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Services.Interfaces;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Repositories;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using HealthAxisCore_Api.Data;
+using HealthAxis.Shared.DTOs.Auth;
+using HealthAxis.Shared.DTOs.User;
 
 namespace HealthAxisCore_Api.Services.Implementations
 {
@@ -18,18 +24,21 @@ namespace HealthAxisCore_Api.Services.Implementations
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IPatientRepository _patientRepository;
+        private readonly HealthAppDbContext _context;
 
         public AuthService(
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
-            IPatientRepository patientRepository)
+            IPatientRepository patientRepository,
+            HealthAppDbContext context)
         {
             _userManager = userManager;
             _configuration = configuration;
             _patientRepository = patientRepository;
+            _context = context;
         }
 
-        // ✅ REGISTER (ONLY PATIENT)
+        // ✅ REGISTER (UNCHANGED)
         public async Task<AuthResponseDTO> RegisterAsync(RegisterDTO request)
         {
             if (request.Password != request.ConfirmPassword)
@@ -67,10 +76,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new BusinessRuleException(errors);
-            }
+                throw new BusinessRuleException(string.Join(", ", result.Errors.Select(e => e.Description)));
 
             await _userManager.AddToRoleAsync(user, "Patient");
 
@@ -86,7 +92,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        // ✅ LOGIN
+        // ✅ LOGIN (UPDATED WITH REFRESH TOKEN)
         public async Task<AuthResponseDTO> LoginAsync(LoginDTO request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -101,11 +107,22 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            var token = await GenerateJwtToken(user);
+            var accessToken = await GenerateJwtToken(user);
+
+            var refreshToken = new RefreshToken
+            {
+                Token = GenerateRefreshToken(),
+                Expires = DateTime.UtcNow.AddDays(7),
+                UserId = user.Id
+            };
+
+            _context.RefreshTokens.Add(refreshToken);
+            await _context.SaveChangesAsync();
 
             return new AuthResponseDTO
             {
-                Token = token,
+                Token = accessToken,
+                RefreshToken = refreshToken.Token,   // ✅ NEW
                 Email = user.Email!,
                 Role = roles.FirstOrDefault() ?? "User",
                 ReferenceId = user.ReferenceId,
@@ -113,7 +130,47 @@ namespace HealthAxisCore_Api.Services.Implementations
             };
         }
 
-        // ✅ CHANGE PASSWORD
+        // ✅ REFRESH TOKEN (NEW)
+        public async Task<AuthResponseDTO> RefreshTokenAsync(string refreshToken)
+        {
+            var token = await _context.RefreshTokens
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.Token == refreshToken);
+
+            if (token == null || token.IsExpired || token.IsRevoked)
+                throw new UnauthorizedException("Invalid or expired refresh token");
+
+            var newAccessToken = await GenerateJwtToken(token.User);
+
+            var roles = await _userManager.GetRolesAsync(token.User);
+
+            return new AuthResponseDTO
+            {
+                Token = newAccessToken,
+                RefreshToken = refreshToken,
+                Email = token.User.Email!,
+                Role = roles.FirstOrDefault() ?? "User",
+                ReferenceId = token.User.ReferenceId,
+                IsFirstLogin = token.User.IsFirstLogin
+            };
+        }
+
+        // ✅ LOGOUT (REVOKE TOKEN)
+        public async Task RevokeRefreshTokenAsync(string refreshToken)
+        {
+            var token = await _context.RefreshTokens
+                .FirstOrDefaultAsync(x => x.Token == refreshToken);
+
+            if (token == null)
+                throw new EntityNotFoundException("Token not found");
+
+            token.IsRevoked = true;
+            token.Revoked = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+        }
+
+        // ✅ CHANGE PASSWORD (UNCHANGED)
         public async Task ChangePasswordAsync(ChangePasswordDTO request)
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
@@ -131,10 +188,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             );
 
             if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new BusinessRuleException(errors);
-            }
+                throw new BusinessRuleException(string.Join(", ", result.Errors.Select(e => e.Description)));
 
             user.IsFirstLogin = false;
             user.TemporaryPassword = null;
@@ -142,7 +196,7 @@ namespace HealthAxisCore_Api.Services.Implementations
             await _userManager.UpdateAsync(user);
         }
 
-        // ✅ JWT TOKEN GENERATION
+        // ✅ JWT TOKEN
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
             var jwtSettings = _configuration.GetSection("Jwt");
@@ -177,6 +231,17 @@ namespace HealthAxisCore_Api.Services.Implementations
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        // ✅ REFRESH TOKEN GENERATOR
+        private string GenerateRefreshToken()
+        {
+            var randomBytes = new byte[64];
+
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomBytes);
+
+            return Convert.ToBase64String(randomBytes);
         }
     }
 }

@@ -4,5 +4,10 @@
   </Folder>
   <Project Path="HealthAxisAdminLayout/HealthAxisAdminLayout.csproj" Id="7cefd2d1-df6f-4222-a06b-9e4d75ef4380" />
   <Project Path="HealthAxisApi/HealthAxisCore_Api.csproj" />
+  <Project Path="HealthAxisApp.Angular/HealthAxisApp.Angular.esproj">
+    <Build />
+    <Deploy />
+  </Project>
   <Project Path="HealthAxisCore_Api.Tests/HealthAxisCore_Api.Tests.csproj" Id="7cf44f4d-c1be-4bc1-ac96-6fa94d0fb386" />
+  <Project Path="HealthAxis_Shared/HealthAxis.Shared.csproj" Id="6723e7db-d57b-40f0-b624-93a3a9940295" />
 </Solution>

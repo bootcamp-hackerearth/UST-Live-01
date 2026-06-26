@@ -1,4 +1,4 @@
-﻿using HealthAxisCore_Api.DTOs.HealthRecord;
+﻿using HealthAxis.Shared.DTOs.HealthRecord;
 
 namespace HealthAxisCore_Api.Services.Interfaces
 {

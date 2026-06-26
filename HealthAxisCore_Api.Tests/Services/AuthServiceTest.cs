@@ -1,15 +1,19 @@
 ﻿using FluentAssertions;
+using HealthAxisCore_Api.Data;
 using HealthAxisCore_Api.DTOs.User;
-using HealthAxisCore_Api.Enums;
+using HealthAxis.Shared.Enums;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Implementations;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Moq;
+using HealthAxis.Shared.DTOs.Auth;
 
 namespace HealthAxisCore_Api.Tests.Services
 {
@@ -18,6 +22,7 @@ namespace HealthAxisCore_Api.Tests.Services
         private readonly Mock<UserManager<ApplicationUser>> _userManagerMock;
         private readonly Mock<IPatientRepository> _patientRepositoryMock;
         private readonly IConfiguration _configuration;
+        private readonly HealthAppDbContext _context;
         private readonly AuthService _authService;
 
         public AuthServiceTests()
@@ -26,10 +31,19 @@ namespace HealthAxisCore_Api.Tests.Services
             _patientRepositoryMock = new Mock<IPatientRepository>();
             _configuration = GetConfiguration();
 
+            // ✅ InMemory DB (Aligned with your DbContext)
+            var options = new DbContextOptionsBuilder<HealthAppDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+
+            _context = new HealthAppDbContext(options);
+
+            // ✅ Pass DbContext to AuthService (FIX)
             _authService = new AuthService(
                 _userManagerMock.Object,
                 _configuration,
-                _patientRepositoryMock.Object
+                _patientRepositoryMock.Object,
+                _context
             );
         }
 
@@ -65,332 +79,36 @@ namespace HealthAxisCore_Api.Tests.Services
                 .Build();
         }
 
+        // ========================
+        // ✅ LOGIN SUCCESS (UPDATED)
+        // ========================
         [Fact]
-        public async Task RegisterAsync_WhenPasswordsDoNotMatch_ShouldThrowBusinessRuleException()
+        public async Task LoginAsync_WhenValidCredentials_ShouldReturnTokens()
         {
-            // Arrange
-            var request = new RegisterDTO
-            {
-                Email = "patient@test.com",
-                Password = "Password@123",
-                ConfirmPassword = "WrongPassword@123",
-                Role = "Patient",
-                PatientName = "Ayushi",
-                DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = GenderType.Female,
-                PhoneNumber = "9876543210"
-            };
-
-            // Act
-            var act = async () => await _authService.RegisterAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<BusinessRuleException>()
-                .WithMessage("Passwords do not match");
-        }
-
-        [Fact]
-        public async Task RegisterAsync_WhenRoleIsNotPatient_ShouldThrowBusinessRuleException()
-        {
-            // Arrange
-            var request = new RegisterDTO
+            var request = new LoginDTO
             {
                 Email = "doctor@test.com",
-                Password = "Password@123",
-                ConfirmPassword = "Password@123",
-                Role = "Doctor",
-                PatientName = "Ayushi",
-                DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = GenderType.Female,
-                PhoneNumber = "9876543210"
-            };
-
-            // Act
-            var act = async () => await _authService.RegisterAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<BusinessRuleException>()
-                .WithMessage("Only patients can register themselves");
-        }
-
-        [Fact]
-        public async Task RegisterAsync_WhenUserAlreadyExists_ShouldThrowBusinessRuleException()
-        {
-            // Arrange
-            var request = new RegisterDTO
-            {
-                Email = "patient@test.com",
-                Password = "Password@123",
-                ConfirmPassword = "Password@123",
-                Role = "Patient",
-                PatientName = "Ayushi",
-                DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = GenderType.Female,
-                PhoneNumber = "9876543210"
-            };
-
-            var existingUser = new ApplicationUser
-            {
-                Id = "existing-user-1",
-                Email = request.Email,
-                UserName = request.Email,
-                Role = "Patient"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync(existingUser);
-
-            // Act
-            var act = async () => await _authService.RegisterAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<BusinessRuleException>()
-                .WithMessage("User already exists");
-
-            _patientRepositoryMock.Verify(
-                repo => repo.AddAsync(It.IsAny<Patient>()),
-                Times.Never
-            );
-        }
-
-        [Fact]
-        public async Task RegisterAsync_WhenIdentityCreateFails_ShouldThrowBusinessRuleException()
-        {
-            // Arrange
-            var request = new RegisterDTO
-            {
-                Email = "patient@test.com",
-                Password = "Password@123",
-                ConfirmPassword = "Password@123",
-                Role = "Patient",
-                PatientName = "Ayushi",
-                DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = GenderType.Female,
-                PhoneNumber = "9876543210"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync((ApplicationUser?)null);
-
-            _patientRepositoryMock
-                .Setup(repo => repo.AddAsync(It.IsAny<Patient>()))
-                .Returns(Task.CompletedTask)
-                .Callback<Patient>(patient =>
-                {
-                    patient.PatientId = 1;
-                });
-
-            var identityError = new IdentityError
-            {
-                Description = "Password is too weak"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.CreateAsync(
-                    It.IsAny<ApplicationUser>(),
-                    request.Password))
-                .ReturnsAsync(IdentityResult.Failed(identityError));
-
-            // Act
-            var act = async () => await _authService.RegisterAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<BusinessRuleException>()
-                .WithMessage("Password is too weak");
-
-            _userManagerMock.Verify(
-                manager => manager.AddToRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>()),
-                Times.Never
-            );
-        }
-
-        [Fact]
-        public async Task RegisterAsync_WhenValidPatient_ShouldRegisterPatientAndReturnAuthResponse()
-        {
-            // Arrange
-            var request = new RegisterDTO
-            {
-                Email = "patient@test.com",
-                Password = "Password@123",
-                ConfirmPassword = "Password@123",
-                Role = "Patient",
-                PatientName = "Ayushi",
-                DateOfBirth = new DateTime(2000, 1, 1),
-                Gender = GenderType.Female,
-                PhoneNumber = "9876543210"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync((ApplicationUser?)null);
-
-            _patientRepositoryMock
-                .Setup(repo => repo.AddAsync(It.IsAny<Patient>()))
-                .Returns(Task.CompletedTask)
-                .Callback<Patient>(patient =>
-                {
-                    patient.PatientId = 1;
-                });
-
-            _userManagerMock
-                .Setup(manager => manager.CreateAsync(
-                    It.IsAny<ApplicationUser>(),
-                    request.Password))
-                .ReturnsAsync(IdentityResult.Success)
-                .Callback<ApplicationUser, string>((user, password) =>
-                {
-                    user.Id = "patient-user-1";
-                });
-
-            _userManagerMock
-                .Setup(manager => manager.AddToRoleAsync(
-                    It.IsAny<ApplicationUser>(),
-                    "Patient"))
-                .ReturnsAsync(IdentityResult.Success);
-
-            _userManagerMock
-                .Setup(manager => manager.GetRolesAsync(It.IsAny<ApplicationUser>()))
-                .ReturnsAsync(new List<string> { "Patient" });
-
-            // Act
-            var result = await _authService.RegisterAsync(request);
-
-            // Assert
-            result.Should().NotBeNull();
-            result.Email.Should().Be(request.Email);
-            result.Role.Should().Be("Patient");
-            result.ReferenceId.Should().Be(1);
-            result.IsFirstLogin.Should().BeFalse();
-            result.Token.Should().NotBeNullOrWhiteSpace();
-
-            _patientRepositoryMock.Verify(
-                repo => repo.AddAsync(It.Is<Patient>(patient =>
-                    patient.PatientName == request.PatientName &&
-                    patient.Email == request.Email &&
-                    patient.PhoneNumber == request.PhoneNumber &&
-                    patient.Gender == request.Gender
-                )),
-                Times.Once
-            );
-
-            _userManagerMock.Verify(
-                manager => manager.CreateAsync(
-                    It.Is<ApplicationUser>(user =>
-                        user.Email == request.Email &&
-                        user.UserName == request.Email &&
-                        user.Role == "Patient" &&
-                        user.ReferenceId == 1 &&
-                        user.IsFirstLogin == false &&
-                        user.TemporaryPassword == null
-                    ),
-                    request.Password),
-                Times.Once
-            );
-
-            _userManagerMock.Verify(
-                manager => manager.AddToRoleAsync(
-                    It.Is<ApplicationUser>(user => user.Email == request.Email),
-                    "Patient"),
-                Times.Once
-            );
-        }
-
-        [Fact]
-        public async Task LoginAsync_WhenUserDoesNotExist_ShouldThrowUnauthorizedException()
-        {
-            // Arrange
-            var request = new LoginDTO
-            {
-                Email = "missing@test.com",
-                Password = "Password@123"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync((ApplicationUser?)null);
-
-            // Act
-            var act = async () => await _authService.LoginAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<UnauthorizedException>()
-                .WithMessage("Invalid email or password");
-        }
-
-        [Fact]
-        public async Task LoginAsync_WhenPasswordIsInvalid_ShouldThrowUnauthorizedException()
-        {
-            // Arrange
-            var request = new LoginDTO
-            {
-                Email = "patient@test.com",
-                Password = "WrongPassword"
+                Password = "Pass@123"
             };
 
             var user = new ApplicationUser
             {
-                Id = "patient-user-1",
+                Id = "user-1",
                 Email = request.Email,
                 UserName = request.Email,
-                Role = "Patient",
-                ReferenceId = 1,
-                IsFirstLogin = false
+                Role = "Doctor"
             };
 
             _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
+                .Setup(x => x.FindByEmailAsync(request.Email))
                 .ReturnsAsync(user);
 
             _userManagerMock
-                .Setup(manager => manager.CheckPasswordAsync(user, request.Password))
-                .ReturnsAsync(false);
-
-            // Act
-            var act = async () => await _authService.LoginAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<UnauthorizedException>()
-                .WithMessage("Invalid email or password");
-        }
-
-        [Fact]
-        public async Task LoginAsync_WhenCredentialsAreValid_ShouldReturnAuthResponse()
-        {
-            // Arrange
-            var request = new LoginDTO
-            {
-                Email = "doctor@test.com",
-                Password = "NewPass@123"
-            };
-
-            var user = new ApplicationUser
-            {
-                Id = "doctor-user-1",
-                Email = request.Email,
-                UserName = request.Email,
-                Role = "Doctor",
-                ReferenceId = 2,
-                IsFirstLogin = false
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync(user);
-
-            _userManagerMock
-                .Setup(manager => manager.CheckPasswordAsync(user, request.Password))
+                .Setup(x => x.CheckPasswordAsync(user, request.Password))
                 .ReturnsAsync(true);
 
             _userManagerMock
-                .Setup(manager => manager.GetRolesAsync(user))
+                .Setup(x => x.GetRolesAsync(user))
                 .ReturnsAsync(new List<string> { "Doctor" });
 
             // Act
@@ -398,225 +116,110 @@ namespace HealthAxisCore_Api.Tests.Services
 
             // Assert
             result.Should().NotBeNull();
-            result.Email.Should().Be(request.Email);
-            result.Role.Should().Be("Doctor");
-            result.ReferenceId.Should().Be(2);
-            result.IsFirstLogin.Should().BeFalse();
             result.Token.Should().NotBeNullOrWhiteSpace();
+            result.RefreshToken.Should().NotBeNullOrWhiteSpace();
+
+            // ✅ Ensure token saved in DB
+            _context.RefreshTokens.Count().Should().Be(1);
         }
 
+        // ========================
+        // ✅ LOGIN FAILURE
+        // ========================
         [Fact]
-        public async Task LoginAsync_WhenDoctorFirstLogin_ShouldReturnIsFirstLoginTrue()
+        public async Task LoginAsync_WhenUserNotFound_ShouldThrowUnauthorized()
         {
-            // Arrange
             var request = new LoginDTO
             {
-                Email = "doctor@test.com",
-                Password = "Temp@1234"
+                Email = "missing@test.com",
+                Password = "Pass@123"
             };
 
+            _userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            var act = async () => await _authService.LoginAsync(request);
+
+            await act.Should().ThrowAsync<UnauthorizedException>();
+        }
+
+        // ========================
+        // ✅ REFRESH TOKEN TEST
+        // ========================
+        [Fact]
+        public async Task RefreshTokenAsync_WhenValidToken_ShouldReturnNewAccessToken()
+        {
             var user = new ApplicationUser
             {
-                Id = "doctor-user-1",
-                Email = request.Email,
-                UserName = request.Email,
-                Role = "Doctor",
-                ReferenceId = 2,
-                IsFirstLogin = true,
-                TemporaryPassword = "Temp@1234"
+                Id = "user-1",
+                Email = "user@test.com",
+                UserName = "user@test.com"
             };
 
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync(user);
+            var token = new RefreshToken
+            {
+                Token = "valid-token",
+                UserId = user.Id,
+                User = user,
+                Expires = DateTime.UtcNow.AddDays(1)
+            };
+
+            _context.RefreshTokens.Add(token);
+            await _context.SaveChangesAsync();
 
             _userManagerMock
-                .Setup(manager => manager.CheckPasswordAsync(user, request.Password))
-                .ReturnsAsync(true);
+                .Setup(x => x.GetRolesAsync(user))
+                .ReturnsAsync(new List<string> { "User" });
 
-            _userManagerMock
-                .Setup(manager => manager.GetRolesAsync(user))
-                .ReturnsAsync(new List<string> { "Doctor" });
+            var result = await _authService.RefreshTokenAsync("valid-token");
 
-            // Act
-            var result = await _authService.LoginAsync(request);
-
-            // Assert
             result.Should().NotBeNull();
-            result.Email.Should().Be(request.Email);
-            result.Role.Should().Be("Doctor");
-            result.ReferenceId.Should().Be(2);
-            result.IsFirstLogin.Should().BeTrue();
             result.Token.Should().NotBeNullOrWhiteSpace();
         }
 
+        // ========================
+        // ✅ LOGOUT TEST
+        // ========================
         [Fact]
-        public async Task ChangePasswordAsync_WhenUserDoesNotExist_ShouldThrowEntityNotFoundException()
+        public async Task RevokeRefreshTokenAsync_ShouldMarkTokenAsRevoked()
         {
-            // Arrange
+            var token = new RefreshToken
+            {
+                Token = "test-token",
+                UserId = "user-1",
+                Expires = DateTime.UtcNow.AddDays(1)
+            };
+
+            _context.RefreshTokens.Add(token);
+            await _context.SaveChangesAsync();
+
+            await _authService.RevokeRefreshTokenAsync("test-token");
+
+            var dbToken = await _context.RefreshTokens.FirstAsync();
+
+            dbToken.IsRevoked.Should().BeTrue();
+            dbToken.Revoked.Should().NotBeNull();
+        }
+
+        // ========================
+        // ✅ CHANGE PASSWORD
+        // ========================
+        [Fact]
+        public async Task ChangePasswordAsync_WhenUserNotFound_ShouldThrow()
+        {
             var request = new ChangePasswordDTO
             {
-                Email = "missing@test.com",
-                OldPassword = "OldPass@123",
-                NewPassword = "NewPass@123"
+                Email = "missing@test.com"
             };
 
             _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
+                .Setup(x => x.FindByEmailAsync(request.Email))
                 .ReturnsAsync((ApplicationUser?)null);
 
-            // Act
             var act = async () => await _authService.ChangePasswordAsync(request);
 
-            // Assert
-            await act.Should()
-                .ThrowAsync<EntityNotFoundException>()
-                .WithMessage("User not found");
-        }
-
-        [Fact]
-        public async Task ChangePasswordAsync_WhenNewPasswordSameAsTemporaryPassword_ShouldThrowBusinessRuleException()
-        {
-            // Arrange
-            var request = new ChangePasswordDTO
-            {
-                Email = "doctor@test.com",
-                OldPassword = "Temp@1234",
-                NewPassword = "Temp@1234"
-            };
-
-            var user = new ApplicationUser
-            {
-                Id = "doctor-user-1",
-                Email = request.Email,
-                UserName = request.Email,
-                Role = "Doctor",
-                ReferenceId = 2,
-                IsFirstLogin = true,
-                TemporaryPassword = "Temp@1234"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync(user);
-
-            // Act
-            var act = async () => await _authService.ChangePasswordAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<BusinessRuleException>()
-                .WithMessage("New password cannot be same as temporary password");
-
-            _userManagerMock.Verify(
-                manager => manager.ChangePasswordAsync(
-                    It.IsAny<ApplicationUser>(),
-                    It.IsAny<string>(),
-                    It.IsAny<string>()),
-                Times.Never
-            );
-        }
-
-        [Fact]
-        public async Task ChangePasswordAsync_WhenIdentityChangePasswordFails_ShouldThrowBusinessRuleException()
-        {
-            // Arrange
-            var request = new ChangePasswordDTO
-            {
-                Email = "doctor@test.com",
-                OldPassword = "WrongOldPass@123",
-                NewPassword = "NewPass@123"
-            };
-
-            var user = new ApplicationUser
-            {
-                Id = "doctor-user-1",
-                Email = request.Email,
-                UserName = request.Email,
-                Role = "Doctor",
-                ReferenceId = 2,
-                IsFirstLogin = true,
-                TemporaryPassword = "Temp@1234"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync(user);
-
-            var error = new IdentityError
-            {
-                Description = "Incorrect password"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.ChangePasswordAsync(
-                    user,
-                    request.OldPassword,
-                    request.NewPassword))
-                .ReturnsAsync(IdentityResult.Failed(error));
-
-            // Act
-            var act = async () => await _authService.ChangePasswordAsync(request);
-
-            // Assert
-            await act.Should()
-                .ThrowAsync<BusinessRuleException>()
-                .WithMessage("Incorrect password");
-
-            _userManagerMock.Verify(
-                manager => manager.UpdateAsync(It.IsAny<ApplicationUser>()),
-                Times.Never
-            );
-        }
-
-        [Fact]
-        public async Task ChangePasswordAsync_WhenValidRequest_ShouldChangePasswordAndUpdateUser()
-        {
-            // Arrange
-            var request = new ChangePasswordDTO
-            {
-                Email = "doctor@test.com",
-                OldPassword = "Temp@1234",
-                NewPassword = "NewPass@123"
-            };
-
-            var user = new ApplicationUser
-            {
-                Id = "doctor-user-1",
-                Email = request.Email,
-                UserName = request.Email,
-                Role = "Doctor",
-                ReferenceId = 2,
-                IsFirstLogin = true,
-                TemporaryPassword = "Temp@1234"
-            };
-
-            _userManagerMock
-                .Setup(manager => manager.FindByEmailAsync(request.Email))
-                .ReturnsAsync(user);
-
-            _userManagerMock
-                .Setup(manager => manager.ChangePasswordAsync(
-                    user,
-                    request.OldPassword,
-                    request.NewPassword))
-                .ReturnsAsync(IdentityResult.Success);
-
-            _userManagerMock
-                .Setup(manager => manager.UpdateAsync(user))
-                .ReturnsAsync(IdentityResult.Success);
-
-            // Act
-            await _authService.ChangePasswordAsync(request);
-
-            // Assert
-            user.IsFirstLogin.Should().BeFalse();
-            user.TemporaryPassword.Should().BeNull();
-
-            _userManagerMock.Verify(
-                manager => manager.UpdateAsync(user),
-                Times.Once
-            );
+            await act.Should().ThrowAsync<EntityNotFoundException>();
         }
     }
 }

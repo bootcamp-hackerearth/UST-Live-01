@@ -1,10 +1,18 @@
-﻿using HealthAxisCore_Api.DTOs.Patient;
+﻿using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.Patient;
 
 namespace HealthAxisCore_Api.Services.Interfaces
 {
     public interface IPatientService
     {
         Task<IEnumerable<PatientResponseDTO>> GetAllAsync();
+
+        Task<PagedResponseDTO<PatientResponseDTO>> GetPagedAsync(
+    int pageNumber,
+    int pageSize,
+    string? search,
+    string? gender
+);
 
         Task<PatientResponseDTO?> GetByIdAsync(int id);
 

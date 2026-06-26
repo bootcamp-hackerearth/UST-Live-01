@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using HealthAxisCore_Api.DTOs.Appointment;
-using HealthAxisCore_Api.Enums;
+using HealthAxis.Shared.DTOs.Appointment;
+using HealthAxis.Shared.Enums;
 using HealthAxisCore_Api.Exceptions;
 using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;

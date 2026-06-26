@@ -16,10 +16,15 @@ namespace HealthAxisAdminLayout.Handlers
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrWhiteSpace(_authState.Token))
+            // ✅ LOAD TOKEN FROM LOCAL STORAGE (CRITICAL FIX)
+            await _authState.LoadFromStorageAsync();
+
+            var token = _authState.Token;
+
+            if (!string.IsNullOrWhiteSpace(token))
             {
                 request.Headers.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _authState.Token);
+                    new AuthenticationHeaderValue("Bearer", token);
             }
 
             return await base.SendAsync(request, cancellationToken);

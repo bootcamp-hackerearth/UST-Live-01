@@ -1,28 +1,24 @@
-﻿namespace HealthAxisAdminLayout.Services.Interfaces
+﻿using HealthAxis.Shared.DTOs.Auth;
+using HealthAxis.Shared.DTOs.User;
+using HealthAxis.Shared;
+    
+namespace HealthAxisAdminLayout.Services.Interfaces
 {
-    using HealthAxisAdminLayout.DTOs.Auth;
-    
+    public interface IAuthStateService
+{
+    string? Token { get; }
+    string? Email { get; }
+    string? Role { get; }
+    int? ReferenceId { get; }
+    bool IsFirstLogin { get; }
 
-    
-    
-        public interface IAuthStateService
-        {
-            string? Token { get; }
+    bool IsLoggedIn { get; }
+    bool IsAdmin { get; }
 
-            string? Email { get; }
+    Task SetLoginAsync(AuthResponseDTO response);
+    Task LoadFromStorageAsync();
+    Task LogoutAsync();
+}
+}
 
-            string? Role { get; }
 
-            int? ReferenceId { get; }
-
-            bool IsFirstLogin { get; }
-
-            bool IsLoggedIn { get; }
-
-            bool IsAdmin { get; }
-
-            void SetLogin(AuthResponseDTO response);
-
-            void Logout();
-        }
-    }

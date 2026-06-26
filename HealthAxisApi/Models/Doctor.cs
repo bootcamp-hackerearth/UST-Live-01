@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using HealthAxisCore_Api.Enums;
+using HealthAxis.Shared.Enums;
 
 namespace HealthAxisCore_Api.Models
 {

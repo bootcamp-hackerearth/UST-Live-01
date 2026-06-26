@@ -1,205 +1,925 @@
 ﻿@page "/admin/doctors"
-@layout HealthAxisAdminLayout.Layout.AdminLayout 
+@attribute [Authorize(Roles = "Admin")]
 
-@using HealthAxisAdminLayout.DTOs.Doctor
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.JSInterop
+@using HealthAxis.Shared.DTOs.Doctor
+@using HealthAxis.Shared.DTOs.Appointment
+@using HealthAxis.Shared.Enums
 @using HealthAxisAdminLayout.Services.Interfaces
 
+@layout HealthAxisAdminLayout.Layout.AdminLayout
+
 @inject IDoctorApiService DoctorService
-@inject IAuthService AuthService
+@inject IAppointmentApiService AppointmentService
+@inject IJSRuntime JS
 
-@inject NavigationManager Navigation
+<div class="doctor-page">
 
-<h3 class="page-title">Manage Doctors</h3>
-<p class="page-subtitle">Create, view, activate, deactivate, and delete doctors</p>
-
-@if (!string.IsNullOrWhiteSpace(message))
-{
-    <div class="alert alert-info">
-        @message
-    </div>
-}
-
-<div class="form-card">
-    <h5>Add Doctor</h5>
-
-    <div class="form-grid">
+    <div class="doctor-hero">
         <div>
-            <label>Doctor Name</label>
-            <input class="form-control" @bind="newDoctor.DoctorName" />
+            <div class="dashboard-kicker">Doctor Management</div>
+            <h1>Doctors</h1>
+            <p>Register, update, activate, and manage HealthAxis doctor profiles.</p>
         </div>
 
-        <div>
-            <label>Email</label>
-            <input class="form-control" @bind="newDoctor.Email" />
-        </div>
-
-        <div>
-            <label>Specialisation</label>
-            <input type="number" class="form-control" @bind="newDoctor.Specialisation" />
-        </div>
-
-        <div>
-            <label>Experience</label>
-            <input type="number" class="form-control" @bind="newDoctor.YearsOfExperience" />
-        </div>
-
-        <div>
-            <label>Consultation Fee</label>
-            <input type="number" class="form-control" @bind="newDoctor.ConsultationFee" />
-        </div>
-
-        <div>
-            <label>Status</label>
-            <select class="form-control" @bind="newDoctor.IsActive">
-                <option value="true">Active</option>
-                <option value="false">Inactive</option>
-            </select>
-        </div>
+        <button class="doctor-add-btn" @onclick="OpenCreateForm">
+            + Add Doctor
+        </button>
     </div>
 
-    <button class="btn btn-primary mt-3" @onclick="CreateDoctorAsync">
-        Create Doctor
-    </button>
-</div>
-
-<div class="table-card mt-4">
-    <h5>Doctors List</h5>
-
-    @if (doctors.Count == 0)
+    @if (!string.IsNullOrWhiteSpace(message))
     {
-        <p>No doctors found.</p>
+        <div class="@messageCssClass">
+            @message
+        </div>
     }
-    else
-    {
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Specialisation</th>
-                    <th>Experience</th>
-                    <th>Fee</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
 
-            <tbody>
-                @foreach (var doctor in doctors)
+    @if (showForm)
+    {
+        <div class="doctor-form-panel">
+
+            <div class="doctor-form-header">
+                <div>
+                    <h3>@(isEditMode ? "Edit Doctor" : "Add Doctor")</h3>
+                    <p>@(isEditMode ? "Update doctor profile information." : "Create a new doctor profile.")</p>
+                </div>
+
+                <button class="doctor-outline-btn" @onclick="CloseForm" disabled="@isLoading">
+                    Close
+                </button>
+            </div>
+
+            @if (validationErrors.Count > 0)
+            {
+                <div class="doctor-validation-box">
+                    @foreach (var error in validationErrors)
+                    {
+                        <div>@error</div>
+                    }
+                </div>
+            }
+
+            <div class="doctor-form-grid">
+
+                <div class="doctor-field">
+                    <label>Doctor Name</label>
+                    <input placeholder="Enter doctor name"
+                           @bind="doctorForm.DoctorName" />
+                </div>
+
+                <div class="doctor-field">
+                    <label>Email</label>
+                    <input placeholder="Enter email"
+                           @bind="doctorForm.Email" />
+                </div>
+
+                <div class="doctor-field">
+                    <label>Specialisation</label>
+                    <select @bind="doctorForm.Specialisation">
+                        @foreach (var spec in Enum.GetValues<SpecialisationType>())
+                        {
+                            <option value="@spec">@spec</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="doctor-field">
+                    <label>Experience</label>
+                    <input type="number"
+                           min="0"
+                           placeholder="Years of experience"
+                           @bind="doctorForm.YearsOfExperience" />
+                </div>
+
+                <div class="doctor-field">
+                    <label>Consultation Fee</label>
+                    <input type="number"
+                           min="0"
+                           step="0.01"
+                           placeholder="Consultation fee"
+                           @bind="doctorForm.ConsultationFee" />
+                </div>
+
+                <div class="doctor-field">
+                    <label>Status</label>
+                    <select @bind="doctorForm.IsActive">
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="doctor-form-actions">
+                <button class="doctor-save-btn"
+                        @onclick="SaveDoctor"
+                        disabled="@isLoading">
+                    @(isEditMode ? "Update Doctor" : "Create Doctor")
+                </button>
+
+                <button class="doctor-cancel-btn"
+                        @onclick="CloseForm"
+                        disabled="@isLoading">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    }
+
+    <div class="doctor-stat-grid">
+
+        <div class="doctor-stat-card doctor-stat-blue">
+            <div>
+                <span>Total Doctors</span>
+                <h2>@TotalDoctors</h2>
+                <p>Doctor profiles in HealthAxis</p>
+            </div>
+            <div class="doctor-stat-icon">+</div>
+        </div>
+
+        <div class="doctor-stat-card doctor-stat-teal">
+            <div>
+                <span>Active Doctors</span>
+                <h2>@ActiveDoctors</h2>
+                <p>Visible on current page</p>
+            </div>
+            <div class="doctor-stat-icon">●</div>
+        </div>
+
+        <div class="doctor-stat-card doctor-stat-red">
+            <div>
+                <span>Inactive Doctors</span>
+                <h2>@InactiveDoctors</h2>
+                <p>Visible on current page</p>
+            </div>
+            <div class="doctor-stat-icon">○</div>
+        </div>
+
+        <div class="doctor-stat-card doctor-stat-purple">
+            <div>
+                <span>Specialisations</span>
+                <h2>@SpecialisationCount</h2>
+                <p>Visible on current page</p>
+            </div>
+            <div class="doctor-stat-icon">□</div>
+        </div>
+
+    </div>
+
+    <div class="doctor-directory">
+
+        <div class="doctor-directory-header">
+            <div>
+                <h3>Doctor Directory</h3>
+                <p>Search, filter, and maintain doctor account visibility.</p>
+            </div>
+
+            <span class="doctor-count-pill">
+                Showing @doctors.Count of @totalCount
+            </span>
+        </div>
+
+        <div class="doctor-filter-row">
+
+            <div class="doctor-search-box">
+                <span>⌕</span>
+
+                <input placeholder="Search doctor by name, email, or specialisation..."
+                       value="@searchText"
+                       @oninput="OnSearchChanged" />
+            </div>
+
+            <select class="doctor-filter-select"
+                    value="@selectedSpecialisation"
+                    @onchange="OnSpecialisationChanged">
+                <option value="All">All Specialisations</option>
+
+                @foreach (var spec in Enum.GetValues<SpecialisationType>())
                 {
-                    <tr>
-                        <td>@doctor.DoctorId</td>
-                        <td>@doctor.DoctorName</td>
-                        <td>@doctor.Email</td>
-                        <td>@doctor.Specialisation</td>
-                        <td>@doctor.YearsOfExperience</td>
-                        <td>@doctor.ConsultationFee</td>
-                        <td>
-                            @if (doctor.IsActive)
-                            {
-                                <span class="badge bg-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Inactive</span>
-                            }
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-warning me-2"
-                                    @onclick="() => ToggleStatusAsync(doctor)">
-                                @(doctor.IsActive ? "Deactivate" : "Activate")
-                            </button>
-
-                            <button class="btn btn-sm btn-danger"
-                                    @onclick="() => DeleteDoctorAsync(doctor.DoctorId)">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
+                    <option value="@spec.ToString()">@spec</option>
                 }
-            </tbody>
-        </table>
+            </select>
+
+            <select class="doctor-filter-select"
+                    value="@selectedStatus"
+                    @onchange="OnStatusChanged">
+                <option value="All">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+
+        </div>
+
+        @if (showStatusLegend)
+        {
+            <div class="doctor-status-legend">
+                <div>
+                    <span class="status-icon active">✓</span>
+                    <strong>Active</strong>
+                    <p>Doctor profile is enabled and available.</p>
+                </div>
+
+                <div>
+                    <span class="status-icon inactive">!</span>
+                    <strong>Inactive</strong>
+                    <p>Doctor profile is disabled and unavailable.</p>
+                </div>
+            </div>
+        }
+
+        @if (isLoading && doctors.Count == 0)
+        {
+            <p>Loading doctors...</p>
+        }
+        else if (!doctors.Any())
+        {
+            <p>No doctors found.</p>
+        }
+        else
+        {
+            <div class="doctor-table-wrapper">
+
+                <table class="doctor-table">
+
+                    <colgroup>
+                        <col class="doctor-col-name" />
+                        <col class="doctor-col-specialisation" />
+                        <col class="doctor-col-experience" />
+                        <col class="doctor-col-fee" />
+                        <col class="doctor-col-status" />
+                        <col class="doctor-col-actions" />
+                    </colgroup>
+
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Specialisation</th>
+                            <th>Experience</th>
+                            <th>Consultation Fee</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var doctor in doctors)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="doctor-profile-cell">
+                                        <div class="doctor-avatar">
+                                            @GetInitials(doctor.DoctorName)
+                                        </div>
+
+                                        <div class="doctor-profile-text">
+                                            <strong>@doctor.DoctorName</strong>
+                                            <span>@doctor.Email</span>
+                                            <small>Doctor ID: @doctor.DoctorId</small>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="doctor-specialisation-pill">
+                                        @doctor.Specialisation
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="doctor-table-text">
+                                        @doctor.YearsOfExperience years
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="doctor-fee-pill">
+                                        ₹@doctor.ConsultationFee
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <button class="doctor-status-icon-btn"
+                                            title="Click to view status meaning"
+                                            @onclick="ToggleStatusLegend">
+                                        @if (doctor.IsActive)
+                                        {
+                                            <span class="status-icon active">✓</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-icon inactive">!</span>
+                                        }
+                                    </button>
+                                </td>
+
+                                <td>
+                                    <div class="doctor-action-group">
+                                        <button class="doctor-edit-btn"
+                                                @onclick="@(() => StartEdit(doctor))"
+                                                disabled="@isLoading">
+                                            Edit
+                                        </button>
+
+                                        <button class="doctor-status-btn"
+                                                @onclick="@(() => ToggleStatus(doctor))"
+                                                disabled="@isLoading">
+                                            @(doctor.IsActive ? "Deactivate" : "Activate")
+                                        </button>
+
+                                        <button class="doctor-appointments-btn"
+                                                @onclick="@(() => OpenDoctorAppointments(doctor))"
+                                                disabled="@isLoading">
+                                            Appointments
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+
+                <div class="hx-pagination">
+
+                    <div class="hx-pagination-info">
+                        Showing @GetStartItemIndex() - @GetEndItemIndex() of @totalCount
+                    </div>
+
+                    <div class="hx-pagination-actions">
+
+                        <select class="hx-page-size-select"
+                                value="@pageSize"
+                                @onchange="OnPageSizeChanged">
+                            @foreach (var size in pageSizeOptions)
+                            {
+                                <option value="@size">@size / page</option>
+                            }
+                        </select>
+
+                        <button @onclick="PreviousPage"
+                                disabled="@(currentPage <= 1)">
+                            Previous
+                        </button>
+
+                        <span>
+                            Page @currentPage of @(totalPages == 0 ? 1 : totalPages)
+                        </span>
+
+                        <button @onclick="NextPage"
+                                disabled="@(currentPage >= totalPages)">
+                            Next
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    @if (showAppointmentsModal)
+    {
+        <div class="doctor-modal-backdrop">
+            <div class="doctor-appointments-modal">
+
+                <div class="doctor-modal-header">
+                    <div>
+                        <h3>Doctor Appointments</h3>
+                        <p>Appointments for Dr. @selectedDoctorName</p>
+                    </div>
+
+                    <button class="doctor-modal-close-btn"
+                            @onclick="CloseAppointmentsModal">
+                        ×
+                    </button>
+                </div>
+
+                @if (isAppointmentsLoading)
+                {
+                    <p>Loading appointments...</p>
+                }
+                else if (doctorAppointments.Count == 0)
+                {
+                    <div class="doctor-empty-appointments">
+                        <h4>No appointments found</h4>
+                        <p>This doctor does not have any appointments yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="doctor-appointments-table-wrapper">
+                        <table class="doctor-appointments-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Appointment Id</th>
+                                    <th>Patient Id</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Cancellation</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var appointment in doctorAppointments)
+                                {
+                                    <tr>
+                                        <td>#@appointment.AppointmentId</td>
+                                        <td>Patient @appointment.PatientId</td>
+                                        <td>@appointment.ScheduledDate.ToString("dd-MMM-yyyy")</td>
+                                        <td>@FormatDoctorAppointmentTime(appointment.TimeSlot)</td>
+                                        <td>
+                                            <span class="@GetDoctorAppointmentStatusClass(appointment.Status)">
+                                                @GetAppointmentStatusText(appointment.Status)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @(string.IsNullOrWhiteSpace(appointment.CancellationReason)
+                                                ? "-"
+                                                : appointment.CancellationReason)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                }
+
+            </div>
+        </div>
     }
+
 </div>
 
 @code {
     private List<DoctorResponseDTO> doctors = new();
 
-    private CreateDoctorDTO newDoctor = new();
+    private CreateDoctorDTO doctorForm = new();
 
     private string message = string.Empty;
 
+    private string messageCssClass = "alert alert-info";
+
+    private string searchText = string.Empty;
+
+    private string selectedSpecialisation = "All";
+
+    private string selectedStatus = "All";
+
+    private bool isLoading = false;
+
+    private bool showForm = false;
+
+    private bool isEditMode = false;
+
+    private bool showStatusLegend = false;
+
+    private int editingDoctorId = 0;
+
+    private List<string> validationErrors = new();
+
+    private bool showAppointmentsModal = false;
+
+    private bool isAppointmentsLoading = false;
+
+    private string selectedDoctorName = string.Empty;
+
+    private List<AppointmentResponseDTO> doctorAppointments = new();
+
+    private int currentPage = 1;
+
+    private int pageSize = 10;
+
+    private int totalCount = 0;
+
+    private int totalPages = 0;
+
+    private readonly int[] pageSizeOptions = new[] { 5, 10, 20 };
+
+    private int TotalDoctors => totalCount;
+
+    private int ActiveDoctors => doctors.Count(d => d.IsActive);
+
+    private int InactiveDoctors => doctors.Count(d => !d.IsActive);
+
+    private int SpecialisationCount => doctors.Select(d => d.Specialisation).Distinct().Count();
+
     protected override async Task OnInitializedAsync()
     {
-        var isAdmin = await AuthService.IsAdminAsync();
+        await LoadDoctors();
+    }
 
-        if (!isAdmin)
+    private async Task LoadDoctors()
+    {
+        isLoading = true;
+
+        try
         {
-            Navigation.NavigateTo("/login");
+            var result = await DoctorService.GetDoctorsPagedAsync(
+                currentPage,
+                pageSize,
+                searchText,
+                selectedSpecialisation,
+                selectedStatus
+            );
+
+            doctors = result.Items;
+            totalCount = result.TotalCount;
+            totalPages = result.TotalPages;
+        }
+        catch
+        {
+            SetErrorMessage("Failed to load doctors.");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task OnSearchChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? string.Empty;
+        currentPage = 1;
+        await LoadDoctors();
+    }
+
+    private async Task OnSpecialisationChanged(ChangeEventArgs e)
+    {
+        selectedSpecialisation = e.Value?.ToString() ?? "All";
+        currentPage = 1;
+        await LoadDoctors();
+    }
+
+    private async Task OnStatusChanged(ChangeEventArgs e)
+    {
+        selectedStatus = e.Value?.ToString() ?? "All";
+        currentPage = 1;
+        await LoadDoctors();
+    }
+
+    private async Task OnPageSizeChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var selectedSize))
+        {
+            pageSize = selectedSize;
+            currentPage = 1;
+            await LoadDoctors();
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+            await LoadDoctors();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (currentPage < totalPages)
+        {
+            currentPage++;
+            await LoadDoctors();
+        }
+    }
+
+    private int GetStartItemIndex()
+    {
+        if (totalCount == 0)
+        {
+            return 0;
+        }
+
+        return ((currentPage - 1) * pageSize) + 1;
+    }
+
+    private int GetEndItemIndex()
+    {
+        var end = currentPage * pageSize;
+
+        return end > totalCount ? totalCount : end;
+    }
+
+    private void OpenCreateForm()
+    {
+        ResetForm();
+        showForm = true;
+        message = string.Empty;
+    }
+
+    private void StartEdit(DoctorResponseDTO doctor)
+    {
+        showForm = true;
+        isEditMode = true;
+        editingDoctorId = doctor.DoctorId;
+        validationErrors.Clear();
+        message = string.Empty;
+
+        doctorForm = new CreateDoctorDTO
+        {
+            DoctorName = doctor.DoctorName,
+            Email = doctor.Email,
+            Specialisation = doctor.Specialisation,
+            YearsOfExperience = doctor.YearsOfExperience,
+            ConsultationFee = doctor.ConsultationFee,
+            IsActive = doctor.IsActive
+        };
+    }
+
+    private void CloseForm()
+    {
+        ResetForm();
+        showForm = false;
+        message = string.Empty;
+    }
+
+    private void ToggleStatusLegend()
+    {
+        showStatusLegend = !showStatusLegend;
+    }
+
+    private async Task SaveDoctor()
+    {
+        if (!ValidateDoctorForm())
+        {
             return;
         }
 
-        await LoadDoctorsAsync();
-    }
-
-    private async Task LoadDoctorsAsync()
-    {
-        doctors = await DoctorService.GetDoctorsAsync();
-    }
-
-    private async Task CreateDoctorAsync()
-    {
+        isLoading = true;
         message = string.Empty;
 
-        var success = await DoctorService.CreateDoctorAsync(newDoctor);
+        try
+        {
+            bool success;
 
-        if (success)
-        {
-            message = "Doctor created successfully.";
-            newDoctor = new CreateDoctorDTO();
-            await LoadDoctorsAsync();
+            if (isEditMode)
+            {
+                success = await DoctorService.UpdateDoctorAsync(editingDoctorId, doctorForm);
+            }
+            else
+            {
+                success = await DoctorService.CreateDoctorAsync(doctorForm);
+            }
+
+            if (success)
+            {
+                SetSuccessMessage(isEditMode ? "Doctor updated successfully." : "Doctor created successfully.");
+                ResetForm();
+                showForm = false;
+                currentPage = 1;
+                await LoadDoctors();
+            }
+            else
+            {
+                SetErrorMessage(isEditMode ? "Failed to update doctor." : "Failed to create doctor.");
+            }
         }
-        else
+        catch
         {
-            message = "Failed to create doctor.";
+            SetErrorMessage(isEditMode ? "Error occurred while updating doctor." : "Error occurred while creating doctor.");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
-    private async Task ToggleStatusAsync(DoctorResponseDTO doctor)
+    private async Task ToggleStatus(DoctorResponseDTO doctor)
     {
-        var newStatus = !doctor.IsActive;
-
-        var success = await DoctorService.SetDoctorStatusAsync(doctor.DoctorId, newStatus);
-
-        if (success)
+        if (doctor.IsActive)
         {
-            message = "Doctor status updated successfully.";
-            await LoadDoctorsAsync();
+            var confirm = await JS.InvokeAsync<bool>(
+                "confirm",
+                $"Are you sure you want to deactivate Dr. {doctor.DoctorName}?"
+            );
+
+            if (!confirm)
+            {
+                return;
+            }
         }
-        else
+
+        isLoading = true;
+        message = string.Empty;
+
+        try
         {
-            message = "Failed to update doctor status.";
+            var success = await DoctorService.SetDoctorStatusAsync(doctor.DoctorId, !doctor.IsActive);
+
+            if (success)
+            {
+                SetSuccessMessage(doctor.IsActive ? "Doctor deactivated successfully." : "Doctor activated successfully.");
+                await LoadDoctors();
+            }
+            else
+            {
+                SetErrorMessage("Failed to update doctor status.");
+            }
+        }
+        catch
+        {
+            SetErrorMessage("Error updating doctor status.");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
-    private async Task DeleteDoctorAsync(int doctorId)
+    private async Task OpenDoctorAppointments(DoctorResponseDTO doctor)
     {
-        var success = await DoctorService.DeleteDoctorAsync(doctorId);
+        showAppointmentsModal = true;
+        isAppointmentsLoading = true;
+        selectedDoctorName = doctor.DoctorName ?? string.Empty;
+        doctorAppointments = new();
 
-        if (success)
+        try
         {
-            message = "Doctor deleted successfully.";
-            await LoadDoctorsAsync();
+            doctorAppointments = await AppointmentService.GetAppointmentsByDoctorAsync(doctor.DoctorId);
         }
-        else
+        catch
         {
-            message = "Failed to delete doctor.";
+            SetErrorMessage("Failed to load doctor appointments.");
         }
+        finally
+        {
+            isAppointmentsLoading = false;
+        }
+    }
+
+    private void CloseAppointmentsModal()
+    {
+        showAppointmentsModal = false;
+        selectedDoctorName = string.Empty;
+        doctorAppointments = new();
+    }
+
+    private bool ValidateDoctorForm()
+    {
+        validationErrors.Clear();
+
+        if (string.IsNullOrWhiteSpace(doctorForm.DoctorName))
+        {
+            validationErrors.Add("Doctor name is required.");
+        }
+        else if (doctorForm.DoctorName.Trim().Length < 3)
+        {
+            validationErrors.Add("Doctor name must be at least 3 characters.");
+        }
+
+        if (string.IsNullOrWhiteSpace(doctorForm.Email))
+        {
+            validationErrors.Add("Email is required.");
+        }
+        else if (!IsValidEmail(doctorForm.Email))
+        {
+            validationErrors.Add("Enter a valid email address.");
+        }
+
+        if (doctorForm.YearsOfExperience < 0)
+        {
+            validationErrors.Add("Experience cannot be negative.");
+        }
+
+        if (doctorForm.YearsOfExperience > 60)
+        {
+            validationErrors.Add("Experience cannot be greater than 60 years.");
+        }
+
+        if (doctorForm.ConsultationFee <= 0)
+        {
+            validationErrors.Add("Consultation fee must be greater than 0.");
+        }
+
+        if (doctorForm.ConsultationFee > 100000)
+        {
+            validationErrors.Add("Consultation fee is too high.");
+        }
+
+        if (validationErrors.Count > 0)
+        {
+            SetErrorMessage("Please fix the validation errors.");
+            return false;
+        }
+
+        return true;
+    }
+
+    private bool IsValidEmail(string email)
+    {
+        try
+        {
+            var address = new System.Net.Mail.MailAddress(email);
+            return address.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void ResetForm()
+    {
+        doctorForm = new CreateDoctorDTO
+        {
+            IsActive = true
+        };
+
+        isEditMode = false;
+        editingDoctorId = 0;
+        validationErrors.Clear();
+    }
+
+    private string GetInitials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "DR";
+        }
+
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length >= 2
+                ? parts[0][..2].ToUpper()
+                : parts[0].ToUpper();
+        }
+
+        return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+    }
+
+    private string FormatDoctorAppointmentTime(object? timeSlot)
+    {
+        if (timeSlot == null)
+        {
+            return "-";
+        }
+
+        if (timeSlot is TimeOnly timeOnly)
+        {
+            return timeOnly.ToString("hh:mm tt");
+        }
+
+        if (timeSlot is TimeSpan timeSpan)
+        {
+            return DateTime.Today.Add(timeSpan).ToString("hh:mm tt");
+        }
+
+        if (timeSlot is DateTime dateTime)
+        {
+            return dateTime.ToString("hh:mm tt");
+        }
+
+        var value = timeSlot.ToString();
+
+        return string.IsNullOrWhiteSpace(value)
+            ? "-"
+            : value;
+    }
+
+    private string GetAppointmentStatusText(AppointmentStatus status)
+    {
+        return status switch
+        {
+            AppointmentStatus.Pending => "Pending",
+            AppointmentStatus.Confirmed => "Confirmed",
+            AppointmentStatus.Cancelled => "Cancelled",
+            AppointmentStatus.Completed => "Completed",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetDoctorAppointmentStatusClass(AppointmentStatus status)
+    {
+        return status switch
+        {
+            AppointmentStatus.Pending => "doctor-appt-status pending",
+            AppointmentStatus.Confirmed => "doctor-appt-status confirmed",
+            AppointmentStatus.Cancelled => "doctor-appt-status cancelled",
+            AppointmentStatus.Completed => "doctor-appt-status completed",
+            _ => "doctor-appt-status pending"
+        };
+    }
+
+    private void SetSuccessMessage(string text)
+    {
+        message = text;
+        messageCssClass = "alert alert-info";
+    }
+
+    private void SetErrorMessage(string text)
+    {
+        message = text;
+        messageCssClass = "alert alert-danger";
     }
 }
-
-@using HealthAxisAdminLayout.DTOs.Doctor
-@using HealthAxisAdminLayout.Services.Interfaces
-
-@inject IDoctorApiService DoctorService

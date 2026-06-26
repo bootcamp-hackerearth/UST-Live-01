@@ -1,4 +1,4 @@
-﻿using HealthAxisAdminLayout.DTOs.HealthRecord;
+﻿using HealthAxis.Shared.DTOs.HealthRecord;
 
 namespace HealthAxisAdminLayout.Services.Interfaces
 {

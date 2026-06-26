@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Text.Json;
-using HealthAxisCore_Api.DTOs.Common;
+using HealthAxis.Shared.DTOs.Common;
 using HealthAxisCore_Api.Exceptions;
+
 
 namespace HealthAxisCore_Api.Middleware
 {
@@ -44,7 +45,7 @@ namespace HealthAxisCore_Api.Middleware
 
             context.Response.StatusCode = statusCode;
 
-            var response = new ErrorResponse
+            var response = new ErrorResponseDTO
             {
                 Success = false,
                 Message = exception.Message,
