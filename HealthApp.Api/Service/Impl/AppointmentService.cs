@@ -1,23 +1,30 @@
 ﻿using AutoMapper;
-using HealthApp.Api.Dto;
+using HealthApp.Api.Exceptions;
 using HealthApp.Api.Model;
+using HealthApp.Api.Repository.Impl;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;
-using HealthApp.Api.Exceptions;
+using HealthApp.Shared.Dto;
 
 namespace HealthApp.Api.Service.Impl
 {
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _repo;
+        private readonly IPatientRepository _patientRepository;
+        private readonly IDoctorRepository _doctorRepository;
         private readonly IMapper _mapper;
 
-        public AppointmentService(IAppointmentRepository repo, IMapper mapper)
+        public AppointmentService(IAppointmentRepository repo,IPatientRepository patientRepository,
+                IDoctorRepository doctorRepository  , IMapper mapper)
         {
             _repo = repo;
+            _patientRepository= patientRepository;
+            _doctorRepository= doctorRepository;
             _mapper = mapper;
         }
 
+        // ✅ CREATE APPOINTMENT (FIXED ✅)
         public async Task<AppointmentDto> Add(AppointmentDto dto)
         {
             if (dto == null)
@@ -37,34 +44,45 @@ namespace HealthApp.Api.Service.Impl
             if (isBooked)
                 throw new ConflictException("This slot is already booked for the doctor.");
 
+            // ✅ Save basic appointment
             var appointment = _mapper.Map<Appointment>(dto);
             var savedAppointment = await _repo.addAsync(appointment);
 
-            if (savedAppointment == null)
-                throw new AppointmentRuleException("Unable to create appointment.");
+            // ✅ IMPORTANT: reload with Patient + Doctor
+            var fullAppointment = await _repo.getbyidAsync(savedAppointment.AppointmentId);
 
-            return _mapper.Map<AppointmentDto>(savedAppointment);
+            // ✅ Now mapping works properly
+            return _mapper.Map<AppointmentDto>(fullAppointment);
         }
 
+        // ✅ GET ALL
         public async Task<List<AppointmentDto>> GetAllAppointments()
         {
             var appointments = await _repo.getallAsync();
-            return _mapper.Map<List<AppointmentDto>>(appointments ?? new List<Appointment>());
+
+            foreach (var appointment in appointments)
+            {
+                await LoadNavigation(appointment); 
+    }
+
+            return _mapper.Map<List<AppointmentDto>>(appointments);
         }
 
+        // ✅ GET BY ID
         public async Task<AppointmentDto> GetAppointmentById(int id)
         {
-            if (id <= 0)
-                throw new AppointmentRuleException("Invalid appointment id.");
 
             var appointment = await _repo.getbyidAsync(id);
 
             if (appointment == null)
                 throw new EntityNotFoundException("Appointment", id);
 
+            await LoadNavigation(appointment);
             return _mapper.Map<AppointmentDto>(appointment);
+
         }
 
+        // ✅ CANCEL
         public async Task<AppointmentDto> CancelAppointment(int appointmentId, string reason)
         {
             if (appointmentId <= 0)
@@ -89,48 +107,11 @@ namespace HealthApp.Api.Service.Impl
             if (saved == null)
                 throw new EntityNotFoundException("Appointment", appointmentId);
 
+            // ✅ Already includes Patient + Doctor (repo fixed)
             return _mapper.Map<AppointmentDto>(saved);
         }
 
-        public async Task<List<string>> CheckDoctorAvailability(int doctorId, DateTime date)
-        {
-            if (doctorId <= 0)
-                throw new AppointmentRuleException("Invalid doctor id.");
-
-            if (date.Date < DateTime.Today)
-                throw new AppointmentRuleException("Cannot check availability for past date.");
-
-            var bookedSlots = await _repo.GetBookedSlotsAsync(doctorId, date.Date);
-            return bookedSlots;
-        }
-
-        public async Task<AppointmentDto> CompleteAppointment(int appointmentId)
-        {
-            if (appointmentId <= 0)
-                throw new AppointmentRuleException("Invalid appointment id.");
-
-            var existing = await _repo.getbyidAsync(appointmentId);
-
-            if (existing == null)
-                throw new EntityNotFoundException("Appointment", appointmentId);
-
-            if (existing.Status == "Cancelled")
-                throw new ConflictException("Cancelled appointment cannot be completed.");
-
-            if (existing.Status == "Completed")
-                throw new ConflictException("Appointment already completed.");
-
-            if (existing.Status != "Confirmed")
-                throw new AppointmentRuleException("Only confirmed appointments can be completed.");
-
-            var saved = await _repo.UpdateStatusAsync(appointmentId, "Completed");
-
-            if (saved == null)
-                throw new EntityNotFoundException("Appointment", appointmentId);
-
-            return _mapper.Map<AppointmentDto>(saved);
-        }
-
+        // ✅ CONFIRM
         public async Task<AppointmentDto> ConfirmAppointment(int appointmentId)
         {
             if (appointmentId <= 0)
@@ -158,18 +139,49 @@ namespace HealthApp.Api.Service.Impl
             return _mapper.Map<AppointmentDto>(saved);
         }
 
-        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctor(int doctorId, DateTime fromDate, DateTime toDate)
+        // ✅ COMPLETE
+        public async Task<AppointmentDto> CompleteAppointment(int appointmentId)
+        {
+            if (appointmentId <= 0)
+                throw new AppointmentRuleException("Invalid appointment id.");
+
+            var existing = await _repo.getbyidAsync(appointmentId);
+
+            if (existing == null)
+                throw new EntityNotFoundException("Appointment", appointmentId);
+
+            if (existing.Status == "Cancelled")
+                throw new ConflictException("Cancelled appointment cannot be completed.");
+
+            if (existing.Status == "Completed")
+                throw new ConflictException("Appointment already completed.");
+
+            if (existing.Status != "Confirmed")
+                throw new AppointmentRuleException("Only confirmed appointments can be completed.");
+
+            var saved = await _repo.UpdateStatusAsync(appointmentId, "Completed");
+
+            if (saved == null)
+                throw new EntityNotFoundException("Appointment", appointmentId);
+
+            return _mapper.Map<AppointmentDto>(saved);
+        }
+
+        // ✅ CHECK AVAILABILITY
+        public async Task<List<string>> CheckDoctorAvailability(int doctorId, DateTime date)
         {
             if (doctorId <= 0)
                 throw new AppointmentRuleException("Invalid doctor id.");
 
-            if (fromDate > toDate)
-                throw new AppointmentRuleException("Invalid date range.");
+            if (date.Date < DateTime.Today)
+                throw new AppointmentRuleException("Cannot check availability for past date.");
 
-            var appointments = await _repo.GetUpcomingByDoctorAsync(doctorId, fromDate, toDate);
-            return _mapper.Map<List<AppointmentDto>>(appointments ?? new List<Appointment>());
+            var bookedSlots = await _repo.GetBookedSlotsAsync(doctorId, date.Date);
+
+            return bookedSlots ?? new List<string>();
         }
 
+        // ✅ SLOT CHECK
         public async Task<bool> IsSlotBooked(int doctorId, DateTime date, string timeSlot)
         {
             if (doctorId <= 0 || string.IsNullOrWhiteSpace(timeSlot))
@@ -178,19 +190,47 @@ namespace HealthApp.Api.Service.Impl
             return await _repo.IsSlotBookedAsync(doctorId, date, timeSlot);
         }
 
+        // ✅ UPCOMING
+        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctor(
+            int doctorId, DateTime fromDate, DateTime toDate)
+        {
+            if (doctorId <= 0)
+                throw new AppointmentRuleException("Invalid doctor id.");
 
+            if (fromDate > toDate)
+                throw new AppointmentRuleException("Invalid date range.");
 
-        public async Task<List<AppointmentDto>> GetAppointmentsByPatientAndDoctor(int? patientId, int? doctorId)
+            var appointments = await _repo.GetUpcomingByDoctorAsync(doctorId, fromDate, toDate);
+
+            return _mapper.Map<List<AppointmentDto>>(
+                appointments ?? new List<Appointment>());
+        }
+
+        // ✅ FILTER
+        public async Task<List<AppointmentDto>> GetAppointmentsByPatientAndDoctor(
+            int? patientId, int? doctorId)
         {
             if (!patientId.HasValue && !doctorId.HasValue)
                 throw new AppointmentRuleException("Either patient id or doctor id must be provided.");
 
             var appointments = await _repo.GetByPatientAndDoctor(patientId, doctorId);
 
-            if (appointments == null || !appointments.Any())
-                throw new EntityNotFoundException("Appointment", 0);
-
-            return _mapper.Map<List<AppointmentDto>>(appointments);
+            return _mapper.Map<List<AppointmentDto>>(
+                appointments ?? new List<Appointment>());
         }
+        private async Task LoadNavigation(Appointment appointment)
+        {
+            if (appointment.Patient == null)
+            {
+                appointment.Patient = await _patientRepository.getbyidAsync(appointment.PatientId);
+            }
+
+            if (appointment.Doctor == null)
+            {
+                appointment.Doctor = await _doctorRepository.getbyidAsync(appointment.DoctorId);
+            }
+        }
+
+
     }
 }

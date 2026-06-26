@@ -1,5 +1,6 @@
 ﻿using HealthApp.Blazor.Components.service.Interface;
 using HealthApp.Shared.Dto;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -16,8 +17,10 @@ namespace HealthApp.Blazor.Components.service.Impl
             _authService = authService;
         }
 
-        private void AddAuthHeader()
+        private async Task PrepareRequest()
         {
+            await _authService.InitializeAsync();
+
             _httpClient.DefaultRequestHeaders.Authorization = null;
 
             if (!string.IsNullOrEmpty(_authService.Token))
@@ -27,14 +30,25 @@ namespace HealthApp.Blazor.Components.service.Impl
             }
         }
 
+        private async Task HandleUnauthorized(HttpResponseMessage response)
+        {
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                await _authService.LogoutAsync();
+                throw new Exception("Session expired. Please login again.");
+            }
+        }
+
+        // ✅ GET ALL
         public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
         {
-            Console.WriteLine($"TOKEN: {_authService.Token}");
             try
             {
-                AddAuthHeader();
+                await PrepareRequest();
 
                 var response = await _httpClient.GetAsync("/api/appointments");
+
+                await HandleUnauthorized(response);
 
                 if (!response.IsSuccessStatusCode)
                     return new List<AppointmentDto>();
@@ -42,20 +56,23 @@ namespace HealthApp.Blazor.Components.service.Impl
                 return await response.Content.ReadFromJsonAsync<List<AppointmentDto>>()
                        ?? new List<AppointmentDto>();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"ERROR: {ex.Message}");
                 return new List<AppointmentDto>();
             }
-
         }
 
+        // ✅ GET BY ID
         public async Task<AppointmentDto?> GetAppointmentByIdAsync(int id)
         {
             try
             {
-                AddAuthHeader();
+                await PrepareRequest();
 
                 var response = await _httpClient.GetAsync($"/api/appointments/{id}");
+
+                await HandleUnauthorized(response);
 
                 if (!response.IsSuccessStatusCode)
                     return null;
@@ -68,14 +85,17 @@ namespace HealthApp.Blazor.Components.service.Impl
             }
         }
 
+        // ✅ AVAILABILITY
         public async Task<List<string>> CheckDoctorAvailabilityAsync(int doctorId, DateTime date)
         {
             try
             {
-                AddAuthHeader();
+                await PrepareRequest();
 
                 var response = await _httpClient.GetAsync(
                     $"/api/appointments/doctor/{doctorId}/availability?date={date:yyyy-MM-dd}");
+
+                await HandleUnauthorized(response);
 
                 if (!response.IsSuccessStatusCode)
                     return new List<string>();
@@ -89,16 +109,19 @@ namespace HealthApp.Blazor.Components.service.Impl
             }
         }
 
+        // ✅ UPCOMING
         public async Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync(
             int doctorId, DateTime fromDate, DateTime toDate)
         {
             try
             {
-                AddAuthHeader();
+                await PrepareRequest();
 
                 var response = await _httpClient.GetAsync(
                     $"/api/appointments/doctor/{doctorId}/upcoming?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}");
 
+                await HandleUnauthorized(response);
+
                 if (!response.IsSuccessStatusCode)
                     return new List<AppointmentDto>();
 
@@ -111,14 +134,17 @@ namespace HealthApp.Blazor.Components.service.Impl
             }
         }
 
+        // ✅ FILTER
         public async Task<List<AppointmentDto>> GetByPatientDoctorAsync(int patientId, int doctorId)
         {
             try
             {
-                AddAuthHeader();
+                await PrepareRequest();
 
                 var response = await _httpClient.GetAsync(
                     $"/api/appointments/by-patient-doctor?patientId={patientId}&doctorId={doctorId}");
+
+                await HandleUnauthorized(response);
 
                 if (!response.IsSuccessStatusCode)
                     return new List<AppointmentDto>();
@@ -132,19 +158,11 @@ namespace HealthApp.Blazor.Components.service.Impl
             }
         }
 
-
-
+        // ✅ COUNT
         public async Task<int> GetAppointmentCountAsync()
         {
-            try
-            {
-                var appointment = await GetAllAppointmentsAsync();
-                return appointment.Count;
-            }
-            catch
-            {
-                return 0;
-            }
+            var data = await GetAllAppointmentsAsync();
+            return data.Count;
         }
     }
 }

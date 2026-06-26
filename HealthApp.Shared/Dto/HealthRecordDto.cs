@@ -13,6 +13,10 @@ namespace HealthApp.Shared.Dto
 
         [Required]
         public int? DoctorId { get; set; }
+        [Required]
+        public string PatientName { get; set; } = string.Empty;
+        [Required]
+        public string DoctorName { get; set; } = string.Empty;
 
         [Required]
         public DateTime? VisitDate { get; set; }

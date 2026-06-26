@@ -2,44 +2,71 @@
 @rendermode InteractiveServer
 
 @using HealthApp.Shared.Dto
-@using HealthApp.Blazor.Components.service.Interface
-
+@using Microsoft.AspNetCore.Components.Web
 @inject IAppointmentService AppointmentService
 
 <PageTitle>Appointments</PageTitle>
 
-<div class="page-block">
+<div class="page">
 
-    <div class="page-header">
+    <!-- HEADER -->
+    <div class="header">
         <div>
             <h2>Appointments</h2>
             <p>Manage appointment schedules and consultation details</p>
         </div>
     </div>
 
-    <!-- SEARCH -->
+    <!-- TOOLBAR -->
     <div class="toolbar">
-        <input class="search-input"
-               placeholder="Search doctor, patient or status..."
-               @bind="searchText" />
 
-        <button class="page-btn secondary" @onclick="Search">Search</button>
-        <button class="page-btn light" @onclick="Reset">Reset</button>
+        <!-- LEFT SEARCH -->
+        <div class="toolbar-left">
+            <input class="input search"
+                   placeholder="Search ID or Status..."
+                   @bind="searchText"
+                   @onkeypress="HandleKeyPress" />
+
+            <button class="btn primary" @onclick="Search">Search</button>
+        </div>
+
+        <!-- RIGHT FILTER -->
+        <div class="toolbar-right">
+
+            
+            <input class="input filter"
+                   placeholder="Doctor Name..."
+                   @bind="doctorFilter" />
+
+            <input class="input filter"
+                   placeholder="Patient Name..."
+                   @bind="patientFilter" />
+
+
+            <button class="btn info" @onclick="FilterByDoctorPatient">
+                Filter
+            </button>
+
+            <button class="btn light" @onclick="Reset">
+                Reset
+            </button>
+        </div>
+
     </div>
 
     <!-- TABLE -->
     @if (isLoading)
     {
-        <div class="empty-state">Loading appointments...</div>
+        <div class="empty">Loading appointments...</div>
     }
     else if (!appointments.Any())
     {
-        <div class="empty-state">No appointments found.</div>
+        <div class="empty">No appointments found.</div>
     }
     else
     {
-        <div class="table-card">
-            <table class="data-table">
+        <div class="card">
+            <table class="table">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -59,18 +86,21 @@
                         <tr>
                             <td>@a.AppointmentId</td>
 
-                            <td>Doctor ID: @a.DoctorId</td>
-                            <td>Patient ID: @a.PatientId</td>
+                            <td>Id: @a.DoctorId<p></p> Name: @a.DoctorName </td>
+                            <td>Id: @a.PatientId<p></p> Nmae: @a.PatientName </td>
                             <td>@a.ScheduledDate.ToString("dd-MM-yyyy")</td>
                             <td>@a.TimeSlot</td>
+
                             <td>
-                                <span class="status-badge @(a.Status?.ToLower())">
+                                <span class="badge @(a.Status?.ToLower())">
                                     @a.Status
                                 </span>
                             </td>
+
                             <td>@a.CancellationReason</td>
+
                             <td>
-                                <button class="mini-btn info"
+                                <button class="mini view"
                                         @onclick="() => ViewAppointment(a)">
                                     View
                                 </button>
@@ -85,19 +115,19 @@
     <!-- MODAL -->
     @if (viewAppointment != null)
     {
-        <div class="modal-backdrop">
-            <div class="modal-card">
+        <div class="modal">
+            <div class="modal-box">
                 <h3>Appointment Details</h3>
 
-                <p><strong>ID:</strong> @viewAppointment.AppointmentId</p>
-                <p><strong>Doctor:</strong> @viewAppointment.DoctorId</p>
-                <p><strong>Patient:</strong> @viewAppointment.PatientId</p>
-                <p><strong>Date:</strong> @viewAppointment.ScheduledDate.ToString("dd-MM-yyyy")</p>
-                <p><strong>Time:</strong> @viewAppointment.TimeSlot</p>
-                <p><strong>Status:</strong> @viewAppointment.Status</p>
-                <p><strong>Reason:</strong> @viewAppointment.CancellationReason</p>
+                <p><b>ID:</b> @viewAppointment.AppointmentId</p>
+                <p><b>Doctor:</b> @viewAppointment.DoctorId</p>
+                <p><b>Patient:</b> @viewAppointment.PatientId</p>
+                <p><b>Date:</b> @viewAppointment.ScheduledDate.ToString("dd-MM-yyyy")</p>
+                <p><b>Time:</b> @viewAppointment.TimeSlot</p>
+                <p><b>Status:</b> @viewAppointment.Status</p>
+                <p><b>Reason:</b> @viewAppointment.CancellationReason</p>
 
-                <button class="page-btn light" @onclick="CloseView">Close</button>
+                <button class="btn light" @onclick="CloseView">Close</button>
             </div>
         </div>
     }
@@ -109,9 +139,11 @@
     private List<AppointmentDto> appointments = new();
     private List<AppointmentDto> allAppointments = new();
 
-    private bool isLoading = true;
     private string searchText = "";
+    private string doctorFilter = "";
+    private string patientFilter = "";
 
+    private bool isLoading = true;
     private AppointmentDto? viewAppointment;
 
     protected override async Task OnInitializedAsync()
@@ -127,32 +159,40 @@
         allAppointments = await AppointmentService.GetAllAppointmentsAsync();
         appointments = allAppointments.ToList();
 
-        Console.WriteLine($"Loaded appointments: {appointments.Count}");
-
         isLoading = false;
-        await InvokeAsync(StateHasChanged);
     }
 
+    // ✅ SEARCH (ID or STATUS)
     private void Search()
     {
-        if (string.IsNullOrWhiteSpace(searchText))
-        {
-            appointments = allAppointments.ToList();
-            return;
-        }
-
         appointments = allAppointments.Where(a =>
             a.AppointmentId.ToString().Contains(searchText)
-            || a.DoctorId.ToString().Contains(searchText)
-            || (a.PatientId?.ToString().Contains(searchText) ?? false)
             || (a.Status?.Contains(searchText, StringComparison.OrdinalIgnoreCase) ?? false)
         ).ToList();
     }
 
+    private Task FilterByDoctorPatient()
+    {
+        appointments = allAppointments.Where(a =>
+            (string.IsNullOrWhiteSpace(doctorFilter) ||
+             (!string.IsNullOrEmpty(a.DoctorName) &&
+              a.DoctorName.Contains(doctorFilter, StringComparison.OrdinalIgnoreCase)))
+
+            &&
+
+            (string.IsNullOrWhiteSpace(patientFilter) ||
+             (!string.IsNullOrEmpty(a.PatientName) &&
+              a.PatientName.Contains(patientFilter, StringComparison.OrdinalIgnoreCase)))
+        ).ToList();
+
+        return Task.CompletedTask;
+    }
 
     private void Reset()
     {
         searchText = "";
+        doctorFilter = "";
+        patientFilter = "";
         appointments = allAppointments.ToList();
     }
 
@@ -162,9 +202,14 @@
         viewAppointment = full ?? a;
     }
 
-    private void CloseView()
+    private void CloseView() => viewAppointment = null;
+
+    private void HandleKeyPress(KeyboardEventArgs e)
     {
-        viewAppointment = null;
+        if (e.Key == "Enter")
+        {
+            Search();
+        }
     }
 }
 
@@ -173,128 +218,159 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 <style>
 
-    .page-block {
+    .page {
+        padding: 20px;
         display: flex;
         flex-direction: column;
         gap: 18px;
     }
 
-    .page-header h2 {
+    /* HEADER */
+    .header h2 {
         font-size: 32px;
+        margin: 0;
         font-weight: 800;
     }
 
+    /* TOOLBAR */
     .toolbar {
         display: flex;
-        gap: 12px;
+        justify-content: space-between;
     }
 
-    .search-input {
-        border: 1px solid #ccc;
-        padding: 10px;
-        border-radius: 10px;
-        width: 300px;
+    .toolbar-left, .toolbar-right {
+        display: flex;
+        gap: 10px;
     }
 
-    .page-btn {
-        padding: 10px 16px;
-        border-radius: 10px;
+    /* INPUT */
+    .input {
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+    }
+
+    .search {
+        width: 250px;
+    }
+
+    .filter {
+        width: 120px;
+    }
+
+    /* BUTTON */
+    .btn {
         border: none;
-        cursor: pointer;
+        padding: 10px 16px;
+        border-radius: 12px;
+        font-weight: 700;
     }
 
-        .page-btn.secondary {
-            background: #2563eb;
-            color: white;
-        }
+    .primary {
+        background: #2563eb;
+        color: white;
+    }
 
-        .page-btn.light {
-            background: #e5e7eb;
-        }
+    .info {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
 
-    .table-card {
+    .light {
+        background: #f3f4f6;
+    }
+
+    /* CARD */
+    .card {
         background: white;
         padding: 20px;
-        border-radius: 16px;
+        border-radius: 18px;
     }
 
-    .data-table {
+    /* TABLE */
+    .table {
         width: 100%;
         border-collapse: collapse;
     }
 
-        .data-table th,
-        .data-table td {
+        .table th {
+            background: #f8fafc;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+
+        .table td, .table th {
             padding: 12px;
             border-bottom: 1px solid #eee;
         }
 
-    .status-badge {
-        padding: 6px 10px;
-        border-radius: 999px;
+    /* STATUS BADGE */
+    .badge {
+        padding: 5px 10px;
+        border-radius: 20px;
         font-size: 12px;
     }
 
-        .status-badge.confirmed {
-            background: #dcfce7;
-            color: green;
-        }
+    .confirmed {
+        background: #dcfce7;
+        color: green;
+    }
 
-        .status-badge.pending {
-            background: #fef9c3;
-        }
+    .pending {
+        background: #fef3c7;
+    }
 
-        .status-badge.cancelled {
-            background: #fee2e2;
-            color: red;
-        }
+    .cancelled {
+        background: #fee2e2;
+        color: red;
+    }
 
-        .status-badge.completed {
-            background: #dbeafe;
-        }
+    .completed {
+        background: #dbeafe;
+    }
 
-    .mini-btn {
+    /* BUTTON */
+    .mini {
         padding: 6px 10px;
         border-radius: 8px;
+        border: none;
     }
 
-        .mini-btn.info {
-            background: #dbeafe;
-        }
+    .view {
+        background: #dbeafe;
+    }
 
-    .empty-state {
-        padding: 20px;
+    /* EMPTY */
+    .empty {
         text-align: center;
+        padding: 30px;
     }
 
-    .modal-backdrop {
+    /* MODAL */
+    .modal {
         position: fixed;
         inset: 0;
-        background: rgba(0,0,0,0.3);
+        background: rgba(0,0,0,0.4);
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
     }
 
-    .modal-card {
+    .modal-box {
         background: white;
         padding: 20px;
-        border-radius: 12px;
+        border-radius: 14px;
+        width: 400px;
+    }
+
+    /* RESPONSIVE */
+    @@media(max-width: 768px) {
+        .toolbar {
+            flex-direction: column;
+            gap: 10px;
+        }
     }
 
 </style>

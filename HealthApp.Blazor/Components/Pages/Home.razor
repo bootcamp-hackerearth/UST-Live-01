@@ -1,492 +1,309 @@
 ﻿@page "/"
 
-<h1>HealthApp Home</h1>
-
-<p>Login Successful</p>
-
-
-@using HealthApp.Blazor.Components.Services
 @inject IDoctorService DoctorService
 @inject IPatientService PatientService
 @inject IAppointmentService AppointmentService
 
+<PageTitle>HealthApp Dashboard</PageTitle>
+
+<div class="dashboard">
 
 
-
-<PageTitle>Admin Dashboard</PageTitle>
-
-<div class="dashboard-page">
-
-    <section class="hero-section">
-        <div class="hero-text">
-            <span class="hero-chip">HealthApp Administration</span>
-            <h1>Welcome to HealthApp Admin Portal</h1>
+    <!-- HERO -->
+    <div class="hero">
+        <div>
+            <span class="badge">HealthApp Administration</span>
+            <h2>Welcome to Admin Portal</h2>
             <p>
-                Manage doctors, patients, appointments, health records, and administrator access
-                through one unified control center.
+                Manage doctors, patients, appointments and system data efficiently
+                using a centralized control dashboard.
             </p>
         </div>
-    </section>
+    </div>
 
-    <section class="stats-grid">
-        <div class="stat-card blue">
-            <div class="stat-card-top">
-                <span class="stat-label">Doctors</span>
-                <span class="stat-icon">🩺</span>
+    <!-- STATS -->
+    <div class="stats">
+        <div class="card blue">
+            <div class="card-top">
+                <span>Doctors</span>
+                <span>🩺</span>
             </div>
             <h3>@doctorCount</h3>
-            <p>Registered specialists available in the system.</p>
+            <p>Registered specialists in system</p>
         </div>
 
-        <div class="stat-card purple">
-            <div class="stat-card-top">
-                <span class="stat-label">Patients</span>
-                <span class="stat-icon">👥</span>
+        <div class="card purple">
+            <div class="card-top">
+                <span>Patients</span>
+                <span>👥</span>
             </div>
             <h3>@patientCount</h3>
-            <p>Patient records currently maintained in the portal.</p>
+            <p>Total patient records available</p>
         </div>
 
-        <div class="stat-card green">
-            <div class="stat-card-top">
-                <span class="stat-label">Appointments</span>
-                <span class="stat-icon">📅</span>
+        <div class="card green">
+            <div class="card-top">
+                <span>Appointments</span>
+                <span>📅</span>
             </div>
             <h3>@appointmentCount</h3>
-            <p>Upcoming scheduled consultations and follow-ups.</p>
+            <p>Upcoming scheduled visits</p>
         </div>
-    </section>
+    </div>
 
-   
-    <section class="dashboard-lower-grid">
-        <div class="wide-panel">
-            <div class="panel-header">
-                <div>
-                    <h3>Quick Overview</h3>
-                    <p>Use these selected entries to navigate quickly through the system.</p>
-                </div>
-            </div>
+    <!-- MAIN GRID -->
+    <div class="grid">
 
-            <div class="quick-list">
-                <div class="quick-row">
+        <!-- LEFT -->
+        <div class="panel">
+            <h3>Quick Access</h3>
+
+            <div class="list">
+                <div class="row">
                     <div>
-                        <strong>Doctors Module</strong>
-                        <span>Manage doctor profiles, speciality and activation status.</span>
+                        <strong>Doctors Management</strong>
+                        <span>Manage doctor profiles and specialization</span>
                     </div>
                     <a href="/doctors">Open</a>
                 </div>
 
-                <div class="quick-row">
+                <div class="row">
                     <div>
-                        <strong>Patients Module</strong>
-                        <span>Browse patient records and core identity data.</span>
+                        <strong>Patients Records</strong>
+                        <span>View and manage patient details</span>
                     </div>
                     <a href="/patients">Open</a>
                 </div>
 
-                <div class="quick-row">
+                <div class="row">
                     <div>
-                        <strong>Appointments Module</strong>
-                        <span>Review upcoming schedules and consultation bookings.</span>
+                        <strong>Appointments</strong>
+                        <span>Monitor schedules and bookings</span>
                     </div>
                     <a href="/appointments">Open</a>
                 </div>
-
             </div>
         </div>
 
-        <div class="profile-panel">
-            <div class="profile-mini-card">
-                <span class="profile-mini-label">ACCOUNT</span>
-                <h3>Admin Profile</h3>
-                <p>Access administrator account details, personal preferences, and account information.</p>
-                <a href="/profile" class="profile-open-btn">Open My Profile</a>
-            </div>
+        <!-- RIGHT -->
+        <div class="profile">
+            <h3>Administrator</h3>
+            <p>Manage account settings and personal information.</p>
+            <a href="/profile">Open Profile</a>
         </div>
-    </section>
+
+    </div>
+
 </div>
 
 <style>
-    .dashboard-page {
+
+    /* GLOBAL */
+    .dashboard {
+        padding: 20px;
+        background: #f3f6fb;
+        min-height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* HEADER */
+    .top-bar {
         display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-    .hero-section {
-        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
-        border: 1px solid rgba(15, 23, 42, 0.05);
-        border-radius: 28px;
-        padding: 2rem 2rem 1.8rem 2rem;
-        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.05);
-    }
-
-    .hero-chip {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.45rem 0.8rem;
-        border-radius: 999px;
-        background: #eff6ff;
-        color: #1d4ed8;
-        font-size: 0.8rem;
-        font-weight: 700;
-        margin-bottom: 0.9rem;
-    }
-
-    .hero-text h1 {
-        margin: 0;
-        font-size: clamp(2rem, 4vw, 3.15rem);
-        font-weight: 800;
-        color: #0f172a;
-        letter-spacing: -0.03em;
-    }
-
-    .hero-text p {
-        margin: 0.8rem 0 0 0;
-        max-width: 920px;
-        font-size: 1.08rem;
-        line-height: 1.75;
-        color: #475569;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1rem;
-    }
-
-    .stat-card {
-        border-radius: 22px;
-        padding: 1.25rem;
-        color: #0f172a;
-        background: white;
-        border: 1px solid rgba(15, 23, 42, 0.05);
-        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
-    }
-
-    .stat-card-top {
-        display: flex;
-        align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.9rem;
+        align-items: center;
+        margin-bottom: 20px;
     }
 
-    .stat-label {
-        font-size: 0.9rem;
+        .top-bar h1 {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+    .top-actions {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+
+        .top-actions a {
+            text-decoration: none;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+    .logout {
+        background: #ef4444;
+        border: none;
+        color: white;
+        padding: 8px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    /* HERO */
+    .hero {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        margin-bottom: 20px;
+    }
+
+    .badge {
+        background: #e0ecff;
+        color: #2563eb;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 13px;
         font-weight: 700;
+    }
+
+    .hero h2 {
+        margin-top: 10px;
+        font-size: 28px;
+    }
+
+    .hero p {
         color: #64748b;
+        margin-top: 8px;
     }
 
-    .stat-icon {
-        font-size: 1.2rem;
+    /* STATS */
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 20px;
     }
 
-    .stat-card h3 {
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 18px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    .card-top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .card h3 {
+        font-size: 28px;
         margin: 0;
-        font-size: 2rem;
-        font-weight: 800;
     }
 
-    .stat-card p {
-        margin: 0.55rem 0 0 0;
-        font-size: 0.92rem;
+    .card p {
         color: #64748b;
-        line-height: 1.5;
+        font-size: 14px;
     }
 
-    .stat-card.blue {
+    .blue {
         border-top: 4px solid #2563eb;
     }
 
-    .stat-card.purple {
+    .purple {
         border-top: 4px solid #7c3aed;
     }
 
-    .stat-card.green {
+    .green {
         border-top: 4px solid #16a34a;
     }
 
-    .stat-card.cyan {
-        border-top: 4px solid #06b6d4;
-    }
-
-    .dashboard-actions {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 1rem;
-    }
-
-    .dashboard-card {
-        background: white;
-        border-radius: 24px;
-        padding: 1.4rem;
-        border: 1px solid rgba(15, 23, 42, 0.05);
-        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
-        display: flex;
-        flex-direction: column;
-        gap: 0.95rem;
-        min-height: 250px;
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
-    }
-
-        .dashboard-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
-        }
-
-    .card-header-line {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-    }
-
-        .card-header-line h2 {
-            margin: 0;
-            font-size: 1.55rem;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-    .card-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.4rem 0.7rem;
-        border-radius: 999px;
-        font-size: 0.72rem;
-        font-weight: 700;
-    }
-
-    .blue-badge {
-        background: #eff6ff;
-        color: #2563eb;
-    }
-
-    .purple-badge {
-        background: #f5f3ff;
-        color: #7c3aed;
-    }
-
-    .green-badge {
-        background: #ecfdf5;
-        color: #16a34a;
-    }
-
-    .cyan-badge {
-        background: #ecfeff;
-        color: #0891b2;
-    }
-
-    .dashboard-card p {
-        margin: 0;
-        color: #56657a;
-        font-size: 1rem;
-        line-height: 1.7;
-    }
-
-    .dashboard-btn {
-        margin-top: auto;
-        text-decoration: none;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0.85rem 1rem;
-        border-radius: 14px;
-        font-weight: 700;
-        color: white;
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
-        box-shadow: 0 10px 18px rgba(15, 23, 42, 0.08);
-    }
-
-        .dashboard-btn:hover {
-            transform: translateY(-1px);
-            color: white;
-        }
-
-    .blue-btn {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    }
-
-    .purple-btn {
-        background: linear-gradient(135deg, #7c3aed, #6d28d9);
-    }
-
-    .green-btn {
-        background: linear-gradient(135deg, #16a34a, #15803d);
-    }
-
-    .cyan-btn {
-        background: linear-gradient(135deg, #06b6d4, #0891b2);
-    }
-
-    .dashboard-lower-grid {
+    /* GRID */
+    .grid {
         display: grid;
         grid-template-columns: 2fr 1fr;
-        gap: 1rem;
+        gap: 15px;
     }
 
-    .wide-panel,
-    .profile-panel {
+    /* PANEL */
+    .panel {
         background: white;
-        border-radius: 24px;
-        border: 1px solid rgba(15, 23, 42, 0.05);
-        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.05);
+        padding: 20px;
+        border-radius: 20px;
     }
 
-    .wide-panel {
-        padding: 1.4rem;
-    }
+        .panel h3 {
+            margin-bottom: 15px;
+        }
 
-    .profile-panel {
-        display: flex;
-        align-items: stretch;
-    }
-
-    .panel-header h3,
-    .profile-mini-card h3 {
-        margin: 0;
-        font-size: 1.45rem;
-        font-weight: 800;
-        color: #0f172a;
-    }
-
-    .panel-header p,
-    .profile-mini-card p {
-        margin: 0.5rem 0 0 0;
-        color: #64748b;
-        line-height: 1.65;
-    }
-
-    .quick-list {
-        margin-top: 1.2rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.85rem;
-    }
-
-    .quick-row {
+    /* LIST */
+    .row {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem;
-        border-radius: 16px;
-        background: #f8fbff;
-        border: 1px solid #edf3fb;
+        background: #f8fafc;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 10px;
     }
 
-        .quick-row strong {
+        .row strong {
             display: block;
-            color: #0f172a;
-            margin-bottom: 0.2rem;
         }
 
-        .quick-row span {
-            display: block;
+        .row span {
+            font-size: 13px;
             color: #64748b;
-            font-size: 0.92rem;
         }
 
-        .quick-row a {
+        .row a {
             text-decoration: none;
-            font-weight: 700;
-            color: #2563eb;
             background: white;
-            border: 1px solid #d9e7ff;
-            padding: 0.65rem 0.9rem;
-            border-radius: 12px;
-            white-space: nowrap;
+            border: 1px solid #e2e8f0;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            color: #2563eb;
         }
 
-    .profile-mini-card {
+    /* PROFILE */
+    .profile {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 1.5rem;
-        width: 100%;
     }
 
-    .profile-mini-label {
-        display: inline-block;
-        margin-bottom: 0.7rem;
-        color: #64748b;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-    }
+        .profile p {
+            color: #64748b;
+            margin-top: 10px;
+        }
 
-    .profile-open-btn {
-        margin-top: 1.2rem;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        padding: 0.85rem 1rem;
-        border-radius: 14px;
-        background: #0f172a;
-        color: white;
-        text-decoration: none;
-        font-weight: 700;
-        width: fit-content;
-    }
-
-        .profile-open-btn:hover {
+        .profile a {
+            margin-top: 15px;
+            background: #0f172a;
             color: white;
-            background: #1e293b;
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            text-decoration: none;
         }
 
-    @@media (max-width: 1280px) {
-        .stats-grid,
-        .dashboard-actions {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* RESPONSIVE */
+    @@media (max-width: 900px) {
+        .stats {
+            grid-template-columns: 1fr;
         }
 
-        .dashboard-lower-grid {
+        .grid {
             grid-template-columns: 1fr;
         }
     }
 
-    @@media (max-width: 768px) {
-        .stats-grid,
-        .dashboard-actions {
-            grid-template-columns: 1fr;
-        }
-
-        .hero-section,
-        .wide-panel,
-        .profile-panel,
-        .dashboard-card {
-            border-radius: 20px;
-        }
-
-        .quick-row {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-            .quick-row a {
-                width: 100%;
-                text-align: center;
-            }
-    }
 </style>
 
-
-
-
-    
 @code {
     private int doctorCount;
     private int patientCount;
     private int appointmentCount;
-    private int healthRecordCount;
 
     protected override async Task OnInitializedAsync()
     {
-
         doctorCount = await DoctorService.GetDoctorCountAsync();
         patientCount = await PatientService.GetPatientCountAsync();
         appointmentCount = await AppointmentService.GetAppointmentCountAsync();
-
-
     }
 }

@@ -1,41 +1,161 @@
-﻿<script type="module" src="@Assets["Components/Layout/ReconnectModal.razor.js"]"></script>
+﻿@* ✅ RECONNECT MODAL *@
 
-<dialog id="components-reconnect-modal" data-nosnippet>
-    <div class="components-reconnect-container">
-        <div class="components-rejoining-animation" aria-hidden="true">
-            <div></div>
-            <div></div>
+<dialog id="reconnect-modal">
+
+    <div class="reconnect-card">
+
+        <!-- Animated Loader -->
+        <div class="loader">
+            <div class="spinner"></div>
         </div>
 
-        <p class="components-reconnect-first-attempt-visible">
-            Reconnecting to HealthApp...
+        <!-- Messages -->
+        <p id="msg-connecting" class="message connecting">
+            🔄 Reconnecting to HealthApp...
         </p>
 
-        <p class="components-reconnect-repeated-attempt-visible">
-            Connection lost. Retrying in
-            <span id="components-seconds-to-next-attempt"></span> seconds...
+        <p id="msg-retrying" class="message retrying hidden">
+            ⚡ Connection lost. Retrying in 
+            <span id="seconds">5</span> seconds...
         </p>
 
-        <p class="components-reconnect-failed-visible">
-            Unable to reconnect.<br />
-            Please retry or reload the page.
+        <p id="msg-failed" class="message failed hidden">
+            ❌ Unable to reconnect.<br />
+            Please reload the page.
         </p>
 
-        <button id="components-reconnect-button" class="components-reconnect-failed-visible">
-            Retry
+        <!-- Button -->
+        <button id="retry-btn" class="retry-btn hidden">
+            🔁 Retry Now
         </button>
 
-        <p class="components-pause-visible">
-            The session has been paused by the server.
-        </p>
-
-        <p class="components-resume-failed-visible">
-            Unable to resume the session.<br />
-            Please retry or reload the page.
-        </p>
-
-        <button id="components-resume-button" class="components-pause-visible components-resume-failed-visible">
-            Resume
-        </button>
     </div>
+
 </dialog>
+
+<style>
+    dialog {
+        border: none;
+        background: transparent;
+    }
+
+    .reconnect-card {
+        width: 360px;
+        padding: 30px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .loader {
+        margin-bottom: 20px;
+    }
+
+    .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid #e5e7eb;
+        border-top: 6px solid #2563eb;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: auto;
+    }
+
+    @@keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
+
+    .message {
+        font-size: 16px;
+        margin: 10px 0;
+    }
+
+    .connecting { color: #1e40af; }
+    .retrying { color: #f59e0b; }
+    .failed { color: #dc2626; }
+
+    .hidden {
+        display: none;
+    }
+
+    .retry-btn {
+        margin-top: 15px;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .retry-btn:hover {
+        background: #1d4ed8;
+    }
+</style>
+
+<script>
+
+    const modal = document.getElementById("reconnect-modal");
+    const retryBtn = document.getElementById("retry-btn");
+
+    const connecting = document.getElementById("msg-connecting");
+    const retrying = document.getElementById("msg-retrying");
+    const failed = document.getElementById("msg-failed");
+
+    const secondsEl = document.getElementById("seconds");
+
+    let counter = 5;
+    let interval;
+
+    function showModal() {
+        if (!modal.open) modal.showModal();
+
+        connecting.classList.remove("hidden");
+        retrying.classList.add("hidden");
+        failed.classList.add("hidden");
+        retryBtn.classList.add("hidden");
+    }
+
+    function showRetry() {
+        connecting.classList.add("hidden");
+        retrying.classList.remove("hidden");
+
+        counter = 5;
+
+        interval = setInterval(() => {
+            counter--;
+            if (secondsEl) secondsEl.textContent = counter;
+
+            if (counter <= 0) {
+                clearInterval(interval);
+                location.reload();
+            }
+        }, 1000);
+    }
+
+    function showFailed() {
+        connecting.classList.add("hidden");
+        retrying.classList.add("hidden");
+        failed.classList.remove("hidden");
+        retryBtn.classList.remove("hidden");
+    }
+
+    retryBtn?.addEventListener("click", () => {
+        location.reload();
+    });
+
+    // ✅ Simulate events (Blazor will override internally)
+    window.addEventListener("offline", () => {
+        showModal();
+        showRetry();
+    });
+
+    window.addEventListener("online", () => {
+        if (modal.open) modal.close();
+    });
+
+</script>

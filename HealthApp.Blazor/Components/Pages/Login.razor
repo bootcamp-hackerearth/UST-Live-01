@@ -2,162 +2,69 @@
 @rendermode InteractiveServer
 
 @using HealthApp.Shared.Dto
-@using HealthApp.Blazor.Components.Services
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
 
 <PageTitle>Admin Login</PageTitle>
 
-<style>
-    html, body {
-        margin: 0;
-        padding: 0;
-        min-height: 100%;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    }
+<div class="login-wrapper">
 
-    .login-page {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-        box-sizing: border-box;
-        position: relative;
-        overflow: hidden;
-        background: radial-gradient(circle at top left, rgba(255,255,255,0.16), transparent 28%), radial-gradient(circle at bottom right, rgba(255,255,255,0.10), transparent 26%), linear-gradient(135deg, #1565f7 0%, #4f46e5 100%);
-    }
+    <!-- ✅ LEFT SIDE -->
+    <div class="left-panel">
+        <div class="left-content">
 
-    .login-card {
-        width: 100%;
-        max-width: 460px;
-        padding: 34px 30px 28px 30px;
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.97);
-        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18);
-        box-sizing: border-box;
-    }
+            <h1>Administrator Portal</h1>
 
-        .login-card h1 {
-            margin: 0 0 10px 0;
-            font-size: 34px;
-            color: #0f172a;
-            font-weight: 800;
-        }
+            <p>
 
-        .login-card p {
-            margin: 0 0 20px 0;
-            color: #64748b;
-            line-height: 1.7;
-        }
+                Access the HealthApp admin system to monitor,
+                control, and manage healthcare operations securely.
 
-    .form-group {
-        margin-bottom: 16px;
-    }
+            </p>
 
-        .form-group label {
-            display: block;
-            margin-bottom: 7px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #334155;
-        }
-
-    .form-control {
-        width: 100%;
-        padding: 13px 14px;
-        font-size: 15px;
-        border: 1px solid #d5dbe6;
-        border-radius: 12px;
-        outline: none;
-        box-sizing: border-box;
-        background: #ffffff;
-    }
-
-        .form-control:focus {
-            border-color: #1565f7;
-            box-shadow: 0 0 0 4px rgba(21, 101, 247, 0.12);
-        }
-
-    .login-btn {
-        width: 100%;
-        margin-top: 6px;
-        padding: 13px 16px;
-        border: none;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #1565f7, #1d4ed8);
-        color: white;
-        font-size: 16px;
-        font-weight: 800;
-        cursor: pointer;
-    }
-
-        .login-btn:hover {
-            opacity: 0.96;
-        }
-
-    .login-alert {
-        margin-bottom: 18px;
-        padding: 12px 14px;
-        border-radius: 12px;
-        font-size: 14px;
-        border: 1px solid #fecaca;
-        background: #fef2f2;
-        color: #b91c1c;
-    }
-
-    .login-note {
-        margin-top: 18px;
-        text-align: center;
-        font-size: 13px;
-        color: #64748b;
-        line-height: 1.6;
-    }
-
-    @@media (max-width: 520px) {
-        .login-card {
-            padding: 26px 20px 22px 20px;
-            border-radius: 18px;
-        }
-    }
-</style>
-
-<div class="login-page">
-    <div class="login-card">
-        <h1>HealthApp Admin Login</h1>
-        <p>Only administrator accounts can access this portal.</p>
-
-        @if (!string.IsNullOrWhiteSpace(errorMessage))
-        {
-            <div class="login-alert">@errorMessage</div>
-        }
-
-        <div class="form-group">
-            <label for="login-email">Email Address</label>
-            <input id="login-email"
-                   class="form-control"
-                   type="email"
-                   placeholder="Enter your email"
-                   @bind="loginModel.Email" />
-        </div>
-
-        <div class="form-group">
-            <label for="login-password">Password</label>
-            <input id="login-password"
-                   class="form-control"
-                   type="password"
-                   placeholder="Enter your password"
-                   @bind="loginModel.Password" />
-        </div>
-
-        <button type="button" class="login-btn" @onclick="HandleLogin">
-            Login
-        </button>
-
-        <div class="login-note">
-            Authorized access only. Contact the system administrator if you need account assistance.
         </div>
     </div>
+
+    <!-- ✅ RIGHT SIDE -->
+    <div class="right-panel">
+
+        <div class="login-card">
+
+            <!-- LOGO -->
+            <div class="logo-box">H</div>
+
+            <h2>Hello! Welcome back</h2>
+
+            @if (!string.IsNullOrWhiteSpace(errorMessage))
+            {
+                <div class="error">@errorMessage</div>
+            }
+
+            <!-- EMAIL -->
+            <input type="email"
+                   class="input"
+                   placeholder="Enter your email"
+                   @bind="loginModel.Email" />
+
+            <!-- PASSWORD -->
+            <input type="password"
+                   class="input"
+                   placeholder="Enter your password"
+                   @bind="loginModel.Password" />
+
+            <!-- LOGIN -->
+            <button class="login-btn" @onclick="HandleLogin">
+                Login
+            </button>
+
+            <div class="note">
+                Authorized access only
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 
 @code {
@@ -180,15 +87,147 @@
 
         var result = await AuthService.LoginAsync(loginModel);
 
-
-        if (result is not null && result.Success && result.Role == "Admin")
+        if (result != null && result.Success && result.Role == "Admin")
         {
             Navigation.NavigateTo("/");
         }
-
         else
         {
             errorMessage = result?.Message ?? "Login failed.";
         }
     }
 }
+
+<style>
+
+    /* ✅ RESET */
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    /* ✅ MAIN WRAPPER */
+    .login-wrapper {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* ✅ LEFT PANEL (GRADIENT) */
+    .left-panel {
+        flex: 1;
+        background: linear-gradient(135deg, #5b7cfa, #6c63ff);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .left-content {
+        max-width: 400px;
+        padding: 20px;
+    }
+
+        .left-content h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .left-content p {
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+    /* ✅ RIGHT PANEL */
+    .right-panel {
+        flex: 1;
+        background: #eef2ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* ✅ LOGIN CARD */
+    .login-card {
+        background: white;
+        padding: 35px;
+        width: 100%;
+        max-width: 360px;
+        border-radius: 18px;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+
+    /* ✅ LOGO */
+    .logo-box {
+        width: 55px;
+        height: 55px;
+        background: linear-gradient(135deg, #5b7cfa, #6c63ff);
+        border-radius: 14px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        font-weight: bold;
+        margin: 0 auto 15px;
+    }
+
+    /* ✅ TITLE */
+    .login-card h2 {
+        margin-bottom: 20px;
+    }
+
+    /* ✅ INPUT */
+    .input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        outline: none;
+    }
+
+    /* ✅ BUTTON */
+    .login-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: #5b7cfa;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+        .login-btn:hover {
+            background: #4f46e5;
+        }
+
+    /* ✅ ERROR */
+    .error {
+        background: #fee2e2;
+        color: #b91c1c;
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    /* ✅ NOTE */
+    .note {
+        margin-top: 10px;
+        font-size: 13px;
+        color: #6b7280;
+    }
+
+    /* ✅ RESPONSIVE */
+    @@media (max-width: 900px) {
+        .login-wrapper {
+            flex-direction: column;
+        }
+
+        .left-panel {
+            height: 35%;
+        }
+    }
+
+</style>

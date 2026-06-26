@@ -1,5 +1,4 @@
-﻿@using HealthApp.Blazor.Components.Pages
-@inject NavigationManager Navigation
+﻿@inject NavigationManager Navigation
 @inject IAuthService AuthService
 
 @if (!_ready)
@@ -10,22 +9,24 @@ else
 {
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
+
             @{
                 var isLoginPage = Navigation.Uri.Contains("/login", StringComparison.OrdinalIgnoreCase);
             }
 
-            @if (isLoginPage)
+            @if (!AuthService.IsLoggedIn && !isLoginPage)
+            {
+                Navigation.NavigateTo("/login", true);
+            }
+            else if (isLoginPage)
             {
                 <RouteView RouteData="@routeData" />
             }
-            else if (AuthService.IsLoggedIn)
+            else
             {
                 <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
             }
-            else
-            {
-                <RedirectToLogin />
-            }
+
         </Found>
 
         <NotFound>
@@ -43,9 +44,9 @@ else
     {
         if (firstRender)
         {
-            await AuthService.InitializeAsync(); 
+            await AuthService.InitializeAsync();
             _ready = true;
-            StateHasChanged(); 
+            StateHasChanged();
         }
     }
 }

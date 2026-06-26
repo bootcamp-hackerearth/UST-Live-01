@@ -1,4 +1,4 @@
-﻿using HealthApp.Api.Dto;
+﻿using HealthApp.Shared.Dto;
 using HealthApp.Api.Service.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -17,17 +17,16 @@ namespace HealthApp.Api.Controllers
             _service = service;
         }
 
-        // GET ALL
+        // ✅ ADMIN: GET ALL
         [HttpGet]
-        [AllowAnonymous]
-        //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var data = await _service.GetAllAppointments();
             return Ok(data);
         }
 
-        // GET BY ID
+        // ✅ ADMIN: GET BY ID
         [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
@@ -36,43 +35,43 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
-        // CREATE
+        // ✅ USER: CREATE APPOINTMENT
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
         public async Task<IActionResult> Add([FromBody] AppointmentDto dto)
         {
-            await _service.Add(dto);
-            return Ok("Appointment created successfully");
+            var result = await _service.Add(dto);
+            return Ok(result);
         }
 
-        // CANCEL
+        // ✅ USER / DOCTOR: CANCEL
         [HttpPut("{id}/cancel")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Doctor")]
         public async Task<IActionResult> Cancel(int id, [FromQuery] string reason)
         {
-            await _service.CancelAppointment(id, reason);
-            return Ok("Appointment cancelled");
+            var result = await _service.CancelAppointment(id, reason);
+            return Ok(result);
         }
 
-        // CONFIRM
+        // ✅ DOCTOR: CONFIRM
         [HttpPut("{id}/confirm")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Confirm(int id)
         {
-            await _service.ConfirmAppointment(id);
-            return Ok("Appointment confirmed");
+            var result = await _service.ConfirmAppointment(id);
+            return Ok(result);
         }
 
-        // COMPLETE
+        // ✅ DOCTOR: COMPLETE
         [HttpPut("{id}/complete")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Complete(int id)
         {
-            await _service.CompleteAppointment(id);
-            return Ok("Appointment completed");
+            var result = await _service.CompleteAppointment(id);
+            return Ok(result);
         }
 
-        // CHECK DOCTOR AVAILABILITY
+        // ✅ USER / ADMIN: CHECK AVAILABILITY
         [HttpGet("doctor/{doctorId}/availability")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Admin")]
         public async Task<IActionResult> CheckDoctorAvailability(int doctorId, [FromQuery] DateTime date)
@@ -81,16 +80,16 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
-        // CHECK IF SLOT IS BOOKED
+        // ✅ USER: SLOT CHECK
         [HttpGet("slot-booked")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
-        public async Task<IActionResult> IsSlotBooked([FromQuery] int doctorId, [FromQuery] DateTime date, [FromQuery] string timeSlot)
+        public async Task<IActionResult> IsSlotBooked(int doctorId, DateTime date, string timeSlot)
         {
             var data = await _service.IsSlotBooked(doctorId, date, timeSlot);
             return Ok(data);
         }
 
-        // GET UPCOMING APPOINTMENTS BY DOCTOR
+        // ✅ DOCTOR / ADMIN: UPCOMING
         [HttpGet("doctor/{doctorId}/upcoming")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
         public async Task<IActionResult> GetUpcomingAppointmentsByDoctor(
@@ -102,12 +101,12 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
-        // GET APPOINTMENTS BY PATIENT AND DOCTOR
+        // ✅ ALL LOGIN USERS: FILTER
         [HttpGet("by-patient-doctor")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Doctor,Admin")]
         public async Task<IActionResult> GetAppointmentsByPatientAndDoctor(
-            [FromQuery] int patientId,
-            [FromQuery] int doctorId)
+            [FromQuery] int? patientId,
+            [FromQuery] int? doctorId)
         {
             var data = await _service.GetAppointmentsByPatientAndDoctor(patientId, doctorId);
             return Ok(data);

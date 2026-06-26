@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthApp.Api.Dto;
+using HealthApp.Shared.Dto;
 using HealthApp.Api.Model;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;

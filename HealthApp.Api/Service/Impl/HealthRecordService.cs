@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using HealthApp.Api.Dto;
+using HealthApp.Shared.Dto;
 using HealthApp.Api.Model;
 using HealthApp.Api.Repository.Interface;
 using HealthApp.Api.Service.Interface;
@@ -12,11 +12,20 @@ namespace HealthApp.Api.Service.Impl
         private IHealthRecordRepository _repo;
         private IMapper _mapper;
 
-        public HealthRecordService(IHealthRecordRepository repo, IMapper mapper)
+        private readonly IPatientRepository _patientRepo;
+        private readonly IDoctorRepository _doctorRepo;
+
+
+
+        public HealthRecordService( IHealthRecordRepository repo, IPatientRepository patientRepo,
+            IDoctorRepository doctorRepo, IMapper mapper)
         {
             _repo = repo;
+            _patientRepo = patientRepo;
+            _doctorRepo = doctorRepo;
             _mapper = mapper;
         }
+
 
         public async Task<HealthRecordDto> AddRecordAsync(HealthRecordDto dto)
         {
@@ -30,9 +39,7 @@ namespace HealthApp.Api.Service.Impl
             var h = _mapper.Map<HealthRecord>(dto);
             var savedh = await _repo.addAsync(h);
 
-            if (savedh == null)
-                throw new HealthRecordRuleException("Unable to create health record.");
-
+            await LoadNavigation(savedh);
             return _mapper.Map<HealthRecordDto>(savedh);
         }
 
@@ -71,6 +78,20 @@ namespace HealthApp.Api.Service.Impl
                 throw new EntityNotFoundException("HealthRecord", 0);
 
             return _mapper.Map<List<HealthRecordDto>>(savedh);
+        }
+
+
+        private async Task LoadNavigation(HealthRecord record)
+        {
+            if (record.Patient == null)
+            {
+                record.Patient = await _patientRepo.getbyidAsync(record.PatientId);
+            }
+
+            if (record.Doctor == null)
+            {
+                record.Doctor = await _doctorRepo.getbyidAsync(record.DoctorId);
+            }
         }
     }
 }
