@@ -7,7 +7,7 @@
 <div class="top-actions">
     <select class="form-select"
             @bind="selectedRole"
-            @bind:after="LoadUsersAsync">
+            @bind:after="LoadUsersAfterRoleChangedAsync">
         <option value="">All Roles</option>
         <option value="Patient">Patient</option>
         <option value="Doctor">Doctor</option>
@@ -16,16 +16,40 @@
 </div>
 
 <div class="table-card glass">
+    <div class="pagination-top-bar">
+        <div class="pagination-left">
+            <span class="pagination-title">Users List</span>
+            <span class="pagination-count">Total: @userTotalCount</span>
+        </div>
+
+        <div class="pagination-page-size">
+            <label>Rows per page</label>
+
+            <select class="form-select pagination-size-select"
+                    value="@userPageSize"
+                    @onchange="OnUserPageSizeChanged">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+    </div>
+
     @if (users is null)
     {
         <p>Loading users...</p>
+    }
+    else if (users.Count == 0)
+    {
+        <p>No users found.</p>
     }
     else
     {
         <table class="data-table">
             <thead>
                 <tr>
-                   
+                    <th>Full Name</th>
                     <th>Email</th>
                     <th>Role</th>
                     <th>Status</th>
@@ -36,7 +60,7 @@
                 @foreach (var user in users)
                 {
                     <tr>
-                       
+                        <td>@user.FullName</td>
                         <td>@user.Email</td>
                         <td>@user.Role</td>
                         <td>
@@ -53,6 +77,11 @@
                 }
             </tbody>
         </table>
+
+        <Pagination CurrentPage="@userCurrentPage"
+                    PageSize="@userPageSize"
+                    TotalItems="@userTotalCount"
+                    OnPageChanged="@ChangeUserPageAsync" />
     }
 </div>
 
@@ -61,6 +90,12 @@
 
     private string selectedRole = string.Empty;
 
+    private int userCurrentPage = 1;
+
+    private int userPageSize = 5;
+
+    private int userTotalCount;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadUsersAsync();
@@ -68,6 +103,38 @@
 
     private async Task LoadUsersAsync()
     {
-        users = await UserAdminService.GetUsersAsync(selectedRole);
+        var result = await UserAdminService.GetUsersAsync(
+            selectedRole,
+            userCurrentPage,
+            userPageSize);
+
+        users = result.Items;
+
+        userTotalCount = result.TotalCount;
+    }
+
+    private async Task LoadUsersAfterRoleChangedAsync()
+    {
+        userCurrentPage = 1;
+
+        await LoadUsersAsync();
+    }
+
+    private async Task ChangeUserPageAsync(int pageNumber)
+    {
+        userCurrentPage = pageNumber;
+
+        await LoadUsersAsync();
+    }
+
+    private async Task OnUserPageSizeChanged(ChangeEventArgs eventArgs)
+    {
+        if (int.TryParse(eventArgs.Value?.ToString(), out var selectedPageSize))
+        {
+            userPageSize = selectedPageSize;
+            userCurrentPage = 1;
+
+            await LoadUsersAsync();
+        }
     }
 }

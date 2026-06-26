@@ -86,10 +86,92 @@
     }
 </div>
 
-<!-- ✅ SEARCH + FILTER -->
+@if (isEditing)
+{
+    <div id="edit-doctor-section"
+         class="form-card glass edit-section">
+        <h3>Edit Doctor</h3>
+
+        <EditForm Model="@editDoctor"
+                  OnValidSubmit="@SaveEditedDoctorAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Doctor Id</label>
+                    <InputNumber class="form-input"
+                                 @bind-Value="editingDoctorId"
+                                 disabled />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Doctor Name</label>
+                    <InputText class="form-input"
+                               @bind-Value="editDoctor.DoctorName" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Specialisation</label>
+                    <InputSelect class="form-select"
+                                 @bind-Value="editDoctor.Specialisation">
+                        <option value="">Select specialisation</option>
+                        <option value="Endocrinologist">Endocrinologist</option>
+                        <option value="Oncologist">Oncologist</option>
+                        <option value="Gynecologist">Gynecologist</option>
+                        <option value="OrthopedicSurgeon">Orthopedic Surgeon</option>
+                        <option value="Psychiatrist">Psychiatrist</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="Neurologist">Neurologist</option>
+                        <option value="Dermatologist">Dermatologist</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="GeneralPractitioner">General Practitioner</option>
+                    </InputSelect>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Years Of Experience</label>
+                    <InputNumber class="form-input"
+                                 @bind-Value="editDoctor.YearsOfExperience" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Consultation Fee</label>
+                    <InputNumber class="form-input"
+                                 @bind-Value="editDoctor.ConsultationFee" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <InputSelect class="form-select"
+                                 @bind-Value="editDoctor.IsActive">
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="primary-button"
+                        type="submit"
+                        disabled="@isSaving">
+                    @(isSaving ? "Updating..." : "Save Changes")
+                </button>
+
+                <button class="secondary-button"
+                        type="button"
+                        @onclick="CancelEdit"
+                        disabled="@isSaving">
+                    Cancel
+                </button>
+            </div>
+        </EditForm>
+    </div>
+}
+
 <div class="table-controls">
     <input class="form-input search-box"
-           placeholder="Search by name or specialisation..."
+           placeholder="Search current page by name or specialisation..."
            @bind="searchText"
            @bind:event="oninput" />
 
@@ -100,6 +182,26 @@
 </div>
 
 <div class="table-card glass">
+    <div class="pagination-top-bar">
+        <div class="pagination-left">
+            <span class="pagination-title">Doctors List</span>
+            <span class="pagination-count">Total: @doctorTotalCount</span>
+        </div>
+
+        <div class="pagination-page-size">
+            <label>Rows per page</label>
+
+            <select class="form-select pagination-size-select"
+                    value="@doctorPageSize"
+                    @onchange="OnDoctorPageSizeChanged">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+            </select>
+        </div>
+    </div>
+
     @if (doctors is null)
     {
         <p>Loading doctors...</p>
@@ -144,7 +246,7 @@
                         </td>
                         <td>
                             <div class="doctor-actions-inline">
-                                <button class="secondary-button"
+                                <button class="secondary-button doctor-edit-button"
                                         @onclick="() => StartEditDoctor(doctor)"
                                         disabled="@isSaving">
                                     Edit
@@ -161,38 +263,78 @@
                 }
             </tbody>
         </table>
+
+        <Pagination CurrentPage="@doctorCurrentPage"
+                    PageSize="@doctorPageSize"
+                    TotalItems="@doctorTotalCount"
+                    OnPageChanged="@ChangeDoctorPageAsync" />
     }
 </div>
 
 @code {
     private List<AdminDoctorDto>? doctors;
+
     private CreateDoctorDto createDoctor = new();
+
     private UpdateDoctorDto editDoctor = new();
 
     private int editingDoctorId;
 
+    private bool isEditing;
+
+    private bool shouldScrollToEditSection;
+
     private string? message;
+
     private string messageCssClass = "success-text";
 
     private bool isSaving;
 
-    //  NEW
     private string? searchText;
+
     private bool showOnlyActive;
+
+    private int doctorCurrentPage = 1;
+
+    private int doctorPageSize = 5;
+
+    private int doctorTotalCount;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadDoctorsAsync();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!shouldScrollToEditSection)
+        {
+            return;
+        }
+
+        shouldScrollToEditSection = false;
+
+        await JSRuntime.InvokeVoidAsync(
+            "healthAxisScrollToElement",
+            "edit-doctor-section");
+    }
+
     private async Task LoadDoctorsAsync()
     {
-        doctors = await DoctorAdminService.GetDoctorsAsync();
+        var result = await DoctorAdminService.GetDoctorsAsync(
+            doctorCurrentPage,
+            doctorPageSize);
+
+        doctors = result.Items;
+
+        doctorTotalCount = result.TotalCount;
     }
 
     private async Task CreateDoctorAsync()
     {
+        message = null;
         isSaving = true;
+
         try
         {
             var success = await DoctorAdminService.CreateDoctorAsync(createDoctor);
@@ -205,8 +347,11 @@
             }
 
             createDoctor = new CreateDoctorDto();
+
             messageCssClass = "success-text";
             message = "Doctor created successfully.";
+
+            doctorCurrentPage = 1;
 
             await LoadDoctorsAsync();
         }
@@ -218,6 +363,8 @@
 
     private void StartEditDoctor(AdminDoctorDto doctor)
     {
+        message = null;
+
         editingDoctorId = doctor.DoctorId;
 
         editDoctor = new UpdateDoctorDto
@@ -228,11 +375,63 @@
             ConsultationFee = doctor.ConsultationFee,
             IsActive = doctor.IsActive
         };
+
+        isEditing = true;
+
+        shouldScrollToEditSection = true;
+    }
+
+    private async Task SaveEditedDoctorAsync()
+    {
+        message = null;
+        isSaving = true;
+
+        try
+        {
+            var success = await DoctorAdminService.UpdateDoctorAsync(
+                editingDoctorId,
+                editDoctor);
+
+            if (!success)
+            {
+                messageCssClass = "error-text";
+                message = "Unable to update doctor.";
+                return;
+            }
+
+            messageCssClass = "success-text";
+            message = "Doctor updated successfully.";
+
+            isEditing = false;
+
+            editingDoctorId = 0;
+
+            editDoctor = new UpdateDoctorDto();
+
+            await LoadDoctorsAsync();
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private void CancelEdit()
+    {
+        isEditing = false;
+
+        editingDoctorId = 0;
+
+        editDoctor = new UpdateDoctorDto();
+
+        message = null;
     }
 
     private async Task ToggleDoctorAsync(AdminDoctorDto doctor)
     {
+        message = null;
         isSaving = true;
+
         try
         {
             var updateDoctor = new UpdateDoctorDto
@@ -244,7 +443,20 @@
                 IsActive = !doctor.IsActive
             };
 
-            await DoctorAdminService.UpdateDoctorAsync(doctor.DoctorId, updateDoctor);
+            var success = await DoctorAdminService.UpdateDoctorAsync(
+                doctor.DoctorId,
+                updateDoctor);
+
+            if (!success)
+            {
+                messageCssClass = "error-text";
+                message = "Unable to update doctor status.";
+                return;
+            }
+
+            messageCssClass = "success-text";
+            message = "Doctor status updated successfully.";
+
             await LoadDoctorsAsync();
         }
         finally
@@ -253,15 +465,32 @@
         }
     }
 
-    //  FILTER LOGIC
+    private async Task ChangeDoctorPageAsync(int pageNumber)
+    {
+        doctorCurrentPage = pageNumber;
+
+        await LoadDoctorsAsync();
+    }
+
+    private async Task OnDoctorPageSizeChanged(ChangeEventArgs eventArgs)
+    {
+        if (int.TryParse(eventArgs.Value?.ToString(), out var selectedPageSize))
+        {
+            doctorPageSize = selectedPageSize;
+            doctorCurrentPage = 1;
+
+            await LoadDoctorsAsync();
+        }
+    }
+
     private IEnumerable<AdminDoctorDto> FilteredDoctors =>
         (doctors ?? Enumerable.Empty<AdminDoctorDto>())
-        .Where(d =>
-            (string.IsNullOrWhiteSpace(searchText) ||
-             d.DoctorName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-             d.Specialisation.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-            &&
-            (!showOnlyActive || d.IsActive));
+            .Where(doctor =>
+                (string.IsNullOrWhiteSpace(searchText) ||
+                 doctor.DoctorName.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                 doctor.Specialisation.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                &&
+                (!showOnlyActive || doctor.IsActive));
 
     private static string GetToggleButtonClass(AdminDoctorDto doctor)
     {

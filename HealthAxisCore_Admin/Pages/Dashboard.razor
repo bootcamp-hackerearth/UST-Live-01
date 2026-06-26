@@ -73,6 +73,8 @@
 }
 
 @code {
+    private const int DashboardPageSize = 100;
+
     private int doctorCount;
 
     private int activeDoctorCount;
@@ -112,18 +114,36 @@
     {
         try
         {
-            var doctors = await DoctorService.GetDoctorsAsync();
+            errorMessage = null;
 
-            var users = await UserService.GetUsersAsync();
+            var firstDoctorsPage = await DoctorService.GetDoctorsAsync(
+                1,
+                DashboardPageSize);
+
+            var patientUsersPage = await UserService.GetUsersAsync(
+                "Patient",
+                1,
+                1);
 
             var reports = await ReportService.GetAppointmentReportsAsync();
 
-            doctorCount = doctors.Count;
+            doctorCount = firstDoctorsPage.TotalCount;
 
-            activeDoctorCount = doctors.Count(doctor => doctor.IsActive);
+            patientCount = patientUsersPage.TotalCount;
 
-            patientCount = users.Count(user =>
-                string.Equals(user.Role, "Patient", StringComparison.OrdinalIgnoreCase));
+            activeDoctorCount = firstDoctorsPage.Items.Count(doctor => doctor.IsActive);
+
+            if (firstDoctorsPage.TotalPages > 1)
+            {
+                for (var pageNumber = 2; pageNumber <= firstDoctorsPage.TotalPages; pageNumber++)
+                {
+                    var doctorsPage = await DoctorService.GetDoctorsAsync(
+                        pageNumber,
+                        DashboardPageSize);
+
+                    activeDoctorCount += doctorsPage.Items.Count(doctor => doctor.IsActive);
+                }
+            }
 
             reportDayCount = reports.Count;
 

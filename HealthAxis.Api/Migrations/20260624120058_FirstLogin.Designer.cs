@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthAxisCore_Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260623140509_FirstLogin")]
+    [Migration("20260624120058_FirstLogin")]
     partial class FirstLogin
     {
         /// <inheritdoc />

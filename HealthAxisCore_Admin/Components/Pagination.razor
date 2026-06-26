@@ -1,0 +1,149 @@
+﻿@namespace HealthAxisCore_Admin.Components
+
+@if (TotalItems > 0 && TotalPages > 1)
+{
+    <div class="pagination-container">
+        <button class="pagination-button"
+                disabled="@IsFirstPage"
+                @onclick="GoToFirstPage">
+            First
+        </button>
+
+        <button class="pagination-button"
+                disabled="@IsFirstPage"
+                @onclick="GoToPreviousPage">
+            Previous
+        </button>
+
+        <div class="pagination-pages">
+            @foreach (var pageNumber in VisiblePageNumbers)
+            {
+                <button class="@GetPageButtonClass(pageNumber)"
+                        @onclick="() => GoToPage(pageNumber)">
+                    @pageNumber
+                </button>
+            }
+        </div>
+
+        <button class="pagination-button"
+                disabled="@IsLastPage"
+                @onclick="GoToNextPage">
+            Next
+        </button>
+
+        <button class="pagination-button"
+                disabled="@IsLastPage"
+                @onclick="GoToLastPage">
+            Last
+        </button>
+
+        <span class="pagination-summary">
+            Page @CurrentPage of @TotalPages
+        </span>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int CurrentPage { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+
+    [Parameter]
+    public int TotalItems { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnPageChanged { get; set; }
+
+    private int TotalPages
+    {
+        get
+        {
+            if (PageSize <= 0)
+            {
+                return 1;
+            }
+
+            return Math.Max(
+                1,
+                (int)Math.Ceiling(TotalItems / (double)PageSize));
+        }
+    }
+
+    private bool IsFirstPage => CurrentPage <= 1;
+
+    private bool IsLastPage => CurrentPage >= TotalPages;
+
+    private IEnumerable<int> VisiblePageNumbers
+    {
+        get
+        {
+            const int maxVisiblePages = 5;
+
+            var startPage = Math.Max(1, CurrentPage - 2);
+
+            var endPage = Math.Min(
+                TotalPages,
+                startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage + 1 < maxVisiblePages)
+            {
+                startPage = Math.Max(
+                    1,
+                    endPage - maxVisiblePages + 1);
+            }
+
+            return Enumerable.Range(
+                startPage,
+                endPage - startPage + 1);
+        }
+    }
+
+    private async Task GoToFirstPage()
+    {
+        await GoToPage(1);
+    }
+
+    private async Task GoToPreviousPage()
+    {
+        await GoToPage(CurrentPage - 1);
+    }
+
+    private async Task GoToNextPage()
+    {
+        await GoToPage(CurrentPage + 1);
+    }
+
+    private async Task GoToLastPage()
+    {
+        await GoToPage(TotalPages);
+    }
+
+    private async Task GoToPage(int pageNumber)
+    {
+        if (pageNumber < 1)
+        {
+            pageNumber = 1;
+        }
+
+        if (pageNumber > TotalPages)
+        {
+            pageNumber = TotalPages;
+        }
+
+        if (pageNumber == CurrentPage)
+        {
+            return;
+        }
+
+        await OnPageChanged.InvokeAsync(pageNumber);
+    }
+
+    private string GetPageButtonClass(int pageNumber)
+    {
+        return pageNumber == CurrentPage
+            ? "pagination-page-button pagination-page-button-active"
+            : "pagination-page-button";
+    }
+}

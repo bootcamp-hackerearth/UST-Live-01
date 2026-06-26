@@ -15,7 +15,7 @@ namespace HealthAxisCore_Api.Migrations
                 table: "Doctors",
                 type: "bit",
                 nullable: false,
-                defaultValue: false);
+                defaultValue: true);
         }
 
         /// <inheritdoc />

@@ -1,4 +1,5 @@
-﻿using HealthAxisCore_Admin.Dtos.Doctors;
+﻿using HealthAxisCore_Admin.Dtos.Common;
+using HealthAxisCore_Admin.Dtos.Doctors;
 using System.Net.Http.Json;
 
 namespace HealthAxisCore_Admin.Services;
@@ -6,6 +7,7 @@ namespace HealthAxisCore_Admin.Services;
 public class DoctorAdminService
 {
     private readonly HttpClient _httpClient;
+
     private readonly AuthService _authService;
 
     public DoctorAdminService(
@@ -13,17 +15,20 @@ public class DoctorAdminService
         AuthService authService)
     {
         _httpClient = httpClient;
+
         _authService = authService;
     }
 
-    public async Task<List<AdminDoctorDto>> GetDoctorsAsync()
+    public async Task<PagedResultDto<AdminDoctorDto>> GetDoctorsAsync(
+        int pageNumber = 1,
+        int pageSize = 10)
     {
         await _authService.AddBearerTokenAsync();
 
-        var doctors = await _httpClient.GetFromJsonAsync<List<AdminDoctorDto>>(
-            "api/admin/doctors");
+        var result = await _httpClient.GetFromJsonAsync<PagedResultDto<AdminDoctorDto>>(
+            $"api/admin/doctors?pageNumber={pageNumber}&pageSize={pageSize}");
 
-        return doctors ?? new List<AdminDoctorDto>();
+        return result ?? new PagedResultDto<AdminDoctorDto>();
     }
 
     public async Task<bool> CreateDoctorAsync(CreateDoctorDto createDoctorDto)

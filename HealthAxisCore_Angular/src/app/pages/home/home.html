@@ -1,0 +1,141 @@
+<div class="home-page">
+  <nav class="navbar neumorphic-panel">
+    <a routerLink="/" class="brand">
+      <span class="brand-mark">H</span>
+
+      <span class="brand-copy">
+        <strong>HealthAxis</strong>
+        <small>Connected Care</small>
+      </span>
+    </a>
+
+    <div class="nav-links">
+      <a routerLink="/login" class="nav-link">Login</a>
+      <a routerLink="/register" class="nav-button">Register</a>
+    </div>
+  </nav>
+
+  <main class="hero-section">
+    <section class="hero-content">
+      <div class="hero-badge">
+        Connected Healthcare Platform
+      </div>
+
+      <h1>
+        Healthcare that
+        <span>moves with you.</span>
+      </h1>
+
+      <p class="hero-description">
+        HealthAxis brings patients, doctors, appointments, and health records into
+        one secure digital care experience.
+      </p>
+
+      <div class="hero-actions">
+        <a routerLink="/register" class="primary-action">
+          Start Your Care Journey
+        </a>
+
+        <a routerLink="/login" class="secondary-action">
+          Login to Portal
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-pill">
+          <strong>JWT</strong>
+          <span>Secured Access</span>
+        </div>
+
+        <div class="stat-pill">
+          <strong>3</strong>
+          <span>Role Portals</span>
+        </div>
+
+        <div class="stat-pill">
+          <strong>Live</strong>
+          <span>Appointments</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero-card neumorphic-panel">
+      <div class="hero-orb hero-orb-one"></div>
+      <div class="hero-orb hero-orb-two"></div>
+      <div class="pulse-circle"></div>
+
+      <div class="appointment-card">
+        <div class="appointment-topline">
+          <span class="card-label">Next Available Slot</span>
+          <span class="live-dot">Live</span>
+        </div>
+
+        <h2>Dermatology Consultation</h2>
+
+        <p class="slot-text">Today · 04:30 PM</p>
+
+        <div class="doctor-chip">
+          <span class="doctor-avatar">DR</span>
+
+          <div>
+            <strong>Specialist Care</strong>
+            <small>Verified doctor availability</small>
+          </div>
+        </div>
+
+        <div class="mini-details">
+          <div>
+            <span>Fee</span>
+            <strong>₹1000</strong>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <strong>Open</strong>
+          </div>
+        </div>
+
+        <button type="button">
+          Book Appointment
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <section class="story-section neumorphic-panel">
+    <div class="story-copy">
+      <span class="section-kicker">The HealthAxis Story</span>
+
+      <h2>
+        Built to remove friction from everyday healthcare.
+      </h2>
+
+      <p>
+        Patients can discover doctors, view availability, and book appointments.
+        Doctors can manage consultations and update health records. Admins can monitor
+        doctors, users, and appointment reports from one connected console.
+      </p>
+    </div>
+
+    <div class="story-timeline">
+      @for (step of journeySteps; track step; let index = $index) {
+      <div class="timeline-item">
+        <span>{{ index + 1 }}</span>
+        <p>{{ step }}</p>
+      </div>
+      }
+    </div>
+  </section>
+
+  <section class="features-section">
+    @for (feature of features; track feature.title) {
+    <div class="feature-card neumorphic-panel">
+      <div class="feature-icon"></div>
+
+      <h3>{{ feature.title }}</h3>
+
+      <p>{{ feature.description }}</p>
+    </div>
+    }
+  </section>
+</div>
