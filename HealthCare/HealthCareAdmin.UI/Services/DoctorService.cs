@@ -1,91 +1,52 @@
 ﻿using Healthcare.Shared.DTOs.Authentication;
 using Healthcare.Shared.DTOs.Doctor;
-using Microsoft.JSInterop;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-public class DoctorService 
+namespace HealthCareAdmin.UI.Services
 {
-    private readonly HttpClient _http;
-    private readonly IJSRuntime _js;
-
-    public DoctorService(HttpClient http, IJSRuntime js)
+    public class DoctorService
     {
-        _http = http;
-        _js = js;
-    }
+        private readonly HttpClient _http;
 
-    public async Task<PagedDoctorResponse> GetDoctors()
-    {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-
-        return await _http.GetFromJsonAsync<PagedDoctorResponse>("api/admin/doctors")
-               ?? new PagedDoctorResponse();
-    }
-
-
-    public async Task<DoctorListDto> GetDoctorById(int id)
-    {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-
-        return await _http.GetFromJsonAsync<DoctorListDto>($"api/admin/doctors/{id}");
-    }
-
-
-
-    public async Task DeleteDoctor(int id)
-    {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-        if (!string.IsNullOrEmpty(token))
+        public DoctorService(HttpClient http)
         {
-            _http.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
+            _http = http;
         }
 
-        await _http.DeleteAsync($"api/admin/doctors/{id}");
+        public async Task<PagedDoctorResponse> GetDoctors()
+        {
+            return await _http.GetFromJsonAsync<PagedDoctorResponse>("api/admin/doctors")
+                   ?? new PagedDoctorResponse();
+        }
+
+        public async Task<DoctorListDto> GetDoctorById(int id)
+        {
+            return await _http.GetFromJsonAsync<DoctorListDto>($"api/admin/doctors/{id}");
+        }
+
+        public async Task DeleteDoctor(int id)
+        {
+            await _http.DeleteAsync($"api/admin/doctors/{id}");
+        }
+
+        public async Task<string?> RegisterDoctor(DoctorRegisterDto dto)
+        {
+            var response = await _http.PostAsJsonAsync("api/auth/register-doctor", dto);
+
+            if (response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task UpdateDoctor(int id, UpdateDoctorDto dto)
+        {
+            await _http.PutAsJsonAsync($"api/admin/doctors/{id}", dto);
+        }
+
+        public async Task UpdateStatus(int id, bool status)
+        {
+            await _http.PatchAsJsonAsync($"api/admin/doctors/{id}/status", status);
+        }
     }
-
-
-
-    public async Task<string?> RegisterDoctor(DoctorRegisterDto dto)
-    {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-
-        var response = await _http.PostAsJsonAsync("api/auth/register-doctor", dto);
-
-        if (response.IsSuccessStatusCode)
-            return null;
-
-        // ✅ get error message from backend
-        return await response.Content.ReadAsStringAsync();
-    }
-
-
-
-    public async Task UpdateDoctor(int id, UpdateDoctorDto dto)
-    {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-
-        await _http.PutAsJsonAsync($"api/admin/doctors/{id}", dto);
-    }
-
-    public async Task UpdateStatus(int id, bool status)
-    {
-        await _http.PatchAsJsonAsync($"api/admin/doctors/{id}/status", status);
-    }
-
-
 }

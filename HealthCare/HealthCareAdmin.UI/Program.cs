@@ -9,25 +9,23 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<DoctorService>();
+
+
 builder.Services.AddScoped<AuthHandler>();
-builder.Services.AddScoped<PatientService>();
-builder.Services.AddScoped<AppointmentService>();
 
-
-builder.Services.AddScoped(sp =>
+var apiBase = new Uri("https://localhost:7225/");
+builder.Services.AddHttpClient<AuthService>(c =>
 {
-    var http = new HttpClient
-    {
-        BaseAddress = new Uri("https://localhost:7225/")
-    };
-
-    return http;
+    c.BaseAddress = apiBase;
 });
 
+builder.Services.AddHttpClient<AppointmentService>(c => c.BaseAddress = apiBase)
+                .AddHttpMessageHandler<AuthHandler>();
 
+builder.Services.AddHttpClient<DoctorService>(c => c.BaseAddress = apiBase)
+                .AddHttpMessageHandler<AuthHandler>();
 
-
+builder.Services.AddHttpClient<PatientService>(c => c.BaseAddress = apiBase)
+                .AddHttpMessageHandler<AuthHandler>();
 
 await builder.Build().RunAsync();

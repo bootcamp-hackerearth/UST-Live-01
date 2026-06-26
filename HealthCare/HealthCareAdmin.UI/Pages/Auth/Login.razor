@@ -1,5 +1,6 @@
 ﻿@page "/"
 @page "/login"
+@inject AuthService AuthService
 
 @layout EmptyLayout
 
@@ -72,27 +73,31 @@
 
         try
         {
-            var result = await AuthService.LoginAsync(loginRequest);
+            var loginResponse = await AuthService.LoginAsync(loginRequest);
 
-            if (result != null && !string.IsNullOrEmpty(result.AccessToken))
+            var result = loginResponse.Result;
+            var error = loginResponse.Error;
+
+            if (result == null)
             {
-                await JS.InvokeVoidAsync("localStorage.setItem", "role", result.Role);
-                Navigation.NavigateTo("/dashboard");
+                ErrorMessage = string.IsNullOrEmpty(error) ? "Invalid credentials" : error;
+                return;
             }
-            else
-            {
-                ErrorMessage = "Invalid credentials";
-            }
+
+            await JS.InvokeVoidAsync("localStorage.setItem", "role", result.Role);
+
+            Navigation.NavigateTo("/dashboard");
         }
-        catch
+        catch (Exception)
         {
-            ErrorMessage = "Invalid credentials";
+            ErrorMessage = "Something went wrong";
         }
         finally
         {
             isLoading = false;
         }
     }
+
 
 
 }

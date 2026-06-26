@@ -15,22 +15,42 @@ namespace HealthCareAdmin.UI.Services
             _js = js;
         }
 
-        public async Task<AuthorResponseDto?> LoginAsync(LoginDto loginDto)
+        public async Task<(AuthorResponseDto? Result, string? Error)> LoginAsync(LoginDto loginDto)
         {
-            var response = await _httpClient.PostAsJsonAsync("api/auth/login", loginDto);
-
-            if (!response.IsSuccessStatusCode)
-                return null;
-
-            var result = await response.Content.ReadFromJsonAsync<AuthorResponseDto>();
-
-            if (result != null && !string.IsNullOrEmpty(result.AccessToken))
+            try
             {
-                //  SAVE TOKEN HERE
-                await _js.InvokeVoidAsync("localStorage.setItem", "token", result.AccessToken);
-            }
+                var response = await _httpClient.PostAsJsonAsync("api/auth/login", loginDto);
 
-            return result;
+                if (!response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        var errorObj = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                        if (errorObj != null && errorObj.ContainsKey("message"))
+                            return (null, errorObj["message"]);
+                    }
+                    catch { }
+
+                    var error = await response.Content.ReadAsStringAsync();
+                    return (null, error);
+                }
+
+                var result = await response.Content.ReadFromJsonAsync<AuthorResponseDto>();
+
+                if (result == null)
+                    return (null, "Invalid server response");
+
+                if (!string.IsNullOrEmpty(result.AccessToken))
+                {
+                    await _js.InvokeVoidAsync("localStorage.setItem", "token", result.AccessToken);
+                }
+
+                return (result, null);
+            }
+            catch
+            {
+                return (null, "Unable to connect to server");
+            }
         }
     }
 }

@@ -1,43 +1,30 @@
-﻿
-using Healthcare.Shared.DTOs.Appointments;
-using Microsoft.JSInterop;
-using System.Net.Http.Headers;
+﻿using Healthcare.Shared.DTOs.Appointments;
 using System.Net.Http.Json;
 
-public class AppointmentService
+namespace HealthCareAdmin.UI.Services
 {
-    private readonly HttpClient _http;
-    private readonly IJSRuntime _js;
-
-    public AppointmentService(HttpClient http, IJSRuntime js)
+    public class AppointmentService
     {
-        _http = http;
-        _js = js;
+        private readonly HttpClient _http;
+
+        public AppointmentService(HttpClient http)
+        {
+            _http = http;
+        }
+
+        public async Task<List<AppointmentReportDto>> GetAppointmentReport(DateTime start, DateTime end)
+        {
+            var url = $"api/admin/appointments/report?startDate={start:yyyy-MM-dd}&endDate={end:yyyy-MM-dd}";
+
+            var result = await _http.GetFromJsonAsync<List<AppointmentReportDto>>(url);
+
+            return result ?? new List<AppointmentReportDto>();
+        }
+
+        public async Task<AppointmentSummaryDto> GetDashboard()
+        {
+            return await _http.GetFromJsonAsync<AppointmentSummaryDto>("api/admin/dashboard")
+                   ?? new AppointmentSummaryDto();
+        }
     }
-
-    public async Task<List<AppointmentReportDto>>GetAppointmentReport(DateTime start, DateTime end)
-    {
-        var token = await _js.InvokeAsync<string>( "localStorage.getItem", "token");
-
-        _http.DefaultRequestHeaders.Authorization =new AuthenticationHeaderValue("Bearer", token);
-
-        var url = $"api/admin/appointments/report" + $"?startDate={start:yyyy-MM-dd}" + $"&endDate={end:yyyy-MM-dd}";
-
-        var result = await _http.GetFromJsonAsync<List<AppointmentReportDto>>(url);
-
-        return result ?? new List<AppointmentReportDto>();
-    }
-
-
-    public async Task<AppointmentSummaryDto> GetDashboard()
-    {
-        var token = await _js.InvokeAsync<string>("localStorage.getItem", "token");
-
-        _http.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", token);
-
-        return await _http.GetFromJsonAsync<AppointmentSummaryDto>("api/admin/dashboard")
-               ?? new AppointmentSummaryDto();
-    }
-
 }
