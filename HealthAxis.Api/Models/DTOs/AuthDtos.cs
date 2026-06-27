@@ -5,34 +5,42 @@ namespace HealthAxisCore_Api.Models.Dtos
     public class RegisterPatientDto
     {
         [Required, RegularExpression(@"[A-Z][A-za-z\s]+"), MinLength(2)]
-        public required string PatientName { get; set; }
+        public string PatientName { get; set; }
+
         [Required]
-        public required DateTime DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
+
         [Required, RegularExpression("(Male|Female|Transgender|Other)")]
-        public required string Gender { get; set; }
+        public string Gender { get; set; }
+
         [Required, EmailAddress]
-        public required string Email { get; set; }
+        public string Email { get; set; }
+
         [Required, Phone]
-        public required string PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
+
         public string? InsuranceID { get; set; }
+
         [Required, MinLength(8)]
-        public required string Password { get; set; }
+        public string Password { get; set; }
     }
 
     public class LoginDto
     {
         [Required, EmailAddress]
-        public required string Email { get; set; }
+        public string Email { get; set; }
+
         [Required]
-        public required string Password { get; set; }
+        public string Password { get; set; }
     }
 
     public class RefreshTokenRequestDto
     {
         [Required]
-        public required string UserId { get; set; }
+        public string UserId { get; set; }
+
         [Required]
-        public required string RefreshToken { get; set; }
+        public string RefreshToken { get; set; }
     }
 
     public class AuthResponseDto
@@ -48,13 +56,11 @@ namespace HealthAxisCore_Api.Models.Dtos
         public int ExpiresIn { get; set; }
     }
 
-
-
     public class ForgotPasswordDto
     {
         [Required]
         [EmailAddress]
-        public required string Email { get; set; }
+        public string Email { get; set; }
     }
 
     public class ForgotPasswordResponseDto
@@ -68,13 +74,13 @@ namespace HealthAxisCore_Api.Models.Dtos
     {
         [Required]
         [EmailAddress]
-        public required string Email { get; set; }
+        public string Email { get; set; }
 
         [Required]
-        public required string Token { get; set; }
+        public string Token { get; set; }
 
         [Required]
         [MinLength(8)]
-        public required string NewPassword { get; set; }
+        public string NewPassword { get; set; }
     }
 }

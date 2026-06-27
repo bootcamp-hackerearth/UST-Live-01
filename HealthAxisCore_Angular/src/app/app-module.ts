@@ -10,4 +10,4 @@ import { App } from './app';
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
 })
-export class AppModule {}
+export class AppModule { }

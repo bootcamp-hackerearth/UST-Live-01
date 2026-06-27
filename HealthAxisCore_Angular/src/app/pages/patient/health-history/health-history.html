@@ -1,0 +1,39 @@
+<section class="page-hero">
+  <div>
+    <span class="page-kicker">Health History</span>
+
+    <h1>Your medical records.</h1>
+
+    <p>
+      Review past consultations, diagnosis details, prescriptions, and doctor notes.
+    </p>
+  </div>
+</section>
+
+<section class="history-table-card">
+  <table>
+    <thead>
+      <tr>
+        <th>Visit Date</th>
+        <th>Doctor</th>
+        <th>Specialisation</th>
+        <th>Diagnosis</th>
+        <th>Prescription</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (record of records; track record.recordId) {
+      <tr>
+        <td>{{ record.visitDate }}</td>
+        <td>{{ record.doctorName }}</td>
+        <td>{{ record.specialisation }}</td>
+        <td>{{ record.diagnosis }}</td>
+        <td>{{ record.prescription }}</td>
+        <td>{{ record.notes }}</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</section>

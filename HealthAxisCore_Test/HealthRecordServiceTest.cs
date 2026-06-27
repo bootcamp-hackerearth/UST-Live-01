@@ -6,7 +6,6 @@ using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Implementation;
 using Moq;
 using System.Security.Claims;
-using Xunit;
 
 namespace HealthAxisCore_Api.Tests.Services
 {
@@ -764,6 +763,5 @@ namespace HealthAxisCore_Api.Tests.Services
             await Assert.ThrowsAsync<UnauthorizedException>(() =>
                 service.GetByIdAsync(1, CreateUser("Doctor"), ct));
         }
-
     }
 }

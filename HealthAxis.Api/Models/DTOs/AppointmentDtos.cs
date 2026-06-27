@@ -10,7 +10,7 @@ namespace HealthAxisCore_Api.Models.Dtos
         public int DoctorId { get; set; }
         public string DoctorName { get; set; } = string.Empty;
         public string Specialisation { get; set; } = string.Empty;
-        public required DateTime ScheduledDate { get; set; }
+        public DateTime ScheduledDate { get; set; }
         public string TimeSlot { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string CancellationReason { get; set; } = string.Empty;
@@ -19,17 +19,20 @@ namespace HealthAxisCore_Api.Models.Dtos
     public class CreateAppointmentDto
     {
         [Required]
-        public required int DoctorId { get; set; }
+        public int DoctorId { get; set; }
+
         [Required]
-        public required DateTime ScheduledDate { get; set; }
+        public DateTime ScheduledDate { get; set; }
+
         [Required]
-        public required string TimeSlot { get; set; }
+        public string TimeSlot { get; set; }
     }
 
     public class UpdateAppointmentStatusDto
     {
         [Required, RegularExpression("(Pending|Confirmed|Cancelled|Completed)")]
-        public required string Status { get; set; }
+        public string Status { get; set; }
+
         [MaxLength(100)]
         public string CancellationReason { get; set; } = string.Empty;
     }

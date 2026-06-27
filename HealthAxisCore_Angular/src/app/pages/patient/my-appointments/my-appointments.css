@@ -1,0 +1,180 @@
+:host {
+  --ha-cyan: #22c7d6;
+  --ha-cyan-dark: #149ab2;
+  --ha-text-main: #102a43;
+  --ha-text-soft: #1f4e5f;
+  --ha-text-muted: #5b7c89;
+  --ha-pink: #ff9fa8;
+  --ha-shadow-main: 18px 18px 42px rgba(21, 94, 117, 0.16), -14px -14px 35px rgba(255, 255, 255, 0.68), inset 1px 1px 0 rgba(255, 255, 255, 0.76), inset -1px -1px 0 rgba(34, 199, 214, 0.16);
+}
+
+.page-hero,
+.appointment-card {
+  background: linear-gradient(145deg, rgba(238, 255, 255, 0.92), rgba(184, 240, 239, 0.74));
+  border: 1px solid rgba(34, 199, 214, 0.34);
+  box-shadow: var(--ha-shadow-main);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+
+.page-hero {
+  padding: 34px;
+  border-radius: 38px;
+}
+
+.page-kicker {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  color: #075985;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: rgba(236, 254, 255, 0.76);
+  border: 1px solid rgba(20, 154, 178, 0.24);
+}
+
+.page-hero h1 {
+  margin: 16px 0 10px;
+  color: var(--ha-text-main);
+  font-size: clamp(38px, 5vw, 56px);
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: -2px;
+}
+
+.page-hero p {
+  margin: 0;
+  color: var(--ha-text-soft);
+  font-weight: 700;
+}
+
+.appointments-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.appointment-card {
+  padding: 28px;
+  border-radius: 34px;
+}
+
+.appointment-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.doctor-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 950;
+  background: linear-gradient(135deg, var(--ha-pink), var(--ha-cyan));
+}
+
+.status-badge {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.status-confirmed {
+  color: #075985;
+  background: rgba(219, 234, 254, 0.82);
+  border: 1px solid rgba(59, 130, 246, 0.24);
+}
+
+.status-pending {
+  color: #92400e;
+  background: rgba(254, 243, 199, 0.82);
+  border: 1px solid rgba(245, 158, 11, 0.24);
+}
+
+.status-completed {
+  color: #166534;
+  background: rgba(220, 252, 231, 0.82);
+  border: 1px solid rgba(34, 197, 94, 0.24);
+}
+
+.status-cancelled {
+  color: #991b1b;
+  background: rgba(254, 226, 226, 0.82);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+}
+
+.appointment-card h2 {
+  margin: 22px 0 8px;
+  color: var(--ha-text-main);
+  font-size: 24px;
+  line-height: 1.1;
+  font-weight: 950;
+}
+
+.specialisation {
+  margin: 0;
+  color: var(--ha-text-soft);
+  font-weight: 850;
+}
+
+.appointment-details {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+  .appointment-details div {
+    padding: 14px;
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(240, 255, 255, 0.78), rgba(184, 240, 239, 0.56));
+    border: 1px solid rgba(20, 154, 178, 0.18);
+  }
+
+  .appointment-details span {
+    display: block;
+    color: var(--ha-text-muted);
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .appointment-details strong {
+    display: block;
+    margin-top: 5px;
+    color: var(--ha-text-main);
+    font-size: 16px;
+    font-weight: 950;
+  }
+
+.cancel-button {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 22px;
+  border-radius: 18px;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 950;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+}
+
+@media (max-width: 1050px) {
+  .appointments-grid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .appointments-grid {
+    grid-template-columns: 1fr;
+  }
+}

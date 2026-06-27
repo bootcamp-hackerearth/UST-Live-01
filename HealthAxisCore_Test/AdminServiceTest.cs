@@ -5,10 +5,11 @@ using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Implementation;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Xunit;
+using System.Linq.Expressions;
 
 namespace HealthAxisCore_Api.Tests.Services
 {
@@ -31,7 +32,7 @@ namespace HealthAxisCore_Api.Tests.Services
                 Mock.Of<ILogger<UserManager<ApplicationUser>>>());
 
             mock.Setup(x => x.Users)
-                .Returns(users ?? new List<ApplicationUser>().AsQueryable());
+                .Returns(users ?? CreateAsyncQueryable(new List<ApplicationUser>()));
 
             return mock;
         }
@@ -66,12 +67,21 @@ namespace HealthAxisCore_Api.Tests.Services
         }
 
         [Fact]
-        public async Task GetDoctorsAsync_WhenDoctorsExist_ShouldReturnMappedDoctorDtos()
+        public async Task GetDoctorsAsync_WhenDoctorsExist_ShouldReturnPagedMappedDoctorDtos()
         {
             var ct = CancellationToken.None;
 
             var doctors = new List<Doctor>
             {
+                new Doctor
+                {
+                    DoctorId = 3,
+                    DoctorName = "Doctor Three",
+                    Specialisation = "Neurologist",
+                    YearsOfExperience = 8,
+                    ConsultationFee = 900,
+                    IsActive = true
+                },
                 new Doctor
                 {
                     DoctorId = 1,
@@ -80,10 +90,19 @@ namespace HealthAxisCore_Api.Tests.Services
                     YearsOfExperience = 10,
                     ConsultationFee = 500,
                     IsActive = true
+                },
+                new Doctor
+                {
+                    DoctorId = 2,
+                    DoctorName = "Doctor Two",
+                    Specialisation = "Dermatologist",
+                    YearsOfExperience = 6,
+                    ConsultationFee = 700,
+                    IsActive = false
                 }
             };
 
-            var doctorDtos = new List<DoctorDto>
+            var mappedDtos = new List<DoctorDto>
             {
                 new DoctorDto
                 {
@@ -93,7 +112,22 @@ namespace HealthAxisCore_Api.Tests.Services
                     YearsOfExperience = 10,
                     ConsultationFee = 500,
                     IsActive = true
+                },
+                new DoctorDto
+                {
+                    DoctorId = 2,
+                    DoctorName = "Doctor Two",
+                    Specialisation = "Dermatologist",
+                    YearsOfExperience = 6,
+                    ConsultationFee = 700,
+                    IsActive = false
                 }
+            };
+
+            var query = new PaginationQueryDto
+            {
+                PageNumber = 1,
+                PageSize = 2
             };
 
             var doctorRepositoryMock = new Mock<IDoctorRepository>();
@@ -105,21 +139,125 @@ namespace HealthAxisCore_Api.Tests.Services
             var mapperMock = new Mock<IMapper>();
 
             mapperMock
-                .Setup(x => x.Map<List<DoctorDto>>(doctors))
-                .Returns(doctorDtos);
+                .Setup(x => x.Map<List<DoctorDto>>(
+                    It.Is<List<Doctor>>(d =>
+                        d.Count == 2 &&
+                        d[0].DoctorId == 1 &&
+                        d[1].DoctorId == 2)))
+                .Returns(mappedDtos);
 
             var service = CreateService(
                 doctorRepositoryMock: doctorRepositoryMock,
                 mapperMock: mapperMock);
 
-            var result = await service.GetDoctorsAsync(ct);
+            var result = await service.GetDoctorsAsync(query, ct);
 
-            Assert.Single(result);
-            Assert.Equal(1, result[0].DoctorId);
-            Assert.Equal("Doctor One", result[0].DoctorName);
+            Assert.Equal(2, result.Items.Count);
+            Assert.Equal(3, result.TotalCount);
+            Assert.Equal(2, result.TotalPages);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(2, result.PageSize);
+            Assert.Equal(1, result.Items[0].DoctorId);
+            Assert.Equal(2, result.Items[1].DoctorId);
 
             doctorRepositoryMock.Verify(x => x.GetAllAsync(ct), Times.Once);
-            mapperMock.Verify(x => x.Map<List<DoctorDto>>(doctors), Times.Once);
+            mapperMock.Verify(x => x.Map<List<DoctorDto>>(
+                It.Is<List<Doctor>>(d =>
+                    d.Count == 2 &&
+                    d[0].DoctorId == 1 &&
+                    d[1].DoctorId == 2)), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenSecondPageRequested_ShouldReturnSecondPage()
+        {
+            var ct = CancellationToken.None;
+
+            var doctors = new List<Doctor>
+            {
+                new Doctor { DoctorId = 1, DoctorName = "Doctor One" },
+                new Doctor { DoctorId = 2, DoctorName = "Doctor Two" },
+                new Doctor { DoctorId = 3, DoctorName = "Doctor Three" }
+            };
+
+            var mappedDtos = new List<DoctorDto>
+            {
+                new DoctorDto
+                {
+                    DoctorId = 3,
+                    DoctorName = "Doctor Three"
+                }
+            };
+
+            var query = new PaginationQueryDto
+            {
+                PageNumber = 2,
+                PageSize = 2
+            };
+
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+            doctorRepositoryMock
+                .Setup(x => x.GetAllAsync(ct))
+                .ReturnsAsync(doctors);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<List<DoctorDto>>(
+                    It.Is<List<Doctor>>(d =>
+                        d.Count == 1 &&
+                        d[0].DoctorId == 3)))
+                .Returns(mappedDtos);
+
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock,
+                mapperMock: mapperMock);
+
+            var result = await service.GetDoctorsAsync(query, ct);
+
+            Assert.Single(result.Items);
+            Assert.Equal(3, result.TotalCount);
+            Assert.Equal(2, result.TotalPages);
+            Assert.Equal(2, result.PageNumber);
+            Assert.Equal(2, result.PageSize);
+            Assert.Equal(3, result.Items[0].DoctorId);
+        }
+
+        [Fact]
+        public async Task GetDoctorsAsync_WhenDoctorsDoNotExist_ShouldReturnEmptyPagedResult()
+        {
+            var ct = CancellationToken.None;
+
+            var query = new PaginationQueryDto
+            {
+                PageNumber = 1,
+                PageSize = 5
+            };
+
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+            doctorRepositoryMock
+                .Setup(x => x.GetAllAsync(ct))
+                .ReturnsAsync(new List<Doctor>());
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<List<DoctorDto>>(It.IsAny<List<Doctor>>()))
+                .Returns(new List<DoctorDto>());
+
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock,
+                mapperMock: mapperMock);
+
+            var result = await service.GetDoctorsAsync(query, ct);
+
+            Assert.Empty(result.Items);
+            Assert.Equal(0, result.TotalCount);
+            Assert.Equal(0, result.TotalPages);
+            Assert.Equal(1, result.PageNumber);
+            Assert.Equal(5, result.PageSize);
         }
 
         [Fact]
@@ -529,7 +667,10 @@ namespace HealthAxisCore_Api.Tests.Services
             Assert.Equal("Doctor not found", exception.Message);
 
             doctorRepositoryMock.Verify(x => x.GetByIdAsync(999, ct), Times.Once);
-            doctorRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<int>(), It.IsAny<Doctor>(), It.IsAny<CancellationToken>()), Times.Never);
+            doctorRepositoryMock.Verify(x => x.UpdateAsync(
+                It.IsAny<int>(),
+                It.IsAny<Doctor>(),
+                It.IsAny<CancellationToken>()), Times.Never);
         }
 
         [Fact]
@@ -685,97 +826,218 @@ namespace HealthAxisCore_Api.Tests.Services
         }
 
         [Fact]
-        public async Task GetUsersAsync_WhenRoleFilterIsNull_ShouldReturnAllUsers()
+        public async Task GetUsersAsync_WhenRoleFilterIsNull_ShouldReturnPagedAllUsersWithFullNames()
         {
+            var ct = CancellationToken.None;
+
             var users = new List<ApplicationUser>
             {
                 new ApplicationUser
                 {
-                    Id = "user-1",
-                    Email = "admin@test.com",
-                    IsActive = true
-                },
-                new ApplicationUser
-                {
                     Id = "user-2",
                     Email = "patient@test.com",
+                    UserName = "patient@test.com",
+                    PatientId = 10,
                     IsActive = false
                 },
                 new ApplicationUser
                 {
+                    Id = "user-1",
+                    Email = "admin@test.com",
+                    UserName = "admin@test.com",
+                    IsActive = true
+                },
+                new ApplicationUser
+                {
                     Id = "user-3",
-                    Email = "norole@test.com",
+                    Email = "doctor@test.com",
+                    UserName = "doctor@test.com",
+                    DoctorId = 20,
                     IsActive = true
                 }
             };
 
-            var userManagerMock = CreateUserManagerMock(users.AsQueryable());
-
-            userManagerMock
-                .Setup(x => x.GetRolesAsync(users[0]))
-                .ReturnsAsync(new List<string> { "Admin" });
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(users));
 
             userManagerMock
                 .Setup(x => x.GetRolesAsync(users[1]))
+                .ReturnsAsync(new List<string> { "Admin" });
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(users[0]))
                 .ReturnsAsync(new List<string> { "Patient" });
 
             userManagerMock
                 .Setup(x => x.GetRolesAsync(users[2]))
-                .ReturnsAsync(new List<string>());
+                .ReturnsAsync(new List<string> { "Doctor" });
 
-            var service = CreateService(userManagerMock: userManagerMock);
+            var patientRepositoryMock = new Mock<IPatientRepository>();
 
-            var result = await service.GetUsersAsync(null);
+            patientRepositoryMock
+                .Setup(x => x.GetByIdAsync(10, ct))
+                .ReturnsAsync(new Patient
+                {
+                    PatientId = 10,
+                    PatientName = "Patient One"
+                });
 
-            Assert.Equal(3, result.Count);
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
 
-            Assert.Contains(result, x => x.Id == "user-1" && x.Role == "Admin");
-            Assert.Contains(result, x => x.Id == "user-2" && x.Role == "Patient");
-            Assert.Contains(result, x => x.Id == "user-3" && x.Role == string.Empty);
+            doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(20, ct))
+                .ReturnsAsync(new Doctor
+                {
+                    DoctorId = 20,
+                    DoctorName = "Doctor One"
+                });
 
-            userManagerMock.Verify(x => x.GetRolesAsync(users[0]), Times.Once);
-            userManagerMock.Verify(x => x.GetRolesAsync(users[1]), Times.Once);
-            userManagerMock.Verify(x => x.GetRolesAsync(users[2]), Times.Once);
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock,
+                patientRepositoryMock: patientRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            var query = new PaginationQueryDto
+            {
+                PageNumber = 1,
+                PageSize = 2
+            };
+
+            var result = await service.GetUsersAsync(null, query, ct);
+
+            Assert.Equal(2, result.Items.Count);
+            Assert.Equal(3, result.TotalCount);
+            Assert.Equal(2, result.TotalPages);
+
+            Assert.Contains(result.Items, x => x.Id == "user-1" && x.Role == "Admin" && x.FullName == "admin@test.com");
+            Assert.Contains(result.Items, x => x.Id == "user-3" && x.Role == "Doctor" && x.FullName == "Doctor One");
         }
 
         [Fact]
-        public async Task GetUsersAsync_WhenRoleFilterIsProvided_ShouldReturnOnlyMatchingUsers()
+        public async Task GetUsersAsync_WhenRoleFilterIsProvided_ShouldReturnPagedUsersInRole()
         {
+            var ct = CancellationToken.None;
+
+            var usersInRole = new List<ApplicationUser>
+            {
+                new ApplicationUser
+                {
+                    Id = "patient-2",
+                    Email = "bpatient@test.com",
+                    UserName = "bpatient@test.com",
+                    PatientId = 2,
+                    IsActive = true
+                },
+                new ApplicationUser
+                {
+                    Id = "patient-1",
+                    Email = "apatient@test.com",
+                    UserName = "apatient@test.com",
+                    PatientId = 1,
+                    IsActive = true
+                }
+            };
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.GetUsersInRoleAsync("Patient"))
+                .ReturnsAsync(usersInRole);
+
+            userManagerMock
+                .Setup(x => x.GetRolesAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(new List<string> { "Patient" });
+
+            var patientRepositoryMock = new Mock<IPatientRepository>();
+
+            patientRepositoryMock
+                .Setup(x => x.GetByIdAsync(1, ct))
+                .ReturnsAsync(new Patient
+                {
+                    PatientId = 1,
+                    PatientName = "Patient One"
+                });
+
+            var service = CreateService(
+                patientRepositoryMock: patientRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            var query = new PaginationQueryDto
+            {
+                PageNumber = 1,
+                PageSize = 1
+            };
+
+            var result = await service.GetUsersAsync("Patient", query, ct);
+
+            Assert.Single(result.Items);
+            Assert.Equal(2, result.TotalCount);
+            Assert.Equal(2, result.TotalPages);
+            Assert.Equal("patient-1", result.Items[0].Id);
+            Assert.Equal("Patient", result.Items[0].Role);
+            Assert.Equal("Patient One", result.Items[0].FullName);
+
+            userManagerMock.Verify(x => x.GetUsersInRoleAsync("Patient"), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetUsersAsync_WhenPatientOrDoctorEntityMissing_ShouldUseUserNameFallback()
+        {
+            var ct = CancellationToken.None;
+
             var users = new List<ApplicationUser>
             {
                 new ApplicationUser
                 {
                     Id = "user-1",
-                    Email = "admin@test.com",
+                    Email = "missingpatient@test.com",
+                    UserName = "missing-patient-user",
+                    PatientId = 99,
                     IsActive = true
                 },
                 new ApplicationUser
                 {
                     Id = "user-2",
-                    Email = "patient@test.com",
+                    Email = "missingdoctor@test.com",
+                    UserName = "missing-doctor-user",
+                    DoctorId = 88,
                     IsActive = true
                 }
             };
 
-            var userManagerMock = CreateUserManagerMock(users.AsQueryable());
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(users));
 
             userManagerMock
-                .Setup(x => x.GetRolesAsync(users[0]))
-                .ReturnsAsync(new List<string> { "Admin" });
+                .Setup(x => x.GetRolesAsync(It.IsAny<ApplicationUser>()))
+                .ReturnsAsync(new List<string>());
 
-            userManagerMock
-                .Setup(x => x.GetRolesAsync(users[1]))
-                .ReturnsAsync(new List<string> { "Patient" });
+            var patientRepositoryMock = new Mock<IPatientRepository>();
 
-            var service = CreateService(userManagerMock: userManagerMock);
+            patientRepositoryMock
+                .Setup(x => x.GetByIdAsync(99, ct))
+                .ReturnsAsync((Patient?)null);
 
-            var result = await service.GetUsersAsync("Admin");
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
 
-            Assert.Single(result);
-            Assert.Equal("user-1", result[0].Id);
-            Assert.Equal("admin@test.com", result[0].Email);
-            Assert.Equal("Admin", result[0].Role);
-            Assert.True(result[0].IsActive);
+            doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(88, ct))
+                .ReturnsAsync((Doctor?)null);
+
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock,
+                patientRepositoryMock: patientRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            var query = new PaginationQueryDto
+            {
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            var result = await service.GetUsersAsync(null, query, ct);
+
+            Assert.Equal(2, result.Items.Count);
+            Assert.Contains(result.Items, x => x.FullName == "missing-patient-user");
+            Assert.Contains(result.Items, x => x.FullName == "missing-doctor-user");
         }
 
         [Fact]
@@ -837,7 +1099,7 @@ namespace HealthAxisCore_Api.Tests.Services
         }
 
         [Fact]
-        public async Task UpdatePatientStatusAsync_WhenPatientExists_ShouldUpdateStatusAndSaveChanges()
+        public async Task UpdatePatientStatusAsync_WhenPatientExistsAndUserDoesNotExist_ShouldUpdatePatientOnlyAndSaveChanges()
         {
             var ct = CancellationToken.None;
 
@@ -863,15 +1125,371 @@ namespace HealthAxisCore_Api.Tests.Services
                 .Setup(x => x.SaveChangesAsync(ct))
                 .ReturnsAsync(1);
 
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(new List<ApplicationUser>()));
+
             var service = CreateService(
-                patientRepositoryMock: patientRepositoryMock);
+                patientRepositoryMock: patientRepositoryMock,
+                userManagerMock: userManagerMock);
 
             await service.UpdatePatientStatusAsync(10, false, ct);
 
             Assert.False(patient.IsActive);
 
-            patientRepositoryMock.Verify(x => x.GetByIdAsync(10, ct), Times.Once);
+            userManagerMock.Verify(x => x.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never);
             patientRepositoryMock.Verify(x => x.SaveChangesAsync(ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdatePatientStatusAsync_WhenPatientExistsAndUserExists_ShouldUpdatePatientUserAndSaveChanges()
+        {
+            var ct = CancellationToken.None;
+
+            var patient = new Patient
+            {
+                PatientId = 10,
+                PatientName = "Patient One",
+                IsActive = true
+            };
+
+            var user = new ApplicationUser
+            {
+                Id = "user-1",
+                PatientId = 10,
+                IsActive = true
+            };
+
+            var patientRepositoryMock = new Mock<IPatientRepository>();
+
+            patientRepositoryMock
+                .Setup(x => x.GetByIdAsync(10, ct))
+                .ReturnsAsync(patient);
+
+            patientRepositoryMock
+                .Setup(x => x.SaveChangesAsync(ct))
+                .ReturnsAsync(1);
+
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(new List<ApplicationUser> { user }));
+
+            userManagerMock
+                .Setup(x => x.UpdateAsync(user))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var service = CreateService(
+                patientRepositoryMock: patientRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            await service.UpdatePatientStatusAsync(10, false, ct);
+
+            Assert.False(patient.IsActive);
+            Assert.False(user.IsActive);
+
+            userManagerMock.Verify(x => x.UpdateAsync(user), Times.Once);
+            patientRepositoryMock.Verify(x => x.SaveChangesAsync(ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdatePatientStatusAsync_WhenUserUpdateFails_ShouldThrowInvalidException()
+        {
+            var ct = CancellationToken.None;
+
+            var patient = new Patient
+            {
+                PatientId = 10,
+                PatientName = "Patient One",
+                IsActive = true
+            };
+
+            var user = new ApplicationUser
+            {
+                Id = "user-1",
+                PatientId = 10,
+                IsActive = true
+            };
+
+            var patientRepositoryMock = new Mock<IPatientRepository>();
+
+            patientRepositoryMock
+                .Setup(x => x.GetByIdAsync(10, ct))
+                .ReturnsAsync(patient);
+
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(new List<ApplicationUser> { user }));
+
+            userManagerMock
+                .Setup(x => x.UpdateAsync(user))
+                .ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError { Description = "Patient user update failed" }));
+
+            var service = CreateService(
+                patientRepositoryMock: patientRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.UpdatePatientStatusAsync(10, false, ct));
+
+            Assert.Contains("Patient user update failed", exception.Message);
+
+            patientRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateDoctorStatusAsync_WhenDoctorDoesNotExist_ShouldThrowNotFoundException()
+        {
+            var ct = CancellationToken.None;
+
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+            doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(99, ct))
+                .ReturnsAsync((Doctor?)null);
+
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.UpdateDoctorStatusAsync(99, true, ct));
+
+            Assert.Equal("Doctor not found", exception.Message);
+
+            doctorRepositoryMock.Verify(x => x.GetByIdAsync(99, ct), Times.Once);
+            doctorRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        [Fact]
+        public async Task UpdateDoctorStatusAsync_WhenDoctorExistsAndUserDoesNotExist_ShouldUpdateDoctorOnlyAndSaveChanges()
+        {
+            var ct = CancellationToken.None;
+
+            var doctor = new Doctor
+            {
+                DoctorId = 10,
+                DoctorName = "Doctor One",
+                IsActive = true
+            };
+
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+            doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(10, ct))
+                .ReturnsAsync(doctor);
+
+            doctorRepositoryMock
+                .Setup(x => x.SaveChangesAsync(ct))
+                .ReturnsAsync(1);
+
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(new List<ApplicationUser>()));
+
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            await service.UpdateDoctorStatusAsync(10, false, ct);
+
+            Assert.False(doctor.IsActive);
+
+            userManagerMock.Verify(x => x.UpdateAsync(It.IsAny<ApplicationUser>()), Times.Never);
+            doctorRepositoryMock.Verify(x => x.SaveChangesAsync(ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateDoctorStatusAsync_WhenDoctorExistsAndUserExists_ShouldUpdateDoctorUserAndSaveChanges()
+        {
+            var ct = CancellationToken.None;
+
+            var doctor = new Doctor
+            {
+                DoctorId = 10,
+                DoctorName = "Doctor One",
+                IsActive = true
+            };
+
+            var user = new ApplicationUser
+            {
+                Id = "user-1",
+                DoctorId = 10,
+                IsActive = true
+            };
+
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+            doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(10, ct))
+                .ReturnsAsync(doctor);
+
+            doctorRepositoryMock
+                .Setup(x => x.SaveChangesAsync(ct))
+                .ReturnsAsync(1);
+
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(new List<ApplicationUser> { user }));
+
+            userManagerMock
+                .Setup(x => x.UpdateAsync(user))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            await service.UpdateDoctorStatusAsync(10, false, ct);
+
+            Assert.False(doctor.IsActive);
+            Assert.False(user.IsActive);
+
+            userManagerMock.Verify(x => x.UpdateAsync(user), Times.Once);
+            doctorRepositoryMock.Verify(x => x.SaveChangesAsync(ct), Times.Once);
+        }
+
+        [Fact]
+        public async Task UpdateDoctorStatusAsync_WhenUserUpdateFails_ShouldThrowInvalidException()
+        {
+            var ct = CancellationToken.None;
+
+            var doctor = new Doctor
+            {
+                DoctorId = 10,
+                DoctorName = "Doctor One",
+                IsActive = true
+            };
+
+            var user = new ApplicationUser
+            {
+                Id = "user-1",
+                DoctorId = 10,
+                IsActive = true
+            };
+
+            var doctorRepositoryMock = new Mock<IDoctorRepository>();
+
+            doctorRepositoryMock
+                .Setup(x => x.GetByIdAsync(10, ct))
+                .ReturnsAsync(doctor);
+
+            var userManagerMock = CreateUserManagerMock(CreateAsyncQueryable(new List<ApplicationUser> { user }));
+
+            userManagerMock
+                .Setup(x => x.UpdateAsync(user))
+                .ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError { Description = "Doctor user update failed" }));
+
+            var service = CreateService(
+                doctorRepositoryMock: doctorRepositoryMock,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.UpdateDoctorStatusAsync(10, false, ct));
+
+            Assert.Contains("Doctor user update failed", exception.Message);
+
+            doctorRepositoryMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
+
+        // ============================================================
+        // Async IQueryable Helpers
+        // Needed because AdminService uses CountAsync and ToListAsync
+        // on userManager.Users.
+        // ============================================================
+
+        private static IQueryable<T> CreateAsyncQueryable<T>(IEnumerable<T> source)
+        {
+            return new TestAsyncEnumerable<T>(source);
+        }
+
+        private sealed class TestAsyncEnumerable<T> :
+            EnumerableQuery<T>,
+            IAsyncEnumerable<T>,
+            IQueryable<T>
+        {
+            public TestAsyncEnumerable(IEnumerable<T> enumerable)
+                : base(enumerable)
+            {
+            }
+
+            public TestAsyncEnumerable(Expression expression)
+                : base(expression)
+            {
+            }
+
+            public IAsyncEnumerator<T> GetAsyncEnumerator(
+                CancellationToken cancellationToken = default)
+            {
+                return new TestAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator());
+            }
+
+            IQueryProvider IQueryable.Provider =>
+                new TestAsyncQueryProvider<T>(this);
+        }
+
+        private sealed class TestAsyncEnumerator<T> : IAsyncEnumerator<T>
+        {
+            private readonly IEnumerator<T> _inner;
+
+            public TestAsyncEnumerator(IEnumerator<T> inner)
+            {
+                _inner = inner;
+            }
+
+            public T Current => _inner.Current;
+
+            public ValueTask DisposeAsync()
+            {
+                _inner.Dispose();
+
+                return ValueTask.CompletedTask;
+            }
+
+            public ValueTask<bool> MoveNextAsync()
+            {
+                return new ValueTask<bool>(_inner.MoveNext());
+            }
+        }
+
+        private sealed class TestAsyncQueryProvider<TEntity> : IAsyncQueryProvider
+        {
+            private readonly IQueryProvider _inner;
+
+            public TestAsyncQueryProvider(IQueryProvider inner)
+            {
+                _inner = inner;
+            }
+
+            public IQueryable CreateQuery(Expression expression)
+            {
+                return new TestAsyncEnumerable<TEntity>(expression);
+            }
+
+            public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
+            {
+                return new TestAsyncEnumerable<TElement>(expression);
+            }
+
+            public object? Execute(Expression expression)
+            {
+                return _inner.Execute(expression);
+            }
+
+            public TResult Execute<TResult>(Expression expression)
+            {
+                return _inner.Execute<TResult>(expression);
+            }
+
+            public TResult ExecuteAsync<TResult>(
+                Expression expression,
+                CancellationToken cancellationToken = default)
+            {
+                var expectedResultType = typeof(TResult).GetGenericArguments()[0];
+
+                var executionResult = typeof(IQueryProvider)
+                    .GetMethod(
+                        name: nameof(IQueryProvider.Execute),
+                        genericParameterCount: 1,
+                        types: new[] { typeof(Expression) })!
+                    .MakeGenericMethod(expectedResultType)
+                    .Invoke(_inner, new object[] { expression });
+
+                return (TResult)typeof(Task)
+                    .GetMethod(nameof(Task.FromResult))!
+                    .MakeGenericMethod(expectedResultType)
+                    .Invoke(null, new[] { executionResult })!;
+            }
         }
     }
 }

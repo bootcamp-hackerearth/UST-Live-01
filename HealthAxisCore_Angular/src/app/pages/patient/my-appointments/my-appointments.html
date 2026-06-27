@@ -1,0 +1,51 @@
+<section class="page-hero">
+  <div>
+    <span class="page-kicker">My Appointments</span>
+
+    <h1>Manage your visits.</h1>
+
+    <p>
+      View upcoming, completed, and cancelled appointments in one place.
+    </p>
+  </div>
+</section>
+
+<section class="appointments-grid">
+  @for (appointment of appointments; track appointment.appointmentId) {
+  <article class="appointment-card">
+    <div class="appointment-top">
+      <div class="doctor-avatar">
+        {{ appointment.doctorName.charAt(0) }}
+      </div>
+
+      <span [class]="getStatusClass(appointment.status)">
+        {{ appointment.status }}
+      </span>
+    </div>
+
+    <h2>{{ appointment.doctorName }}</h2>
+
+    <p class="specialisation">
+      {{ appointment.specialisation }}
+    </p>
+
+    <div class="appointment-details">
+      <div>
+        <span>Date</span>
+        <strong>{{ appointment.scheduledDate }}</strong>
+      </div>
+
+      <div>
+        <span>Time</span>
+        <strong>{{ appointment.timeSlot }}</strong>
+      </div>
+    </div>
+
+    @if (appointment.status !== 'Cancelled' && appointment.status !== 'Completed') {
+    <button type="button" class="cancel-button" (click)="cancelAppointment(appointment)">
+      Cancel Appointment
+    </button>
+    }
+  </article>
+  }
+</section>

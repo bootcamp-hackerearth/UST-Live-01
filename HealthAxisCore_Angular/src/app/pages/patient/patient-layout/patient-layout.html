@@ -1,0 +1,61 @@
+<div class="patient-shell">
+  <nav class="patient-navbar">
+    <a routerLink="/patient/dashboard" class="brand">
+      <span class="brand-mark">H</span>
+
+      <span class="brand-copy">
+        <strong>HealthAxis</strong>
+        <small>Patient Portal</small>
+      </span>
+    </a>
+
+    <div class="nav-links">
+      <a routerLink="/patient/dashboard"
+         routerLinkActive="active-link"
+         class="nav-link">
+        Dashboard
+      </a>
+
+      <a routerLink="/patient/doctors"
+         routerLinkActive="active-link"
+         class="nav-link">
+        Find Doctors
+      </a>
+
+      <a routerLink="/patient/appointments"
+         routerLinkActive="active-link"
+         class="nav-link">
+        Appointments
+      </a>
+
+      <a routerLink="/patient/health-history"
+         routerLinkActive="active-link"
+         class="nav-link">
+        Health History
+      </a>
+    </div>
+
+    <div class="navbar-actions">
+      <a routerLink="/patient/profile" class="profile-button">
+        <span class="profile-avatar">
+          {{ patientName.charAt(0) }}
+        </span>
+
+        <span class="profile-copy">
+          <small>Logged in as</small>
+          <strong>{{ patientName }}</strong>
+        </span>
+      </a>
+
+      <button type="button"
+              class="logout-button"
+              (click)="logout()">
+        Logout
+      </button>
+    </div>
+  </nav>
+
+  <main class="patient-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

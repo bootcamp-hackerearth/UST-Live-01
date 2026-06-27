@@ -1,0 +1,87 @@
+<section class="page-hero">
+  <div>
+    <span class="page-kicker">Find Doctors</span>
+
+    <h1>Choose the right specialist.</h1>
+
+    <p>
+      Search available doctors by name or specialisation and book your next appointment.
+    </p>
+  </div>
+</section>
+
+<section class="filter-card">
+  <div class="filter-group">
+    <label>Search doctor</label>
+
+    <input type="text"
+           [(ngModel)]="searchText"
+           placeholder="Search by doctor name or specialisation" />
+  </div>
+
+  <div class="filter-group">
+    <label>Specialisation</label>
+
+    <select [(ngModel)]="selectedSpecialisation">
+      <option value="">All specialisations</option>
+
+      @for (specialisation of specialisations; track specialisation) {
+      <option [value]="specialisation">
+        {{ specialisation }}
+      </option>
+      }
+    </select>
+  </div>
+
+  <button type="button" class="clear-button" (click)="clearFilters()">
+    Clear
+  </button>
+</section>
+
+<section class="doctor-grid">
+  @if (filteredDoctors.length === 0) {
+  <div class="empty-state">
+    <h2>No doctors found</h2>
+    <p>Try changing your search or specialisation filter.</p>
+  </div>
+  }
+
+  @for (doctor of filteredDoctors; track doctor.doctorId) {
+  <article class="doctor-card">
+    <div class="doctor-top">
+      <div class="doctor-avatar">
+        {{ doctor.doctorName.charAt(0) }}
+      </div>
+
+      <span class="status-pill"
+            [class.inactive]="!doctor.isActive">
+        {{ doctor.isActive ? 'Available' : 'Inactive' }}
+      </span>
+    </div>
+
+    <h2>{{ doctor.doctorName }}</h2>
+
+    <p class="specialisation">
+      {{ doctor.specialisation }}
+    </p>
+
+    <div class="doctor-meta">
+      <div>
+        <span>Experience</span>
+        <strong>{{ doctor.yearsOfExperience }} yrs</strong>
+      </div>
+
+      <div>
+        <span>Fee</span>
+        <strong>₹{{ doctor.consultationFee }}</strong>
+      </div>
+    </div>
+
+    <a [routerLink]="['/patient/book', doctor.doctorId]"
+       class="book-button"
+       [class.disabled-link]="!doctor.isActive">
+      Book Appointment
+    </a>
+  </article>
+  }
+</section>

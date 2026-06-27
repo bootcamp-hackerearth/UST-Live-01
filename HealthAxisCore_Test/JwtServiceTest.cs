@@ -9,7 +9,6 @@ using Moq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Xunit;
 
 namespace HealthAxisCore_Api.Tests.Services
 {

@@ -19,13 +19,17 @@ namespace HealthAxisCore_Api.Models.Dtos
     public class CreateHealthRecordDto
     {
         [Required]
-        public required int PatientId { get; set; }
+        public int PatientId { get; set; }
+
         [Required]
-        public required int AppointmentId { get; set; }
+        public int AppointmentId { get; set; }
+
         [Required]
-        public required string Diagnosis { get; set; }
+        public string Diagnosis { get; set; }
+
         [Required]
-        public required string Prescription { get; set; }
+        public string Prescription { get; set; }
+
         public string? Notes { get; set; }
     }
 }

@@ -1,10 +1,133 @@
 <div class="auth-page">
-  <div class="auth-card">
-    <h1>Login</h1>
-    <p>Under Construction.....</p>
+  <div class="auth-shell">
+    <section class="auth-brand-panel">
+      <a routerLink="/" class="brand-link">
+        <span class="brand-mark">H</span>
 
-    <a routerLink="/">
-      Back to home
-    </a>
+        <span>
+          <strong>HealthAxis</strong>
+          <small>Connected Healthcare Platform</small>
+        </span>
+      </a>
+
+      <div class="brand-story">
+        <span class="story-kicker">Secure Portal Access</span>
+
+        <h1>
+          Welcome back to
+          <span>smarter healthcare.</span>
+        </h1>
+
+        <p>
+          Login as a patient or doctor to manage appointments, consultations,
+          and healthcare records through a protected digital care experience.
+        </p>
+      </div>
+
+      <div class="brand-points">
+        <div class="brand-point">
+          <span></span>
+          JWT-secured access
+        </div>
+
+        <div class="brand-point">
+          <span></span>
+          Patient and doctor role portals
+        </div>
+
+        <div class="brand-point">
+          <span></span>
+          Appointment and record management
+        </div>
+      </div>
+    </section>
+
+    <section class="auth-card">
+      <div class="auth-card-header">
+        <span class="auth-badge">Login</span>
+
+        <h2>Access your portal</h2>
+
+        <p>
+          Enter your registered email and password to continue.
+        </p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="submitLogin()">
+        <div class="form-group">
+          <label>Email address</label>
+
+          <input type="email"
+                 formControlName="email"
+                 placeholder="example@healthaxis.com"
+                 [class.input-invalid]="email?.invalid && (email?.touched || submitted)" />
+
+          @if (email?.invalid && (email?.touched || submitted)) {
+          <small class="validation-message">
+            @if (email?.errors?.['required']) {
+            Email is required.
+            }
+
+            @if (email?.errors?.['email']) {
+            Enter a valid email address.
+            }
+          </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+
+          <div class="password-wrapper">
+            <input [type]="showPassword ? 'text' : 'password'"
+                   formControlName="password"
+                   placeholder="Enter password"
+                   [class.input-invalid]="password?.invalid && (password?.touched || submitted)" />
+
+            <button type="button"
+                    class="password-toggle"
+                    (click)="togglePasswordVisibility()">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          @if (password?.invalid && (password?.touched || submitted)) {
+          <small class="validation-message">
+            @if (password?.errors?.['required']) {
+            Password is required.
+            }
+
+            @if (password?.errors?.['minlength']) {
+            Password must be at least 8 characters.
+            }
+          </small>
+          }
+        </div>
+
+        <div class="form-row">
+          <label class="remember-me">
+            <input type="checkbox" formControlName="rememberMe" />
+            Remember me
+          </label>
+
+          <a routerLink="/login" class="soft-link">
+            Forgot password?
+          </a>
+        </div>
+
+        <button type="submit" class="primary-auth-button">
+          Login
+        </button>
+      </form>
+
+      <div class="auth-switch">
+        <span>New to HealthAxis?</span>
+        <a routerLink="/register">Create patient account</a>
+      </div>
+
+      <a routerLink="/" class="home-link">
+        Back to home
+      </a>
+    </section>
   </div>
 </div>

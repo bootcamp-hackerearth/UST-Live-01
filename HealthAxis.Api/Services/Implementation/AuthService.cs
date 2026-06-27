@@ -250,6 +250,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                         configuration["Jwt:AccessTokenExpirationMinutes"]
                     ) * 60
             };
+
         public async Task<ForgotPasswordResponseDto> ForgotPasswordAsync(
     ForgotPasswordDto request)
         {

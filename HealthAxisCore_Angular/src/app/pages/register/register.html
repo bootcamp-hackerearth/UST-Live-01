@@ -1,10 +1,226 @@
-<div class="auth-page">
-  <div class="auth-card">
-    <h1>Register</h1>
-    <p>Under Construction....</p>
+<div class="register-page">
+  <div class="register-shell">
+    <section class="register-card">
+      <div class="register-header">
+        <a routerLink="/" class="brand-link">
+          <span class="brand-mark">H</span>
 
-    <a routerLink="/">
-      Back to home
-    </a>
+          <span>
+            <strong>HealthAxis</strong>
+            <small>Patient Registration</small>
+          </span>
+        </a>
+
+        <span class="register-badge">Create Account</span>
+
+        <h1>Start your care journey.</h1>
+
+        <p>
+          Create a patient account to find doctors, book appointments,
+          and access your health history securely.
+        </p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="submitRegister()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Full name</label>
+
+            <input type="text"
+                   formControlName="patientName"
+                   placeholder="Arun Menon"
+                   [class.input-invalid]="patientName?.invalid && (patientName?.touched || submitted)" />
+
+            @if (patientName?.invalid && (patientName?.touched || submitted)) {
+            <small class="validation-message">
+              Full name is required.
+            </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Date of birth</label>
+
+            <input type="date"
+                   formControlName="dateOfBirth"
+                   [class.input-invalid]="dateOfBirth?.invalid && (dateOfBirth?.touched || submitted)" />
+
+            @if (dateOfBirth?.invalid && (dateOfBirth?.touched || submitted)) {
+            <small class="validation-message">
+              Date of birth is required.
+            </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Gender</label>
+
+            <select formControlName="gender"
+                    [class.input-invalid]="gender?.invalid && (gender?.touched || submitted)">
+              <option value="">Select gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+
+            @if (gender?.invalid && (gender?.touched || submitted)) {
+            <small class="validation-message">
+              Gender is required.
+            </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Email address</label>
+
+            <input type="email"
+                   formControlName="email"
+                   placeholder="patient@healthaxis.com"
+                   [class.input-invalid]="email?.invalid && (email?.touched || submitted)" />
+
+            @if (email?.invalid && (email?.touched || submitted)) {
+            <small class="validation-message">
+              Enter a valid email address.
+            </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Phone number</label>
+
+            <input type="text"
+                   formControlName="phoneNumber"
+                   placeholder="9876543210"
+                   [class.input-invalid]="phoneNumber?.invalid && (phoneNumber?.touched || submitted)" />
+
+            @if (phoneNumber?.invalid && (phoneNumber?.touched || submitted)) {
+            <small class="validation-message">
+              Enter a valid 10-digit phone number.
+            </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Insurance ID</label>
+
+            <input type="text"
+                   formControlName="insuranceID"
+                   placeholder="INS0001"
+                   [class.input-invalid]="insuranceID?.invalid && (insuranceID?.touched || submitted)" />
+
+            @if (insuranceID?.invalid && (insuranceID?.touched || submitted)) {
+            <small class="validation-message">
+              Insurance ID is required.
+            </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+
+            <div class="password-wrapper">
+              <input [type]="showPassword ? 'text' : 'password'"
+                     formControlName="password"
+                     placeholder="Minimum 8 characters"
+                     [class.input-invalid]="password?.invalid && (password?.touched || submitted)" />
+
+              <button type="button"
+                      class="password-toggle"
+                      (click)="togglePasswordVisibility()">
+                {{ showPassword ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+
+            @if (password?.invalid && (password?.touched || submitted)) {
+            <small class="validation-message">
+              Password must be at least 8 characters.
+            </small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>Confirm password</label>
+
+            <div class="password-wrapper">
+              <input [type]="showConfirmPassword ? 'text' : 'password'"
+                     formControlName="confirmPassword"
+                     placeholder="Re-enter password"
+                     [class.input-invalid]="(confirmPassword?.invalid || passwordsDoNotMatch) && (confirmPassword?.touched || submitted)" />
+
+              <button type="button"
+                      class="password-toggle"
+                      (click)="toggleConfirmPasswordVisibility()">
+                {{ showConfirmPassword ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+
+            @if (confirmPassword?.invalid && (confirmPassword?.touched || submitted)) {
+            <small class="validation-message">
+              Confirm password is required.
+            </small>
+            }
+
+            @if (passwordsDoNotMatch) {
+            <small class="validation-message">
+              Passwords do not match.
+            </small>
+            }
+          </div>
+        </div>
+
+        <label class="terms-row">
+          <input type="checkbox" formControlName="termsAccepted" />
+          <span>
+            I agree to create a secure HealthAxis patient account.
+          </span>
+        </label>
+
+        @if (termsAccepted?.invalid && (termsAccepted?.touched || submitted)) {
+        <small class="validation-message terms-validation">
+          You must accept this before registration.
+        </small>
+        }
+
+        <button type="submit" class="primary-register-button">
+          Create Patient Account
+        </button>
+      </form>
+
+      <div class="register-switch">
+        <span>Already registered?</span>
+        <a routerLink="/login">Login here</a>
+      </div>
+
+      <a routerLink="/" class="home-link">
+        Back to home
+      </a>
+    </section>
+
+    <section class="register-side-panel">
+      <div class="side-orb"></div>
+
+      <span class="side-kicker">Why join HealthAxis?</span>
+
+      <h2>
+        One account for your healthcare journey.
+      </h2>
+
+      <div class="side-list">
+        <div>
+          <strong>Find doctors</strong>
+          <span>Search specialists and availability.</span>
+        </div>
+
+        <div>
+          <strong>Book appointments</strong>
+          <span>Select slots and manage visits.</span>
+        </div>
+
+        <div>
+          <strong>Track health history</strong>
+          <span>Access consultation records securely.</span>
+        </div>
+      </div>
+    </section>
   </div>
 </div>

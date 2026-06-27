@@ -1,0 +1,69 @@
+<section class="dashboard-hero">
+  <div>
+    <span class="page-kicker">Patient Dashboard</span>
+
+    <h1>
+      Welcome back,
+      <span>{{ patientName }}</span>
+    </h1>
+
+    <p>
+      Manage appointments, discover specialists, and keep your health journey connected.
+    </p>
+  </div>
+
+  <a routerLink="/patient/doctors" class="hero-action">
+    Book Appointment
+  </a>
+</section>
+
+<section class="dashboard-grid">
+  @for (card of dashboardCards; track card.title) {
+  <a [routerLink]="card.route" class="dashboard-card">
+    <div>
+      <span class="card-value">{{ card.value }}</span>
+      <h2>{{ card.title }}</h2>
+      <p>{{ card.description }}</p>
+    </div>
+
+    <span class="card-arrow">View</span>
+  </a>
+  }
+</section>
+
+<section class="dashboard-section">
+  <div class="section-header">
+    <div>
+      <span class="page-kicker">Upcoming Care</span>
+      <h2>Upcoming Appointments</h2>
+    </div>
+
+    <a routerLink="/patient/appointments">
+      View all
+    </a>
+  </div>
+
+  <div class="appointments-list">
+    @for (appointment of upcomingAppointments; track appointment.doctorName) {
+    <div class="appointment-row">
+      <div class="doctor-icon">
+        {{ appointment.doctorName.charAt(0) }}
+      </div>
+
+      <div class="appointment-main">
+        <h3>{{ appointment.doctorName }}</h3>
+        <p>{{ appointment.specialisation }}</p>
+      </div>
+
+      <div class="appointment-time">
+        <strong>{{ appointment.date }}</strong>
+        <span>{{ appointment.time }}</span>
+      </div>
+
+      <span class="status-badge">
+        {{ appointment.status }}
+      </span>
+    </div>
+    }
+  </div>
+</section>

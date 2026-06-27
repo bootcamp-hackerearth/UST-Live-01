@@ -6,7 +6,6 @@ using HealthAxisCore_Api.Repositories.Interfaces;
 using HealthAxisCore_Api.Services.Implementation;
 using Moq;
 using System.Security.Claims;
-using Xunit;
 
 namespace HealthAxisCore_Api.Tests.Services
 {
