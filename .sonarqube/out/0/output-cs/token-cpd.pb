@@ -2303,61 +2303,7 @@ DoctorName		  
 
 & '
 } 
-} ˆ
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.cs
-	namespace 	
-S3_HealthAxis
- 
-. 
-Shared 
-. 
-DTOs #
-.# $
-Appointment$ /
-{ 
-public 
-
-class  
-CreateAppointmentDto %
-{ 
-public 
-int 
-	PatientId 
-{ 
-get "
-;" #
-set$ '
-;' (
-}) *
-public 
-int 
-DoctorId 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-public 
-DateOnly 
-ScheduledDate %
-{& '
-get( +
-;+ ,
-set- 0
-;0 1
-}2 3
-public 
-int 
-TimeSlot 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-}		 
-} á
+} á
 iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\DoctorScheduleItemDto.cs
 	namespace 	
 S3_HealthAxis
@@ -2452,8 +2398,8 @@ iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 
 & '
 } 
-} Å
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.cs
+} ˆ
+hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.cs
 	namespace 	
 S3_HealthAxis
  
@@ -2467,24 +2413,46 @@ hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 public 
 
 class  
-CancelAppointmentDto %
+CreateAppointmentDto %
 { 
-public 
-string 
-CancellationReason (
-{) *
-get+ .
-;. /
-set0 3
-;3 4
-}5 6
-=7 8
-string9 ?
-.? @
-Empty@ E
-;E F
-} 
-} ‘
+public 
+int 
+	PatientId 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
+public 
+int 
+DoctorId 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+public 
+DateOnly 
+ScheduledDate %
+{& '
+get( +
+;+ ,
+set- 0
+;0 1
+}2 3
+public 
+int 
+TimeSlot 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+}		 
+} ‘
 bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDto.cs
 	namespace 	
 S3_HealthAxis
@@ -2584,7 +2552,39 @@ bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 ;4 5
 }6 7
 } 
-} «
+} Å
+hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.cs
+	namespace 	
+S3_HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs #
+.# $
+Appointment$ /
+{ 
+public 
+
+class  
+CancelAppointmentDto %
+{ 
+public 
+string 
+CancellationReason (
+{) *
+get+ .
+;. /
+set0 3
+;3 4
+}5 6
+=7 8
+string9 ?
+.? @
+Empty@ E
+;E F
+} 
+} «
 iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDetailsDto.cs
 	namespace 	
 S3_HealthAxis
@@ -2777,60 +2777,6 @@ _C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\User
 ;' (
 }) *
 } 
-} „
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\AdminStatisticsDto.cs
-	namespace 	
-S3_HealthAxis
- 
-. 
-Shared 
-. 
-DTOs #
-.# $
-Admin$ )
-{ 
-public 
-
-class 
-AdminStatisticsDto #
-{ 
-public 
-int 
-Patients 
-{ 
-get !
-;! "
-set# &
-;& '
-}( )
-public 
-int 
-Doctors 
-{ 
-get  
-;  !
-set" %
-;% &
-}' (
-public		 
-int		 
-Appointments		 
-{		  !
-get		" %
-;		% &
-set		' *
-;		* +
-}		, -
-public 
-int 
-HealthRecords  
-{! "
-get# &
-;& '
-set( +
-;+ ,
-}- .
-} 
 } Ÿ
 _C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\AdminDashboardDto.cs
 	namespace 	
@@ -2912,4 +2858,58 @@ _C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\Admi
 ;3 4
 }5 6
 } 
-} 
+} „
+`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\AdminStatisticsDto.cs
+	namespace 	
+S3_HealthAxis
+ 
+. 
+Shared 
+. 
+DTOs #
+.# $
+Admin$ )
+{ 
+public 
+
+class 
+AdminStatisticsDto #
+{ 
+public 
+int 
+Patients 
+{ 
+get !
+;! "
+set# &
+;& '
+}( )
+public 
+int 
+Doctors 
+{ 
+get  
+;  !
+set" %
+;% &
+}' (
+public		 
+int		 
+Appointments		 
+{		  !
+get		" %
+;		% &
+set		' *
+;		* +
+}		, -
+public 
+int 
+HealthRecords  
+{! "
+get# &
+;& '
+set( +
+;+ ,
+}- .
+} 
+} 

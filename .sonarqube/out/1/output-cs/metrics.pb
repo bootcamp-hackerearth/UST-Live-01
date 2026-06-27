@@ -24,35 +24,34 @@ eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interf
 hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IPatientRepository.csr	
 
 mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IHealthRecordRepository.csr	
-z
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IGenericRepository.csr	±
-lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\PatientRepository.cs 8
-r7	
- !"#%'()*+-./02345689:;=>?@ABx|
-gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IDoctorRepository.csr	
-~
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IAdminRepository.csr	Æ
+Æ
 iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\UserRepository.cs
  	8	r9	
- !"#$%'()*,-./02345689:;=>?@ABCà
-lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IAppointmentRepository.csr	°
-gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\HealthRecord.cs 8r.	
- !"#%&'(*+,-.012345«
-kC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\DoctorRepository.cs 	8rN	
-!"#$%&')*,-./1345679:;<>?@ACDEFGIJKLMNOPQRTUVWYZ[\]^x∑
-FC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Program.csI8jrî	
- !"#$%&'()*+,-./0123456789:ABCDEKLMNOQRSTUWXZ\^_`bcdflmnopqrstuvw}~ÄÅÇàâäãåçéíñóòöõúùû†°¢§¶®™¨Æ≤xÇL (-.3ACDKLMOQ`bflnpr}~ÄÅÇàâäãåçéíñòöú†§¶®™¨Æ≤¨
+ !"#$%'()*,-./02345689:;=>?@ABC|
+gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IDoctorRepository.csr	
+à
+lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IAppointmentRepository.csr	~
+fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IAdminRepository.csr	z
+hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IGenericRepository.csr	¨
 lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\GenericRepository.cs 8r2	
- !"#%&'()+,-/012346789:;x√
-jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\AdminRepository.cs
- 8rK	
- !#$%&')*+,./01346789:;<>?@ABCDEFGIJKLNOPRSTVWXY[\x¢
+ !"#%&'()+,-/012346789:;x°
+gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\HealthRecord.cs 8r.	
+ !"#%&'(*+,-.012345±
+lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\PatientRepository.cs 8
+r7	
+ !"#%'()*+-./02345689:;=>?@ABx«
+kC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\DoctorRepository.cs 	8rN	
+!"#$%&')*,-./1345679:;<>?@ACDEFGIJKLMNOPQRTUVWYZ[\]^x¢
 pC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\AppointmentRepository.cs 8*r£	
  !"#$%'()*+,-./12345678:;<=>?@ABCDFGHIJKLMOPQRTVWXYZ[]^_`bdefghiklmnopqrsuvwxyz{|}ÄÅÇÉÑÖÜáâäãåéèêëíîïñóôöõúùûx
-p
-JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\User.cs 8r	ÇÄ
+«
+jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\AdminRepository.cs 8rO	
+ !#$%&()*,-/01245679:;<>?@ACDEFHIJKMNOPRSTUWXYZ\]^_`axÄ
 MC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Patient.cs 8j&r 
-!"$')*+Ç}
+!"$')*+Ç∑
+FC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Program.csI8jrî	
+ !"#$%&'()*+,-./0123456789:ABCDEKLMNOQRSTUWXZ\^_`bcdflmnopqrstuvw}~ÄÅÇàâäãåçéíñóòöõúùû†°¢§¶®™¨Æ≤xÇL (-.3ACDKLMOQ`bflnpr}~ÄÅÇàâäãåçéíñòöú†§¶®™¨Æ≤p
+JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\User.cs 8r	Ç}
 RC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\HealthRecord.cs 8r
 !"$%&Ç$
 LC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Doctor.cs 8j$r!	
@@ -60,11 +59,11 @@ LC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Doctor.cs 
 QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Appointment.cs 8r	
  "#$ÇÇ
 fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260622111729_DoctorUpdates.cs 8j
+r	
+cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260622111123_emailadded.cs 8j
 r	≤
 mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260619044738_AddUniqueDoctorEmail.cs 8j
-*r+	 !#$%&'(+,-./123456Ç#-1
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260622111123_emailadded.cs 8j
-r	ã
+*r+	 !#$%&'(+,-./123456Ç#-1ã
 `C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260617093733_testing.cs" 8j«ró	
  !"#$%&'()*+,-./012356789:;<=>?@ABCDEFGHJKLMNOPQRSTUVWXYZ[\]_`abcdefghijklmnopqstuvwxyz{|}~ÄÅÇÉÑÖÜáàâãåçéèêëíìîïñóòôöõúùü†°¢§•¶ß®©´¨≠Æ∞±≤≥µ∂∑∏∫ªºΩø¿¡¬√ƒ≈»… ÀÕŒ–—”‘÷◊Ÿ⁄‹›ﬁﬂ‡Ç~ !"#$%&'()*+,-.02579;<=?ABDGJLNPQRTVWY\_acdefhjkmpsuwxz|}ÇÉÖàãçèêëíîñóôúü§´∞µ∫ø Õ–”÷Ÿ‹†
 jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260616160604_UpdatedUsersMOdel.cs 8jr	
@@ -76,19 +75,19 @@ fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260615
 bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\RequestLoggingMiddleware.cs 8r	
 ÇÕ
 ]C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\ExceptionMiddleware.cs 8	rF
- !"$%&')*+,-.01235678:;<=?@ACDEFHIKLMOPQRSTxÇ!&),-.123678;<=@ACEIKRØ
-PC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Data\AppDbContext.cs 8j	*4INTqârç	
- !"$%&'(+,-./012789:;=>?@ACDEFGJKLPQRVWXYZ[\]^_`abcdefghijklmnostuvwxyz{|}~ÄÅÇÉÑÖÜåçéèêëíìîïñóòôÇ7 !"$%&'(+,./0789:;=>?@ACDEFGJKPQV\_hksxÅåìîÛ
+ !"$%&')*+,-.01235678:;<=?@ACDEFHIKLMOPQRSTxÇ!&),-.123678;<=@ACEIKR¥
+PC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Data\AppDbContext.cs 8j!.8KPUqárç	
+"#$%&()*+,/01234569:;<=?@ABCEFGHILMNQRSVWXYZ[\]^_`abcdefghijklmnorstuvwxyz{|}~ÄÅÇÉÑÖàâäãåçéèêëíìîïÇ8"#$%&()*+,/02349:;<=?@ABCEFGHILMQRV\_hkrwÄàèêÛ
 \C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\PatientController.cs 8	rn	
  !#$%&()+,-./01346789:;<=?@ABCDEFGHJKLMNOPQSTUVWXYZ[\]_`abcdeghijklmopqrstuwxyz{|}~xÇ!#%(13=?@AFQSW[egkuw{„
 aC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\HealthRecordController.cs 8r]	
 !"$%&'()*,-./02356789:;<=?@ABCDEFGHIJKLMNOPRSTUVWXYZ[]^_`abcdefghixÇ!),.2=?@AFJNZ]aeÏ
 [C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\DoctorController.cs 	8
 rk	
- "#$%&')*+,-/023456789:<=?@ABCDEFHIJKLNOPQRSTUVXY[\]^_`abcdeghjklmnoqrtuvwxy{|}xÇ')+/8<EHIJTXbgoqy{Ú
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\AppointmentController.cs- 8r¬	
- !#$%'(*+,-./02356789:;<>?ABCDEFGHIJKLMOPRSTUVWXY[\^_`abcdefhijklmnopqrstuvwxyz{|~ÄÅÇÉÑÖÜáâäãåçéèêëíìîïñóòôöúùûü†°¢£•¶ß®©™´¨≠ÆØ∞±≥¥µ∂∑∏π∫ºΩæø¿¡¬√ƒ≈∆«» ÀÃÕŒœ—“‘’÷◊ÿŸ⁄€‹›ﬂ‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚxÇ>!#$'/2;>IOW[fhijpuzÜâéìò¢•™Øπº¡∆Œ—‹ﬂ‰ÈÓµ
+ "#$%&')*+,-/023456789:<=?@ABCDEFHIJKLNOPQRSTUVXY[\]^_`abcdeghjklmnoqrtuvwxy{|}xÇ')+/8<EHIJTXbgoqy{µ
 YC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\AuthController.cs 8	r:	
- !"#%&'(*+-./0234578:;<=>@ABCEFIJxÇ#%'*0247>@BE≠
+ !"#%&'(*+-./0234578:;<=>@ABCEFIJxÇ#%'*0247>@BEÚ
+`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\AppointmentController.cs- 8r¬	
+ !#$%'(*+,-./02356789:;<>?ABCDEFGHIJKLMOPRSTUVWXY[\^_`abcdefhijklmnopqrstuvwxyz{|~ÄÅÇÉÑÖÜáâäãåçéèêëíìîïñóòôöúùûü†°¢£•¶ß®©™´¨≠ÆØ∞±≥¥µ∂∑∏π∫ºΩæø¿¡¬√ƒ≈∆«» ÀÃÕŒœ—“‘’÷◊ÿŸ⁄€‹›ﬂ‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚxÇ>!#$'/2;>IOW[fhijpuzÜâéìò¢•™Øπº¡∆Œ—‹ﬂ‰ÈÓ≠
 ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\AdminController.cs 8r7	
  !"#$%&()*+,-./12345679:<=>?xÇ#$,-69:<
