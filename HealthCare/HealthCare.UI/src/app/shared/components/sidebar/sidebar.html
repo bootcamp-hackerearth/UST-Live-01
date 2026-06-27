@@ -1,0 +1,74 @@
+<div class="sidebar">
+
+    <ul>
+
+        @if(role === 'Patient') {
+
+            <li routerLink="/patient/dashboard"
+                routerLinkActive="active">
+                🏠 Dashboard
+            </li>
+
+            <li routerLink="/patient/search-doctors"
+                routerLinkActive="active">
+                🔍 Search Doctors
+            </li>
+
+            <li routerLink="/patient/book-appointment"
+                routerLinkActive="active">
+                📅 Book Appointment
+            </li>
+
+            <li routerLink="/patient/my-appointments"
+                routerLinkActive="active">
+                🗓️ My Appointments
+            </li>
+
+            <li routerLink="/patient/health-history"
+                routerLinkActive="active">
+                📄 Health History
+            </li>
+
+            <li routerLink="/patient/profile"
+                routerLinkActive="active">
+                👤 My Profile
+            </li>
+
+        }
+
+        @if(role === 'Doctor') {
+
+            <li routerLink="/doctor/dashboard"
+                routerLinkActive="active">
+                🏠 Dashboard
+            </li>
+
+            <li routerLink="/doctor/schedule"
+                routerLinkActive="active">
+                📅 Today's Schedule
+            </li>
+
+            <li routerLink="/doctor/health-record"
+                routerLinkActive="active">
+                🩺 Add Health Record
+            </li>
+
+            <li routerLink="/doctor/leave"
+                routerLinkActive="active">
+                🌴 Add Leave
+            </li>
+
+            <li routerLink="/doctor/profile"
+                routerLinkActive="active">
+                👤 My Profile
+            </li>
+
+        }
+
+        <li (click)="logout()">
+            🚪 Logout
+        </li>
+
+    </ul>
+
+</div>

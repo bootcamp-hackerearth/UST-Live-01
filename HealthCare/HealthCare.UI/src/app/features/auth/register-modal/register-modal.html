@@ -1,0 +1,67 @@
+<div class="modal-backdrop">
+
+    <div class="modal-card">
+
+        <button class="close-btn"
+                (click)="closeModal()">
+            ×
+        </button>
+
+        <h2>Patient Registration</h2>
+
+        <form [formGroup]="registerForm"
+              (ngSubmit)="onSubmit()">
+
+            <input
+                class="form-control mb-3"
+                placeholder="Full Name"
+                formControlName="fullName">
+
+             <select
+                class="form-control mb-3"
+                formControlName="gender">
+
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+
+             </select>
+
+             <input
+                 type="date"
+                 class="form-control mb-3"
+                 formControlName="dateOfBirth">
+
+            <input
+                class="form-control mb-3"
+                placeholder="Email"
+                formControlName="email">
+
+            <input
+                class="form-control mb-3"
+                placeholder="Phone Number"
+                formControlName="phoneNumber">
+
+            <input
+                type="password"
+                class="form-control mb-3"
+                placeholder="Password"
+                formControlName="password">
+
+            <input
+                type="password"
+                class="form-control mb-3"
+                placeholder="Confirm Password"
+                formControlName="confirmPassword">
+
+            <button
+                class="btn btn-primary w-100">
+                Register
+            </button>
+
+        </form>
+
+    </div>
+
+</div>

@@ -1,0 +1,99 @@
+<div class="container mt-4">
+
+    <div class="card shadow p-4">
+
+        <h3 class="mb-4">
+            Book Appointment
+        </h3>
+
+        <div class="mb-3">
+
+            <label>Date</label>
+
+            <input
+                type="date"
+                class="form-control"
+                [(ngModel)]="date"
+                (change)="loadDoctors()">
+        </div>
+
+        <div class="mb-3">
+
+            <label>Specialisation</label>
+
+            <select
+                class="form-select"
+                [(ngModel)]="specialisation"
+                (change)="loadDoctors()">
+
+                <option value="">
+                    Select
+                </option>
+
+                @for(sp of specialisations; track sp)
+                {
+                    <option [value]="sp">
+                        {{sp}}
+                    </option>
+                }
+
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>Doctor</label>
+
+            <select
+                class="form-select"
+                [(ngModel)]="doctorId"
+                (change)="loadSlots()">
+
+                <option value="0">
+                    Select Doctor
+                </option>
+
+                @for(doc of doctors; track doc.id)
+                {
+                    <option [value]="doc.id">
+                        Dr. {{doc.name}}
+                    </option>
+                }
+
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+
+            <label>Available Slots</label>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                @for(slot of slots; track slot)
+                {
+                    <button
+                        class="btn btn-outline-primary"
+                        (click)="selectedSlot = slot">
+
+                        {{slot}}
+
+                    </button>
+                }
+
+            </div>
+
+        </div>
+
+        <button
+            class="btn btn-primary"
+            (click)="bookAppointment()">
+
+            Book Appointment
+
+        </button>
+
+    </div>
+
+</div>

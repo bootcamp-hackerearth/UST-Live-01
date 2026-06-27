@@ -1,0 +1,36 @@
+﻿@page "/login-redirect"
+
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+@if (isLoading)
+{
+    <h3>Signing in...</h3>
+}
+
+@code {
+
+    [SupplyParameterFromQuery]
+    public string? Token { get; set; }
+
+    private bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!string.IsNullOrEmpty(Token))
+            {
+                // Save token to localStorage
+                await JS.InvokeVoidAsync(
+                    "localStorage.setItem",
+                    "token",
+                    Token);
+
+                Navigation.NavigateTo("/dashboard", true);
+            }
+
+            isLoading = false;
+        }
+    }
+}

@@ -1,0 +1,32 @@
+.modal-backdrop{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    z-index:1000;
+}
+
+.modal-card{
+    background:white;
+    width:420px;
+    padding:30px;
+    border-radius:20px;
+    position:relative;
+    box-shadow:0 10px 40px rgba(0,0,0,.2);
+}
+
+.close-btn{
+    position:absolute;
+    right:20px;
+    top:15px;
+
+    border:none;
+    background:none;
+
+    font-size:28px;
+    cursor:pointer;
+}

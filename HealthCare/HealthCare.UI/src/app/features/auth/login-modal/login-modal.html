@@ -1,0 +1,46 @@
+<div class="modal-backdrop">
+
+    <div class="modal-card">
+
+        <button class="close-btn"
+                (click)="closeModal()">
+            ×
+        </button>
+
+        <h2>Login</h2>
+
+        <form [formGroup]="loginForm"
+              (ngSubmit)="onSubmit()">
+
+            <div class="mb-3">
+
+                <label>Email</label>
+
+                <input
+                    type="email"
+                    class="form-control"
+                    formControlName="email">
+
+            </div>
+
+            <div class="mb-3">
+
+                <label>Password</label>
+
+                <input
+                    type="password"
+                    class="form-control"
+                    formControlName="password">
+
+            </div>
+
+            <button
+                class="btn btn-primary w-100">
+                Login
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
