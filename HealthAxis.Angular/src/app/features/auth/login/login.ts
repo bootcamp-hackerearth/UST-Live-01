@@ -1,0 +1,122 @@
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component } from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { LoginRequest } from '../../../core/models/login-request';
+import { AuthService } from '../../../core/services/auth.service';
+import { TokenService } from '../../../core/models/token.service';
+
+@Component({
+  selector: 'app-login',
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './login.html',
+  styleUrls: ['./login.css']
+})
+export class Login {
+  isSubmitting = false;
+  showPassword = false;
+  errorMessage = '';
+
+  loginForm: FormGroup;
+
+  private readonly blazorAdminUrl = 'https://localhost:7051/dashboard';
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private tokenService: TokenService,
+    private router: Router
+  ) {
+    this.loginForm = this.fb.group({
+      email: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/)
+        ]
+      ],
+      password: [
+        '',
+        Validators.required
+      ]
+    });
+  }
+
+  get email() {
+    return this.loginForm.get('email');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  submitLogin(): void {
+    this.errorMessage = '';
+
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const formValue = this.loginForm.value;
+
+    const request: LoginRequest = {
+      email: formValue.email ?? '',
+      password: formValue.password ?? ''
+    };
+
+    this.authService.login(request).subscribe({
+      next: (response) => {
+        this.tokenService.saveAuthData(response);
+        this.redirectByRole(response.role);
+      },
+
+      error: (error: HttpErrorResponse) => {
+        console.log('Login error:', error);
+
+        this.errorMessage =
+          error.error?.message ??
+          'Login failed. Please check your email and password.';
+
+        this.isSubmitting = false;
+      },
+
+      complete: () => {
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  private redirectByRole(role: string): void {
+    const normalizedRole = role.toLowerCase();
+
+    if (normalizedRole === 'admin') {
+      window.location.href = this.blazorAdminUrl;
+      return;
+    }
+
+    if (normalizedRole === 'patient') {
+      this.router.navigate(['/patient/dashboard']);
+      return;
+    }
+
+    if (normalizedRole === 'doctor') {
+      this.router.navigate(['/doctor/dashboard']);
+      return;
+    }
+
+    this.errorMessage = 'Unknown user role. Please contact support.';
+    this.tokenService.clearAuthData();
+  }
+}
