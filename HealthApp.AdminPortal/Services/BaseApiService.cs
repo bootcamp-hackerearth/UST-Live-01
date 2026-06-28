@@ -31,7 +31,7 @@ namespace HealthApp.AdminPortal.Services.Impl
             }
         }
 
-        protected async Task<string> ReadErrorMessageAsync(HttpResponseMessage response)
+        protected static async Task<string> ReadErrorMessageAsync(HttpResponseMessage response)
         {
             try
             {

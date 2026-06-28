@@ -355,15 +355,28 @@
         }
     }
 
-    private AppointmentStatus? SelectedStatus =>
-        string.IsNullOrWhiteSpace(SelectedStatusValue)
-            ? null
-            : Enum.TryParse<AppointmentStatus>(
+    private AppointmentStatus? SelectedStatus
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(SelectedStatusValue))
+            {
+                return null;
+            }
+
+            var isValidStatus = Enum.TryParse<AppointmentStatus>(
                 SelectedStatusValue,
                 true,
-                out var status)
-                    ? status
-                    : null;
+                out var status);
+
+            if (!isValidStatus)
+            {
+                return null;
+            }
+
+            return status;
+        }
+    }
 
     private DateOnly? FilterDateOnly =>
         FilterDate.HasValue
@@ -418,15 +431,18 @@
         isLoading = true;
 
         var result = await AppointmentService.GetAppointments(
-            SelectedDoctorId,
-            SelectedPatientId,
-            SelectedStatus,
-            FilterDateOnly,
-            FromDateOnly,
-            ToDateOnly,
-            OnlyUpcoming,
-            CurrentPage,
-            PageSize);
+    new AppointmentFilterDto
+    {
+        DoctorId = SelectedDoctorId,
+        PatientId = SelectedPatientId,
+        Status = SelectedStatus,
+        Date = FilterDateOnly,
+        FromDate = FromDateOnly,
+        ToDate = ToDateOnly,
+        OnlyUpcoming = OnlyUpcoming,
+        PageNumber = CurrentPage,
+        PageSize = PageSize
+    });
 
         if (result.IsSuccess && result.Data is not null)
         {
@@ -521,17 +537,17 @@
         }
     }
 
-    private string GetDoctorDisplayText(DoctorDto doctor)
+    private static string GetDoctorDisplayText(DoctorDto doctor)
     {
         return $"{doctor.FullName} - DOC-{doctor.DoctorId:000}";
     }
 
-    private string GetPatientDisplayText(PatientDto patient)
+    private static string GetPatientDisplayText(PatientDto patient)
     {
         return $"{patient.FullName} - PAT-{patient.PatientId:000}";
     }
 
-    private string GetStatusClass(string? status)
+    private static string GetStatusClass(string? status)
     {
         return status?.ToLowerInvariant() switch
         {
@@ -543,7 +559,7 @@
         };
     }
 
-    private string GetStatusIcon(string? status)
+    private static string GetStatusIcon(string? status)
     {
         return status?.ToLowerInvariant() switch
         {

@@ -222,7 +222,7 @@ else
         NavigationManager.NavigateTo("/login", true);
     }
 
-    private class ProfileModel
+    private sealed class ProfileModel
     {
         public string Name { get; set; } = "";
         public string Email { get; set; } = "";

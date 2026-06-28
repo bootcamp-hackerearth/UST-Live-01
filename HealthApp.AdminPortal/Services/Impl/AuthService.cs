@@ -98,7 +98,7 @@ namespace HealthApp.AdminPortal.Services.Impl
             return ApiResult.Success("Password changed successfully.");
         }
 
-        private class RegisterDoctorResponse
+        private sealed class RegisterDoctorResponse
         {
             public string Message { get; set; } = string.Empty;
             public string UserId { get; set; } = string.Empty;

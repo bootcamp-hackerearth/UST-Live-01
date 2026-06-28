@@ -1,7 +1,6 @@
 ﻿using HealthApp.AdminPortal.Models;
 using HealthApp.AdminPortal.Services.Interface;
 using HealthApp.Shared.Dtos;
-using HealthApp.Shared.Enums;
 using System.Net.Http.Json;
 
 namespace HealthApp.AdminPortal.Services.Impl
@@ -14,60 +13,54 @@ namespace HealthApp.AdminPortal.Services.Impl
         }
 
         public async Task<ApiResult<PagedResultDto<AppointmentDto>>> GetAppointments(
-            int? doctorId = null,
-            int? patientId = null,
-            AppointmentStatus? status = null,
-            DateOnly? date = null,
-            DateOnly? fromDate = null,
-            DateOnly? toDate = null,
-            bool onlyUpcoming = false,
-            int pageNumber = 1,
-            int pageSize = 10)
+            AppointmentFilterDto filter)
         {
             await AddAuthHeaderAsync();
 
+            filter ??= new AppointmentFilterDto();
+
             var queryParams = new List<string>
             {
-                $"pageNumber={pageNumber}",
-                $"pageSize={pageSize}"
+                $"pageNumber={filter.PageNumber}",
+                $"pageSize={filter.PageSize}"
             };
 
-            if (doctorId.HasValue)
+            if (filter.DoctorId.HasValue)
             {
-                queryParams.Add($"doctorId={doctorId.Value}");
+                queryParams.Add($"doctorId={filter.DoctorId.Value}");
             }
 
-            if (patientId.HasValue)
+            if (filter.PatientId.HasValue)
             {
-                queryParams.Add($"patientId={patientId.Value}");
+                queryParams.Add($"patientId={filter.PatientId.Value}");
             }
 
-            if (status.HasValue)
+            if (filter.Status.HasValue)
             {
-                queryParams.Add($"status={status.Value}");
+                queryParams.Add($"status={filter.Status.Value}");
             }
 
-            if (date.HasValue)
+            if (filter.Date.HasValue)
             {
-                queryParams.Add($"date={date.Value:yyyy-MM-dd}");
+                queryParams.Add($"date={filter.Date.Value:yyyy-MM-dd}");
             }
 
-            if (fromDate.HasValue)
+            if (filter.FromDate.HasValue)
             {
-                queryParams.Add($"fromDate={fromDate.Value:yyyy-MM-dd}");
+                queryParams.Add($"fromDate={filter.FromDate.Value:yyyy-MM-dd}");
             }
 
-            if (toDate.HasValue)
+            if (filter.ToDate.HasValue)
             {
-                queryParams.Add($"toDate={toDate.Value:yyyy-MM-dd}");
+                queryParams.Add($"toDate={filter.ToDate.Value:yyyy-MM-dd}");
             }
 
-            if (onlyUpcoming)
+            if (filter.OnlyUpcoming)
             {
                 queryParams.Add("onlyUpcoming=true");
             }
 
-            var queryString = "?" + string.Join("&", queryParams);
+            var queryString = $"?{string.Join("&", queryParams)}";
 
             var response = await _http.GetAsync($"api/appointments{queryString}");
 

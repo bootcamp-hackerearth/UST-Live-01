@@ -140,10 +140,10 @@
 </div>
 
 @code {
-    private DoctorCreateDto Doctor = new();
+    private readonly DoctorCreateDto Doctor = new();
     private bool isSaving = false;
 
-    private List<SpecialisationType> Specialisations =
+    private readonly List<SpecialisationType> Specialisations =
         Enum.GetValues<SpecialisationType>().ToList();
 
     

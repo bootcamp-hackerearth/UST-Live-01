@@ -49,7 +49,7 @@
         Toasts.Remove(toast);
     }
 
-    private string GetToastClass(ToastType type)
+    private static string GetToastClass(ToastType type)
     {
         return type switch
         {
@@ -61,7 +61,7 @@
         };
     }
 
-    private string GetIcon(ToastType type)
+    private static string GetIcon(ToastType type)
     {
         return type switch
         {

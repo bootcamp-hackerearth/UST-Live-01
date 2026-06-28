@@ -1416,84 +1416,140 @@ a {
     background: linear-gradient(135deg, #f59e0b, #d97706);
 }
 
-/* Dashboard Section Cards */
+/* Equal Dashboard Layout */
 
-.dashboard-section-card {
-    border-radius: 24px;
-    min-height: 370px;
+.dashboard-equal-row {
+    align-items: stretch;
 }
 
-/* Recent Activities */
+    .dashboard-equal-row > [class*="col-"] {
+        display: flex;
+    }
 
-.activity-list {
+.dashboard-section-card {
+    width: 100%;
+    border-radius: 24px;
+    min-height: 560px;
     display: flex;
     flex-direction: column;
+}
+
+.dashboard-section-header {
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-section-body {
+    flex: 1;
+}
+
+.dashboard-summary-card .dashboard-section-body {
+    flex: 1;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.dashboard-section-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+}
+
+/* System Overview */
+
+.activity-list {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
     gap: 1rem;
 }
 
 .activity-item {
+    min-height: 0;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 1rem;
-    padding: 1rem;
+    padding: 1rem 1.25rem;
     border-radius: 18px;
     background: #f8fafc;
     border: 1px solid #eef2f7;
 }
 
 .activity-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 15px;
+    width: 62px;
+    height: 62px;
+    min-width: 62px;
+    border-radius: 20px;
     display: grid;
     place-items: center;
     color: #ffffff;
     flex-shrink: 0;
-    font-size: 1rem;
+    font-size: 1.35rem;
 }
 
-/* Appointment Summary Cards */
+/* Appointment Summary */
+
+.confirmed-pill {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #93c5fd;
+    font-size: 0.8rem;
+    font-weight: 800;
+}
 
 .appointment-summary-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: repeat(3, 1fr);
     gap: 1rem;
 }
-
+.dashboard-section-footer .btn-health {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 .appointment-summary-card {
+    min-height: 0;
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1.1rem;
+    padding: 1rem 1.25rem;
     border-radius: 20px;
     border: 1px solid transparent;
 }
 
-    .appointment-summary-card .summary-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 18px;
-        display: grid;
-        place-items: center;
-        font-size: 1.35rem;
-        flex-shrink: 0;
-    }
+.summary-icon {
+    width: 62px;
+    height: 62px;
+    min-width: 62px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.45rem;
+}
 
 .summary-content {
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .summary-count {
-    font-size: 1.55rem;
+    font-size: 1.9rem;
     font-weight: 800;
     line-height: 1;
+    margin-bottom: 0.35rem;
 }
 
 .summary-label {
-    color: #64748b;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    margin-top: 0.3rem;
+    color: #64748b;
 }
 
 /* Appointment Summary Colors */
@@ -1540,20 +1596,37 @@ a {
         color: #b91c1c;
     }
 
-.change-password-card {
-    max-width: 900px;
+/* Dashboard Responsive */
+
+@media (max-width: 1199px) {
+    .dashboard-section-card {
+        min-height: auto;
+    }
+
+    .activity-list,
+    .appointment-summary-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .activity-item,
+    .appointment-summary-card {
+        min-height: 96px;
+    }
 }
 
-    .change-password-card .form-label {
-        color: #334155;
+.appointment-summary-card.summary-info {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+}
+
+    .appointment-summary-card.summary-info .summary-icon {
+        background: #2563eb;
     }
 
-    .change-password-card .validation-message {
-        color: #dc3545;
-        font-size: 0.85rem;
-        margin-top: 0.25rem;
+    .appointment-summary-card.summary-info .summary-count {
+        color: #1d4ed8;
     }
-
 /* =========================
    Patient Details Page
 ========================= */
@@ -1784,3 +1857,187 @@ a {
         color: #ffffff;
         opacity: 0.92;
     }
+/* =========================
+   Dashboard Aligned Layout
+========================= */
+
+.dashboard-equal-row {
+    align-items: stretch !important;
+}
+
+    .dashboard-equal-row > [class*="col-"] {
+        display: flex !important;
+    }
+
+.dashboard-section-card {
+    width: 100% !important;
+    min-height: 560px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    border-radius: 24px !important;
+}
+
+.dashboard-section-header {
+    margin-bottom: 1.5rem !important;
+}
+
+.dashboard-section-body {
+    flex: 1 !important;
+}
+
+/* System Overview */
+
+.activity-list {
+    display: grid !important;
+    grid-template-rows: repeat(4, 1fr) !important;
+    gap: 1rem !important;
+}
+
+.activity-item {
+    min-height: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 1rem 1.25rem !important;
+    border-radius: 18px !important;
+    background: #f8fafc !important;
+    border: 1px solid #eef2f7 !important;
+}
+
+.activity-icon {
+    width: 62px !important;
+    height: 62px !important;
+    min-width: 62px !important;
+    border-radius: 20px !important;
+    display: grid !important;
+    place-items: center !important;
+    color: #ffffff !important;
+    flex-shrink: 0 !important;
+    font-size: 1.35rem !important;
+}
+
+/* Appointment Summary */
+
+.appointment-summary-list {
+    display: grid !important;
+    grid-template-rows: repeat(4, 1fr) !important;
+    gap: 1rem !important;
+}
+
+.appointment-summary-card {
+    min-height: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    padding: 1rem 1.25rem !important;
+    border-radius: 20px !important;
+    border: 1px solid transparent !important;
+}
+
+.summary-icon {
+    width: 62px !important;
+    height: 62px !important;
+    min-width: 62px !important;
+    border-radius: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    font-size: 1.45rem !important;
+}
+
+.summary-content {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+}
+
+.summary-count {
+    font-size: 1.9rem !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    margin-bottom: 0.35rem !important;
+}
+
+.summary-label {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: #64748b !important;
+}
+
+/* Appointment Summary Colors */
+
+.summary-warning {
+    background: #fffbeb !important;
+    border-color: #fde68a !important;
+}
+
+    .summary-warning .summary-icon {
+        background: #f59e0b !important;
+        color: #ffffff !important;
+    }
+
+    .summary-warning .summary-count {
+        color: #92400e !important;
+    }
+
+.summary-info {
+    background: #eff6ff !important;
+    border-color: #93c5fd !important;
+}
+
+    .summary-info .summary-icon {
+        background: #2563eb !important;
+        color: #ffffff !important;
+    }
+
+    .summary-info .summary-count {
+        color: #1d4ed8 !important;
+    }
+
+.summary-success {
+    background: #ecfdf5 !important;
+    border-color: #a7f3d0 !important;
+}
+
+    .summary-success .summary-icon {
+        background: #10b981 !important;
+        color: #ffffff !important;
+    }
+
+    .summary-success .summary-count {
+        color: #047857 !important;
+    }
+
+.summary-danger {
+    background: #fef2f2 !important;
+    border-color: #fecaca !important;
+}
+
+    .summary-danger .summary-icon {
+        background: #ef4444 !important;
+        color: #ffffff !important;
+    }
+
+    .summary-danger .summary-count {
+        color: #b91c1c !important;
+    }
+
+/* Responsive */
+
+@media (max-width: 1199px) {
+    .dashboard-section-card {
+        min-height: auto !important;
+    }
+
+    .activity-list,
+    .appointment-summary-list {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    .activity-item,
+    .appointment-summary-card {
+        min-height: 96px !important;
+    }
+}

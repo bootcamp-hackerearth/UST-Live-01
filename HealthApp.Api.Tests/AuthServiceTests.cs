@@ -1,17 +1,19 @@
-﻿using Xunit;
-using Moq;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using HealthApp.Api.Services.Impl;
-using HealthApp.Api.Repositories.Interfaces;
-using HealthApp.Api.Models;
+﻿using AutoMapper;
 using HealthApp.Api.Exceptions;
-using AutoMapper;
-using System.Linq;
+using HealthApp.Api.Models;
+using HealthApp.Api.Repositories.Interfaces;
+using HealthApp.Api.Services.Impl;
 using HealthApp.Shared.Dtos;
 using HealthApp.Shared.Enums;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace HealthApp.Api.Tests.Services
 {
@@ -52,15 +54,38 @@ namespace HealthApp.Api.Tests.Services
             );
         }
 
+
         private static Mock<UserManager<ApplicationUser>> GetUserManagerMock()
         {
             var store = new Mock<IUserStore<ApplicationUser>>();
 
+            var options = Options.Create(new IdentityOptions());
+
+            var passwordHasher = new Mock<IPasswordHasher<ApplicationUser>>();
+
+            var userValidators = new List<IUserValidator<ApplicationUser>>();
+
+            var passwordValidators = new List<IPasswordValidator<ApplicationUser>>();
+
+            var keyNormalizer = new Mock<ILookupNormalizer>();
+
+            var errorDescriber = new IdentityErrorDescriber();
+
+            var serviceProvider = new Mock<IServiceProvider>();
+
+            var logger = new Mock<ILogger<UserManager<ApplicationUser>>>();
+
             return new Mock<UserManager<ApplicationUser>>(
                 store.Object,
-                null, null, null, null, null, null, null, null);
+                options,
+                passwordHasher.Object,
+                userValidators,
+                passwordValidators,
+                keyNormalizer.Object,
+                errorDescriber,
+                serviceProvider.Object,
+                logger.Object);
         }
-
 
         [Fact]
         public async Task RegisterPatient_ShouldFail_WhenPasswordsMismatch()

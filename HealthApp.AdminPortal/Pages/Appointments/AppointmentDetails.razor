@@ -189,7 +189,7 @@ else
         }
     }
 
-    private string GetStatusClass(string status)
+    private static string GetStatusClass(string status)
     {
         return status?.ToLowerInvariant() switch
         {
@@ -201,7 +201,7 @@ else
         };
     }
 
-    private string GetStatusIcon(string status)
+    private static string GetStatusIcon(string status)
     {
         return status?.ToLowerInvariant() switch
         {

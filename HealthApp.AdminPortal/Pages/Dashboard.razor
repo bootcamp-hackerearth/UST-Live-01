@@ -51,23 +51,17 @@ else
         }
     </div>
 
-    <div class="row g-4">
-
+    <div class="row g-4 dashboard-equal-row">
         <div class="col-xl-8">
-            <div class="table-card dashboard-section-card">
-
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h5 class="fw-bold mb-1">System Overview</h5>
-                        <p class="text-muted small mb-0">
-                            Quick summary of users, doctors, patients, and appointments.
-                        </p>
-
-                    </div>
+            <div class="table-card dashboard-section-card dashboard-overview-card h-100">
+                <div class="dashboard-section-header">
+                    <h5 class="fw-bold mb-1">System Overview</h5>
+                    <p class="text-muted small mb-0">
+                        Quick summary of users, doctors, patients, and appointments.
+                    </p>
                 </div>
 
-                <div class="activity-list">
-
+                <div class="dashboard-section-body activity-list">
                     <div class="activity-item">
                         <div class="activity-icon bg-health">
                             <i class="bi bi-people"></i>
@@ -119,24 +113,20 @@ else
                             </div>
                         </div>
                     </div>
-
                 </div>
-
             </div>
         </div>
 
         <div class="col-xl-4">
-            <div class="table-card dashboard-section-card">
-
-                <div class="mb-4">
+            <div class="table-card dashboard-section-card dashboard-summary-card h-100">
+                <div class="dashboard-section-header">
                     <h5 class="fw-bold mb-1">Appointment Summary</h5>
                     <p class="text-muted small mb-0">
                         Status-wise appointment count.
                     </p>
                 </div>
 
-                <div class="appointment-summary-list">
-
+                <div class="dashboard-section-body appointment-summary-list">
                     @foreach (var item in AppointmentSummary)
                     {
                         <div class="appointment-summary-card @item.CardClass">
@@ -150,20 +140,9 @@ else
                             </div>
                         </div>
                     }
-
                 </div>
-
-                <div class="mt-4 pt-4 border-top">
-                    <NavLink href="/appointments"
-                             class="btn btn-health rounded-pill w-100">
-                        <i class="bi bi-calendar-check me-2"></i>
-                        View Appointments
-                    </NavLink>
-                </div>
-
             </div>
         </div>
-
     </div>
 }
 
@@ -183,12 +162,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
-        DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+
+        var today = DateOnly.FromDateTime(DateTime.Now);
 
         var patientResult = await PatientService.GetAll();
         var doctorResult = await DoctorService.GetAll();
-        var appointmentResult = await AppointmentService.GetAppointments();
-        var todayAppointment = await AppointmentService.GetAppointments(null,null,null,today,null,null);
+        var todayAppointmentResult = await AppointmentService.GetAppointments(
+        new AppointmentFilterDto
+        {
+            Date = today
+        });
         var reportResult = await ReportService.GetAppointmentReports();
 
         if (patientResult.IsSuccess)
@@ -209,13 +192,13 @@ else
             NotificationService.Error(doctorResult.Message);
         }
 
-        if (appointmentResult.IsSuccess)
+        if (todayAppointmentResult.IsSuccess)
         {
-            todayAppointments = todayAppointment.Data!.TotalCount;
+            todayAppointments = todayAppointmentResult.Data?.TotalCount ?? 0;
         }
         else
         {
-            NotificationService.Error(appointmentResult.Message);
+            NotificationService.Error(todayAppointmentResult.Message);
         }
 
         if (reportResult.IsSuccess)
@@ -280,6 +263,13 @@ else
         },
         new AppointmentSummaryItem
         {
+            Label = "Confirmed",
+            Count = confirmed,
+            Icon = "bi bi-calendar-check",
+            CardClass = "summary-info"
+        },
+        new AppointmentSummaryItem
+        {
             Label = "Completed",
             Count = completed,
             Icon = "bi bi-check-circle",
@@ -294,19 +284,7 @@ else
         }
     };
 
-    private List<RecentActivity> RecentActivities = new()
-    {
-        new RecentActivity
-        {
-            Title = "System ready",
-            Description = "Admin dashboard data loaded from API.",
-            Time = "Now",
-            Icon = "bi bi-check2-circle",
-            IconBackground = "bg-success"
-        }
-    };
-
-    private class DashboardMetric
+    private sealed class DashboardMetric
     {
         public string Label { get; set; } = string.Empty;
 
@@ -317,7 +295,7 @@ else
         public string CardClass { get; set; } = string.Empty;
     }
 
-    private class AppointmentSummaryItem
+    private sealed class AppointmentSummaryItem
     {
         public string Label { get; set; } = string.Empty;
 
@@ -326,18 +304,5 @@ else
         public string Icon { get; set; } = string.Empty;
 
         public string CardClass { get; set; } = string.Empty;
-    }
-
-    private class RecentActivity
-    {
-        public string Title { get; set; } = string.Empty;
-
-        public string Description { get; set; } = string.Empty;
-
-        public string Time { get; set; } = string.Empty;
-
-        public string Icon { get; set; } = string.Empty;
-
-        public string IconBackground { get; set; } = string.Empty;
     }
 }

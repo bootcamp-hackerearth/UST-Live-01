@@ -6,6 +6,9 @@ namespace HealthApp.Api.Data
 {
     public static class DataSeeder
     {
+        private const string GenderMale = "Male";
+        private const string GenderFemale = "Female";
+
         public static void SeedData(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Doctor>().HasData(
@@ -22,16 +25,116 @@ namespace HealthApp.Api.Data
             );
 
             modelBuilder.Entity<Patient>().HasData(
-                new Patient { PatientId = 1, FullName = "Michael Johnson", DateOfBirth = new DateOnly(1985, 4, 12), Gender = "Male", PhoneNumber = "8000000501", Email = "michael.j@gmail.com", InsuranceId = "INS-1001", CreatedDate = new DateTime(2025, 1, 10) },
-                new Patient { PatientId = 2, FullName = "Sarah Williams", DateOfBirth = new DateOnly(1990, 8, 25), Gender = "Female", PhoneNumber = "8000000502", Email = "sarah.w@gmail.com", InsuranceId = "INS-1002", CreatedDate = new DateTime(2025, 1, 11) },
-                new Patient { PatientId = 3, FullName = "David Brown", DateOfBirth = new DateOnly(1978, 2, 14), Gender = "Male", PhoneNumber = "8000000503", Email = "david.b@gmail.com", InsuranceId = "INS-1003", CreatedDate = new DateTime(2025, 1, 12) },
-                new Patient { PatientId = 4, FullName = "Emily Davis", DateOfBirth = new DateOnly(1995, 11, 30), Gender = "Female", PhoneNumber = "8000000504", Email = "emily.d@gmail.com", InsuranceId = "INS-1004", CreatedDate = new DateTime(2025, 1, 13) },
-                new Patient { PatientId = 5, FullName = "James Miller", DateOfBirth = new DateOnly(1982, 7, 19), Gender = "Male", PhoneNumber = "8000000505", Email = "james.m@gmail.com", InsuranceId = "INS-1005", CreatedDate = new DateTime(2025, 1, 14) },
-                new Patient { PatientId = 6, FullName = "Jessica Wilson", DateOfBirth = new DateOnly(1988, 9, 5), Gender = "Female", PhoneNumber = "8000000506", Email = "jessica.w@gmail.com", InsuranceId = "INS-1006", CreatedDate = new DateTime(2025, 1, 15) },
-                new Patient { PatientId = 7, FullName = "Robert Moore", DateOfBirth = new DateOnly(1970, 12, 1), Gender = "Male", PhoneNumber = "8000000507", Email = "robert.m@gmail.com", InsuranceId = "INS-1007", CreatedDate = new DateTime(2025, 1, 16) },
-                new Patient { PatientId = 8, FullName = "Amanda Taylor", DateOfBirth = new DateOnly(1992, 3, 22), Gender = "Female", PhoneNumber = "8000000508", Email = "amanda.t@gmail.com", InsuranceId = "INS-1008", CreatedDate = new DateTime(2025, 1, 17) },
-                new Patient { PatientId = 9, FullName = "William Anderson", DateOfBirth = new DateOnly(1980, 5, 17), Gender = "Male", PhoneNumber = "8000000509", Email = "william.a@gmail.com", InsuranceId = "INS-1009", CreatedDate = new DateTime(2025, 1, 18) },
-                new Patient { PatientId = 10, FullName = "Ashley Thomas", DateOfBirth = new DateOnly(1998, 10, 8), Gender = "Female", PhoneNumber = "8000000510", Email = "ashley.t@gmail.com", InsuranceId = "INS-1010", CreatedDate = new DateTime(2025, 1, 19) }
+                new Patient
+                {
+                    PatientId = 1,
+                    FullName = "Michael Johnson",
+                    DateOfBirth = new DateOnly(1985, 4, 12),
+                    Gender = GenderMale,
+                    PhoneNumber = "8000000501",
+                    Email = "michael.j@gmail.com",
+                    InsuranceId = "INS-1001",
+                    CreatedDate = new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 2,
+                    FullName = "Sarah Williams",
+                    DateOfBirth = new DateOnly(1990, 8, 25),
+                    Gender = GenderFemale,
+                    PhoneNumber = "8000000502",
+                    Email = "sarah.w@gmail.com",
+                    InsuranceId = "INS-1002",
+                    CreatedDate = new DateTime(2025, 1, 11, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 3,
+                    FullName = "David Brown",
+                    DateOfBirth = new DateOnly(1978, 2, 14),
+                    Gender = GenderMale,
+                    PhoneNumber = "8000000503",
+                    Email = "david.b@gmail.com",
+                    InsuranceId = "INS-1003",
+                    CreatedDate = new DateTime(2025, 1, 12, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 4,
+                    FullName = "Emily Davis",
+                    DateOfBirth = new DateOnly(1995, 11, 30),
+                    Gender = GenderFemale,
+                    PhoneNumber = "8000000504",
+                    Email = "emily.d@gmail.com",
+                    InsuranceId = "INS-1004",
+                    CreatedDate = new DateTime(2025, 1, 13, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 5,
+                    FullName = "James Miller",
+                    DateOfBirth = new DateOnly(1982, 7, 19),
+                    Gender = GenderMale,
+                    PhoneNumber = "8000000505",
+                    Email = "james.m@gmail.com",
+                    InsuranceId = "INS-1005",
+                    CreatedDate = new DateTime(2025, 1, 14, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 6,
+                    FullName = "Jessica Wilson",
+                    DateOfBirth = new DateOnly(1988, 9, 5),
+                    Gender = GenderFemale,
+                    PhoneNumber = "8000000506",
+                    Email = "jessica.w@gmail.com",
+                    InsuranceId = "INS-1006",
+                    CreatedDate = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 7,
+                    FullName = "Robert Moore",
+                    DateOfBirth = new DateOnly(1970, 12, 1),
+                    Gender = GenderMale,
+                    PhoneNumber = "8000000507",
+                    Email = "robert.m@gmail.com",
+                    InsuranceId = "INS-1007",
+                    CreatedDate = new DateTime(2025, 1, 16, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 8,
+                    FullName = "Amanda Taylor",
+                    DateOfBirth = new DateOnly(1992, 3, 22),
+                    Gender = GenderFemale,
+                    PhoneNumber = "8000000508",
+                    Email = "amanda.t@gmail.com",
+                    InsuranceId = "INS-1008",
+                    CreatedDate = new DateTime(2025, 1, 17, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 9,
+                    FullName = "William Anderson",
+                    DateOfBirth = new DateOnly(1980, 5, 17),
+                    Gender = GenderMale,
+                    PhoneNumber = "8000000509",
+                    Email = "william.a@gmail.com",
+                    InsuranceId = "INS-1009",
+                    CreatedDate = new DateTime(2025, 1, 18, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Patient
+                {
+                    PatientId = 10,
+                    FullName = "Ashley Thomas",
+                    DateOfBirth = new DateOnly(1998, 10, 8),
+                    Gender = GenderFemale,
+                    PhoneNumber = "8000000510",
+                    Email = "ashley.t@gmail.com",
+                    InsuranceId = "INS-1010",
+                    CreatedDate = new DateTime(2025, 1, 19, 0, 0, 0, DateTimeKind.Utc)
+                }
             );
 
             modelBuilder.Entity<Appointment>().HasData(

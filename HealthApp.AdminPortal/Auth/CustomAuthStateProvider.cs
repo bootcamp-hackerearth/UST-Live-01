@@ -54,14 +54,14 @@ namespace HealthApp.AdminPortal.Auth
                 Task.FromResult(GetAnonymousState()));
         }
 
-        private AuthenticationState GetAnonymousState()
+        private static AuthenticationState GetAnonymousState()
         {
             var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
 
             return new AuthenticationState(anonymousUser);
         }
 
-        private bool IsTokenExpired(string token)
+        private static bool IsTokenExpired(string token)
         {
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
@@ -83,7 +83,7 @@ namespace HealthApp.AdminPortal.Auth
             return expiryDateTime <= DateTime.UtcNow;
         }
 
-        private ClaimsPrincipal CreateClaimsPrincipalFromToken(string token)
+        private static ClaimsPrincipal CreateClaimsPrincipalFromToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);

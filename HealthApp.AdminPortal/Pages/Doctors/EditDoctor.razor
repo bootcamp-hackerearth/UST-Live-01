@@ -163,7 +163,7 @@ else
 
     private bool isSaving = false;
 
-    private List<SpecialisationType> Specialisations =
+    private readonly List<SpecialisationType> Specialisations =
         Enum.GetValues<SpecialisationType>().ToList();
 
     protected override async Task OnInitializedAsync()

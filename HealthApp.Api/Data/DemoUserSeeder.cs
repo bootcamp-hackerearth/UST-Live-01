@@ -6,6 +6,13 @@ namespace HealthApp.Api.Data
 {
     public static class DemoUserSeeder
     {
+        private const string DoctorRole = "Doctor";
+        private const string PatientRole = "Patient";
+        private const string DefaultUserName = "User";
+        private const string DoctorTitle = "Dr.";
+        private const string PasswordSuffix = "@123";
+        private const string ErrorSeparator = " ";
+
         public static async Task SeedDoctorAndPatientUsersAsync(
             IServiceProvider serviceProvider)
         {
@@ -54,18 +61,20 @@ namespace HealthApp.Api.Data
                         await userManager.UpdateAsync(existingUser);
                     }
 
-                    if (!await userManager.IsInRoleAsync(existingUser, "Doctor"))
+                    if (!await userManager.IsInRoleAsync(
+                            existingUser,
+                            DoctorRole))
                     {
                         await userManager.AddToRoleAsync(
                             existingUser,
-                            "Doctor");
+                            DoctorRole);
                     }
 
                     continue;
                 }
 
-                var password = GenerateDoctorPassword(
-                    doctor.FullName);
+                var password = GenerateDefaultPassword(
+                    doctor.FullName!);
 
                 var user = new ApplicationUser
                 {
@@ -82,9 +91,7 @@ namespace HealthApp.Api.Data
 
                 if (!createResult.Succeeded)
                 {
-                    var errors = string.Join(
-                        " ",
-                        createResult.Errors.Select(error => error.Description));
+                    var errors = GetIdentityErrors(createResult);
 
                     throw new InvalidOperationException(
                         $"Failed to create doctor user for {doctor.DoctorEmail}. {errors}");
@@ -92,13 +99,11 @@ namespace HealthApp.Api.Data
 
                 var roleResult = await userManager.AddToRoleAsync(
                     user,
-                    "Doctor");
+                    DoctorRole);
 
                 if (!roleResult.Succeeded)
                 {
-                    var errors = string.Join(
-                        " ",
-                        roleResult.Errors.Select(error => error.Description));
+                    var errors = GetIdentityErrors(roleResult);
 
                     throw new InvalidOperationException(
                         $"Failed to assign Doctor role for {doctor.DoctorEmail}. {errors}");
@@ -134,18 +139,20 @@ namespace HealthApp.Api.Data
                         await userManager.UpdateAsync(existingUser);
                     }
 
-                    if (!await userManager.IsInRoleAsync(existingUser, "Patient"))
+                    if (!await userManager.IsInRoleAsync(
+                            existingUser,
+                            PatientRole))
                     {
                         await userManager.AddToRoleAsync(
                             existingUser,
-                            "Patient");
+                            PatientRole);
                     }
 
                     continue;
                 }
 
-                var password = GeneratePatientPassword(
-                    patient.FullName);
+                var password = GenerateDefaultPassword(
+                    patient.FullName!);
 
                 var user = new ApplicationUser
                 {
@@ -162,9 +169,7 @@ namespace HealthApp.Api.Data
 
                 if (!createResult.Succeeded)
                 {
-                    var errors = string.Join(
-                        " ",
-                        createResult.Errors.Select(error => error.Description));
+                    var errors = GetIdentityErrors(createResult);
 
                     throw new InvalidOperationException(
                         $"Failed to create patient user for {patient.Email}. {errors}");
@@ -172,13 +177,11 @@ namespace HealthApp.Api.Data
 
                 var roleResult = await userManager.AddToRoleAsync(
                     user,
-                    "Patient");
+                    PatientRole);
 
                 if (!roleResult.Succeeded)
                 {
-                    var errors = string.Join(
-                        " ",
-                        roleResult.Errors.Select(error => error.Description));
+                    var errors = GetIdentityErrors(roleResult);
 
                     throw new InvalidOperationException(
                         $"Failed to assign Patient role for {patient.Email}. {errors}");
@@ -186,20 +189,12 @@ namespace HealthApp.Api.Data
             }
         }
 
-        private static string GenerateDoctorPassword(
+        private static string GenerateDefaultPassword(
             string fullName)
         {
             var firstName = GetFirstName(fullName);
 
-            return $"{firstName}@123";
-        }
-
-        private static string GeneratePatientPassword(
-            string fullName)
-        {
-            var firstName = GetFirstName(fullName);
-
-            return $"{firstName}@123";
+            return $"{firstName}{PasswordSuffix}";
         }
 
         private static string GetFirstName(
@@ -207,20 +202,33 @@ namespace HealthApp.Api.Data
         {
             if (string.IsNullOrWhiteSpace(fullName))
             {
-                return "User";
+                return DefaultUserName;
             }
 
             var cleanName = fullName
-                .Replace("Dr.", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace(
+                    DoctorTitle,
+                    string.Empty,
+                    StringComparison.OrdinalIgnoreCase)
                 .Trim();
 
             var firstName = cleanName
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Split(
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries)
                 .FirstOrDefault();
 
             return string.IsNullOrWhiteSpace(firstName)
-                ? "User"
+                ? DefaultUserName
                 : firstName;
+        }
+
+        private static string GetIdentityErrors(
+            IdentityResult identityResult)
+        {
+            return string.Join(
+                ErrorSeparator,
+                identityResult.Errors.Select(error => error.Description));
         }
     }
 }
