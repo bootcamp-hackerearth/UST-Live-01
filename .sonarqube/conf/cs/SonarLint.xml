@@ -3,7 +3,7 @@
   <Settings>
     <Setting>
       <Key>sonar.cs.cobertura.reportsPaths</Key>
-      <Value>**/coverage.cobertura.xml</Value>
+      <Value>**/TestResults/**/coverage.cobertura.xml</Value>
     </Setting>
     <Setting>
       <Key>sonar.cs.ignoreHeaderComments</Key>

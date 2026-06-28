@@ -18,27 +18,27 @@ eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\In
 lC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Interface\IPatientRepository.csr	
 Ç
 qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Interface\IHealthRecordRepository.csr	~
-kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Interface\IDoctorRepository.csr	è
+kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Interface\IDoctorRepository.csr	ø
+kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\HealthRecordRepository.cs 8r1	
+ !"#$%'()*+,-./1234567Ç !"#)*+,-34´
+fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\PatientRepository.cs 8r)	
+ !"#$&'()*+,-.xÇ !"*+è
 pC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Interface\IAppointmentRepository.csr	!#%')*µ
 _C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\Repository.cs 8r2
- "$&(*,.02468:<>@BDFHJLNPRTVXZ\^`bxÇ&(,024<DFNPTXZ\´
-fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\PatientRepository.cs 8r)	
- !"#$&'()*+,-.xÇ !"*+ø
-kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\HealthRecordRepository.cs 8r1	
- !"#$%'()*+,-./1234567Ç !"#)*+,-34±
+ "$&(*,.02468:<>@BDFHJLNPRTVXZ\^`bxÇ&(,024<DFNPTXZ\±
 eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\DoctorRepository.cs 8r/	 !"$%&'(*+,-/012345678:;xÇ &'-/067·
 jC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Repository\Impl\AppointmentRepository.cs 82rª	
- !"#$&'()*+,-.012345689:;<=>?@BCDEFGHIJLMNOPQRSTVWXYZ[\]^_`bcdefghijklmopqrstuvwxyz|}~ÄÅÇÉÑÖáàâäãåçéèêíìîïñóòôöõúûü†°¢£§•¶ß©™´¨≠ÆØ∞±≤¥µ∂∏π∫ªºΩæ¿¡¬ƒ≈∆«»… ÀÕŒœ–—“”’÷◊ÿŸ⁄€‹ﬁﬂ‡·‚„‰ÊÁËÈÍÎÏÌÓÔxÇ© !"()*+,2345:;<=>DEFGHNOPQRXYZ[\]^defghijkqrstuvwx~ÄÅÇÉâäãåçéîïñóòôö†°¢£§•´¨≠ÆØ∞∂∏π∫ªº¬ƒ≈∆«»…”’÷◊ÿŸ⁄‰ÊÁËÈÍÎÉ
-SC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Patient.cs 8r"	
-!#%&(*,-.Ç(‹
+ !"#$&'()*+,-.012345689:;<=>?@BCDEFGHIJLMNOPQRSTVWXYZ[\]^_`bcdefghijklmopqrstuvwxyz|}~ÄÅÇÉÑÖáàâäãåçéèêíìîïñóòôöõúûü†°¢£§•¶ß©™´¨≠ÆØ∞±≤¥µ∂∏π∫ªºΩæ¿¡¬ƒ≈∆«»… ÀÕŒœ–—“”’÷◊ÿŸ⁄€‹ﬁﬂ‡·‚„‰ÊÁËÈÍÎÏÌÓÔxÇ© !"()*+,2345:;<=>DEFGHNOPQRXYZ[\]^defghijkqrstuvwx~ÄÅÇÉâäãåçéîïñóòôö†°¢£§•´¨≠ÆØ∞∂∏π∫ªº¬ƒ≈∆«»…”’÷◊ÿŸ⁄‰ÊÁËÈÍÎ‹
 LC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Program.cs]8j,^adjmu{íù†rö	
- !#$%&'()*-./0234578:<=>?ABCEFGHIJKMNOPQRSUVWXY\_befghknopqsvwxy|}ÄÅÉÖÜáàâäãåçêìîïóôõúû°¢£§•ß™≠Ø±≥xÇT!#$%&'-.02>AEGMOU\_begknopqsvwxy|}ÄÅÖáâêìïóôõû°£§ß™≠Ø±≥Ü
+ !#$%&'()*-./0234578:<=>?ABCEFGHIJKMNOPQRSUVWXY\_befghknopqsvwxy|}ÄÅÉÖÜáàâäãåçêìîïóôõúû°¢£§•ß™≠Ø±≥xÇT!#$%&'-.02>AEGMOU\_begknopqsvwxy|}ÄÅÖáâêìïóôõû°£§ß™≠Ø±≥É
+SC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Patient.cs 8r"	
+!#%&(*,-.Ç(Ü
 XC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\HealthRecord.cs 8r 	 !#$%'(*+,Ç*Å
-RC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Doctor.cs 8r 	!$%')+,-Ç'p
-XC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\AuthResponse.cs 8r		
-ÇÉ
+RC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Doctor.cs 8r 	!$%')+,-Ç'É
 WC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\Appointment.cs 8r	
- "#%'()Ç%ë
+ "#%'()Ç%p
+XC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Models\AuthResponse.cs 8r		
+Çë
 uC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260621154631_UpdateSeedDateTimeKind.cs 8j
 r	ç
 qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260618201917_Addpatientidentity.cs 8j
@@ -48,21 +48,21 @@ qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20
 {C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260618085527_RemoveDoctorVerificationFlow.cs 8j
 r(	 !#$%&'(*+,-./012Ç#*œ
 xC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260617184259_DoctorApprovalFlowUpdated.cs 8j
-#r1	 !$%&'()*+-./012456789:;<Ç &*+-12489ù
-rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260616114957_aspnetidentityadded.cs" 8j«ró	
- !"#$%&'()*+,-./012356789:;<=>?@ABCDEFGHJKLMNOPQRSTUVWXYZ[\]_`abcdefghijklmnopqstuvwxyz{|}~ÄÅÇÉÑÖÜáàâãåçéèêëíìîïñóòôöõúùü†°¢§•¶ß®©´¨≠Æ∞±≤≥µ∂∑∏∫ªºΩø¿¡¬√ƒ≈»… ÀÕŒ–—”‘÷◊Ÿ⁄‹›ﬁﬂ‡Ç~ !"#$%&'()*+,-.02579;<=?ABDGJLNPQRTVWY\_acdefhjkmpsuwxz|}ÇÉÖàãçèêëíîñóôúü§´∞µ∫ø Õ–”÷Ÿ‹“
+#r1	 !$%&'()*+-./012456789:;<Ç &*+-12489“
 vC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260617183838_DoctorApprovalFlowAdded.cs	 8j
-7r9	!"#$%&()*+,-/01234589:;<>?@BCDEFGÇ!%&(,-/34:>B¬
+7r9	!"#$%&()*+,-/01234589:;<>?@BCDEFGÇ!%&(,-/34:>Bù
+rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260616114957_aspnetidentityadded.cs" 8j«ró	
+ !"#$%&'()*+,-./012356789:;<=>?@ABCDEFGHJKLMNOPQRSTUVWXYZ[\]_`abcdefghijklmnopqstuvwxyz{|}~ÄÅÇÉÑÖÜáàâãåçéèêëíìîïñóòôöõúùü†°¢§•¶ß®©´¨≠Æ∞±≤≥µ∂∑∏∫ªºΩø¿¡¬√ƒ≈»… ÀÕŒ–—”‘÷◊Ÿ⁄‹›ﬁﬂ‡Ç~ !"#$%&'()*+,-.02579;<=?ABDGJLNPQRTVWY\_acdefhjkmpsuwxz|}ÇÉÖàãçèêëíîñóôúü§´∞µ∫ø Õ–”÷Ÿ‹¬
 lC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260616114249_DropUserTable.cs 8j
 r/	 !"#$%&')*+,-./013456789:Ç !"$&)+-./03¡
 kC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615050714_AddUserTable.cs 8j
 3r/	 "#$%&'()*,-./01456789:Ç"$&'(),6°
 sC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615045634_AddHealthRecordTable.cs 8j
-drr	 !"#$%&'()*+,-./0123456789;<=>?@ABCEFGHIKLMNPQRSUVWXYZ\]^_`abefghiklmoprstuvwxz{|}~ÄÅÇÉÇ( !"#$%')*,/146;=?@ABEKPU\gkorxzÄ‡
-rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615044709_AddAppointmentTable.cs 8j
-Dr?	 !"#$%&'()*+,-/012345679:;<>?@ABEFGHIJKÇ !#&'),/134569>G≠
+drr	 !"#$%&'()*+,-./0123456789;<=>?@ABCEFGHIKLMNPQRSUVWXYZ\]^_`abefghiklmoprstuvwxz{|}~ÄÅÇÉÇ( !"#$%')*,/146;=?@ABEKPU\gkorxzÄ≠
 mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615044341_SeedDoctorData.cs 8j
-r#	 !#$%&()*+,-.Ç	#(Æ
+r#	 !#$%&()*+,-.Ç	#(‡
+rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615044709_AddAppointmentTable.cs 8j
+Dr?	 !"#$%&'()*+,-/012345679:;<>?@ABEFGHIJKÇ !#&'),/134569>GÆ
 mC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615044005_AddDoctorTable.cs 8j!r!	
 "#$%&'(Ç$Æ
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20260615043705_SeedPatientData.cs 8j
@@ -71,27 +71,27 @@ rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Migrations\20
  #$%&'()Ç%¡
 fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Middleware\GlobalExceptionHandler.cs 8
 r8	
- "#%&()*+,-/0234679:;<=>?ACDEFxÇ #&)+-0367=>AC}
+ "#%&()*+,-/0234679:;<=>?ACDEFxÇ #&)+-0367=>ACè
+[C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Mapping\MappingProfile.cs 8jCVirj
+ !"#%&'()*+,-/012345679:;<=>?@ADEFGHJKLMNPQRSTWXYZ[\]^_`abcegjklmnopqrstuvxz{|}xÇ3!"%'(+,/12569;<?@DFGJLMPRSWYZ]^abegjlmpqtuxz}
 iC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\HealthRecordRuleException.cs 8r
 	
-è
-[C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Mapping\MappingProfile.cs 8jCVirj
- !"#%&'()*+,-/012345679:;<=>?@ADEFGHJKLMNPQRSTWXYZ[\]^_`abcegjklmnopqrstuvxz{|}xÇ3!"%'(+,/12569;<?@DFGJLMPRSWYZ]^abegjlmpqtuxz~
+~
 fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\HealthCareAppException.cs 8r
 |
 hC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\ForbiddenAccessException.cs 8r
-	
-Ü
-gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\EntityNotFoundException.cs 8r	
-Ç{
-aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\ConflictException.cs 8r
-y
-eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\BusinessRuleException.cs 8r
 	
 |
 hC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\AppointmentRuleException.cs 8r
 	
 {
+aC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\ConflictException.cs 8r
+y
+eC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\BusinessRuleException.cs 8r
+	
+Ü
+gC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Exceptions\EntityNotFoundException.cs 8r	
+Ç{
 TC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\Data\RoleSeeder.cs 8r	
 xÇ	
 ˇ

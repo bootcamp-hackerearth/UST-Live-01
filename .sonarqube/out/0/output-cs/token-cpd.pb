@@ -110,7 +110,205 @@ cC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Enums\
 }		 
 }
 
- £!
+ £
+lC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\PatientDto\UpdatePatientDto.cs
+	namespace 	
+HealthCareApp
+ 
+. 
+Shared 
+. 
+Dtos #
+.# $
+Patients$ ,
+{ 
+public		 
+
+class		 
+UpdatePatientDto		 !
+{
+
+ 
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! H
+)H I
+]I J
+[ 	
+StringLength	 
+( 
+$num 
+, 
+ErrorMessage '
+=( )
+$str* X
+)X Y
+]Y Z
+public 
+string 
+FullName 
+{  
+get! $
+;$ %
+set& )
+;) *
+}+ ,
+=- .
+string/ 5
+.5 6
+Empty6 ;
+;; <
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! L
+)L M
+]M N
+[ 	
+Range	 
+( 
+typeof 
+( 
+DateTime 
+) 
+,  
+$str! -
+,- .
+$str/ ;
+,; <
+ErrorMessage 
+= 
+$str K
+)K L
+]L M
+public 
+DateTime 
+DateOfBirth #
+{$ %
+get& )
+;) *
+set+ .
+;. /
+}0 1
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! F
+)F G
+]G H
+public 
+
+GenderType 
+Gender  
+{! "
+get# &
+;& '
+set( +
+;+ ,
+}- .
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! K
+)K L
+]L M
+[ 	
+RegularExpression	 
+( 
+$str )
+,) *
+ErrorMessage+ 7
+=8 9
+$str: h
+)h i
+]i j
+public 
+string 
+PhoneNumber "
+{# $
+get% (
+;( )
+set* -
+;- .
+}/ 0
+=0 1
+string2 8
+.8 9
+Empty9 >
+;> ?
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! L
+)L M
+]M N
+[ 	
+EmailAddress	 
+( 
+ErrorMessage "
+=# $
+$str% J
+)J K
+]K L
+public 
+string 
+Email 
+{ 
+get "
+;" #
+set$ '
+;' (
+}) *
+=* +
+string+ 1
+.1 2
+Empty2 7
+;7 8
+[ 	
+Required	 
+( 
+ErrorMessage 
+=  
+$str! K
+)K L
+]L M
+[ 	
+StringLength	 
+( 
+$num 
+, 
+ErrorMessage &
+=' (
+$str) V
+)V W
+]W X
+public   
+string   
+InsuranceId   "
+{  # $
+get  % (
+;  ( )
+set  * -
+;  - .
+}  / 0
+=  1 2
+string  2 8
+.  8 9
+Empty  9 >
+;  > ?
+}!! 
+}"" £!
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\PatientDto\PatientRegisterDto.cs
 	namespace 	
 HealthCareApp
@@ -370,205 +568,7 @@ GenderType 
 Empty%%= B
 ;%%B C
 }&& 
-}'' £
-lC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\PatientDto\UpdatePatientDto.cs
-	namespace 	
-HealthCareApp
- 
-. 
-Shared 
-. 
-Dtos #
-.# $
-Patients$ ,
-{ 
-public		 
-
-class		 
-UpdatePatientDto		 !
-{
-
- 
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! H
-)H I
-]I J
-[ 	
-StringLength	 
-( 
-$num 
-, 
-ErrorMessage '
-=( )
-$str* X
-)X Y
-]Y Z
-public 
-string 
-FullName 
-{  
-get! $
-;$ %
-set& )
-;) *
-}+ ,
-=- .
-string/ 5
-.5 6
-Empty6 ;
-;; <
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! L
-)L M
-]M N
-[ 	
-Range	 
-( 
-typeof 
-( 
-DateTime 
-) 
-,  
-$str! -
-,- .
-$str/ ;
-,; <
-ErrorMessage 
-= 
-$str K
-)K L
-]L M
-public 
-DateTime 
-DateOfBirth #
-{$ %
-get& )
-;) *
-set+ .
-;. /
-}0 1
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! F
-)F G
-]G H
-public 
-
-GenderType 
-Gender  
-{! "
-get# &
-;& '
-set( +
-;+ ,
-}- .
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! K
-)K L
-]L M
-[ 	
-RegularExpression	 
-( 
-$str )
-,) *
-ErrorMessage+ 7
-=8 9
-$str: h
-)h i
-]i j
-public 
-string 
-PhoneNumber "
-{# $
-get% (
-;( )
-set* -
-;- .
-}/ 0
-=0 1
-string2 8
-.8 9
-Empty9 >
-;> ?
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! L
-)L M
-]M N
-[ 	
-EmailAddress	 
-( 
-ErrorMessage "
-=# $
-$str% J
-)J K
-]K L
-public 
-string 
-Email 
-{ 
-get "
-;" #
-set$ '
-;' (
-}) *
-=* +
-string+ 1
-.1 2
-Empty2 7
-;7 8
-[ 	
-Required	 
-( 
-ErrorMessage 
-=  
-$str! K
-)K L
-]L M
-[ 	
-StringLength	 
-( 
-$num 
-, 
-ErrorMessage &
-=' (
-$str) V
-)V W
-]W X
-public   
-string   
-InsuranceId   "
-{  # $
-get  % (
-;  ( )
-set  * -
-;  - .
-}  / 0
-=  1 2
-string  2 8
-.  8 9
-Empty  9 >
-;  > ?
-}!! 
-}"" Æ
+}'' Æ
 fC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\PatientDto\PatientDto.cs
 	namespace 	
 HealthCareApp
@@ -3347,7 +3347,100 @@ rC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\A
 Empty6 ;
 ;; <
 } 
-} …
+} Ÿ
+zC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterPersonDto.cs
+	namespace 	
+HealthCareApp
+ 
+. 
+Shared 
+. 
+Dtos #
+.# $
+Appointments$ 0
+{ 
+public 
+
+class &
+AppointmentFilterPersonDto +
+{ 
+public 
+int 
+Id 
+{ 
+get 
+; 
+set  
+;  !
+}" #
+public 
+string 
+Name 
+{ 
+get  
+;  !
+set" %
+;% &
+}' (
+=) *
+string+ 1
+.1 2
+Empty2 7
+;7 8
+} 
+}		 û
+{C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterOptionsDto.cs
+	namespace 	
+HealthCareApp
+ 
+. 
+Shared 
+. 
+Dtos #
+.# $
+Appointments$ 0
+{ 
+public 
+
+class '
+AppointmentFilterOptionsDto ,
+{ 
+public 
+List 
+< &
+AppointmentFilterPersonDto .
+>. /
+Patients0 8
+{9 :
+get; >
+;> ?
+set@ C
+;C D
+}E F
+=G H
+newI L
+(L M
+)M N
+;N O
+public 
+List 
+< &
+AppointmentFilterPersonDto .
+>. /
+Doctors0 7
+{8 9
+get: =
+;= >
+set? B
+;B C
+}D E
+=F G
+newH K
+(K L
+)L M
+;M N
+} 
+}		 …
 qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDailyStatusSummaryDto.cs
 	namespace 	
 HealthCareApp
@@ -3424,100 +3517,7 @@ qC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\A
 ;' (
 }) *
 } 
-} û
-{C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterOptionsDto.cs
-	namespace 	
-HealthCareApp
- 
-. 
-Shared 
-. 
-Dtos #
-.# $
-Appointments$ 0
-{ 
-public 
-
-class '
-AppointmentFilterOptionsDto ,
-{ 
-public 
-List 
-< &
-AppointmentFilterPersonDto .
->. /
-Patients0 8
-{9 :
-get; >
-;> ?
-set@ C
-;C D
-}E F
-=G H
-newI L
-(L M
-)M N
-;N O
-public 
-List 
-< &
-AppointmentFilterPersonDto .
->. /
-Doctors0 7
-{8 9
-get: =
-;= >
-set? B
-;B C
-}D E
-=F G
-newH K
-(K L
-)L M
-;M N
-} 
-}		 Ÿ
-zC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentFilterPersonDto.cs
-	namespace 	
-HealthCareApp
- 
-. 
-Shared 
-. 
-Dtos #
-.# $
-Appointments$ 0
-{ 
-public 
-
-class &
-AppointmentFilterPersonDto +
-{ 
-public 
-int 
-Id 
-{ 
-get 
-; 
-set  
-;  !
-}" #
-public 
-string 
-Name 
-{ 
-get  
-;  !
-set" %
-;% &
-}' (
-=) *
-string+ 1
-.1 2
-Empty2 7
-;7 8
-} 
-}		 ó
+} ó
 nC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\Dtos\AppointmentDto\AppointmentDto.cs
 	namespace 	
 HealthCareApp

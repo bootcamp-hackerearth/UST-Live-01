@@ -1,8 +1,9 @@
 Product projects
 ---------------------------------------
 C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\HealthCareApp.Shared.csproj
-C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\HealthCareApp.AdminBlazor.csproj
 C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\HealthCareApp.csproj
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.AdminBlazor\HealthCareApp.AdminBlazor.csproj
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.UI\HealthCareApp.UI.esproj
 
 
 Test projects
@@ -17,7 +18,9 @@ Invalid projects
 
 Skipped projects
 ---------------------------------------
-{none}
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Shared\HealthCareApp.Shared.csproj
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\HealthCareApp.csproj
+C:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp.Testing\HealthCareApp.Testing.csproj
 
 
 Excluded projects

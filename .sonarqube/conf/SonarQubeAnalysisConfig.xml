@@ -149,12 +149,12 @@
     <Property Name="sonar.java.jvmframeworkconfig.activate">true</Property>
     <Property Name="sonar.updatecenter.url">https://downloads.sonarsource.com/sonarqube/update/update-center.properties</Property>
     <Property Name="sonar.core.id">147B411E-AZ5PIHhRTREygm783YmM</Property>
-    <Property Name="sonar.core.startTime">25-06-2026 11:55:54</Property>
+    <Property Name="sonar.core.startTime">26-06-2026 15:29:34</Property>
   </ServerSettings>
   <LocalSettings>
     <Property Name="sonar.host.url">http://localhost:9000</Property>
-    <Property Name="sonar.exclusions">**/Migrations/**</Property>
-    <Property Name="sonar.cs.cobertura.reportsPaths">**/coverage.cobertura.xml</Property>
+    <Property Name="sonar.exclusions">**/Migrations/**,**/*.razor,**/HealthCareApp.AdminBlazor/**</Property>
+    <Property Name="sonar.cs.cobertura.reportsPaths">**/TestResults/**/coverage.cobertura.xml</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>
