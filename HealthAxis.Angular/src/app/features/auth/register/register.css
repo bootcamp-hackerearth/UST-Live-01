@@ -1,0 +1,277 @@
+:host {
+  display: block;
+  min-height: 100vh;
+-weight: 650;  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+.register-card {
+  background: #ffffff;
+  border: 1px solid rgba(221, 231, 240, 0.95);
+  border-radius: 28px;
+  padding: 34px;
+  box-shadow: 0 28px 70px rgba(26, 54, 115, 0.16);
+}
+
+.form-header h2 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 30px;
+}
+
+.form-header p {
+  margin: 8px 0 24px;
+  color: #667085;
+}
+
+.alert-error,
+.alert-success {
+  border-radius: 14px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.alert-error {
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #ffd6d6;
+}
+
+.alert-success {
+  background: #ecfdf3;
+  color: #087443;
+  border: 1px solid #b7efd0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-group label {
+  color: #1a3673;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+  height: 46px;
+  border: 1px solid #dde7f0;
+  border-radius: 13px;
+  padding: 0 13px;
+  color: #172033;
+  font: inherit;
+  outline: none;
+  background: #ffffff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #44b8f3;
+  box-shadow: 0 0 0 4px rgba(68, 184, 243, 0.14);
+}
+
+.form-group small {
+  color: #b42318;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.submit-btn {
+  width: 100%;
+  margin-top: 24px;
+  height: 50px;
+  border: none;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #286ce2, #44b8f3);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 16px 32px rgba(40, 108, 226, 0.25);
+}
+
+.submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.login-link {
+  text-align: center;
+  color: #667085;
+  margin: 20px 0 0;
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #286ce2;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+@media (max-width: 980px) {
+  .register-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .info-content {
+    margin-top: 42px;
+  }
+}
+
+@media (max-width: 640px) {
+  .register-page {
+    padding: 22px;
+  }
+
+  .register-card {
+    padding: 24px;
+    border-radius: 22px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .full-width {
+    grid-column: span 1;
+  }
+
+  .info-content h2 {
+    font-size: 38px;
+  }
+}
+
+.register-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, rgba(68, 184, 243, 0.2), transparent 34%),
+    linear-gradient(180deg, #f7fbff 0%, #eaf6fd 100%);
+  padding: 38px;
+}
+
+.register-shell {
+  min-height: calc(100vh - 76px);
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 34px;
+  max-width: 1220px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.register-info {
+  padding: 18px;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.brand-logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #44b8f3, #286ce2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 900;
+  box-shadow: 0 14px 28px rgba(40, 108, 226, 0.25);
+}
+
+.brand-link h1 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 27px;
+}
+
+.brand-link p {
+  margin: 3px 0 0;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.info-content {
+  margin-top: 82px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  margin: 0 0 18px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #eaf6fd;
+  color: #286ce2;
+  font-size: 13px;
+  font-weight: 850;
+  border: 1px solid rgba(68, 184, 243, 0.35);
+}
+
+.info-content h2 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 48px;
+  line-height: 1.08;
+  letter-spacing: -1.5px;
+}
+
+.info-content > p {
+  margin: 22px 0 0;
+  color: #53627a;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.info-list {
+  margin-top: 30px;
+  display: grid;
+  gap: 14px;
+}
+
+.info-list div {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid #dde7f0;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.info-list span {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #ddf8ea;
+  color: #087443;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+
+.info-list p {
+  margin: 0;
+  color: #172033;
+}
