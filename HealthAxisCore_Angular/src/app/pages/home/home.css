@@ -52,18 +52,15 @@
   gap: 14px;
 }
 
-.brand-mark {
-  width: 48px;
-  height: 48px;
-  border-radius: 17px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 950;
-  background: linear-gradient(135deg, var(--ha-cyan), var(--ha-cyan-dark));
-  box-shadow: 8px 8px 18px rgba(21, 94, 117, 0.20), -6px -6px 16px rgba(255, 255, 255, 0.62);
+.brand-logo {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  display: block;
+  border-radius: 18px;
+  padding: 4px;
+  background: linear-gradient(145deg, rgba(240, 255, 255, 0.88), rgba(184, 240, 239, 0.64));
+  box-shadow: 8px 8px 18px rgba(21, 94, 117, 0.16), -6px -6px 16px rgba(255, 255, 255, 0.62);
 }
 
 .brand-copy {

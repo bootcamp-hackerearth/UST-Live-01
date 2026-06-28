@@ -29,6 +29,10 @@ export class Register {
 
   submitted = false;
 
+  todayDate = this.getTodayDate();
+
+  minimumDateOfBirth = this.getMinimumDateOfBirth();
+
   constructor(private formBuilder: FormBuilder) {
     this.registerForm = this.formBuilder.group(
       {
@@ -42,7 +46,8 @@ export class Register {
         dateOfBirth: [
           '',
           [
-            Validators.required
+            Validators.required,
+            Register.dateOfBirthValidator
           ]
         ],
         gender: [
@@ -55,7 +60,8 @@ export class Register {
           '',
           [
             Validators.required,
-            Validators.email
+            Validators.email,
+            Register.emailDomainValidator
           ]
         ],
         phoneNumber: [
@@ -154,9 +160,77 @@ export class Register {
       return;
     }
 
+    const emailValue = this.registerForm.get('email')?.value;
+
+    const emailDomainName = this.getEmailDomainName(emailValue);
+
+    console.log('Extracted email domain:', emailDomainName);
+
     console.log('Register form submitted:', this.registerForm.value);
 
     // API connection will be added later.
+  }
+
+  private static emailDomainValidator(control: AbstractControl): ValidationErrors | null {
+    const email = control.value?.toString().trim().toLowerCase();
+
+    if (!email || !email.includes('@')) {
+      return null;
+    }
+
+    const domainPart = email.split('@')[1];
+
+    if (!domainPart || !domainPart.includes('.')) {
+      return null;
+    }
+
+    const domainName = domainPart.split('.')[0];
+
+    if (domainName === 'healthaxis') {
+      return {
+        blockedPatientDomain: true
+      };
+    }
+
+    return null;
+  }
+
+  private static dateOfBirthValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+
+    if (!value) {
+      return null;
+    }
+
+    const selectedDate = new Date(value);
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    selectedDate.setHours(0, 0, 0, 0);
+
+    const minimumDate = new Date(
+      today.getFullYear() - 120,
+      today.getMonth(),
+      today.getDate()
+    );
+
+    minimumDate.setHours(0, 0, 0, 0);
+
+    if (selectedDate > today) {
+      return {
+        futureDateOfBirth: true
+      };
+    }
+
+    if (selectedDate < minimumDate) {
+      return {
+        tooOldDateOfBirth: true
+      };
+    }
+
+    return null;
   }
 
   private passwordsShouldMatch(control: AbstractControl): ValidationErrors | null {
@@ -171,5 +245,37 @@ export class Register {
     return password === confirmPassword
       ? null
       : { passwordMismatch: true };
+  }
+
+  private getTodayDate(): string {
+    const today = new Date();
+
+    return today.toISOString().split('T')[0];
+  }
+
+  private getMinimumDateOfBirth(): string {
+    const today = new Date();
+
+    const minimumDate = new Date(
+      today.getFullYear() - 120,
+      today.getMonth(),
+      today.getDate()
+    );
+
+    return minimumDate.toISOString().split('T')[0];
+  }
+
+  private getEmailDomainName(email: string): string {
+    if (!email || !email.includes('@')) {
+      return '';
+    }
+
+    const domainPart = email.split('@')[1];
+
+    if (!domainPart || !domainPart.includes('.')) {
+      return '';
+    }
+
+    return domainPart.split('.')[0];
   }
 }
