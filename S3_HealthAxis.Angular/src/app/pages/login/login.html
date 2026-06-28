@@ -1,0 +1,57 @@
+<section class="ha-auth-page">
+  <div class="ha-auth-card">
+    <span class="ha-auth-badge">
+      <i class="bi bi-shield-lock"></i>
+      Secure Login
+    </span>
+
+    <h2>Login to HealthAxis</h2>
+
+    <p>
+      Access your patient or doctor portal using your registered email and password.
+    </p>
+
+    @if (errorMessage) {
+      <div class="ha-auth-error">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <label>Email</label>
+      <input
+        type="email"
+        name="email"
+        placeholder="Enter your email"
+        [(ngModel)]="loginRequest.email"
+        autocomplete="email"
+        required
+      />
+
+      <label>Password</label>
+      <input
+        type="password"
+        name="password"
+        placeholder="Enter your password"
+        [(ngModel)]="loginRequest.password"
+        autocomplete="current-password"
+        required
+      />
+
+      <button type="submit" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Logging in...
+        } @else {
+          Login
+        }
+      </button>
+    </form>
+
+    <div class="ha-auth-link">
+      New patient?
+      <a routerLink="/register">Create an account</a>
+    </div>
+  </div>
+</section>

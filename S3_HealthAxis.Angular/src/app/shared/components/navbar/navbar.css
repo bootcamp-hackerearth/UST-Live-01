@@ -1,0 +1,113 @@
+.ha-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 76px;
+  padding: 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(14, 116, 144, 0.78),
+      rgba(37, 99, 235, 0.66),
+      rgba(59, 130, 246, 0.58)
+    ),
+    rgba(255, 255, 255, 0.12);
+
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+
+  border-bottom: 1px solid rgba(219, 234, 254, 0.36);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.18);
+}
+
+.ha-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 850;
+  font-size: 1.18rem;
+  letter-spacing: 0.2px;
+}
+
+.ha-brand:hover {
+  color: #e0f7ff;
+}
+
+.ha-brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #67e8f9, #2563eb);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.32);
+}
+
+.ha-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.ha-nav-links a {
+  position: relative;
+  color: #eef8ff;
+  text-decoration: none;
+  font-weight: 750;
+  font-size: 0.94rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.ha-nav-links a:hover,
+.ha-nav-links a.active {
+  color: #ffffff;
+}
+
+.ha-nav-links a:hover {
+  transform: translateY(-1px);
+}
+
+.ha-register-link {
+  padding: 10px 17px;
+  border-radius: 999px;
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.3);
+}
+
+.ha-register-link:hover {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #22d3ee, #1d4ed8);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.34);
+}
+
+@media (max-width: 760px) {
+  .ha-navbar {
+    height: auto;
+    min-height: 76px;
+    padding: 16px 20px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ha-nav-links {
+    width: 100%;
+    overflow-x: auto;
+    gap: 14px;
+    padding-bottom: 4px;
+  }
+
+  .ha-nav-links a {
+    white-space: nowrap;
+  }
+}

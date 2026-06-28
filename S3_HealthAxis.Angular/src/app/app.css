@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.app-main {
+  min-height: calc(100vh - 140px);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(125, 211, 252, 0.28), transparent 28%),
+    radial-gradient(circle at 92% 18%, rgba(147, 197, 253, 0.32), transparent 30%),
+    radial-gradient(circle at 50% 95%, rgba(204, 251, 241, 0.35), transparent 34%),
+    linear-gradient(135deg, #f7fcff 0%, #eef8ff 42%, #f7fbfb 100%);
+}

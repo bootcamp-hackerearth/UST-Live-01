@@ -1,0 +1,35 @@
+<header class="ha-navbar">
+  <a class="ha-brand" routerLink="/">
+    <span class="ha-brand-icon">
+      <i class="bi bi-heart-pulse"></i>
+    </span>
+    <span>HealthAxis</span>
+  </a>
+
+  <nav class="ha-nav-links">
+    @if (showHomeLink) {
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Home
+      </a>
+    }
+
+    @if (showPatientJourneyLink) {
+      <a routerLink="/" fragment="journey">
+        Patient Journey
+      </a>
+    }
+
+    @if (showLoginLink) {
+      <a routerLink="/login" routerLinkActive="active">
+        Login
+      </a>
+    }
+
+    @if (showRegisterLink) {
+      <a routerLink="/register" routerLinkActive="active" class="ha-register-link">
+        Register
+      </a>
+    }
+  </nav>
+</header>
+
