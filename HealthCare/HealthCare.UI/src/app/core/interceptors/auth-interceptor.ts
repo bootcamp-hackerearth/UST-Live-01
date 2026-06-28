@@ -1,26 +1,56 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { catchError, switchMap, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
-    const token = localStorage.getItem('token');
+  const authService = inject(AuthService);
+  const token = localStorage.getItem('token');
 
-  // Skip adding token for login/register requests
-  if (
-    req.url.includes('/login') ||
-    req.url.includes('/register')
-  ) {
+  // Skip auth endpoints
+  if (req.url.includes('/login') || req.url.includes('/register')) {
     return next(req);
   }
 
-  if (token) {
+  const authReq = token
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    : req;
 
-    const clonedRequest = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+
+      //  Token expired or unauthorized
+      if (error.status === 401) {
+
+        return authService.refreshToken().pipe(
+          switchMap((newToken: string) => {
+
+            // Save new token
+            localStorage.setItem('token', newToken);
+
+            // Retry original request with new token
+            const retryReq = req.clone({
+              setHeaders: {
+                Authorization: `Bearer ${newToken}`
+              }
+            });
+
+            return next(retryReq);
+          }),
+          catchError(err => {
+            //  Refresh failed → logout
+            authService.logout();
+            return throwError(() => err);
+          })
+        );
       }
-    });
 
-    return next(clonedRequest);
-  }
-  return next(req);
+      return throwError(() => error);
+    })
+  );
 };

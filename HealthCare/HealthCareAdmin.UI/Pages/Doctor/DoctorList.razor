@@ -1,5 +1,6 @@
 ﻿@page "/doctor/list"
 @using Healthcare.Shared.DTOs.Doctor
+@using Healthcare.Shared.DTOs;
 
 
 @inject DoctorService DoctorService
@@ -88,7 +89,7 @@
                 <td colspan="6" class="text-center">Loading...</td>
             </tr>
         }
-        else if (paginatedDoctors.Count == 0)
+            else if (result.Items == null || !result.Items.Any())
         {
             <tr>
                 <td colspan="6" class="text-center text-muted">
@@ -98,7 +99,7 @@
         }
         else
         {
-            @foreach (var doc in paginatedDoctors)
+                @foreach (var doc in result.Items)
             {
                 <tr>
                     <td>@doc.FullName</td>
@@ -192,9 +193,7 @@
 
 @code {
 
-    private List<DoctorListDto> doctors = new();
-    private List<DoctorListDto> filteredDoctors = new();
-    private List<DoctorListDto> paginatedDoctors = new();
+    private PagedResult<DoctorListDto> result = new();
 
     private bool isLoading = true;
 
@@ -205,13 +204,10 @@
     private string statusFilter = "";
     private bool showDeletePopup = false;
     private int deleteDoctorId;
-
-
     private int _currentPage = 1;
-    private int pageSize = 5;
+    private int pageSize = 10;
 
-    private int TotalPages =>
-        (int)Math.Ceiling(filteredDoctors.Count / (double)pageSize);
+    private int TotalPages => result.TotalPages;
 
     private List<string> specialisations = new();
 
@@ -222,21 +218,29 @@
         await LoadDoctors();
     }
 
+
     private async Task LoadDoctors()
     {
         try
         {
             isLoading = true;
 
-            var result = await DoctorService.GetDoctors();
-            doctors = result.Items;
-
-            specialisations = doctors
-                .Select(x => x.Specialisation)
+            
+            var filter = new DoctorFilter
+            {
+                PageNumber = _currentPage,
+                PageSize = pageSize,
+                FullName = searchText, 
+               Specialisation = selectedSpecialisation,
+                MinExperience = minExperience,
+                IsActive = string.IsNullOrEmpty(statusFilter) ? null : bool.Parse(statusFilter) 
+        
+            };
+            result = await DoctorService.GetDoctors(filter);
+            specialisations = result.Items?.Select(x => x.Specialisation)
                 .Distinct()
-                .ToList();
+                .ToList() ?? new List<string>();
 
-            ApplyFilters();
         }
         finally
         {
@@ -244,47 +248,28 @@
         }
     }
 
-    private void ApplyFilters()
-    {
-        filteredDoctors = doctors
-            .Where(d => string.IsNullOrEmpty(searchText) ||
-                        d.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-            .Where(d => string.IsNullOrEmpty(selectedSpecialisation) ||
-                        d.Specialisation == selectedSpecialisation)
-            .Where(d => !minExperience.HasValue ||
-                        d.YearsOfExperience >= minExperience)
-            .Where(d => string.IsNullOrEmpty(statusFilter) ||
-                        d.IsActive.ToString().ToLower() == statusFilter)
-            .ToList();
-
-        _currentPage = 1;
-        ApplyPagination();
-    }
-
-    private void ApplyPagination()
-    {
-        paginatedDoctors = filteredDoctors
-            .Skip((_currentPage - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-    }
-
-    private void NextPage()
+    private async Task NextPage()
     {
         if (_currentPage < TotalPages)
         {
             _currentPage++;
-            ApplyPagination();
+            await LoadDoctors();
         }
     }
 
-    private void PrevPage()
+    private async Task PrevPage()
     {
         if (_currentPage > 1)
         {
             _currentPage--;
-            ApplyPagination();
+            await LoadDoctors();
         }
+    }
+
+    private async Task ApplyFilters()
+    {
+        _currentPage = 1;
+        await LoadDoctors();
     }
 
     private void ShowDeletePopup(int id)

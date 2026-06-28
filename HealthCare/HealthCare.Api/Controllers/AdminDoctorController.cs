@@ -34,12 +34,11 @@ namespace HealthCare.Api.Controllers
 
             return Ok(result);
         }
-
         [HttpGet("doctors")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> GetAllDoctor()
+        public async Task<IActionResult> GetAllDoctor([FromQuery] DoctorFilter filter)
         {
-            var result = await _doctorService.GetAllAsync(new DoctorFilter());
+            var result = await _doctorService.GetAllAsync(filter);
             return Ok(result);
         }
 

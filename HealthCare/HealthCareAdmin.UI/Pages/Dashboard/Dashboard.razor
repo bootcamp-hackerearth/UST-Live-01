@@ -1,5 +1,7 @@
 ﻿@page "/dashboard"
 @using Healthcare.Shared.DTOs.Appointments
+@using Healthcare.Shared.DTOs.Doctor;
+@using Healthcare.Shared.DTOs.Patient;
 
 @inject DoctorService DoctorService
 @inject PatientService PatientService
@@ -104,38 +106,44 @@
     private int completed;
     private int cancelled;
 
-    [Inject] NavigationManager Nav { get; set; }
-    [Inject] IJSRuntime JS { get; set; }
+    [Inject] NavigationManager? Nav { get; set; }
+    [Inject] IJSRuntime? JS { get; set; }
 
-   
-  
     protected override async Task OnInitializedAsync()
     {
         var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
 
-        // ✅ Auth check
+        //  Auth check
         if (string.IsNullOrEmpty(token))
         {
             Nav.NavigateTo("/login");
             return;
         }
 
-        // ✅ Load dashboard data
+        // Load dashboard data
         dashboard = await AppointmentService.GetDashboard();
     }
 
     private async Task LoadDashboard()
     {
-        // ✅ Doctors
+        // Doctors
+        var doctorResult = await DoctorService.GetDoctors(new DoctorFilter
+        {
+            PageNumber = 1,
+            PageSize = 1   // ✅ we only need count, not full data
+        });
 
-        var doctorResult = await DoctorService.GetDoctors();
-        totalDoctors = doctorResult.TotalCount;
 
-        // ✅ Patients
-        var patientResult = await PatientService.GetPatients();
-        totalPatients = patientResult.TotalCount;
+        //  Patients
 
-        // ✅ Appointments (use your report API or list API)
+        var patientResult = await PatientService.GetPatients(new PatientFilter
+        {
+            PageNumber = 1,
+            PageSize = 1
+        });
+
+
+        //  Appointments (use your report API or list API)
         var report = await AppointmentService.GetAppointmentReport(
             DateTime.Today.AddDays(-6),
             DateTime.Today
@@ -145,6 +153,7 @@
         pending = report.Sum(x => x.PendingCount);
         confirmed = report.Sum(x => x.ConfirmedCount);
         completed = report.Sum(x => x.CompletedCount);
+        cancelled = report.Sum(x => x.CancelledCount);
 
         totalAppointments = report.Sum(x => x.PendingCount + x.ConfirmedCount + x.CompletedCount);
     }

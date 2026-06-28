@@ -23,13 +23,14 @@ namespace HealthCare.Api.Controllers
 
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
-        public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto,int id)
+        public async Task<IActionResult> Create([FromBody] CreateAppointmentDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var patientId = GetPatientIdFromClaims();
-            await _service.AddAsync(dto,patientId);
+
+            await _service.AddAsync(dto, patientId);
 
             return StatusCode(201, new
             {
@@ -77,7 +78,7 @@ namespace HealthCare.Api.Controllers
             return Ok(new { available = result });
         }
 
-        [HttpGet("doctor/{doctorId:int}/schedule")]
+        [HttpGet("doctor/schedule")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> GetDoctorSchedule( DateOnly date)
         {

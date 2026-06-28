@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 
 import { Login } from '../models/login.model';
 
@@ -39,11 +39,6 @@ export class AuthService {
     return localStorage.getItem('token');
   }
 
-  // Logout
-  logout(): void {
-    localStorage.removeItem('token');
-  }
-
   // Check login status
   isLoggedIn(): boolean {
     return !!this.getToken();
@@ -79,4 +74,21 @@ export class AuthService {
       'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
     ] || null;
   }
+
+  refreshToken() {
+  const refreshToken = localStorage.getItem('refreshToken');
+
+  return this.http.post<{ token: string }>('/api/refresh', {
+    refreshToken
+  }).pipe(
+    switchMap(response => {
+      return [response.token];
+    })
+  );
+}
+
+logout() {
+  localStorage.clear();
+  // redirect to login
+}
 }

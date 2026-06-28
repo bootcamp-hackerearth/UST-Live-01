@@ -1,5 +1,6 @@
 ﻿@page "/patient/list"
 @using Healthcare.Shared.DTOs.Patient
+@using Healthcare.Shared.DTOs;
 
 @inject PatientService PatientService
 @inject IJSRuntime JS
@@ -80,7 +81,7 @@
                 <td colspan="6" class="text-center">Loading...</td>
             </tr>
         }
-        else if (paginatedPatients.Count == 0)
+        else if (result.Items == null || !result.Items.Any())
         {
             <tr>
                 <td colspan="6" class="text-center text-muted">
@@ -90,7 +91,7 @@
         }
         else
         {
-            @foreach (var p in paginatedPatients)
+            @foreach (var p in result.Items)
             {
                 <tr>
                     <td>@p.FullName</td>
@@ -152,6 +153,7 @@
         Page @_currentPage / @TotalPages
     </span>
 
+
     <button class="btn btn-outline-primary"
             disabled="@(_currentPage == TotalPages)"
             @onclick="NextPage">
@@ -189,9 +191,7 @@
 
 @code {
 
-    private List<PatientListDto> patients = new();
-    private List<PatientListDto> filteredPatients = new();
-    private List<PatientListDto> paginatedPatients = new();
+    private PagedResult<PatientListDto> result = new();
 
     private bool isLoading = true;
     private bool showDeletePopup = false;
@@ -203,10 +203,9 @@
     private string statusFilter = "";
 
     private int _currentPage = 1;
-    private int pageSize = 5;
+    private int pageSize = 10;
 
-    private int TotalPages =>
-        (int)Math.Ceiling(filteredPatients.Count / (double)pageSize);
+    private int TotalPages => result?.TotalPages ?? 1;
 
     protected override async Task OnInitializedAsync()
     {
@@ -219,11 +218,16 @@
         {
             isLoading = true;
 
-            var result = await PatientService.GetPatients();
+            var filter = new PatientFilter
+            {
+                PageNumber = _currentPage,
+                PageSize = pageSize,
+                FullName = searchText,
+                HasInsurance = string.IsNullOrEmpty(insuranceFilter) ? null : bool.Parse(insuranceFilter),
+                IsActive = string.IsNullOrEmpty(statusFilter) ? null : bool.Parse(statusFilter)
+            };
 
-            patients = result.Items;
-
-            ApplyFilters();
+            result = await PatientService.GetPatients(filter);
         }
         finally
         {
@@ -231,44 +235,29 @@
         }
     }
 
-    private void ApplyFilters()
+    
+    private async Task ApplyFilters()
     {
-        filteredPatients = patients
-            .Where(p => string.IsNullOrEmpty(searchText) || p.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-
-            .Where(p => string.IsNullOrEmpty(insuranceFilter) || p.HasInsurance.ToString().ToLower() == insuranceFilter)
-
-            .Where(p => string.IsNullOrEmpty(statusFilter) || p.IsActive.ToString().ToLower() == statusFilter)
-
-            .ToList();
-
         _currentPage = 1;
-        ApplyPagination();
+        await LoadPatients();
     }
 
-    private void ApplyPagination()
-    {
-        paginatedPatients = filteredPatients
-            .Skip((_currentPage - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-    }
-
-    private void NextPage()
+  
+    private async Task NextPage()
     {
         if (_currentPage < TotalPages)
         {
             _currentPage++;
-            ApplyPagination();
+            await LoadPatients();
         }
     }
 
-    private void PrevPage()
+    private async Task PrevPage()
     {
         if (_currentPage > 1)
         {
             _currentPage--;
-            ApplyPagination();
+            await LoadPatients();
         }
     }
 
@@ -283,9 +272,7 @@
         try
         {
             await PatientService.UpdateStatus(patient.PatientId, !patient.IsActive);
-            patient.IsActive = !patient.IsActive;
-
-            StateHasChanged(); 
+            await LoadPatients();
         }
         catch
         {

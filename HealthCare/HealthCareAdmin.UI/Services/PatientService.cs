@@ -1,4 +1,6 @@
-﻿using Healthcare.Shared.DTOs.Patient;
+﻿using Healthcare.Shared.DTOs;
+using Healthcare.Shared.DTOs.Doctor;
+using Healthcare.Shared.DTOs.Patient;
 using System.Net.Http.Json;
 
 namespace HealthCareAdmin.UI.Services
@@ -12,11 +14,23 @@ namespace HealthCareAdmin.UI.Services
             _http = http;
         }
 
-        public async Task<PagedPatientResponse> GetPatients()
+
+        public async Task<PagedResult<PatientListDto>> GetPatients(PatientFilter filter)
         {
-            return await _http.GetFromJsonAsync<PagedPatientResponse>("api/admin/patients")
-                   ?? new PagedPatientResponse();
+            var query = $"api/admin/patients?pageNumber={filter.PageNumber}&pageSize={filter.PageSize}";
+
+            if (!string.IsNullOrEmpty(filter.FullName))
+                query += $"&fullName={filter.FullName}";
+
+            if (filter.HasInsurance.HasValue)
+                query += $"&hasInsurance={filter.HasInsurance}";
+
+            if (filter.IsActive.HasValue)
+                query += $"&isActive={filter.IsActive}";
+
+            return await _http.GetFromJsonAsync<PagedResult<PatientListDto>>(query) ?? new PagedResult<PatientListDto>();
         }
+
 
         public async Task DeletePatient(int id)
         {

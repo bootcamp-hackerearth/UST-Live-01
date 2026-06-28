@@ -2,7 +2,6 @@ using HealthCareAdmin.UI;
 using HealthCareAdmin.UI.Services;
 using HealthCareAdmin.UI.Services.Auth;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
