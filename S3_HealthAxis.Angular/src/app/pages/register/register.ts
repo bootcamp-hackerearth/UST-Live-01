@@ -214,7 +214,7 @@ export class Register {
         this.successMessage = 'Registration successful. Redirecting to patient portal...';
 
         setTimeout(() => {
-          this.router.navigate(['/patient/doctors']);
+          this.router.navigate(['/patient/dashboard']);
         }, 900);
       },
       error: (error) => {

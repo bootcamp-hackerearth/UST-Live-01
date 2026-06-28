@@ -50,7 +50,7 @@ export class Login {
         }
 
         if (role === 'patient') {
-          this.router.navigate(['/patient/doctors']);
+          this.router.navigate(['/patient/dashboard']);
           return;
         }
 

@@ -1,0 +1,158 @@
+<section class="ha-dashboard-page">
+  <div class="ha-dashboard-shell">
+    <!-- Header -->
+    <section class="ha-dashboard-hero">
+      <div>
+        <span class="ha-dashboard-badge">
+          <i class="bi bi-person-heart"></i>
+          Patient Portal
+        </span>
+
+        <h1>Welcome back to your care journey.</h1>
+
+        <p>
+          Search doctors, book appointments, track visits, and view your health history
+          from one simple dashboard.
+        </p>
+
+        <div class="ha-dashboard-actions">
+          <a routerLink="/patient/doctors" class="ha-primary-btn">
+            Find Doctor
+            <i class="bi bi-search"></i>
+          </a>
+
+          <a routerLink="/patient/appointments" class="ha-secondary-btn">
+            My Appointments
+          </a>
+        </div>
+      </div>
+
+      <div class="ha-next-appointment-card">
+        <div class="ha-card-top">
+          <span>Upcoming Appointment</span>
+          <span class="ha-status pending">Pending</span>
+        </div>
+
+        <div class="ha-doctor-line">
+          <div class="ha-avatar">
+            <i class="bi bi-person-badge"></i>
+          </div>
+
+          <div>
+            <h3>Dr. Arun Nair</h3>
+            <p>General Practitioner</p>
+          </div>
+        </div>
+
+        <div class="ha-appointment-meta">
+          <div>
+            <i class="bi bi-calendar2-check"></i>
+            <span>30 Jun 2026</span>
+          </div>
+
+          <div>
+            <i class="bi bi-clock"></i>
+            <span>10:00 AM</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="ha-stat-grid">
+      <div class="ha-stat-card">
+        <i class="bi bi-calendar2-week"></i>
+        <span>Total Appointments</span>
+        <strong>8</strong>
+      </div>
+
+      <div class="ha-stat-card">
+        <i class="bi bi-hourglass-split"></i>
+        <span>Pending</span>
+        <strong>2</strong>
+      </div>
+
+      <div class="ha-stat-card">
+        <i class="bi bi-check2-circle"></i>
+        <span>Completed</span>
+        <strong>5</strong>
+      </div>
+
+      <div class="ha-stat-card">
+        <i class="bi bi-journal-medical"></i>
+        <span>Health Records</span>
+        <strong>3</strong>
+      </div>
+    </section>
+
+    <!-- Main dashboard grid -->
+    <section class="ha-main-grid">
+      <!-- Quick actions -->
+      <div class="ha-panel">
+        <div class="ha-panel-header">
+          <div>
+            <span>Quick Actions</span>
+            <h2>What would you like to do?</h2>
+          </div>
+        </div>
+
+        <div class="ha-action-grid">
+          <a routerLink="/patient/doctors" class="ha-action-card">
+            <i class="bi bi-search-heart"></i>
+            <strong>Search Doctors</strong>
+            <p>Find specialists by availability and consultation fee.</p>
+          </a>
+
+          <a routerLink="/patient/appointments" class="ha-action-card">
+            <i class="bi bi-calendar-plus"></i>
+            <strong>Book Appointment</strong>
+            <p>Choose a date and slot with your preferred doctor.</p>
+          </a>
+
+          <a routerLink="/patient/history" class="ha-action-card">
+            <i class="bi bi-clipboard2-pulse"></i>
+            <strong>Health History</strong>
+            <p>View diagnosis, prescriptions, and past visits.</p>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recent appointments -->
+      <div class="ha-panel">
+        <div class="ha-panel-header">
+          <div>
+            <span>Appointments</span>
+            <h2>Recent activity</h2>
+          </div>
+        </div>
+
+        <div class="ha-list">
+          <div class="ha-list-item">
+            <div>
+              <strong>Dr. Rohan Menon</strong>
+              <span>Cardiologist • 26 Jun 2026</span>
+            </div>
+            <span class="ha-status completed">Completed</span>
+          </div>
+
+          <div class="ha-list-item">
+            <div>
+              <strong>Dr. Arun Nair</strong>
+              <span>General Practitioner • 30 Jun 2026</span>
+            </div>
+            <span class="ha-status pending">Pending</span>
+          </div>
+
+          <div class="ha-list-item">
+            <div>
+              <strong>Dr. Meera Iyer</strong>
+              <span>Dermatologist • 03 Jul 2026</span>
+            </div>
+            <span class="ha-status confirmed">Confirmed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+

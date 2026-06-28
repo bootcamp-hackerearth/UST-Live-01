@@ -1,0 +1,348 @@
+.ha-dashboard-page {
+  padding: 42px 30px 80px;
+  min-height: calc(100vh - 140px);
+}
+
+.ha-dashboard-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.ha-dashboard-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.ha-dashboard-hero,
+.ha-panel,
+.ha-stat-card,
+.ha-next-appointment-card {
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(203, 232, 255, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+}
+
+.ha-dashboard-hero {
+  padding: 38px;
+}
+
+.ha-dashboard-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: rgba(239, 246, 255, 0.96);
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  font-size: 0.86rem;
+  margin-bottom: 18px;
+}
+
+.ha-dashboard-hero h1 {
+  margin: 0 0 16px;
+  color: #101827;
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.ha-dashboard-hero p {
+  margin: 0;
+  max-width: 700px;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 1.04rem;
+}
+
+.ha-dashboard-actions {
+  margin-top: 28px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.ha-primary-btn,
+.ha-secondary-btn {
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  font-weight: 850;
+}
+
+.ha-primary-btn {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.24);
+}
+
+.ha-secondary-btn {
+  color: #1d4ed8;
+  background: #ffffff;
+  border: 1px solid #bfdbfe;
+}
+
+.ha-next-appointment-card {
+  padding: 28px;
+}
+
+.ha-card-top,
+.ha-appointment-meta,
+.ha-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ha-card-top {
+  margin-bottom: 24px;
+}
+
+.ha-card-top span:first-child {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-doctor-line {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 26px;
+}
+
+.ha-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  color: #2563eb;
+  background: #eff6ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.ha-doctor-line h3 {
+  margin: 0 0 4px;
+  color: #112033;
+}
+
+.ha-doctor-line p {
+  margin: 0;
+  color: #64748b;
+}
+
+.ha-appointment-meta {
+  gap: 12px;
+}
+
+.ha-appointment-meta div {
+  flex: 1;
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fbff;
+  color: #475569;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ha-stat-grid {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.ha-stat-card {
+  padding: 24px;
+}
+
+.ha-stat-card i {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.ha-stat-card span {
+  display: block;
+  color: #64748b;
+  font-weight: 750;
+}
+
+.ha-stat-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #101827;
+  font-size: 1.9rem;
+}
+
+.ha-main-grid {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 22px;
+}
+
+.ha-panel {
+  padding: 28px;
+}
+
+.ha-panel-header span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-panel-header h2 {
+  margin: 8px 0 22px;
+  color: #101827;
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+}
+
+.ha-action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.ha-action-card {
+  padding: 20px;
+  border-radius: 22px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  text-decoration: none;
+  transition: all 0.22s ease;
+}
+
+.ha-action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.12);
+}
+
+.ha-action-card i {
+  color: #2563eb;
+  font-size: 1.5rem;
+}
+
+.ha-action-card strong {
+  display: block;
+  margin-top: 12px;
+  color: #112033;
+}
+
+.ha-action-card p {
+  margin: 8px 0 0;
+  color: #64748b;
+  line-height: 1.55;
+}
+
+.ha-list {
+  display: grid;
+  gap: 14px;
+}
+
+.ha-list-item {
+  padding: 16px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid #e0f2fe;
+}
+
+.ha-list-item strong {
+  display: block;
+  color: #112033;
+}
+
+.ha-list-item span {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.ha-status {
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.75rem !important;
+  font-weight: 900;
+}
+
+.ha-status.pending {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.ha-status.completed {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #bbf7d0;
+}
+
+.ha-status.confirmed {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+@media (max-width: 1100px) {
+  .ha-dashboard-hero,
+  .ha-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ha-action-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .ha-dashboard-page {
+    padding: 28px 18px 56px;
+  }
+
+  .ha-dashboard-hero {
+    padding: 28px;
+  }
+
+  .ha-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-appointment-meta {
+    flex-direction: column;
+  }
+
+  .ha-appointment-meta div {
+    width: 100%;
+  }
+}
+

@@ -4,6 +4,8 @@ import { Component } from '@angular/core';
   selector: 'app-doctor-dashboard',
   imports: [],
   templateUrl: './doctor-dashboard.html',
-  styleUrl: './doctor-dashboard.css',
+  styleUrl: './doctor-dashboard.css'
 })
-export class DoctorDashboard {}
+export class DoctorDashboard {
+}
+

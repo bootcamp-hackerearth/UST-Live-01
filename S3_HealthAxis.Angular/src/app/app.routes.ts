@@ -17,6 +17,11 @@ export const routes: Routes = [
       import('./pages/register/register').then(m => m.Register)
   },
   {
+    path: 'patient/dashboard',
+    loadComponent: () =>
+      import('./pages/patient-dashboard/patient-dashboard').then(m => m.PatientDashboard)
+  },
+  {
     path: 'patient/doctors',
     loadComponent: () =>
       import('./pages/patient-doctors/patient-doctors').then(m => m.PatientDoctors)

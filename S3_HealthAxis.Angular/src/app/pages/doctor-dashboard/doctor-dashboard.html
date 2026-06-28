@@ -1,6 +1,144 @@
-<section class="p-5">
-  <div class="container">
-    <h2>Doctor Dashboard</h2>
-    <p>Today’s schedule will be implemented later.</p>
+<section class="ha-doctor-page">
+  <div class="ha-doctor-shell">
+    <!-- Header -->
+    <section class="ha-doctor-hero">
+      <div>
+        <span class="ha-doctor-badge">
+          <i class="bi bi-person-badge"></i>
+          Doctor Dashboard
+        </span>
+
+        <h1>Today’s consultations at a glance.</h1>
+
+        <p>
+          Review appointments, open patient profiles, and prepare consultation records
+          from one focused workspace.
+        </p>
+      </div>
+
+      <div class="ha-today-card">
+        <span>Today</span>
+        <strong>6 Appointments</strong>
+        <p>June 30, 2026</p>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="ha-doctor-stats">
+      <div class="ha-stat-box">
+        <i class="bi bi-calendar-check"></i>
+        <span>Scheduled</span>
+        <strong>6</strong>
+      </div>
+
+      <div class="ha-stat-box">
+        <i class="bi bi-hourglass-split"></i>
+        <span>Pending</span>
+        <strong>2</strong>
+      </div>
+
+      <div class="ha-stat-box">
+        <i class="bi bi-check2-circle"></i>
+        <span>Completed</span>
+        <strong>3</strong>
+      </div>
+
+      <div class="ha-stat-box">
+        <i class="bi bi-file-medical"></i>
+        <span>Records Added</span>
+        <strong>3</strong>
+      </div>
+    </section>
+
+    <!-- Dashboard Content -->
+    <section class="ha-doctor-grid">
+      <!-- Schedule -->
+      <div class="ha-panel">
+        <div class="ha-panel-header">
+          <div>
+            <span>Schedule</span>
+            <h2>Today’s appointments</h2>
+          </div>
+        </div>
+
+        <div class="ha-schedule-list">
+          <div class="ha-schedule-item">
+            <div class="ha-time">10:00 AM</div>
+            <div class="ha-patient-info">
+              <strong>Ayush Sharma</strong>
+              <span>General consultation</span>
+            </div>
+            <span class="ha-status pending">Pending</span>
+          </div>
+
+          <div class="ha-schedule-item">
+            <div class="ha-time">11:30 AM</div>
+            <div class="ha-patient-info">
+              <strong>Riya Shukla</strong>
+              <span>Follow-up visit</span>
+            </div>
+            <span class="ha-status confirmed">Confirmed</span>
+          </div>
+
+          <div class="ha-schedule-item">
+            <div class="ha-time">02:00 PM</div>
+            <div class="ha-patient-info">
+              <strong>Karan Mehta</strong>
+              <span>Prescription review</span>
+            </div>
+            <span class="ha-status completed">Completed</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient Context -->
+      <div class="ha-panel">
+        <div class="ha-panel-header">
+          <div>
+            <span>Patient Context</span>
+            <h2>Selected patient preview</h2>
+          </div>
+        </div>
+
+        <div class="ha-profile-card">
+          <div class="ha-profile-top">
+            <div class="ha-profile-avatar">
+              <i class="bi bi-person-heart"></i>
+            </div>
+
+            <div>
+              <h3>Ayush Sharma</h3>
+              <p>Age 31 • Male</p>
+            </div>
+          </div>
+
+          <div class="ha-profile-grid">
+            <div>
+              <span>Last Visit</span>
+              <strong>12 Jun 2026</strong>
+            </div>
+
+            <div>
+              <span>Records</span>
+              <strong>4</strong>
+            </div>
+          </div>
+
+          <div class="ha-health-summary">
+            <h4>Recent Health Note</h4>
+            <p>
+              Patient reported mild fever and fatigue. Follow-up recommended after
+              prescribed medication course.
+            </p>
+          </div>
+
+          <button type="button" class="ha-record-btn">
+            <i class="bi bi-plus-circle"></i>
+            Add Health Record
+          </button>
+        </div>
+      </div>
+    </section>
   </div>
 </section>
+

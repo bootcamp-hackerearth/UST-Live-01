@@ -1,0 +1,335 @@
+.ha-doctor-page {
+  min-height: calc(100vh - 140px);
+  padding: 42px 30px 80px;
+}
+
+.ha-doctor-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.ha-doctor-hero,
+.ha-panel,
+.ha-stat-box,
+.ha-today-card {
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(203, 232, 255, 0.95);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+}
+
+.ha-doctor-hero {
+  padding: 38px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
+  align-items: center;
+}
+
+.ha-doctor-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: rgba(239, 246, 255, 0.96);
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  font-size: 0.86rem;
+  margin-bottom: 18px;
+}
+
+.ha-doctor-hero h1 {
+  margin: 0 0 16px;
+  color: #101827;
+  font-size: clamp(2.2rem, 4vw, 3.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.ha-doctor-hero p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 1.04rem;
+}
+
+.ha-today-card {
+  padding: 26px;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(56, 189, 248, 0.22), transparent 35%),
+    rgba(255, 255, 255, 0.78);
+}
+
+.ha-today-card span {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-today-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #101827;
+  font-size: 1.7rem;
+}
+
+.ha-today-card p {
+  margin: 8px 0 0;
+  color: #64748b;
+}
+
+.ha-doctor-stats {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.ha-stat-box {
+  padding: 24px;
+}
+
+.ha-stat-box i {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.ha-stat-box span {
+  display: block;
+  color: #64748b;
+  font-weight: 750;
+}
+
+.ha-stat-box strong {
+  display: block;
+  margin-top: 8px;
+  color: #101827;
+  font-size: 1.9rem;
+}
+
+.ha-doctor-grid {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 22px;
+}
+
+.ha-panel {
+  padding: 28px;
+}
+
+.ha-panel-header span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-panel-header h2 {
+  margin: 8px 0 22px;
+  color: #101827;
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+}
+
+.ha-schedule-list {
+  display: grid;
+  gap: 14px;
+}
+
+.ha-schedule-item {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  align-items: center;
+  gap: 15px;
+  padding: 16px;
+  border-radius: 20px;
+  background: #f8fbff;
+  border: 1px solid #e0f2fe;
+}
+
+.ha-time {
+  color: #2563eb;
+  font-weight: 900;
+}
+
+.ha-patient-info strong {
+  display: block;
+  color: #112033;
+}
+
+.ha-patient-info span {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.ha-status {
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.ha-status.pending {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.ha-status.completed {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #bbf7d0;
+}
+
+.ha-status.confirmed {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.ha-profile-card {
+  padding: 22px;
+  border-radius: 24px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+}
+
+.ha-profile-top {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.ha-profile-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  color: #2563eb;
+  background: #eff6ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.ha-profile-top h3 {
+  margin: 0 0 4px;
+  color: #112033;
+}
+
+.ha-profile-top p {
+  margin: 0;
+  color: #64748b;
+}
+
+.ha-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ha-profile-grid div {
+  padding: 14px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+}
+
+.ha-profile-grid span {
+  display: block;
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.ha-profile-grid strong {
+  display: block;
+  color: #112033;
+  margin-top: 4px;
+}
+
+.ha-health-summary {
+  padding: 16px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  margin-bottom: 18px;
+}
+
+.ha-health-summary h4 {
+  margin: 0 0 8px;
+  color: #112033;
+}
+
+.ha-health-summary p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.ha-record-btn {
+  width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-weight: 850;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+}
+
+@media (max-width: 1100px) {
+  .ha-doctor-hero,
+  .ha-doctor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-doctor-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .ha-doctor-page {
+    padding: 28px 18px 56px;
+  }
+
+  .ha-doctor-hero {
+    padding: 28px;
+  }
+
+  .ha-doctor-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-schedule-item {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
