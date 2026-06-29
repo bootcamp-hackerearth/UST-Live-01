@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface LandingFeature {
   title: string;
@@ -54,23 +55,18 @@ export class Home implements OnInit {
   currentHighlightIndex = 0;
 
   isLoginModalOpen = false;
-
   isSignupModalOpen = false;
 
   isSubmittingLogin = false;
-
   isSubmittingSignup = false;
 
   loginMessage = '';
-
   signupMessage = '';
 
   todayDate = '';
 
   namePattern = '^[A-Za-z][A-Za-z\\s]{1,99}$';
-
   phonePattern = '^[0-9]{10}$';
-
   passwordPattern = '^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$';
 
   genderOptions: string[] = ['Male', 'Female', 'Other'];
@@ -99,7 +95,6 @@ export class Home implements OnInit {
   ];
 
   features: LandingFeature[] = [];
-
   highlights: CareHighlight[] = [];
 
   loginForm: LoginFormModel = {
@@ -119,9 +114,11 @@ export class Home implements OnInit {
     confirmPassword: ''
   };
 
+  constructor(private router: Router) {
+  }
+
   ngOnInit(): void {
     this.todayDate = new Date().toISOString().split('T')[0];
-
     this.loadLandingContent();
   }
 
@@ -138,7 +135,6 @@ export class Home implements OnInit {
 
   get isPasswordMismatch(): boolean {
     const password = this.patientRegisterForm.password.trim();
-
     const confirmPassword = this.patientRegisterForm.confirmPassword.trim();
 
     return confirmPassword.length > 0 && password !== confirmPassword;
@@ -146,30 +142,22 @@ export class Home implements OnInit {
 
   openLoginModal(): void {
     this.loginMessage = '';
-
     this.isSignupModalOpen = false;
-
     this.isLoginModalOpen = true;
   }
 
   openSignupModal(): void {
     this.signupMessage = '';
-
     this.isLoginModalOpen = false;
-
     this.isSignupModalOpen = true;
   }
 
   closeModals(): void {
     this.isLoginModalOpen = false;
-
     this.isSignupModalOpen = false;
 
-    
-this.resetLoginForm();
-
-  this.resetSignupForm()
-
+    this.resetLoginForm();
+    this.resetSignupForm();
   }
 
   submitLogin(form: NgForm): void {
@@ -177,21 +165,21 @@ this.resetLoginForm();
 
     if (form.invalid) {
       form.control.markAllAsTouched();
-
       this.loginMessage = 'Please enter username/email and password.';
-
       return;
     }
 
     this.isSubmittingLogin = true;
-
     this.loginMessage = 'Checking your credentials...';
 
     setTimeout(() => {
       this.isSubmittingLogin = false;
 
-      this.loginMessage = 'Login validation is ready. Backend connection will be added next.';
-    }, 900);
+      this.isLoginModalOpen = false;
+      this.isSignupModalOpen = false;
+
+      this.router.navigate(['/patient/dashboard']);
+    }, 700);
   }
 
   submitSignup(form: NgForm): void {
@@ -199,25 +187,20 @@ this.resetLoginForm();
 
     if (form.invalid) {
       form.control.markAllAsTouched();
-
       this.signupMessage = 'Please correct the highlighted fields.';
-
       return;
     }
 
     if (this.isPasswordMismatch) {
       this.signupMessage = 'Password and Confirm Password do not match.';
-
       return;
     }
 
     this.isSubmittingSignup = true;
-
     this.signupMessage = 'Creating your patient account...';
 
     setTimeout(() => {
       this.isSubmittingSignup = false;
-
       this.signupMessage =
         'Patient registration validation is ready. Backend connection will be added next.';
     }, 900);
@@ -249,33 +232,31 @@ this.resetLoginForm();
   }
 
   private resetLoginForm(): void {
-  this.loginForm = {
-    usernameOrEmail: '',
-    password: ''
-  };
+    this.loginForm = {
+      usernameOrEmail: '',
+      password: ''
+    };
 
-  this.loginMessage = '';
+    this.loginMessage = '';
+    this.isSubmittingLogin = false;
+  }
 
-  this.isSubmittingLogin = false;
-}
+  private resetSignupForm(): void {
+    this.patientRegisterForm = {
+      fullName: '',
+      dateOfBirth: '',
+      gender: '',
+      email: '',
+      countryCode: '+91',
+      phoneNumber: '',
+      insuranceId: '',
+      password: '',
+      confirmPassword: ''
+    };
 
-private resetSignupForm(): void {
-  this.patientRegisterForm = {
-    fullName: '',
-    dateOfBirth: '',
-    gender: '',
-    email: '',
-    countryCode: '+91',
-    phoneNumber: '',
-    insuranceId: '',
-    password: '',
-    confirmPassword: ''
-  };
-
-  this.signupMessage = '';
-
-  this.isSubmittingSignup = false;
-}
+    this.signupMessage = '';
+    this.isSubmittingSignup = false;
+  }
 
   private loadLandingContent(): void {
     this.features = [

@@ -1,0 +1,159 @@
+<section class="hr-records-shell">
+
+  <div class="hr-hero-card">
+    <div>
+      <span class="hr-kicker">Medical History</span>
+
+      <h2>Health Records</h2>
+
+      <p>
+        Review your diagnosis, prescriptions, visit notes, and care history from
+        your completed consultations.
+      </p>
+    </div>
+
+    <div class="hr-hero-badge">
+      <strong>{{ records.length }}</strong>
+      <span>Records Available</span>
+    </div>
+  </div>
+
+  @if (records.length === 0) {
+    <div class="hr-empty-card">
+      <div class="hr-empty-icon">▣</div>
+
+      <h3>No health records available</h3>
+
+      <p>
+        Your consultation records will appear here after completed visits.
+      </p>
+    </div>
+  }
+
+  @if (records.length > 0) {
+    <div class="hr-record-grid">
+
+      @for (rec of records; track rec.healthRecordId) {
+
+        <article class="hr-record-card" (click)="openDetails(rec)">
+
+          <div class="hr-record-top">
+            <div class="hr-record-icon">
+              HR
+            </div>
+
+            <div class="hr-record-title">
+              <span>Consultation Record</span>
+              <h3>{{ rec.doctorName }}</h3>
+              <p>{{ formatDate(rec.visitDate) }}</p>
+            </div>
+
+            <button type="button" class="hr-view-btn">
+              View
+            </button>
+          </div>
+
+          <div class="hr-diagnosis-box">
+            <span>Diagnosis</span>
+            <strong>{{ rec.diagnosis }}</strong>
+          </div>
+
+          <div class="hr-record-detail-grid">
+
+            <div class="hr-detail-tile">
+              <span>Prescription</span>
+              <p>{{ rec.prescription }}</p>
+            </div>
+
+            @if (rec.notes) {
+              <div class="hr-detail-tile">
+                <span>Doctor Notes</span>
+                <p>{{ rec.notes }}</p>
+              </div>
+            }
+
+          </div>
+
+          <div class="hr-card-footer">
+            <span>Appointment #{{ rec.appointmentId }}</span>
+            <small>Click to view full medical summary</small>
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+  }
+
+  @if (isModalOpen && selectedRecord) {
+
+    <div class="hr-modal-backdrop" (click)="closeModal()">
+
+      <section class="hr-modal" (click)="$event.stopPropagation()">
+
+        <div class="hr-modal-accent"></div>
+
+        <div class="hr-modal-header">
+          <div>
+            <span class="hr-modal-kicker">Health Record Details</span>
+
+            <h3>{{ selectedRecord.doctorName }}</h3>
+
+            <p>
+              {{ formatDate(selectedRecord.visitDate) }} • Appointment #{{ selectedRecord.appointmentId }}
+            </p>
+          </div>
+
+          <button type="button" class="hr-modal-close" (click)="closeModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="hr-modal-summary">
+
+          <div>
+            <span>Patient</span>
+            <strong>{{ selectedRecord.patientName }}</strong>
+          </div>
+
+          <div>
+            <span>Doctor</span>
+            <strong>{{ selectedRecord.doctorName }}</strong>
+          </div>
+
+          <div>
+            <span>Visit Date</span>
+            <strong>{{ formatDate(selectedRecord.visitDate) }}</strong>
+          </div>
+
+        </div>
+
+        <div class="hr-modal-body">
+
+          <div class="hr-modal-section diagnosis">
+            <span>Diagnosis</span>
+            <p>{{ selectedRecord.diagnosis }}</p>
+          </div>
+
+          <div class="hr-modal-section">
+            <span>Prescription</span>
+            <p>{{ selectedRecord.prescription }}</p>
+          </div>
+
+          @if (selectedRecord.notes) {
+            <div class="hr-modal-section">
+              <span>Doctor Notes</span>
+              <p>{{ selectedRecord.notes }}</p>
+            </div>
+          }
+
+        </div>
+
+      </section>
+
+    </div>
+
+  }
+
+</section>
