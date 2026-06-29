@@ -214,8 +214,20 @@
         <h2>Welcome Back</h2>
 
         <p>
-          Sign in to continue your HealthAxis care experience.
+          Select your portal and sign in to continue your HealthAxis care experience.
         </p>
+
+        <div class="ha-login-role-grid">
+          @for (role of loginRoleOptions; track role) {
+            <button
+              type="button"
+              class="ha-login-role-btn"
+              [class.active]="selectedLoginRole === role"
+              (click)="selectLoginRole(role)">
+              {{ role }}
+            </button>
+          }
+        </div>
 
         <form
           class="ha-auth-form"
@@ -223,19 +235,20 @@
           (ngSubmit)="submitLogin(loginFormRef)"
           novalidate>
           <label>
-            Username or Email
+            Email
             <input
-              type="text"
+              type="email"
               name="usernameOrEmail"
-              placeholder="Enter username or email"
+              placeholder="Enter email"
               required
+              email
               [(ngModel)]="loginForm.usernameOrEmail"
               #usernameOrEmail="ngModel" />
           </label>
 
           @if (usernameOrEmail.invalid && usernameOrEmail.touched) {
             <div class="ha-field-error">
-              Username or email is required.
+              Enter a valid email address.
             </div>
           }
 
@@ -266,12 +279,12 @@
             type="submit"
             class="ha-auth-submit"
             [disabled]="isSubmittingLogin">
-            {{ isSubmittingLogin ? 'Please wait...' : 'Login' }}
+            {{ isSubmittingLogin ? 'Please wait...' : 'Login as ' + selectedLoginRole }}
           </button>
         </form>
 
         <div class="ha-auth-switch">
-          New to HealthAxis?
+          New patient?
           <button type="button" (click)="openSignupModal()">
             Create patient account
           </button>

@@ -814,3 +814,50 @@ button {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==============================
+   LOGIN ROLE SELECTOR
+============================== */
+
+.ha-login-role-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.ha-login-role-btn {
+  height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  color: #334155;
+  background: #f8fafc;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.ha-login-role-btn:hover {
+  transform: translateY(-2px);
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.ha-login-role-btn.active {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  border-color: transparent;
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.24);
+}
+
+@media (max-width: 520px) {
+  .ha-login-role-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 
+import { AuthService } from '../../core/services/auth.service';
+import { LoginRequest, UserRole } from '../../shared/models/auth.models';
+
 interface LandingFeature {
   title: string;
   description: string;
@@ -65,6 +68,10 @@ export class Home implements OnInit {
 
   todayDate = '';
 
+  selectedLoginRole: UserRole = 'Patient';
+
+  loginRoleOptions: UserRole[] = ['Patient', 'Doctor', 'Admin'];
+
   namePattern = '^[A-Za-z][A-Za-z\\s]{1,99}$';
   phonePattern = '^[0-9]{10}$';
   passwordPattern = '^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$';
@@ -114,7 +121,10 @@ export class Home implements OnInit {
     confirmPassword: ''
   };
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {
   }
 
   ngOnInit(): void {
@@ -140,7 +150,8 @@ export class Home implements OnInit {
     return confirmPassword.length > 0 && password !== confirmPassword;
   }
 
-  openLoginModal(): void {
+  openLoginModal(role: UserRole = 'Patient'): void {
+    this.selectedLoginRole = role;
     this.loginMessage = '';
     this.isSignupModalOpen = false;
     this.isLoginModalOpen = true;
@@ -160,26 +171,46 @@ export class Home implements OnInit {
     this.resetSignupForm();
   }
 
+  selectLoginRole(role: UserRole): void {
+    this.selectedLoginRole = role;
+    this.loginMessage = '';
+  }
+
   submitLogin(form: NgForm): void {
     this.loginMessage = '';
 
     if (form.invalid) {
       form.control.markAllAsTouched();
-      this.loginMessage = 'Please enter username/email and password.';
+      this.loginMessage = 'Please enter email and password.';
       return;
     }
 
     this.isSubmittingLogin = true;
     this.loginMessage = 'Checking your credentials...';
 
-    setTimeout(() => {
-      this.isSubmittingLogin = false;
+    const request: LoginRequest = {
+      email: this.loginForm.usernameOrEmail.trim(),
+      password: this.loginForm.password
+    };
 
-      this.isLoginModalOpen = false;
-      this.isSignupModalOpen = false;
+    this.authService.login(request).subscribe({
+      next: () => {
+        const loggedInRole = this.authService.getRole();
 
-      this.router.navigate(['/patient/dashboard']);
-    }, 700);
+        if (loggedInRole !== this.selectedLoginRole) {
+          this.authService.logout();
+          this.isSubmittingLogin = false;
+          this.loginMessage = `This login is only for ${this.selectedLoginRole}s.`;
+          return;
+        }
+
+        this.redirectAfterLogin(this.selectedLoginRole);
+      },
+      error: (error: unknown) => {
+        this.isSubmittingLogin = false;
+        this.loginMessage = this.getLoginErrorMessage(error);
+      }
+    });
   }
 
   submitSignup(form: NgForm): void {
@@ -231,6 +262,33 @@ export class Home implements OnInit {
     }
   }
 
+  private redirectAfterLogin(role: UserRole): void {
+    this.isSubmittingLogin = false;
+    this.isLoginModalOpen = false;
+    this.isSignupModalOpen = false;
+
+    if (role === 'Patient') {
+      this.router.navigate(['/patient/dashboard']);
+      return;
+    }
+
+    if (role === 'Doctor') {
+      this.router.navigate(['/doctor/dashboard']);
+      return;
+    }
+
+   
+if (role === 'Admin') {
+  const token = this.authService.getToken();
+
+  window.location.href =
+    `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
+
+  return;
+}
+
+  }
+
   private resetLoginForm(): void {
     this.loginForm = {
       usernameOrEmail: '',
@@ -239,6 +297,7 @@ export class Home implements OnInit {
 
     this.loginMessage = '';
     this.isSubmittingLogin = false;
+    this.selectedLoginRole = 'Patient';
   }
 
   private resetSignupForm(): void {
@@ -256,6 +315,29 @@ export class Home implements OnInit {
 
     this.signupMessage = '';
     this.isSubmittingSignup = false;
+  }
+
+  private getLoginErrorMessage(error: unknown): string {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+        };
+      };
+
+      return (
+        apiError.error?.message ??
+        apiError.error?.Message ??
+        'Invalid email or password.'
+      );
+    }
+
+    return 'Invalid email or password.';
   }
 
   private loadLandingContent(): void {
