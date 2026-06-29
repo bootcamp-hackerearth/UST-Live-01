@@ -7,36 +7,34 @@ namespace HealthAxisApplicn.Services.Impl
 {
     public class HealthRecordService(IHealthRecordRepository repository, IAppointmentRepository appointmentRepository, IMapper mapper) : IHealthRecordService
     {
-        public async Task<HealthRecordDto> CreateAsync(CreateHealthRecordDto dto)
+        public async Task<HealthRecordDto?> UpdateAsync(int id, UpdateHealthRecordDto dto)
         {
+            var record = await repository.GetByIdAsync(id);
+
+            if (record == null)
+                return null;
+            
+            var appointment = await appointmentRepository.GetByIdAsync(record.AppointmentId);
+
+            if (appointment?.Status != "Completed")
+                throw new Exception("Cannot update record before appointment is completed");
+
+
             if (string.IsNullOrWhiteSpace(dto.Diagnosis))
                 throw new Exception("Diagnosis is required");
 
             if (string.IsNullOrWhiteSpace(dto.Prescription))
                 throw new Exception("Prescription is required");
 
-            var appointment = await appointmentRepository.GetByIdAsync(dto.AppointmentId);
+            record.Diagnosis = dto.Diagnosis;
+            record.Prescription = dto.Prescription;
+            record.Notes = dto.Notes;
 
-            if (appointment == null)
-                throw new Exception("Invalid Appointment");
+            var updated = await repository.UpdateAsync(id, record);
 
-            if (appointment.Status != "Completed")
-                throw new Exception("Health record can only be created after appointment is completed");
-
-            var record = new HealthRecord
-            {
-                PatientId = appointment.PatientId,
-                DoctorId = appointment.DoctorId,
-                VisitDate = dto.VisitDate,
-                Diagnosis = dto.Diagnosis,
-                Prescription = dto.Prescription,
-                Notes = dto.Notes
-            };
-
-            var saved = await repository.CreateAsync(record);
-
-            return mapper.Map<HealthRecordDto>(saved);
+            return mapper.Map<HealthRecordDto>(updated);
         }
+
 
         public async Task<List<HealthRecordDto>> GetAllAsync()
         {
@@ -67,6 +65,24 @@ namespace HealthAxisApplicn.Services.Impl
         public async Task<List<HealthRecordDto>> GetRecordsByPatientNameAsync(string patientName)
         {
             return mapper.Map<List<HealthRecordDto>>(await repository.GetRecordsByPatientNameAsync(patientName));
+        }
+
+        public async Task CreateFromAppointment(Appointment appointment)
+        {
+            var exists = await repository.ExistsForAppointmentAsync(appointment.AppointmentId);
+
+            if (exists)
+                return; 
+
+            var record = new HealthRecord
+            {
+                PatientId = appointment.PatientId,
+                DoctorId = appointment.DoctorId,
+                AppointmentId = appointment.AppointmentId,
+                VisitDate = appointment.ScheduledDate
+            };
+
+            await repository.CreateAsync(record);
         }
 
     }

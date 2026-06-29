@@ -68,6 +68,7 @@ namespace HealthAxisApplicn.Services.Impl
 
             existing.DoctorName = entity.DoctorName;
             existing.Specialisation = entity.Specialisation;
+            existing.Email = entity.Email;
             existing.YearsOfExperience = entity.YearsOfExperience;
             existing.ConsultationFee = entity.ConsultationFee;
             existing.IsActive = entity.IsActive;

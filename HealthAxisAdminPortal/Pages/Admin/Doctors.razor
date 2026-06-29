@@ -1,4 +1,5 @@
 ﻿@page "/admin/doctors"
+@using HealthAxisAdminPortal.Pages.Shared
 @inject IDoctorApiService doctorService
 @inject IJSRuntime JS
 
@@ -13,8 +14,17 @@
     </button>
 
     <input class="form-control mb-3 stylish-input"
-           placeholder="🔍 Search by name or specialisation..."
+           placeholder="🔍 Search by name..."
            @oninput="SearchDoctors" />
+
+    <select class="form-control mb-3 stylish-input"
+            @onchange="FilterBySpecialisation">
+        <option value="">All Specialisations</option>
+        @foreach (var spec in specialisations)
+        {
+            <option value="@spec">@spec</option>
+        }
+    </select>
 
     @if (showEdit)
     {
@@ -26,7 +36,16 @@
                    @bind="editDoctor.DoctorName" />
 
             <input class="form-control stylish-input mb-2"
-                   @bind="editDoctor.Specialisation" />
+                   placeholder="Email"
+                   @bind="editDoctor.Email" />
+
+            <select class="form-control stylish-input mb-2"
+                    @bind="editDoctor.Specialisation">
+                @foreach (var spec in specialisations)
+                {
+                    <option value="@spec">@spec</option>
+                }
+            </select>
 
             <input type="number"
                    class="form-control stylish-input mb-2"
@@ -43,10 +62,8 @@
             <button class="btn btn-secondary" @onclick="() => showEdit = false">
                 Cancel
             </button>
-
         </div>
     }
-
 
     @if (showForm)
     {
@@ -60,10 +77,23 @@
                        @bind="newDoctor.DoctorName" />
             </div>
 
+            <!-- ✅ EMAIL -->
             <div class="mb-2">
                 <input class="form-control stylish-input"
-                       placeholder="Specialisation"
-                       @bind="newDoctor.Specialisation" />
+                       placeholder="Email"
+                       @bind="newDoctor.Email" />
+            </div>
+
+            <div class="mb-2">
+                <select class="form-control stylish-input"
+                        @bind="newDoctor.Specialisation">
+                    <option value="">Select Specialisation</option>
+
+                    @foreach (var spec in specialisations)
+                    {
+                        <option value="@spec">@spec</option>
+                    }
+                </select>
             </div>
 
             <div class="mb-2">
@@ -85,6 +115,7 @@
 
         </div>
     }
+    ``
 
     @if (doctors == null)
     {
@@ -101,11 +132,12 @@
             <thead>
                 <tr>
                     <th>Name</th>
+                    <th>Email</th> 
                     <th>Specialization</th>
                     <th>Experience</th>
                     <th>Fee</th>
                     <th>Active</th>
-                    <th> Actions</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
 
@@ -115,6 +147,7 @@
                     <tr>
 
                         <td>@doctor.DoctorName</td>
+                        <td>@doctor.Email</td>
                         <td>@doctor.Specialisation</td>
                         <td>@doctor.YearsOfExperience</td>
 
@@ -145,7 +178,6 @@
                             </button>
                         </td>
 
-
                     </tr>
                 }
             </tbody>
@@ -155,126 +187,91 @@
 
 </div>
 
+<ErrorModal IsVisible="@showError"
+            Message="@errorMessage"
+            OnClose="CloseError" />
+
+<ConfirmModal IsVisible="@showConfirm"
+              Message="@confirmMessage"
+              OnClose="HandleConfirm" />
+
 @code {
+
     private List<DoctorDto>? doctors;
+
+    private List<string> specialisations = new()
+    {
+        "Cardiologist",
+        "Dermatologist",
+        "Neurologist",
+        "Pediatrician",
+        "Psychiatrist",
+        "OrthopedicSurgeon",
+        "Gynecologist",
+        "Oncologist",
+        "Endocrinologist",
+        "GeneralPractitioner"
+    };
+
+    private bool showForm = false;
+    private bool showEdit = false;
+    private bool showError = false;
+
+    private bool showConfirm = false;
+    private string confirmMessage = "";
+    private Func<Task>? confirmAction;
+
+    private string errorMessage = "";
+    private string selectedSpecialisation = "";
+
+    private CreateDoctorDto newDoctor = new();
+    private UpdateDoctorDto editDoctor = new();
+
+    private int editingId;
 
     protected override async Task OnInitializedAsync()
     {
         doctors = await doctorService.GetAllAsync();
     }
 
-    private bool showForm = false;
-    private CreateDoctorDto newDoctor = new();
+    private void ShowForm() => showForm = true;
 
-    void ShowForm()
-    {
-        showForm = true;
-    }
-
-    void CancelForm()
+    private void CancelForm()
     {
         showForm = false;
         newDoctor = new CreateDoctorDto();
     }
 
+    private void CloseError() => showError = false;
+
     private async Task AddDoctor()
     {
-        var success = await doctorService.CreateAsync(newDoctor);
-
-        if (success)
+        try
         {
-            showForm = false;
-            doctors = await doctorService.GetAllAsync();
-            newDoctor = new CreateDoctorDto();
+            var success = await doctorService.CreateAsync(newDoctor);
+
+            if (success)
+            {
+                showForm = false;
+                doctors = await doctorService.GetAllAsync();
+                newDoctor = new CreateDoctorDto();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", "Failed to add doctor");
-        }
-    }
-
-    private async Task ToggleStatus(DoctorDto doctor)
-    {
-        var confirm = await JS.InvokeAsync<bool>(
-            "confirm",
-            $"Are you sure you want to {(doctor.IsActive ? "deactivate" : "activate")} this doctor?"
-        );
-
-        if (!confirm)
-            return;
-
-        var success = await doctorService.ToggleActiveAsync(doctor.DoctorId);
-
-        if (success)
-        {
-            doctor.IsActive = !doctor.IsActive;
-        }
-        else
-        {
-            await JS.InvokeVoidAsync("alert", "Failed to update doctor status");
+            errorMessage = ex.Message;
+            showError = true;
         }
     }
 
-    private async Task UpdateFee(DoctorDto doctor)
-    {
-        var confirm = await JS.InvokeAsync<bool>(
-            "confirm",
-            "Update consultation fee?"
-        );
-
-        if (!confirm)
-            return;
-
-        var dto = new UpdateDoctorDto
-        {
-            DoctorName = doctor.DoctorName,
-            Specialisation = doctor.Specialisation,
-            YearsOfExperience = doctor.YearsOfExperience,
-            ConsultationFee = doctor.ConsultationFee,
-            IsActive = doctor.IsActive
-        };
-
-        var success = await doctorService.UpdateAsync(doctor.DoctorId, dto);
-
-        if (!success)
-        {
-            await JS.InvokeVoidAsync("alert", "Failed to update fee");
-        }
-    }
-
-    private async Task SearchDoctors(ChangeEventArgs e)
-    {
-        var value = e.Value?.ToString() ?? "";
-
-        // ✅ prevent call if no token yet
-        if (string.IsNullOrEmpty(TokenStore.AccessToken))
-        {
-            Console.WriteLine("Token missing, skipping search");
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            doctors = await doctorService.GetAllAsync();
-        }
-        else
-        {
-            doctors = await doctorService.SearchAsync(value);
-        }
-    }
-
-    
-    private bool showEdit = false;
-    private UpdateDoctorDto editDoctor = new();
-    private int editingId;
-
-    void OpenEdit(DoctorDto doctor)
+    private void OpenEdit(DoctorDto doctor)
     {
         editingId = doctor.DoctorId;
 
         editDoctor = new UpdateDoctorDto
         {
             DoctorName = doctor.DoctorName,
+            Email = doctor.Email, 
             Specialisation = doctor.Specialisation,
             YearsOfExperience = doctor.YearsOfExperience,
             ConsultationFee = doctor.ConsultationFee,
@@ -286,21 +283,117 @@
 
     private async Task UpdateDoctor()
     {
-        var success = await doctorService.UpdateAsync(editingId, editDoctor);
-
-        if (success)
+        try
         {
-            showEdit = false;
+            var success = await doctorService.UpdateAsync(editingId, editDoctor);
 
-            // ✅ Refresh table
-            doctors = await doctorService.GetAllAsync();
+            if (success)
+            {
+                showEdit = false;
+                doctors = await doctorService.GetAllAsync();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", "Update failed");
+            errorMessage = ex.Message;
+            showError = true;
         }
     }
 
+    private void UpdateFee(DoctorDto doctor)
+    {
+        confirmMessage = "Update consultation fee?";
 
+        confirmAction = async () =>
+        {
+            try
+            {
+                var dto = new UpdateDoctorDto
+                {
+                    DoctorName = doctor.DoctorName,
+                    Email = doctor.Email,
+                    Specialisation = doctor.Specialisation,
+                    YearsOfExperience = doctor.YearsOfExperience,
+                    ConsultationFee = doctor.ConsultationFee,
+                    IsActive = doctor.IsActive
+                };
 
+                await doctorService.UpdateAsync(doctor.DoctorId, dto);
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                showError = true;
+            }
+        };
+
+        showConfirm = true;
+    }
+
+   private void ToggleStatus(DoctorDto doctor)
+{
+    confirmMessage = doctor.IsActive
+        ? "Deactivate this doctor?"
+        : "Activate this doctor?";
+
+    confirmAction = async () =>
+    {
+        try
+        {
+            var success = await doctorService.ToggleActiveAsync(doctor.DoctorId);
+
+            if (success)
+            {
+                doctor.IsActive = !doctor.IsActive;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+            showError = true;
+        }
+    };
+
+    showConfirm = true;
+    }
+
+    private async Task HandleConfirm(bool result)
+    {
+        showConfirm = false;
+
+        if (result && confirmAction != null)
+        {
+            await confirmAction();
+        }
+    }
+
+    private async Task SearchDoctors(ChangeEventArgs e)
+    {
+        var name = e.Value?.ToString() ?? "";
+
+        var result = await doctorService.SearchAsync(name);
+
+        if (!string.IsNullOrWhiteSpace(selectedSpecialisation))
+        {
+            result = result
+                .Where(d => d.Specialisation == selectedSpecialisation)
+                .ToList();
+        }
+
+        doctors = result;
+    }
+
+    private async Task FilterBySpecialisation(ChangeEventArgs e)
+    {
+        selectedSpecialisation = e.Value?.ToString() ?? "";
+
+        doctors = await doctorService.GetAllAsync();
+
+        if (!string.IsNullOrWhiteSpace(selectedSpecialisation))
+        {
+            doctors = doctors
+                .Where(d => d.Specialisation == selectedSpecialisation)
+                .ToList();
+        }
+    }
 }

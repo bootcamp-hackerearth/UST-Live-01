@@ -1,4 +1,8 @@
 <Solution>
+  <Project Path="HealthAxis.AngularApp/HealthAxis.AngularApp.esproj">
+    <Build />
+    <Deploy />
+  </Project>
   <Project Path="HealthAxisAdminPortal/HealthAxisAdminPortal.csproj" Id="17941892-e582-424d-b3dd-4495d8586b26" />
   <Project Path="HealthAxisAPITests/HealthAxisAPITests.csproj" Id="6360f288-6018-49e6-add8-ca3676cda2c2" />
   <Project Path="HealthAxisApplicn/HealthAxisApplicn.csproj" />

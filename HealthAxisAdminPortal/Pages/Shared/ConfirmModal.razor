@@ -1,0 +1,40 @@
+﻿@if (IsVisible)
+{
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%;
+        background:rgba(0,0,0,0.5);
+        display:flex; justify-content:center; align-items:center;
+        z-index:9999;">
+
+        <div style="background:white; padding:20px; border-radius:10px; width:320px; text-align:center;">
+
+            <h5>⚠️ Confirm</h5>
+
+            <p>@Message</p>
+
+            <button class="btn btn-success me-2" @onclick="Confirm">
+                Yes
+            </button>
+
+            <button class="btn btn-secondary" @onclick="Cancel">
+                No
+            </button>
+
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public string Message { get; set; } = "";
+    [Parameter] public EventCallback<bool> OnClose { get; set; }
+
+    private async Task Confirm()
+    {
+        await OnClose.InvokeAsync(true);
+    }
+
+    private async Task Cancel()
+    {
+        await OnClose.InvokeAsync(false);
+    }
+}

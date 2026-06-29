@@ -17,7 +17,7 @@ namespace HealthAxisApplicn.Models
 
         public string UserId { get; set; } = string.Empty;
 
-        public IdentityUser User { get; set; } = null!;     
+        public ApplicationUser User { get; set; } = null!;
     }
 
 }

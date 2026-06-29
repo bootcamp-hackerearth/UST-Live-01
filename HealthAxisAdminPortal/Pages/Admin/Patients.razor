@@ -1,4 +1,5 @@
 ﻿@page "/admin/patients"
+@using HealthAxisAdminPortal.Pages.Shared
 @inject IPatientApiService patientService
 @inject IJSRuntime JS
 
@@ -8,7 +9,6 @@
         🧑‍🤝‍🧑 Patient Management
     </h2>
 
-    <!-- 🔍 SEARCH -->
     <div class="row mb-3">
 
         <div class="col-md-6">
@@ -79,7 +79,6 @@
         </table>
     }
 
-    <!-- ✏️ EDIT FORM -->
     @if (showEdit)
     {
         <div class="glass-card p-3 mb-4">
@@ -93,8 +92,15 @@
                    class="form-control stylish-input mb-2"
                    @bind="editPatient.DateOfBirth" />
 
-            <input class="form-control stylish-input mb-2"
-                   @bind="editPatient.Gender" />
+            <select class="form-control stylish-input"
+                    @bind="editPatient.Gender">
+
+                @foreach (var g in genders)
+                {
+                    <option value="@g">@g</option>
+                }
+
+            </select>
 
             <input class="form-control stylish-input mb-2"
                    @bind="editPatient.Email" />
@@ -111,9 +117,33 @@
         </div>
     }
 
-</div> <!-- ✅ THIS WAS MISSING -->
+</div> 
+
+<ErrorModal IsVisible="@showError"
+            Message="@errorMessage"
+            OnClose="CloseError" />
+
+<ConfirmModal IsVisible="@showConfirm"
+              Message="@confirmMessage"
+              OnClose="HandleConfirm" />
+
 @code {
     private List<PatientDto>? patients;
+
+    private bool showError = false;
+    private string errorMessage = "";
+
+    private bool showConfirm = false;
+    private string confirmMessage = "";
+    private Func<Task>? confirmAction;
+
+    private List<string> genders = new()
+    {
+    "Male",
+    "Female",
+    "Transgender",
+    "Other"
+    };
 
     private string nameSearch = "";
     private string phoneSearch = "";
@@ -121,6 +151,11 @@
     private bool showEdit = false;
     private UpdatePatientDto editPatient = new();
     private int editingId;
+
+    private void CloseError()
+    {
+        showError = false;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -152,20 +187,40 @@
         }
     }
 
-    private async Task Toggle(PatientDto patient)
+    private void Toggle(PatientDto patient)
     {
-        var confirm = await JS.InvokeAsync<bool>(
-            "confirm",
-            patient.IsActive ? "Deactivate this patient?" : "Activate this patient?"
-        );
+        confirmMessage = patient.IsActive
+            ? "Deactivate this patient?"
+            : "Activate this patient?";
 
-        if (!confirm) return;
-
-        var success = await patientService.ToggleAsync(patient.PatientId);
-
-        if (success)
+        confirmAction = async () =>
         {
-            patient.IsActive = !patient.IsActive;
+            try
+            {
+                var success = await patientService.ToggleAsync(patient.PatientId);
+
+                if (success)
+                {
+                    patient.IsActive = !patient.IsActive;
+                }
+            }
+            catch (Exception ex)
+            {
+                errorMessage = ex.Message;
+                showError = true;
+            }
+        };
+
+        showConfirm = true;
+    }
+
+    private async Task HandleConfirm(bool result)
+    {
+        showConfirm = false;
+
+        if (result && confirmAction != null)
+        {
+            await confirmAction();
         }
     }
 
@@ -188,16 +243,20 @@
 
     private async Task UpdatePatient()
     {
-        var success = await patientService.UpdateAsync(editingId, editPatient);
+        try
+        {
+            var success = await patientService.UpdateAsync(editingId, editPatient);
 
-        if (success)
-        {
-            showEdit = false;
-            patients = await patientService.GetAllAsync();
+            if (success)
+            {
+                showEdit = false;
+                patients = await patientService.GetAllAsync();
+            }
         }
-        else
+        catch (Exception ex)
         {
-            await JS.InvokeVoidAsync("alert", "Update failed");
-        }
+            errorMessage = ex.Message; 
+        showError = true;          
+    }
     }
 }

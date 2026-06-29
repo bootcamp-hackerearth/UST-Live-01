@@ -27,7 +27,7 @@ namespace HealthAxisApplicn.Repositories.Impl
         {
             return await _context.Set<HealthRecord>()
                 .Include(h => h.Doctor)
-                .Where(h => h.Doctor.DoctorName.ToLower() == doctorName.ToLower())
+                .Where(h => h.Doctor.DoctorName == doctorName)
                 .ToListAsync(ct);
         }
 
@@ -35,7 +35,20 @@ namespace HealthAxisApplicn.Repositories.Impl
         {
             return await _context.Set<HealthRecord>()
                 .Include(h => h.Patient)
-                .Where(h => h.Patient.PatientName.ToLower() == patientName.ToLower()).ToListAsync(ct);
+                .Where(h => h.Patient.PatientName == patientName).ToListAsync(ct);
+        }
+
+        public async Task<HealthRecord?> GetByAppointmentIdAsync(int appointmentId, CancellationToken ct = default)
+        {
+            return await _context.Set<HealthRecord>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(h => h.AppointmentId == appointmentId, ct);
+        }
+
+        public async Task<bool> ExistsForAppointmentAsync(int appointmentId, CancellationToken ct = default)
+        {
+            return await _context.Set<HealthRecord>()
+                .AnyAsync(h => h.AppointmentId == appointmentId, ct);
         }
     }
 }

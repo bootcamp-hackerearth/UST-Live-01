@@ -47,12 +47,14 @@ namespace HealthAxisApplicn.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
-            }
+                return BadRequest(ModelState); 
+    }
+
             var result = await service.CreateAsync(entity);
-            if (result is null) return NotFound();
-            return CreatedAtAction("GetById", new { id = result.DoctorId }, result);
-        }
+
+            return Ok(result); 
+}
+
 
         [HttpPut("{id:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
@@ -60,7 +62,7 @@ namespace HealthAxisApplicn.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             var result = await service.UpdateAsync(id, entity);
             if (result is null) return NotFound();

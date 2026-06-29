@@ -1,7 +1,10 @@
-﻿using HealthAxisAdminPortal.Services.FrontEndMemory;
+﻿using HealthAxisAdminPortal.Models;
+using HealthAxisAdminPortal.Services.FrontEndMemory;
 using HealthAxisAdminPortal.Services.Interfaces;
 using HealthAxisApplicn.Dto.Doctors;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using static System.Net.WebRequestMethods;
 
 namespace HealthAxisAdminPortal.Services.Implementation
 {
@@ -47,7 +50,6 @@ namespace HealthAxisAdminPortal.Services.Implementation
             }
         }
 
-
         public async Task<bool> CreateAsync(CreateDoctorDto dto)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/doctors")
@@ -55,40 +57,65 @@ namespace HealthAxisAdminPortal.Services.Implementation
                 Content = JsonContent.Create(dto)
             };
 
-            if (!string.IsNullOrEmpty(TokenStore.AccessToken))
-            {
-                request.Headers.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue(
-                        "Bearer",
-                        TokenStore.AccessToken
-                    );
-            }
+            // ✅ ADD TOKEN (THIS WAS MISSING 🔥)
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", TokenStore.AccessToken);
 
             var response = await http.SendAsync(request);
 
-            return response.IsSuccessStatusCode;
+            if (!response.IsSuccessStatusCode)
+            {
+                var problem = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
+
+                if (problem?.Errors != null && problem.Errors.Count > 0)
+                {
+                    var messages = problem.Errors
+                        .SelectMany(e => e.Value)
+                        .Where(m => !string.IsNullOrWhiteSpace(m));
+
+                    throw new Exception(string.Join(" *** ", messages));
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception(content);
+            }
+
+            return true;
         }
+
 
         public async Task<bool> UpdateAsync(int id, UpdateDoctorDto dto)
-        {
-            var request = new HttpRequestMessage(HttpMethod.Put, $"/api/doctors/{id}")
             {
-                Content = JsonContent.Create(dto)
-            };
+                var request = new HttpRequestMessage(HttpMethod.Put, $"/api/doctors/{id}")
+                {
+                    Content = JsonContent.Create(dto)
+                };
 
-            if (!string.IsNullOrEmpty(TokenStore.AccessToken))
-            {
                 request.Headers.Authorization =
-                    new System.Net.Http.Headers.AuthenticationHeaderValue(
-                        "Bearer",
-                        TokenStore.AccessToken
-                    );
+                    new AuthenticationHeaderValue("Bearer", TokenStore.AccessToken);
+
+                var response = await http.SendAsync(request);
+
+                // ✅ ONLY handle errors when request fails
+                if (!response.IsSuccessStatusCode)
+                {
+                    var problem = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
+
+                    if (problem?.Errors != null && problem.Errors.Count > 0)
+                    {
+                        var messages = problem.Errors
+                            .SelectMany(e => e.Value)
+                            .Where(m => !string.IsNullOrWhiteSpace(m));
+
+                        throw new Exception(string.Join(" *** ", messages));
+                    }
+
+                    var content = await response.Content.ReadAsStringAsync();
+                    throw new Exception(content);
+                }
+
+                return true;
             }
-
-            var response = await http.SendAsync(request);
-
-            return response.IsSuccessStatusCode;
-        }
 
         public async Task<bool> ToggleActiveAsync(int id)
         {

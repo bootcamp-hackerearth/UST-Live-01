@@ -22,6 +22,71 @@ namespace HealthAxisApplicn.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("HealthAxisApplicn.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("HealthAxisApplicn.Models.Appointment", b =>
                 {
                     b.Property<int>("AppointmentId")
@@ -74,6 +139,11 @@ namespace HealthAxisApplicn.Migrations
 
                     b.Property<string>("DoctorName")
                         .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
@@ -83,41 +153,19 @@ namespace HealthAxisApplicn.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("YearsOfExperience")
                         .HasColumnType("int");
 
                     b.HasKey("DoctorId");
 
-                    b.ToTable("Doctors");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            DoctorId = 1,
-                            ConsultationFee = 1000m,
-                            DoctorName = "Ranjith Govind",
-                            IsActive = true,
-                            Specialisation = "Cardiologist",
-                            YearsOfExperience = 3
-                        },
-                        new
-                        {
-                            DoctorId = 2,
-                            ConsultationFee = 1200m,
-                            DoctorName = "Rahul Nambiar",
-                            IsActive = true,
-                            Specialisation = "Endocrinologist",
-                            YearsOfExperience = 4
-                        },
-                        new
-                        {
-                            DoctorId = 3,
-                            ConsultationFee = 1100m,
-                            DoctorName = "Atif Aslam",
-                            IsActive = true,
-                            Specialisation = "Dermatologist",
-                            YearsOfExperience = 2
-                        });
+                    b.ToTable("Doctors");
                 });
 
             modelBuilder.Entity("HealthAxisApplicn.Models.HealthRecord", b =>
@@ -127,6 +175,9 @@ namespace HealthAxisApplicn.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HealthRecordId"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Diagnosis")
                         .IsRequired()
@@ -149,6 +200,8 @@ namespace HealthAxisApplicn.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("HealthRecordId");
+
+                    b.HasIndex("AppointmentId");
 
                     b.HasIndex("DoctorId");
 
@@ -190,41 +243,16 @@ namespace HealthAxisApplicn.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("PatientId");
 
-                    b.ToTable("Patients");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            PatientId = 1,
-                            DateOfBirth = new DateTime(1990, 12, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "nakul@gmail.com",
-                            Gender = "Male",
-                            IsActive = true,
-                            PatientName = "Nakul",
-                            PhoneNo = "9887756746"
-                        },
-                        new
-                        {
-                            PatientId = 2,
-                            DateOfBirth = new DateTime(1995, 8, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "nelwyn@gmail.com",
-                            Gender = "Male",
-                            IsActive = true,
-                            PatientName = "Nelwyn",
-                            PhoneNo = "9778864535"
-                        },
-                        new
-                        {
-                            PatientId = 3,
-                            DateOfBirth = new DateTime(1978, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "vikram@gmail.com",
-                            Gender = "Male",
-                            IsActive = true,
-                            PatientName = "Vikram",
-                            PhoneNo = "9335252312"
-                        });
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("HealthAxisApplicn.Models.RefreshToken", b =>
@@ -306,71 +334,6 @@ namespace HealthAxisApplicn.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetRoleClaims", (string)null);
-                });
-
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -473,8 +436,25 @@ namespace HealthAxisApplicn.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("HealthAxisApplicn.Models.Doctor", b =>
+                {
+                    b.HasOne("HealthAxisApplicn.Models.ApplicationUser", "User")
+                        .WithOne("Doctor")
+                        .HasForeignKey("HealthAxisApplicn.Models.Doctor", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HealthAxisApplicn.Models.HealthRecord", b =>
                 {
+                    b.HasOne("HealthAxisApplicn.Models.Appointment", "Appointment")
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HealthAxisApplicn.Models.Doctor", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId")
@@ -487,14 +467,27 @@ namespace HealthAxisApplicn.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.Navigation("Appointment");
+
                     b.Navigation("Doctor");
 
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("HealthAxisApplicn.Models.Patient", b =>
+                {
+                    b.HasOne("HealthAxisApplicn.Models.ApplicationUser", "User")
+                        .WithOne("Patient")
+                        .HasForeignKey("HealthAxisApplicn.Models.Patient", "UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HealthAxisApplicn.Models.RefreshToken", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                    b.HasOne("HealthAxisApplicn.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -514,7 +507,7 @@ namespace HealthAxisApplicn.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("HealthAxisApplicn.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -523,7 +516,7 @@ namespace HealthAxisApplicn.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("HealthAxisApplicn.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -538,7 +531,7 @@ namespace HealthAxisApplicn.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("HealthAxisApplicn.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -547,11 +540,18 @@ namespace HealthAxisApplicn.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("HealthAxisApplicn.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HealthAxisApplicn.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
                 });
 #pragma warning restore 612, 618
         }

@@ -24,7 +24,6 @@
             <div class="text-danger mb-2">@error</div>
         }
 
-        <!-- ✅ IMPORTANT: type="button" -->
         <button type="button" class="btn btn-primary w-100" @onclick="HandleLogin">
             Login
         </button>
@@ -54,7 +53,6 @@
             return;
         }
 
-        // ✅ Decode JWT to extract role
         var handler = new System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler();
         var token = handler.ReadJwtToken(result.AccessToken);
 
@@ -62,17 +60,14 @@
             .FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)
             ?.Value;
 
-        // ✅ THIS is the missing part
         if (role != "Admin")
         {
             error = "You are not authorized to access the Admin Portal";
             return;
         }
 
-        // ✅ Store token
         TokenStore.AccessToken = result.AccessToken;
 
-        // ✅ Navigate
         NavManager.NavigateTo("/");
 
     }

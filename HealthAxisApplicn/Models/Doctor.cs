@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthAxisApplicn.Models
 {
@@ -7,14 +8,19 @@ namespace HealthAxisApplicn.Models
     {
         [Key]
         public int DoctorId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Doctor name is required.")]
         [RegularExpression(@"[A-Z][A-Za-z\s]+", ErrorMessage = "Name should only contain alphabets")]
         [MinLength(2)]
+        [StringLength(100, ErrorMessage = "Doctor name cannot exceed 100 characters.")]
         public string DoctorName { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
         [Required]
         [RegularExpression("(Endocrinologist|Oncologist|Gynecologist|OrthopedicSurgeon|Psychiatrist|Pediatrician|Neurologist|Dermatologist|Cardiologist|GeneralPractitioner)")]
         public string Specialisation { get; set; }
         [Required]
+        [Range(0, 60, ErrorMessage = "Experience must be between 0 and 60 years.")]
         public int YearsOfExperience { get; set; }
         [Required]
         [Range(0, 100000, ErrorMessage = "Consultation Fee cannot be negative")]
@@ -22,5 +28,12 @@ namespace HealthAxisApplicn.Models
         public decimal ConsultationFee { get; set; }
         [Required]
         public bool IsActive { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; }
+
     }
 }

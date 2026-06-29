@@ -8,13 +8,9 @@ namespace HealthAxisApplicn.Dto.Appointments
         public int AppointmentId { get; set; }
         public int PatientId { get; set; }
         public int DoctorId { get; set; }
-        [Required]
         public DateTime ScheduledDate { get; set; }
-        [Required]
         public string TimeSlot { get; set; } = string.Empty;
-        [RegularExpression("(Pending|Confirmed|Completed|Cancelled)")]
         public string Status { get; set; } = string.Empty;
-        [MaxLength(200)]
         public string? CancellationReason { get; set; }
     }
 
@@ -24,19 +20,24 @@ namespace HealthAxisApplicn.Dto.Appointments
         public int DoctorId { get; set; }
 
         [Required]
+        [DataType(DataType.DateTime)]
         public DateTime ScheduledDate { get; set; }
 
         [Required]
-        [RegularExpression(@"^\d{2}:\d{2}(-\d{2}:\d{2})?$")]
+        [RegularExpression(@"^([01]\d|2[0-3]):([0-5]\d)$",
+         ErrorMessage = "Time must be in HH:mm format (00:00–23:59)")]
         public string TimeSlot { get; set; } = string.Empty;
     }
 
 
     public class UpdateAppointmentStatusDto
     {
+
         [Required]
-        [RegularExpression("^(Pending|Confirmed|Cancelled|Completed)$")]
+        [RegularExpression("^(Pending|Confirmed|Cancelled|Completed)$",
+            ErrorMessage = "Invalid status value")]
         public string Status { get; set; } = string.Empty;
+
 
         [MaxLength(100)]
         public string? CancellationReason { get; set; }

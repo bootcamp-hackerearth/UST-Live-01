@@ -29,6 +29,16 @@ namespace HealthAxisApplicn.Dto.Auth
         [Required]
         [RegularExpression("^(Patient|Doctor|Admin)$")]
         public string Role { get; set; } = "Patient";
+
+        public string? Name { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
+
+        public string? Gender { get; set; }
+
+        public string? PhoneNo { get; set; }
+
+        public string? InsuranceID { get; set; }
     }
 
 

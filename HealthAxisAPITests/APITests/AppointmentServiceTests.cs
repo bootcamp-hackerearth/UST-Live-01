@@ -1,39 +1,72 @@
-﻿using Xunit;
-using Moq;
+﻿using AutoMapper;
 using FluentAssertions;
-using AutoMapper;
-using HealthAxisApplicn.Services.Impl;
-using HealthAxisApplicn.Repositories;
-using HealthAxisApplicn.Models;
 using HealthAxisApplicn.Dto.Appointments;
+using HealthAxisApplicn.Models;
+using HealthAxisApplicn.Repositories;
+using HealthAxisApplicn.Services;
+using HealthAxisApplicn.Services.Impl;
+using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 public class AppointmentServiceTests
 {
     private readonly Mock<IAppointmentRepository> _repoMock;
     private readonly Mock<IMapper> _mapperMock;
     private readonly AppointmentService _service;
+    private readonly Mock<IHealthRecordService> _healthRecordMock;
+
 
     public AppointmentServiceTests()
     {
         _repoMock = new Mock<IAppointmentRepository>();
         _mapperMock = new Mock<IMapper>();
-        _service = new AppointmentService(_repoMock.Object, _mapperMock.Object);
+        _healthRecordMock = new Mock<IHealthRecordService>();
+        _service = new AppointmentService(
+            _repoMock.Object,
+            _healthRecordMock.Object,
+            _mapperMock.Object);
+
     }
 
     [Fact]
     public async Task CreateAsync_Should_Create_Appointment()
     {
-        var dto = new CreateAppointmentDto();
+        var dto = new CreateAppointmentDto
+        {
+            ScheduledDate = DateTime.UtcNow.AddDays(1), 
+            TimeSlot = "10:00",
+            DoctorId = 1
+        };
+
         var appointment = new Appointment();
         var resultDto = new AppointmentDto();
+        var patientId = 1;
 
-        _mapperMock.Setup(m => m.Map<Appointment>(dto)).Returns(appointment);
-        _repoMock.Setup(r => r.CreateAsync(appointment, default)).ReturnsAsync(appointment);
-        _mapperMock.Setup(m => m.Map<AppointmentDto>(appointment)).Returns(resultDto);
+        _mapperMock.Setup(m => m.Map<Appointment>(dto))
+                   .Returns(appointment);
 
-        var result = await _service.CreateAsync(dto);
+        _repoMock.Setup(r =>
+            r.DoctorHasConflictAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<string>(), default))
+            .ReturnsAsync(false);
+
+        _repoMock.Setup(r =>
+            r.PatientHasConflictAsync(It.IsAny<int>(), It.IsAny<DateTime>(), It.IsAny<string>(), default))
+            .ReturnsAsync(false);
+
+        _repoMock.Setup(r =>
+            r.PatientHasAppointmentOnDateAsync(It.IsAny<int>(), It.IsAny<DateTime>(), default))
+            .ReturnsAsync(false);
+
+        _repoMock.Setup(r =>
+            r.CreateAsync(It.IsAny<Appointment>(), default))
+            .ReturnsAsync(appointment);
+
+        _mapperMock.Setup(m => m.Map<AppointmentDto>(appointment))
+                   .Returns(resultDto);
+
+        var result = await _service.CreateAsync(dto, patientId);
 
         result.Should().NotBeNull();
     }
@@ -83,7 +116,7 @@ public class AppointmentServiceTests
         var list = new List<Appointment> { new Appointment() };
         var dtos = new List<AppointmentDto> { new AppointmentDto() };
 
-        _repoMock.Setup(r => r.GetAppointmentsByDoctorIdAsync(1, default)).ReturnsAsync(list);
+        _repoMock.Setup(r => r.GetUpcomingAppointmentsByDoctorIdAsync(1, default)).ReturnsAsync(list);
         _mapperMock.Setup(m => m.Map<List<AppointmentDto>>(list)).Returns(dtos);
 
         var result = await _service.GetAppointmentsByDoctorIdAsync(1);
@@ -159,5 +192,27 @@ public class AppointmentServiceTests
         });
 
         result.Status.Should().Be("Cancelled");
+    }
+
+    [Fact]
+    public async Task UpdateAsync_Should_Call_CreateFromAppointment_When_Completed()
+    {
+        var existing = new Appointment { AppointmentId = 1, Status = "Confirmed" };
+
+        _repoMock.Setup(r => r.GetByIdAsync(1, default)).ReturnsAsync(existing);
+        _repoMock.Setup(r => r.UpdateAsync(1, existing, default))
+                 .ReturnsAsync(existing);
+
+        _mapperMock.Setup(m => m.Map<AppointmentDto>(existing))
+                   .Returns(new AppointmentDto());
+
+        await _service.UpdateAsync(1, new UpdateAppointmentStatusDto
+        {
+            Status = "Completed"
+        });
+
+        _healthRecordMock.Verify(x =>
+            x.CreateFromAppointment(It.IsAny<Appointment>()),
+            Times.Once);
     }
 }

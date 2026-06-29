@@ -7,9 +7,11 @@ namespace HealthAxisApplicn.Models
     {
         [Key]
         public int AppointmentId { get; set; }
+        [Required]
         public int PatientId { get; set; }
         [ForeignKey(nameof(PatientId))]
         public Patient Patient { get; set; } = null!;
+        [Required]
         public int DoctorId { get; set; }
         [ForeignKey(nameof(DoctorId))]
         public Doctor Doctor { get; set; } = null!;

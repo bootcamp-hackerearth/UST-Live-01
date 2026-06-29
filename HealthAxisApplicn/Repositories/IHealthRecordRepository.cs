@@ -8,6 +8,8 @@ namespace HealthAxisApplicn.Repositories
         Task<List<HealthRecord>> GetRecordsByDoctorIdAsync(int doctorId, CancellationToken ct = default);
         Task<List<HealthRecord>> GetRecordsByPatientNameAsync(string patientName, CancellationToken ct = default);
         Task<List<HealthRecord>> GetRecordsByDoctorNameAsync(string doctorName, CancellationToken ct = default);
+        Task<HealthRecord?> GetByAppointmentIdAsync(int appointmentId, CancellationToken ct = default);
+        Task<bool> ExistsForAppointmentAsync(int appointmentId, CancellationToken ct = default);
 
 
     }

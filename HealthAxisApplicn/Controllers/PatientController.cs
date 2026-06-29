@@ -49,7 +49,7 @@ namespace HealthAxisApplicn.Controllers
         {
             if(!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             var result = await service.UpdateAsync(id, entity);
             if (result is null) return NotFound();

@@ -13,6 +13,7 @@ namespace HealthAxisApplicn.Controllers
     public class AppointmentController(IAppointmentService service) : ControllerBase
     {
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
         {
             var result = await service.GetAllAsync();
@@ -28,24 +29,56 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
+        [Authorize(Roles = "Patient")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentDto entity)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
-            var result = await service.CreateAsync(entity);
+
+            // GET PatientId FROM JWT
+            var patientId = int.Parse(User.FindFirst("PatientId")!.Value);
+
+            // PASS TO SERVICE
+            var result = await service.CreateAsync(entity, patientId);
+
             if (result is null) return NotFound();
+
             return CreatedAtAction("GetById", new { id = result.AppointmentId }, result);
         }
 
+
+        [HttpGet("my")]
+        [Authorize(Roles = "Patient")]
+        public async Task<IActionResult> GetMyAppointments()
+        {
+            var patientId = int.Parse(User.FindFirst("PatientId")!.Value);
+
+            var result = await service.GetAppointmentsByPatientIdAsync(patientId);
+
+            return Ok(result);
+        }
+
+        [HttpGet("doctor/my")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetDoctorAppointments()
+        {
+            var doctorId = int.Parse(User.FindFirst("DoctorId")!.Value);
+
+            var result = await service.GetAppointmentsByDoctorIdAsync(doctorId);
+
+            return Ok(result);
+        }
+
+
         [HttpPut("{id:int}")]
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateAppointmentStatusDto entity)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(ModelState);
             }
             var result = await service.UpdateAsync(id, entity);
             if (result is null) return NotFound();
@@ -53,7 +86,7 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpGet("patient/{patientId:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByPatient(int patientId)
         {
             var result = await service.GetAppointmentsByPatientIdAsync(patientId);
@@ -61,18 +94,24 @@ namespace HealthAxisApplicn.Controllers
         }
 
         [HttpGet("doctor/{doctorId:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetByDoctor(int doctorId)
         {
             var result = await service.GetAppointmentsByDoctorIdAsync(doctorId);
             return result.Count == 0 ? NotFound() : Ok(result);
         }
         [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
-        { 
-            await service.DeleteAppointmentAsync(id); 
-            return NoContent(); 
+        {
+            var deleted = await service.DeleteAppointmentAsync(id);
+
+            if (!deleted)
+                return NotFound();
+
+            return NoContent();
+
         }
+
     }
 }

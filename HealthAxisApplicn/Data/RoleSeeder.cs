@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using HealthAxisApplicn.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace HealthAxisApplicn.Data
 {
@@ -18,20 +19,18 @@ namespace HealthAxisApplicn.Data
         }
 
         public static async Task SeedAdminAsync(
-            UserManager<IdentityUser> userManager,
+            UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager)
         {
             string adminEmail = "theadmin@healthaxis.com";
             string adminPassword = "Admin@123";
 
-            // ✅ Check if admin already exists
             var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
 
             if (existingAdmin != null)
                 return;
 
-            // ✅ Create admin user
-            var adminUser = new IdentityUser
+            var adminUser = new ApplicationUser
             {
                 UserName = adminEmail,
                 Email = adminEmail,
@@ -46,7 +45,6 @@ namespace HealthAxisApplicn.Data
                 throw new Exception($"Admin creation failed: {errors}");
             }
 
-            // ✅ Ensure role exists before assigning
             if (!await roleManager.RoleExistsAsync("Admin"))
             {
                 await roleManager.CreateAsync(new IdentityRole("Admin"));

@@ -1,5 +1,6 @@
 ﻿namespace HealthAxisAdminPortal.Services.Implementation
 {
+    using HealthAxisAdminPortal.Models;
     using HealthAxisAdminPortal.Services.FrontEndMemory;
     using HealthAxisAdminPortal.Services.Interfaces;
     using HealthAxisApplicn.Dto.Patients;
@@ -55,8 +56,7 @@
 
         public async Task<bool> UpdateAsync(int id, UpdatePatientDto dto)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put,
-                $"/api/patients/{id}")
+            var request = new HttpRequestMessage(HttpMethod.Put, $"/api/patients/{id}")
             {
                 Content = JsonContent.Create(dto)
             };
@@ -66,7 +66,24 @@
 
             var response = await http.SendAsync(request);
 
-            return response.IsSuccessStatusCode;
+            if (!response.IsSuccessStatusCode)
+            {
+                var problem = await response.Content.ReadFromJsonAsync<ValidationErrorResponse>();
+
+                if (problem?.Errors != null && problem.Errors.Count > 0)
+                {
+                    var messages = problem.Errors
+                        .SelectMany(e => e.Value)
+                        .Where(m => !string.IsNullOrWhiteSpace(m));
+
+                    throw new Exception(string.Join(" *** ", messages)); 
+        }
+
+                var content = await response.Content.ReadAsStringAsync();
+                throw new Exception(content);
+            }
+
+            return true;
         }
     }
 }

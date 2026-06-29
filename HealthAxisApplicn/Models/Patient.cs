@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HealthAxisApplicn.Models
 {
@@ -27,5 +28,11 @@ namespace HealthAxisApplicn.Models
         public string? InsuranceID { get; set; }
         [Required]
         public bool IsActive { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+        [ForeignKey("UserId")]
+        public ApplicationUser User { get; set; }
+
     }
 }
