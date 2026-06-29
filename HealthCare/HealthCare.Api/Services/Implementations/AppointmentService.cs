@@ -26,10 +26,16 @@ namespace HealthCare.Api.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task AddAsync(CreateAppointmentDto dto, int id)
+        public async Task AddAsync(CreateAppointmentDto dto, int patientId)
         {
             var appointment = _mapper.Map<Appointment>(dto);
+
+            appointment.PatientId = patientId;
+
+            appointment.Status = "Pending";
+
             await _repository.AddAsync(appointment);
+
             await _context.SaveChangesAsync();
         }
 

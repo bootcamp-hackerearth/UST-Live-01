@@ -4,69 +4,93 @@
 
         @if(role === 'Patient') {
 
-            <li routerLink="/patient/dashboard"
-                routerLinkActive="active">
-                🏠 Dashboard
+            <li>
+                <a routerLink="/patient/dashboard"
+                   routerLinkActive="active">
+                    🏠 Dashboard
+                </a>
             </li>
 
-            <li routerLink="/patient/search-doctors"
-                routerLinkActive="active">
-                🔍 Search Doctors
+            <li>
+                <a routerLink="/patient/search-doctors"
+                   routerLinkActive="active">
+                    🔍 Search Doctors
+                </a>
             </li>
 
-            <li routerLink="/patient/book-appointment"
-                routerLinkActive="active">
-                📅 Book Appointment
+            <li>
+                <a routerLink="/patient/book-appointment"
+                   routerLinkActive="active">
+                    📅 Book Appointment
+                </a>
             </li>
 
-            <li routerLink="/patient/my-appointments"
-                routerLinkActive="active">
-                🗓️ My Appointments
+            <li>
+                <a routerLink="/patient/my-appointments"
+                   routerLinkActive="active">
+                    🗓️ My Appointments
+                </a>
             </li>
 
-            <li routerLink="/patient/health-history"
-                routerLinkActive="active">
-                📄 Health History
+            <li>
+                <a routerLink="/patient/health-history"
+                   routerLinkActive="active">
+                    📄 Health History
+                </a>
             </li>
 
-            <li routerLink="/patient/profile"
-                routerLinkActive="active">
-                👤 My Profile
+            <li>
+                <a routerLink="/patient/profile"
+                   routerLinkActive="active">
+                    👤 My Profile
+                </a>
             </li>
 
         }
 
         @if(role === 'Doctor') {
 
-            <li routerLink="/doctor/dashboard"
-                routerLinkActive="active">
-                🏠 Dashboard
+            <li>
+                <a routerLink="/doctor/dashboard"
+                   routerLinkActive="active">
+                    🏠 Dashboard
+                </a>
             </li>
 
-            <li routerLink="/doctor/schedule"
-                routerLinkActive="active">
-                📅 Today's Schedule
+            <li>
+                <a routerLink="/doctor/schedule"
+                   routerLinkActive="active">
+                    📅 Today's Schedule
+                </a>
             </li>
 
-            <li routerLink="/doctor/health-record"
-                routerLinkActive="active">
-                🩺 Add Health Record
+            <li>
+                <a routerLink="/doctor/health-record"
+                   routerLinkActive="active">
+                    🩺 Add Health Record
+                </a>
             </li>
 
-            <li routerLink="/doctor/leave"
-                routerLinkActive="active">
-                🌴 Add Leave
+            <li>
+                <a routerLink="/doctor/leave"
+                   routerLinkActive="active">
+                    🌴 Add Leave
+                </a>
             </li>
 
-            <li routerLink="/doctor/profile"
-                routerLinkActive="active">
-                👤 My Profile
+            <li>
+                <a routerLink="/doctor/profile"
+                   routerLinkActive="active">
+                    👤 My Profile
+                </a>
             </li>
 
         }
 
-        <li (click)="logout()">
-            🚪 Logout
+        <li>
+            <a (click)="logout()">
+                🚪 Logout
+            </a>
         </li>
 
     </ul>

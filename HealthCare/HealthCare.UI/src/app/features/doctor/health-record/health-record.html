@@ -1,0 +1,113 @@
+<div class="min-h-screen bg-slate-50 p-6">
+
+    <div class="max-w-4xl mx-auto">
+
+        <div class="mb-8">
+
+            <h1
+              class="text-3xl font-bold text-slate-800">
+
+                Add Health Record
+
+            </h1>
+
+            <p class="text-slate-500">
+
+                Record patient diagnosis and treatment
+
+            </p>
+
+        </div>
+
+        <div
+          class="bg-white rounded-3xl
+                 shadow-lg p-8">
+
+            <form
+              [formGroup]="form"
+              (ngSubmit)="saveRecord()">
+
+                <div class="space-y-6">
+
+                    <div>
+
+                        <label
+                          class="block mb-2 font-medium">
+
+                            Diagnosis
+
+                        </label>
+
+                        <textarea
+                          rows="4"
+                          formControlName="diagnosis"
+                          class="w-full p-4 border
+                                 rounded-xl">
+
+                        </textarea>
+
+                    </div>
+
+                    <div>
+
+                        <label
+                          class="block mb-2 font-medium">
+
+                            Prescription
+
+                        </label>
+
+                        <textarea
+                          rows="4"
+                          formControlName="prescription"
+                          class="w-full p-4 border
+                                 rounded-xl">
+
+                        </textarea>
+
+                    </div>
+
+                    <div>
+
+                        <label
+                          class="block mb-2 font-medium">
+
+                            Notes
+
+                        </label>
+
+                        <textarea
+                          rows="4"
+                          formControlName="notes"
+                          class="w-full p-4 border
+                                 rounded-xl">
+
+                        </textarea>
+
+                    </div>
+
+                </div>
+
+                <button
+                  type="submit"
+                  [disabled]="loading"
+                  class="mt-8 w-full
+                         bg-blue-600
+                         hover:bg-blue-700
+                         text-white py-4
+                         rounded-xl">
+
+                    {{ loading
+                       ? 'Saving...'
+                       : 'Save Health Record'
+                    }}
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

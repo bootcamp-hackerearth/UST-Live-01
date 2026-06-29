@@ -1,118 +1,146 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 
-import { DoctorService } from '../../../core/services/doctor.service';
-import { AppointmentService } from '../../../core/services/appointment.service';
+import { DoctorService }
+from '../../../core/services/doctor.service';
+
+import { AppointmentService }
+from '../../../core/services/appointment.service';
 
 @Component({
-  selector: 'app-book-appointment',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './book-appointment.html',
-  styleUrl: './book-appointment.css'
+  selector:'app-book-appointment',
+  standalone:true,
+  imports:[
+    CommonModule,
+    ReactiveFormsModule
+  ],
+  templateUrl:'./book-appointment.html',
+  styleUrl:'./book-appointment.css'
 })
-export class BookAppointmentComponent
-implements OnInit {
+export class BookAppointmentComponent {
 
-  date = '';
+  form:FormGroup;
 
-  specialisation = '';
+  doctors:any[]=[];
+  slots:string[]=[];
 
-  doctorId = 0;
-
-  selectedSlot = '';
-
-  specialisations: string[] = [];
-
-  doctors: any[] = [];
-
-  slots: string[] = [];
+  specializations=[
+    'Cardiology',
+    'Dermatology',
+    'Neurology',
+    'Orthopedics',
+    'Pediatrics',
+    'General Medicine'
+  ];
 
   constructor(
-    private doctorService: DoctorService,
-    private appointmentService: AppointmentService
-  ) {}
+    private fb:FormBuilder,
+    private doctorService:DoctorService,
+    private appointmentService:AppointmentService
+  ){
 
-  ngOnInit(): void {
+    this.form=this.fb.group({
 
-    this.loadSpecialisations();
+      scheduledDate:['',Validators.required],
+
+      specialization:['',Validators.required],
+
+      doctorId:['',Validators.required],
+
+      timeSlot:['',Validators.required]
+
+    });
   }
 
-  loadSpecialisations() {
+  loadDoctors(){
 
-    this.doctorService
-      .getSpecialisations()
-      .subscribe(res => {
+    const spec =
+      this.form.value.specialization;
 
-        this.specialisations = res;
-      });
-  }
+    const date =
+      this.form.value.scheduledDate;
 
-  loadDoctors() {
-
-    if (!this.date || !this.specialisation)
+    if(!spec || !date)
       return;
 
     this.doctorService
-      .getAvailableDoctors(
-        this.specialisation,
-        this.date
-      )
-      .subscribe(res => {
+      .getAvailableDoctors(spec,date)
+      .subscribe(res=>{
 
         this.doctors = res;
-
-        this.slots = [];
-
-        this.selectedSlot = '';
       });
   }
 
-  loadSlots() {
+  loadSlots(){
 
-    if (!this.doctorId)
+    const doctorId =
+      this.form.value.doctorId;
+
+    const date =
+      this.form.value.scheduledDate;
+
+    if(!doctorId)
       return;
 
     this.appointmentService
       .getAvailableSlots(
-        this.doctorId,
-        this.date
+        doctorId,
+        date
       )
-      .subscribe(res => {
+      .subscribe(res=>{
 
         this.slots = res;
       });
   }
 
-  bookAppointment() {
+  bookAppointment(){
+
+    if(this.form.invalid)
+      return;
 
     const appointment = {
 
-      doctorId: this.doctorId,
+      doctorId:
+        this.form.value.doctorId,
 
-      appointmentDate: this.date,
+      scheduledDate:
+        this.form.value.scheduledDate,
 
-      timeSlot: this.selectedSlot
+      timeSlot:
+        this.form.value.timeSlot
     };
 
     this.appointmentService
       .bookAppointment(appointment)
       .subscribe({
 
-        next: () => {
+        next:()=>{
 
           alert(
             'Appointment booked successfully'
           );
+
+          this.form.reset();
+
+          this.doctors=[];
+          this.slots=[];
         },
 
-        error: () => {
+        error:()=>{
 
           alert(
             'Unable to book appointment'
           );
         }
+
       });
+
   }
+
 }

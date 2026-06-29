@@ -1,0 +1,93 @@
+<div class="max-w-5xl mx-auto p-6">
+
+    <div class="bg-white rounded-3xl shadow-lg p-8">
+
+        <div class="flex items-center gap-6 mb-8">
+
+            <div
+                class="h-24 w-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-4xl font-bold">
+
+                {{ profileForm.value.firstName?.charAt(0) || 'P' }}
+
+            </div>
+
+            <div>
+
+                <h2 class="text-3xl font-bold text-slate-800">
+                    My Profile
+                </h2>
+
+                <p class="text-slate-500">
+                    Manage your personal information
+                </p>
+
+            </div>
+
+        </div>
+
+        @if(loading){
+
+        <div class="text-center py-10">
+
+            Loading profile...
+
+        </div>
+
+        }
+
+        @else {
+
+        <form
+            [formGroup]="profileForm"
+            (ngSubmit)="updateProfile()">
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <div>
+
+                    <label class="label">First Name</label>
+
+                    <input
+                        type="text"
+                        formControlName="FullName"
+                        class="input" />
+
+                </div>
+
+
+                <div>
+
+                    <label class="label">Email</label>
+
+                    <input
+                        type="email"
+                        formControlName="email"
+                        class="input" />
+
+                </div>
+
+            </div>
+
+            <div class="mt-8">
+
+                <button
+                    class="bg-[#0B5ED7]
+                           hover:bg-blue-700
+                           text-white
+                           px-8 py-3
+                           rounded-xl
+                           font-semibold">
+
+                    {{ saving ? 'Updating...' : 'Update Profile' }}
+
+                </button>
+
+            </div>
+
+        </form>
+
+        }
+
+    </div>
+
+</div>

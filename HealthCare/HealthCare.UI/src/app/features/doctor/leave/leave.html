@@ -1,0 +1,88 @@
+<div class="min-h-screen bg-slate-50 p-6">
+
+    <div class="mb-8">
+
+        <h1 class="text-3xl font-bold text-slate-800">
+            Add Leave
+        </h1>
+
+        <p class="text-slate-500">
+            Manage your unavailable dates
+        </p>
+
+    </div>
+
+    <div class="bg-white rounded-3xl shadow p-8">
+
+        <div class="flex gap-4">
+
+            <input
+                type="date"
+                [(ngModel)]="selectedDate"
+                class="border rounded-xl p-3 flex-1">
+
+            <button
+                (click)="addDate()"
+                class="bg-blue-600 text-white px-6 rounded-xl">
+
+                Add
+
+            </button>
+
+        </div>
+
+        @if(leaves.length > 0){
+
+            <div class="mt-8">
+
+                <h3 class="font-semibold mb-4">
+                    Selected Leave Dates
+                </h3>
+
+                <div class="space-y-3">
+
+                    @for(leave of leaves;
+                          track leave.leaveDate;
+                          let i = $index){
+
+                        <div
+                          class="flex justify-between items-center
+                                 bg-slate-100 rounded-xl p-4">
+
+                            <span>
+
+                                {{leave.leaveDate}}
+
+                            </span>
+
+                            <button
+                              (click)="removeDate(i)"
+                              class="text-red-600">
+
+                                Remove
+
+                            </button>
+
+                        </div>
+
+                    }
+
+                </div>
+
+            </div>
+
+        }
+
+        <button
+            (click)="submitLeaves()"
+            [disabled]="loading"
+            class="mt-8 w-full bg-cyan-600
+                   text-white py-4 rounded-xl">
+
+            {{loading ? 'Saving...' : 'Submit Leaves'}}
+
+        </button>
+
+    </div>
+
+</div>

@@ -1,17 +1,17 @@
 // import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-// import { Dashboard } from './dashboard';
+// import { Schedule } from './schedule';
 
-// describe('Dashboard', () => {
-//   let component: Dashboard;
-//   let fixture: ComponentFixture<Dashboard>;
+// describe('Schedule', () => {
+//   let component: Schedule;
+//   let fixture: ComponentFixture<Schedule>;
 
 //   beforeEach(async () => {
 //     await TestBed.configureTestingModule({
-//       imports: [Dashboard],
+//       imports: [Schedule],
 //     }).compileComponents();
 
-//     fixture = TestBed.createComponent(Dashboard);
+//     fixture = TestBed.createComponent(Schedule);
 //     component = fixture.componentInstance;
 //     await fixture.whenStable();
 //   });

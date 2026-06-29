@@ -1,98 +1,136 @@
-<div class="container mt-4">
+<div class="min-h-screen bg-[#F8FAFC] p-8">
 
-    <div class="card shadow p-4">
+    <div class="max-w-3xl mx-auto">
 
-        <h3 class="mb-4">
-            Book Appointment
-        </h3>
+        <div class="bg-white rounded-3xl shadow-lg p-8">
 
-        <div class="mb-3">
+            <h2 class="text-3xl font-bold text-[#1E293B] mb-2">
+                Book Appointment
+            </h2>
 
-            <label>Date</label>
+            <p class="text-gray-500 mb-8">
+                Schedule your consultation with doctors.
+            </p>
 
-            <input
-                type="date"
-                class="form-control"
-                [(ngModel)]="date"
-                (change)="loadDoctors()">
+            <form
+                [formGroup]="form"
+                (ngSubmit)="bookAppointment()">
+
+                <!-- Date -->
+
+                <div class="mb-5">
+
+                    <label class="font-semibold">
+                        Appointment Date
+                    </label>
+
+                    <input
+                        type="date"
+                        formControlName="scheduledDate"
+                        class="w-full mt-2 p-3 border rounded-xl">
+
+                </div>
+
+                <!-- Specialization -->
+
+                <div class="mb-5">
+
+                    <label class="font-semibold">
+                        Specialization
+                    </label>
+
+                    <select
+                        formControlName="specialization"
+                        (change)="loadDoctors()"
+                        class="w-full mt-2 p-3 border rounded-xl">
+
+                        <option value="">
+                            Select Specialization
+                        </option>
+
+                        @for(spec of specializations; track spec){
+
+                            <option [value]="spec">
+                                {{spec}}
+                            </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+                <!-- Doctors -->
+
+                <div class="mb-5">
+
+                    <label class="font-semibold">
+                        Doctor
+                    </label>
+
+                    <select
+                        formControlName="doctorId"
+                        (change)="loadSlots()"
+                        class="w-full mt-2 p-3 border rounded-xl">
+
+                        <option value="">
+                            Select Doctor
+                        </option>
+
+                        @for(doc of doctors; track doc.id){
+
+                            <option [value]="doc.id">
+                                Dr. {{doc.name}}
+                            </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+                <!-- Slots -->
+
+                <div class="mb-5">
+
+                    <label class="font-semibold">
+                        Available Slots
+                    </label>
+
+                    <select
+                        formControlName="timeSlot"
+                        class="w-full mt-2 p-3 border rounded-xl">
+
+                        <option value="">
+                            Select Slot
+                        </option>
+
+                        @for(slot of slots; track slot){
+
+                            <option [value]="slot">
+                                {{slot}}
+                            </option>
+
+                        }
+
+                    </select>
+
+                </div>
+
+                <button
+                    class="w-full bg-[#0B5ED7]
+                           text-white
+                           py-3
+                           rounded-xl
+                           hover:bg-blue-700">
+
+                    Book Appointment
+
+                </button>
+
+            </form>
+
         </div>
-
-        <div class="mb-3">
-
-            <label>Specialisation</label>
-
-            <select
-                class="form-select"
-                [(ngModel)]="specialisation"
-                (change)="loadDoctors()">
-
-                <option value="">
-                    Select
-                </option>
-
-                @for(sp of specialisations; track sp)
-                {
-                    <option [value]="sp">
-                        {{sp}}
-                    </option>
-                }
-
-            </select>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>Doctor</label>
-
-            <select
-                class="form-select"
-                [(ngModel)]="doctorId"
-                (change)="loadSlots()">
-
-                <option value="0">
-                    Select Doctor
-                </option>
-
-                @for(doc of doctors; track doc.id)
-                {
-                    <option [value]="doc.id">
-                        Dr. {{doc.name}}
-                    </option>
-                }
-
-            </select>
-
-        </div>
-
-        <div class="mb-3">
-
-            <label>Available Slots</label>
-
-            <div class="d-flex flex-wrap gap-2">
-
-                @for(slot of slots; track slot)
-                {
-                    <button
-                        class="btn btn-outline-primary"
-                        (click)="selectedSlot = slot">
-
-                        {{slot}}
-
-                    </button>
-                }
-
-            </div>
-
-        </div>
-
-        <button
-            class="btn btn-primary"
-            (click)="bookAppointment()">
-
-            Book Appointment
-
-        </button>
 
     </div>
 

@@ -1,0 +1,132 @@
+<div class="min-h-screen bg-slate-50 p-6">
+
+    <div class="mb-8">
+
+        <h1 class="text-3xl font-bold text-slate-800">
+            My Health Records
+        </h1>
+
+        <p class="text-slate-500">
+            View your consultation history
+        </p>
+
+    </div>
+
+    @if(loading){
+
+        <div class="text-center py-10">
+
+            Loading records...
+
+        </div>
+
+    }
+
+    @else {
+
+        <div class="space-y-6">
+
+            @for(record of records;
+                  track record.healthRecordId){
+
+                <div
+                    class="bg-white rounded-3xl
+                           shadow p-6">
+
+                    <div
+                        class="flex justify-between
+                               items-center mb-4">
+
+                        <div>
+
+                            <h2
+                             class="text-xl font-bold">
+
+                                Dr.
+                                {{record.doctorName}}
+
+                            </h2>
+
+                            <p class="text-slate-500">
+
+                                {{
+                                record.visitDate
+                                | date:'dd MMM yyyy'
+                                }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="space-y-4">
+
+                        <div>
+
+                            <h3
+                              class="font-semibold
+                                     text-blue-600">
+
+                                Diagnosis
+
+                            </h3>
+
+                            <p>
+
+                                {{record.diagnosis}}
+
+                            </p>
+
+                        </div>
+
+                        <div>
+
+                            <h3
+                              class="font-semibold
+                                     text-green-600">
+
+                                Prescription
+
+                            </h3>
+
+                            <p>
+
+                                {{record.prescription}}
+
+                            </p>
+
+                        </div>
+
+                        <div>
+
+                            <h3
+                              class="font-semibold
+                                     text-slate-600">
+
+                                Notes
+
+                            </h3>
+
+                            <p>
+
+                                {{
+                                record.notes ||
+                                'No additional notes'
+                                }}
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            }
+
+        </div>
+
+    }
+
+</div>

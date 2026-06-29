@@ -1,1 +1,200 @@
-<p>dashboard works!</p>
+<div class="min-h-screen bg-[#F8FAFC] p-6">
+
+    <!-- Welcome -->
+
+    <div class="mb-8">
+
+        <h1 class="text-4xl font-bold text-[#1E293B]">
+            Welcome Back, {{patientName}} 👋
+        </h1>
+
+        <p class="text-gray-500 mt-2">
+            Here's your healthcare overview.
+        </p>
+
+    </div>
+
+    <!-- Statistics -->
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+        @for(stat of stats; track stat.title){
+
+        <div class="bg-white rounded-3xl shadow-sm p-6 hover:shadow-lg transition">
+
+            <div class="flex justify-between items-center">
+
+                <div>
+
+                    <p class="text-gray-500">
+                        {{stat.title}}
+                    </p>
+
+                    <h2 class="text-3xl font-bold mt-3 text-[#1E293B]">
+                        {{stat.value}}
+                    </h2>
+
+                </div>
+
+                <div
+                    class="w-14 h-14 rounded-full flex items-center justify-center"
+                    [class]="stat.color">
+
+                    <i class="bi {{stat.icon}} text-2xl"></i>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        }
+
+    </div>
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Upcoming Appointments -->
+
+        <div class="lg:col-span-2">
+
+            <div class="bg-white rounded-3xl shadow-sm p-6">
+
+                <div class="flex justify-between mb-6">
+
+                    <h3 class="text-2xl font-semibold text-[#1E293B]">
+                        Upcoming Appointments
+                    </h3>
+
+                    <a
+                        routerLink="/patient/my-appointments"
+                        class="text-[#0B5ED7] font-semibold">
+                        View All
+                    </a>
+
+                </div>
+
+                @for(app of appointments; track app.doctor){
+
+                <div
+                    class="border rounded-2xl p-5 mb-4 hover:bg-gray-50">
+
+                    <div class="flex justify-between">
+
+                        <div>
+
+                            <h4 class="font-bold text-lg">
+                                {{app.doctor}}
+                            </h4>
+
+                            <p class="text-gray-500">
+                                {{app.speciality}}
+                            </p>
+
+                            <p class="mt-2 text-sm text-gray-600">
+                                {{app.date}} • {{app.time}}
+                            </p>
+
+                        </div>
+
+                        <span
+                            class="h-fit px-4 py-2 rounded-full text-sm"
+
+                            [ngClass]="{
+                              'bg-green-100 text-green-700':
+                               app.status==='Confirmed',
+
+                              'bg-yellow-100 text-yellow-700':
+                               app.status==='Pending'
+                            }">
+
+                            {{app.status}}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- Quick Actions -->
+
+        <div>
+
+            <div class="bg-white rounded-3xl shadow-sm p-6">
+
+                <h3 class="text-2xl font-semibold mb-6 text-[#1E293B]">
+                    Quick Actions
+                </h3>
+
+                <div class="space-y-4">
+
+                    <a
+                        routerLink="/patient/book-appointment"
+                        class="block p-5 rounded-2xl bg-blue-50 hover:bg-blue-100 transition">
+
+                        <i class="bi bi-calendar-plus text-2xl text-[#0B5ED7]"></i>
+
+                        <h4 class="font-semibold mt-2">
+                            Book Appointment
+                        </h4>
+
+                    </a>
+
+                    <a
+                        routerLink="/patient/my-appointments"
+                        class="block p-5 rounded-2xl bg-green-50 hover:bg-green-100 transition">
+
+                        <i class="bi bi-list-check text-2xl text-green-600"></i>
+
+                        <h4 class="font-semibold mt-2">
+                            My Appointments
+                        </h4>
+
+                    </a>
+
+                    <a
+                        routerLink="/patient/profile"
+                        class="block p-5 rounded-2xl bg-purple-50 hover:bg-purple-100 transition">
+
+                        <i class="bi bi-person text-2xl text-purple-600"></i>
+
+                        <h4 class="font-semibold mt-2">
+                            My Profile
+                        </h4>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- Health Tip -->
+
+            <div class="bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6]
+                        rounded-3xl mt-6 p-6 text-white">
+
+                <h3 class="text-xl font-bold mb-3">
+                    Health Tip of the Day
+                </h3>
+
+                <p>
+                    Drink plenty of water, exercise regularly,
+                    and get at least 7-8 hours of sleep daily.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

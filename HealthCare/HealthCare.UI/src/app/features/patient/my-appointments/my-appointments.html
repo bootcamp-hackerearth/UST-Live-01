@@ -1,0 +1,97 @@
+<div class="p-6 bg-[#F8FAFC] min-h-screen">
+
+    <div class="mb-8">
+
+        <h1 class="text-3xl font-bold text-[#1E293B]">
+            My Appointments
+        </h1>
+
+        <p class="text-slate-500">
+            View and manage all your appointments
+        </p>
+
+    </div>
+
+    @if(loading){
+
+        <div class="text-center py-10">
+            Loading appointments...
+        </div>
+
+    }
+
+    @else if(appointments.length === 0){
+
+        <div class="bg-white rounded-2xl p-10 text-center shadow">
+
+            <h3 class="text-xl font-semibold">
+                No Appointments Found
+            </h3>
+
+            <p class="text-slate-500 mt-2">
+                Book an appointment to get started.
+            </p>
+
+        </div>
+
+    }
+
+    @else {
+
+        <div class="grid gap-6">
+
+            @for(app of appointments; track app.id){
+
+                <div class="bg-white rounded-3xl p-6 shadow">
+
+    <div class="flex justify-between">
+
+        <div>
+
+            <h3 class="text-2xl font-bold text-[#0B5ED7]">
+                Dr. {{app.doctorName}}
+            </h3>
+
+            <p class="text-slate-500">
+                {{app.specialisation}}
+            </p>
+
+        </div>
+
+        <span
+            class="px-4 py-2 rounded-full text-sm font-semibold"
+            [ngClass]="getStatusClass(app.status)">
+
+            {{app.status}}
+
+        </span>
+
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6 mt-6">
+
+        <div>
+            <p class="text-slate-400">Appointment Date</p>
+            <h4 class="font-semibold">
+                {{app.scheduledDate}}
+            </h4>
+        </div>
+
+        <div>
+            <p class="text-slate-400">Time Slot</p>
+            <h4 class="font-semibold">
+                {{app.timeSlot}}
+            </h4>
+        </div>
+
+    </div>
+
+</div>
+
+            }
+
+        </div>
+
+    }
+
+</div>

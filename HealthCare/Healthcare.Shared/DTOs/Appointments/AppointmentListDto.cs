@@ -3,6 +3,8 @@
     public class AppointmentListDto
     {
         public int AppointmentId { get; set; }
+        public int PatientId { get; set; }
+        public int? HealthRecordId { get; set; }
         public string PatientName { get; set; } = null!;
         public string DoctorName { get; set; } = null!;
         public DateOnly ScheduledDate { get; set; }

@@ -1,1 +1,152 @@
-<p>dashboard works!</p>
+<div class="min-h-screen bg-slate-50 p-6">
+
+    <!-- Header -->
+
+    <div class="mb-8">
+
+        <h1 class="text-3xl font-bold text-slate-800">
+            Welcome Doctor 👨‍⚕️
+        </h1>
+
+        <p class="text-slate-500">
+            Here's your schedule for today
+        </p>
+
+    </div>
+
+    <!-- Statistics -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+        <div
+            class="bg-white rounded-2xl shadow p-6 border-l-4 border-blue-600">
+
+            <h3 class="text-slate-500">
+                Today's Appointments
+            </h3>
+
+            <h2 class="text-4xl font-bold text-blue-600 mt-3">
+                {{todayAppointments}}
+            </h2>
+
+        </div>
+
+        <div
+            class="bg-white rounded-2xl shadow p-6 border-l-4 border-yellow-500">
+
+            <h3 class="text-slate-500">
+                Pending
+            </h3>
+
+            <h2 class="text-4xl font-bold text-yellow-500 mt-3">
+                {{pendingAppointments}}
+            </h2>
+
+        </div>
+
+        <div
+            class="bg-white rounded-2xl shadow p-6 border-l-4 border-green-500">
+
+            <h3 class="text-slate-500">
+                Completed
+            </h3>
+
+            <h2 class="text-4xl font-bold text-green-500 mt-3">
+                {{completedAppointments}}
+            </h2>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+        <a
+            routerLink="/doctor/schedule"
+            class="bg-blue-600 text-white p-6 rounded-2xl shadow hover:scale-105 transition">
+
+            <h3 class="text-xl font-semibold">
+                Today's Schedule
+            </h3>
+
+            <p class="opacity-90 mt-2">
+                View and manage appointments
+            </p>
+
+        </a>
+
+        <a
+            routerLink="/doctor/leave"
+            class="bg-cyan-600 text-white p-6 rounded-2xl shadow hover:scale-105 transition">
+
+            <h3 class="text-xl font-semibold">
+                Add Leave
+            </h3>
+
+            <p class="opacity-90 mt-2">
+                Manage your availability
+            </p>
+
+        </a>
+
+    </div>
+
+    <!-- Today's Schedule -->
+
+    <div class="bg-white rounded-3xl shadow p-6">
+
+        <h2 class="text-2xl font-bold mb-6">
+            Today's Appointments
+        </h2>
+
+        @if(todaySchedule.length === 0){
+
+            <div class="text-center text-slate-500 py-8">
+
+                No appointments scheduled for today.
+
+            </div>
+        }
+
+        @else {
+
+            <div class="space-y-4">
+
+                @for(item of todaySchedule;
+                track item.appointmentId){
+
+                    <div
+                        class="border rounded-xl p-4 flex justify-between">
+
+                        <div>
+
+                            <h3 class="font-bold">
+                                {{item.patientName}}
+                            </h3>
+
+                            <p class="text-slate-500">
+                                {{item.timeSlot}}
+                            </p>
+
+                        </div>
+
+                        <span
+                            class="px-4 py-2 rounded-full bg-blue-100 text-blue-700">
+
+                            {{item.status}}
+
+                        </span>
+
+                    </div>
+
+                }
+
+            </div>
+
+        }
+
+    </div>
+
+</div>

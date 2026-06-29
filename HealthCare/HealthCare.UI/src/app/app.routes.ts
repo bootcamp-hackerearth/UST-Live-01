@@ -8,12 +8,17 @@ import { LandingComponent } from './features/auth/landing/landing';
 import { PatientLayoutComponent } from './shared/layouts/patient-layout/patient-layout';
 import { DoctorLayoutComponent } from './shared/layouts/doctor-layout/doctor-layout';
 
-import { DashboardComponent as PatientDashboard }
-from './features/patient/dashboard/dashboard';
+import { DashboardComponent as PatientDashboard }from './features/patient/dashboard/dashboard';
 
-import { DashboardComponent as DoctorDashboard }
-from './features/doctor/dashboard/dashboard';
 import { BookAppointmentComponent } from './features/patient/book-appointment/book-appointment';
+import { MyAppointmentsComponent } from './features/patient/my-appointments/my-appointments';
+import { ProfileComponent } from './features/patient/profile/profile';
+import { ScheduleComponent } from './features/doctor/schedule/schedule';
+import { LeaveComponent } from './features/doctor/leave/leave';
+import { DoctorProfileComponent } from './features/doctor/profile/profile';
+import { DoctorDashboardComponent } from './features/doctor/dashboard/dashboard';
+import { HealthRecordComponent } from './features/doctor/health-record/health-record';
+import { HealthHistoryComponent } from './features/patient/health-history/health-history';
 
 
 export const routes: Routes = [ 
@@ -22,16 +27,6 @@ export const routes: Routes = [
     path: '',
     component: LandingComponent
   },
-
-//   {
-//     path: 'login',
-//     component: LoginComponent
-//   },
-
-//   {
-//     path: 'register',
-//     component: RegisterComponent
-//   },
 
   // PATIENT
 
@@ -56,7 +51,21 @@ export const routes: Routes = [
   component: BookAppointmentComponent,
   canActivate:[authGuard, roleGuard],
   data:{roles:['Patient']}
-},
+  },
+
+  {
+    path:'patient/my-appointments',
+    component: MyAppointmentsComponent,
+    canActivate:[authGuard, roleGuard],
+    data:{roles:['Patient']}
+  },
+
+  {
+    path:'patient/profile',
+    component:ProfileComponent,
+    canActivate:[authGuard, roleGuard],
+    data:{roles:['Patient']}
+  },
 
   // DOCTOR
 
@@ -66,14 +75,62 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Doctor'] },
 
-    children: [
+     children: [
 
       {
         path: 'dashboard',
-        component: DoctorDashboard
+        component: DoctorDashboardComponent
       }
-
     ]
-  }
+  },
+
+  {
+     path: 'doctor/schedule',
+     component: ScheduleComponent,
+     canActivate: [authGuard, roleGuard],
+     data: { roles: ['Doctor'] }
+  },
+
+  {
+  path: 'doctor/leave',
+  component: LeaveComponent,
+  canActivate: [authGuard, roleGuard],
+  data: { roles: ['Doctor'] }
+  },
+
+  {
+  path: 'doctor/profile',
+  component: DoctorProfileComponent,
+  canActivate: [authGuard, roleGuard],
+  data: { roles: ['Doctor'] }
+  },
+  
+  //APPOINTMENT
+  {
+    path: 'patient/book-appointment',
+    component:BookAppointmentComponent,
+    canActivate:[authGuard,roleGuard],
+    data:{roles:['Patient']}
+  },
+
+  {
+    path:'patient/my-appointments',
+    component:MyAppointmentsComponent,
+    canActivate:[authGuard,roleGuard],
+    data:{roles:['Patient']}
+  },
+
+  //HEALTH-RECORD
+  {
+  path: 'doctor/health-record',
+  component: HealthRecordComponent,
+  canActivate: [authGuard, roleGuard],
+  data: { roles: ['Doctor'] }
+  },
+ 
+  {
+  path: 'patient/health-history',
+  component: HealthHistoryComponent
+}
 
 ];
