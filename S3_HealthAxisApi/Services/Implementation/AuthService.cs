@@ -17,7 +17,7 @@ namespace S3_HealthAxisApi.Services.Implementation
         private readonly IConfiguration _configuration;
         private readonly IPatientRepository _patientRepository;
 
-        public AuthService( 
+        public AuthService(
             IUserRepository userRepository,
             IPatientRepository patientRepository,
             IConfiguration configuration)
@@ -34,7 +34,7 @@ namespace S3_HealthAxisApi.Services.Implementation
                 return (false, "Passwords do not match.", null);
             }
 
-            if (await _userRepository.EmailExistsAsync(request.Email))
+            if (await _userRepository.EmailExistsAsync(request.Email.Trim().ToLower()))
             {
                 return (false, "Email already exists.", null);
             }
@@ -65,19 +65,19 @@ namespace S3_HealthAxisApi.Services.Implementation
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
                     Email = user.Email,
-                    Role = user.Role.ToString()
+                    Role = user.Role.ToString(),
+                    ReferenceId = user.ReferenceId
                 });
         }
 
-        public async Task<(bool Success,string Message, AuthResponseDto? Data)>RegisterPatientAsync(RegisterPatientDto request)
+        public async Task<(bool Success, string Message, AuthResponseDto? Data)> RegisterPatientAsync(RegisterPatientDto request)
         {
             if (request.Password != request.ConfirmPassword)
             {
                 return (false, "Passwords do not match.", null);
             }
 
-            if (await _userRepository.EmailExistsAsync(
-                request.Email))
+            if (await _userRepository.EmailExistsAsync(request.Email.Trim().ToLower()))
             {
                 return (false, "Email already exists.", null);
             }
@@ -101,23 +101,19 @@ namespace S3_HealthAxisApi.Services.Implementation
                 Email = request.Email.Trim().ToLower(),
                 PasswordHash = HashPassword(request.Password),
                 Role = UserRole.Patient,
-                ReferenceId = patient.PatientId
+                ReferenceId = patient.PatientId,
+                CreatedDate = DateTime.UtcNow
             };
+
+            var refreshToken = GenerateRefreshToken();
+
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
 
-            var accessToken =
-                GenerateToken(user);
-
-            var refreshToken =
-                GenerateRefreshToken();
-
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime =
-                DateTime.UtcNow.AddDays(7);
-
-            await _userRepository.SaveChangesAsync();
+            var accessToken = GenerateToken(user);
 
             return (
                 true,
@@ -127,12 +123,12 @@ namespace S3_HealthAxisApi.Services.Implementation
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
                     Email = user.Email,
-                    Role = user.Role.ToString()
+                    Role = user.Role.ToString(),
+                    ReferenceId = user.ReferenceId
                 });
         }
 
-        public async Task<(bool Success, string Message, AuthResponseDto? Data)>
-            LoginAsync(LoginDto request)
+        public async Task<(bool Success, string Message, AuthResponseDto? Data)> LoginAsync(LoginDto request)
         {
             var user = await _userRepository.GetByEmailAsync(
                 request.Email.Trim().ToLower());
@@ -167,12 +163,12 @@ namespace S3_HealthAxisApi.Services.Implementation
                     AccessToken = accessToken,
                     RefreshToken = refreshToken,
                     Email = user.Email,
-                    Role = user.Role.ToString()
+                    Role = user.Role.ToString(),
+                    ReferenceId = user.ReferenceId
                 });
         }
 
-        public async Task<(bool Success, string Message, AuthResponseDto? Data)>
-            RefreshTokenAsync(RefreshTokenDto request)
+        public async Task<(bool Success, string Message, AuthResponseDto? Data)> RefreshTokenAsync(RefreshTokenDto request)
         {
             var user = await _userRepository
                 .GetByRefreshTokenAsync(request.RefreshToken);
@@ -206,7 +202,8 @@ namespace S3_HealthAxisApi.Services.Implementation
                     AccessToken = newAccessToken,
                     RefreshToken = newRefreshToken,
                     Email = user.Email,
-                    Role = user.Role.ToString()
+                    Role = user.Role.ToString(),
+                    ReferenceId = user.ReferenceId
                 });
         }
 
@@ -241,7 +238,11 @@ namespace S3_HealthAxisApi.Services.Implementation
 
                 new Claim(
                     ClaimTypes.Role,
-                    user.Role.ToString())
+                    user.Role.ToString()),
+
+                new Claim(
+                    "ReferenceId",
+                    user.ReferenceId?.ToString() ?? string.Empty)
             };
 
             var token = new JwtSecurityToken(
@@ -262,6 +263,51 @@ namespace S3_HealthAxisApi.Services.Implementation
                 RandomNumberGenerator.GetBytes(64));
         }
 
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(
+    string email,
+    ChangePasswordDto request)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return (false, "Invalid authenticated user.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword))
+            {
+                return (false, "New password is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.ConfirmNewPassword))
+            {
+                return (false, "Confirm password is required.");
+            }
+
+            if (request.NewPassword != request.ConfirmNewPassword)
+            {
+                return (false, "Passwords do not match.");
+            }
+
+            if (request.NewPassword.Length < 8)
+            {
+                return (false, "Password must be at least 8 characters long.");
+            }
+
+            var user = await _userRepository.GetByEmailAsync(
+                email.Trim().ToLower());
+
+            if (user == null)
+            {
+                return (false, "User account not found.");
+            }
+
+            user.PasswordHash = HashPassword(request.NewPassword);
+
+            await _userRepository.UpdateAsync(user);
+            await _userRepository.SaveChangesAsync();
+
+            return (true, "Password changed successfully.");
+        }
+
         private static string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
@@ -274,3 +320,5 @@ namespace S3_HealthAxisApi.Services.Implementation
         }
     }
 }
+
+

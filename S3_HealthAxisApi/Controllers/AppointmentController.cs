@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using S3_HealthAxis.Shared.DTOs.Appointment;
 using S3_HealthAxisApi.Services.Interface;
+using System.Security.Claims;
 
 namespace S3_HealthAxisApi.Controllers
 {
@@ -23,6 +24,7 @@ namespace S3_HealthAxisApi.Controllers
         public async Task<ActionResult<IEnumerable<AppointmentDetailsDto>>> GetAll()
         {
             var appointments = await _appointmentService.GetAllAsync();
+
             return Ok(appointments);
         }
 
@@ -33,16 +35,40 @@ namespace S3_HealthAxisApi.Controllers
                 await _appointmentService.GetByIdAsync(id);
 
             if (appointment == null)
-                return NotFound(
-                    $"Appointment {id} not found.");
+            {
+                return NotFound($"Appointment {id} not found.");
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                if (!patientIdFromToken.HasValue ||
+                    appointment.PatientId != patientIdFromToken.Value)
+                {
+                    return Forbid();
+                }
+            }
 
             return Ok(appointment);
         }
 
         [HttpGet("patient/{patientId:int}")]
+        [Authorize(Roles = "Patient,Admin,Doctor")]
         public async Task<IActionResult> GetPatientHistory(
             int patientId)
         {
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                if (!patientIdFromToken.HasValue ||
+                    patientIdFromToken.Value != patientId)
+                {
+                    return Forbid();
+                }
+            }
+
             var appointments =
                 await _appointmentService
                     .GetPatientHistoryAsync(patientId);
@@ -79,7 +105,7 @@ namespace S3_HealthAxisApi.Controllers
             return Ok(schedule);
         }
 
-        [HttpGet("doctor/{doctorId}/upcoming")]
+        [HttpGet("doctor/{doctorId:int}/upcoming")]
         [Authorize(Roles = "Admin,Doctor")]
         public async Task<IActionResult> GetDoctorUpcomingSchedule(int doctorId)
         {
@@ -98,6 +124,17 @@ namespace S3_HealthAxisApi.Controllers
         {
             try
             {
+                if (User.IsInRole("Patient"))
+                {
+                    var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                    if (!patientIdFromToken.HasValue ||
+                        dto.PatientId != patientIdFromToken.Value)
+                    {
+                        return Forbid();
+                    }
+                }
+
                 var appointment =
                     await _appointmentService.CreateAsync(dto);
 
@@ -106,18 +143,15 @@ namespace S3_HealthAxisApi.Controllers
                     new { id = appointment.AppointmentId },
                     appointment);
             }
-            catch (
-                ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (
-                InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (
-                KeyNotFoundException ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
@@ -131,23 +165,39 @@ namespace S3_HealthAxisApi.Controllers
         {
             try
             {
+                var existingAppointment =
+                    await _appointmentService.GetByIdAsync(id);
+
+                if (existingAppointment == null)
+                {
+                    return NotFound($"Appointment {id} not found.");
+                }
+
+                if (User.IsInRole("Patient"))
+                {
+                    var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                    if (!patientIdFromToken.HasValue ||
+                        existingAppointment.PatientId != patientIdFromToken.Value)
+                    {
+                        return Forbid();
+                    }
+                }
+
                 await _appointmentService
                     .UpdateAsync(id, dto);
 
                 return NoContent();
             }
-            catch (
-                KeyNotFoundException ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
-            catch (
-                ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (
-                InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -164,13 +214,11 @@ namespace S3_HealthAxisApi.Controllers
 
                 return NoContent();
             }
-            catch (
-                KeyNotFoundException)
+            catch (KeyNotFoundException)
             {
                 return NotFound();
             }
-            catch (
-                InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -187,22 +235,41 @@ namespace S3_HealthAxisApi.Controllers
 
                 return NoContent();
             }
-            catch (
-                KeyNotFoundException)
+            catch (KeyNotFoundException)
             {
                 return NotFound();
             }
-            catch (
-                InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
-        [HttpPut("{id}/status")]
+        [HttpPut("{id:int}/status")]
         [Authorize]
-        public async Task<IActionResult> UpdateStatus(int id, UpdateAppointmentStatusDto dto)
+        public async Task<IActionResult> UpdateStatus(
+            int id,
+            [FromBody] UpdateAppointmentStatusDto dto)
         {
+            var existingAppointment =
+                await _appointmentService.GetByIdAsync(id);
+
+            if (existingAppointment == null)
+            {
+                return NotFound($"Appointment {id} not found.");
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                if (!patientIdFromToken.HasValue ||
+                    existingAppointment.PatientId != patientIdFromToken.Value)
+                {
+                    return Forbid();
+                }
+            }
+
             await _appointmentService
                 .UpdateStatusAsync(id, dto);
 
@@ -217,26 +284,55 @@ namespace S3_HealthAxisApi.Controllers
         {
             try
             {
+                var existingAppointment =
+                    await _appointmentService.GetByIdAsync(id);
+
+                if (existingAppointment == null)
+                {
+                    return NotFound($"Appointment {id} not found.");
+                }
+
+                if (User.IsInRole("Patient"))
+                {
+                    var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                    if (!patientIdFromToken.HasValue ||
+                        existingAppointment.PatientId != patientIdFromToken.Value)
+                    {
+                        return Forbid();
+                    }
+                }
+
                 await _appointmentService
                     .CancelAsync(id, dto);
 
                 return NoContent();
             }
-            catch (
-                KeyNotFoundException)
+            catch (KeyNotFoundException)
             {
                 return NotFound();
             }
-            catch (
-                ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 return BadRequest(ex.Message);
             }
-            catch (
-                InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
             }
         }
+
+        private int? GetPatientReferenceIdFromToken()
+        {
+            var referenceIdValue = User.FindFirst("ReferenceId")?.Value;
+
+            if (int.TryParse(referenceIdValue, out var referenceId))
+            {
+                return referenceId;
+            }
+
+            return null;
+        }
     }
 }
+

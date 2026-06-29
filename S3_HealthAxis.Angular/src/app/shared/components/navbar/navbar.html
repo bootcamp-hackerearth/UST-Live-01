@@ -7,29 +7,231 @@
   </a>
 
   <nav class="ha-nav-links">
-    @if (showHomeLink) {
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-        Home
+    @if (!isLoggedIn) {
+      @if (showHomeLink) {
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          Home
+        </a>
+      }
+
+      @if (showPatientJourneyLink) {
+        <a routerLink="/" fragment="journey">
+          Patient Journey
+        </a>
+      }
+
+      @if (showLoginLink) {
+        <a routerLink="/login" routerLinkActive="active">
+          Login
+        </a>
+      }
+
+      @if (showRegisterLink) {
+        <a routerLink="/register" routerLinkActive="active" class="ha-register-link">
+          Register
+        </a>
+      }
+    }
+
+    @if (isLoggedIn && isPatient) {
+      <a routerLink="/patient/dashboard" routerLinkActive="active">
+        Dashboard
+      </a>
+
+      <a routerLink="/patient/doctors" routerLinkActive="active">
+        Find Doctors
+      </a>
+
+      <a routerLink="/patient/appointments" routerLinkActive="active">
+        Appointments
+      </a>
+
+      <a routerLink="/patient/history" routerLinkActive="active">
+        Health History
       </a>
     }
 
-    @if (showPatientJourneyLink) {
-      <a routerLink="/" fragment="journey">
-        Patient Journey
+    @if (isLoggedIn && isDoctor) {
+      <a routerLink="/doctor/dashboard" routerLinkActive="active">
+        Dashboard
       </a>
     }
 
-    @if (showLoginLink) {
-      <a routerLink="/login" routerLinkActive="active">
-        Login
-      </a>
-    }
+    @if (isLoggedIn) {
+      <div class="ha-profile-menu">
+        <button type="button" class="ha-profile-button" (click)="toggleMenu()">
+          <span class="ha-profile-avatar">
+            <i class="bi bi-person-circle"></i>
+          </span>
 
-    @if (showRegisterLink) {
-      <a routerLink="/register" routerLinkActive="active" class="ha-register-link">
-        Register
-      </a>
+          <span class="ha-profile-text">
+            {{ displayName }}
+          </span>
+
+          <i class="bi bi-chevron-down"></i>
+        </button>
+
+        @if (isMenuOpen) {
+          <div class="ha-profile-dropdown">
+            <div class="ha-profile-summary">
+              <strong>{{ displayName }}</strong>
+              <span>{{ userEmail }}</span>
+              <small>{{ role }}</small>
+            </div>
+
+            <button
+              type="button"
+              class="ha-dropdown-item"
+              (click)="openChangePasswordModal()"
+            >
+              <i class="bi bi-key"></i>
+              Change Password
+            </button>
+
+            <button type="button" class="ha-dropdown-item logout" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i>
+              Logout
+            </button>
+          </div>
+        }
+      </div>
     }
   </nav>
 </header>
+
+@if (showChangePasswordModal) {
+  <div class="ha-password-modal-backdrop">
+    <div class="ha-password-modal-card">
+      <button
+        type="button"
+        class="ha-password-modal-close"
+        [disabled]="changingPassword"
+        (click)="closeChangePasswordModal()"
+      >
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="ha-password-modal-icon">
+        <i class="bi bi-key"></i>
+      </div>
+
+      <h2>Change Password</h2>
+
+      <p class="ha-password-modal-subtitle">
+        Create a new password for your HealthAxis account.
+      </p>
+
+      @if (passwordErrorMessage) {
+        <div class="ha-password-alert error">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>{{ passwordErrorMessage }}</span>
+        </div>
+      }
+
+      @if (passwordSuccessMessage) {
+        <div class="ha-password-alert success">
+          <i class="bi bi-check-circle"></i>
+          <span>{{ passwordSuccessMessage }}</span>
+        </div>
+      }
+
+      <div class="ha-password-field">
+        <label>New Password</label>
+
+        <div class="ha-password-input-wrap">
+          <input
+            [type]="showNewPassword ? 'text' : 'password'"
+            placeholder="Enter new password"
+            [(ngModel)]="changePasswordForm.newPassword"
+          />
+
+          <button
+            type="button"
+            class="ha-password-toggle"
+            (click)="toggleNewPasswordVisibility()"
+          >
+            <i
+              class="bi"
+              [class.bi-eye]="!showNewPassword"
+              [class.bi-eye-slash]="showNewPassword">
+            </i>
+          </button>
+        </div>
+      </div>
+
+      @if (changePasswordForm.newPassword) {
+        <div class="ha-password-strength">
+          <div class="ha-strength-track">
+            <span [class]="passwordStrengthClass"></span>
+          </div>
+
+          <div class="ha-strength-info">
+            <small>Password strength</small>
+            <strong [class]="passwordStrengthClass">
+              {{ passwordStrengthLabel }}
+            </strong>
+          </div>
+        </div>
+      }
+
+      <div class="ha-password-field">
+        <label>Confirm New Password</label>
+
+        <div class="ha-password-input-wrap">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            placeholder="Confirm new password"
+            [(ngModel)]="changePasswordForm.confirmNewPassword"
+          />
+
+          <button
+            type="button"
+            class="ha-password-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+          >
+            <i
+              class="bi"
+              [class.bi-eye]="!showConfirmPassword"
+              [class.bi-eye-slash]="showConfirmPassword">
+            </i>
+          </button>
+        </div>
+      </div>
+
+      @if (
+        changePasswordForm.confirmNewPassword &&
+        !passwordsMatch
+      ) {
+        <small class="ha-password-error">
+          Passwords do not match.
+        </small>
+      }
+
+      <div class="ha-password-modal-actions">
+        <button
+          type="button"
+          class="ha-password-secondary-btn"
+          [disabled]="changingPassword"
+          (click)="closeChangePasswordModal()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="ha-password-primary-btn"
+          [disabled]="changingPassword || !canSubmitChangePassword"
+          (click)="submitChangePassword()"
+        >
+          @if (changingPassword) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Updating...
+          } @else {
+            Update Password
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}
 

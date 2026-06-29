@@ -1,0 +1,223 @@
+<section class="ha-appointments-page">
+  <div class="ha-appointments-shell">
+
+    <!-- HERO -->
+    <section class="ha-appointments-hero">
+      <div>
+        <span class="ha-appointments-badge">
+          <i class="bi bi-calendar2-week"></i>
+          My Appointments
+        </span>
+
+        <h1>Track and manage your appointments.</h1>
+
+        <p>
+          View appointment status, consultation date, time slot, and cancel appointments
+          when needed.
+        </p>
+      </div>
+
+      <div class="ha-summary-card">
+        <span>Total Appointments</span>
+        <strong>{{ totalAppointments }}</strong>
+        <p>Your complete appointment history.</p>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    @if (successMessage) {
+      <div class="ha-alert success">
+        <i class="bi bi-check-circle"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="ha-alert error">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <!-- STATS -->
+    <section class="ha-stat-grid">
+      <div class="ha-stat-card">
+        <i class="bi bi-hourglass-split"></i>
+        <span>Pending</span>
+        <strong>{{ pendingAppointments }}</strong>
+      </div>
+
+      <div class="ha-stat-card">
+        <i class="bi bi-patch-check"></i>
+        <span>Confirmed</span>
+        <strong>{{ confirmedAppointments }}</strong>
+      </div>
+
+      <div class="ha-stat-card">
+        <i class="bi bi-check2-circle"></i>
+        <span>Completed</span>
+        <strong>{{ completedAppointments }}</strong>
+      </div>
+
+      <div class="ha-stat-card">
+        <i class="bi bi-x-circle"></i>
+        <span>Cancelled</span>
+        <strong>{{ cancelledAppointments }}</strong>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    @if (loading) {
+      <div class="ha-loading-card">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading appointments...</p>
+      </div>
+    } @else if (appointments.length === 0) {
+      <div class="ha-empty-state">
+        <i class="bi bi-calendar-x"></i>
+        <h3>No appointments found</h3>
+        <p>You have not booked any appointments yet.</p>
+
+        <a routerLink="/patient/doctors" class="ha-primary-btn">
+          Find Doctor
+          <i class="bi bi-search"></i>
+        </a>
+      </div>
+    } @else {
+      <section class="ha-appointment-grid">
+        @for (appointment of appointments; track appointment.appointmentId) {
+          <article class="ha-appointment-card">
+            <div class="ha-card-top">
+              <div>
+                <span>Appointment #{{ appointment.appointmentId }}</span>
+                <h3>{{ appointment.doctorName }}</h3>
+              </div>
+
+              <span [attr.class]="'ha-status ' + statusClass(appointment.status)">
+                {{ statusText(appointment.status) }}
+              </span>
+            </div>
+
+            <div class="ha-appointment-info">
+              <div>
+                <i class="bi bi-calendar2-check"></i>
+                <span>{{ appointment.scheduledDate | date:'dd MMM yyyy' }}</span>
+              </div>
+
+              <div>
+                <i class="bi bi-clock"></i>
+                <span>{{ timeSlotText(appointment.timeSlot) }}</span>
+              </div>
+
+              <div>
+                <i class="bi bi-person-badge"></i>
+                <span>Doctor ID: {{ appointment.doctorId }}</span>
+              </div>
+            </div>
+
+            @if (appointment.cancellationReason) {
+              <div class="ha-cancel-reason">
+                <strong>Cancellation Reason</strong>
+                <p>{{ appointment.cancellationReason }}</p>
+              </div>
+            }
+
+            <div class="ha-card-actions">
+              @if (canCancel(appointment)) {
+                <button
+                  type="button"
+                  class="ha-cancel-btn"
+                  (click)="openCancelModal(appointment)"
+                >
+                  <i class="bi bi-x-circle"></i>
+                  Cancel Appointment
+                </button>
+              } @else {
+                <span class="ha-muted-action">
+                  No action available
+                </span>
+              }
+            </div>
+          </article>
+        }
+      </section>
+    }
+  </div>
+
+  <!-- CANCEL MODAL -->
+  @if (showCancelModal && selectedAppointment) {
+    <div class="ha-modal-backdrop">
+      <div class="ha-modal-card">
+        <button
+          type="button"
+          class="ha-modal-close"
+          [disabled]="cancelling"
+          (click)="closeCancelModal()"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+
+        <div class="ha-modal-icon warning">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+
+        <h2>Cancel appointment?</h2>
+
+        <p class="ha-modal-subtitle">
+          Please provide a reason for cancelling this appointment.
+        </p>
+
+        <div class="ha-review-list">
+          <div>
+            <span>Doctor</span>
+            <strong>{{ selectedAppointment.doctorName }}</strong>
+          </div>
+
+          <div>
+            <span>Date</span>
+            <strong>{{ selectedAppointment.scheduledDate | date:'dd MMM yyyy' }}</strong>
+          </div>
+
+          <div>
+            <span>Time</span>
+            <strong>{{ timeSlotText(selectedAppointment.timeSlot) }}</strong>
+          </div>
+        </div>
+
+        <div class="ha-reason-field">
+          <label>Cancellation Reason</label>
+          <textarea
+            rows="4"
+            placeholder="Enter cancellation reason"
+            [(ngModel)]="cancellationReason"
+          ></textarea>
+        </div>
+
+        <div class="ha-modal-actions">
+          <button
+            type="button"
+            class="ha-secondary-btn"
+            [disabled]="cancelling"
+            (click)="closeCancelModal()"
+          >
+            Go Back
+          </button>
+
+          <button
+            type="button"
+            class="ha-danger-btn"
+            [disabled]="cancelling || !cancellationReason.trim()"
+            (click)="confirmCancel()"
+          >
+            @if (cancelling) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              Cancelling...
+            } @else {
+              Confirm Cancel
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>

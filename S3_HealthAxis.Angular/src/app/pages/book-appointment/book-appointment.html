@@ -1,0 +1,296 @@
+<section class="ha-book-page">
+  <div class="ha-book-shell">
+
+    @if (loadingDoctor) {
+      <div class="ha-loading-card">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading doctor details...</p>
+      </div>
+    } @else if (errorMessage && !doctor) {
+      <div class="ha-error-card">
+        <i class="bi bi-exclamation-triangle"></i>
+        <h2>Booking unavailable</h2>
+        <p>{{ errorMessage }}</p>
+
+        <a routerLink="/patient/doctors" class="ha-secondary-btn">
+          Back to Doctors
+        </a>
+      </div>
+    } @else {
+      <section class="ha-book-hero">
+        <div>
+          <span class="ha-book-badge">
+            <i class="bi bi-calendar-plus"></i>
+            Book Appointment
+          </span>
+
+          <h1>Schedule your consultation.</h1>
+
+          <p>
+            Pick a suitable date, choose an available time slot, review the details,
+            and confirm your appointment.
+          </p>
+        </div>
+
+        @if (doctor) {
+          <div class="ha-doctor-summary-card">
+            <div class="ha-doctor-summary-top">
+              <div class="ha-doctor-avatar">
+                <i class="bi bi-person-badge"></i>
+              </div>
+
+              <div>
+                <h3>{{ doctor.fullName }}</h3>
+                <p>{{ specialisationText(doctor.specialisation) }}</p>
+              </div>
+            </div>
+
+            <div class="ha-doctor-info-grid">
+              <div>
+                <span>Experience</span>
+                <strong>{{ doctor.yearsOfExperience }} year(s)</strong>
+              </div>
+
+              <div>
+                <span>Consultation Fee</span>
+                <strong>₹{{ doctor.consultationFee }}</strong>
+              </div>
+            </div>
+          </div>
+        }
+      </section>
+
+      <section class="ha-book-grid">
+        <div class="ha-book-panel">
+          <div class="ha-panel-header">
+            <span>Step 1</span>
+            <h2>Select appointment date</h2>
+          </div>
+
+          <div class="ha-date-field">
+            <label>Date</label>
+            <input
+              type="date"
+              [(ngModel)]="selectedDate"
+              [min]="minDate"
+              (change)="onDateChange()"
+            />
+          </div>
+
+          <p class="ha-help-text">
+            Past dates are disabled. Choose today's date or a future date to view available slots.
+          </p>
+        </div>
+
+        <div class="ha-book-panel">
+          <div class="ha-panel-header">
+            <span>Step 2</span>
+            <h2>Select available slot</h2>
+          </div>
+
+          @if (loadingSlots) {
+            <div class="ha-slot-loading">
+              <div class="spinner-border spinner-border-sm text-primary"></div>
+              <span>Loading slots...</span>
+            </div>
+          } @else if (selectedDate && availableSlots.length > 0) {
+            <div class="ha-slot-grid">
+              @for (slot of availableSlots; track slot) {
+                <button
+                  type="button"
+                  class="ha-slot-btn"
+                  [class.selected]="selectedSlot === slot"
+                  (click)="selectSlot(slot)"
+                >
+                  <i class="bi bi-clock"></i>
+                  {{ timeSlotText(slot) }}
+                </button>
+              }
+            </div>
+          } @else if (selectedDate && availableSlots.length === 0 && !loadingSlots) {
+            <div class="ha-empty-state compact">
+              <i class="bi bi-calendar-x"></i>
+              <p>No slots available for selected date.</p>
+            </div>
+          } @else {
+            <div class="ha-empty-state compact">
+              <i class="bi bi-calendar-event"></i>
+              <p>Select a date to view available slots.</p>
+            </div>
+          }
+        </div>
+      </section>
+
+      @if (errorMessage) {
+        <div class="ha-alert error">
+          <i class="bi bi-exclamation-triangle"></i>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      @if (successMessage) {
+        <div class="ha-alert success">
+          <i class="bi bi-check-circle"></i>
+          <span>{{ successMessage }}</span>
+        </div>
+      }
+
+      <section class="ha-confirm-panel">
+        <div>
+          <span>Final Step</span>
+          <h2>Review and confirm</h2>
+
+          <p>
+            @if (selectedDate && selectedSlot) {
+              You selected
+              <strong>{{ selectedDate | date:'dd MMM yyyy' }}</strong>
+              at
+              <strong>{{ timeSlotText(selectedSlot) }}</strong>.
+            } @else {
+              Select a date and available time slot to continue.
+            }
+          </p>
+        </div>
+
+        <div class="ha-confirm-actions">
+          <a routerLink="/patient/doctors" class="ha-secondary-btn">
+            Back
+          </a>
+
+          <button
+            type="button"
+            class="ha-primary-btn"
+            [disabled]="!selectedDate || !selectedSlot"
+            (click)="openReviewModal()"
+          >
+            Review Booking
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </section>
+    }
+  </div>
+
+  <!-- REVIEW MODAL -->
+  @if (showReviewModal && doctor) {
+    <div class="ha-modal-backdrop">
+      <div class="ha-modal-card">
+        <button
+          type="button"
+          class="ha-modal-close"
+          [disabled]="booking"
+          (click)="closeReviewModal()"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+
+        <div class="ha-modal-icon review">
+          <i class="bi bi-calendar-check"></i>
+        </div>
+
+        <h2>Review appointment details</h2>
+
+        <p class="ha-modal-subtitle">
+          Please confirm the appointment details before final submission.
+        </p>
+
+        <div class="ha-review-list">
+          <div>
+            <span>Doctor</span>
+            <strong>{{ doctor.fullName }}</strong>
+          </div>
+
+          <div>
+            <span>Specialisation</span>
+            <strong>{{ specialisationText(doctor.specialisation) }}</strong>
+          </div>
+
+          <div>
+            <span>Date</span>
+            <strong>{{ selectedDate | date:'dd MMM yyyy' }}</strong>
+          </div>
+
+          <div>
+            <span>Time Slot</span>
+            <strong>{{ selectedSlot ? timeSlotText(selectedSlot) : '-' }}</strong>
+          </div>
+
+          <div>
+            <span>Consultation Fee</span>
+            <strong>₹{{ doctor.consultationFee }}</strong>
+          </div>
+        </div>
+
+        <div class="ha-modal-note">
+          <i class="bi bi-info-circle"></i>
+          <span>
+            You can cancel this appointment later from My Appointments if needed.
+          </span>
+        </div>
+
+        <div class="ha-modal-actions">
+          <button
+            type="button"
+            class="ha-secondary-btn"
+            [disabled]="booking"
+            (click)="closeReviewModal()"
+          >
+            Go Back
+          </button>
+
+          <button
+            type="button"
+            class="ha-primary-btn"
+            [disabled]="booking"
+            (click)="confirmFinalBooking()"
+          >
+            @if (booking) {
+              <span class="spinner-border spinner-border-sm me-2"></span>
+              Booking...
+            } @else {
+              Confirm Appointment
+              <i class="bi bi-check-circle"></i>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- SUCCESS MODAL -->
+  @if (showSuccessModal) {
+    <div class="ha-modal-backdrop">
+      <div class="ha-modal-card success">
+        <div class="ha-modal-icon success">
+          <i class="bi bi-check2-circle"></i>
+        </div>
+
+        <h2>Appointment booked successfully!</h2>
+
+        <p class="ha-modal-subtitle">
+          Your appointment has been created. You can view the latest status from My Appointments.
+        </p>
+
+        <div class="ha-modal-actions">
+          <button
+            type="button"
+            class="ha-secondary-btn"
+            (click)="bookAnother()"
+          >
+            Book Another
+          </button>
+
+          <button
+            type="button"
+            class="ha-primary-btn"
+            (click)="goToAppointments()"
+          >
+            Go to My Appointments
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</section>
+

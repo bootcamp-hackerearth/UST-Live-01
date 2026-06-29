@@ -1,0 +1,264 @@
+.ha-history-page {
+  min-height: calc(100vh - 140px);
+  padding: 42px 30px 80px;
+}
+
+.ha-history-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* SHARED CARDS */
+
+.ha-history-hero,
+.ha-summary-card,
+.ha-history-card,
+.ha-loading-card,
+.ha-error-card,
+.ha-empty-state {
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(203, 232, 255, 0.95);
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* HERO */
+
+.ha-history-hero {
+  padding: 38px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
+  align-items: center;
+}
+
+.ha-history-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: rgba(239, 246, 255, 0.96);
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  font-size: 0.86rem;
+  margin-bottom: 18px;
+}
+
+.ha-history-hero h1 {
+  margin: 0 0 16px;
+  color: #101827;
+  font-size: clamp(2.2rem, 4vw, 3.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.ha-history-hero p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 1.04rem;
+}
+
+.ha-summary-card {
+  padding: 26px;
+}
+
+.ha-summary-card span {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-summary-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #101827;
+  font-size: 2.3rem;
+}
+
+.ha-summary-card p {
+  margin-top: 8px;
+  color: #64748b;
+}
+
+/* GRID */
+
+.ha-history-grid {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.ha-history-card {
+  padding: 24px;
+}
+
+.ha-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.ha-card-top span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-card-top h3 {
+  margin: 8px 0 4px;
+  color: #112033;
+  font-size: 1.25rem;
+}
+
+.ha-card-top p {
+  margin: 0;
+  color: #64748b;
+}
+
+.ha-date-pill {
+  height: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ha-record-section {
+  padding: 15px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  margin-bottom: 14px;
+}
+
+.ha-record-section span {
+  display: block;
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.ha-record-section p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.65;
+}
+
+.ha-record-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ha-record-footer span {
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+/* STATES */
+
+.ha-loading-card,
+.ha-error-card,
+.ha-empty-state {
+  margin-top: 28px;
+  min-height: 280px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.ha-loading-card p,
+.ha-error-card p,
+.ha-empty-state p {
+  color: #64748b;
+  margin: 0;
+}
+
+.ha-error-card i {
+  color: #dc2626;
+  font-size: 2rem;
+}
+
+.ha-error-card h2,
+.ha-empty-state h3 {
+  margin: 0;
+  color: #112033;
+}
+
+.ha-empty-state i {
+  color: #2563eb;
+  font-size: 2rem;
+}
+
+.ha-secondary-btn {
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  text-decoration: none;
+  font-weight: 850;
+  color: #1d4ed8;
+  background: #ffffff;
+  border: 1px solid #bfdbfe;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+  .ha-history-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-history-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .ha-history-page {
+    padding: 28px 18px 56px;
+  }
+
+  .ha-history-hero,
+  .ha-history-card {
+    padding: 28px;
+  }
+
+  .ha-card-top {
+    flex-direction: column;
+  }
+}
+

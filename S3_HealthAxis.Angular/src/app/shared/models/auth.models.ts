@@ -8,6 +8,7 @@ export interface AuthResponse {
   refreshToken: string;
   email: string;
   role: string;
+  referenceId?: number;
 }
 
 export interface RegisterPatientRequest {
@@ -20,3 +21,13 @@ export interface RegisterPatientRequest {
   password: string;
   confirmPassword: string;
 }
+
+export interface ChangePasswordRequest {
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export interface ApiMessageResponse {
+  message: string;
+}
+

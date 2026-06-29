@@ -2,11 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
-import {
-  AuthResponse,
-  LoginRequest,
-  RegisterPatientRequest
-} from '../../shared/models/auth.models';
+import {AuthResponse, LoginRequest, RegisterPatientRequest} from '../../shared/models/auth.models';
+import {ApiMessageResponse, ChangePasswordRequest} from '../../shared/models/auth.models';
 
 import { TokenService } from './token.service';
 
@@ -40,6 +37,13 @@ export class AuthService {
         })
       );
   }
+
+  changePassword(request: ChangePasswordRequest) {
+  return this.http.put<ApiMessageResponse>(
+    `${this.apiBaseUrl}/auth/change-password`,
+    request
+  );
+}
 
   logout(): void {
     this.tokenService.clearAuthData();

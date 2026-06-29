@@ -11,10 +11,14 @@ namespace S3_HealthAxisApi.Controllers
     public class PatientsController : ControllerBase
     {
         private readonly IPatientService _patientService;
+        private readonly IHealthRecordService _healthRecordService;
 
-        public PatientsController(IPatientService patientService)
+        public PatientsController(
+            IPatientService patientService,
+            IHealthRecordService healthRecordService)
         {
             _patientService = patientService;
+            _healthRecordService = healthRecordService;
         }
 
         [HttpGet]
@@ -27,9 +31,20 @@ namespace S3_HealthAxisApi.Controllers
         }
 
         [HttpGet("{id:int}")]
-        [Authorize(Roles = "Admin,Doctor")]
+        [Authorize(Roles = "Admin,Doctor,Patient")]
         public async Task<IActionResult> GetById(int id)
         {
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                if (!patientIdFromToken.HasValue ||
+                    patientIdFromToken.Value != id)
+                {
+                    return Forbid();
+                }
+            }
+
             var patient = await _patientService.GetByIdAsync(id);
 
             if (patient == null)
@@ -38,6 +53,34 @@ namespace S3_HealthAxisApi.Controllers
             }
 
             return Ok(patient);
+        }
+
+        [HttpGet("{id:int}/health-records")]
+        [Authorize(Roles = "Admin,Doctor,Patient")]
+        public async Task<IActionResult> GetHealthRecords(int id)
+        {
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                if (!patientIdFromToken.HasValue ||
+                    patientIdFromToken.Value != id)
+                {
+                    return Forbid();
+                }
+            }
+
+            try
+            {
+                var records =
+                    await _healthRecordService.GetByPatientIdAsync(id);
+
+                return Ok(records);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpGet("search")]
@@ -78,6 +121,17 @@ namespace S3_HealthAxisApi.Controllers
         {
             try
             {
+                if (User.IsInRole("Patient"))
+                {
+                    var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                    if (!patientIdFromToken.HasValue ||
+                        patientIdFromToken.Value != id)
+                    {
+                        return Forbid();
+                    }
+                }
+
                 await _patientService.UpdateAsync(id, dto);
 
                 return NoContent();
@@ -123,5 +177,18 @@ namespace S3_HealthAxisApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+        private int? GetPatientReferenceIdFromToken()
+        {
+            var referenceIdValue = User.FindFirst("ReferenceId")?.Value;
+
+            if (int.TryParse(referenceIdValue, out var referenceId))
+            {
+                return referenceId;
+            }
+
+            return null;
+        }
     }
 }
+

@@ -1,0 +1,440 @@
+.ha-doctors-page {
+  min-height: calc(100vh - 140px);
+  padding: 42px 30px 80px;
+}
+
+.ha-doctors-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* HERO / SHARED CARDS */
+
+.ha-doctors-hero,
+.ha-filter-panel,
+.ha-doctor-card,
+.ha-loading-card,
+.ha-error-card,
+.ha-empty-state,
+.ha-doctors-summary-card {
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(203, 232, 255, 0.95);
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.ha-doctors-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
+  align-items: center;
+  padding: 38px;
+}
+
+.ha-doctors-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: rgba(239, 246, 255, 0.96);
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  font-size: 0.86rem;
+  margin-bottom: 18px;
+}
+
+.ha-doctors-hero h1 {
+  margin: 0 0 16px;
+  color: #101827;
+  font-size: clamp(2.2rem, 4vw, 3.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.ha-doctors-hero p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 1.04rem;
+}
+
+.ha-doctors-summary-card {
+  padding: 26px;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(56, 189, 248, 0.22), transparent 35%),
+    rgba(255, 255, 255, 0.78);
+}
+
+.ha-doctors-summary-card span {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-doctors-summary-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #101827;
+  font-size: 2.3rem;
+}
+
+.ha-doctors-summary-card p {
+  margin-top: 8px;
+  color: #64748b;
+}
+
+/* FILTERS */
+
+.ha-filter-panel {
+  margin-top: 26px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px auto;
+  gap: 18px;
+  align-items: end;
+}
+
+.ha-search-field,
+.ha-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ha-search-field label,
+.ha-filter-field label {
+  font-weight: 850;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.ha-input-wrap {
+  position: relative;
+}
+
+.ha-input-wrap i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+.ha-input-wrap input {
+  width: 100%;
+  height: 50px;
+  border-radius: 16px;
+  border: 1px solid #dbe5ef;
+  padding: 0 15px 0 42px;
+  outline: none;
+  background: #f8fbff;
+  color: #334155;
+}
+
+.ha-filter-field select {
+  height: 50px;
+  border-radius: 16px;
+  border: 1px solid #dbe5ef;
+  padding: 0 15px;
+  outline: none;
+  background: #f8fbff;
+  color: #334155;
+}
+
+.ha-input-wrap input:focus,
+.ha-filter-field select:focus {
+  border-color: #60a5fa;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+}
+
+.ha-clear-btn {
+  height: 50px;
+  border-radius: 16px;
+  padding: 0 18px;
+  background: #ffffff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.ha-clear-btn:hover {
+  background: #eff6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+}
+
+/* RESULTS HEADER */
+
+.ha-results-header {
+  margin-top: 34px;
+  margin-bottom: 18px;
+}
+
+.ha-results-header span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-results-header h2 {
+  margin: 8px 0 0;
+  color: #101827;
+  font-size: 1.7rem;
+  letter-spacing: -0.03em;
+}
+
+/* DOCTOR GRID */
+
+.ha-doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.ha-doctor-card {
+  padding: 24px;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.ha-doctor-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 26px 58px rgba(37, 99, 235, 0.13);
+  border-color: rgba(125, 211, 252, 0.95);
+}
+
+.ha-doctor-card-top {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.ha-doctor-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  color: #2563eb;
+  background: #eff6ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex: 0 0 58px;
+}
+
+.ha-doctor-card h3 {
+  margin: 0 0 4px;
+  color: #112033;
+  font-size: 1.2rem;
+}
+
+.ha-doctor-card p {
+  margin: 0;
+  color: #64748b;
+}
+
+/* DOCTOR INFO */
+
+.ha-doctor-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ha-doctor-info-grid div {
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+}
+
+.ha-doctor-info-grid span {
+  display: block;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.ha-doctor-info-grid strong {
+  display: block;
+  margin-top: 6px;
+  color: #112033;
+}
+
+/* DOCTOR META */
+
+.ha-doctor-meta {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ha-doctor-meta span {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  word-break: break-all;
+}
+
+.ha-active-status {
+  width: fit-content;
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem !important;
+  font-weight: 900 !important;
+}
+
+.ha-active-status.active {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #bbf7d0;
+}
+
+.ha-active-status.inactive {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* ACTIONS */
+
+.ha-doctor-actions {
+  display: flex;
+}
+
+.ha-book-btn {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 850;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.22);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.ha-book-btn:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(37, 99, 235, 0.28);
+}
+
+.ha-book-btn.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* LOADING / ERROR / EMPTY STATES */
+
+.ha-loading-card,
+.ha-error-card,
+.ha-empty-state {
+  margin-top: 28px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 28px;
+}
+
+.ha-loading-card p,
+.ha-error-card p,
+.ha-empty-state p {
+  color: #64748b;
+  margin: 0;
+}
+
+.ha-error-card i {
+  color: #dc2626;
+  font-size: 2rem;
+}
+
+.ha-error-card h2 {
+  margin: 0;
+  color: #101827;
+}
+
+.ha-empty-state i {
+  color: #2563eb;
+  font-size: 2rem;
+}
+
+.ha-empty-state h3 {
+  margin: 0;
+  color: #112033;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .ha-doctors-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-filter-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-doctor-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .ha-doctors-page {
+    padding: 28px 18px 56px;
+  }
+
+  .ha-doctors-hero {
+    padding: 28px;
+  }
+
+  .ha-doctor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-doctor-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-clear-btn {
+    width: 100%;
+  }
+}

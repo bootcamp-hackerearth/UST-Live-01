@@ -1,1 +1,154 @@
-<p>patient-doctors works!</p>
+<section class="ha-doctors-page">
+  <div class="ha-doctors-shell">
+
+    <!-- HEADER -->
+    <section class="ha-doctors-hero">
+      <div>
+        <span class="ha-doctors-badge">
+          <i class="bi bi-search-heart"></i>
+          Doctor Search
+        </span>
+
+        <h1>Find the right doctor for your care.</h1>
+
+        <p>
+          Search doctors by name or filter by specialisation, then book an appointment
+          with your preferred healthcare provider.
+        </p>
+      </div>
+
+      <div class="ha-doctors-summary-card">
+        <span>Available Doctors</span>
+        <strong>{{ activeDoctorsCount() }}</strong>
+        <p>Active doctors available for appointment booking.</p>
+      </div>
+    </section>
+
+    <!-- FILTERS -->
+    <section class="ha-filter-panel">
+      <div class="ha-search-field">
+        <label>Search Doctor</label>
+
+        <div class="ha-input-wrap">
+          <i class="bi bi-search"></i>
+          <input
+            type="text"
+            placeholder="Search by doctor name or specialisation"
+            [(ngModel)]="searchText"
+          />
+        </div>
+      </div>
+
+      <div class="ha-filter-field">
+        <label>Specialisation</label>
+
+        <select
+          [(ngModel)]="selectedSpecialisation"
+          (change)="applySpecialisationFilter()"
+        >
+          <option [ngValue]="null">All Specialisations</option>
+
+          @for (specialisation of specialisations; track specialisation.value) {
+            <option [ngValue]="specialisation.value">
+              {{ specialisation.label }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <button type="button" class="ha-clear-btn" (click)="clearFilters()">
+        <i class="bi bi-x-circle"></i>
+        Clear
+      </button>
+    </section>
+
+    <!-- CONTENT -->
+    @if (loading) {
+      <div class="ha-loading-card">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading doctors...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="ha-error-card">
+        <i class="bi bi-exclamation-triangle"></i>
+        <h2>Doctors unavailable</h2>
+        <p>{{ errorMessage }}</p>
+      </div>
+    } @else {
+      <section class="ha-results-header">
+        <div>
+          <span>Search Results</span>
+          <h2>{{ filteredDoctors.length }} doctor(s) found</h2>
+        </div>
+      </section>
+
+      @if (filteredDoctors.length > 0) {
+        <section class="ha-doctor-grid">
+          @for (doctor of filteredDoctors; track trackDoctor($index, doctor)) {
+            <article class="ha-doctor-card">
+              <div class="ha-doctor-card-top">
+                <div class="ha-doctor-avatar">
+                  <i class="bi bi-person-badge"></i>
+                </div>
+
+                <div>
+                  <h3>{{ doctor.fullName }}</h3>
+                  <p>{{ specialisationText(doctor.specialisation) }}</p>
+                </div>
+              </div>
+
+              <div class="ha-doctor-info-grid">
+                <div>
+                  <span>Experience</span>
+                  <strong>{{ doctor.yearsOfExperience }} year(s)</strong>
+                </div>
+
+                <div>
+                  <span>Consultation Fee</span>
+                  <strong>₹{{ doctor.consultationFee }}</strong>
+                </div>
+              </div>
+
+              <div class="ha-doctor-meta">
+                <span>
+                  <i class="bi bi-envelope"></i>
+                  {{ doctor.email }}
+                </span>
+
+                @if (doctor.isActive) {
+                  <span class="ha-active-status active">
+                    <i class="bi bi-check-circle"></i>
+                    Active
+                  </span>
+                } @else {
+                  <span class="ha-active-status inactive">
+                    <i class="bi bi-x-circle"></i>
+                    Inactive
+                  </span>
+                }
+              </div>
+
+              <div class="ha-doctor-actions">
+                <a
+                  [routerLink]="['/patient/book', doctor.doctorId]"
+                  class="ha-book-btn"
+                  [class.disabled]="!doctor.isActive"
+                >
+                  Book Appointment
+                  <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </article>
+          }
+        </section>
+      } @else {
+        <div class="ha-empty-state">
+          <i class="bi bi-search"></i>
+          <h3>No doctors found</h3>
+          <p>Try changing the search text or specialisation filter.</p>
+        </div>
+      }
+    }
+  </div>
+</section>
+

@@ -1,158 +1,257 @@
 <section class="ha-dashboard-page">
   <div class="ha-dashboard-shell">
-    <!-- Header -->
-    <section class="ha-dashboard-hero">
-      <div>
-        <span class="ha-dashboard-badge">
-          <i class="bi bi-person-heart"></i>
-          Patient Portal
-        </span>
 
-        <h1>Welcome back to your care journey.</h1>
-
-        <p>
-          Search doctors, book appointments, track visits, and view your health history
-          from one simple dashboard.
-        </p>
-
-        <div class="ha-dashboard-actions">
-          <a routerLink="/patient/doctors" class="ha-primary-btn">
-            Find Doctor
-            <i class="bi bi-search"></i>
-          </a>
-
-          <a routerLink="/patient/appointments" class="ha-secondary-btn">
-            My Appointments
-          </a>
-        </div>
+    @if (loading) {
+      <div class="ha-loading-card">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading your patient dashboard...</p>
       </div>
+    } @else if (errorMessage) {
+      <div class="ha-error-card">
+        <i class="bi bi-exclamation-triangle"></i>
+        <h2>Dashboard unavailable</h2>
+        <p>{{ errorMessage }}</p>
+      </div>
+    } @else {
 
-      <div class="ha-next-appointment-card">
-        <div class="ha-card-top">
-          <span>Upcoming Appointment</span>
-          <span class="ha-status pending">Pending</span>
-        </div>
+      <!-- HERO SECTION -->
+      <section class="ha-dashboard-hero">
+        <div>
+          <span class="ha-dashboard-badge">
+            <i class="bi bi-person-heart"></i>
+            Patient Portal
+          </span>
 
-        <div class="ha-doctor-line">
-          <div class="ha-avatar">
-            <i class="bi bi-person-badge"></i>
+          <h1>Welcome back, {{ patientName }}.</h1>
+
+          <p>
+            Search doctors, book appointments, track visits, and view your health history
+            from one simple dashboard.
+          </p>
+
+          <div class="ha-patient-meta">
+            <span>
+              <i class="bi bi-envelope"></i>
+              {{ patientEmail }}
+            </span>
+
+            <span>
+              <i class="bi bi-telephone"></i>
+              {{ patientPhone }}
+            </span>
           </div>
 
-          <div>
-            <h3>Dr. Arun Nair</h3>
-            <p>General Practitioner</p>
+          <div class="ha-dashboard-actions">
+            <a routerLink="/patient/doctors" class="ha-primary-btn">
+              Find Doctor
+              <i class="bi bi-search"></i>
+            </a>
+
+            <a routerLink="/patient/appointments" class="ha-secondary-btn">
+              My Appointments
+            </a>
           </div>
         </div>
 
-        <div class="ha-appointment-meta">
-          <div>
-            <i class="bi bi-calendar2-check"></i>
-            <span>30 Jun 2026</span>
+        <!-- UPCOMING APPOINTMENT CARD -->
+        <div class="ha-next-appointment-card">
+          <div class="ha-card-top">
+            <span>Upcoming Appointment</span>
+
+            @if (upcomingAppointment) {
+              <span [attr.class]="'ha-status ' + statusClass(upcomingAppointment.status)">
+                {{ statusText(upcomingAppointment.status) }}
+              </span>
+            }
           </div>
 
-          <div>
-            <i class="bi bi-clock"></i>
-            <span>10:00 AM</span>
+          @if (upcomingAppointment) {
+            <div class="ha-doctor-line">
+              <div class="ha-avatar">
+                <i class="bi bi-person-badge"></i>
+              </div>
+
+              <div>
+                <h3>{{ upcomingAppointment.doctorName }}</h3>
+                <p>Doctor ID: {{ upcomingAppointment.doctorId }}</p>
+              </div>
+            </div>
+
+            <div class="ha-appointment-meta">
+              <div>
+                <i class="bi bi-calendar2-check"></i>
+                <span>
+                  {{ upcomingAppointment.scheduledDate | date:'dd MMM yyyy' }}
+                </span>
+              </div>
+
+              <div>
+                <i class="bi bi-clock"></i>
+                <span>
+                  {{ timeSlotText(upcomingAppointment.timeSlot) }}
+                </span>
+              </div>
+            </div>
+          } @else {
+            <div class="ha-empty-state">
+              <i class="bi bi-calendar-x"></i>
+              <p>No upcoming appointment found.</p>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- STATS SECTION -->
+      <section class="ha-stat-grid">
+        <div class="ha-stat-card">
+          <i class="bi bi-calendar2-week"></i>
+          <span>Total Appointments</span>
+          <strong>{{ totalAppointments }}</strong>
+        </div>
+
+        <div class="ha-stat-card">
+          <i class="bi bi-hourglass-split"></i>
+          <span>Pending</span>
+          <strong>{{ pendingAppointments }}</strong>
+        </div>
+
+        <div class="ha-stat-card">
+          <i class="bi bi-patch-check"></i>
+          <span>Confirmed</span>
+          <strong>{{ confirmedAppointments }}</strong>
+        </div>
+
+        <div class="ha-stat-card">
+          <i class="bi bi-check2-circle"></i>
+          <span>Completed</span>
+          <strong>{{ completedAppointments }}</strong>
+        </div>
+      </section>
+
+      <!-- MAIN GRID SECTION -->
+      <section class="ha-main-grid">
+
+        <!-- QUICK ACTIONS PANEL -->
+        <div class="ha-panel">
+          <div class="ha-panel-header">
+            <div>
+              <span>Quick Actions</span>
+              <h2>What would you like to do?</h2>
+            </div>
+          </div>
+
+          <div class="ha-action-grid">
+            <a routerLink="/patient/doctors" class="ha-action-card">
+              <i class="bi bi-search-heart"></i>
+              <strong>Search Doctors</strong>
+              <p>Find specialists by availability and consultation fee.</p>
+            </a>
+
+            <a routerLink="/patient/appointments" class="ha-action-card">
+              <i class="bi bi-calendar-plus"></i>
+              <strong>Book Appointment</strong>
+              <p>Choose a date and slot with your preferred doctor.</p>
+            </a>
+
+            <a routerLink="/patient/history" class="ha-action-card">
+              <i class="bi bi-clipboard2-pulse"></i>
+              <strong>Health History</strong>
+              <p>View diagnosis, prescriptions, and past visits.</p>
+            </a>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Stats -->
-    <section class="ha-stat-grid">
-      <div class="ha-stat-card">
-        <i class="bi bi-calendar2-week"></i>
-        <span>Total Appointments</span>
-        <strong>8</strong>
-      </div>
+        <!-- RECENT APPOINTMENTS PANEL -->
+        <div class="ha-panel">
+          <div class="ha-panel-header">
+            <div>
+              <span>Appointments</span>
+              <h2>Recent activity</h2>
+            </div>
+          </div>
 
-      <div class="ha-stat-card">
-        <i class="bi bi-hourglass-split"></i>
-        <span>Pending</span>
-        <strong>2</strong>
-      </div>
+          <div class="ha-list">
+            @if (recentAppointments.length > 0) {
+              @for (appointment of recentAppointments; track appointment.appointmentId) {
+                <div class="ha-list-item">
+                  <div>
+                    <strong>{{ appointment.doctorName }}</strong>
 
-      <div class="ha-stat-card">
-        <i class="bi bi-check2-circle"></i>
-        <span>Completed</span>
-        <strong>5</strong>
-      </div>
+                    <span>
+                      {{ appointment.scheduledDate | date:'dd MMM yyyy' }}
+                      •
+                      {{ timeSlotText(appointment.timeSlot) }}
+                    </span>
+                  </div>
 
-      <div class="ha-stat-card">
-        <i class="bi bi-journal-medical"></i>
-        <span>Health Records</span>
-        <strong>3</strong>
-      </div>
-    </section>
+                  <span [attr.class]="'ha-status ' + statusClass(appointment.status)">
+                    {{ statusText(appointment.status) }}
+                  </span>
+                </div>
+              }
+            } @else {
+              <div class="ha-empty-state">
+                <i class="bi bi-calendar-x"></i>
+                <p>No appointments found.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
 
-    <!-- Main dashboard grid -->
-    <section class="ha-main-grid">
-      <!-- Quick actions -->
-      <div class="ha-panel">
+      <!-- HEALTH HISTORY SECTION -->
+      <section class="ha-panel ha-health-panel">
         <div class="ha-panel-header">
           <div>
-            <span>Quick Actions</span>
-            <h2>What would you like to do?</h2>
+            <span>Health History</span>
+            <h2>Recent health records</h2>
           </div>
+
+          <strong class="ha-health-count">
+            {{ healthRecords.length }} record(s)
+          </strong>
         </div>
 
-        <div class="ha-action-grid">
-          <a routerLink="/patient/doctors" class="ha-action-card">
-            <i class="bi bi-search-heart"></i>
-            <strong>Search Doctors</strong>
-            <p>Find specialists by availability and consultation fee.</p>
-          </a>
+        @if (recentHealthRecords.length > 0) {
+          <div class="ha-health-record-grid">
+            @for (record of recentHealthRecords; track $index) {
+              <div class="ha-health-record-card">
+                <div class="ha-health-record-top">
+                  <i class="bi bi-file-medical"></i>
 
-          <a routerLink="/patient/appointments" class="ha-action-card">
-            <i class="bi bi-calendar-plus"></i>
-            <strong>Book Appointment</strong>
-            <p>Choose a date and slot with your preferred doctor.</p>
-          </a>
+                  <div>
+                    <strong>{{ recordDoctorName(record) }}</strong>
+                    <span>{{ recordSpecialisation(record) }}</span>
+                  </div>
+                </div>
 
-          <a routerLink="/patient/history" class="ha-action-card">
-            <i class="bi bi-clipboard2-pulse"></i>
-            <strong>Health History</strong>
-            <p>View diagnosis, prescriptions, and past visits.</p>
-          </a>
-        </div>
-      </div>
+                <p class="ha-diagnosis">
+                  {{ record.diagnosis || 'Diagnosis not available' }}
+                </p>
 
-      <!-- Recent appointments -->
-      <div class="ha-panel">
-        <div class="ha-panel-header">
-          <div>
-            <span>Appointments</span>
-            <h2>Recent activity</h2>
+                <div class="ha-record-meta">
+                  <span>
+                    <i class="bi bi-calendar-event"></i>
+                    {{ recordVisitDate(record) | date:'dd MMM yyyy' }}
+                  </span>
+
+                  <span>
+                    <i class="bi bi-capsule"></i>
+                    {{ recordMedication(record) }}
+                  </span>
+                </div>
+              </div>
+            }
           </div>
-        </div>
-
-        <div class="ha-list">
-          <div class="ha-list-item">
-            <div>
-              <strong>Dr. Rohan Menon</strong>
-              <span>Cardiologist • 26 Jun 2026</span>
-            </div>
-            <span class="ha-status completed">Completed</span>
+        } @else {
+          <div class="ha-empty-state">
+            <i class="bi bi-journal-x"></i>
+            <p>No health records found yet.</p>
           </div>
+        }
+      </section>
+    }
 
-          <div class="ha-list-item">
-            <div>
-              <strong>Dr. Arun Nair</strong>
-              <span>General Practitioner • 30 Jun 2026</span>
-            </div>
-            <span class="ha-status pending">Pending</span>
-          </div>
-
-          <div class="ha-list-item">
-            <div>
-              <strong>Dr. Meera Iyer</strong>
-              <span>Dermatologist • 03 Jul 2026</span>
-            </div>
-            <span class="ha-status confirmed">Confirmed</span>
-          </div>
-        </div>
-      </div>
-    </section>
   </div>
 </section>
 

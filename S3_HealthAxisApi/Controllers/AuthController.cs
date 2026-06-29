@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using S3_HealthAxis.Shared.DTOs.Auth;
 using S3_HealthAxisApi.Services.Interface;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace S3_HealthAxisApi.Controllers
 {
@@ -55,6 +58,34 @@ namespace S3_HealthAxisApi.Controllers
             return Ok(result.Data);
         }
 
+        [HttpPut("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(
+    [FromBody] ChangePasswordDto request)
+        {
+            var email =
+                User.FindFirst(JwtRegisteredClaimNames.Email)?.Value ??
+                User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return Unauthorized("Unable to identify authenticated user.");
+            }
+
+            var result =
+                await _authService.ChangePasswordAsync(email, request);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(new
+            {
+                message = result.Message
+            });
+        }
+
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(RefreshTokenDto dto)
         {
@@ -68,6 +99,7 @@ namespace S3_HealthAxisApi.Controllers
 
             return Ok(result.Data);
         }
+
 
 
     }

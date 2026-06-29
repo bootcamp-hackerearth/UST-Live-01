@@ -8,6 +8,8 @@ namespace S3_HealthAxisApi.Services.Interface
 
         Task<HealthRecordDto?> GetByAppointmentIdAsync(int appointmentId);
 
+        Task<IEnumerable<HealthRecordDto>> GetByPatientIdAsync(int patientId);
+
         Task<HealthRecordDto> CreateAsync(CreateHealthRecordDto dto);
 
         Task UpdateAsync(int id, UpdateHealthRecordDto dto);

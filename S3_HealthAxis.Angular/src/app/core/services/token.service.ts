@@ -9,12 +9,17 @@ export class TokenService {
   private readonly refreshTokenKey = 'healthaxis_refresh_token';
   private readonly emailKey = 'healthaxis_email';
   private readonly roleKey = 'healthaxis_role';
+  private readonly referenceIdKey = 'healthaxis_reference_id';
 
   saveAuthData(auth: AuthResponse): void {
     localStorage.setItem(this.accessTokenKey, auth.accessToken);
     localStorage.setItem(this.refreshTokenKey, auth.refreshToken);
     localStorage.setItem(this.emailKey, auth.email);
     localStorage.setItem(this.roleKey, auth.role);
+
+    if (auth.referenceId !== null && auth.referenceId !== undefined) {
+      localStorage.setItem(this.referenceIdKey, auth.referenceId.toString());
+    }
   }
 
   getAccessToken(): string | null {
@@ -33,6 +38,18 @@ export class TokenService {
     return localStorage.getItem(this.roleKey);
   }
 
+  getReferenceId(): number | null {
+    const value = localStorage.getItem(this.referenceIdKey);
+
+    if (!value) {
+      return null;
+    }
+
+    const parsedValue = Number(value);
+
+    return Number.isNaN(parsedValue) ? null : parsedValue;
+  }
+
   isLoggedIn(): boolean {
     return !!this.getAccessToken();
   }
@@ -42,5 +59,7 @@ export class TokenService {
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.emailKey);
     localStorage.removeItem(this.roleKey);
+    localStorage.removeItem(this.referenceIdKey);
   }
 }
+

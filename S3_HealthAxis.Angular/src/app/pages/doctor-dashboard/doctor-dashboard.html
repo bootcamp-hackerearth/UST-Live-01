@@ -1,6 +1,7 @@
 <section class="ha-doctor-page">
   <div class="ha-doctor-shell">
-    <!-- Header -->
+
+    <!-- HERO -->
     <section class="ha-doctor-hero">
       <div>
         <span class="ha-doctor-badge">
@@ -11,134 +12,302 @@
         <h1>Today’s consultations at a glance.</h1>
 
         <p>
-          Review appointments, open patient profiles, and prepare consultation records
-          from one focused workspace.
+          Review today’s schedule, open patient profiles, and add consultation health records.
         </p>
       </div>
 
       <div class="ha-today-card">
         <span>Today</span>
-        <strong>6 Appointments</strong>
-        <p>June 30, 2026</p>
+        <strong>{{ totalAppointments }} Appointment(s)</strong>
+
+        @if (schedule.length > 0) {
+          <p>{{ schedule[0].scheduledDate | date:'dd MMM yyyy' }}</p>
+        } @else {
+          <p>No appointments scheduled today</p>
+        }
       </div>
     </section>
 
-    <!-- Stats -->
+    <!-- ALERTS -->
+    @if (successMessage) {
+      <div class="ha-alert success">
+        <i class="bi bi-check-circle"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+    }
+
+    @if (errorMessage) {
+      <div class="ha-alert error">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <!-- STATS -->
     <section class="ha-doctor-stats">
       <div class="ha-stat-box">
         <i class="bi bi-calendar-check"></i>
         <span>Scheduled</span>
-        <strong>6</strong>
+        <strong>{{ totalAppointments }}</strong>
       </div>
 
       <div class="ha-stat-box">
         <i class="bi bi-hourglass-split"></i>
         <span>Pending</span>
-        <strong>2</strong>
+        <strong>{{ pendingAppointments }}</strong>
+      </div>
+
+      <div class="ha-stat-box">
+        <i class="bi bi-patch-check"></i>
+        <span>Confirmed</span>
+        <strong>{{ confirmedAppointments }}</strong>
       </div>
 
       <div class="ha-stat-box">
         <i class="bi bi-check2-circle"></i>
         <span>Completed</span>
-        <strong>3</strong>
-      </div>
-
-      <div class="ha-stat-box">
-        <i class="bi bi-file-medical"></i>
-        <span>Records Added</span>
-        <strong>3</strong>
+        <strong>{{ completedAppointments }}</strong>
       </div>
     </section>
 
-    <!-- Dashboard Content -->
-    <section class="ha-doctor-grid">
-      <!-- Schedule -->
-      <div class="ha-panel">
-        <div class="ha-panel-header">
-          <div>
-            <span>Schedule</span>
-            <h2>Today’s appointments</h2>
-          </div>
-        </div>
-
-        <div class="ha-schedule-list">
-          <div class="ha-schedule-item">
-            <div class="ha-time">10:00 AM</div>
-            <div class="ha-patient-info">
-              <strong>Ayush Sharma</strong>
-              <span>General consultation</span>
-            </div>
-            <span class="ha-status pending">Pending</span>
-          </div>
-
-          <div class="ha-schedule-item">
-            <div class="ha-time">11:30 AM</div>
-            <div class="ha-patient-info">
-              <strong>Riya Shukla</strong>
-              <span>Follow-up visit</span>
-            </div>
-            <span class="ha-status confirmed">Confirmed</span>
-          </div>
-
-          <div class="ha-schedule-item">
-            <div class="ha-time">02:00 PM</div>
-            <div class="ha-patient-info">
-              <strong>Karan Mehta</strong>
-              <span>Prescription review</span>
-            </div>
-            <span class="ha-status completed">Completed</span>
-          </div>
-        </div>
+    <!-- CONTENT -->
+    @if (loading) {
+      <div class="ha-loading-card">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading today’s schedule...</p>
       </div>
+    } @else if (schedule.length === 0) {
+      <div class="ha-empty-state">
+        <i class="bi bi-calendar-x"></i>
+        <h3>No appointments today</h3>
+        <p>Your scheduled consultations for today will appear here.</p>
+      </div>
+    } @else {
+      <section class="ha-doctor-grid">
 
-      <!-- Patient Context -->
-      <div class="ha-panel">
-        <div class="ha-panel-header">
-          <div>
-            <span>Patient Context</span>
-            <h2>Selected patient preview</h2>
+        <!-- TODAY SCHEDULE -->
+        <div class="ha-panel">
+          <div class="ha-panel-header">
+            <div>
+              <span>Schedule</span>
+              <h2>Today’s appointments</h2>
+            </div>
+          </div>
+
+          <div class="ha-schedule-list">
+            @for (appointment of schedule; track appointment.appointmentId) {
+              <div class="ha-schedule-item">
+                <div class="ha-time">
+                  {{ timeSlotText(appointment.timeSlot) }}
+                </div>
+
+                <div class="ha-patient-info">
+                  <strong>{{ appointment.patientName }}</strong>
+                  <span>Patient ID: {{ appointment.patientId }}</span>
+                </div>
+
+                <span [attr.class]="'ha-status ' + statusClass(appointment.status)">
+                  {{ statusText(appointment.status) }}
+                </span>
+
+                <div class="ha-schedule-actions">
+                  <button
+                    type="button"
+                    class="ha-view-btn"
+                    (click)="openPatientProfile(appointment)"
+                  >
+                    View Patient
+                  </button>
+
+                  @if (canAddHealthRecord(appointment)) {
+                    <button
+                      type="button"
+                      class="ha-record-btn small"
+                      (click)="openHealthRecordPanel(appointment)"
+                    >
+                      Add Record
+                    </button>
+                  }
+                </div>
+              </div>
+            }
           </div>
         </div>
 
-        <div class="ha-profile-card">
-          <div class="ha-profile-top">
+        <!-- WORKFLOW -->
+        <div class="ha-panel">
+          <div class="ha-panel-header">
+            <div>
+              <span>Workflow</span>
+              <h2>Consultation actions</h2>
+            </div>
+          </div>
+
+          <div class="ha-workflow-card">
+            <i class="bi bi-clipboard2-pulse"></i>
+
+            <h3>Complete consultation</h3>
+
+            <p>
+              Open an appointment, review patient context, then add diagnosis,
+              prescription, and notes to complete the consultation.
+            </p>
+          </div>
+        </div>
+
+      </section>
+    }
+  </div>
+
+  <!-- PATIENT PROFILE MODAL -->
+  @if (showPatientModal) {
+    <div class="ha-modal-backdrop">
+      <div class="ha-modal-card profile">
+        <button
+          type="button"
+          class="ha-modal-close"
+          [disabled]="loadingPatient"
+          (click)="closePatientModal()"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+
+        @if (loadingPatient) {
+          <div class="ha-modal-loading">
+            <div class="spinner-border text-primary"></div>
+            <p>Loading patient profile...</p>
+          </div>
+        } @else if (selectedPatient) {
+          <div class="ha-profile-header">
             <div class="ha-profile-avatar">
               <i class="bi bi-person-heart"></i>
             </div>
 
             <div>
-              <h3>Ayush Sharma</h3>
-              <p>Age 31 • Male</p>
+              <h2>{{ selectedPatient.fullName }}</h2>
+              <p>Patient ID: {{ selectedPatient.patientId }}</p>
             </div>
           </div>
 
           <div class="ha-profile-grid">
             <div>
-              <span>Last Visit</span>
-              <strong>12 Jun 2026</strong>
+              <span>Date of Birth</span>
+              <strong>{{ selectedPatient.dateOfBirth | date:'dd MMM yyyy' }}</strong>
             </div>
 
             <div>
-              <span>Records</span>
-              <strong>4</strong>
+              <span>Gender</span>
+              <strong>{{ genderText(selectedPatient.gender) }}</strong>
+            </div>
+
+            <div>
+              <span>Phone</span>
+              <strong>{{ selectedPatient.phoneNumber }}</strong>
+            </div>
+
+            <div>
+              <span>Email</span>
+              <strong>{{ selectedPatient.email || 'Not available' }}</strong>
             </div>
           </div>
 
-          <div class="ha-health-summary">
-            <h4>Recent Health Note</h4>
-            <p>
-              Patient reported mild fever and fatigue. Follow-up recommended after
-              prescribed medication course.
-            </p>
-          </div>
+          <div class="ha-history-preview">
+            <h3>Health History</h3>
 
-          <button type="button" class="ha-record-btn">
-            <i class="bi bi-plus-circle"></i>
-            Add Health Record
-          </button>
-        </div>
+            @if (selectedPatientRecords.length > 0) {
+              @for (record of selectedPatientRecords; track record.healthRecordId) {
+                <div class="ha-history-item">
+                  <strong>{{ record.createdOn | date:'dd MMM yyyy' }}</strong>
+
+                  <p>
+                    {{ record.diagnosis || 'Diagnosis not available' }}
+                  </p>
+
+                  <span>
+                    {{ record.prescription || 'Prescription not available' }}
+                  </span>
+                </div>
+              }
+            } @else {
+              <div class="ha-empty-state compact">
+                <i class="bi bi-journal-x"></i>
+                <p>No previous health records found.</p>
+              </div>
+            }
+          </div>
+        }
       </div>
-    </section>
-  </div>
+    </div>
+  }
+
+  <!-- HEALTH RECORD SLIDE OUT -->
+  @if (showHealthRecordPanel && selectedAppointment) {
+    <div class="ha-drawer-backdrop">
+      <aside class="ha-record-drawer">
+        <button
+          type="button"
+          class="ha-modal-close"
+          [disabled]="savingHealthRecord"
+          (click)="closeHealthRecordPanel()"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+
+        <span class="ha-drawer-kicker">Add Health Record</span>
+
+        <h2>{{ selectedAppointment.patientName }}</h2>
+
+        <p>
+          Appointment #{{ selectedAppointment.appointmentId }}
+          •
+          {{ timeSlotText(selectedAppointment.timeSlot) }}
+        </p>
+
+        <div class="ha-form-field">
+          <label>Diagnosis</label>
+
+          <textarea
+            rows="4"
+            placeholder="Enter diagnosis"
+            [(ngModel)]="healthRecordForm.diagnosis"
+          ></textarea>
+        </div>
+
+        <div class="ha-form-field">
+          <label>Prescription</label>
+
+          <textarea
+            rows="4"
+            placeholder="Enter prescription"
+            [(ngModel)]="healthRecordForm.prescription"
+          ></textarea>
+        </div>
+
+        <div class="ha-form-field">
+          <label>Notes</label>
+
+          <textarea
+            rows="4"
+            placeholder="Enter optional notes"
+            [(ngModel)]="healthRecordForm.notes"
+          ></textarea>
+        </div>
+
+        <button
+          type="button"
+          class="ha-record-submit-btn"
+          [disabled]="savingHealthRecord"
+          (click)="submitHealthRecord()"
+        >
+          @if (savingHealthRecord) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Saving...
+          } @else {
+            Complete Consultation
+          }
+        </button>
+      </aside>
+    </div>
+  }
 </section>
 

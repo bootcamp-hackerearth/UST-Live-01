@@ -44,6 +44,22 @@ namespace S3_HealthAxisApi.Services.Implementation
                 : MapToDto(record);
         }
 
+        public async Task<IEnumerable<HealthRecordDto>> GetByPatientIdAsync(int patientId)
+        {
+            var patient = await _patientRepository.GetByIdAsync(patientId);
+
+            if (patient == null)
+            {
+                throw new KeyNotFoundException(
+                    $"Patient with Id {patientId} not found.");
+            }
+
+            var records =
+                await _healthRecordRepository.GetByPatientIdAsync(patientId);
+
+            return records.Select(MapToDto);
+        }
+
         public async Task<HealthRecordDto> CreateAsync(CreateHealthRecordDto dto)
         {
             ValidateCreateDto(dto);
@@ -52,7 +68,9 @@ namespace S3_HealthAxisApi.Services.Implementation
                 await _appointmentRepository.GetByIdAsync(dto.AppointmentId);
 
             if (appointment == null)
+            {
                 throw new KeyNotFoundException("Appointment not found.");
+            }
 
             if (appointment.Status != AppointmentStatus.Completed)
             {
@@ -74,13 +92,17 @@ namespace S3_HealthAxisApi.Services.Implementation
                 await _patientRepository.GetByIdAsync(dto.PatientId);
 
             if (patient == null)
+            {
                 throw new KeyNotFoundException("Patient not found.");
+            }
 
             var doctor =
                 await _doctorRepository.GetByIdAsync(dto.DoctorId);
 
             if (doctor == null)
+            {
                 throw new KeyNotFoundException("Doctor not found.");
+            }
 
             if (appointment.PatientId != dto.PatientId)
             {
@@ -108,7 +130,10 @@ namespace S3_HealthAxisApi.Services.Implementation
             await _healthRecordRepository.AddAsync(record);
             await _healthRecordRepository.SaveChangesAsync();
 
-            return MapToDto(record);
+            var createdRecord =
+                await _healthRecordRepository.GetByIdAsync(record.HealthRecordId);
+
+            return MapToDto(createdRecord ?? record);
         }
 
         public async Task UpdateAsync(
@@ -121,8 +146,10 @@ namespace S3_HealthAxisApi.Services.Implementation
                 await _healthRecordRepository.GetByIdAsync(id);
 
             if (record == null)
+            {
                 throw new KeyNotFoundException(
                     $"Health record {id} not found.");
+            }
 
             record.Diagnosis = dto.Diagnosis!.Trim();
             record.Prescription = dto.Prescription!.Trim();
@@ -136,36 +163,50 @@ namespace S3_HealthAxisApi.Services.Implementation
             CreateHealthRecordDto dto)
         {
             if (dto.AppointmentId <= 0)
+            {
                 throw new ArgumentException(
                     "AppointmentId is required.");
+            }
 
             if (dto.PatientId <= 0)
+            {
                 throw new ArgumentException(
                     "PatientId is required.");
+            }
 
             if (dto.DoctorId <= 0)
+            {
                 throw new ArgumentException(
                     "DoctorId is required.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.Diagnosis))
+            {
                 throw new ArgumentException(
                     "Diagnosis is required.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.Prescription))
+            {
                 throw new ArgumentException(
                     "Prescription is required.");
+            }
         }
 
         private static void ValidateUpdateDto(
             UpdateHealthRecordDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.Diagnosis))
+            {
                 throw new ArgumentException(
                     "Diagnosis is required.");
+            }
 
             if (string.IsNullOrWhiteSpace(dto.Prescription))
+            {
                 throw new ArgumentException(
                     "Prescription is required.");
+            }
         }
 
         private static HealthRecordDto MapToDto(
@@ -177,6 +218,11 @@ namespace S3_HealthAxisApi.Services.Implementation
                 AppointmentId = record.AppointmentId,
                 PatientId = record.PatientId,
                 DoctorId = record.DoctorId,
+                DoctorName = record.Doctor?.FullName ?? string.Empty,
+                DoctorSpecialisation = record.Doctor == null
+                    ? 0
+                    : (int)record.Doctor.Specialisation,
+                CreatedOn = record.CreatedOn,
                 Diagnosis = record.Diagnosis,
                 Prescription = record.Prescription,
                 Notes = record.Notes
@@ -184,3 +230,4 @@ namespace S3_HealthAxisApi.Services.Implementation
         }
     }
 }
+

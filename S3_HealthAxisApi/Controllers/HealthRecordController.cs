@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using S3_HealthAxis.Shared.DTOs.HealthRecord;
 using S3_HealthAxisApi.Services.Interface;
+using System.Security.Claims;
 
 namespace S3_HealthAxisApi.Controllers
 {
@@ -11,11 +12,14 @@ namespace S3_HealthAxisApi.Controllers
     public class HealthRecordsController : ControllerBase
     {
         private readonly IHealthRecordService _healthRecordService;
+        private readonly IAppointmentService _appointmentService;
 
         public HealthRecordsController(
-            IHealthRecordService healthRecordService)
+            IHealthRecordService healthRecordService,
+            IAppointmentService appointmentService)
         {
             _healthRecordService = healthRecordService;
+            _appointmentService = appointmentService;
         }
 
         [HttpGet("{id:int}")]
@@ -37,6 +41,26 @@ namespace S3_HealthAxisApi.Controllers
         public async Task<IActionResult> GetByAppointment(
             int appointmentId)
         {
+            var appointment =
+                await _appointmentService.GetByIdAsync(appointmentId);
+
+            if (appointment == null)
+            {
+                return NotFound(
+                    $"Appointment {appointmentId} not found.");
+            }
+
+            if (User.IsInRole("Patient"))
+            {
+                var patientIdFromToken = GetPatientReferenceIdFromToken();
+
+                if (!patientIdFromToken.HasValue ||
+                    appointment.PatientId != patientIdFromToken.Value)
+                {
+                    return Forbid();
+                }
+            }
+
             var record =
                 await _healthRecordService
                     .GetByAppointmentIdAsync(appointmentId);
@@ -100,6 +124,18 @@ namespace S3_HealthAxisApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        private int? GetPatientReferenceIdFromToken()
+        {
+            var referenceIdValue = User.FindFirst("ReferenceId")?.Value;
+
+            if (int.TryParse(referenceIdValue, out var referenceId))
+            {
+                return referenceId;
+            }
+
+            return null;
         }
     }
 }

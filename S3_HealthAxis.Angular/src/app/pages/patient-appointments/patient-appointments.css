@@ -1,0 +1,532 @@
+.ha-appointments-page {
+  min-height: calc(100vh - 140px);
+  padding: 42px 30px 80px;
+}
+
+.ha-appointments-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* SHARED CARDS */
+
+.ha-appointments-hero,
+.ha-summary-card,
+.ha-stat-card,
+.ha-appointment-card,
+.ha-loading-card,
+.ha-empty-state,
+.ha-alert,
+.ha-modal-card {
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(203, 232, 255, 0.95);
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* HERO */
+
+.ha-appointments-hero {
+  padding: 38px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
+  align-items: center;
+}
+
+.ha-appointments-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: rgba(239, 246, 255, 0.96);
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  font-size: 0.86rem;
+  margin-bottom: 18px;
+}
+
+.ha-appointments-hero h1 {
+  margin: 0 0 16px;
+  color: #101827;
+  font-size: clamp(2.2rem, 4vw, 3.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.ha-appointments-hero p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 1.04rem;
+}
+
+.ha-summary-card {
+  padding: 26px;
+}
+
+.ha-summary-card span {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-summary-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #101827;
+  font-size: 2.3rem;
+}
+
+.ha-summary-card p {
+  margin-top: 8px;
+  color: #64748b;
+}
+
+/* ALERTS */
+
+.ha-alert {
+  margin-top: 22px;
+  padding: 15px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 750;
+}
+
+.ha-alert.success {
+  background: #ecfdf5;
+  color: #047857;
+  border-color: #bbf7d0;
+}
+
+.ha-alert.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* STATS */
+
+.ha-stat-grid {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.ha-stat-card {
+  padding: 24px;
+}
+
+.ha-stat-card i {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+}
+
+.ha-stat-card span {
+  display: block;
+  color: #64748b;
+  font-weight: 750;
+}
+
+.ha-stat-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #101827;
+  font-size: 1.9rem;
+}
+
+/* APPOINTMENT GRID */
+
+.ha-appointment-grid {
+  margin-top: 26px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.ha-appointment-card {
+  padding: 24px;
+}
+
+.ha-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.ha-card-top span:first-child {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-card-top h3 {
+  margin: 7px 0 0;
+  color: #112033;
+  font-size: 1.25rem;
+}
+
+.ha-appointment-info {
+  display: grid;
+  gap: 12px;
+}
+
+.ha-appointment-info div {
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  color: #475569;
+  font-weight: 750;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ha-appointment-info i {
+  color: #2563eb;
+}
+
+/* STATUS */
+
+.ha-status {
+  padding: 7px 11px;
+  border-radius: 999px;
+  font-size: 0.75rem !important;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.ha-status.pending {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.ha-status.confirmed {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.ha-status.completed {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid #bbf7d0;
+}
+
+.ha-status.cancelled {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.ha-status.unknown {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+/* CANCEL REASON / ACTIONS */
+
+.ha-cancel-reason {
+  margin-top: 14px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.ha-cancel-reason strong {
+  display: block;
+  color: #b91c1c;
+  margin-bottom: 6px;
+}
+
+.ha-cancel-reason p {
+  margin: 0;
+  color: #7f1d1d;
+}
+
+.ha-card-actions {
+  margin-top: 18px;
+}
+
+.ha-cancel-btn,
+.ha-primary-btn,
+.ha-secondary-btn,
+.ha-danger-btn {
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 15px;
+  font-weight: 850;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.ha-cancel-btn {
+  width: 100%;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.ha-primary-btn {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.ha-secondary-btn {
+  color: #1d4ed8;
+  background: #ffffff;
+  border: 1px solid #bfdbfe;
+}
+
+.ha-danger-btn {
+  color: #ffffff;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.ha-danger-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.ha-muted-action {
+  display: inline-flex;
+  color: #94a3b8;
+  font-weight: 750;
+}
+
+/* STATES */
+
+.ha-loading-card,
+.ha-empty-state {
+  margin-top: 28px;
+  min-height: 280px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.ha-loading-card p,
+.ha-empty-state p {
+  color: #64748b;
+  margin: 0;
+}
+
+.ha-empty-state i {
+  color: #2563eb;
+  font-size: 2rem;
+}
+
+.ha-empty-state h3 {
+  margin: 0;
+  color: #112033;
+}
+
+/* MODAL */
+
+.ha-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.ha-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  padding: 34px;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.ha-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 12px;
+  background: #f8fbff;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ha-modal-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 18px;
+}
+
+.ha-modal-icon.warning {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.ha-modal-card h2 {
+  margin: 0 0 10px;
+  color: #101827;
+}
+
+.ha-modal-subtitle {
+  margin: 0 0 24px;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.ha-review-list {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ha-review-list div {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.ha-review-list span {
+  color: #64748b;
+  font-weight: 750;
+}
+
+.ha-review-list strong {
+  color: #112033;
+  text-align: right;
+}
+
+.ha-reason-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ha-reason-field label {
+  font-weight: 850;
+  color: #334155;
+}
+
+.ha-reason-field textarea {
+  border-radius: 16px;
+  border: 1px solid #dbe5ef;
+  padding: 14px;
+  resize: vertical;
+  outline: none;
+  background: #f8fbff;
+}
+
+.ha-reason-field textarea:focus {
+  border-color: #60a5fa;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+}
+
+.ha-modal-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+  .ha-appointments-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .ha-appointment-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .ha-appointments-page {
+    padding: 28px 18px 56px;
+  }
+
+  .ha-appointments-hero,
+  .ha-modal-card {
+    padding: 28px;
+  }
+
+  .ha-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-card-top {
+    flex-direction: column;
+  }
+
+  .ha-review-list div {
+    flex-direction: column;
+  }
+
+  .ha-review-list strong {
+    text-align: left;
+  }
+
+  .ha-modal-actions {
+    flex-direction: column;
+  }
+
+  .ha-modal-actions button {
+    width: 100%;
+  }
+}
+

@@ -19,19 +19,30 @@ namespace S3_HealthAxisApi.Repository.Implementation
         public async Task<HealthRecord?> GetByIdAsync(int id)
         {
             return await _context.HealthRecords
-                .Include(hr => hr.Patient)
-                .Include(hr => hr.Doctor)
-                .Include(hr => hr.Appointment)
-                .FirstOrDefaultAsync(hr => hr.HealthRecordId == id);
+                .Include(r => r.Doctor)
+                .Include(r => r.Patient)
+                .Include(r => r.Appointment)
+                .FirstOrDefaultAsync(r => r.HealthRecordId == id);
         }
 
         public async Task<HealthRecord?> GetByAppointmentIdAsync(int appointmentId)
         {
             return await _context.HealthRecords
-                .Include(hr => hr.Patient)
-                .Include(hr => hr.Doctor)
-                .Include(hr => hr.Appointment)
-                .FirstOrDefaultAsync(hr => hr.AppointmentId == appointmentId);
+                .Include(r => r.Doctor)
+                .Include(r => r.Patient)
+                .Include(r => r.Appointment)
+                .FirstOrDefaultAsync(r => r.AppointmentId == appointmentId);
+        }
+
+        public async Task<IEnumerable<HealthRecord>> GetByPatientIdAsync(int patientId)
+        {
+            return await _context.HealthRecords
+                .Include(r => r.Doctor)
+                .Include(r => r.Patient)
+                .Include(r => r.Appointment)
+                .Where(r => r.PatientId == patientId)
+                .OrderByDescending(r => r.CreatedOn)
+                .ToListAsync();
         }
 
         public async Task AddAsync(HealthRecord record)
