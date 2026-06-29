@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using HealthCare.Api.Data;
 using Healthcare.Shared.DTOs;
 using Healthcare.Shared.DTOs.Patient;
+using HealthCare.Api.Data;
 using HealthCare.Api.Exceptions;
 using HealthCare.Api.Models;
+using HealthCare.Api.Repositories.Implementations;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +15,13 @@ namespace HealthCare.Api.Services.Implementations
     public class PatientService : IPatientService
     {
         private readonly IRepository<Patient> _repository;
+        private readonly IPatientRepository? _patientRepository;
         private readonly HealthCareDbContext _context;
         private readonly IMapper _mapper;
 
-        public PatientService(IRepository<Patient> repository, HealthCareDbContext context, IMapper mapper)
+        public PatientService(IRepository<Patient> repository, HealthCareDbContext context, IMapper mapper, IPatientRepository patientRepositor)
         {
+            _patientRepository = patientRepositor;
             _repository = repository;
             _context = context;
             _mapper = mapper;
@@ -32,7 +35,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task UpdateAsync(int id, UpdatePatientDto dto)
         {
-            var patient = await _repository.GetByIdAsync(id);
+            var patient = await _repository.GetProfileAsync(id);
             if (patient == null)
                 throw new PatientNotFoundException(id);
             _mapper.Map(dto,patient);
@@ -43,25 +46,22 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task DeleteAsync(int id)
         {
-            var patient = await _repository.GetByIdAsync(id);
+            var patient = await _repository.GetProfileAsync(id);
             if (patient == null)
                 throw new PatientNotFoundException(id);
             await _repository.DeleteAsync(id);
             await _context.SaveChangesAsync();
         }
 
-
         public async Task<PatientListDto> GetByIdAsync(int id)
         {
-            var patient = await _repository.GetByIdAsync(id);
+            var patient = await _patientRepository.GetMyProfileAsync(id);
 
             if (patient == null)
                 throw new PatientNotFoundException(id);
 
-            return _mapper.Map<PatientListDto>(patient);
+            return patient;
         }
-
-
 
         public async Task<IEnumerable<PatientListDto>> SearchByNameAsync(string name)
         {
@@ -110,7 +110,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task UpdateStatusAsync(int id, bool isActive)
         {
-            var patient = await _repository.GetByIdAsync(id);
+            var patient = await _repository.GetProfileAsync(id);
 
             if (patient is null)
                 throw new InvalidOperationException("Patient not found.");

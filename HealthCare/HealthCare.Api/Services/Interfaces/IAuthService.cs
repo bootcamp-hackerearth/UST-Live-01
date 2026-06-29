@@ -15,5 +15,7 @@ namespace HealthCare.Api.Services.Interfaces
         Task<AuthorResponseDto> LoginAsync(LoginDto dto);
 
         Task ChangePasswordAsync(string userId, ChangePasswordDto dto);
+
+        Task<bool> EmailExistsAsync(string email);
     }
 }

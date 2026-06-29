@@ -28,9 +28,15 @@ namespace HealthCare.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            await _authService.RegisterPatientAsync(dto);
-
-            return Ok(new { message = "Patient registered successfully" });
+            try
+            {
+                await _authService.RegisterPatientAsync(dto);
+                return Ok(new { message = "Patient registered successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         //  ADMIN CREATES DOCTOR
@@ -65,6 +71,18 @@ namespace HealthCare.Api.Controllers
 
             return Ok(response);
         }
+
+
+        // CHECK IF EMAIL EXISTS
+        [HttpGet("check-email")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CheckEmail(string email)
+        {
+            var exists = await _authService.EmailExistsAsync(email);
+
+            return Ok(exists); // true / false
+        }
+
 
         [HttpPost("change-password")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

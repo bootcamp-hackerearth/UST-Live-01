@@ -1,137 +1,166 @@
-<div class="min-h-screen bg-[#F8FAFC] p-8">
+<!-- ✅ MODAL WRAPPER -->
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-6">
 
-    <div class="max-w-3xl mx-auto">
+  <!-- ✅ MODAL CARD -->
+  <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-        <div class="bg-white rounded-3xl shadow-lg p-8">
+    <!-- ✅ HEADER -->
+    <div class="flex justify-between items-center px-6 py-4 border-b">
+      <h2 class="text-2xl font-bold text-[#0B5ED7]">
+        Book Appointment
+      </h2>
 
-            <h2 class="text-3xl font-bold text-[#1E293B] mb-2">
-                Book Appointment
-            </h2>
+      <button
+        (click)="close.emit()"
+        class="text-gray-400 hover:text-red-500 text-xl">
+        ✕
+      </button>
+    </div>
 
-            <p class="text-gray-500 mb-8">
-                Schedule your consultation with doctors.
+    <!-- ✅ BODY -->
+    <div class="p-6 space-y-4">
+
+      <form [formGroup]="form" (ngSubmit)="bookAppointment()" class="space-y-5">
+
+        <!-- ✅ DATE -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">
+            Appointment Date
+          </label>
+
+          <input
+            type="date"
+            formControlName="scheduledDate"
+            class="w-full border rounded-xl px-4 py-2
+                   focus:ring-2 focus:ring-[#0B5ED7] outline-none">
+        </div>
+
+        <!-- ✅ SPECIALIZATION -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">
+            Specialization
+          </label>
+
+          <select
+            formControlName="specialization"
+            (change)="loadDoctors()"
+            class="w-full border rounded-xl px-4 py-2
+                   focus:ring-2 focus:ring-[#0B5ED7]">
+
+            <option value="">Select Specialization</option>
+
+            @for(spec of specializations; track spec){
+              <option [value]="spec">{{spec}}</option>
+            }
+          </select>
+        </div>
+
+        <!-- ✅ DOCTOR -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">
+            Select Doctor
+          </label>
+
+         <select formControlName="doctorId"
+        class="w-full border rounded-xl px-4 py-2">
+
+         <option value="">Select Doctor</option>
+
+         @for(doc of doctors; track doc.doctorId){
+         <option [value]="doc.doctorId">
+           Dr. {{doc.fullName}}
+         </option>
+        }
+        </select>
+
+
+          @if(!doctors.length && form.value.specialization){
+            <p class="text-xs text-gray-400 mt-1">
+              No doctors available
             </p>
+          }
+        </div>
 
-            <form
-                [formGroup]="form"
-                (ngSubmit)="bookAppointment()">
+        <!-- ✅ SLOT -->
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">
+            Available Time Slots
+          </label>
 
-                <!-- Date -->
+          <select
+            formControlName="timeSlot"
+            class="w-full border rounded-xl px-4 py-2
+                   focus:ring-2 focus:ring-[#0B5ED7]">
 
-                <div class="mb-5">
+            <option value="">Select Time Slot</option>
 
-                    <label class="font-semibold">
-                        Appointment Date
-                    </label>
+            @for(slot of slots; track slot){
+              <option [value]="slot">{{slot}}</option>
+            }
+          </select>
 
-                    <input
-                        type="date"
-                        formControlName="scheduledDate"
-                        class="w-full mt-2 p-3 border rounded-xl">
+          @if(!slots.length && form.value.doctorId){
+            <p class="text-xs text-gray-400 mt-1">
+              No slots available
+            </p>
+          }
+        </div>
 
-                </div>
+        <!-- ✅ FOOTER BUTTON INSIDE FORM -->
+        <div class="flex justify-end gap-3 pt-2">
 
-                <!-- Specialization -->
+          <button
+            type="button"
+            (click)="close.emit()"
+            class="px-4 py-2 rounded-lg border text-gray-600 hover:bg-gray-100">
+            Cancel
+          </button>
 
-                <div class="mb-5">
+          <button
+            type="submit"
+            [disabled]="form.invalid || isLoading"
+            class="px-6 py-2 rounded-lg text-white font-semibold
+                   bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6]
+                   disabled:opacity-50 flex items-center gap-2">
 
-                    <label class="font-semibold">
-                        Specialization
-                    </label>
+            @if(isLoading){
+              <span class="w-4 h-4 border-2 border-white
+                           border-t-transparent rounded-full animate-spin">
+              </span>
+            }
 
-                    <select
-                        formControlName="specialization"
-                        (change)="loadDoctors()"
-                        class="w-full mt-2 p-3 border rounded-xl">
-
-                        <option value="">
-                            Select Specialization
-                        </option>
-
-                        @for(spec of specializations; track spec){
-
-                            <option [value]="spec">
-                                {{spec}}
-                            </option>
-
-                        }
-
-                    </select>
-
-                </div>
-
-                <!-- Doctors -->
-
-                <div class="mb-5">
-
-                    <label class="font-semibold">
-                        Doctor
-                    </label>
-
-                    <select
-                        formControlName="doctorId"
-                        (change)="loadSlots()"
-                        class="w-full mt-2 p-3 border rounded-xl">
-
-                        <option value="">
-                            Select Doctor
-                        </option>
-
-                        @for(doc of doctors; track doc.id){
-
-                            <option [value]="doc.id">
-                                Dr. {{doc.name}}
-                            </option>
-
-                        }
-
-                    </select>
-
-                </div>
-
-                <!-- Slots -->
-
-                <div class="mb-5">
-
-                    <label class="font-semibold">
-                        Available Slots
-                    </label>
-
-                    <select
-                        formControlName="timeSlot"
-                        class="w-full mt-2 p-3 border rounded-xl">
-
-                        <option value="">
-                            Select Slot
-                        </option>
-
-                        @for(slot of slots; track slot){
-
-                            <option [value]="slot">
-                                {{slot}}
-                            </option>
-
-                        }
-
-                    </select>
-
-                </div>
-
-                <button
-                    class="w-full bg-[#0B5ED7]
-                           text-white
-                           py-3
-                           rounded-xl
-                           hover:bg-blue-700">
-
-                    Book Appointment
-
-                </button>
-
-            </form>
+            {{ isLoading ? 'Booking...' : 'Book Appointment' }}
+          </button>
 
         </div>
 
+      </form>
     </div>
 
+  </div>
 </div>
+
+@if(showSuccessPopup){
+  <div class="fixed inset-0 flex items-center justify-center z-[60]">
+
+    <div class="absolute inset-0 bg-black/50"></div>
+
+    <div class="bg-white p-8 rounded-2xl shadow-xl text-center w-80">
+
+      <div class="mx-auto mb-3 w-16 h-16 flex items-center justify-center rounded-full"
+           style="background:#22C55E20">
+
+        <span class="text-2xl text-green-500">✔</span>
+      </div>
+
+      <h3 class="text-lg font-bold text-[#0B5ED7]">
+        Success
+      </h3>
+
+      <p class="text-gray-500 mt-2">
+        Appointment booked successfully
+      </p>
+
+    </div>
+  </div>
+}

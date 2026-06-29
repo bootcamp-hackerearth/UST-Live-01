@@ -19,7 +19,8 @@ import { PatientService } from '../../../core/services/patient.service';
 export class ProfileComponent implements OnInit {
 
   profileForm!: FormGroup;
-
+  isEditMode = false;
+  showSuccess = false;
   loading = false;
   saving = false;
 
@@ -30,17 +31,23 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.profileForm = this.fb.group({
+   this.profileForm = this.fb.group({
 
-      fullName: ['', Validators.required],
+  patientId: [{ value: '', disabled: true }], 
 
-      email: [{ value: '', disabled: true }],
+  fullName: ['', Validators.required],
 
-      gender: ['', Validators.required],
+  phoneNumber: [
+    '',
+    [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]
+  ],
 
-      dateOfBirth: ['', Validators.required],
+  email: [{ value: '', disabled: true }],
 
-    });
+  gender: ['', Validators.required],
+
+  hasInsurance: [false]
+});
 
     this.loadProfile();
   }
@@ -52,46 +59,57 @@ export class ProfileComponent implements OnInit {
     this.patientService.getProfile()
       .subscribe({
 
-        next: (res: any) => {
+     
+next: (res: any) => {
 
-          this.profileForm.patchValue(res);
+  this.profileForm.patchValue({
 
-          this.loading = false;
-        },
+    patientId: res.patientId,
+    fullName: res.fullName,
+    phoneNumber: res.phoneNumber,
+     email: res.email,
+    gender: res.gender,
+    hasInsurance: res.hasInsurance
+  });
 
-        error: () => {
+  this.loading = false;
+  }
 
-          this.loading = false;
-        }
       });
   }
 
-  updateProfile() {
+ updateProfile() {
 
-    if (this.profileForm.invalid)
-      return;
+  if (this.profileForm.invalid) return;
 
-    this.saving = true;
+  this.saving = true;
 
-    this.patientService.updateProfile(
-      this.profileForm.getRawValue()
-    )
-    .subscribe({
+  this.patientService.updateProfile(
+    this.profileForm.getRawValue()
+  )
+  .subscribe({
 
-      next: () => {
+    next: () => {
+      this.saving = false;
 
-        this.saving = false;
+      this.isEditMode = false; 
+      this.showSuccess = true;
 
-        alert('Profile updated successfully');
-      },
+      setTimeout(() => {
+        this.showSuccess = false;
+      }, 2500);
+    },
 
-      error: () => {
+    error: () => {
+      this.saving = false;
+      alert('Update failed');
+    }
+  });
+}
 
-        this.saving = false;
+toggleEdit() {
+  this.isEditMode = !this.isEditMode;
+}
 
-        alert('Unable to update profile');
-      }
-    });
-  }
 
 }

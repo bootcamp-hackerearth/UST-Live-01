@@ -41,31 +41,28 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: PatientDashboard
-      }
+      },
 
+      {
+         path: 'my-appointments',
+        component: MyAppointmentsComponent
+      },
+      {
+         path:'profile',
+        component:ProfileComponent,
+      },
+      {
+         path:'book-appointment',
+        component: BookAppointmentComponent,
+      },
+
+      {
+        path: 'health-history',
+        component: HealthHistoryComponent
+      }
     ]
   },
 
-  {
-  path:'patient/book-appointment',
-  component: BookAppointmentComponent,
-  canActivate:[authGuard, roleGuard],
-  data:{roles:['Patient']}
-  },
-
-  {
-    path:'patient/my-appointments',
-    component: MyAppointmentsComponent,
-    canActivate:[authGuard, roleGuard],
-    data:{roles:['Patient']}
-  },
-
-  {
-    path:'patient/profile',
-    component:ProfileComponent,
-    canActivate:[authGuard, roleGuard],
-    data:{roles:['Patient']}
-  },
 
   // DOCTOR
 
@@ -80,57 +77,27 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         component: DoctorDashboardComponent
-      }
+      },
+       {
+          path: 'leave',
+          component: LeaveComponent,
+       },
+
+        {
+          path: 'doctor/schedule',
+          component: ScheduleComponent,
+        },
+
+        {
+        path: 'profile',
+        component: DoctorProfileComponent,
+        },
+
+        {
+        path: 'health-record',
+        component: HealthRecordComponent,
+        }
+
     ]
   },
-
-  {
-     path: 'doctor/schedule',
-     component: ScheduleComponent,
-     canActivate: [authGuard, roleGuard],
-     data: { roles: ['Doctor'] }
-  },
-
-  {
-  path: 'doctor/leave',
-  component: LeaveComponent,
-  canActivate: [authGuard, roleGuard],
-  data: { roles: ['Doctor'] }
-  },
-
-  {
-  path: 'doctor/profile',
-  component: DoctorProfileComponent,
-  canActivate: [authGuard, roleGuard],
-  data: { roles: ['Doctor'] }
-  },
-  
-  //APPOINTMENT
-  {
-    path: 'patient/book-appointment',
-    component:BookAppointmentComponent,
-    canActivate:[authGuard,roleGuard],
-    data:{roles:['Patient']}
-  },
-
-  {
-    path:'patient/my-appointments',
-    component:MyAppointmentsComponent,
-    canActivate:[authGuard,roleGuard],
-    data:{roles:['Patient']}
-  },
-
-  //HEALTH-RECORD
-  {
-  path: 'doctor/health-record',
-  component: HealthRecordComponent,
-  canActivate: [authGuard, roleGuard],
-  data: { roles: ['Doctor'] }
-  },
- 
-  {
-  path: 'patient/health-history',
-  component: HealthHistoryComponent
-}
-
 ];

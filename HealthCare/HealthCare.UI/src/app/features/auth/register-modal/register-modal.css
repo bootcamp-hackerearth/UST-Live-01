@@ -1,32 +1,24 @@
-.modal-backdrop{
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    z-index:1000;
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-.modal-card{
-    background:white;
-    width:420px;
-    padding:30px;
-    border-radius:20px;
-    position:relative;
-    box-shadow:0 10px 40px rgba(0,0,0,.2);
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
 }
 
-.close-btn{
-    position:absolute;
-    right:20px;
-    top:15px;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-    border:none;
-    background:none;
-
-    font-size:28px;
-    cursor:pointer;
+.animate-spin {
+  animation: spin 0.6s linear infinite;
 }

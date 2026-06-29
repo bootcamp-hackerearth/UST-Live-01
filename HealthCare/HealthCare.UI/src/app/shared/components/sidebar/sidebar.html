@@ -1,98 +1,90 @@
-<div class="sidebar">
+<!-- ✅ SIDEBAR WRAPPER -->
+<div
+  class="flex flex-col h-screen w-64 bg-[#0B5ED7] text-white shadow-lg
+         fixed md:relative z-40 transition-transform duration-300
+         md:translate-x-0"
+  [class.-translate-x-full]="!isSidebarOpen"
+>
 
-    <ul>
+  <!-- ✅ HEADER -->
+  <div class="p-5 border-b border-blue-400">
+    <h2 class="text-xl font-bold tracking-wide">
+      Healthcare
+    </h2>
+  </div>
 
-        @if(role === 'Patient') {
+  <!-- ✅ MENU -->
+  <ul class="flex-1 p-4 space-y-2 overflow-y-auto">
 
-            <li>
-                <a routerLink="/patient/dashboard"
-                   routerLinkActive="active">
-                    🏠 Dashboard
-                </a>
-            </li>
+    @for(item of menuItems; track item.label){
 
-            <li>
-                <a routerLink="/patient/search-doctors"
-                   routerLinkActive="active">
-                    🔍 Search Doctors
-                </a>
-            </li>
+      <li>
 
-            <li>
-                <a routerLink="/patient/book-appointment"
-                   routerLinkActive="active">
-                    📅 Book Appointment
-                </a>
-            </li>
+        <!-- ✅ LINK (Button Style ✅) -->
+        @if(item.link){
+          <a
+            [routerLink]="item.link" 
+            routerLinkActive="bg-white !text-[#0B5ED7]"
+            class="flex items-center gap-3 w-full px-4 py-2 rounded-lg 
+            no-underline text-white font-medium text-sm 
+            bg-white/10 hover:bg-[#14B8A6]
+            transition duration-200">
 
-            <li>
-                <a routerLink="/patient/my-appointments"
-                   routerLinkActive="active">
-                    🗓️ My Appointments
-                </a>
-            </li>
 
-            <li>
-                <a routerLink="/patient/health-history"
-                   routerLinkActive="active">
-                    📄 Health History
-                </a>
-            </li>
+            <span class="text-lg">{{item.icon}}</span>
+            <span>{{item.label}}</span>
 
-            <li>
-                <a routerLink="/patient/profile"
-                   routerLinkActive="active">
-                    👤 My Profile
-                </a>
-            </li>
-
+          </a>
         }
 
-        @if(role === 'Doctor') {
+        <!-- ✅ ACTION (also consistent ✅) -->
+        @if(item.type === 'action'){
+          <button
+            (click)="item.action()"
+            class="flex items-center gap-3 w-full px-4 py-2 rounded-lg
+                   text-white text-sm font-medium
+                   bg-white/10
+                   hover:bg-[#14B8A6]
+                   transition duration-200">
 
-            <li>
-                <a routerLink="/doctor/dashboard"
-                   routerLinkActive="active">
-                    🏠 Dashboard
-                </a>
-            </li>
+            <span class="text-lg">{{item.icon}}</span>
+            <span>{{item.label}}</span>
 
-            <li>
-                <a routerLink="/doctor/schedule"
-                   routerLinkActive="active">
-                    📅 Today's Schedule
-                </a>
-            </li>
-
-            <li>
-                <a routerLink="/doctor/health-record"
-                   routerLinkActive="active">
-                    🩺 Add Health Record
-                </a>
-            </li>
-
-            <li>
-                <a routerLink="/doctor/leave"
-                   routerLinkActive="active">
-                    🌴 Add Leave
-                </a>
-            </li>
-
-            <li>
-                <a routerLink="/doctor/profile"
-                   routerLinkActive="active">
-                    👤 My Profile
-                </a>
-            </li>
-
+          </button>
         }
 
-        <li>
-            <a (click)="logout()">
-                🚪 Logout
-            </a>
-        </li>
+      </li>
 
-    </ul>
+    }
+
+  </ul>
+
+  <!-- ✅ FOOTER -->
+  <div class="p-4 border-t border-blue-400 text-xs text-center opacity-80">
+    © Healthcare App
+  </div>
 
 </div>
+
+<!-- ✅ MOBILE TOGGLE BUTTON -->
+<button
+  class="md:hidden fixed top-4 left-4 bg-[#0B5ED7] text-white p-2 rounded shadow z-50"
+  (click)="isSidebarOpen = !isSidebarOpen"
+>
+  ☰
+</button>
+
+<!-- ✅ OVERLAY -->
+@if(isSidebarOpen){
+  <div
+    class="fixed inset-0 bg-black/30 z-30 md:hidden"
+    (click)="isSidebarOpen = false">
+  </div>
+}
+
+<!-- ✅ MODAL -->
+@if(showBookingModal){
+  <app-book-appointment
+    (close)="showBookingModal = false">
+  </app-book-appointment>
+}

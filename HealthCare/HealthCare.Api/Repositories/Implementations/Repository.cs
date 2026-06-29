@@ -37,7 +37,7 @@ namespace HealthCare.Api.Repositories.Implementations
                 _dbSet.Remove(entity);
         }
 
-        public  async Task<T>GetByIdAsync(int id)=>
+        public  async Task<T>GetProfileAsync(int id)=>
 
              await _dbSet.FindAsync(id);
 

@@ -1,63 +1,238 @@
-<div class="modal-backdrop">
+<div class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4">
 
-    <div class="modal-card">
+    <div class="relative w-full max-w-sm bg-white rounded-2xl shadow-xl p-6">
 
-        <button class="close-btn"
-                (click)="closeModal()">
+        <!-- Close Button -->
+        <button
+            (click)="closeModal()"
+            class="absolute top-4 right-4 text-2xl text-slate-400 hover:text-red-500 transition">
+
             ×
+
         </button>
 
-        <h2>Patient Registration</h2>
+        <!-- Header -->
+        <div class="text-center mb-4">
 
-        <form [formGroup]="registerForm"
-              (ngSubmit)="onSubmit()">
+            <h2 class="text-xl font-bold text-slate-800">
+                Patient Registration
+            </h2>
 
-            <input
-                class="form-control mb-3"
-                placeholder="Full Name"
-                formControlName="fullName">
+            <p class="text-sm text-slate-500 mt-1">
+                Create your healthcare account
+            </p>
 
-             <select
-                class="form-control mb-3"
-                formControlName="gender">
+        </div>
 
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
+        <!-- Error Message -->
+        @if(serverError){
 
-             </select>
+            <div
+                class="mb-3 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
 
-             <input
-                 type="date"
-                 class="form-control mb-3"
-                 formControlName="dateOfBirth">
+                {{serverError}}
 
-            <input
-                class="form-control mb-3"
-                placeholder="Email"
-                formControlName="email">
+            </div>
 
-            <input
-                class="form-control mb-3"
-                placeholder="Phone Number"
-                formControlName="phoneNumber">
+        }
 
-            <input
-                type="password"
-                class="form-control mb-3"
-                placeholder="Password"
-                formControlName="password">
+        <!-- Success Message -->
+        @if(successMessage){
 
-            <input
-                type="password"
-                class="form-control mb-3"
-                placeholder="Confirm Password"
-                formControlName="confirmPassword">
+            <div
+                class="mb-3 rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-600">
 
-            <button
-                class="btn btn-primary w-100">
-                Register
+                {{successMessage}}
+
+            </div>
+
+        }
+
+        <form
+            [formGroup]="registerForm"
+            (ngSubmit)="onSubmit()"
+            class="space-y-3">
+
+            <!-- Full Name -->
+            <div>
+
+                <input
+                    type="text"
+                    formControlName="fullName"
+                    placeholder="Full Name"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none
+                           focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+                @if(f['fullName'].touched &&
+                    f['fullName'].errors?.['required']){
+
+                    <p class="mt-1 text-xs text-red-500">
+                        Full name is required
+                    </p>
+
+                }
+
+            </div>
+
+            <!-- Email -->
+            <div>
+
+              
+        <input
+         type="email"
+         formControlName="email"
+         placeholder="Email Address"
+         [class.border-red-500]="f['email'].touched && f['email'].invalid"
+         class="w-full rounded-lg border px-3 py-2.5 outline-none
+         focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+
+                @if(f['email'].touched &&
+                    f['email'].errors?.['required']){
+
+                    <p class="mt-1 text-xs text-red-500">
+                        Email is required
+                    </p>
+
+                }
+
+                @if(f['email'].touched &&
+                    f['email'].errors?.['email']){
+
+                    <p class="mt-1 text-xs text-red-500">
+                        Enter a valid email address
+                    </p>
+                }
+                
+                @if(f['email'].touched && f['email'].errors?.['emailTaken'])
+                {
+                <p class="mt-1 text-xs text-red-500"> Email already exists</p>
+                }
+
+            </div>
+
+            <!-- Phone Number -->
+            <div>
+
+                <input
+                    type="text"
+                    formControlName="phoneNumber"
+                    placeholder="Phone Number"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none
+                           focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+                @if(f['phoneNumber'].touched &&
+                    f['phoneNumber'].errors?.['pattern']){
+
+                    <p class="mt-1 text-xs text-red-500">
+                        Enter a valid phone number
+                    </p>
+
+                }
+
+            </div>
+
+            <!-- Gender -->
+            <div>
+
+                <select
+                    formControlName="gender"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none
+                           focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+
+                </select>
+
+            </div>
+
+            <!-- Date Of Birth -->
+            <div>
+
+                <input
+                    type="date"
+                    formControlName="dateOfBirth"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none
+                           focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+            </div>
+
+            <!-- Insurance Id -->
+            <div>
+
+                <input
+                    type="text"
+                    formControlName="insuranceId"
+                    placeholder="Insurance ID (Optional)"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none
+                           focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+            </div>
+
+            <!-- Password -->
+            <div>
+
+                <input
+                    type="password"
+                    formControlName="password"
+                    placeholder="Password"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none
+                           focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+                @if(f['password'].touched &&
+                    f['password'].errors?.['required']){
+
+                    <p class="mt-1 text-xs text-red-500">
+                        Password is required
+                    </p>
+
+                }
+
+                @if(f['password'].touched &&
+                    f['password'].errors?.['minlength']){
+
+                    <p class="mt-1 text-xs text-red-500">
+                        Password must contain at least 6 characters
+                    </p>
+
+                }
+
+            </div>
+
+            <!-- Confirm Password -->
+            <div>
+
+                <input
+                    type="password"
+                    formControlName="confirmPassword"
+                    placeholder="Confirm Password"
+                    class="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none
+                           focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
+
+            </div>
+
+            <!-- Register Button -->
+           <button
+             type="submit"
+             [disabled]="registerForm.invalid || isLoading"
+             class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-teal-500
+             py-2.5 text-white font-semibold
+             hover:shadow-lg transition duration-300
+             disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+
+             <!--  Spinner -->
+            @if(isLoading){
+             <span
+              class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin">
+            </span>
+  }
+
+            <!-- ✅ Text -->
+            {{ isLoading ? 'Registering...' : 'Register' }}
+
             </button>
 
         </form>
@@ -65,3 +240,35 @@
     </div>
 
 </div>
+
+@if(showSuccessPopup){
+  <div class="fixed inset-0 flex items-center justify-center z-[60]">
+
+    <!-- Background overlay -->
+    <div class="absolute inset-0 bg-slate-900/50"></div>
+
+    <!-- Popup Card -->
+    <div class="relative bg-white rounded-2xl p-6 w-80 shadow-xl text-center animate-scaleIn">
+
+      <!-- Green Success Icon -->
+      <div class="mx-auto mb-3 flex items-center justify-center 
+                  w-14 h-14 rounded-full"
+           style="background-color:#22C55E20">
+
+        <span class="text-2xl" style="color:#22C55E">✔</span>
+
+      </div>
+
+      <!-- Title -->
+      <h3 class="text-lg font-bold" style="color:#0B5ED7">
+        Success!
+      </h3>
+
+      <!-- Message -->
+      <p class="text-sm mt-2" style="color:#64748B">
+        Patient registered successfully
+      </p>
+
+    </div>
+  </div>
+}

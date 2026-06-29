@@ -15,15 +15,14 @@ export class DoctorService {
 
   constructor(private http:HttpClient){}
 
-  getAvailableDoctors(
-    specialization:string,
-    date:string
-  ):Observable<any[]>{
 
-    return this.http.get<any[]>(
-      `${this.api}/available?specialisation=${specialization}&date=${date}`
-    );
-  }
+getAvailableDoctors(specialization: string, date: string) {
+
+  return this.http.get<any[]>(
+    `${this.api}/available?specialisation=${specialization}&date=${date}`
+  );
+}
+
 
   getDoctorSchedule(date: string) {
 

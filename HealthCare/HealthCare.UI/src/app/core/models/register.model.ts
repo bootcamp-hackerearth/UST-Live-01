@@ -1,15 +1,17 @@
 export interface Register {
 
-  FullName: string;
+  fullName: string;
 
-  Email: string;
+  email: string;
 
-  Password: string;
+  password: string;
 
-  PhoneNumber: string;
+  phoneNumber: string;
 
-  Gender: string;
+  gender: string;
 
-  DateOfBirth: string;
+  dateOfBirth: string;
+
+  insuranceId:string;
 
 }

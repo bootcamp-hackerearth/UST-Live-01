@@ -40,7 +40,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task UpdateAsync(int id,UpdateHealthRecordDto dto)
         {
-            var record = await _repository.GetByIdAsync(id);
+            var record = await _repository.GetProfileAsync(id);
             if (record == null)
                 throw new HealthRecordNotFoundException(id);
 
@@ -57,7 +57,7 @@ namespace HealthCare.Api.Services.Implementations
         public async Task DeleteAsync(int id)
         {
 
-            var record = await _repository.GetByIdAsync(id);
+            var record = await _repository.GetProfileAsync(id);
             if (record == null)
                 throw new HealthRecordNotFoundException(id);
             await _repository.DeleteAsync(id);
@@ -66,7 +66,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task<HealthRecordListDto> GetByIdAsync(int id)
         {
-            var record = await _repository.GetByIdAsync(id);
+            var record = await _repository.GetProfileAsync(id);
             return record == null ? null : _mapper.Map<HealthRecordListDto?>(record);
         }
 

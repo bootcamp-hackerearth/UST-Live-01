@@ -8,6 +8,7 @@ namespace HealthCare.Api.Models
 
     public class User : IdentityUser
     {
-     
+        public Patient? Patient { get; set; }
+
     }
 }

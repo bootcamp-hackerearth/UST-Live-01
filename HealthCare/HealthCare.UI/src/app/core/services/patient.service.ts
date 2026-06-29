@@ -33,6 +33,19 @@ export class PatientService {
     `${this.api}/healthrecords/my-records`
   );
 
+  }
+
+  getAppointments() {
+  return this.http.get<any[]>(
+    `${this.api}/appointments/my`
+    );
+  }
+
+  getDashboardStats() {
+  return this.http.get<any>(
+    `${this.api}/dashboard/stats`
+  );
+  }
 }
 
-}
+

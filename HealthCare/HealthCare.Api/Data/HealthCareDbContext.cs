@@ -54,7 +54,7 @@ namespace HealthCare.Api.Data
 
             modelBuilder.Entity<Patient>()
                 .HasOne(p => p.User)
-                .WithOne()
+                .WithOne(u => u.Patient)
                 .HasForeignKey<Patient>(p => p.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 

@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import { SidebarComponent } from '../../components/sidebar/sidebar';
 
+
 @Component({
   selector: 'app-patient-layout',
   standalone: true,
@@ -15,5 +16,6 @@ import { SidebarComponent } from '../../components/sidebar/sidebar';
   templateUrl: './patient-layout.html',
   styleUrl: './patient-layout.css'
 })
+
 export class PatientLayoutComponent {
 }

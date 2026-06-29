@@ -5,6 +5,7 @@ using AutoMapper;
 using HealthCare.Api.Data;
 using Healthcare.Shared.DTOs.Authentication;
 using HealthCare.Api.Models;
+using Microsoft.EntityFrameworkCore;
 using HealthCare.Api.Repositories.Interfaces;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -65,6 +66,12 @@ namespace HealthCare.Api.Services.Implementations
         //  PATIENT REGISTRATION 
         public async Task RegisterPatientAsync(CreatePatientDto dto)
         {
+
+            var exists = await _context.Users
+                    .AnyAsync(u => u.Email == dto.Email);
+
+            if (exists)
+                throw new Exception("Email already exists");
 
 
             if (string.IsNullOrEmpty(dto.Email))
@@ -168,6 +175,15 @@ namespace HealthCare.Api.Services.Implementations
                 Role = role
             };
         }
+
+        //Check Email already exists
+
+        public async Task<bool> EmailExistsAsync(string email)
+        {
+            return await _context.Users
+                .AnyAsync(u => u.Email == email);
+        }
+
 
 
         //Chnage Password

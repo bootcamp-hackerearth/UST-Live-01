@@ -13,15 +13,14 @@ export class AppointmentService {
 
   constructor(private http: HttpClient) { }
 
-  getAvailableSlots(
-    doctorId:number,
-    date:string
-  ):Observable<string[]>{
 
-    return this.http.get<string[]>(
-      `${this.api}/available-slots?doctorId=${doctorId}&date=${date}`
-    );
-  }
+getAvailableSlots(doctorId: number, date: string) {
+
+  return this.http.get<string[]>(
+    `${this.api}/available-slots?doctorId=${doctorId}&date=${date}`
+  );
+}
+
 
   bookAppointment(data:any):Observable<any>{
 
@@ -31,12 +30,12 @@ export class AppointmentService {
     );
   }
 
-  getMyAppointments(): Observable<any[]> {
-
+ 
+getMyAppointments() {
   return this.http.get<any[]>(
-    `${this.api}/my`
+    `${this.api}/my`   
   );
-  }
+}
 
   getDoctorSchedule(date: string) {
 

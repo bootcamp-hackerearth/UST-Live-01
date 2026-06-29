@@ -41,7 +41,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task UpdateAsync(int id, UpdateAppointmentDto dto)
         {
-            var appointment = await _repository.GetByIdAsync(id);
+            var appointment = await _repository.GetProfileAsync(id);
             if (appointment == null)
                 throw new AppointmentNotFoundException(id);
             _mapper.Map(dto, appointment);
@@ -52,7 +52,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task DeleteAsync(int id)
         {
-            var appointment = await _repository.GetByIdAsync(id);
+            var appointment = await _repository.GetProfileAsync(id);
             if (appointment == null)
                 throw new AppointmentNotFoundException(id);
             await _repository.DeleteAsync(id);
@@ -61,7 +61,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task<AppointmentListDto?> GetByIdAsync(int id)
         {
-            var appointment = await _repository.GetByIdAsync(id);
+            var appointment = await _repository.GetProfileAsync(id);
             return appointment == null ? null : _mapper.Map<AppointmentListDto?>(appointment);
         }
 
@@ -109,7 +109,7 @@ namespace HealthCare.Api.Services.Implementations
 
         public async Task UpdateStatusAsync(int id, UpdateAppointmentDto dto)
         {
-            var appointment = await _repository.GetByIdAsync(id);
+            var appointment = await _repository.GetProfileAsync(id);
 
             if (appointment is null)
                 throw new InvalidOperationException("Patient not found.");

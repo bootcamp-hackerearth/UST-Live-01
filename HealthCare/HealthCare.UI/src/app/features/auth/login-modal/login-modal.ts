@@ -8,7 +8,6 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -24,6 +23,9 @@ export class LoginModal {
 
   loginForm: FormGroup;
 
+  // Error message shown inside popup
+  serverError = '';
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -31,7 +33,6 @@ export class LoginModal {
   ) {
 
     this.loginForm = this.fb.group({
-
       email: [
         '',
         [Validators.required, Validators.email]
@@ -41,80 +42,79 @@ export class LoginModal {
         '',
         Validators.required
       ]
-
     });
   }
 
   onSubmit(): void {
 
-    // Form validation
+    this.serverError = '';
+
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    // Call Login API
     this.authService.login(this.loginForm.value)
       .subscribe({
 
         next: (res: any) => {
 
-          console.log('Login Response:', res);
+          this.authService.saveToken(res.accessToken);
 
-          // Save JWT token
-          this.authService.saveToken(
-            res.accessToken
-          );
+          const role = this.authService.getRole();
 
-          // Get role from JWT
-          const role =
-            this.authService.getRole();
-
-          console.log('Role:', role);
-
-          // Close popup
           this.close.emit();
 
-          // Role based navigation
           if (role === 'Patient') {
 
             this.router.navigate([
               '/patient/dashboard'
             ]);
 
-          }
-          else if (role === 'Doctor') {
+          } else if (role === 'Doctor') {
 
             this.router.navigate([
               '/doctor/dashboard'
             ]);
 
-          }
-          else if (role === 'Admin') {
+          } else if (role === 'Admin') {
 
-            // Redirect to Blazor Admin Portal
             window.location.href =
               `https://localhost:7125/login-redirect?token=${res.accessToken}`;
-          }
-          else {
-
-            alert('Role not recognized');
           }
         },
 
         error: (err) => {
 
-          console.error(err);
-
-          alert(
-            'Invalid Email or Password'
-          );
-        }
+       if (err.status === 0) {
+        this.serverError =
+      'Unable to connect to server. Please try again later.';
+      }
+        else if (err.status === 401 || err.status === 400) {
+         this.serverError =
+          'Invalid email or password.';
+         }
+        else if (err.status === 500) {
+        this.serverError =
+       'Server error. Please try again later.';
+       }
+        else {
+        this.serverError =
+         'Login failed. Please try again.';
+      }
+}
       });
   }
 
   closeModal(): void {
-
     this.close.emit();
+  }
+
+  get email() {
+    return this.loginForm.get('email');
+  }
+
+  get password() {
+    return this.loginForm.get('password');
   }
 }

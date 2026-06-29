@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { ChangeDetectorRef } from '@angular/core';
 import { AppointmentService }
 from '../../../core/services/appointment.service';
 
@@ -19,33 +19,39 @@ implements OnInit {
   loading = true;
 
   constructor(
-    private appointmentService: AppointmentService
+    private appointmentService: AppointmentService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadAppointments();
   }
 
-  loadAppointments() {
+loadAppointments() {
 
-    this.appointmentService
-      .getMyAppointments()
-      .subscribe({
+  this.appointmentService
+    .getMyAppointments()
+    .subscribe({
 
-        next: (res: any[]) => {
+      next: (res: any[]) => {
 
-          this.appointments = res;
+        this.appointments = [...res]; 
+        
+        this.loading = false;
 
-          this.loading = false;
-        },
+        this.cd.detectChanges();
 
-        error: () => {
+      },
 
-          this.loading = false;
-        }
+      error: (err) => {
 
-      });
-  }
+        console.error(err);
+
+        this.loading = false;
+      }
+
+    });
+}
 
   getStatusClass(status: string) {
 

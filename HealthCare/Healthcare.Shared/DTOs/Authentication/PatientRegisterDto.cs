@@ -26,7 +26,6 @@ namespace Healthcare.Shared.DTOs.Authentication
         [Required]
         public string Password { get; set; } = null!;
 
-        [Required]
         public string? ConfirmPassword { get; set; }
 
 

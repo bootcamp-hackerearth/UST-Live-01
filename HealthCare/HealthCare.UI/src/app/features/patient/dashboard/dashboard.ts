@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { PatientService } from '../../../core/services/patient.service';
 
 @Component({
   selector: 'app-patient-dashboard',
@@ -12,55 +13,86 @@ import { RouterModule } from '@angular/router';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
-  patientName = 'John Doe';
+  patientName = '';
+  showBookingModal = false;
 
-  stats = [
-    {
-      title: 'Upcoming Appointments',
-      value: 2,
-      icon: 'bi-calendar-check',
-      color: 'bg-blue-100 text-blue-600'
-    },
-    {
-      title: 'Completed Visits',
-      value: 12,
-      icon: 'bi-check-circle',
-      color: 'bg-green-100 text-green-600'
-    },
-    {
-      title: 'Health Records',
-      value: 8,
-      icon: 'bi-file-medical',
-      color: 'bg-purple-100 text-purple-600'
-    },
-    {
-      title: 'Prescriptions',
-      value: 5,
-      icon: 'bi-prescription2',
-      color: 'bg-yellow-100 text-yellow-600'
-    }
-  ];
+  stats: any[] = [];
+  appointments: any[] = [];
 
-  appointments = [
+  constructor(
+    private patientService: PatientService
+  ) {}
 
-    {
-      doctor: 'Dr. Sarah Johnson',
-      speciality: 'Cardiologist',
-      date: '20 May 2026',
-      time: '10:00 AM',
-      status: 'Confirmed'
-    },
+  ngOnInit() {
+    this.loadProfile();
+    this.loadAppointments();
+    this.loadStats();
+  }
 
-    {
-      doctor: 'Dr. Emily Carter',
-      speciality: 'Dermatologist',
-      date: '25 May 2026',
-      time: '02:30 PM',
-      status: 'Pending'
-    }
+  // ✅ Load patient profile
+  loadProfile() {
+    this.patientService.getProfile().subscribe({
+      next: (res: any) => {
+        console.log('Profile:', res);
+        this.patientName = res.fullName;
+      },
+      error: (err) => {
+        console.error('Error loading profile', err);
+      }
+    });
+  }
 
-  ];
+  // ✅ Load appointments
+  loadAppointments() {
+    this.patientService.getAppointments().subscribe({
+      next: (res: any[]) => {
+        console.log('Appointments:', res);
+        this.appointments = res;
+      },
+      error: (err) => {
+        console.error('Error loading appointments', err);
+      }
+    });
+  }
+
+  // ✅ Load stats (backend required)
+  loadStats() {
+    this.patientService.getDashboardStats().subscribe({
+      next: (res: any) => {
+
+        this.stats = [
+          {
+            title: 'Upcoming Appointments',
+            value: res.upcoming,
+            icon: 'bi-calendar-check',
+            color: 'bg-blue-100 text-blue-600'
+          },
+          {
+            title: 'Completed Visits',
+            value: res.completed,
+            icon: 'bi-check-circle',
+            color: 'bg-green-100 text-green-600'
+          },
+          {
+            title: 'Health Records',
+            value: res.records,
+            icon: 'bi-file-medical',
+            color: 'bg-purple-100 text-purple-600'
+          },
+          {
+            title: 'Prescriptions',
+            value: res.prescriptions,
+            icon: 'bi-prescription2',
+            color: 'bg-yellow-100 text-yellow-600'
+          }
+        ];
+      },
+      error: (err) => {
+        console.error('Error loading stats', err);
+      }
+    });
+  }
 
 }

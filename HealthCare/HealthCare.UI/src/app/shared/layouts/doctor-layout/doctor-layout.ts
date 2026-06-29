@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../components/navbar/navbar';
 import { SidebarComponent } from '../../components/sidebar/sidebar';
 
+
 @Component({
   selector: 'app-doctor-layout',
   standalone: true,
@@ -11,6 +12,7 @@ import { SidebarComponent } from '../../components/sidebar/sidebar';
     RouterOutlet,
     NavbarComponent,
     SidebarComponent
+    
   ],
   templateUrl: './doctor-layout.html',
   styleUrl: './doctor-layout.css'

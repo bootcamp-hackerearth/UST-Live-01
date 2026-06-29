@@ -1,97 +1,79 @@
 <div class="p-6 bg-[#F8FAFC] min-h-screen">
 
-    <div class="mb-8">
+  <!-- HEADER -->
+  <div class="mb-6">
+    <h1 class="text-3xl font-bold text-[#1E293B]">
+      My Appointments
+    </h1>
 
-        <h1 class="text-3xl font-bold text-[#1E293B]">
-            My Appointments
-        </h1>
+    <p class="text-slate-500">
+      View and manage all your appointments
+    </p>
+  </div>
 
-        <p class="text-slate-500">
-            View and manage all your appointments
-        </p>
 
-    </div>
 
-    @if(loading){
+@if(loading){
+  <div class="text-center py-10">
+    Loading appointments...
+  </div>
+}
 
-        <div class="text-center py-10">
-            Loading appointments...
-        </div>
+@else if(appointments.length === 0){
+  <div class="bg-white rounded-xl p-8 text-center shadow">
+    No Appointments Found
+  </div>
+}
 
-    }
+@else{
 
-    @else if(appointments.length === 0){
+  <div class="bg-white shadow rounded-1xl overflow-hidden">
+    <table class="w-full text-left border-collapse">
 
-        <div class="bg-white rounded-2xl p-10 text-center shadow">
+      <thead class="bg-[#0B5ED7] text-white text-sm">
+        <tr>
+          <th class="p-4">Doctor</th>
+          <th class="p-4">Date</th>
+          <th class="p-4">Time</th>
+          <th class="p-4">Status</th>
+        </tr>
+      </thead>
 
-            <h3 class="text-xl font-semibold">
-                No Appointments Found
-            </h3>
+      <tbody>
 
-            <p class="text-slate-500 mt-2">
-                Book an appointment to get started.
-            </p>
+        @for(app of appointments; track app.appointmentId){
 
-        </div>
+          <tr class="border-b hover:bg-gray-50 transition">
 
-    }
+            <td class="p-4 font-semibold text-[#1E293B]">
+              {{app.doctorName}}
+            </td>
 
-    @else {
+            <td class="p-4 text-slate-600">
+              {{app.scheduledDate}}
+            </td>
 
-        <div class="grid gap-6">
+            <td class="p-4 text-slate-600">
+              {{app.timeSlot}}
+            </td>
 
-            @for(app of appointments; track app.id){
+            <td class="p-4">
+              <span
+                class="px-3 py-1 rounded-full text-sm font-semibold"
+                [ngClass]="getStatusClass(app.status)">
+                {{app.status}}
+              </span>
+            </td>
 
-                <div class="bg-white rounded-3xl p-6 shadow">
+          </tr>
 
-    <div class="flex justify-between">
+        }
 
-        <div>
+      </tbody>
 
-            <h3 class="text-2xl font-bold text-[#0B5ED7]">
-                Dr. {{app.doctorName}}
-            </h3>
+    </table>
+  </div>
 
-            <p class="text-slate-500">
-                {{app.specialisation}}
-            </p>
-
-        </div>
-
-        <span
-            class="px-4 py-2 rounded-full text-sm font-semibold"
-            [ngClass]="getStatusClass(app.status)">
-
-            {{app.status}}
-
-        </span>
-
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-6 mt-6">
-
-        <div>
-            <p class="text-slate-400">Appointment Date</p>
-            <h4 class="font-semibold">
-                {{app.scheduledDate}}
-            </h4>
-        </div>
-
-        <div>
-            <p class="text-slate-400">Time Slot</p>
-            <h4 class="font-semibold">
-                {{app.timeSlot}}
-            </h4>
-        </div>
-
-    </div>
-
-</div>
-
-            }
-
-        </div>
-
-    }
+}
 
 </div>

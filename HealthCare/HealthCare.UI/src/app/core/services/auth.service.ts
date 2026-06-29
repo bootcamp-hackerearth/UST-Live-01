@@ -9,14 +9,14 @@ import { Login } from '../models/login.model';
 })
 export class AuthService {
 
-  private readonly apiUrl = 'https://localhost:7225/api/auth';
+  private readonly api = 'https://localhost:7225/api/auth';
 
   constructor(private http: HttpClient) { }
 
   // Login
   login(data: Login): Observable<any> {
     return this.http.post<any>(
-      `${this.apiUrl}/login`,
+      `${this.api}/login`,
       data
     );
   }
@@ -24,7 +24,7 @@ export class AuthService {
   // Register
   register(data: any): Observable<any> {
     return this.http.post<any>(
-      `${this.apiUrl}/register`,
+      `${this.api}/register-patient`,
       data
     );
   }

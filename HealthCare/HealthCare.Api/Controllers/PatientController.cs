@@ -42,7 +42,21 @@ namespace HealthCare.Api.Controllers
             return Ok(new { message = "Patient profile updated successfully" });
         }
 
-      
+
+        [HttpGet("dashboard/stats")]
+        public IActionResult GetStats()
+        {
+            return Ok(new
+            {
+                upcoming = 2,
+                completed = 10,
+                records = 5,
+                prescriptions = 3
+            });
+        }
+
+
+
         private int GetPatientIdFromClaims()
         {
             var claim = User.FindFirst("PatientId")

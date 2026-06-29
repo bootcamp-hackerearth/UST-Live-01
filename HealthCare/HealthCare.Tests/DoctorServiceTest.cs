@@ -62,7 +62,7 @@ namespace HealthCare.Api.Tests
         {
             var doctor = new Doctor();
 
-            _repoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(doctor);
+            _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync(doctor);
 
             await _service.UpdateAsync(1, new UpdateDoctorDto());
 
@@ -73,7 +73,7 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task UpdateAsync_ShouldThrow_WhenNotFound()
         {
-            _repoMock.Setup(r => r.GetByIdAsync(1))
+            _repoMock.Setup(r => r.GetProfileAsync(1))
                 .ReturnsAsync((Doctor)null);
 
             await Assert.ThrowsAsync<DoctorNotFoundException>(() =>
@@ -86,7 +86,7 @@ namespace HealthCare.Api.Tests
         {
             var doctor = new Doctor();
 
-            _repoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(doctor);
+            _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync(doctor);
 
             await _service.DeleteAsync(1);
 
@@ -97,7 +97,7 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task DeleteAsync_ShouldThrow_WhenNotFound()
         {
-            _repoMock.Setup(r => r.GetByIdAsync(1))
+            _repoMock.Setup(r => r.GetProfileAsync(1))
                 .ReturnsAsync((Doctor)null);
 
             await Assert.ThrowsAsync<DoctorNotFoundException>(() =>
@@ -111,7 +111,7 @@ namespace HealthCare.Api.Tests
             var doctor = new Doctor();
             var dto = new DoctorListDto();
 
-            _repoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(doctor);
+            _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync(doctor);
             _mapperMock.Setup(m => m.Map<DoctorListDto>(doctor)).Returns(dto);
 
             var result = await _service.GetByIdAsync(1);
@@ -155,7 +155,7 @@ namespace HealthCare.Api.Tests
         {
             var doctor = new Doctor { IsActive = true };
 
-            _repoMock.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(doctor);
+            _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync(doctor);
 
             await _service.UpdateStatusAsync(1, false);
 

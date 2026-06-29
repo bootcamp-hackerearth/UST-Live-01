@@ -1,46 +1,108 @@
-<div class="modal-backdrop">
+<div class="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-4">
 
-    <div class="modal-card">
+  <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8">
 
-        <button class="close-btn"
-                (click)="closeModal()">
-            ×
-        </button>
+    <!-- Close Button -->
+    <button
+      (click)="closeModal()"
+      class="absolute top-4 right-5 text-slate-400 hover:text-red-500 text-3xl">
+      ×
+    </button>
 
-        <h2>Login</h2>
+    <!-- Header -->
+    <h2 class="text-3xl font-bold text-slate-800 text-center">
+      Welcome Back
+    </h2>
 
-        <form [formGroup]="loginForm"
-              (ngSubmit)="onSubmit()">
+    <p class="text-slate-500 text-center mt-2 mb-6">
+      Sign in to continue
+    </p>
 
-            <div class="mb-3">
+    <!-- Server Error -->
+    @if(serverError){
+      <div
+        class="mb-5 rounded-xl border-l-4 border-red-500 bg-red-50 p-4 text-red-600">
 
-                <label>Email</label>
+        {{ serverError }}
 
-                <input
-                    type="email"
-                    class="form-control"
-                    formControlName="email">
+      </div>
+    }
 
-            </div>
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      class="space-y-5">
 
-            <div class="mb-3">
+      <!-- Email -->
+      <div>
 
-                <label>Password</label>
+        <label class="block mb-2 font-semibold text-slate-700">
+          Email Address
+        </label>
 
-                <input
-                    type="password"
-                    class="form-control"
-                    formControlName="password">
+        <input
+          type="email"
+          formControlName="email"
+          placeholder="Enter your email"
+          class="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3
+                 focus:border-[#0B5ED7]
+                 focus:ring-4
+                 focus:ring-blue-100
+                 outline-none transition">
 
-            </div>
+        @if(email?.touched && email?.errors?.['required']){
+          <p class="mt-1 text-sm text-red-500">
+            Email is required
+          </p>
+        }
 
-            <button
-                class="btn btn-primary w-100">
-                Login
-            </button>
+        @if(email?.touched && email?.errors?.['email']){
+          <p class="mt-1 text-sm text-red-500">
+            Enter a valid email address
+          </p>
+        }
 
-        </form>
+      </div>
 
-    </div>
+      <!-- Password -->
+      <div>
+
+        <label class="block mb-2 font-semibold text-slate-700">
+          Password
+        </label>
+
+        <input
+          type="password"
+          formControlName="password"
+          placeholder="Enter your password"
+          class="w-full rounded-xl border border-slate-300 bg-slate-50 px-4 py-3
+                 focus:border-[#0B5ED7]
+                 focus:ring-4
+                 focus:ring-blue-100
+                 outline-none transition">
+
+        @if(password?.touched && password?.errors?.['required']){
+          <p class="mt-1 text-sm text-red-500">
+            Password is required
+          </p>
+        }
+
+      </div>
+
+      <!-- Login Button -->
+      <button
+        type="submit"
+        class="w-full rounded-xl py-3 font-semibold text-white
+               bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6]
+               hover:shadow-lg hover:-translate-y-0.5
+               transition-all duration-300">
+
+        Login
+
+      </button>
+
+    </form>
+
+  </div>
 
 </div>
