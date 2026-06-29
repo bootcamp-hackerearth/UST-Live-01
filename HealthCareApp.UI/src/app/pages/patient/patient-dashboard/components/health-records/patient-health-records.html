@@ -18,6 +18,48 @@
     </div>
   </div>
 
+  @if (records.length > 0) {
+    <section class="hr-filter-card">
+
+      <div class="hr-search-field">
+        <label>
+          Search Health Records
+
+          <input
+            type="text"
+            name="healthRecordSearch"
+            placeholder="Search by doctor, diagnosis, prescription, or appointment ID"
+            [(ngModel)]="searchTerm">
+        </label>
+      </div>
+
+      <div class="hr-filter-grid">
+
+        <label>
+          Visit Date
+
+          <input
+            type="date"
+            name="visitDateFilter"
+            [(ngModel)]="selectedVisitDate">
+        </label>
+
+      </div>
+
+      @if (hasActiveFilters) {
+        <div class="hr-filter-actions">
+          <button
+            type="button"
+            class="hr-clear-filters-btn"
+            (click)="clearFilters()">
+            Clear Filters
+          </button>
+        </div>
+      }
+
+    </section>
+  }
+
   @if (records.length === 0) {
     <div class="hr-empty-card">
       <div class="hr-empty-icon">▣</div>
@@ -30,10 +72,22 @@
     </div>
   }
 
-  @if (records.length > 0) {
+  @if (records.length > 0 && filteredRecords.length === 0) {
+    <div class="hr-empty-card">
+      <div class="hr-empty-icon">⌕</div>
+
+      <h3>No matching health records</h3>
+
+      <p>
+        Try changing your search text or visit date filter.
+      </p>
+    </div>
+  }
+
+  @if (filteredRecords.length > 0) {
     <div class="hr-record-grid">
 
-      @for (rec of records; track rec.healthRecordId) {
+      @for (rec of filteredRecords; track rec.healthRecordId) {
 
         <article class="hr-record-card" (click)="openDetails(rec)">
 
@@ -44,11 +98,15 @@
 
             <div class="hr-record-title">
               <span>Consultation Record</span>
+
               <h3>{{ rec.doctorName }}</h3>
+
               <p>{{ formatDate(rec.visitDate) }}</p>
             </div>
 
-            <button type="button" class="hr-view-btn">
+            <button
+              type="button"
+              class="hr-view-btn">
               View
             </button>
           </div>
@@ -105,7 +163,10 @@
             </p>
           </div>
 
-          <button type="button" class="hr-modal-close" (click)="closeModal()">
+          <button
+            type="button"
+            class="hr-modal-close"
+            (click)="closeModal()">
             ×
           </button>
         </div>

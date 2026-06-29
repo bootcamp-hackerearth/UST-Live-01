@@ -607,3 +607,155 @@
     padding: 20px 22px 26px;
   }
 }
+
+
+/* ================================
+   HEALTH RECORD SEARCH + FILTERS
+================================ */
+
+.hr-filter-card {
+  padding: 20px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(124, 58, 237, 0.08), transparent 38%),
+    rgba(255, 255, 255, 0.94);
+  border: 1px solid #dbeafe;
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.07);
+  display: grid;
+  gap: 16px;
+}
+
+.hr-search-field label,
+.hr-filter-grid label {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.hr-search-field input,
+.hr-filter-grid input {
+  width: 100%;
+  height: 48px;
+  margin-top: 9px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.hr-search-field input:focus,
+.hr-filter-grid input:focus {
+  border-color: #a78bfa;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+.hr-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px);
+  gap: 14px;
+}
+
+.hr-filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hr-clear-filters-btn {
+  height: 42px;
+  padding: 0 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 15px;
+  color: #334155;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.hr-clear-filters-btn:hover {
+  transform: translateY(-2px);
+  background: #f8fafc;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+/* ================================
+   FILTER RESPONSIVE
+================================ */
+
+@media (max-width: 640px) {
+  .hr-filter-card {
+    padding: 18px;
+    border-radius: 26px;
+  }
+
+  .hr-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hr-filter-actions {
+    justify-content: stretch;
+  }
+
+  .hr-clear-filters-btn {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   FINAL HEALTH RECORDS HERO SIZE FIX
+========================================================= */
+
+.hr-hero-card {
+  padding: 20px 26px !important;
+  border-radius: 28px !important;
+  min-height: auto !important;
+}
+
+.hr-kicker {
+  font-size: 11px !important;
+}
+
+.hr-hero-card h2 {
+  font-size: clamp(28px, 3vw, 38px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+  margin-top: 10px !important;
+}
+
+.hr-hero-card p {
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  margin-top: 10px !important;
+  max-width: 620px !important;
+}
+
+.hr-hero-badge {
+  min-width: 105px !important;
+  padding: 13px !important;
+  border-radius: 22px !important;
+}
+
+.hr-hero-badge strong {
+  font-size: 28px !important;
+}
+
+.hr-hero-badge span {
+  font-size: 11px !important;
+}

@@ -474,3 +474,223 @@
     width: 100%;
   }
 }
+
+/* ================================
+   PROFILE CONFIRMATION MODALS
+================================ */
+
+.pp-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 7000;
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  animation: pp-confirm-fade 0.2s ease;
+}
+
+.pp-confirm-modal {
+  width: min(480px, 100%);
+  padding: 28px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 38%),
+    linear-gradient(145deg, #ffffff 0%, #f8fbff 60%, #eef6ff 100%);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 35px 90px rgba(15, 23, 42, 0.32);
+  text-align: center;
+  animation: pp-confirm-enter 0.24s ease;
+}
+
+.pp-confirm-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 30px;
+  font-weight: 1000;
+}
+
+.pp-confirm-icon.warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  box-shadow: 0 18px 38px rgba(217, 119, 6, 0.24);
+}
+
+.pp-confirm-icon.success {
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.24);
+}
+
+.pp-confirm-kicker {
+  display: block;
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pp-confirm-modal h3 {
+  margin: 10px 0 0;
+  color: #0f172a;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+}
+
+.pp-confirm-modal p {
+  margin: 12px auto 0;
+  max-width: 360px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.pp-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.pp-confirm-cancel,
+.pp-confirm-primary,
+.pp-confirm-danger {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.pp-confirm-cancel {
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+.pp-confirm-primary {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  border: 0;
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+}
+
+.pp-confirm-danger {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border: 0;
+  box-shadow: 0 16px 34px rgba(220, 38, 38, 0.24);
+}
+
+.pp-confirm-cancel:hover,
+.pp-confirm-primary:hover,
+.pp-confirm-danger:hover {
+  transform: translateY(-2px);
+}
+
+.pp-confirm-cancel:hover {
+  background: #f8fafc;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+}
+
+.pp-confirm-primary:hover {
+  box-shadow: 0 20px 42px rgba(37, 99, 235, 0.3);
+}
+
+.pp-confirm-danger:hover {
+  box-shadow: 0 20px 42px rgba(220, 38, 38, 0.3);
+}
+
+@keyframes pp-confirm-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pp-confirm-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 560px) {
+  .pp-confirm-modal {
+    padding: 24px;
+    border-radius: 26px;
+  }
+
+  .pp-confirm-actions {
+    flex-direction: column;
+  }
+
+  .pp-confirm-cancel,
+  .pp-confirm-primary,
+  .pp-confirm-danger {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   FINAL PROFILE HERO SIZE FIX
+========================================================= */
+
+.pp-hero-card {
+  padding: 20px 26px !important;
+  border-radius: 28px !important;
+  min-height: auto !important;
+}
+
+.pp-kicker {
+  font-size: 11px !important;
+}
+
+.pp-hero-card h2 {
+  font-size: clamp(28px, 3vw, 38px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.04em !important;
+  margin-top: 10px !important;
+}
+
+.pp-hero-card p {
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  margin-top: 10px !important;
+  max-width: 650px !important;
+}
+
+.pp-hero-actions {
+  gap: 10px !important;
+}
+
+.pp-primary-action,
+.pp-secondary-action {
+  height: 40px !important;
+  padding: 0 14px !important;
+  font-size: 12px !important;
+  border-radius: 14px !important;
+}

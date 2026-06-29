@@ -58,6 +58,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
   toastType: ToastType = 'info';
 
   isSidebarOpen = false;
+  isLogoutModalOpen = false;
 
   private toastTimer?: ReturnType<typeof setTimeout>;
 
@@ -186,9 +187,19 @@ export class PatientDashboard implements OnInit, OnDestroy {
   }
 
   logout(): void {
+    this.isLogoutModalOpen = true;
+    this.closeSidebar();
+  }
+
+  closeLogoutModal(): void {
+    this.isLogoutModalOpen = false;
+  }
+
+  confirmLogout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
 
+    this.isLogoutModalOpen = false;
     this.router.navigate(['/']);
   }
 

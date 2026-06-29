@@ -17,6 +17,102 @@
     </div>
   </div>
 
+  @if (appointments.length > 0) {
+    <section class="al-filter-card">
+
+      <div class="al-search-field">
+        <label>
+          Search Appointments
+
+          <input
+            type="text"
+            name="appointmentSearch"
+            placeholder="Search by doctor name or appointment ID"
+            [(ngModel)]="searchTerm">
+        </label>
+      </div>
+
+      <div class="al-filter-grid">
+
+        <label>
+          Status
+
+          <select
+            name="statusFilter"
+            [(ngModel)]="selectedStatus">
+
+            <option value="">All Status</option>
+
+            @for (status of statusOptions; track status) {
+              <option [value]="status">
+                {{ status }}
+              </option>
+            }
+
+          </select>
+        </label>
+
+        <label>
+          Specialisation
+
+          <select
+            name="specialisationFilter"
+            [(ngModel)]="selectedSpecialisation">
+
+            <option value="">All Specialisations</option>
+
+            @for (specialisation of specialisationOptions; track specialisation) {
+              <option [value]="specialisation">
+                {{ specialisation }}
+              </option>
+            }
+
+          </select>
+        </label>
+
+        <label>
+          Time Slot
+
+          <select
+            name="timeSlotFilter"
+            [(ngModel)]="selectedTimeSlot">
+
+            <option value="">All Time Slots</option>
+
+            @for (slot of timeSlotOptions; track slot) {
+              <option [value]="slot">
+                {{ slot }}
+              </option>
+            }
+
+          </select>
+        </label>
+
+        <label>
+          Scheduled Date
+
+          <input
+            type="date"
+            name="dateFilter"
+            [(ngModel)]="selectedDate">
+        </label>
+
+      </div>
+
+      @if (hasActiveFilters) {
+        <div class="al-filter-actions">
+          <button
+            type="button"
+            class="al-clear-filters-btn"
+            (click)="clearFilters()">
+            Clear Filters
+          </button>
+        </div>
+      }
+
+    </section>
+  }
+
   @if (appointments.length === 0) {
     <div class="al-empty-card">
       <div class="al-empty-icon">◷</div>
@@ -29,10 +125,22 @@
     </div>
   }
 
-  @if (appointments.length > 0) {
+  @if (appointments.length > 0 && filteredAppointments.length === 0) {
+    <div class="al-empty-card">
+      <div class="al-empty-icon">⌕</div>
+
+      <h3>No matching appointments</h3>
+
+      <p>
+        Try changing your search text or filters.
+      </p>
+    </div>
+  }
+
+  @if (filteredAppointments.length > 0) {
     <div class="al-timeline">
 
-      @for (appt of appointments; track appt.appointmentId) {
+      @for (appt of filteredAppointments; track appt.appointmentId) {
 
         <article
           class="al-appt-card"
@@ -160,6 +268,7 @@
 
         <label class="al-reason-field">
           Cancellation Reason
+
           <textarea
             name="cancellationReason"
             rows="4"

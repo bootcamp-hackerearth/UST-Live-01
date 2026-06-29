@@ -4,6 +4,10 @@
   animation: ba-page-enter 0.32s ease;
 }
 
+/* ==============================
+   HERO
+============================== */
+
 .ba-hero-card {
   position: relative;
   overflow: hidden;
@@ -114,6 +118,10 @@
   font-weight: 850;
 }
 
+/* ==============================
+   FORM CARD
+============================== */
+
 .ba-booking-card {
   padding: 28px;
   border-radius: 34px;
@@ -143,6 +151,10 @@
   line-height: 1.65;
   font-weight: 750;
 }
+
+/* ==============================
+   PROGRESS
+============================== */
 
 .ba-progress-row {
   display: grid;
@@ -186,6 +198,10 @@
   background: linear-gradient(90deg, #bfdbfe, #38bdf8);
 }
 
+/* ==============================
+   SECTION CARD
+============================== */
+
 .ba-section-card {
   margin-top: 18px;
   padding: 20px;
@@ -207,24 +223,214 @@
   letter-spacing: -0.035em;
 }
 
-.ba-specialisation-grid,
-.ba-doctor-grid,
-.ba-slot-grid {
+/* ==============================
+   COMPACT SPECIALISATION DROPDOWN
+============================== */
+
+.ba-specialisation-combo {
+  position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.ba-specialisation-combo label {
+  min-width: 0;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.ba-specialisation-combo input {
+  width: 100%;
+  height: 50px;
+  margin-top: 9px;
+  padding: 0 15px;
+  box-sizing: border-box;
+  border-radius: 18px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.ba-specialisation-combo input:focus {
+  border-color: #38bdf8;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+.ba-clear-specialisation {
+  height: 50px;
+  padding: 0 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 18px;
+  color: #334155;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.ba-clear-specialisation:hover {
+  transform: translateY(-2px);
+  background: #f8fafc;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.ba-specialisation-dropdown {
+  grid-column: 1 / -1;
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  margin-top: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 22px;
+  background: #ffffff;
+  border: 1px solid #dbeafe;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+  display: grid;
+  gap: 8px;
+  animation: ba-dropdown-enter 0.18s ease;
+}
+
+.ba-specialisation-dropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ba-specialisation-dropdown::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+
+.ba-specialisation-dropdown::-webkit-scrollbar-thumb {
+  background: #bfdbfe;
+  border-radius: 999px;
+}
+
+.ba-specialisation-dropdown::-webkit-scrollbar-thumb:hover {
+  background: #93c5fd;
+}
+
+.ba-specialisation-option {
+  width: 100%;
+  min-height: 62px;
+  padding: 12px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+}
+
+.ba-specialisation-option:hover,
+.ba-specialisation-option.selected {
+  background: #eff6ff;
+  transform: translateX(3px);
+}
+
+.ba-specialisation-option > span {
+  width: 40px;
+  height: 40px;
+  border-radius: 15px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  font-size: 15px;
+  font-weight: 1000;
+}
+
+.ba-specialisation-option strong {
+  display: block;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 1000;
+}
+
+.ba-specialisation-option small {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ba-specialisation-empty,
+.ba-specialisation-more {
+  padding: 12px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 850;
+}
+
+.ba-selected-specialisation {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.ba-selected-specialisation span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ba-selected-specialisation strong {
+  display: block;
+  margin-top: 5px;
+  color: #1d4ed8;
+  font-size: 15px;
+  font-weight: 1000;
+}
+
+/* ==============================
+   DOCTOR CARDS
+============================== */
+
+.ba-doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 14px;
 }
 
-.ba-specialisation-grid {
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-}
-
-.ba-specialisation-card,
-.ba-doctor-card,
-.ba-slot {
+.ba-doctor-card {
+  padding: 18px;
   border: 1px solid #e2e8f0;
+  border-radius: 26px;
   background: linear-gradient(145deg, #ffffff, #f8fafc);
   cursor: pointer;
   font-family: inherit;
+  text-align: left;
+  display: flex;
+  gap: 15px;
   transition:
     transform 0.2s ease,
     border-color 0.2s ease,
@@ -232,35 +438,6 @@
     background 0.2s ease;
 }
 
-.ba-specialisation-card {
-  min-height: 90px;
-  padding: 16px;
-  border-radius: 24px;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.ba-specialisation-card span {
-  width: 46px;
-  height: 46px;
-  border-radius: 17px;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  font-weight: 1000;
-}
-
-.ba-specialisation-card strong {
-  color: #0f172a;
-  font-size: 15px;
-  font-weight: 1000;
-}
-
-.ba-specialisation-card:hover,
-.ba-specialisation-card.selected,
 .ba-doctor-card:hover,
 .ba-doctor-card.selected {
   transform: translateY(-4px);
@@ -268,21 +445,8 @@
   box-shadow: 0 20px 48px rgba(37, 99, 235, 0.14);
 }
 
-.ba-specialisation-card.selected,
 .ba-doctor-card.selected {
   background: #eff6ff;
-}
-
-.ba-doctor-grid {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-}
-
-.ba-doctor-card {
-  padding: 18px;
-  border-radius: 26px;
-  text-align: left;
-  display: flex;
-  gap: 15px;
 }
 
 .ba-doctor-avatar {
@@ -331,6 +495,10 @@
   font-weight: 900;
 }
 
+/* ==============================
+   DATE
+============================== */
+
 .ba-date-field {
   display: block;
   color: #334155;
@@ -361,17 +529,31 @@
   box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
 }
 
+/* ==============================
+   SLOTS
+============================== */
+
 .ba-slot-grid {
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
 }
 
 .ba-slot {
   min-height: 78px;
   padding: 14px;
+  border: 1px solid #e2e8f0;
   border-radius: 22px;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  cursor: pointer;
+  font-family: inherit;
   display: grid;
   gap: 6px;
   text-align: left;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .ba-slot strong {
@@ -394,6 +576,11 @@
   color: #166534;
 }
 
+.ba-slot.available:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(22, 163, 74, 0.14);
+}
+
 .ba-slot.selected {
   border-color: #2563eb;
   background: #dbeafe;
@@ -408,7 +595,7 @@
   cursor: not-allowed;
   border-color: #fecaca;
   background: #fee2e2;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .ba-slot.booked span {
@@ -419,6 +606,10 @@
   cursor: not-allowed;
   opacity: 0.65;
 }
+
+/* ==============================
+   MESSAGE + SUBMIT
+============================== */
 
 .ba-form-message {
   margin-top: 18px;
@@ -492,6 +683,186 @@
   font-weight: 850;
 }
 
+/* ==============================
+   COMPACT BOOKING PAGE FIX
+============================== */
+
+.ba-booking-shell.compact {
+  gap: 0;
+}
+
+.ba-form-header.compact-header {
+  margin-bottom: 18px;
+}
+
+.ba-form-header.compact-header h3 {
+  font-size: 34px;
+}
+
+.ba-form-header.compact-header p {
+  max-width: 720px;
+}
+
+/* ==============================
+   BOOKING CONFIRMATION MODAL
+============================== */
+
+.ba-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 7000;
+  padding: 24px;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  animation: ba-confirm-fade 0.2s ease;
+}
+
+.ba-confirm-modal {
+  width: min(560px, 100%);
+  padding: 28px;
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 38%),
+    linear-gradient(145deg, #ffffff 0%, #f8fbff 60%, #eef6ff 100%);
+  border: 1px solid #bfdbfe;
+  box-shadow: 0 35px 90px rgba(15, 23, 42, 0.32);
+  text-align: center;
+  animation: ba-confirm-enter 0.24s ease;
+}
+
+.ba-confirm-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 18px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  font-size: 30px;
+  font-weight: 1000;
+  box-shadow: 0 18px 38px rgba(37, 99, 235, 0.24);
+}
+
+.ba-confirm-kicker {
+  color: #0284c7;
+  font-size: 12px;
+  font-weight: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ba-confirm-modal h3 {
+  margin: 10px 0 0;
+  color: #0f172a;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 1000;
+  letter-spacing: -0.045em;
+}
+
+.ba-confirm-modal p {
+  margin: 12px auto 0;
+  max-width: 380px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 750;
+}
+
+.ba-confirm-details {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ba-confirm-details div {
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  text-align: left;
+}
+
+.ba-confirm-details span {
+  display: block;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ba-confirm-details strong {
+  display: block;
+  margin-top: 7px;
+  color: #0f172a;
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 1000;
+}
+
+.ba-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ba-confirm-edit,
+.ba-confirm-submit {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 1000;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.ba-confirm-edit {
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+}
+
+.ba-confirm-submit {
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #2563eb);
+  border: 0;
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.24);
+}
+
+.ba-confirm-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ba-confirm-edit:hover,
+.ba-confirm-submit:hover {
+  transform: translateY(-2px);
+}
+
+/* ==============================
+   SCROLL OFFSET
+============================== */
+
+.ba-section-card,
+.ba-submit-row {
+  scroll-margin-top: 120px;
+}
+
+/* ==============================
+   ANIMATIONS
+============================== */
+
 @keyframes ba-page-enter {
   from {
     opacity: 0;
@@ -516,6 +887,40 @@
   }
 }
 
+@keyframes ba-dropdown-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ba-confirm-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ba-confirm-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes ba-pulse {
   0% {
     box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.24);
@@ -529,6 +934,10 @@
     box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
   }
 }
+
+/* ==============================
+   RESPONSIVE
+============================== */
 
 @media (max-width: 960px) {
   .ba-hero-card {
@@ -556,6 +965,18 @@
     display: none;
   }
 
+  .ba-specialisation-combo {
+    grid-template-columns: 1fr;
+  }
+
+  .ba-specialisation-dropdown {
+    grid-column: 1;
+  }
+
+  .ba-clear-specialisation {
+    width: 100%;
+  }
+
   .ba-submit-row {
     flex-direction: column;
     align-items: stretch;
@@ -566,189 +987,17 @@
   }
 }
 
-/* ==============================
-   SEARCHABLE SPECIALISATION
-============================== */
+@media (max-width: 560px) {
+  .ba-confirm-details {
+    grid-template-columns: 1fr;
+  }
 
-.ba-specialisation-search {
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.ba-specialisation-search label {
-  flex: 1;
-  color: #334155;
-  font-size: 13px;
-  font-weight: 950;
-}
-
-.ba-specialisation-search input {
-  width: 100%;
-  height: 48px;
-  margin-top: 9px;
-  padding: 0 14px;
-  box-sizing: border-box;
-  border-radius: 16px;
-  border: 1px solid #cbd5e1;
-  outline: none;
-  background: #f8fafc;
-  color: #0f172a;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 750;
-  transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease,
-    background 0.18s ease;
-}
-
-.ba-specialisation-search input:focus {
-  border-color: #38bdf8;
-  background: #ffffff;
-  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
-}
-
-.ba-clear-specialisation {
-  height: 48px;
-  padding: 0 16px;
-  border: 1px solid #cbd5e1;
-  border-radius: 16px;
-  color: #334155;
-  background: #ffffff;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 1000;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    background 0.18s ease;
-}
-
-.ba-clear-specialisation:hover {
-  transform: translateY(-2px);
-  background: #f8fafc;
-  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
-}
-
-.ba-specialisation-list {
-  max-height: 280px;
-  overflow-y: auto;
-  display: grid;
-  gap: 10px;
-  padding-right: 4px;
-}
-
-.ba-specialisation-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.ba-specialisation-list::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 999px;
-}
-
-.ba-specialisation-list::-webkit-scrollbar-thumb {
-  background: #bfdbfe;
-  border-radius: 999px;
-}
-
-.ba-specialisation-list::-webkit-scrollbar-thumb:hover {
-  background: #93c5fd;
-}
-
-.ba-specialisation-row {
-  width: 100%;
-  min-height: 72px;
-  padding: 14px;
-  border: 1px solid #e2e8f0;
-  border-radius: 22px;
-  background: linear-gradient(145deg, #ffffff, #f8fafc);
-  cursor: pointer;
-  font-family: inherit;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease,
-    border-color 0.18s ease,
-    background 0.18s ease;
-}
-
-.ba-specialisation-row:hover {
-  transform: translateY(-3px);
-  border-color: #93c5fd;
-  box-shadow: 0 18px 42px rgba(37, 99, 235, 0.11);
-}
-
-.ba-specialisation-row.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
-  box-shadow: 0 18px 42px rgba(37, 99, 235, 0.14);
-}
-
-.ba-specialisation-row > span {
-  width: 44px;
-  height: 44px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  color: #ffffff;
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  font-size: 16px;
-  font-weight: 1000;
-}
-
-.ba-specialisation-row strong {
-  display: block;
-  color: #0f172a;
-  font-size: 14px;
-  font-weight: 1000;
-}
-
-.ba-specialisation-row small {
-  display: block;
-  margin-top: 4px;
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.ba-specialisation-row em {
-  margin-left: auto;
-  padding: 6px 10px;
-  border-radius: 999px;
-  color: #1d4ed8;
-  background: #dbeafe;
-  font-size: 11px;
-  font-style: normal;
-  font-weight: 1000;
-}
-
-@media (max-width: 720px) {
-  .ba-specialisation-search {
+  .ba-confirm-actions {
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .ba-clear-specialisation {
+  .ba-confirm-edit,
+  .ba-confirm-submit {
     width: 100%;
-  }
-
-  .ba-specialisation-list {
-    max-height: none;
-  }
-
-  .ba-specialisation-row {
-    align-items: flex-start;
-  }
-
-  .ba-specialisation-row em {
-    margin-left: 0;
   }
 }

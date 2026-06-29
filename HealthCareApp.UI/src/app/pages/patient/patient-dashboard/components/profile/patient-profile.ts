@@ -6,6 +6,7 @@ import {
   PatientDto,
   UpdatePatientDto
 } from '../../../../../shared/models/patient.models';
+
 import { PatientFakeDataService } from '../../../../../core/services/patient-fake-data.service';
 
 @Component({
@@ -16,11 +17,15 @@ import { PatientFakeDataService } from '../../../../../core/services/patient-fak
   styleUrl: './patient-profile.css'
 })
 export class PatientProfile {
-
   patient?: PatientDto;
 
   isEditMode = false;
   isPasswordMode = false;
+
+  isDiscardProfileModalOpen = false;
+  isDiscardPasswordModalOpen = false;
+  isPasswordConfirmModalOpen = false;
+  isProfileSaveConfirmModalOpen = false;
 
   hasSubmitted = false;
   hasPasswordSubmitted = false;
@@ -54,10 +59,6 @@ export class PatientProfile {
     this.todayDate = new Date().toISOString().split('T')[0];
     this.loadProfile();
   }
-
-  // ===============================
-  // PROFILE VALIDATIONS
-  // ===============================
 
   get isNameInvalid(): boolean {
     const name = this.form.patientName.trim();
@@ -107,10 +108,6 @@ export class PatientProfile {
     );
   }
 
-  // ===============================
-  // PASSWORD VALIDATIONS
-  // ===============================
-
   get isCurrentPasswordInvalid(): boolean {
     return !this.passwordForm.currentPassword.trim();
   }
@@ -150,10 +147,6 @@ export class PatientProfile {
     );
   }
 
-  // ===============================
-  // PROFILE ACTIONS
-  // ===============================
-
   loadProfile(): void {
     this.patient = this.service.getPatientProfile();
 
@@ -177,8 +170,22 @@ export class PatientProfile {
   cancelEdit(): void {
     this.message = '';
     this.hasSubmitted = false;
-    this.isEditMode = false;
-    this.loadProfile();
+
+    if (this.hasProfileChanges()) {
+      this.isDiscardProfileModalOpen = true;
+      return;
+    }
+
+    this.discardProfileChanges();
+  }
+
+  closeDiscardProfileModal(): void {
+    this.isDiscardProfileModalOpen = false;
+  }
+
+  confirmDiscardProfileChanges(): void {
+    this.isDiscardProfileModalOpen = false;
+    this.discardProfileChanges();
   }
 
   saveProfile(): void {
@@ -190,6 +197,14 @@ export class PatientProfile {
       return;
     }
 
+    this.isProfileSaveConfirmModalOpen = true;
+  }
+
+  closeProfileSaveConfirmModal(): void {
+    this.isProfileSaveConfirmModalOpen = false;
+  }
+
+  confirmSaveProfile(): void {
     const request: UpdatePatientDto = {
       patientName: this.form.patientName.trim(),
       dateOfBirth: this.form.dateOfBirth,
@@ -201,16 +216,13 @@ export class PatientProfile {
 
     this.service.updatePatientProfile(request);
 
+    this.isProfileSaveConfirmModalOpen = false;
     this.loadProfile();
     this.isEditMode = false;
     this.hasSubmitted = false;
 
     this.profileUpdated.emit();
   }
-
-  // ===============================
-  // PASSWORD ACTIONS
-  // ===============================
 
   enablePasswordChange(): void {
     this.passwordMessage = '';
@@ -224,9 +236,22 @@ export class PatientProfile {
   cancelPasswordChange(): void {
     this.passwordMessage = '';
     this.hasPasswordSubmitted = false;
-    this.isPasswordMode = false;
 
-    this.resetPasswordForm();
+    if (this.hasPasswordChanges()) {
+      this.isDiscardPasswordModalOpen = true;
+      return;
+    }
+
+    this.discardPasswordChanges();
+  }
+
+  closeDiscardPasswordModal(): void {
+    this.isDiscardPasswordModalOpen = false;
+  }
+
+  confirmDiscardPasswordChanges(): void {
+    this.isDiscardPasswordModalOpen = false;
+    this.discardPasswordChanges();
   }
 
   changePassword(): void {
@@ -238,14 +263,60 @@ export class PatientProfile {
       return;
     }
 
-    this.service.changePatientPassword(this.passwordForm);
+    this.isPasswordConfirmModalOpen = true;
+  }
 
+  closePasswordConfirmModal(): void {
+    this.isPasswordConfirmModalOpen = false;
+  }
+
+  confirmPasswordChange(): void {
+    try {
+      this.service.changePatientPassword(this.passwordForm);
+
+      this.isPasswordConfirmModalOpen = false;
+      this.isPasswordMode = false;
+      this.hasPasswordSubmitted = false;
+
+      this.resetPasswordForm();
+      this.passwordChanged.emit();
+    } catch (error: unknown) {
+      this.isPasswordConfirmModalOpen = false;
+      this.passwordMessage = this.getErrorMessage(error);
+    }
+  }
+
+  private hasProfileChanges(): boolean {
+    if (!this.patient) {
+      return false;
+    }
+
+    return (
+      this.form.patientName !== this.patient.patientName ||
+      this.form.dateOfBirth !== this.patient.dateOfBirth ||
+      this.form.gender !== this.patient.gender ||
+      this.form.email !== this.patient.email ||
+      this.form.phoneNumber !== this.patient.phoneNumber ||
+      this.form.insuranceId !== (this.patient.insuranceId ?? '')
+    );
+  }
+
+  private hasPasswordChanges(): boolean {
+    return (
+      this.passwordForm.currentPassword.trim().length > 0 ||
+      this.passwordForm.newPassword.trim().length > 0 ||
+      this.passwordForm.confirmPassword.trim().length > 0
+    );
+  }
+
+  private discardProfileChanges(): void {
+    this.isEditMode = false;
+    this.loadProfile();
+  }
+
+  private discardPasswordChanges(): void {
     this.isPasswordMode = false;
-    this.hasPasswordSubmitted = false;
-
     this.resetPasswordForm();
-
-    this.passwordChanged.emit();
   }
 
   private resetPasswordForm(): void {
@@ -254,5 +325,13 @@ export class PatientProfile {
       newPassword: '',
       confirmPassword: ''
     };
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return 'Something went wrong. Please try again.';
   }
 }

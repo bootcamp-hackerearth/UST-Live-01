@@ -205,46 +205,56 @@ export class PatientFakeDataService {
       .map((appointment: AppointmentDto) => ({ ...appointment }));
   }
 
-  bookAppointment(request: BookAppointmentDto): AppointmentDto {
-    const doctor = this.doctors.find(
-      (item: DoctorDto) => item.doctorId === request.doctorId
-    );
+ bookAppointment(request: BookAppointmentDto): AppointmentDto {
+  const doctor = this.doctors.find(
+    (item: DoctorDto) => item.doctorId === request.doctorId
+  );
 
-    if (!doctor) {
-      throw new Error('Doctor not found.');
-    }
-
-    if (!doctor.isActive) {
-      throw new Error('Doctor is not available for booking.');
-    }
-
-    if (
-      this.isSlotBooked(
-        request.doctorId,
-        request.scheduledDate,
-        request.timeSlot
-      )
-    ) {
-      throw new Error('This slot is already booked. Please choose another.');
-    }
-
-    const newAppointment: AppointmentDto = {
-      appointmentId: this.getNextAppointmentId(),
-      patientId: request.patientId,
-      patientName: this.patient.patientName,
-      doctorId: doctor.doctorId,
-      doctorName: doctor.doctorName,
-      specialisation: doctor.specialisation,
-      scheduledDate: request.scheduledDate,
-      timeSlot: request.timeSlot,
-      status: 'Pending'
-    };
-
-    this.appointments.unshift(newAppointment);
-
-    return { ...newAppointment };
+  if (!doctor) {
+    throw new Error('Doctor not found.');
   }
 
+  if (!doctor.isActive) {
+    throw new Error('Doctor is not available for booking.');
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  const maxBookingDate = this.getDateAfterDays(30);
+
+  if (request.scheduledDate < today) {
+    throw new Error('Past dates are not allowed for appointment booking.');
+  }
+
+  if (request.scheduledDate > maxBookingDate) {
+    throw new Error('Appointments can only be booked within the next 30 days.');
+  }
+
+  if (
+    this.isSlotBooked(
+      request.doctorId,
+      request.scheduledDate,
+      request.timeSlot
+    )
+  ) {
+    throw new Error('This slot is already booked. Please choose another.');
+  }
+
+  const newAppointment: AppointmentDto = {
+    appointmentId: this.getNextAppointmentId(),
+    patientId: request.patientId,
+    patientName: this.patient.patientName,
+    doctorId: doctor.doctorId,
+    doctorName: doctor.doctorName,
+    specialisation: doctor.specialisation,
+    scheduledDate: request.scheduledDate,
+    timeSlot: request.timeSlot,
+    status: 'Pending'
+  };
+
+  this.appointments.unshift(newAppointment);
+
+  return { ...newAppointment };
+}
   cancelAppointment(request: CancelAppointmentDto): AppointmentDto {
     const appointment = this.appointments.find(
       (item: AppointmentDto) => item.appointmentId === request.appointmentId

@@ -13,7 +13,6 @@ import { PatientFakeDataService } from '../../../../../core/services/patient-fak
   styleUrl: './patient-book-appointment.css'
 })
 export class PatientBookAppointment {
-
   specialisations: string[] = [];
   doctors: DoctorDto[] = [];
   filteredDoctors: DoctorDto[] = [];
@@ -21,7 +20,14 @@ export class PatientBookAppointment {
 
   selectedSpecialisation = '';
   specialisationSearchTerm = '';
+  isSpecialisationDropdownOpen = false;
+
   todayDate = '';
+  maxBookingDate = '';
+
+  message = '';
+  isSubmitting = false;
+  isBookingConfirmOpen = false;
 
   form: BookAppointmentDto = {
     patientId: 1,
@@ -30,16 +36,15 @@ export class PatientBookAppointment {
     timeSlot: ''
   };
 
-  message = '';
-  isSubmitting = false;
-
   @Output() bookingSuccess = new EventEmitter<void>();
 
   constructor(private service: PatientFakeDataService) {
     this.specialisations = this.service.getSpecialisations();
     this.doctors = this.service.getActiveDoctors();
     this.timeSlots = this.service.getAvailableTimeSlots();
+
     this.todayDate = new Date().toISOString().split('T')[0];
+    this.maxBookingDate = this.getDateAfterDays(30);
   }
 
   get filteredSpecialisations(): string[] {
@@ -54,36 +59,69 @@ export class PatientBookAppointment {
     );
   }
 
+  get visibleSpecialisations(): string[] {
+    return this.filteredSpecialisations;
+  }
+
   get selectedDoctor(): DoctorDto | undefined {
     return this.doctors.find(
       (doctor: DoctorDto) => doctor.doctorId === this.form.doctorId
     );
   }
 
+  openSpecialisationDropdown(): void {
+    this.isSpecialisationDropdownOpen = true;
+    this.scrollDownForSpecialisationSearch();
+  }
+
+  closeSpecialisationDropdown(): void {
+    setTimeout(() => {
+      this.isSpecialisationDropdownOpen = false;
+    }, 150);
+  }
+
   selectSpecialisation(specialisation: string): void {
     this.selectedSpecialisation = specialisation;
     this.specialisationSearchTerm = specialisation;
     this.filteredDoctors = this.service.getDoctorsBySpecialisation(specialisation);
+    this.isSpecialisationDropdownOpen = false;
 
     this.form.doctorId = null!;
+    this.form.scheduledDate = '';
     this.form.timeSlot = '';
     this.message = '';
+
+    this.scrollToSection('doctor-section');
   }
 
   clearSpecialisation(): void {
     this.selectedSpecialisation = '';
     this.specialisationSearchTerm = '';
     this.filteredDoctors = [];
+    this.isSpecialisationDropdownOpen = false;
 
     this.form.doctorId = null!;
+    this.form.scheduledDate = '';
     this.form.timeSlot = '';
     this.message = '';
   }
 
   selectDoctor(doctorId: number): void {
     this.form.doctorId = doctorId;
+    this.form.scheduledDate = '';
     this.form.timeSlot = '';
     this.message = '';
+
+    this.scrollToSection('date-section');
+  }
+
+  onDateChange(): void {
+    this.form.timeSlot = '';
+    this.message = '';
+
+    if (this.form.scheduledDate) {
+      this.scrollToSection('slot-section');
+    }
   }
 
   selectTimeSlot(slot: string): void {
@@ -93,11 +131,8 @@ export class PatientBookAppointment {
 
     this.form.timeSlot = slot;
     this.message = '';
-  }
 
-  onDateChange(): void {
-    this.form.timeSlot = '';
-    this.message = '';
+    this.scrollToSection('submit-section');
   }
 
   isTimeSlotBooked(slot: string): boolean {
@@ -151,43 +186,73 @@ export class PatientBookAppointment {
   submit(): void {
     this.message = '';
 
-    if (!this.selectedSpecialisation) {
-      this.message = 'Please select a specialisation.';
+    if (!this.isBookingFormValid()) {
       return;
     }
 
-    if (!this.form.doctorId) {
-      this.message = 'Please select a doctor.';
-      return;
-    }
+    this.isBookingConfirmOpen = true;
+  }
 
-    if (!this.form.scheduledDate) {
-      this.message = 'Please select an appointment date.';
-      return;
-    }
+  closeBookingConfirm(): void {
+    this.isBookingConfirmOpen = false;
+  }
 
-    if (!this.form.timeSlot) {
-      this.message = 'Please select an available time slot.';
-      return;
-    }
-
+  confirmBooking(): void {
+    this.message = '';
     this.isSubmitting = true;
 
     try {
       this.service.bookAppointment(this.form);
 
+      this.closeBookingConfirm();
       this.resetForm();
       this.bookingSuccess.emit();
     } catch (error: unknown) {
       this.message = this.getErrorMessage(error);
+      this.closeBookingConfirm();
     }
 
     this.isSubmitting = false;
   }
 
+  private isBookingFormValid(): boolean {
+    if (!this.selectedSpecialisation) {
+      this.message = 'Please select a specialisation.';
+      return false;
+    }
+
+    if (!this.form.doctorId) {
+      this.message = 'Please select a doctor.';
+      return false;
+    }
+
+    if (!this.form.scheduledDate) {
+      this.message = 'Please select an appointment date.';
+      return false;
+    }
+
+    if (this.form.scheduledDate < this.todayDate) {
+      this.message = 'Past dates are not allowed. Please select today or a future date.';
+      return false;
+    }
+
+    if (this.form.scheduledDate > this.maxBookingDate) {
+      this.message = 'Appointments can only be booked within the next 30 days.';
+      return false;
+    }
+
+    if (!this.form.timeSlot) {
+      this.message = 'Please select an available time slot.';
+      return false;
+    }
+
+    return true;
+  }
+
   private resetForm(): void {
     this.selectedSpecialisation = '';
     this.specialisationSearchTerm = '';
+    this.isSpecialisationDropdownOpen = false;
     this.filteredDoctors = [];
 
     this.form = {
@@ -198,11 +263,43 @@ export class PatientBookAppointment {
     };
   }
 
+  private scrollDownForSpecialisationSearch(): void {
+    setTimeout(() => {
+      window.scrollBy({
+        top: 260,
+        behavior: 'smooth'
+      });
+    }, 120);
+  }
+
+  private scrollToSection(sectionId: string): void {
+    setTimeout(() => {
+      const section = document.getElementById(sectionId);
+
+      if (!section) {
+        return;
+      }
+
+      section.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 250);
+  }
+
   private getErrorMessage(error: unknown): string {
     if (error instanceof Error) {
       return error.message;
     }
 
     return 'Something went wrong while booking the appointment.';
+  }
+
+  private getDateAfterDays(days: number): string {
+    const date = new Date();
+
+    date.setDate(date.getDate() + days);
+
+    return date.toISOString().split('T')[0];
   }
 }

@@ -14,11 +14,17 @@
 
     @if (!isEditMode && !isPasswordMode) {
       <div class="pp-hero-actions">
-        <button type="button" class="pp-primary-action" (click)="enableEdit()">
+        <button
+          type="button"
+          class="pp-primary-action"
+          (click)="enableEdit()">
           Edit Profile
         </button>
 
-        <button type="button" class="pp-secondary-action" (click)="enablePasswordChange()">
+        <button
+          type="button"
+          class="pp-secondary-action"
+          (click)="enablePasswordChange()">
           Change Password
         </button>
       </div>
@@ -38,7 +44,9 @@
 
           <div>
             <span>Patient Identity</span>
+
             <h3>{{ patient.patientName }}</h3>
+
             <p>{{ patient.email }}</p>
           </div>
         </article>
@@ -87,7 +95,9 @@
 
         <div class="pp-form-heading">
           <span>Edit Profile</span>
+
           <h3>Update Personal Details</h3>
+
           <p>
             Keep your patient information accurate for appointment booking and care records.
           </p>
@@ -98,6 +108,7 @@
           <div class="pp-field-card">
             <label>
               Full Name
+
               <input
                 type="text"
                 name="patientName"
@@ -115,6 +126,7 @@
           <div class="pp-field-card">
             <label>
               Date of Birth
+
               <input
                 type="date"
                 name="dateOfBirth"
@@ -132,6 +144,7 @@
           <div class="pp-field-card">
             <label>
               Gender
+
               <select
                 name="gender"
                 [(ngModel)]="form.gender">
@@ -157,6 +170,7 @@
           <div class="pp-field-card">
             <label>
               Email
+
               <input
                 type="email"
                 name="email"
@@ -173,6 +187,7 @@
           <div class="pp-field-card">
             <label>
               Phone Number
+
               <input
                 type="text"
                 name="phoneNumber"
@@ -190,6 +205,7 @@
           <div class="pp-field-card">
             <label>
               Insurance ID
+
               <input
                 type="text"
                 name="insuranceId"
@@ -213,11 +229,16 @@
         }
 
         <div class="pp-form-actions">
-          <button type="button" class="pp-cancel-btn" (click)="cancelEdit()">
+          <button
+            type="button"
+            class="pp-cancel-btn"
+            (click)="cancelEdit()">
             Cancel
           </button>
 
-          <button type="submit" class="pp-save-btn">
+          <button
+            type="submit"
+            class="pp-save-btn">
             Save Changes
           </button>
         </div>
@@ -232,7 +253,9 @@
 
         <div class="pp-form-heading">
           <span>Account Security</span>
+
           <h3>Change Password</h3>
+
           <p>
             Use a strong password with uppercase letter, number, and special character.
           </p>
@@ -243,6 +266,7 @@
 
           <div>
             <strong>Password safety tip</strong>
+
             <p>
               Avoid reusing old passwords. Choose a unique password for your HealthAxis account.
             </p>
@@ -254,6 +278,7 @@
           <div class="pp-field-card">
             <label>
               Current Password
+
               <input
                 type="password"
                 name="currentPassword"
@@ -270,6 +295,7 @@
           <div class="pp-field-card">
             <label>
               New Password
+
               <input
                 type="password"
                 name="newPassword"
@@ -293,6 +319,7 @@
           <div class="pp-field-card">
             <label>
               Confirm Password
+
               <input
                 type="password"
                 name="confirmPassword"
@@ -321,11 +348,16 @@
         }
 
         <div class="pp-form-actions">
-          <button type="button" class="pp-cancel-btn" (click)="cancelPasswordChange()">
+          <button
+            type="button"
+            class="pp-cancel-btn"
+            (click)="cancelPasswordChange()">
             Cancel
           </button>
 
-          <button type="submit" class="pp-save-btn">
+          <button
+            type="submit"
+            class="pp-save-btn">
             Change Password
           </button>
         </div>
@@ -334,6 +366,158 @@
 
     }
 
+  }
+
+  @if (isProfileSaveConfirmModalOpen) {
+    <div class="pp-confirm-backdrop" (click)="closeProfileSaveConfirmModal()">
+
+      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+
+        <div class="pp-confirm-icon success">
+          ✓
+        </div>
+
+        <span class="pp-confirm-kicker">Confirm Profile Update</span>
+
+        <h3>Save profile changes?</h3>
+
+        <p>
+          Your updated profile details will be saved to your HealthAxis patient account.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closeProfileSaveConfirmModal()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-primary"
+            (click)="confirmSaveProfile()">
+            Yes, Save Changes
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isDiscardProfileModalOpen) {
+    <div class="pp-confirm-backdrop" (click)="closeDiscardProfileModal()">
+
+      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+
+        <div class="pp-confirm-icon warning">
+          !
+        </div>
+
+        <span class="pp-confirm-kicker">Unsaved Changes</span>
+
+        <h3>Discard profile changes?</h3>
+
+        <p>
+          You have unsaved profile details. If you discard, your changes will be lost.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closeDiscardProfileModal()">
+            Keep Editing
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-danger"
+            (click)="confirmDiscardProfileChanges()">
+            Discard Changes
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isDiscardPasswordModalOpen) {
+    <div class="pp-confirm-backdrop" (click)="closeDiscardPasswordModal()">
+
+      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+
+        <div class="pp-confirm-icon warning">
+          !
+        </div>
+
+        <span class="pp-confirm-kicker">Password Form</span>
+
+        <h3>Discard password changes?</h3>
+
+        <p>
+          You have entered password details. If you discard, the password fields will be cleared.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closeDiscardPasswordModal()">
+            Keep Editing
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-danger"
+            (click)="confirmDiscardPasswordChanges()">
+            Discard Changes
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isPasswordConfirmModalOpen) {
+    <div class="pp-confirm-backdrop" (click)="closePasswordConfirmModal()">
+
+      <section class="pp-confirm-modal" (click)="$event.stopPropagation()">
+
+        <div class="pp-confirm-icon success">
+          ✓
+        </div>
+
+        <span class="pp-confirm-kicker">Confirm Password Change</span>
+
+        <h3>Change your password?</h3>
+
+        <p>
+          After changing your password, use the new password for future logins.
+        </p>
+
+        <div class="pp-confirm-actions">
+          <button
+            type="button"
+            class="pp-confirm-cancel"
+            (click)="closePasswordConfirmModal()">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="pp-confirm-primary"
+            (click)="confirmPasswordChange()">
+            Yes, Change Password
+          </button>
+        </div>
+
+      </section>
+
+    </div>
   }
 
 </section>

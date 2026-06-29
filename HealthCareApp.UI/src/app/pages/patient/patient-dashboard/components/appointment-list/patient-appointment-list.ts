@@ -12,8 +12,13 @@ import { PatientFakeDataService } from '../../../../../core/services/patient-fak
   styleUrl: './patient-appointment-list.css'
 })
 export class PatientAppointmentList {
-
   appointments: AppointmentDto[] = [];
+
+  searchTerm = '';
+  selectedStatus = '';
+  selectedSpecialisation = '';
+  selectedTimeSlot = '';
+  selectedDate = '';
 
   isCancelModalOpen = false;
   cancellationReason = '';
@@ -26,12 +31,60 @@ export class PatientAppointmentList {
     this.loadAppointments();
   }
 
+  get filteredAppointments(): AppointmentDto[] {
+    const term = this.searchTerm.trim().toLowerCase();
+
+    return this.appointments.filter((appointment: AppointmentDto) =>
+      this.matchesSearchTerm(appointment, term) &&
+      this.matchesStatusFilter(appointment) &&
+      this.matchesSpecialisationFilter(appointment) &&
+      this.matchesTimeSlotFilter(appointment) &&
+      this.matchesDateFilter(appointment)
+    );
+  }
+
+  get statusOptions(): string[] {
+    return Array.from(
+      new Set(this.appointments.map((appointment: AppointmentDto) => appointment.status))
+    );
+  }
+
+  get specialisationOptions(): string[] {
+    return Array.from(
+      new Set(this.appointments.map((appointment: AppointmentDto) => appointment.specialisation))
+    );
+  }
+
+  get timeSlotOptions(): string[] {
+    return Array.from(
+      new Set(this.appointments.map((appointment: AppointmentDto) => appointment.timeSlot))
+    );
+  }
+
+  get hasActiveFilters(): boolean {
+    return (
+      this.searchTerm.trim().length > 0 ||
+      !!this.selectedStatus ||
+      !!this.selectedSpecialisation ||
+      !!this.selectedTimeSlot ||
+      !!this.selectedDate
+    );
+  }
+
   loadAppointments(): void {
     this.appointments = this.service.getAppointments().sort(
       (a: AppointmentDto, b: AppointmentDto) =>
         new Date(b.scheduledDate).getTime() -
         new Date(a.scheduledDate).getTime()
     );
+  }
+
+  clearFilters(): void {
+    this.searchTerm = '';
+    this.selectedStatus = '';
+    this.selectedSpecialisation = '';
+    this.selectedTimeSlot = '';
+    this.selectedDate = '';
   }
 
   openCancelModal(appointment: AppointmentDto): void {
@@ -88,6 +141,52 @@ export class PatientAppointmentList {
       month: 'short',
       year: 'numeric'
     });
+  }
+
+  private matchesSearchTerm(
+    appointment: AppointmentDto,
+    term: string
+  ): boolean {
+    if (!term) {
+      return true;
+    }
+
+    return (
+      appointment.doctorName.toLowerCase().includes(term) ||
+      appointment.appointmentId.toString().includes(term)
+    );
+  }
+
+  private matchesStatusFilter(appointment: AppointmentDto): boolean {
+    if (!this.selectedStatus) {
+      return true;
+    }
+
+    return appointment.status === this.selectedStatus;
+  }
+
+  private matchesSpecialisationFilter(appointment: AppointmentDto): boolean {
+    if (!this.selectedSpecialisation) {
+      return true;
+    }
+
+    return appointment.specialisation === this.selectedSpecialisation;
+  }
+
+  private matchesTimeSlotFilter(appointment: AppointmentDto): boolean {
+    if (!this.selectedTimeSlot) {
+      return true;
+    }
+
+    return appointment.timeSlot === this.selectedTimeSlot;
+  }
+
+  private matchesDateFilter(appointment: AppointmentDto): boolean {
+    if (!this.selectedDate) {
+      return true;
+    }
+
+    return appointment.scheduledDate === this.selectedDate;
   }
 
   private getErrorMessage(error: unknown): string {
