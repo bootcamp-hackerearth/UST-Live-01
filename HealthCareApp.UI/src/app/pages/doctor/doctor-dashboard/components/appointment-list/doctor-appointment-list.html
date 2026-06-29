@@ -1,0 +1,1077 @@
+<section class="da-appointments-shell">
+
+  <div class="da-hero-card">
+    <div>
+      <span class="da-kicker">Doctor Schedule</span>
+
+      <h2>My Appointments</h2>
+
+      <p>
+        Review patient appointments, confirm pending visits, and add health records after consultation.
+      </p>
+    </div>
+
+    <div class="da-hero-badge">
+      <strong>{{ appointments.length }}</strong>
+      <span>Total Appointments</span>
+    </div>
+  </div>
+
+  @if (appointments.length > 0) {
+    <section class="da-filter-card">
+
+      <div class="da-search-field">
+        <label>
+          Search Appointments
+
+          <input
+            type="text"
+            name="doctorAppointmentSearch"
+            placeholder="Search by patient name or appointment ID"
+            [(ngModel)]="searchTerm">
+        </label>
+      </div>
+
+      <div class="da-filter-grid">
+
+        <label>
+          Status
+
+          <select
+            name="statusFilter"
+            [(ngModel)]="selectedStatus">
+
+            <option value="">All Status</option>
+
+            @for (status of statusOptions; track status) {
+              <option [value]="status">
+                {{ status }}
+              </option>
+            }
+
+          </select>
+        </label>
+
+        <label>
+          Time Slot
+
+          <select
+            name="timeSlotFilter"
+            [(ngModel)]="selectedTimeSlot">
+
+            <option value="">All Time Slots</option>
+
+            @for (slot of timeSlotOptions; track slot) {
+              <option [value]="slot">
+                {{ slot }}
+              </option>
+            }
+
+          </select>
+        </label>
+
+        <label>
+          Appointment Date
+
+          <input
+            type="date"
+            name="appointmentDateFilter"
+            [(ngModel)]="selectedDate">
+        </label>
+
+      </div>
+
+      @if (hasActiveFilters) {
+        <div class="da-filter-actions">
+          <button
+            type="button"
+            class="da-clear-filters-btn"
+            (click)="clearFilters()">
+            Clear Filters
+          </button>
+        </div>
+      }
+
+    </section>
+  }
+
+  @if (appointments.length === 0) {
+    <div class="da-empty-card">
+      <div class="da-empty-icon">◷</div>
+
+      <h3>No appointments found</h3>
+
+      <p>
+        Assigned patient appointments will appear here.
+      </p>
+    </div>
+  }
+
+  @if (appointments.length > 0 && filteredAppointments.length === 0) {
+    <div class="da-empty-card">
+      <div class="da-empty-icon">⌕</div>
+
+      <h3>No matching appointments</h3>
+
+      <p>
+        Try changing your search text or filters.
+      </p>
+    </div>
+  }
+
+  @if (filteredAppointments.length > 0) {
+    <div class="da-timeline">
+
+      @for (appt of filteredAppointments; track appt.appointmentId) {
+
+        <article
+          class="da-appt-card"
+          [class.pending]="appt.status === 'Pending'"
+          [class.confirmed]="appt.status === 'Confirmed'"
+          [class.completed]="appt.status === 'Completed'"
+          [class.cancelled]="appt.status === 'Cancelled'">
+
+          <div class="da-status-rail"></div>
+
+          <div class="da-appt-main">
+
+            <div class="da-appt-header">
+              <div>
+                <span class="da-appt-label">Patient Consultation</span>
+
+                <h3>{{ appt.patientName }}</h3>
+
+                <p>{{ appt.specialisation }}</p>
+              </div>
+
+              <span [class]="getStatusClass(appt.status)">
+                {{ appt.status }}
+              </span>
+            </div>
+
+            <div class="da-appt-info-grid">
+
+              <div class="da-info-tile">
+                <span>Date</span>
+                <strong>📅 {{ formatDate(appt.scheduledDate) }}</strong>
+              </div>
+
+              <div class="da-info-tile">
+                <span>Time Slot</span>
+                <strong>🕒 {{ appt.timeSlot }}</strong>
+              </div>
+
+              <div class="da-info-tile">
+                <span>Appointment ID</span>
+                <strong>#{{ appt.appointmentId }}</strong>
+              </div>
+
+            </div>
+
+            <div class="da-appt-footer">
+              <p>
+                @if (appt.status === 'Pending') {
+                  This appointment is waiting for doctor confirmation.
+                }
+
+                @if (appt.status === 'Confirmed') {
+                  Add the health record after consultation to complete this appointment.
+                }
+
+                @if (appt.status === 'Completed') {
+                  This consultation has been completed and health record is saved.
+                }
+
+                @if (appt.status === 'Cancelled') {
+                  This appointment was cancelled.
+                }
+              </p>
+
+              <div class="da-action-buttons">
+
+                @if (appt.status === 'Pending') {
+                  <button
+                    type="button"
+                    class="da-confirm-btn"
+                    (click)="openConfirmModal(appt)">
+                    Confirm
+                  </button>
+                }
+
+                @if (appt.status === 'Confirmed') {
+                  <button
+                    type="button"
+                    class="da-complete-btn"
+                    (click)="openHealthRecordModal(appt)">
+                    Add Health Record
+                  </button>
+                }
+
+              </div>
+            </div>
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+  }
+
+  @if (isConfirmModalOpen && selectedAppointment) {
+    <div class="da-modal-backdrop" (click)="closeConfirmModal()">
+
+      <section class="da-action-modal" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Appointment Action</span>
+
+            <h3>Confirm appointment?</h3>
+
+            <p>
+              {{ selectedAppointment.patientName }}
+              •
+              {{ formatDate(selectedAppointment.scheduledDate) }}
+              •
+              {{ selectedAppointment.timeSlot }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="closeConfirmModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="da-action-summary">
+          <strong>This appointment status will change from Pending to Confirmed.</strong>
+
+          <p>
+            Appointment #{{ selectedAppointment.appointmentId }} will be visible as confirmed for the patient.
+          </p>
+        </div>
+
+        @if (confirmMessage) {
+          <div class="da-modal-message">
+            {{ confirmMessage }}
+          </div>
+        }
+
+        <div class="da-modal-actions">
+          <button
+            type="button"
+            class="da-keep-btn"
+            (click)="closeConfirmModal()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="da-confirm-action-btn"
+            (click)="confirmAppointment()">
+            Yes, Confirm
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isHealthRecordModalOpen && selectedAppointment) {
+    <div class="da-modal-backdrop" (click)="requestCloseHealthRecordModal()">
+
+      <section class="da-action-modal wide" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent complete"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Add Health Record</span>
+
+            <h3>{{ selectedAppointment.patientName }}</h3>
+
+            <p>
+              {{ formatDate(selectedAppointment.scheduledDate) }}
+              •
+              {{ selectedAppointment.timeSlot }}
+              •
+              Appointment #{{ selectedAppointment.appointmentId }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="requestCloseHealthRecordModal()">
+            ×
+          </button>
+        </div>
+
+        <form class="da-record-form" (ngSubmit)="submitHealthRecord()">
+
+          <div class="da-record-grid">
+
+            <div class="da-record-display">
+              <span>Patient</span>
+              <strong>{{ selectedAppointment.patientName }}</strong>
+            </div>
+
+            <div class="da-record-display">
+              <span>Visit Date</span>
+              <strong>{{ formatDate(selectedAppointment.scheduledDate) }}</strong>
+            </div>
+
+            <div class="da-record-display">
+              <span>Appointment ID</span>
+              <strong>#{{ selectedAppointment.appointmentId }}</strong>
+            </div>
+
+          </div>
+
+          <label class="da-record-field">
+            Diagnosis
+
+            <textarea
+              name="diagnosis"
+              rows="4"
+              maxlength="500"
+              placeholder="Enter diagnosis details"
+              [(ngModel)]="recordForm.diagnosis">
+            </textarea>
+          </label>
+
+          @if (hasRecordSubmitted && isDiagnosisInvalid) {
+            <div class="da-modal-message">
+              Diagnosis must contain at least 3 characters.
+            </div>
+          }
+
+          <label class="da-record-field">
+            Prescription
+
+            <textarea
+              name="prescription"
+              rows="4"
+              maxlength="500"
+              placeholder="Enter prescription details"
+              [(ngModel)]="recordForm.prescription">
+            </textarea>
+          </label>
+
+          @if (hasRecordSubmitted && isPrescriptionInvalid) {
+            <div class="da-modal-message">
+              Prescription must contain at least 3 characters.
+            </div>
+          }
+
+          <label class="da-record-field">
+            Notes Optional
+
+            <textarea
+              name="notes"
+              rows="3"
+              maxlength="500"
+              placeholder="Add optional doctor notes"
+              [(ngModel)]="recordForm.notes">
+            </textarea>
+          </label>
+
+          @if (recordMessage) {
+            <div class="da-modal-message">
+              {{ recordMessage }}
+            </div>
+          }
+
+          <div class="da-modal-actions">
+            <button
+              type="button"
+              class="da-keep-btn"
+              (click)="requestCloseHealthRecordModal()">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="da-confirm-action-btn complete">
+              Save Health Record
+            </button>
+          </div>
+
+        </form>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isHealthRecordSaveConfirmOpen && selectedAppointment) {
+    <div class="da-modal-backdrop" (click)="closeHealthRecordSaveConfirm()">
+
+      <section class="da-action-modal" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent complete"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Confirm Health Record</span>
+
+            <h3>Save and complete appointment?</h3>
+
+            <p>
+              {{ selectedAppointment.patientName }}
+              •
+              Appointment #{{ selectedAppointment.appointmentId }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="closeHealthRecordSaveConfirm()">
+            ×
+          </button>
+        </div>
+
+        <div class="da-action-summary complete">
+          <strong>
+            Health record will be saved and appointment status will become Completed.
+          </strong>
+
+          <p>
+            If you review again, the appointment will remain Confirmed.
+          </p>
+        </div>
+
+        <div class="da-modal-actions">
+          <button
+            type="button"
+            class="da-keep-btn"
+            (click)="closeHealthRecordSaveConfirm()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="da-confirm-action-btn complete"
+            (click)="confirmSaveHealthRecord()">
+            Yes, Save Record
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isDiscardHealthRecordModalOpen) {
+    <div class="da-modal-backdrop" (click)="closeDiscardHealthRecordModal()">
+
+      <section class="da-action-modal" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent danger"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Unsaved Health Record</span>
+
+            <h3>Discard health record changes?</h3>
+
+            <p>
+              Your entered diagnosis, prescription, or notes will be lost.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="closeDiscardHealthRecordModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="da-action-summary danger">
+          <strong>
+            The appointment will remain Confirmed because the health record is not saved.
+          </strong>
+        </div>
+
+        <div class="da-modal-actions">
+          <button
+            type="button"
+            class="da-keep-btn"
+            (click)="closeDiscardHealthRecordModal()">
+            Keep Editing
+          </button>
+
+          <button
+            type="button"
+            class="da-confirm-action-btn danger"
+            (click)="confirmDiscardHealthRecord()">
+            Discard Changes
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+</section><section class="da-appointments-shell">
+
+  <div class="da-hero-card">
+    <div>
+      <span class="da-kicker">Doctor Schedule</span>
+
+      <h2>My Appointments</h2>
+
+      <p>
+        Review patient appointments, confirm pending visits, and add health records after consultation.
+      </p>
+    </div>
+
+    <div class="da-hero-badge">
+      <strong>{{ appointments.length }}</strong>
+      <span>Total Appointments</span>
+    </div>
+  </div>
+
+  @if (appointments.length > 0) {
+    <section class="da-filter-card">
+
+      <div class="da-search-field">
+        <label>
+          Search Appointments
+
+          <input
+            type="text"
+            name="doctorAppointmentSearch"
+            placeholder="Search by patient name or appointment ID"
+            [(ngModel)]="searchTerm">
+        </label>
+      </div>
+
+      <div class="da-filter-grid">
+
+        <label>
+          Status
+
+          <select
+            name="statusFilter"
+            [(ngModel)]="selectedStatus">
+
+            <option value="">All Status</option>
+
+            @for (status of statusOptions; track status) {
+              <option [value]="status">
+                {{ status }}
+              </option>
+            }
+
+          </select>
+        </label>
+
+        <label>
+          Time Slot
+
+          <select
+            name="timeSlotFilter"
+            [(ngModel)]="selectedTimeSlot">
+
+            <option value="">All Time Slots</option>
+
+            @for (slot of timeSlotOptions; track slot) {
+              <option [value]="slot">
+                {{ slot }}
+              </option>
+            }
+
+          </select>
+        </label>
+
+        <label>
+          Appointment Date
+
+          <input
+            type="date"
+            name="appointmentDateFilter"
+            [(ngModel)]="selectedDate">
+        </label>
+
+      </div>
+
+      @if (hasActiveFilters) {
+        <div class="da-filter-actions">
+          <button
+            type="button"
+            class="da-clear-filters-btn"
+            (click)="clearFilters()">
+            Clear Filters
+          </button>
+        </div>
+      }
+
+    </section>
+  }
+
+  @if (appointments.length === 0) {
+    <div class="da-empty-card">
+      <div class="da-empty-icon">◷</div>
+
+      <h3>No appointments found</h3>
+
+      <p>
+        Assigned patient appointments will appear here.
+      </p>
+    </div>
+  }
+
+  @if (appointments.length > 0 && filteredAppointments.length === 0) {
+    <div class="da-empty-card">
+      <div class="da-empty-icon">⌕</div>
+
+      <h3>No matching appointments</h3>
+
+      <p>
+        Try changing your search text or filters.
+      </p>
+    </div>
+  }
+
+  @if (filteredAppointments.length > 0) {
+    <div class="da-timeline">
+
+      @for (appt of filteredAppointments; track appt.appointmentId) {
+
+        <article
+          class="da-appt-card"
+          [class.pending]="appt.status === 'Pending'"
+          [class.confirmed]="appt.status === 'Confirmed'"
+          [class.completed]="appt.status === 'Completed'"
+          [class.cancelled]="appt.status === 'Cancelled'">
+
+          <div class="da-status-rail"></div>
+
+          <div class="da-appt-main">
+
+            <div class="da-appt-header">
+              <div>
+                <span class="da-appt-label">Patient Consultation</span>
+
+                <h3>{{ appt.patientName }}</h3>
+
+                <p>{{ appt.specialisation }}</p>
+              </div>
+
+              <span [class]="getStatusClass(appt.status)">
+                {{ appt.status }}
+              </span>
+            </div>
+
+            <div class="da-appt-info-grid">
+
+              <div class="da-info-tile">
+                <span>Date</span>
+                <strong>📅 {{ formatDate(appt.scheduledDate) }}</strong>
+              </div>
+
+              <div class="da-info-tile">
+                <span>Time Slot</span>
+                <strong>🕒 {{ appt.timeSlot }}</strong>
+              </div>
+
+              <div class="da-info-tile">
+                <span>Appointment ID</span>
+                <strong>#{{ appt.appointmentId }}</strong>
+              </div>
+
+            </div>
+
+            <div class="da-appt-footer">
+              <p>
+                @if (appt.status === 'Pending') {
+                  This appointment is waiting for doctor confirmation.
+                }
+
+                @if (canAddHealthRecord(appt)) {
+                  Add the health record after consultation to complete this appointment.
+                }
+
+                @if (isFutureConfirmedAppointment(appt)) {
+                  Health record can be added only on the appointment date.
+                }
+
+                @if (isPastConfirmedAppointment(appt)) {
+                  Appointment date has passed. Please review this appointment separately.
+                }
+
+                @if (appt.status === 'Completed') {
+                  This consultation has been completed and health record is saved.
+                }
+
+                @if (appt.status === 'Cancelled') {
+                  This appointment was cancelled.
+                }
+              </p>
+
+              <div class="da-action-buttons">
+
+                @if (appt.status === 'Pending') {
+                  <button
+                    type="button"
+                    class="da-confirm-btn"
+                    (click)="openConfirmModal(appt)">
+                    Confirm
+                  </button>
+                }
+
+                @if (canAddHealthRecord(appt)) {
+                  <button
+                    type="button"
+                    class="da-complete-btn"
+                    (click)="openHealthRecordModal(appt)">
+                    Add Health Record
+                  </button>
+                }
+
+                @if (isFutureConfirmedAppointment(appt)) {
+                  <button
+                    type="button"
+                    class="da-disabled-action-btn"
+                    disabled>
+                    Available on appointment date
+                  </button>
+                }
+
+                @if (isPastConfirmedAppointment(appt)) {
+                  <button
+                    type="button"
+                    class="da-disabled-action-btn"
+                    disabled>
+                    Appointment date passed
+                  </button>
+                }
+
+              </div>
+            </div>
+
+          </div>
+
+        </article>
+
+      }
+
+    </div>
+  }
+
+  @if (isConfirmModalOpen && selectedAppointment) {
+    <div class="da-modal-backdrop" (click)="closeConfirmModal()">
+
+      <section class="da-action-modal" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Appointment Action</span>
+
+            <h3>Confirm appointment?</h3>
+
+            <p>
+              {{ selectedAppointment.patientName }}
+              •
+              {{ formatDate(selectedAppointment.scheduledDate) }}
+              •
+              {{ selectedAppointment.timeSlot }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="closeConfirmModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="da-action-summary">
+          <strong>This appointment status will change from Pending to Confirmed.</strong>
+
+          <p>
+            Appointment #{{ selectedAppointment.appointmentId }} will be visible as confirmed for the patient.
+          </p>
+        </div>
+
+        @if (confirmMessage) {
+          <div class="da-modal-message">
+            {{ confirmMessage }}
+          </div>
+        }
+
+        <div class="da-modal-actions">
+          <button
+            type="button"
+            class="da-keep-btn"
+            (click)="closeConfirmModal()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="da-confirm-action-btn"
+            (click)="confirmAppointment()">
+            Yes, Confirm
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isHealthRecordModalOpen && selectedAppointment) {
+    <div class="da-modal-backdrop" (click)="requestCloseHealthRecordModal()">
+
+      <section class="da-action-modal wide" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent complete"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Add Health Record</span>
+
+            <h3>{{ selectedAppointment.patientName }}</h3>
+
+            <p>
+              {{ formatDate(selectedAppointment.scheduledDate) }}
+              •
+              {{ selectedAppointment.timeSlot }}
+              •
+              Appointment #{{ selectedAppointment.appointmentId }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="requestCloseHealthRecordModal()">
+            ×
+          </button>
+        </div>
+
+        <form class="da-record-form" (ngSubmit)="submitHealthRecord()">
+
+          <div class="da-record-grid">
+
+            <div class="da-record-display">
+              <span>Patient</span>
+              <strong>{{ selectedAppointment.patientName }}</strong>
+            </div>
+
+            <div class="da-record-display">
+              <span>Visit Date</span>
+              <strong>{{ formatDate(selectedAppointment.scheduledDate) }}</strong>
+            </div>
+
+            <div class="da-record-display">
+              <span>Appointment ID</span>
+              <strong>#{{ selectedAppointment.appointmentId }}</strong>
+            </div>
+
+          </div>
+
+          <label class="da-record-field">
+            Diagnosis
+
+            <textarea
+              name="diagnosis"
+              rows="4"
+              maxlength="500"
+              placeholder="Enter diagnosis details"
+              [(ngModel)]="recordForm.diagnosis">
+            </textarea>
+          </label>
+
+          @if (hasRecordSubmitted && isDiagnosisInvalid) {
+            <div class="da-modal-message">
+              Diagnosis must contain at least 3 characters.
+            </div>
+          }
+
+          <label class="da-record-field">
+            Prescription
+
+            <textarea
+              name="prescription"
+              rows="4"
+              maxlength="500"
+              placeholder="Enter prescription details"
+              [(ngModel)]="recordForm.prescription">
+            </textarea>
+          </label>
+
+          @if (hasRecordSubmitted && isPrescriptionInvalid) {
+            <div class="da-modal-message">
+              Prescription must contain at least 3 characters.
+            </div>
+          }
+
+          <label class="da-record-field">
+            Notes Optional
+
+            <textarea
+              name="notes"
+              rows="3"
+              maxlength="500"
+              placeholder="Add optional doctor notes"
+              [(ngModel)]="recordForm.notes">
+            </textarea>
+          </label>
+
+          @if (recordMessage) {
+            <div class="da-modal-message">
+              {{ recordMessage }}
+            </div>
+          }
+
+          <div class="da-modal-actions">
+            <button
+              type="button"
+              class="da-keep-btn"
+              (click)="requestCloseHealthRecordModal()">
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              class="da-confirm-action-btn complete">
+              Save Health Record
+            </button>
+          </div>
+
+        </form>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isHealthRecordSaveConfirmOpen && selectedAppointment) {
+    <div class="da-modal-backdrop" (click)="closeHealthRecordSaveConfirm()">
+
+      <section class="da-action-modal" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent complete"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Confirm Health Record</span>
+
+            <h3>Save and complete appointment?</h3>
+
+            <p>
+              {{ selectedAppointment.patientName }}
+              •
+              Appointment #{{ selectedAppointment.appointmentId }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="closeHealthRecordSaveConfirm()">
+            ×
+          </button>
+        </div>
+
+        <div class="da-action-summary complete">
+          <strong>
+            Health record will be saved and appointment status will become Completed.
+          </strong>
+
+          <p>
+            If you review again, the appointment will remain Confirmed.
+          </p>
+        </div>
+
+        <div class="da-modal-actions">
+          <button
+            type="button"
+            class="da-keep-btn"
+            (click)="closeHealthRecordSaveConfirm()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="da-confirm-action-btn complete"
+            (click)="confirmSaveHealthRecord()">
+            Yes, Save Record
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isDiscardHealthRecordModalOpen) {
+    <div class="da-modal-backdrop" (click)="closeDiscardHealthRecordModal()">
+
+      <section class="da-action-modal" (click)="$event.stopPropagation()">
+
+        <div class="da-modal-accent danger"></div>
+
+        <div class="da-modal-header">
+          <div>
+            <span>Unsaved Health Record</span>
+
+            <h3>Discard health record changes?</h3>
+
+            <p>
+              Your entered diagnosis, prescription, or notes will be lost.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="da-modal-close"
+            (click)="closeDiscardHealthRecordModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="da-action-summary danger">
+          <strong>
+            The appointment will remain Confirmed because the health record is not saved.
+          </strong>
+        </div>
+
+        <div class="da-modal-actions">
+          <button
+            type="button"
+            class="da-keep-btn"
+            (click)="closeDiscardHealthRecordModal()">
+            Keep Editing
+          </button>
+
+          <button
+            type="button"
+            class="da-confirm-action-btn danger"
+            (click)="confirmDiscardHealthRecord()">
+            Discard Changes
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+</section>

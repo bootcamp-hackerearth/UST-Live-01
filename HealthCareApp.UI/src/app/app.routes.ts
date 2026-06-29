@@ -1,19 +1,23 @@
 import { Routes } from '@angular/router';
-import { Home } from './pages/home/home';
-import { PatientDashboard } from './pages/patient/patient-dashboard/patient-dashboard';
 
 export const routes: Routes = [
   {
     path: '',
-    component: Home
-  },
-  {
-    path: 'home',
-    component: Home
+    loadComponent: () =>
+      import('./pages/home/home')
+        .then(m => m.Home)
   },
   {
     path: 'patient/dashboard',
-    component: PatientDashboard
+    loadComponent: () =>
+      import('./pages/patient/patient-dashboard/patient-dashboard')
+        .then(m => m.PatientDashboard)
+  },
+  {
+    path: 'doctor/dashboard',
+    loadComponent: () =>
+      import('./pages/doctor/doctor-dashboard/doctor-dashboard')
+        .then(m => m.DoctorDashboard)
   },
   {
     path: '**',

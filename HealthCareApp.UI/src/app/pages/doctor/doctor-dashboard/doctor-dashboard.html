@@ -1,0 +1,531 @@
+<section class="dd-page">
+
+  <aside class="dd-sidebar" [class.open]="isSidebarOpen">
+
+    <div class="dd-brand">
+      <div class="dd-brand-logo">
+        HX
+      </div>
+
+      <div class="dd-brand-copy">
+        <h2>HealthAxis</h2>
+        <span>Doctor Workspace</span>
+      </div>
+
+      <button
+        type="button"
+        class="dd-sidebar-toggle"
+        (click)="toggleSidebar()">
+        ☰
+      </button>
+    </div>
+
+    <nav class="dd-menu">
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'dashboard'"
+        (click)="setActiveSection('dashboard')">
+        <span>⌂</span>
+        <strong>Dashboard</strong>
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'appointments'"
+        (click)="setActiveSection('appointments')">
+        <span>📅</span>
+        <strong>Appointments</strong>
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'records'"
+        (click)="setActiveSection('records')">
+        <span>▣</span>
+        <strong>Health Records</strong>
+      </button>
+
+      <button
+        type="button"
+        [class.active]="activeSection === 'profile'"
+        (click)="setActiveSection('profile')">
+        <span>👤</span>
+        <strong>Profile</strong>
+      </button>
+
+      <button
+        type="button"
+        class="dd-logout-menu-btn"
+        (click)="openLogoutModal()">
+        <span>↪</span>
+        <strong>Logout</strong>
+      </button>
+
+    </nav>
+
+  </aside>
+
+  @if (isSidebarOpen) {
+    <div class="dd-sidebar-overlay" (click)="closeSidebar()"></div>
+  }
+
+  <main class="dd-main">
+
+    <header class="dd-topbar">
+      <div class="dd-topbar-left">
+        <div>
+          <span class="dd-kicker">Doctor Workspace</span>
+
+          <h1>Welcome back, {{ doctorFirstName }}</h1>
+
+          <p>
+            Manage patient appointments, consultations, health records, and your HealthAxis doctor profile.
+          </p>
+        </div>
+      </div>
+
+      @if (doctor) {
+        <div class="dd-user-card">
+          <div class="dd-user-avatar">
+            {{ doctor.doctorName[0] }}
+          </div>
+
+          <div>
+            <strong>{{ doctor.doctorName }}</strong>
+            <span>{{ doctor.specialisation }}</span>
+          </div>
+        </div>
+      }
+    </header>
+
+    @if (mustChangeTemporaryPassword) {
+
+      <section class="dd-temp-password-shell">
+
+        <div class="dd-temp-card">
+
+          <div class="dd-temp-icon">
+            🔐
+          </div>
+
+          <span class="dd-panel-eyebrow">Temporary Password</span>
+
+          <h2>Change your temporary password</h2>
+
+          <p>
+            For security, please change your temporary password before accessing the doctor dashboard.
+          </p>
+
+          <form class="dd-temp-form" (ngSubmit)="submitTemporaryPasswordChange()">
+
+            <label>
+              Current Temporary Password
+
+              <input
+                type="password"
+                name="currentPassword"
+                [(ngModel)]="passwordForm.currentPassword">
+            </label>
+
+            @if (hasPasswordSubmitted && isCurrentPasswordInvalid) {
+              <div class="dd-field-error">
+                Current password is required.
+              </div>
+            }
+
+            <label>
+              New Password
+
+              <input
+                type="password"
+                name="newPassword"
+                [(ngModel)]="passwordForm.newPassword">
+            </label>
+
+            @if (hasPasswordSubmitted && isNewPasswordInvalid) {
+              <div class="dd-field-error">
+                Password must be at least 8 characters and include uppercase letter, number, and special character.
+              </div>
+            }
+
+            @if (hasPasswordSubmitted && isSamePasswordInvalid) {
+              <div class="dd-field-error">
+                New password must be different from current password.
+              </div>
+            }
+
+            <label>
+              Confirm Password
+
+              <input
+                type="password"
+                name="confirmPassword"
+                [(ngModel)]="passwordForm.confirmPassword">
+            </label>
+
+            @if (hasPasswordSubmitted && isConfirmPasswordInvalid) {
+              <div class="dd-field-error">
+                Confirm password is required.
+              </div>
+            }
+
+            @if (hasPasswordSubmitted && isPasswordMismatch) {
+              <div class="dd-field-error">
+                New password and confirm password do not match.
+              </div>
+            }
+
+            @if (passwordMessage) {
+              <div class="dd-form-message">
+                {{ passwordMessage }}
+              </div>
+            }
+
+            <button type="submit" class="dd-primary-btn">
+              Change Password
+            </button>
+
+          </form>
+
+        </div>
+
+      </section>
+
+    } @else {
+
+      @if (activeSection === 'dashboard') {
+
+        <section class="dd-premium-dashboard">
+
+          <section class="dd-hero-panel">
+            <div class="dd-hero-content">
+              <span class="dd-hero-label">Clinical Overview</span>
+
+              <h2>Today’s care queue, appointments, and records in one place.</h2>
+
+              <p>
+                Track pending confirmations, upcoming appointments, completed consultations,
+                and patient health records from your HealthAxis doctor workspace.
+              </p>
+
+              <div class="dd-hero-actions">
+                <button type="button" (click)="setActiveSection('appointments')">
+                  View Appointments
+                </button>
+
+                <button
+                  type="button"
+                  class="secondary"
+                  (click)="setActiveSection('records')">
+                  View Health Records
+                </button>
+              </div>
+            </div>
+
+            <aside class="dd-chart-card">
+              <div class="dd-donut-wrap">
+                <div class="dd-donut" [style.background]="chartBackground">
+                  <div class="dd-donut-center">
+                    <strong>{{ totalOverviewCount }}</strong>
+                    <span>Total Items</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dd-chart-legend">
+                <div>
+                  <span class="blue-dot"></span>
+                  Upcoming
+                  <strong>{{ summary.upcomingCount }}</strong>
+                </div>
+
+                <div>
+                  <span class="amber-dot"></span>
+                  Pending
+                  <strong>{{ summary.pendingCount }}</strong>
+                </div>
+
+                <div>
+                  <span class="sky-dot"></span>
+                  Confirmed
+                  <strong>{{ summary.confirmedCount }}</strong>
+                </div>
+
+                <div>
+                  <span class="green-dot"></span>
+                  Completed
+                  <strong>{{ summary.completedCount }}</strong>
+                </div>
+
+                <div>
+                  <span class="purple-dot"></span>
+                  Records
+                  <strong>{{ summary.healthRecordCount }}</strong>
+                </div>
+              </div>
+            </aside>
+          </section>
+
+          <section class="dd-summary-grid">
+
+            <article class="dd-summary-card blue">
+              <span>Upcoming Appointments</span>
+              <strong>{{ summary.upcomingCount }}</strong>
+              <p>Scheduled consultations ahead.</p>
+            </article>
+
+            <article class="dd-summary-card amber">
+              <span>Pending Confirmations</span>
+              <strong>{{ summary.pendingCount }}</strong>
+              <p>Appointments awaiting doctor action.</p>
+            </article>
+
+            <article class="dd-summary-card sky">
+              <span>Confirmed Visits</span>
+              <strong>{{ summary.confirmedCount }}</strong>
+              <p>Ready for consultation.</p>
+            </article>
+
+            <article class="dd-summary-card green">
+              <span>Completed Consultations</span>
+              <strong>{{ summary.completedCount }}</strong>
+              <p>Consultations completed.</p>
+            </article>
+
+          </section>
+
+          <section class="dd-dashboard-grid">
+
+            <article class="dd-panel premium-panel">
+              <div class="dd-panel-header">
+                <div>
+                  <span class="dd-panel-eyebrow">Next Consultation</span>
+
+                  <h3>Upcoming Appointment</h3>
+
+                  <p>Your nearest active patient appointment.</p>
+                </div>
+
+                <button type="button" (click)="setActiveSection('appointments')">
+                  View All
+                </button>
+              </div>
+
+              @if (nextAppointment) {
+                <div class="dd-next-card premium-next">
+                  <div class="dd-date-box">
+                    <strong>{{ formatDate(nextAppointment.scheduledDate).split(' ')[0] }}</strong>
+                    <span>{{ formatDate(nextAppointment.scheduledDate).split(' ')[1] }}</span>
+                  </div>
+
+                  <div>
+                    <h4>{{ nextAppointment.patientName }}</h4>
+
+                    <p>{{ nextAppointment.specialisation }}</p>
+
+                    <div class="dd-next-tags">
+                      <span class="dd-time-pill">{{ nextAppointment.timeSlot }}</span>
+
+                      <span [class]="getStatusClass(nextAppointment.status)">
+                        {{ nextAppointment.status }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <div class="dd-empty-card">
+                  No upcoming appointments found.
+                </div>
+              }
+            </article>
+
+            <article class="dd-panel premium-panel">
+              <div class="dd-panel-header">
+                <div>
+                  <span class="dd-panel-eyebrow">Quick Actions</span>
+
+                  <h3>Doctor Tools</h3>
+
+                  <p>Jump quickly to common doctor tasks.</p>
+                </div>
+              </div>
+
+              <div class="dd-action-grid">
+                <button type="button" (click)="setActiveSection('appointments')">
+                  <span>📅</span>
+                  <strong>Appointments</strong>
+                  <small>Confirm visits and add records</small>
+                </button>
+
+                <button type="button" (click)="setActiveSection('records')">
+                  <span>▣</span>
+                  <strong>Records</strong>
+                  <small>View added health records</small>
+                </button>
+
+                <button type="button" (click)="setActiveSection('profile')">
+                  <span>👤</span>
+                  <strong>Profile</strong>
+                  <small>View doctor profile</small>
+                </button>
+              </div>
+            </article>
+
+            <article class="dd-panel premium-panel dd-wide-panel">
+              <div class="dd-panel-header">
+                <div>
+                  <span class="dd-panel-eyebrow">Latest Record</span>
+
+                  <h3>Recent Health Record</h3>
+
+                  <p>Most recently added patient health record.</p>
+                </div>
+
+                <button type="button" (click)="setActiveSection('records')">
+                  View Records
+                </button>
+              </div>
+
+              @if (latestHealthRecord) {
+                <div class="dd-record-preview">
+                  <div>
+                    <span>Patient</span>
+                    <strong>{{ latestHealthRecord.patientName }}</strong>
+                  </div>
+
+                  <div>
+                    <span>Visit Date</span>
+                    <strong>{{ formatDate(latestHealthRecord.visitDate) }}</strong>
+                  </div>
+
+                  <div>
+                    <span>Appointment</span>
+                    <strong>#{{ latestHealthRecord.appointmentId }}</strong>
+                  </div>
+
+                  <p>
+                    {{ latestHealthRecord.diagnosis }}
+                  </p>
+                </div>
+              } @else {
+                <div class="dd-empty-card">
+                  No health records added yet.
+                </div>
+              }
+            </article>
+
+          </section>
+
+        </section>
+
+      }
+
+      @if (activeSection === 'appointments') {
+        <app-doctor-appointment-list
+          (refreshDashboard)="handleDoctorDataChanged()"
+          (doctorToast)="handleDoctorToast($event)">
+        </app-doctor-appointment-list>
+      }
+
+      @if (activeSection === 'records') {
+        <app-doctor-health-records></app-doctor-health-records>
+      }
+
+     @if (activeSection === 'profile') {
+  <app-doctor-profile
+    (doctorToast)="handleDoctorToast($event)">
+  </app-doctor-profile>
+}
+
+    }
+
+  </main>
+
+  @if (isTempPasswordConfirmOpen) {
+    <div class="dd-confirm-backdrop" (click)="closeTempPasswordConfirm()">
+
+      <section class="dd-confirm-modal" (click)="$event.stopPropagation()">
+
+        <div class="dd-confirm-icon success">
+          ✓
+        </div>
+
+        <span class="dd-confirm-kicker">Confirm Password Change</span>
+
+        <h3>Change temporary password?</h3>
+
+        <p>
+          Your doctor dashboard will unlock after changing the temporary password.
+        </p>
+
+        <div class="dd-confirm-actions">
+          <button
+            type="button"
+            class="dd-confirm-cancel"
+            (click)="closeTempPasswordConfirm()">
+            Review Again
+          </button>
+
+          <button
+            type="button"
+            class="dd-confirm-primary"
+            (click)="confirmTemporaryPasswordChange()">
+            Yes, Change Password
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (isLogoutModalOpen) {
+    <div class="dd-confirm-backdrop" (click)="closeLogoutModal()">
+
+      <section class="dd-confirm-modal danger" (click)="$event.stopPropagation()">
+
+        <div class="dd-confirm-icon danger">
+          ↪
+        </div>
+
+        <span class="dd-confirm-kicker danger-text">Logout Confirmation</span>
+
+        <h3>Do you want to logout?</h3>
+
+        <p>
+          You will be redirected to the HealthAxis home page.
+        </p>
+
+        <div class="dd-confirm-actions">
+          <button
+            type="button"
+            class="dd-confirm-cancel"
+            (click)="closeLogoutModal()">
+            Stay Logged In
+          </button>
+
+          <button
+            type="button"
+            class="dd-confirm-danger"
+            (click)="confirmLogout()">
+            Yes, Logout
+          </button>
+        </div>
+
+      </section>
+
+    </div>
+  }
+
+  @if (toastMessage) {
+    <div class="dd-toast" [class]="toastType">
+      <span>{{ toastMessage }}</span>
+
+      <button type="button" (click)="dismissToast()">
+        ×
+      </button>
+    </div>
+  }
+
+</section>
