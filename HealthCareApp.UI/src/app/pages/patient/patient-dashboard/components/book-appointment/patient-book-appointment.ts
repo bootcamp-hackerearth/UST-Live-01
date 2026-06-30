@@ -82,8 +82,8 @@ export class PatientBookAppointment implements OnInit {
   }
 
   get visibleSpecialisations(): string[] {
-    return this.filteredSpecialisations.slice(0, 6);
-  }
+  return this.filteredSpecialisations;
+}
 
   get selectedDoctor(): DoctorDto | undefined {
     return this.doctors.find(

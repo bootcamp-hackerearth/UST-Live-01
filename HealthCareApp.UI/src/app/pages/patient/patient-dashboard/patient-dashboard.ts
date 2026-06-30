@@ -106,15 +106,19 @@ export class PatientDashboard implements OnInit, OnDestroy {
     return this.healthRecords[0];
   }
 
-  get totalOverviewCount(): number {
-    const total =
-      this.summary.upcomingCount +
-      this.summary.pendingCount +
-      this.summary.completedCount +
-      this.summary.healthRecordCount;
+ get totalOverviewCount(): number {
+  return (
+    this.summary.upcomingCount +
+    this.summary.pendingCount +
+    this.summary.completedCount +
+    this.summary.healthRecordCount
+  );
+}
 
-    return total > 0 ? total : 1;
-  }
+get chartTotalCount(): number {
+  return this.totalOverviewCount > 0 ? this.totalOverviewCount : 1;
+}
+
 
   get upcomingPercentage(): number {
     return this.calculatePercentage(this.summary.upcomingCount);
@@ -239,9 +243,10 @@ export class PatientDashboard implements OnInit, OnDestroy {
     this.loadDashboardData();
   }
 
-  private calculatePercentage(value: number): number {
-    return Math.round((value / this.totalOverviewCount) * 100);
-  }
+ private calculatePercentage(value: number): number {
+  return Math.round((value / this.chartTotalCount) * 100);
+}
+
 
   private loadDashboardData(): void {
     this.isDashboardLoading = true;
