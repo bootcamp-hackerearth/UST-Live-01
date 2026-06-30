@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { timeout } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
-import { LoginRequest, UserRole } from '../../shared/models/auth.models';
+import {
+  LoginRequest,
+  PatientRegisterRequest,
+  UserRole
+} from '../../shared/models/auth.models';
 
 interface LandingFeature {
   title: string;
@@ -76,7 +81,12 @@ export class Home implements OnInit {
   phonePattern = '^[0-9]{10}$';
   passwordPattern = '^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$';
 
-  genderOptions: string[] = ['Male', 'Female', 'Other'];
+  genderOptions: string[] = [
+    'Male',
+    'Female',
+    'Transgender',
+    'Other'
+  ];
 
   countryCodeOptions: CountryCodeOption[] = [
     {
@@ -193,7 +203,9 @@ export class Home implements OnInit {
       password: this.loginForm.password
     };
 
-    this.authService.login(request).subscribe({
+    this.authService.login(request).pipe(
+      timeout(15000)
+    ).subscribe({
       next: () => {
         const loggedInRole = this.authService.getRole();
 
@@ -227,14 +239,56 @@ export class Home implements OnInit {
       return;
     }
 
+    if (this.patientRegisterForm.dateOfBirth > this.todayDate) {
+      this.signupMessage = 'Date of birth cannot be a future date.';
+      return;
+    }
+
     this.isSubmittingSignup = true;
     this.signupMessage = 'Creating your patient account...';
 
-    setTimeout(() => {
-      this.isSubmittingSignup = false;
-      this.signupMessage =
-        'Patient registration validation is ready. Backend connection will be added next.';
-    }, 900);
+    const request: PatientRegisterRequest = {
+      fullName: this.patientRegisterForm.fullName.trim(),
+      dateOfBirth: this.patientRegisterForm.dateOfBirth,
+      gender: this.mapGenderToNumber(this.patientRegisterForm.gender),
+      email: this.patientRegisterForm.email.trim(),
+      phoneNumber: this.patientRegisterForm.phoneNumber.trim(),
+      insuranceId: this.patientRegisterForm.insuranceId.trim(),
+      password: this.patientRegisterForm.password,
+      confirmPassword: this.patientRegisterForm.confirmPassword
+    };
+
+    this.authService.registerPatient(request).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: (response) => {
+        this.isSubmittingSignup = false;
+        this.signupMessage =
+          response.message || 'Patient account created successfully. Please login.';
+
+        form.resetForm({
+          fullName: '',
+          dateOfBirth: '',
+          gender: '',
+          email: '',
+          countryCode: '+91',
+          phoneNumber: '',
+          insuranceId: '',
+          password: '',
+          confirmPassword: ''
+        });
+
+        setTimeout(() => {
+          this.isSignupModalOpen = false;
+          this.openLoginModal('Patient');
+          this.loginMessage = 'Patient account created successfully. Please login.';
+        }, 1200);
+      },
+      error: (error: unknown) => {
+        this.isSubmittingSignup = false;
+        this.signupMessage = this.getSignupErrorMessage(error);
+      }
+    });
   }
 
   scrollToAbout(): void {
@@ -277,16 +331,14 @@ export class Home implements OnInit {
       return;
     }
 
-   
-if (role === 'Admin') {
-  const token = this.authService.getToken();
+    if (role === 'Admin') {
+      const token = this.authService.getToken();
 
-  window.location.href =
-    `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
+      window.location.href =
+        `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
 
-  return;
-}
-
+      return;
+    }
   }
 
   private resetLoginForm(): void {
@@ -317,6 +369,25 @@ if (role === 'Admin') {
     this.isSubmittingSignup = false;
   }
 
+  private mapGenderToNumber(gender: string): number {
+    switch (gender) {
+      case 'Male':
+        return 0;
+
+      case 'Female':
+        return 1;
+
+      case 'Transgender':
+        return 2;
+
+      case 'Other':
+        return 3;
+
+      default:
+        return 3;
+    }
+  }
+
   private getLoginErrorMessage(error: unknown): string {
     if (
       typeof error === 'object' &&
@@ -328,7 +399,12 @@ if (role === 'Admin') {
           message?: string;
           Message?: string;
         };
+        name?: string;
       };
+
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
 
       return (
         apiError.error?.message ??
@@ -338,6 +414,45 @@ if (role === 'Admin') {
     }
 
     return 'Invalid email or password.';
+  }
+
+  private getSignupErrorMessage(error: unknown): string {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+          errors?: Record<string, string[]>;
+        };
+        name?: string;
+      };
+
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
+
+      if (apiError.error?.message) {
+        return apiError.error.message;
+      }
+
+      if (apiError.error?.Message) {
+        return apiError.error.Message;
+      }
+
+      if (apiError.error?.errors) {
+        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+        if (firstError) {
+          return firstError;
+        }
+      }
+    }
+
+    return 'Something went wrong while creating the patient account.';
   }
 
   private loadLandingContent(): void {

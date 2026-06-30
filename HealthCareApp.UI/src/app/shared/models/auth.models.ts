@@ -9,6 +9,7 @@ export interface AuthResponse {
   accessToken: string;
   message: string;
   expiresIn: number;
+  mustChangePassword: boolean;
 }
 
 export interface DecodedToken {
@@ -26,4 +27,20 @@ export interface ChangePasswordRequest {
 
 export interface ChangePasswordResponse {
   message: string;
+}
+
+export interface PatientRegisterRequest {
+  fullName: string;
+  dateOfBirth: string;
+  gender: number;
+  email: string;
+  phoneNumber: string;
+  insuranceId: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface PatientRegisterResponse {
+  message: string;
+  patientId: number;
 }

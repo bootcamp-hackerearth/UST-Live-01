@@ -32,6 +32,12 @@ interface DoctorDashboardSummary {
   healthRecordCount: number;
 }
 
+interface DoctorPasswordForm {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 interface DoctorToastEvent {
   message: string;
   type: ToastType;
@@ -71,6 +77,18 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   isSidebarOpen = false;
   isLogoutModalOpen = false;
 
+  mustChangeTemporaryPassword = false;
+  isTempPasswordConfirmOpen = false;
+  hasPasswordSubmitted = false;
+  passwordMessage = '';
+  isChangingTemporaryPassword = false;
+
+  passwordForm: DoctorPasswordForm = {
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  };
+
   toastMessage = '';
   toastType: ToastType = 'info';
 
@@ -86,7 +104,15 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.mustChangeTemporaryPassword = this.authService.getMustChangePassword();
+
     this.loadDashboardData();
+
+    if (this.mustChangeTemporaryPassword) {
+      this.showToast('Please change your temporary password to continue.', 'warning');
+      return;
+    }
+
     this.showToast('Welcome to your HealthAxis doctor portal.', 'success');
   }
 
@@ -112,16 +138,20 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     return this.recentHealthRecords[0];
   }
 
-  get totalOverviewCount(): number {
-    const total =
-      this.summary.upcomingCount +
-      this.summary.pendingCount +
-      this.summary.confirmedCount +
-      this.summary.completedCount +
-      this.summary.healthRecordCount;
+get totalOverviewCount(): number {
+  return (
+    this.summary.upcomingCount +
+    this.summary.pendingCount +
+    this.summary.confirmedCount +
+    this.summary.completedCount +
+    this.summary.healthRecordCount
+  );
+}
 
-    return total > 0 ? total : 1;
-  }
+get chartTotalCount(): number {
+  return this.totalOverviewCount > 0 ? this.totalOverviewCount : 1;
+}
+
 
   get upcomingPercentage(): number {
     return this.calculatePercentage(this.summary.upcomingCount);
@@ -160,6 +190,45 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     `;
   }
 
+  get isCurrentPasswordInvalid(): boolean {
+    return !this.passwordForm.currentPassword.trim();
+  }
+
+  get isNewPasswordInvalid(): boolean {
+    const password = this.passwordForm.newPassword;
+    const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+    return !passwordPattern.test(password);
+  }
+
+  get isConfirmPasswordInvalid(): boolean {
+    return !this.passwordForm.confirmPassword.trim();
+  }
+
+  get isPasswordMismatch(): boolean {
+    return (
+      this.passwordForm.confirmPassword.trim().length > 0 &&
+      this.passwordForm.newPassword !== this.passwordForm.confirmPassword
+    );
+  }
+
+  get isSamePasswordInvalid(): boolean {
+    return (
+      this.passwordForm.currentPassword.trim().length > 0 &&
+      this.passwordForm.currentPassword === this.passwordForm.newPassword
+    );
+  }
+
+  get isPasswordFormInvalid(): boolean {
+    return (
+      this.isCurrentPasswordInvalid ||
+      this.isNewPasswordInvalid ||
+      this.isConfirmPasswordInvalid ||
+      this.isPasswordMismatch ||
+      this.isSamePasswordInvalid
+    );
+  }
+
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
@@ -169,8 +238,66 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   setActiveSection(section: DoctorDashboardSection): void {
+    if (this.mustChangeTemporaryPassword) {
+      this.showToast('Change your temporary password first.', 'warning');
+      return;
+    }
+
     this.activeSection = section;
     this.closeSidebar();
+  }
+
+  submitTemporaryPasswordChange(): void {
+    this.passwordMessage = '';
+    this.hasPasswordSubmitted = true;
+
+    if (this.isPasswordFormInvalid) {
+      this.passwordMessage = 'Please correct the highlighted password fields.';
+      return;
+    }
+
+    this.isTempPasswordConfirmOpen = true;
+  }
+
+  closeTempPasswordConfirm(): void {
+    if (this.isChangingTemporaryPassword) {
+      return;
+    }
+
+    this.isTempPasswordConfirmOpen = false;
+  }
+
+  confirmTemporaryPasswordChange(): void {
+    this.passwordMessage = '';
+    this.isChangingTemporaryPassword = true;
+
+    this.authService.changePassword({
+      currentPassword: this.passwordForm.currentPassword,
+      newPassword: this.passwordForm.newPassword,
+      confirmNewPassword: this.passwordForm.confirmPassword
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isChangingTemporaryPassword = false;
+        this.isTempPasswordConfirmOpen = false;
+        this.mustChangeTemporaryPassword = false;
+        this.hasPasswordSubmitted = false;
+
+        this.authService.markPasswordChangeCompleted();
+        this.resetPasswordForm();
+        this.loadDashboardData();
+
+        this.showToast('Password changed successfully. Dashboard unlocked ✅', 'success');
+      },
+      error: (error: unknown) => {
+        console.log('Doctor temporary password change API error:', error);
+
+        this.isChangingTemporaryPassword = false;
+        this.isTempPasswordConfirmOpen = false;
+        this.passwordMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   handleDoctorDataChanged(): void {
@@ -297,14 +424,24 @@ export class DoctorDashboard implements OnInit, OnDestroy {
       },
       error: (error: unknown) => {
         console.log('Doctor dashboard API error:', error);
+
         this.isDashboardLoading = false;
         this.dashboardErrorMessage = this.getErrorMessage(error);
       }
     });
   }
 
-  private calculatePercentage(value: number): number {
-    return Math.round((value / this.totalOverviewCount) * 100);
+ private calculatePercentage(value: number): number {
+  return Math.round((value / this.chartTotalCount) * 100);
+}
+
+
+  private resetPasswordForm(): void {
+    this.passwordForm = {
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    };
   }
 
   private getErrorMessage(error: unknown): string {
@@ -317,6 +454,7 @@ export class DoctorDashboard implements OnInit, OnDestroy {
         error?: {
           message?: string;
           Message?: string;
+          errors?: Record<string, string[]>;
         };
         name?: string;
       };
@@ -325,13 +463,23 @@ export class DoctorDashboard implements OnInit, OnDestroy {
         return 'The server is taking too long to respond. Please try again.';
       }
 
-      return (
-        apiError.error?.message ??
-        apiError.error?.Message ??
-        'Unable to load doctor dashboard data.'
-      );
+      if (apiError.error?.message) {
+        return apiError.error.message;
+      }
+
+      if (apiError.error?.Message) {
+        return apiError.error.Message;
+      }
+
+      if (apiError.error?.errors) {
+        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+        if (firstError) {
+          return firstError;
+        }
+      }
     }
 
-    return 'Unable to load doctor dashboard data.';
+    return 'Something went wrong. Please try again.';
   }
 }

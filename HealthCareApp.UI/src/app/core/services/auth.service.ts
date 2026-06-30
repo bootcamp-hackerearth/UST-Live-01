@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
 import {
   AuthResponse,
@@ -8,6 +8,8 @@ import {
   ChangePasswordResponse,
   DecodedToken,
   LoginRequest,
+  PatientRegisterRequest,
+  PatientRegisterResponse,
   UserRole
 } from '../../shared/models/auth.models';
 
@@ -18,6 +20,8 @@ interface ApiAuthResponse {
   Message?: string;
   expiresIn?: number;
   ExpiresIn?: number;
+  mustChangePassword?: boolean;
+  MustChangePassword?: boolean;
 }
 
 interface JwtPayload {
@@ -43,6 +47,7 @@ export class AuthService {
   private readonly userIdKey = 'healthaxis_user_id';
   private readonly emailKey = 'healthaxis_email';
   private readonly expiryKey = 'healthaxis_token_expiry';
+  private readonly mustChangePasswordKey = 'healthaxis_must_change_password';
 
   constructor(private http: HttpClient) {
   }
@@ -50,10 +55,16 @@ export class AuthService {
   login(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<ApiAuthResponse>(`${this.apiUrl}/login`, request).pipe(
       map((response: ApiAuthResponse) => this.normalizeAuthResponse(response)),
-      map((response: AuthResponse) => {
+      tap((response: AuthResponse) => {
         this.saveLogin(response);
-        return response;
       })
+    );
+  }
+
+  registerPatient(request: PatientRegisterRequest): Observable<PatientRegisterResponse> {
+    return this.http.post<PatientRegisterResponse>(
+      `${this.apiUrl}/register-patient`,
+      request
     );
   }
 
@@ -70,6 +81,7 @@ export class AuthService {
     sessionStorage.removeItem(this.userIdKey);
     sessionStorage.removeItem(this.emailKey);
     sessionStorage.removeItem(this.expiryKey);
+    sessionStorage.removeItem(this.mustChangePasswordKey);
   }
 
   saveLogin(response: AuthResponse): void {
@@ -80,6 +92,10 @@ export class AuthService {
     sessionStorage.setItem(this.userIdKey, decodedToken.userId);
     sessionStorage.setItem(this.emailKey, decodedToken.email);
     sessionStorage.setItem(this.expiryKey, decodedToken.expiresAt.toString());
+    sessionStorage.setItem(
+      this.mustChangePasswordKey,
+      String(response.mustChangePassword)
+    );
   }
 
   getToken(): string {
@@ -102,6 +118,14 @@ export class AuthService {
 
   getEmail(): string {
     return sessionStorage.getItem(this.emailKey) ?? '';
+  }
+
+  getMustChangePassword(): boolean {
+    return sessionStorage.getItem(this.mustChangePasswordKey) === 'true';
+  }
+
+  markPasswordChangeCompleted(): void {
+    sessionStorage.setItem(this.mustChangePasswordKey, 'false');
   }
 
   isLoggedIn(): boolean {
@@ -131,7 +155,11 @@ export class AuthService {
     return {
       accessToken: response.accessToken ?? response.AccessToken ?? '',
       message: response.message ?? response.Message ?? '',
-      expiresIn: response.expiresIn ?? response.ExpiresIn ?? 0
+      expiresIn: response.expiresIn ?? response.ExpiresIn ?? 0,
+      mustChangePassword:
+        response.mustChangePassword ??
+        response.MustChangePassword ??
+        false
     };
   }
 
