@@ -12,7 +12,8 @@ namespace HealthAxis.API.Controllers
     {
         private readonly IHealthRecordService _healthRecordService;
 
-        public HealthRecordsController(IHealthRecordService healthRecordService)
+        public HealthRecordsController(
+            IHealthRecordService healthRecordService)
         {
             _healthRecordService = healthRecordService;
         }
@@ -23,7 +24,9 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var records =
-                await _healthRecordService.GetByPatientIdAsync(patientId, ct);
+                await _healthRecordService.GetByPatientIdAsync(
+                    patientId,
+                    ct);
 
             return Ok(records);
         }
@@ -35,7 +38,9 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var record =
-                await _healthRecordService.CreateAsync(request, ct);
+                await _healthRecordService.CreateAsync(
+                    request,
+                    ct);
 
             return Ok(record);
         }
@@ -46,11 +51,16 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var record =
-                await _healthRecordService.GetByIdAsync(id, ct);
+                await _healthRecordService.GetByIdAsync(
+                    id,
+                    ct);
 
             if (record == null)
             {
-                return NotFound(new { message = "Health record not found." });
+                return NotFound(new
+                {
+                    message = "Health record not found."
+                });
             }
 
             return Ok(record);

@@ -1,3 +1,111 @@
-<h1 style="padding: 40px; color: #1A3673;">
-  Doctor Search Page Coming Next
-</h1>
+<div class="doctor-search-page">
+  <header class="page-header">
+    <div>
+      <h1>Find Doctors</h1>
+      <p>Search doctors by name, ID, or specialisation and book your appointment.</p>
+    </div>
+
+    <a routerLink="/patient/dashboard" class="secondary-btn">
+      Back to Dashboard
+    </a>
+  </header>
+
+  <section class="search-card">
+    <div class="search-row">
+      <div class="search-box">
+        <span>⌕</span>
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChanged()"
+        />
+      </div>
+
+      <select
+        [(ngModel)]="selectedSpecialisation"
+        (ngModelChange)="onSpecialisationChanged()"
+      >
+        @for (specialisation of specialisations; track specialisation.value) {
+          <option [value]="specialisation.value">
+            {{ specialisation.label }}
+          </option>
+        }
+      </select>
+
+      <button class="secondary-btn" type="button" (click)="clearFilters()">
+        Clear
+      </button>
+    </div>
+  </section>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="page-card">
+      <p>Loading doctors...</p>
+    </div>
+  } @else {
+@if (filteredDoctors.length === 0) {
+        <div class="empty-state">
+        <strong>No doctors found</strong>
+        <span>Try changing your search text or specialisation filter.</span>
+      </div>
+    } @else {
+      <section class="doctor-grid">
+        @for (doctor of filteredDoctors; track doctor.doctorId) {
+          <article class="doctor-card">
+            <div class="doctor-card-header">
+              <div class="doctor-avatar">
+                {{ doctor.fullName.charAt(0).toUpperCase() }}
+              </div>
+
+              <div>
+                <h2>{{ doctor.fullName }}</h2>
+                <p>{{ getSpecialisationName(doctor.specialisation) }}</p>
+              </div>
+            </div>
+
+            <div class="doctor-meta">
+              <div>
+                <span>Experience</span>
+                <strong>{{ doctor.yearsOfExperience }} years</strong>
+              </div>
+
+              <div>
+                <span>Consultation Fee</span>
+                <strong>{{ formatFee(doctor.consultationFee) }}</strong>
+              </div>
+            </div>
+
+            <div class="doctor-footer">
+              <span
+                class="status-badge"
+                [class.active]="doctor.isActive"
+                [class.inactive]="!doctor.isActive"
+              >
+                {{ doctor.isActive ? 'Available' : 'Inactive' }}
+              </span>
+
+              @if (doctor.isActive) {
+                <a
+                  class="book-btn"
+                  [routerLink]="['/patient/book-appointment', doctor.doctorId]"
+                >
+                  Book Appointment
+                </a>
+              } @else {
+                <button class="book-btn disabled" disabled>
+                  Not Available
+                </button>
+              }
+            </div>
+          </article>
+        }
+      </section>
+    }
+  }
+</div>

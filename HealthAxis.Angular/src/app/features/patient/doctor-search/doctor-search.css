@@ -1,0 +1,263 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  color: #172033;
+  background: #f4f9fd;
+}
+
+.doctor-search-page {
+  padding: 34px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 32px;
+}
+
+.page-header p {
+  margin: 7px 0 0;
+  color: #667085;
+}
+
+.secondary-btn {
+  text-decoration: none;
+  border: 1px solid #dde7f0;
+  background: #ffffff;
+  color: #1a3673;
+  border-radius: 13px;
+  padding: 11px 16px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.search-card,
+.page-card,
+.empty-state {
+  background: #ffffff;
+  border: 1px solid #dde7f0;
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.search-card {
+  margin-bottom: 22px;
+}
+
+.search-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 280px;
+  height: 48px;
+  border: 1px solid #dde7f0;
+  border-radius: 14px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+
+.search-box span {
+  color: #286ce2;
+  font-weight: 900;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font: inherit;
+  color: #172033;
+}
+
+.search-row select {
+  min-width: 230px;
+  height: 48px;
+  border: 1px solid #dde7f0;
+  border-radius: 14px;
+  padding: 0 13px;
+  color: #172033;
+  font: inherit;
+  background: #ffffff;
+}
+
+.alert-error {
+  border-radius: 14px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  font-weight: 700;
+  font-size: 14px;
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #ffd6d6;
+}
+
+.doctor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.doctor-card {
+  background: #ffffff;
+  border: 1px solid #dde7f0;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.doctor-card-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.doctor-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #44b8f3, #286ce2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.doctor-card h2 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 20px;
+}
+
+.doctor-card-header p {
+  margin: 5px 0 0;
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.doctor-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.doctor-meta div {
+  background: #f8fcff;
+  border: 1px solid #dde7f0;
+  border-radius: 15px;
+  padding: 13px;
+}
+
+.doctor-meta span {
+  display: block;
+  color: #667085;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.doctor-meta strong {
+  color: #1a3673;
+  font-size: 14px;
+}
+
+.doctor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.status-badge {
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.status-badge.active {
+  background: #ecfdf3;
+  color: #087443;
+}
+
+.status-badge.inactive {
+  background: #fff1f1;
+  color: #b42318;
+}
+
+.book-btn {
+  text-decoration: none;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #286ce2, #44b8f3);
+  color: #ffffff;
+  font-weight: 850;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.book-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.empty-state {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #667085;
+}
+
+.empty-state strong {
+  color: #1a3673;
+  font-size: 18px;
+}
+
+@media (max-width: 1100px) {
+  .doctor-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .doctor-search-page {
+    padding: 22px;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .doctor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .doctor-meta {
+    grid-template-columns: 1fr;
+  }
+}

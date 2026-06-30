@@ -1,0 +1,67 @@
+<div class="doctor-info-page">
+  <header class="page-header">
+    <div>
+      <h1>My Information</h1>
+      <p>View your doctor profile details.</p>
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="page-card">
+      Loading doctor information...
+    </div>
+  } @else {
+    @if (doctor) {
+      <section class="info-card">
+        <div class="doctor-header">
+          <div class="doctor-avatar">
+            {{ doctor.fullName.charAt(0).toUpperCase() }}
+          </div>
+
+          <div>
+            <h2>{{ doctor.fullName }}</h2>
+            <p>{{ getSpecialisationName(doctor.specialisation) }}</p>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div>
+            <span>Doctor ID</span>
+            <strong>{{ doctor.doctorId }}</strong>
+          </div>
+
+          <div>
+            <span>Email</span>
+            <strong>{{ doctor.email }}</strong>
+          </div>
+
+          <div>
+            <span>Phone Number</span>
+            <strong>{{ doctor.phoneNumber }}</strong>
+          </div>
+
+          <div>
+            <span>Experience</span>
+            <strong>{{ doctor.yearsOfExperience }} years</strong>
+          </div>
+
+          <div>
+            <span>Consultation Fee</span>
+            <strong>{{ formatFee(doctor.consultationFee) }}</strong>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <strong>{{ doctor.isActive ? 'Active' : 'Inactive' }}</strong>
+          </div>
+        </div>
+      </section>
+    }
+  }
+</div>

@@ -1,3 +1,77 @@
-<h1 style="padding: 40px; color: #1A3673;">
-  Health History Page Coming Next
-</h1>
+<div class="health-history-page">
+  <header class="page-header">
+    <div>
+      <h1>Health History</h1>
+      <p>View your past visits, diagnoses, prescriptions, and consultation notes.</p>
+    </div>
+
+    <a routerLink="/patient/dashboard" class="secondary-btn">
+      Back to Dashboard
+    </a>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="page-card">
+      <p>Loading health history...</p>
+    </div>
+  } @else {
+    @if (healthRecords.length === 0) {
+      <div class="empty-state">
+        <strong>No health records found</strong>
+        <span>Your completed consultation records will appear here.</span>
+      </div>
+    } @else {
+      <section class="records-grid">
+        @for (record of healthRecords; track record.healthRecordId) {
+          <article class="record-card">
+            <div class="record-header">
+              <div class="record-icon">
+                ▤
+              </div>
+
+              <div>
+                <h2>{{ record.diagnosis }}</h2>
+                <p>Visit Date: {{ formatDate(record.visitDate) }}</p>
+              </div>
+            </div>
+
+            <div class="record-meta">
+              <div>
+                <span>Doctor</span>
+                <strong>{{ getDoctorName(record) }}</strong>
+              </div>
+
+              <div>
+                <span>Specialisation</span>
+                <strong>{{ getSpecialisationName(record.specialisation) }}</strong>
+              </div>
+
+              <div>
+                <span>Appointment ID</span>
+                <strong>{{ record.appointmentId }}</strong>
+              </div>
+            </div>
+
+            <div class="record-section">
+              <span>Prescription</span>
+              <p>{{ record.prescription }}</p>
+            </div>
+
+            @if (record.notes) {
+              <div class="record-section notes-section">
+                <span>Notes</span>
+                <p>{{ record.notes }}</p>
+              </div>
+            }
+          </article>
+        }
+      </section>
+    }
+  }
+</div>

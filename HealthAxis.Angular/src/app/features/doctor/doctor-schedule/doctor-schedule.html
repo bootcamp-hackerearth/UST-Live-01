@@ -1,0 +1,74 @@
+<div class="schedule-page">
+  <header class="page-header">
+    <div>
+      <h1>Schedule</h1>
+      <p>View and manage your assigned appointments.</p>
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <section class="filter-card">
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      (ngModelChange)="applyFilters()"
+    />
+
+    <select
+      [(ngModel)]="selectedStatus"
+      (ngModelChange)="applyFilters()"
+    >
+      <option value="">All Status</option>
+      <option value="scheduled">Scheduled</option>
+      <option value="confirmed">Confirmed</option>
+      <option value="cancelled">Cancelled</option>
+      <option value="completed">Completed</option>
+    </select>
+  </section>
+
+  @if (isLoading) {
+    <div class="empty-state">
+      Loading schedule...
+    </div>
+  } @else {
+    <section class="appointment-list">
+      @for (appointment of filteredAppointments; track appointment.appointmentId) {
+        <article class="appointment-card">
+          <div>
+            <h2>{{ getPatientDisplayName(appointment) }}</h2>
+            <p>Appointment ID: {{ appointment.appointmentId }}</p>
+          </div>
+
+          <div class="appointment-meta">
+            <span>{{ formatDate(appointment.scheduledDate) }}</span>
+            <span>{{ appointment.timeSlot }}</span>
+            <span class="status-badge" [class]="getStatusClass(appointment.status)">
+              {{ getStatusText(appointment.status) }}
+            </span>
+          </div>
+
+          <div class="appointment-actions">
+            <a
+              [routerLink]="['/doctor/patient-profile', appointment.patientId]"
+              class="secondary-btn"
+            >
+              View Patient
+            </a>
+
+            <a
+              [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
+              class="primary-btn"
+            >
+              Add Health Record
+            </a>
+          </div>
+        </article>
+      }
+    </section>
+  }
+</div>

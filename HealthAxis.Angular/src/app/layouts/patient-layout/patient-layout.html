@@ -1,0 +1,124 @@
+<div class="patient-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar-rail">
+    <div class="floating-sidebar">
+
+      <!-- Brand -->
+      <a routerLink="/patient/dashboard" class="portal-brand">
+        <div class="brand-mark">H</div>
+
+        <div class="brand-text">
+          <h2>HealthAxis</h2>
+          <p>Patient Portal</p>
+        </div>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="floating-nav">
+
+        <a
+          routerLink="/patient/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <a
+          routerLink="/patient/doctors"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">⚕</span>
+          <span class="nav-label">Find Doctors</span>
+        </a>
+
+        <a
+          routerLink="/patient/appointments"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">▤</span>
+          <span class="nav-label">My Appointments</span>
+        </a>
+
+        <a
+          routerLink="/patient/health-history"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">▧</span>
+          <span class="nav-label">Health History</span>
+        </a>
+
+      </nav>
+
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="patient-content">
+<header class="patient-topbar">
+
+  <div class="topbar-title">
+    <h1>Patient Dashboard</h1>
+    <p>Welcome back! Manage your appointments, doctors and health records from one place.</p>
+  </div>
+
+  <div class="user-menu-wrapper">
+
+    <button
+      class="user-menu-button"
+      type="button"
+      (click)="toggleUserMenu($event)"
+    >
+      <div class="user-avatar">
+        {{ displayName.charAt(0).toUpperCase() }}
+      </div>
+
+      <div class="user-text">
+        <strong>{{ displayName }}</strong>
+        <span>{{ userEmail }}</span>
+      </div>
+
+      <span class="chevron">⌄</span>
+    </button>
+
+    @if (isUserMenuOpen) {
+      <div class="user-dropdown" (click)="$event.stopPropagation()">
+
+        <a
+          routerLink="/patient/my-information"
+          (click)="closeUserMenu()">
+          My Information
+        </a>
+
+        <a
+          routerLink="/patient/change-password"
+          (click)="closeUserMenu()">
+          Change Password
+        </a>
+
+        <button
+          type="button"
+          (click)="logout()">
+          Logout
+        </button>
+
+      </div>
+    }
+
+  </div>
+
+</header>
+
+    <!-- Routed Pages -->
+    <section class="patient-view">
+      <router-outlet></router-outlet>
+    </section>
+
+  </main>
+
+</div>

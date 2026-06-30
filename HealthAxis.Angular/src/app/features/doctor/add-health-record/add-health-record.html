@@ -1,0 +1,111 @@
+<div class="health-record-page">
+  <header class="page-header">
+    <div>
+      <h1>Add Health Record</h1>
+      <p>Add diagnosis, prescription, and consultation notes.</p>
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="alert-success">
+      {{ successMessage }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="page-card">
+      Loading appointments...
+    </div>
+  } @else {
+    <form class="record-card" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>Appointment</label>
+
+        <select
+          [(ngModel)]="selectedAppointmentId"
+          name="appointmentId"
+          (ngModelChange)="onAppointmentChanged()"
+        >
+          <option value="">Select appointment</option>
+
+          @for (appointment of appointments; track appointment.appointmentId) {
+            <option [value]="appointment.appointmentId">
+              {{ getPatientDisplayName(appointment) }} -
+              {{ appointment.scheduledDate | date:'dd MMM yyyy' }} -
+              {{ appointment.timeSlot }}
+            </option>
+          }
+        </select>
+      </div>
+
+      @if (selectedAppointment) {
+        <div class="appointment-summary">
+          <div>
+            <span>Patient</span>
+            <strong>{{ getPatientDisplayName(selectedAppointment) }}</strong>
+          </div>
+
+          <div>
+            <span>Appointment ID</span>
+            <strong>{{ selectedAppointment.appointmentId }}</strong>
+          </div>
+
+          <div>
+            <span>Time Slot</span>
+            <strong>{{ selectedAppointment.timeSlot }}</strong>
+          </div>
+        </div>
+      }
+
+      <div class="form-group">
+        <label>Visit Date</label>
+        <input
+          type="date"
+          [(ngModel)]="form.visitDate"
+          name="visitDate"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Diagnosis</label>
+        <input
+          type="text"
+          [(ngModel)]="form.diagnosis"
+          name="diagnosis"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Prescription</label>
+        <textarea
+          rows="4"
+          [(ngModel)]="form.prescription"
+          name="prescription"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea
+          rows="3"
+          [(ngModel)]="form.notes"
+          name="notes"
+        ></textarea>
+      </div>
+
+      <button
+        class="primary-btn"
+        type="submit"
+        [disabled]="isSaving"
+      >
+        {{ isSaving ? 'Saving...' : 'Save Health Record' }}
+      </button>
+    </form>
+  }
+</div>

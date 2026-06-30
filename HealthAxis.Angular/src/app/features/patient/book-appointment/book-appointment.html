@@ -1,0 +1,121 @@
+<div class="book-page">
+  <header class="page-header">
+    <div>
+      <h1>Book Appointment</h1>
+      <p>Select a date and available time slot for your consultation.</p>
+    </div>
+
+    <a routerLink="/patient/doctors" class="secondary-btn">
+      Back to Doctors
+    </a>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="alert-success">
+      {{ successMessage }}
+    </div>
+  }
+
+  @if (isLoadingDoctor) {
+    <div class="page-card">
+      <p>Loading doctor details...</p>
+    </div>
+  } @else {
+    @if (doctor) {
+      <section class="booking-layout">
+        <article class="doctor-summary-card">
+          <div class="doctor-header">
+            <div class="doctor-avatar">
+              {{ doctor.fullName.charAt(0).toUpperCase() }}
+            </div>
+
+            <div>
+              <h2>{{ doctor.fullName }}</h2>
+              <p>{{ getSpecialisationName(doctor.specialisation) }}</p>
+            </div>
+          </div>
+
+          <div class="doctor-meta">
+            <div>
+              <span>Experience</span>
+              <strong>{{ doctor.yearsOfExperience }} years</strong>
+            </div>
+
+            <div>
+              <span>Consultation Fee</span>
+              <strong>{{ formatFee(doctor.consultationFee) }}</strong>
+            </div>
+
+            <div>
+              <span>Status</span>
+              <strong>
+                {{ doctor.isActive ? 'Available' : 'Inactive' }}
+              </strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="booking-card">
+          <h2>Choose Appointment Slot</h2>
+          <p>Select a date first. Available slots will appear below.</p>
+
+          <div class="form-group">
+            <label>Appointment Date</label>
+            <input
+              type="date"
+              [(ngModel)]="selectedDate"
+              [min]="minDate"
+              (ngModelChange)="onDateChanged()"
+            />
+          </div>
+
+          @if (isLoadingSlots) {
+            <div class="slot-loading">
+              Loading available slots...
+            </div>
+          }
+
+          @if (!isLoadingSlots && selectedDate && availableSlots.length === 0) {
+            <div class="empty-slots">
+              No slots available for this date.
+            </div>
+          }
+
+          @if (availableSlots.length > 0) {
+            <div class="slot-section">
+              <label>Available Time Slots</label>
+
+              <div class="slot-grid">
+                @for (slot of availableSlots; track slot) {
+                  <button
+                    type="button"
+                    class="slot-btn"
+                    [class.selected]="selectedSlot === slot"
+                    (click)="selectedSlot = slot"
+                  >
+                    {{ slot }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <button
+            type="button"
+            class="primary-btn book-submit"
+            [disabled]="isBooking || !selectedDate || !selectedSlot || !doctor.isActive"
+            (click)="bookAppointment()"
+          >
+            {{ isBooking ? 'Booking...' : 'Confirm Appointment' }}
+          </button>
+        </article>
+      </section>
+    }
+  }
+</div>

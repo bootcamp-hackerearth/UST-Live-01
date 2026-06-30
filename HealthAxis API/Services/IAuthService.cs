@@ -9,12 +9,26 @@ namespace HealthAxis.API.Services
             RegisterPatientDto request,
             CancellationToken ct = default);
 
-        Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn, string UserId, string Email, string Role, int ReferenceId)> LoginAsync(
-            LoginDto request,
-            CancellationToken ct = default);
+        Task<(
+            bool Success,
+            string Message,
+            string AccessToken,
+            string RefreshToken,
+            int ExpiresIn,
+            string UserId,
+            string Email,
+            string Role,
+            int ReferenceId)> LoginAsync(
+                LoginDto request,
+                CancellationToken ct = default);
 
         Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn)> RefreshTokenAsync(
             RefreshTokenDto request,
+            CancellationToken ct = default);
+
+        Task<(bool Success, string Message)> ChangePasswordAsync(
+            string userId,
+            ChangePasswordDto request,
             CancellationToken ct = default);
     }
 }

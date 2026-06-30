@@ -1,0 +1,136 @@
+:host {
+  display: block;
+  color: #172033;
+}
+
+.health-record-page {
+  max-width: 900px;
+}
+
+.page-header {
+  margin-bottom: 22px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 32px;
+}
+
+.page-header p {
+  margin: 7px 0 0;
+  color: #667085;
+}
+
+.page-card,
+.record-card {
+  background: #ffffff;
+  border: 1px solid #dde7f0;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.alert-error,
+.alert-success {
+  border-radius: 14px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+
+.alert-error {
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #ffd6d6;
+}
+
+.alert-success {
+  background: #ecfdf3;
+  color: #087443;
+  border: 1px solid #b7efd0;
+}
+
+.form-group {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  color: #1a3673;
+  font-weight: 850;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 1px solid #dde7f0;
+  border-radius: 13px;
+  padding: 12px 13px;
+  font: inherit;
+  outline: none;
+}
+
+.form-group input,
+.form-group select {
+  height: 48px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #44b8f3;
+  box-shadow: 0 0 0 4px rgba(68, 184, 243, 0.14);
+}
+
+.appointment-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.appointment-summary div {
+  background: #f8fcff;
+  border: 1px solid #dde7f0;
+  border-radius: 15px;
+  padding: 13px;
+}
+
+.appointment-summary span {
+  display: block;
+  color: #667085;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.appointment-summary strong {
+  color: #1a3673;
+}
+
+.primary-btn {
+  height: 50px;
+  border: none;
+  border-radius: 15px;
+  padding: 0 24px;
+  background: linear-gradient(135deg, #1a3673, #286ce2);
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.primary-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .appointment-summary {
+    grid-template-columns: 1fr;
+  }
+}

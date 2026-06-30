@@ -1,6 +1,5 @@
 ﻿using HealthAxis.API.Utilities;
 using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata;
 
 namespace HealthAxis.API.DTOs.HealthRecords
 {
@@ -30,4 +29,3 @@ namespace HealthAxis.API.DTOs.HealthRecords
         public string Notes { get; set; } = string.Empty;
     }
 }
-

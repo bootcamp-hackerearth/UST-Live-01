@@ -1,161 +1,100 @@
-<div class="patient-dashboard-page">
-  <aside class="patient-sidebar">
-    <a routerLink="/" class="sidebar-brand">
-      <div class="brand-logo">H</div>
+<div class="dashboard-content">
+
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+
+    <div class="summary-card">
+      <div class="summary-icon blue-icon">⚕</div>
 
       <div>
-        <h2>HealthAxis</h2>
-        <p>Patient Portal</p>
-      </div>
-    </a>
-
-    <div class="patient-user-card">
-      <div class="patient-avatar">
-        {{ displayName.charAt(0).toUpperCase() }}
-      </div>
-
-      <div>
-        <strong>{{ displayName }}</strong>
-        <span>{{ userEmail }}</span>
+        <span>Find Doctors</span>
+        <strong>Search</strong>
+        <p>Browse doctors by specialisation and availability.</p>
       </div>
     </div>
 
-    <nav class="patient-nav">
-  <a
-    routerLink="/patient/dashboard"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-  >
-    <span>⌂</span>
-    Dashboard
-  </a>
+    <div class="summary-card">
+      <div class="summary-icon green-icon">✓</div>
 
-  <a
-    routerLink="/patient/doctors"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-  >
-    <span>⚕</span>
-    Find Doctors
-  </a>
-
-  <a
-    routerLink="/patient/appointments"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-  >
-    <span>▦</span>
-    My Appointments
-  </a>
-
-  <a
-    routerLink="/patient/health-history"
-    routerLinkActive="active"
-    [routerLinkActiveOptions]="{ exact: true }"
-  >
-    <span>▤</span>
-    Health History
-  </a>
-</nav>
-  </aside>
-
-  <main class="patient-main">
-    <header class="patient-topbar">
       <div>
-        <h1>Dashboard</h1>
-        <p>Welcome back, {{ displayName }}. Manage your healthcare journey from one place.</p>
+        <span>Appointments</span>
+        <strong>Track</strong>
+        <p>View upcoming and past appointment details.</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon orange-icon">▤</div>
+
+      <div>
+        <span>Health History</span>
+        <strong>Records</strong>
+        <p>Access diagnosis, prescriptions and visit history.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-grid">
+
+    <section class="dashboard-panel">
+
+      <div class="panel-header">
+        <h2>Quick Actions</h2>
+        <p>Start common patient activities quickly.</p>
       </div>
 
-      <button class="logout-btn" type="button" (click)="logout()">
-        Logout
-      </button>
-    </header>
+      <div class="action-list">
 
-    <section class="dashboard-content">
-      <div class="summary-grid">
-        <div class="summary-card">
-          <div class="summary-icon blue-icon">⚕</div>
+        <a routerLink="/patient/doctors">
+          <span>⚕</span>
 
           <div>
-            <span>Find Doctors</span>
-            <strong>Search</strong>
-            <p>Browse doctors by specialisation and availability.</p>
+            <strong>Find a Doctor</strong>
+            <p>Search available doctors and book an appointment.</p>
           </div>
-        </div>
+        </a>
 
-        <div class="summary-card">
-          <div class="summary-icon green-icon">✓</div>
+        <a routerLink="/patient/appointments">
+          <span>▦</span>
 
           <div>
-            <span>Appointments</span>
-            <strong>Track</strong>
-            <p>View upcoming and past appointment details.</p>
+            <strong>My Appointments</strong>
+            <p>View appointment status and cancellation options.</p>
           </div>
-        </div>
+        </a>
 
-        <div class="summary-card">
-          <div class="summary-icon orange-icon">▤</div>
+        <a routerLink="/patient/health-history">
+          <span>▤</span>
 
           <div>
-            <span>Health History</span>
-            <strong>Records</strong>
-            <p>Access diagnosis, prescriptions, and visit history.</p>
+            <strong>Health History</strong>
+            <p>Review your past visits and medical records.</p>
           </div>
-        </div>
+        </a>
+
       </div>
 
-      <div class="dashboard-grid">
-        <section class="dashboard-panel">
-          <div class="panel-header">
-            <div>
-              <h2>Quick Actions</h2>
-              <p>Start common patient activities quickly.</p>
-            </div>
-          </div>
-
-          <div class="action-list">
-            <a routerLink="/patient/doctors">
-              <span>⚕</span>
-              <div>
-                <strong>Find a Doctor</strong>
-                <p>Search available doctors and book an appointment.</p>
-              </div>
-            </a>
-
-            <a routerLink="/patient/appointments">
-              <span>▦</span>
-              <div>
-                <strong>My Appointments</strong>
-                <p>View appointment status and cancellation options.</p>
-              </div>
-            </a>
-
-            <a routerLink="/patient/health-history">
-              <span>▤</span>
-              <div>
-                <strong>Health History</strong>
-                <p>Review your past visits and medical records.</p>
-              </div>
-            </a>
-          </div>
-        </section>
-
-        <section class="dashboard-panel">
-          <div class="panel-header">
-            <div>
-              <h2>Portal Overview</h2>
-              <p>Your healthcare activity summary.</p>
-            </div>
-          </div>
-
-          <div class="empty-state">
-            <strong>Dashboard data will appear here soon</strong>
-            <span>
-              Upcoming appointments, recent visits, and health updates will be connected from the API next.
-            </span>
-          </div>
-        </section>
-      </div>
     </section>
-  </main>
+
+    <section class="dashboard-panel">
+
+      <div class="panel-header">
+        <h2>Portal Overview</h2>
+        <p>Your healthcare activity summary.</p>
+      </div>
+
+      <div class="empty-state">
+        <strong>Dashboard data will appear here soon</strong>
+
+        <span>
+          Upcoming appointments, recent visits and health updates will be connected from the API next.
+        </span>
+      </div>
+
+    </section>
+
+  </div>
+
 </div>

@@ -1,3 +1,133 @@
-<h1 style="padding: 40px; color: #1A3673;">
-  My Appointments Page Coming Next
-</h1>
+<div class="appointments-page">
+  <header class="page-header">
+    <div>
+      <h1>My Appointments</h1>
+      <p>View your appointment history, current status, and cancellation options.</p>
+    </div>
+
+    <a routerLink="/patient/dashboard" class="secondary-btn">
+      Back to Dashboard
+    </a>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="alert-success">
+      {{ successMessage }}
+    </div>
+  }
+
+  @if (isLoading) {
+    <div class="page-card">
+      <p>Loading appointments...</p>
+    </div>
+  } @else {
+    @if (appointments.length === 0) {
+      <div class="empty-state">
+        <strong>No appointments found</strong>
+        <span>Your booked appointments will appear here.</span>
+
+        <a routerLink="/patient/doctors" class="primary-btn">
+          Find Doctors
+        </a>
+      </div>
+    } @else {
+      <section class="appointment-grid">
+        @for (appointment of appointments; track appointment.appointmentId) {
+          <article class="appointment-card">
+            <div class="appointment-card-header">
+              <div class="doctor-avatar">
+                {{ getDoctorDisplayName(appointment).charAt(0).toUpperCase() }}
+              </div>
+
+              <div>
+                <h2>{{ getDoctorDisplayName(appointment) }}</h2>
+                <p>Appointment ID: {{ appointment.appointmentId }}</p>
+              </div>
+            </div>
+
+            <div class="appointment-details">
+              <div>
+                <span>Date</span>
+                <strong>{{ formatDate(appointment.scheduledDate) }}</strong>
+              </div>
+
+              <div>
+                <span>Time Slot</span>
+                <strong>{{ appointment.timeSlot }}</strong>
+              </div>
+
+              <div>
+                <span>Status</span>
+                <strong>
+                  <span class="status-badge" [class]="getStatusClass(appointment.status)">
+                    {{ getStatusText(appointment.status) }}
+                  </span>
+                </strong>
+              </div>
+            </div>
+
+            @if (appointment.cancellationReason) {
+              <div class="cancel-reason">
+                <span>Cancellation Reason</span>
+                <p>{{ appointment.cancellationReason }}</p>
+              </div>
+            }
+
+            <div class="appointment-actions">
+              @if (canCancelAppointment(appointment.status)) {
+                <button
+                  type="button"
+                  class="danger-btn"
+                  (click)="showCancelBox(appointment.appointmentId)"
+                >
+                  Cancel Appointment
+                </button>
+              } @else {
+                <span class="muted-action">
+                  No action available
+                </span>
+              }
+            </div>
+
+            @if (selectedAppointmentId === appointment.appointmentId) {
+              <div class="cancel-box">
+                <label>Cancellation Reason</label>
+
+                <textarea
+                  rows="3"
+                  [(ngModel)]="cancellationReason"
+                ></textarea>
+
+                <div class="cancel-actions">
+                  <button
+                    type="button"
+                    class="primary-btn"
+                    [disabled]="isCancelling"
+                    (click)="submitCancellation(appointment.appointmentId)"
+                  >
+                    {{ isCancelling ? 'Cancelling...' : 'Submit Cancellation' }}
+                  </button>
+
+                  <button
+                    type="button"
+                    class="secondary-btn"
+                    [disabled]="isCancelling"
+                    (click)="hideCancelBox()"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            }
+          </article>
+        }
+      </section>
+    }
+  }
+</div>

@@ -79,9 +79,10 @@ namespace HealthAxis.API.Services
 
             if (!createUserResult.Succeeded)
             {
-                string errorMessage = string.Join(
-                    ", ",
-                    createUserResult.Errors.Select(error => error.Description));
+                string errorMessage =
+                    string.Join(
+                        ", ",
+                        createUserResult.Errors.Select(error => error.Description));
 
                 return (
                     false,
@@ -97,9 +98,10 @@ namespace HealthAxis.API.Services
 
             if (!roleClaimResult.Succeeded)
             {
-                string errorMessage = string.Join(
-                    ", ",
-                    roleClaimResult.Errors.Select(error => error.Description));
+                string errorMessage =
+                    string.Join(
+                        ", ",
+                        roleClaimResult.Errors.Select(error => error.Description));
 
                 return (
                     false,
@@ -115,9 +117,10 @@ namespace HealthAxis.API.Services
 
             if (!referenceClaimResult.Succeeded)
             {
-                string errorMessage = string.Join(
-                    ", ",
-                    referenceClaimResult.Errors.Select(error => error.Description));
+                string errorMessage =
+                    string.Join(
+                        ", ",
+                        referenceClaimResult.Errors.Select(error => error.Description));
 
                 return (
                     false,
@@ -133,9 +136,18 @@ namespace HealthAxis.API.Services
                 createdPatient.PatientId);
         }
 
-        public async Task<(bool Success, string Message, string AccessToken, string RefreshToken, int ExpiresIn, string UserId, string Email, string Role, int ReferenceId)> LoginAsync(
-     LoginDto request,
-     CancellationToken ct = default)
+        public async Task<(
+            bool Success,
+            string Message,
+            string AccessToken,
+            string RefreshToken,
+            int ExpiresIn,
+            string UserId,
+            string Email,
+            string Role,
+            int ReferenceId)> LoginAsync(
+                LoginDto request,
+                CancellationToken ct = default)
         {
             IdentityUser? user =
                 await _userManager.FindByEmailAsync(request.Email);
@@ -300,6 +312,51 @@ namespace HealthAxis.API.Services
                 GetAccessTokenExpirySeconds());
         }
 
+        public async Task<(bool Success, string Message)> ChangePasswordAsync(
+            string userId,
+            ChangePasswordDto request,
+            CancellationToken ct = default)
+        {
+            IdentityUser? user =
+                await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return (
+                    false,
+                    "User not found.");
+            }
+
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                return (
+                    false,
+                    "New password and confirm password do not match.");
+            }
+
+            IdentityResult result =
+                await _userManager.ChangePasswordAsync(
+                    user,
+                    request.CurrentPassword,
+                    request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                string errorMessage =
+                    string.Join(
+                        " ",
+                        result.Errors.Select(error => error.Description));
+
+                return (
+                    false,
+                    errorMessage);
+            }
+
+            return (
+                true,
+                "Password changed successfully.");
+        }
+
         private async Task<string> GenerateJwtTokenAsync(
             IdentityUser user)
         {
@@ -390,5 +447,3 @@ namespace HealthAxis.API.Services
         }
     }
 }
-
-

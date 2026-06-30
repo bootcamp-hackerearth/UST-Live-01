@@ -1,0 +1,100 @@
+<div class="doctor-shell">
+  <aside class="sidebar-rail">
+    <div class="floating-sidebar">
+      <a routerLink="/doctor/dashboard" class="portal-brand">
+        <div class="brand-mark">H</div>
+
+        <div class="brand-text">
+          <h2>HealthAxis</h2>
+          <p>Doctor Portal</p>
+        </div>
+      </a>
+
+      <nav class="floating-nav">
+        <a
+          routerLink="/doctor/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">▦</span>
+          <span class="nav-label">Dashboard</span>
+        </a>
+
+        <a
+          routerLink="/doctor/schedule"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">▤</span>
+          <span class="nav-label">Schedule</span>
+        </a>
+
+        <a
+          routerLink="/doctor/patient-profile"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">◎</span>
+          <span class="nav-label">Patient Profile</span>
+        </a>
+
+        <a
+          routerLink="/doctor/add-health-record"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          <span class="nav-icon">＋</span>
+          <span class="nav-label">Add Health Record</span>
+        </a>
+      </nav>
+    </div>
+  </aside>
+
+  <main class="doctor-content">
+    <header class="doctor-topbar">
+      <div class="topbar-title">
+        <h1>Doctor Portal</h1>
+        <p>Manage consultations, schedules, and patient records.</p>
+      </div>
+
+      <div class="user-menu-wrapper">
+        <button
+          class="user-menu-button"
+          type="button"
+          (click)="toggleUserMenu($event)"
+        >
+          <div class="user-avatar">
+            {{ displayName.charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="user-text">
+            <strong>{{ displayName }}</strong>
+            <span>{{ userEmail }}</span>
+          </div>
+
+          <span class="chevron">⌄</span>
+        </button>
+
+        @if (isUserMenuOpen) {
+          <div class="user-dropdown" (click)="$event.stopPropagation()">
+            <a routerLink="/doctor/my-information" (click)="closeUserMenu()">
+              My Information
+            </a>
+
+            <a routerLink="/doctor/change-password" (click)="closeUserMenu()">
+              Change Password
+            </a>
+
+            <button type="button" (click)="logout()">
+              Logout
+            </button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <section class="doctor-view">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>

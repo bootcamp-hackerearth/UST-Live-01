@@ -1,14 +1,22 @@
-﻿namespace HealthAxis.API.DTOs.HealthRecords
+﻿using HealthAxis.API.Enums;
+
+namespace HealthAxis.API.DTOs.HealthRecords
 {
     public class HealthRecordReadDto
     {
-        public int RecordId { get; set; }
-
-        public int AppointmentId { get; set; }
+        public int HealthRecordId { get; set; }
 
         public int PatientId { get; set; }
 
+        public string PatientName { get; set; } = string.Empty;
+
         public int DoctorId { get; set; }
+
+        public string DoctorName { get; set; } = string.Empty;
+
+        public Specialisation Specialisation { get; set; }
+
+        public int AppointmentId { get; set; }
 
         public DateTime VisitDate { get; set; }
 

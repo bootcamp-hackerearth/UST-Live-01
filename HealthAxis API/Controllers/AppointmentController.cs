@@ -12,18 +12,48 @@ namespace HealthAxis.API.Controllers
     {
         private readonly IAppointmentService _appointmentService;
 
-        public AppointmentsController(IAppointmentService appointmentService)
+        public AppointmentsController(
+            IAppointmentService appointmentService)
         {
             _appointmentService = appointmentService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(CancellationToken ct)
+        public async Task<IActionResult> GetAll(
+            CancellationToken ct)
         {
-            var appointments =
-                await _appointmentService.GetAllAsync(ct);
+            if (User.IsInRole("Admin"))
+            {
+                var appointments =
+                    await _appointmentService.GetAllWithDetailsAsync(ct);
 
-            return Ok(appointments);
+                return Ok(appointments);
+            }
+
+            int referenceId =
+                GetReferenceIdFromToken();
+
+            if (User.IsInRole("Patient"))
+            {
+                var appointments =
+                    await _appointmentService.GetAppointmentsByPatientIdAsync(
+                        referenceId,
+                        ct);
+
+                return Ok(appointments);
+            }
+
+            if (User.IsInRole("Doctor"))
+            {
+                var appointments =
+                    await _appointmentService.GetAppointmentsByDoctorIdAsync(
+                        referenceId,
+                        ct);
+
+                return Ok(appointments);
+            }
+
+            return Forbid();
         }
 
         [HttpPost]
@@ -33,7 +63,9 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var appointment =
-                await _appointmentService.CreateAsync(request, ct);
+                await _appointmentService.CreateAsync(
+                    request,
+                    ct);
 
             return Ok(appointment);
         }
@@ -45,11 +77,18 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var appointment =
-                await _appointmentService.UpdateStatusAsync(id, request, ct);
+                await _appointmentService.UpdateStatusAsync(
+                    id,
+                    request,
+                    ct);
 
             if (appointment == null)
             {
-                return NotFound(new { message = "Appointment not found." });
+                return NotFound(
+                    new
+                    {
+                        message = "Appointment not found."
+                    });
             }
 
             return Ok(appointment);
@@ -62,14 +101,35 @@ namespace HealthAxis.API.Controllers
             CancellationToken ct)
         {
             var appointment =
-                await _appointmentService.DeleteAsync(id, ct);
+                await _appointmentService.DeleteAsync(
+                    id,
+                    ct);
 
             if (appointment == null)
             {
-                return NotFound(new { message = "Appointment not found." });
+                return NotFound(
+                    new
+                    {
+                        message = "Appointment not found."
+                    });
             }
 
             return Ok(appointment);
+        }
+
+        private int GetReferenceIdFromToken()
+        {
+            string? referenceIdClaim =
+                User.FindFirst("ReferenceId")?.Value;
+
+            if (string.IsNullOrWhiteSpace(referenceIdClaim) ||
+                !int.TryParse(referenceIdClaim, out int referenceId))
+            {
+                throw new UnauthorizedAccessException(
+                    "Reference Id was not found in token.");
+            }
+
+            return referenceId;
         }
     }
 }
