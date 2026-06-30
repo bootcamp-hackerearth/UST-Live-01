@@ -13,54 +13,102 @@
     </div>
 
     <div class="hr-hero-badge">
-      <strong>{{ records.length }}</strong>
+      <strong>{{ totalRecords }}</strong>
       <span>Records Available</span>
     </div>
   </div>
 
-  @if (records.length > 0) {
-    <section class="hr-filter-card">
+  <section class="hr-filter-card">
 
-      <div class="hr-search-field">
-        <label>
-          Search Health Records
+    <div class="hr-search-field">
+      <label>
+        Search Health Records
 
-          <input
-            type="text"
-            name="healthRecordSearch"
-            placeholder="Search by doctor, diagnosis, prescription, or appointment ID"
-            [(ngModel)]="searchTerm">
-        </label>
+        <input
+          type="text"
+          name="healthRecordSearch"
+          placeholder="Search by doctor, diagnosis, prescription, or appointment ID"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()">
+      </label>
+    </div>
+
+    <div class="hr-filter-grid">
+
+      <label>
+        Visit Date
+
+        <input
+          type="date"
+          name="visitDateFilter"
+          [(ngModel)]="selectedVisitDate"
+          (ngModelChange)="applyFilters()">
+      </label>
+
+      <label>
+        Page Size
+
+        <select
+          name="recordPageSize"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="changePageSize()">
+
+          @for (size of pageSizeOptions; track size) {
+            <option [value]="size">
+              {{ size }}
+            </option>
+          }
+
+        </select>
+      </label>
+
+    </div>
+
+    @if (hasActiveFilters) {
+      <div class="hr-filter-actions">
+        <button
+          type="button"
+          class="hr-clear-filters-btn"
+          (click)="clearFilters()">
+          Clear Filters
+        </button>
       </div>
+    }
 
-      <div class="hr-filter-grid">
+  </section>
 
-        <label>
-          Visit Date
+  @if (isLoading) {
+    <div class="hr-empty-card">
+      <div class="hr-empty-icon">↻</div>
 
-          <input
-            type="date"
-            name="visitDateFilter"
-            [(ngModel)]="selectedVisitDate">
-        </label>
+      <h3>Loading health records...</h3>
 
-      </div>
-
-      @if (hasActiveFilters) {
-        <div class="hr-filter-actions">
-          <button
-            type="button"
-            class="hr-clear-filters-btn"
-            (click)="clearFilters()">
-            Clear Filters
-          </button>
-        </div>
-      }
-
-    </section>
+      <p>
+        Please wait while HealthAxis loads your medical history.
+      </p>
+    </div>
   }
 
-  @if (records.length === 0) {
+  @if (!isLoading && errorMessage) {
+    <div class="hr-empty-card">
+      <div class="hr-empty-icon">!</div>
+
+      <h3>Unable to load health records</h3>
+
+      <p>
+        {{ errorMessage }}
+      </p>
+
+      <button
+        type="button"
+        class="hr-clear-filters-btn"
+        (click)="loadRecords()">
+        Retry
+      </button>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && records.length === 0) {
     <div class="hr-empty-card">
       <div class="hr-empty-icon">▣</div>
 
@@ -72,22 +120,10 @@
     </div>
   }
 
-  @if (records.length > 0 && filteredRecords.length === 0) {
-    <div class="hr-empty-card">
-      <div class="hr-empty-icon">⌕</div>
-
-      <h3>No matching health records</h3>
-
-      <p>
-        Try changing your search text or visit date filter.
-      </p>
-    </div>
-  }
-
-  @if (filteredRecords.length > 0) {
+  @if (!isLoading && !errorMessage && records.length > 0) {
     <div class="hr-record-grid">
 
-      @for (rec of filteredRecords; track rec.healthRecordId) {
+      @for (rec of records; track rec.healthRecordId) {
 
         <article class="hr-record-card" (click)="openDetails(rec)">
 
@@ -142,6 +178,33 @@
       }
 
     </div>
+
+    <section class="hr-pagination-card">
+
+      <div>
+        <strong>Page {{ pageNumber }} of {{ totalPages || 1 }}</strong>
+        <span>Total Records: {{ totalRecords }}</span>
+      </div>
+
+      <div class="hr-pagination-actions">
+        <button
+          type="button"
+          class="hr-page-btn"
+          [disabled]="!canGoPrevious"
+          (click)="goToPreviousPage()">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          class="hr-page-btn"
+          [disabled]="!canGoNext"
+          (click)="goToNextPage()">
+          Next
+        </button>
+      </div>
+
+    </section>
   }
 
   @if (isModalOpen && selectedRecord) {

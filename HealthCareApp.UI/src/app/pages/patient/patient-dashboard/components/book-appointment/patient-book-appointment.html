@@ -46,6 +46,12 @@
         </p>
       </div>
 
+      @if (isLoadingDoctors) {
+        <div class="ba-empty-state">
+          Loading active doctors...
+        </div>
+      }
+
       <div class="ba-specialisation-combo">
 
         <label>
@@ -56,6 +62,7 @@
             name="specialisationSearchTerm"
             placeholder="Search e.g. Cardiology, Dermatology, Pediatrics"
             autocomplete="off"
+            [disabled]="isLoadingDoctors"
             [(ngModel)]="specialisationSearchTerm"
             (focus)="openSpecialisationDropdown()"
             (ngModelChange)="openSpecialisationDropdown()"
@@ -143,7 +150,7 @@
                 (click)="selectDoctor(doctor.doctorId)">
 
                 <div class="ba-doctor-avatar">
-                  {{ doctor.doctorName.split(' ')[1]?.[0] || 'D' }}
+                  {{ doctor.doctorName.split(' ')[1]?.[0] || doctor.doctorName[0] || 'D' }}
                 </div>
 
                 <div class="ba-doctor-info">
@@ -198,23 +205,37 @@
           <h4>Select Time Slot</h4>
 
           <p>
-            Red slots are already booked and cannot be selected.
+            Select one available time slot. If the slot is already booked, backend will prevent duplicate booking.
           </p>
         </div>
 
-        <div class="ba-slot-grid">
-          @for (slot of timeSlots; track slot) {
-            <button
-              type="button"
-              [class]="getSlotClass(slot)"
-              [disabled]="isTimeSlotDisabled(slot)"
-              (click)="selectTimeSlot(slot)">
+        @if (isLoadingSlots) {
+          <div class="ba-empty-state">
+            Loading available slots...
+          </div>
+        }
 
-              <strong>{{ slot }}</strong>
-              <span>{{ getSlotStatus(slot) }}</span>
-            </button>
-          }
-        </div>
+        @if (!isLoadingSlots && timeSlots.length === 0) {
+          <div class="ba-empty-state">
+            No slots available for this doctor.
+          </div>
+        }
+
+        @if (!isLoadingSlots && timeSlots.length > 0) {
+          <div class="ba-slot-grid">
+            @for (slot of timeSlots; track slot) {
+              <button
+                type="button"
+                [class]="getSlotClass(slot)"
+                [disabled]="isTimeSlotDisabled(slot)"
+                (click)="selectTimeSlot(slot)">
+
+                <strong>{{ slot }}</strong>
+                <span>{{ getSlotStatus(slot) }}</span>
+              </button>
+            }
+          </div>
+        }
       </section>
     }
 
@@ -227,7 +248,7 @@
     <div class="ba-submit-row" id="submit-section">
       <div class="ba-submit-note">
         <strong>Note:</strong>
-        Your appointment will be created as Pending until confirmed by the clinic.
+        Your appointment will be created as Pending until confirmed by the doctor.
       </div>
 
       <button

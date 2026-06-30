@@ -4,6 +4,8 @@ import { Observable, map } from 'rxjs';
 
 import {
   AuthResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
   DecodedToken,
   LoginRequest,
   UserRole
@@ -25,7 +27,6 @@ interface JwtPayload {
   role?: string | string[];
   roles?: string | string[];
   nameid?: string;
-  unique_name?: string;
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'?: string;
   'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string;
   'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string | string[];
@@ -56,30 +57,37 @@ export class AuthService {
     );
   }
 
+  changePassword(request: ChangePasswordRequest): Observable<ChangePasswordResponse> {
+    return this.http.post<ChangePasswordResponse>(
+      `${this.apiUrl}/change-password`,
+      request
+    );
+  }
+
   logout(): void {
-    localStorage.removeItem(this.tokenKey);
-    localStorage.removeItem(this.roleKey);
-    localStorage.removeItem(this.userIdKey);
-    localStorage.removeItem(this.emailKey);
-    localStorage.removeItem(this.expiryKey);
+    sessionStorage.removeItem(this.tokenKey);
+    sessionStorage.removeItem(this.roleKey);
+    sessionStorage.removeItem(this.userIdKey);
+    sessionStorage.removeItem(this.emailKey);
+    sessionStorage.removeItem(this.expiryKey);
   }
 
   saveLogin(response: AuthResponse): void {
     const decodedToken = this.decodeToken(response.accessToken);
 
-    localStorage.setItem(this.tokenKey, response.accessToken);
-    localStorage.setItem(this.roleKey, decodedToken.role);
-    localStorage.setItem(this.userIdKey, decodedToken.userId);
-    localStorage.setItem(this.emailKey, decodedToken.email);
-    localStorage.setItem(this.expiryKey, decodedToken.expiresAt.toString());
+    sessionStorage.setItem(this.tokenKey, response.accessToken);
+    sessionStorage.setItem(this.roleKey, decodedToken.role);
+    sessionStorage.setItem(this.userIdKey, decodedToken.userId);
+    sessionStorage.setItem(this.emailKey, decodedToken.email);
+    sessionStorage.setItem(this.expiryKey, decodedToken.expiresAt.toString());
   }
 
   getToken(): string {
-    return localStorage.getItem(this.tokenKey) ?? '';
+    return sessionStorage.getItem(this.tokenKey) ?? '';
   }
 
   getRole(): UserRole | '' {
-    const role = localStorage.getItem(this.roleKey);
+    const role = sessionStorage.getItem(this.roleKey);
 
     if (role === 'Admin' || role === 'Patient' || role === 'Doctor') {
       return role;
@@ -89,16 +97,16 @@ export class AuthService {
   }
 
   getUserId(): string {
-    return localStorage.getItem(this.userIdKey) ?? '';
+    return sessionStorage.getItem(this.userIdKey) ?? '';
   }
 
   getEmail(): string {
-    return localStorage.getItem(this.emailKey) ?? '';
+    return sessionStorage.getItem(this.emailKey) ?? '';
   }
 
   isLoggedIn(): boolean {
     const token = this.getToken();
-    const expiry = Number(localStorage.getItem(this.expiryKey) ?? 0);
+    const expiry = Number(sessionStorage.getItem(this.expiryKey) ?? 0);
 
     if (!token || !expiry) {
       return false;
@@ -120,14 +128,10 @@ export class AuthService {
   }
 
   private normalizeAuthResponse(response: ApiAuthResponse): AuthResponse {
-    const accessToken = response.accessToken ?? response.AccessToken ?? '';
-    const message = response.message ?? response.Message ?? '';
-    const expiresIn = response.expiresIn ?? response.ExpiresIn ?? 0;
-
     return {
-      accessToken,
-      message,
-      expiresIn
+      accessToken: response.accessToken ?? response.AccessToken ?? '',
+      message: response.message ?? response.Message ?? '',
+      expiresIn: response.expiresIn ?? response.ExpiresIn ?? 0
     };
   }
 

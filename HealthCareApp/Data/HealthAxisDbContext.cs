@@ -120,6 +120,7 @@ namespace HealthCareApp.Data
                     YearsOfExperience = 10,
                     ConsultationFee = 5000,
                     IsActive = true,
+                    MustChangePassword = false,
                     IdentityUserId = null,
                     CreatedDate = UtcDate(2026, 6, 15)
                 },
@@ -132,6 +133,7 @@ namespace HealthCareApp.Data
                     YearsOfExperience = 15,
                     ConsultationFee = 1000,
                     IsActive = true,
+                    MustChangePassword = false,
                     IdentityUserId = null,
                     CreatedDate = UtcDate(2026, 6, 15)
                 },
@@ -144,6 +146,7 @@ namespace HealthCareApp.Data
                     YearsOfExperience = 8,
                     ConsultationFee = 700,
                     IsActive = true,
+                    MustChangePassword = false,
                     IdentityUserId = null,
                     CreatedDate = UtcDate(2026, 6, 15)
                 }

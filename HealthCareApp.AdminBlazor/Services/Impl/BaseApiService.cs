@@ -159,8 +159,8 @@ namespace HealthCareApp.AdminBlazor.Services.Impl
                 TokenStorageKey);
 
             _navigationManager.NavigateTo(
-                "/login?sessionExpired=true",
-                replace: true);
+                "http://localhost:4200",
+                forceLoad: true);
         }
     }
 }

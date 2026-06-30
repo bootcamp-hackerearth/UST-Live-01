@@ -29,12 +29,12 @@ namespace HealthCareApp.Models
         [Range(0, 100000, ErrorMessage = "Fee must be between 0 and 100000")]
         public int ConsultationFee { get; set; }
 
-
         public string? IdentityUserId { get; set; }
-
 
         [Required]
         public bool IsActive { get; set; } = true;
+
+        public bool MustChangePassword { get; set; } = true;
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 

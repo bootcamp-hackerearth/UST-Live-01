@@ -1,5 +1,12 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
+import { finalize, timeout } from 'rxjs';
 
 import {
   ChangePasswordDto,
@@ -7,7 +14,8 @@ import {
   UpdatePatientDto
 } from '../../../../../shared/models/patient.models';
 
-import { PatientFakeDataService } from '../../../../../core/services/patient-fake-data.service';
+import { PatientApiService } from '../../../../../core/services/patient-api.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-patient-profile',
@@ -16,8 +24,10 @@ import { PatientFakeDataService } from '../../../../../core/services/patient-fak
   templateUrl: './patient-profile.html',
   styleUrl: './patient-profile.css'
 })
-export class PatientProfile {
+export class PatientProfile implements OnInit {
   patient?: PatientDto;
+
+  isLoading = false;
 
   isEditMode = false;
   isPasswordMode = false;
@@ -35,7 +45,12 @@ export class PatientProfile {
 
   todayDate = '';
 
-  genderOptions: string[] = ['Male', 'Female', 'Other'];
+  genderOptions: string[] = [
+    'Male',
+    'Female',
+    'Transgender',
+    'Other'
+  ];
 
   form: UpdatePatientDto = {
     patientName: '',
@@ -55,8 +70,14 @@ export class PatientProfile {
   @Output() profileUpdated = new EventEmitter<void>();
   @Output() passwordChanged = new EventEmitter<void>();
 
-  constructor(private service: PatientFakeDataService) {
+  constructor(
+    private patientApiService: PatientApiService,
+    private authService: AuthService
+  ) {
     this.todayDate = new Date().toISOString().split('T')[0];
+  }
+
+  ngOnInit(): void {
     this.loadProfile();
   }
 
@@ -88,13 +109,18 @@ export class PatientProfile {
 
   get isPhoneInvalid(): boolean {
     const phone = this.form.phoneNumber.replace(/\s/g, '');
-    const phonePattern = /^(?:\+91)?[6-9]\d{9}$/;
+    const phonePattern = /^[0-9]{10}$/;
 
     return !phonePattern.test(phone);
   }
 
   get isInsuranceInvalid(): boolean {
-    return !!this.form.insuranceId && this.form.insuranceId.length > 50;
+    const insuranceId = this.form.insuranceId ?? '';
+
+    return (
+      insuranceId.trim().length === 0 ||
+      insuranceId.trim().length > 30
+    );
   }
 
   get isFormInvalid(): boolean {
@@ -148,16 +174,32 @@ export class PatientProfile {
   }
 
   loadProfile(): void {
-    this.patient = this.service.getPatientProfile();
+    this.isLoading = true;
+    this.message = '';
 
-    this.form = {
-      patientName: this.patient.patientName,
-      dateOfBirth: this.patient.dateOfBirth,
-      gender: this.patient.gender,
-      email: this.patient.email,
-      phoneNumber: this.patient.phoneNumber,
-      insuranceId: this.patient.insuranceId ?? ''
-    };
+    this.patientApiService.getMyProfile().pipe(
+      timeout(15000),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: (patient: PatientDto) => {
+        this.patient = patient;
+
+        this.form = {
+          patientName: patient.patientName,
+          dateOfBirth: patient.dateOfBirth,
+          gender: patient.gender,
+          email: patient.email,
+          phoneNumber: patient.phoneNumber,
+          insuranceId: patient.insuranceId ?? ''
+        };
+      },
+      error: (error: unknown) => {
+        console.log('Patient profile API error:', error);
+        this.message = this.getErrorMessage(error);
+      }
+    });
   }
 
   enableEdit(): void {
@@ -205,23 +247,32 @@ export class PatientProfile {
   }
 
   confirmSaveProfile(): void {
-    const request: UpdatePatientDto = {
-      patientName: this.form.patientName.trim(),
+    this.message = '';
+
+    this.patientApiService.updateMyProfile({
+      fullName: this.form.patientName.trim(),
       dateOfBirth: this.form.dateOfBirth,
-      gender: this.form.gender,
+      gender: this.mapGenderToNumber(this.form.gender),
       email: this.form.email.trim(),
       phoneNumber: this.form.phoneNumber.trim(),
-      insuranceId: this.form.insuranceId?.trim() || undefined
-    };
+      insuranceId: (this.form.insuranceId ?? '').trim()
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isProfileSaveConfirmModalOpen = false;
+        this.isEditMode = false;
+        this.hasSubmitted = false;
 
-    this.service.updatePatientProfile(request);
-
-    this.isProfileSaveConfirmModalOpen = false;
-    this.loadProfile();
-    this.isEditMode = false;
-    this.hasSubmitted = false;
-
-    this.profileUpdated.emit();
+        this.loadProfile();
+        this.profileUpdated.emit();
+      },
+      error: (error: unknown) => {
+        console.log('Patient profile update API error:', error);
+        this.isProfileSaveConfirmModalOpen = false;
+        this.message = this.getErrorMessage(error);
+      }
+    });
   }
 
   enablePasswordChange(): void {
@@ -271,19 +322,29 @@ export class PatientProfile {
   }
 
   confirmPasswordChange(): void {
-    try {
-      this.service.changePatientPassword(this.passwordForm);
+    this.passwordMessage = '';
 
-      this.isPasswordConfirmModalOpen = false;
-      this.isPasswordMode = false;
-      this.hasPasswordSubmitted = false;
+    this.authService.changePassword({
+      currentPassword: this.passwordForm.currentPassword,
+      newPassword: this.passwordForm.newPassword,
+      confirmNewPassword: this.passwordForm.confirmPassword
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isPasswordConfirmModalOpen = false;
+        this.isPasswordMode = false;
+        this.hasPasswordSubmitted = false;
 
-      this.resetPasswordForm();
-      this.passwordChanged.emit();
-    } catch (error: unknown) {
-      this.isPasswordConfirmModalOpen = false;
-      this.passwordMessage = this.getErrorMessage(error);
-    }
+        this.resetPasswordForm();
+        this.passwordChanged.emit();
+      },
+      error: (error: unknown) => {
+        console.log('Patient password change API error:', error);
+        this.isPasswordConfirmModalOpen = false;
+        this.passwordMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   private hasProfileChanges(): boolean {
@@ -327,9 +388,59 @@ export class PatientProfile {
     };
   }
 
+  private mapGenderToNumber(gender: string): number {
+    switch (gender) {
+      case 'Male':
+        return 0;
+
+      case 'Female':
+        return 1;
+
+      case 'Transgender':
+        return 2;
+
+      case 'Other':
+        return 3;
+
+      default:
+        return 3;
+    }
+  }
+
   private getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message;
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+          errors?: Record<string, string[]>;
+        };
+        name?: string;
+      };
+
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
+
+      if (apiError.error?.message) {
+        return apiError.error.message;
+      }
+
+      if (apiError.error?.Message) {
+        return apiError.error.Message;
+      }
+
+      if (apiError.error?.errors) {
+        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+        if (firstError) {
+          return firstError;
+        }
+      }
     }
 
     return 'Something went wrong. Please try again.';

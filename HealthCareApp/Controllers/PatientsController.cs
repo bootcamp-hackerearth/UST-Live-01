@@ -25,7 +25,28 @@ namespace HealthCareApp.Controllers
             _patientService = patientService;
             _healthRecordService = healthRecordService;
         }
+        [HttpGet("{patientId:int}/health-records")]
+        [Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = "Doctor")]
+        public async Task<IActionResult> GetPatientHealthRecords([FromRoute] int patientId)
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = "Invalid user token."
+                });
+            }
+
+            var records = await _healthRecordService.GetPatientHealthRecordsForTreatingDoctorAsync(
+                patientId,
+                identityUserId);
+
+            return Ok(records);
+        }
         // Admin only: view all patients.
         [HttpGet]
         [Authorize(
@@ -139,15 +160,6 @@ namespace HealthCareApp.Controllers
 
         // Admin and Doctor: view patient health records by patient id.
         // Patient should use GET /api/Patients/me/health-records instead.
-        [HttpGet("{patientId:int}/health-records")]
-        [Authorize(
-            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Admin,Doctor")]
-        public async Task<IActionResult> GetPatientHealthRecords([FromRoute] int patientId)
-        {
-            var records = await _healthRecordService.GetHealthRecordsByPatientIdAsync(patientId);
-
-            return Ok(records);
-        }
+      
     }
 }

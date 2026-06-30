@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { finalize, timeout } from 'rxjs';
 
 import { HealthRecordDto } from '../../../../../shared/models/health-record.models';
-import { PatientFakeDataService } from '../../../../../core/services/patient-fake-data.service';
+import { HealthRecordApiService } from '../../../../../core/services/health-record-api.service';
 
 @Component({
   selector: 'app-health-records',
@@ -17,20 +18,21 @@ export class PatientHealthRecords {
   searchTerm = '';
   selectedVisitDate = '';
 
+  isLoading = false;
+  errorMessage = '';
+
+  pageNumber = 1;
+  pageSize = 5;
+  totalRecords = 0;
+  totalPages = 0;
+
+  pageSizeOptions: number[] = [5, 10, 15, 20];
+
   selectedRecord?: HealthRecordDto;
   isModalOpen = false;
 
-  constructor(private service: PatientFakeDataService) {
+  constructor(private healthRecordApiService: HealthRecordApiService) {
     this.loadRecords();
-  }
-
-  get filteredRecords(): HealthRecordDto[] {
-    const term = this.searchTerm.trim().toLowerCase();
-
-    return this.records.filter((record: HealthRecordDto) =>
-      this.matchesSearchTerm(record, term) &&
-      this.matchesVisitDateFilter(record)
-    );
   }
 
   get hasActiveFilters(): boolean {
@@ -40,17 +42,79 @@ export class PatientHealthRecords {
     );
   }
 
+  get canGoPrevious(): boolean {
+    return this.pageNumber > 1;
+  }
+
+  get canGoNext(): boolean {
+    return this.pageNumber < this.totalPages;
+  }
+
   loadRecords(): void {
-    this.records = this.service.getHealthRecords().sort(
-      (a: HealthRecordDto, b: HealthRecordDto) =>
-        new Date(b.visitDate).getTime() -
-        new Date(a.visitDate).getTime()
-    );
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.healthRecordApiService.getMyHealthRecords({
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      searchTerm: this.searchTerm,
+      visitDate: this.selectedVisitDate
+    }).pipe(
+      timeout(15000),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: (response) => {
+        this.records = response.items ?? [];
+        this.pageNumber = response.pageNumber;
+        this.pageSize = response.pageSize;
+        this.totalRecords = response.totalRecords;
+        this.totalPages = response.totalPages;
+      },
+      error: (error: unknown) => {
+        console.log('Patient health records API error:', error);
+        this.records = [];
+        this.totalRecords = 0;
+        this.totalPages = 0;
+        this.errorMessage = this.getErrorMessage(error);
+      }
+    });
+  }
+
+  applyFilters(): void {
+    this.pageNumber = 1;
+    this.loadRecords();
   }
 
   clearFilters(): void {
     this.searchTerm = '';
     this.selectedVisitDate = '';
+    this.pageNumber = 1;
+    this.loadRecords();
+  }
+
+  changePageSize(): void {
+    this.pageNumber = 1;
+    this.loadRecords();
+  }
+
+  goToPreviousPage(): void {
+    if (!this.canGoPrevious) {
+      return;
+    }
+
+    this.pageNumber--;
+    this.loadRecords();
+  }
+
+  goToNextPage(): void {
+    if (!this.canGoNext) {
+      return;
+    }
+
+    this.pageNumber++;
+    this.loadRecords();
   }
 
   openDetails(record: HealthRecordDto): void {
@@ -64,34 +128,55 @@ export class PatientHealthRecords {
   }
 
   formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('en-IN', {
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'Not Available';
+    }
+
+    return parsedDate.toLocaleDateString('en-IN', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
     });
   }
 
-  private matchesSearchTerm(
-    record: HealthRecordDto,
-    term: string
-  ): boolean {
-    if (!term) {
-      return true;
+  private getErrorMessage(error: unknown): string {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+          errors?: Record<string, string[]>;
+        };
+        name?: string;
+      };
+
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
+
+      if (apiError.error?.message) {
+        return apiError.error.message;
+      }
+
+      if (apiError.error?.Message) {
+        return apiError.error.Message;
+      }
+
+      if (apiError.error?.errors) {
+        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+        if (firstError) {
+          return firstError;
+        }
+      }
     }
 
-    return (
-      record.doctorName.toLowerCase().includes(term) ||
-      record.diagnosis.toLowerCase().includes(term) ||
-      record.prescription.toLowerCase().includes(term) ||
-      record.appointmentId.toString().includes(term)
-    );
-  }
-
-  private matchesVisitDateFilter(record: HealthRecordDto): boolean {
-    if (!this.selectedVisitDate) {
-      return true;
-    }
-
-    return record.visitDate === this.selectedVisitDate;
+    return 'Something went wrong while loading health records.';
   }
 }

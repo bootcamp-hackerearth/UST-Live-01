@@ -12,108 +12,121 @@
     </div>
 
     <div class="al-hero-badge">
-      <strong>{{ appointments.length }}</strong>
+      <strong>{{ totalRecords }}</strong>
       <span>Total Visits</span>
     </div>
   </div>
 
-  @if (appointments.length > 0) {
-    <section class="al-filter-card">
+  <section class="al-filter-card">
 
-      <div class="al-search-field">
-        <label>
-          Search Appointments
+    <div class="al-search-field">
+      <label>
+        Search Appointments
 
-          <input
-            type="text"
-            name="appointmentSearch"
-            placeholder="Search by doctor name or appointment ID"
-            [(ngModel)]="searchTerm">
-        </label>
+        <input
+          type="text"
+          name="appointmentSearch"
+          placeholder="Search by doctor name, time slot, reason, or appointment ID"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()">
+      </label>
+    </div>
+
+    <div class="al-filter-grid">
+
+      <label>
+        Status
+
+        <select
+          name="statusFilter"
+          [(ngModel)]="selectedStatus"
+          (ngModelChange)="applyFilters()">
+
+          <option value="">All Status</option>
+
+          @for (status of statusOptions; track status) {
+            <option [value]="status">
+              {{ status }}
+            </option>
+          }
+
+        </select>
+      </label>
+
+      <label>
+        Scheduled Date
+
+        <input
+          type="date"
+          name="dateFilter"
+          [(ngModel)]="selectedDate"
+          (ngModelChange)="applyFilters()">
+      </label>
+
+      <label>
+        Page Size
+
+        <select
+          name="pageSize"
+          [(ngModel)]="pageSize"
+          (ngModelChange)="changePageSize()">
+
+          @for (size of pageSizeOptions; track size) {
+            <option [value]="size">
+              {{ size }}
+            </option>
+          }
+
+        </select>
+      </label>
+
+    </div>
+
+    @if (hasActiveFilters) {
+      <div class="al-filter-actions">
+        <button
+          type="button"
+          class="al-clear-filters-btn"
+          (click)="clearFilters()">
+          Clear Filters
+        </button>
       </div>
+    }
 
-      <div class="al-filter-grid">
+  </section>
 
-        <label>
-          Status
+  @if (isLoading) {
+    <div class="al-empty-card">
+      <div class="al-empty-icon">↻</div>
 
-          <select
-            name="statusFilter"
-            [(ngModel)]="selectedStatus">
+      <h3>Loading appointments...</h3>
 
-            <option value="">All Status</option>
-
-            @for (status of statusOptions; track status) {
-              <option [value]="status">
-                {{ status }}
-              </option>
-            }
-
-          </select>
-        </label>
-
-        <label>
-          Specialisation
-
-          <select
-            name="specialisationFilter"
-            [(ngModel)]="selectedSpecialisation">
-
-            <option value="">All Specialisations</option>
-
-            @for (specialisation of specialisationOptions; track specialisation) {
-              <option [value]="specialisation">
-                {{ specialisation }}
-              </option>
-            }
-
-          </select>
-        </label>
-
-        <label>
-          Time Slot
-
-          <select
-            name="timeSlotFilter"
-            [(ngModel)]="selectedTimeSlot">
-
-            <option value="">All Time Slots</option>
-
-            @for (slot of timeSlotOptions; track slot) {
-              <option [value]="slot">
-                {{ slot }}
-              </option>
-            }
-
-          </select>
-        </label>
-
-        <label>
-          Scheduled Date
-
-          <input
-            type="date"
-            name="dateFilter"
-            [(ngModel)]="selectedDate">
-        </label>
-
-      </div>
-
-      @if (hasActiveFilters) {
-        <div class="al-filter-actions">
-          <button
-            type="button"
-            class="al-clear-filters-btn"
-            (click)="clearFilters()">
-            Clear Filters
-          </button>
-        </div>
-      }
-
-    </section>
+      <p>
+        Please wait while HealthAxis loads your latest appointment timeline.
+      </p>
+    </div>
   }
 
-  @if (appointments.length === 0) {
+  @if (!isLoading && errorMessage) {
+    <div class="al-empty-card">
+      <div class="al-empty-icon">!</div>
+
+      <h3>Unable to load appointments</h3>
+
+      <p>
+        {{ errorMessage }}
+      </p>
+
+      <button
+        type="button"
+        class="al-clear-filters-btn"
+        (click)="loadAppointments()">
+        Retry
+      </button>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && appointments.length === 0) {
     <div class="al-empty-card">
       <div class="al-empty-icon">◷</div>
 
@@ -125,22 +138,10 @@
     </div>
   }
 
-  @if (appointments.length > 0 && filteredAppointments.length === 0) {
-    <div class="al-empty-card">
-      <div class="al-empty-icon">⌕</div>
-
-      <h3>No matching appointments</h3>
-
-      <p>
-        Try changing your search text or filters.
-      </p>
-    </div>
-  }
-
-  @if (filteredAppointments.length > 0) {
+  @if (!isLoading && !errorMessage && appointments.length > 0) {
     <div class="al-timeline">
 
-      @for (appt of filteredAppointments; track appt.appointmentId) {
+      @for (appt of appointments; track appt.appointmentId) {
 
         <article
           class="al-appt-card"
@@ -229,6 +230,33 @@
       }
 
     </div>
+
+    <section class="al-pagination-card">
+
+      <div>
+        <strong>Page {{ pageNumber }} of {{ totalPages || 1 }}</strong>
+        <span>Total Records: {{ totalRecords }}</span>
+      </div>
+
+      <div class="al-pagination-actions">
+        <button
+          type="button"
+          class="al-page-btn"
+          [disabled]="!canGoPrevious"
+          (click)="goToPreviousPage()">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          class="al-page-btn"
+          [disabled]="!canGoNext"
+          (click)="goToNextPage()">
+          Next
+        </button>
+      </div>
+
+    </section>
   }
 
   @if (isCancelModalOpen && selectedAppointment) {

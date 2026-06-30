@@ -1,8 +1,16 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output
+} from '@angular/core';
+
 import { FormsModule } from '@angular/forms';
+import { timeout } from 'rxjs';
 
 import { DoctorDto } from '../../../../../shared/models/doctor.models';
-import { DoctorFakeDataService } from '../../../../../core/services/doctor-fake-data.service';
+import { DoctorApiService } from '../../../../../core/services/doctor-api.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 type ToastType = 'success' | 'info' | 'warning';
 
@@ -24,8 +32,11 @@ interface DoctorPasswordForm {
   templateUrl: './doctor-profile.html',
   styleUrl: './doctor-profile.css'
 })
-export class DoctorProfile {
+export class DoctorProfile implements OnInit {
   doctor?: DoctorDto;
+
+  isLoading = false;
+  profileMessage = '';
 
   isPasswordMode = false;
   isPasswordConfirmModalOpen = false;
@@ -42,7 +53,13 @@ export class DoctorProfile {
 
   @Output() doctorToast = new EventEmitter<DoctorToastEvent>();
 
-  constructor(private service: DoctorFakeDataService) {
+  constructor(
+    private doctorApiService: DoctorApiService,
+    private authService: AuthService
+  ) {
+  }
+
+  ngOnInit(): void {
     this.loadProfile();
   }
 
@@ -86,7 +103,22 @@ export class DoctorProfile {
   }
 
   loadProfile(): void {
-    this.doctor = this.service.getDoctorProfile();
+    this.isLoading = true;
+    this.profileMessage = '';
+
+    this.doctorApiService.getMyProfile().pipe(
+      timeout(15000)
+    ).subscribe({
+      next: (doctor: DoctorDto) => {
+        this.doctor = doctor;
+        this.isLoading = false;
+      },
+      error: (error: unknown) => {
+        console.log('Doctor profile API error:', error);
+        this.isLoading = false;
+        this.profileMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   enablePasswordChange(): void {
@@ -134,20 +166,28 @@ export class DoctorProfile {
   }
 
   confirmPasswordChange(): void {
-    try {
-      this.service.changeDoctorPassword(this.passwordForm);
+    this.authService.changePassword({
+      currentPassword: this.passwordForm.currentPassword,
+      newPassword: this.passwordForm.newPassword,
+      confirmNewPassword: this.passwordForm.confirmPassword
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isPasswordConfirmModalOpen = false;
+        this.isPasswordMode = false;
+        this.hasPasswordSubmitted = false;
 
-      this.isPasswordConfirmModalOpen = false;
-      this.isPasswordMode = false;
-      this.hasPasswordSubmitted = false;
+        this.resetPasswordForm();
 
-      this.resetPasswordForm();
-
-      this.emitToast('Password changed successfully ✅', 'success');
-    } catch (error: unknown) {
-      this.isPasswordConfirmModalOpen = false;
-      this.passwordMessage = this.getErrorMessage(error);
-    }
+        this.emitToast('Password changed successfully ✅', 'success');
+      },
+      error: (error: unknown) => {
+        console.log('Doctor password change API error:', error);
+        this.isPasswordConfirmModalOpen = false;
+        this.passwordMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   getStatusText(isActive: boolean): string {
@@ -183,8 +223,39 @@ export class DoctorProfile {
   }
 
   private getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message;
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+          errors?: Record<string, string[]>;
+        };
+        name?: string;
+      };
+
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
+
+      if (apiError.error?.message) {
+        return apiError.error.message;
+      }
+
+      if (apiError.error?.Message) {
+        return apiError.error.Message;
+      }
+
+      if (apiError.error?.errors) {
+        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+        if (firstError) {
+          return firstError;
+        }
+      }
     }
 
     return 'Something went wrong. Please try again.';

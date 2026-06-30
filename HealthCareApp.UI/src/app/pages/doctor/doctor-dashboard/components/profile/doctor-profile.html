@@ -11,7 +11,7 @@
       </p>
     </div>
 
-    @if (!isPasswordMode) {
+    @if (!isPasswordMode && !isLoading) {
       <div class="dp-hero-actions">
         <button
           type="button"
@@ -23,7 +23,19 @@
     }
   </div>
 
-  @if (doctor && !isPasswordMode) {
+  @if (isLoading) {
+    <div class="dp-admin-note">
+      Loading doctor profile...
+    </div>
+  }
+
+  @if (!isLoading && profileMessage) {
+    <div class="dp-form-message">
+      {{ profileMessage }}
+    </div>
+  }
+
+  @if (!isLoading && doctor && !isPasswordMode) {
 
     <div class="dp-profile-overview">
 

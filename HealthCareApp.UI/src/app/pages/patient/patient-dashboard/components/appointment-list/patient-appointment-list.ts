@@ -2,7 +2,11 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import { AppointmentDto } from '../../../../../shared/models/appointment.models';
-import { PatientFakeDataService } from '../../../../../core/services/patient-fake-data.service';
+import {
+  AppointmentApiService,
+  AppointmentStatusText
+} from '../../../../../core/services/appointment-api.service';
+import { finalize, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-appointment-list',
@@ -15,10 +19,25 @@ export class PatientAppointmentList {
   appointments: AppointmentDto[] = [];
 
   searchTerm = '';
-  selectedStatus = '';
-  selectedSpecialisation = '';
-  selectedTimeSlot = '';
+  selectedStatus: AppointmentStatusText | '' = '';
   selectedDate = '';
+
+  isLoading = false;
+  errorMessage = '';
+
+  pageNumber = 1;
+  pageSize = 5;
+  totalRecords = 0;
+  totalPages = 0;
+
+  pageSizeOptions: number[] = [5, 10, 15, 20];
+
+  statusOptions: AppointmentStatusText[] = [
+    'Pending',
+    'Confirmed',
+    'Completed',
+    'Cancelled'
+  ];
 
   isCancelModalOpen = false;
   cancellationReason = '';
@@ -27,64 +46,90 @@ export class PatientAppointmentList {
 
   @Output() refreshDashboard = new EventEmitter<void>();
 
-  constructor(private service: PatientFakeDataService) {
+  constructor(private appointmentApiService: AppointmentApiService) {
     this.loadAppointments();
-  }
-
-  get filteredAppointments(): AppointmentDto[] {
-    const term = this.searchTerm.trim().toLowerCase();
-
-    return this.appointments.filter((appointment: AppointmentDto) =>
-      this.matchesSearchTerm(appointment, term) &&
-      this.matchesStatusFilter(appointment) &&
-      this.matchesSpecialisationFilter(appointment) &&
-      this.matchesTimeSlotFilter(appointment) &&
-      this.matchesDateFilter(appointment)
-    );
-  }
-
-  get statusOptions(): string[] {
-    return Array.from(
-      new Set(this.appointments.map((appointment: AppointmentDto) => appointment.status))
-    );
-  }
-
-  get specialisationOptions(): string[] {
-    return Array.from(
-      new Set(this.appointments.map((appointment: AppointmentDto) => appointment.specialisation))
-    );
-  }
-
-  get timeSlotOptions(): string[] {
-    return Array.from(
-      new Set(this.appointments.map((appointment: AppointmentDto) => appointment.timeSlot))
-    );
   }
 
   get hasActiveFilters(): boolean {
     return (
       this.searchTerm.trim().length > 0 ||
       !!this.selectedStatus ||
-      !!this.selectedSpecialisation ||
-      !!this.selectedTimeSlot ||
       !!this.selectedDate
     );
   }
 
+  get canGoPrevious(): boolean {
+    return this.pageNumber > 1;
+  }
+
+  get canGoNext(): boolean {
+    return this.pageNumber < this.totalPages;
+  }
+
   loadAppointments(): void {
-    this.appointments = this.service.getAppointments().sort(
-      (a: AppointmentDto, b: AppointmentDto) =>
-        new Date(b.scheduledDate).getTime() -
-        new Date(a.scheduledDate).getTime()
-    );
+  this.isLoading = true;
+  this.errorMessage = '';
+
+  this.appointmentApiService.getMyAppointments({
+    pageNumber: this.pageNumber,
+    pageSize: this.pageSize,
+    searchTerm: this.searchTerm,
+    status: this.selectedStatus,
+    scheduledDate: this.selectedDate
+  }).pipe(
+    timeout(15000),
+    finalize(() => {
+      this.isLoading = false;
+    })
+  ).subscribe({
+    next: (response) => {
+      this.appointments = response.items;
+      this.pageNumber = response.pageNumber;
+      this.pageSize = response.pageSize;
+      this.totalRecords = response.totalRecords;
+      this.totalPages = response.totalPages;
+    },
+    error: (error: unknown) => {
+      console.log('Patient appointments API error:', error);
+      this.errorMessage = this.getErrorMessage(error);
+    }
+  });
+}
+
+  applyFilters(): void {
+    this.pageNumber = 1;
+    this.loadAppointments();
   }
 
   clearFilters(): void {
     this.searchTerm = '';
     this.selectedStatus = '';
-    this.selectedSpecialisation = '';
-    this.selectedTimeSlot = '';
     this.selectedDate = '';
+    this.pageNumber = 1;
+    this.loadAppointments();
+  }
+
+  changePageSize(): void {
+    this.pageNumber = 1;
+    this.loadAppointments();
+  }
+
+  goToPreviousPage(): void {
+    if (!this.canGoPrevious) {
+      return;
+    }
+
+    this.pageNumber--;
+    this.loadAppointments();
+  }
+
+  goToNextPage(): void {
+    if (!this.canGoNext) {
+      return;
+    }
+
+    this.pageNumber++;
+    this.loadAppointments();
   }
 
   openCancelModal(appointment: AppointmentDto): void {
@@ -117,18 +162,19 @@ export class PatientAppointmentList {
       return;
     }
 
-    try {
-      this.service.cancelAppointment({
-        appointmentId: this.selectedAppointment.appointmentId,
-        reason
-      });
-
-      this.closeCancelModal();
-      this.loadAppointments();
-      this.refreshDashboard.emit();
-    } catch (error: unknown) {
-      this.cancellationMessage = this.getErrorMessage(error);
-    }
+    this.appointmentApiService.cancelAppointment({
+      appointmentId: this.selectedAppointment.appointmentId,
+      reason
+    }).subscribe({
+      next: () => {
+        this.closeCancelModal();
+        this.loadAppointments();
+        this.refreshDashboard.emit();
+      },
+      error: (error: unknown) => {
+        this.cancellationMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   getStatusClass(status: string): string {
@@ -143,57 +189,26 @@ export class PatientAppointmentList {
     });
   }
 
-  private matchesSearchTerm(
-    appointment: AppointmentDto,
-    term: string
-  ): boolean {
-    if (!term) {
-      return true;
-    }
-
-    return (
-      appointment.doctorName.toLowerCase().includes(term) ||
-      appointment.appointmentId.toString().includes(term)
-    );
-  }
-
-  private matchesStatusFilter(appointment: AppointmentDto): boolean {
-    if (!this.selectedStatus) {
-      return true;
-    }
-
-    return appointment.status === this.selectedStatus;
-  }
-
-  private matchesSpecialisationFilter(appointment: AppointmentDto): boolean {
-    if (!this.selectedSpecialisation) {
-      return true;
-    }
-
-    return appointment.specialisation === this.selectedSpecialisation;
-  }
-
-  private matchesTimeSlotFilter(appointment: AppointmentDto): boolean {
-    if (!this.selectedTimeSlot) {
-      return true;
-    }
-
-    return appointment.timeSlot === this.selectedTimeSlot;
-  }
-
-  private matchesDateFilter(appointment: AppointmentDto): boolean {
-    if (!this.selectedDate) {
-      return true;
-    }
-
-    return appointment.scheduledDate === this.selectedDate;
-  }
-
   private getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message;
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+        };
+      };
+
+      return (
+        apiError.error?.message ??
+        apiError.error?.Message ??
+        'Something went wrong while loading appointments.'
+      );
     }
 
-    return 'Something went wrong while cancelling the appointment.';
+    return 'Something went wrong while loading appointments.';
   }
 }

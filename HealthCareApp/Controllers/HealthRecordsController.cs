@@ -1,9 +1,10 @@
-﻿using HealthCareApp.Shared.Dtos.Auth;
-using HealthCareApp.Services;
+﻿using HealthCareApp.Services;
+using HealthCareApp.Shared.Dtos.Auth;
+using HealthCareApp.Shared.Dtos.HealthRecords;
+using HealthCareApp.Shared.Dtos.Pagination;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HealthCareApp.Shared.Dtos.HealthRecords;
 using System.Security.Claims;
 
 namespace HealthCareApp.Controllers
@@ -30,9 +31,9 @@ namespace HealthCareApp.Controllers
         // Patient/Doctor: view logged-in user's health records
         [HttpGet("my")]
         [Authorize(
-            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Patient,Doctor")]
-        public async Task<IActionResult> GetMyHealthRecords()
+     AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+     Roles = "Patient,Doctor")]
+        public async Task<IActionResult> GetMyHealthRecords([FromQuery] HealthRecordPaginationQueryDto query)
         {
             var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -46,14 +47,18 @@ namespace HealthCareApp.Controllers
 
             if (User.IsInRole("Patient"))
             {
-                var records = await service.GetMyHealthRecordsForPatientAsync(identityUserId);
+                var records = await service.GetMyHealthRecordsForPatientPagedAsync(
+                    identityUserId,
+                    query);
 
                 return Ok(records);
             }
 
             if (User.IsInRole("Doctor"))
             {
-                var records = await service.GetMyHealthRecordsForDoctorAsync(identityUserId);
+                var records = await service.GetMyHealthRecordsForDoctorPagedAsync(
+                    identityUserId,
+                    query);
 
                 return Ok(records);
             }

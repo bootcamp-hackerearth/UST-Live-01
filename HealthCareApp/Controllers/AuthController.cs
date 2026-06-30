@@ -39,7 +39,7 @@ namespace HealthCareApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto request)
         {
-            var (success, message, token, expiresIn) = await service.Login(request);
+            var (success, message, token, expiresIn, mustChangePassword) = await service.Login(request);
 
             if (!success)
             {
@@ -49,11 +49,12 @@ namespace HealthCareApp.Controllers
                 });
             }
 
-            AuthResponse response = new AuthResponse
+            AuthResponseDto response = new AuthResponseDto
             {
                 AccessToken = token,
                 Message = message,
-                ExpiresIn = expiresIn
+                ExpiresIn = expiresIn,
+                MustChangePassword = mustChangePassword
             };
 
             return Ok(response);

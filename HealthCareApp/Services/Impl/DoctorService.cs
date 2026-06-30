@@ -29,10 +29,7 @@ namespace HealthCareApp.Services
 
         public async Task<PagedResponse<DoctorDto>> GetAllDoctorsPagedAsync(DoctorPaginationQueryDto query)
         {
-            if (query is null)
-            {
-                query = new DoctorPaginationQueryDto();
-            }
+            query ??= new DoctorPaginationQueryDto();
 
             int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
 
@@ -178,6 +175,7 @@ namespace HealthCareApp.Services
             doctor.Email = normalizedEmail;
             doctor.YearsOfExperience = CalculateYearsOfExperience(dto.PracticeStartDate);
             doctor.IsActive = true;
+            doctor.MustChangePassword = true;
             doctor.IdentityUserId = identityUser.Id;
             doctor.CreatedDate = DateTime.Now;
 
@@ -213,6 +211,7 @@ namespace HealthCareApp.Services
             doctor.IdentityUserId = existingDoctor.IdentityUserId;
             doctor.YearsOfExperience = CalculateYearsOfExperience(dto.PracticeStartDate);
             doctor.CreatedDate = existingDoctor.CreatedDate;
+            doctor.MustChangePassword = existingDoctor.MustChangePassword;
 
             var updatedDoctor = await repository.UpdateAsync(doctorId, doctor);
 

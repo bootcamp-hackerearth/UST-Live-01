@@ -19,6 +19,8 @@ namespace HealthCareApp.Testing.Services
 
         private readonly Mock<IPatientRepository> patientRepositoryMock;
 
+        private readonly Mock<IDoctorRepository> doctorRepositoryMock;
+
         private readonly IConfiguration configuration;
 
         private readonly AuthService authService;
@@ -29,11 +31,14 @@ namespace HealthCareApp.Testing.Services
 
             patientRepositoryMock = new Mock<IPatientRepository>();
 
+            doctorRepositoryMock = new Mock<IDoctorRepository>();
+
             configuration = CreateConfiguration();
 
             authService = new AuthService(
                 userManagerMock.Object,
                 patientRepositoryMock.Object,
+                doctorRepositoryMock.Object,
                 configuration);
         }
 
@@ -79,7 +84,6 @@ namespace HealthCareApp.Testing.Services
                 .ReturnsAsync(new IdentityUser
                 {
                     Email = request.Email,
-
                     UserName = request.Email
                 });
 
@@ -235,6 +239,8 @@ namespace HealthCareApp.Testing.Services
             result.Token.Should().BeEmpty();
 
             result.ExpiresIn.Should().Be(0);
+
+            result.MustChangePassword.Should().BeFalse();
         }
 
         [Fact]
@@ -245,9 +251,7 @@ namespace HealthCareApp.Testing.Services
             var user = new IdentityUser
             {
                 Id = "user-1",
-
                 Email = request.Email,
-
                 UserName = request.Email
             };
 
@@ -270,6 +274,8 @@ namespace HealthCareApp.Testing.Services
             result.Token.Should().BeEmpty();
 
             result.ExpiresIn.Should().Be(0);
+
+            result.MustChangePassword.Should().BeFalse();
         }
 
         [Fact]
@@ -280,9 +286,7 @@ namespace HealthCareApp.Testing.Services
             var user = new IdentityUser
             {
                 Id = "user-1",
-
                 Email = request.Email,
-
                 UserName = request.Email
             };
 
@@ -313,6 +317,8 @@ namespace HealthCareApp.Testing.Services
 
             result.ExpiresIn.Should().Be(60);
 
+            result.MustChangePassword.Should().BeFalse();
+
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var jwtToken = tokenHandler.ReadJwtToken(result.Token);
@@ -327,14 +333,72 @@ namespace HealthCareApp.Testing.Services
         }
 
         [Fact]
+        public async Task Login_WhenDoctorMustChangePassword_ShouldReturnMustChangePasswordTrue()
+        {
+            var request = GetValidLoginDto();
+
+            var user = new IdentityUser
+            {
+                Id = "doctor-user-1",
+                Email = request.Email,
+                UserName = request.Email
+            };
+
+            var doctor = new Doctor
+            {
+                DoctorId = 10,
+                DoctorName = "Test Doctor",
+                Email = request.Email,
+                Specialisation = SpecialisationType.GeneralPractitioner,
+                YearsOfExperience = 5,
+                ConsultationFee = 500,
+                IdentityUserId = user.Id,
+                IsActive = true,
+                MustChangePassword = true,
+                CreatedDate = DateTime.Now
+            };
+
+            userManagerMock
+                .Setup(manager => manager.FindByEmailAsync(request.Email))
+                .ReturnsAsync(user);
+
+            userManagerMock
+                .Setup(manager => manager.CheckPasswordAsync(
+                    user,
+                    request.Password))
+                .ReturnsAsync(true);
+
+            userManagerMock
+                .Setup(manager => manager.GetRolesAsync(user))
+                .ReturnsAsync(new List<string>
+                {
+                    "Doctor"
+                });
+
+            doctorRepositoryMock
+                .Setup(repository => repository.GetByIdentityUserIdAsync(user.Id, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            var result = await authService.Login(request);
+
+            result.Success.Should().BeTrue();
+
+            result.Message.Should().Be("Login Successful");
+
+            result.Token.Should().NotBeNullOrWhiteSpace();
+
+            result.ExpiresIn.Should().Be(60);
+
+            result.MustChangePassword.Should().BeTrue();
+        }
+
+        [Fact]
         public async Task ChangePasswordAsync_WhenNewPasswordSameAsCurrentPassword_ShouldReturnFailure()
         {
             var request = new ChangePasswordDto
             {
                 CurrentPassword = "Same@123",
-
                 NewPassword = "Same@123",
-
                 ConfirmNewPassword = "Same@123"
             };
 
@@ -353,9 +417,7 @@ namespace HealthCareApp.Testing.Services
             var request = new ChangePasswordDto
             {
                 CurrentPassword = "Old@123",
-
                 NewPassword = "New@123",
-
                 ConfirmNewPassword = "Different@123"
             };
 
@@ -394,9 +456,7 @@ namespace HealthCareApp.Testing.Services
             var user = new IdentityUser
             {
                 Id = "user-1",
-
                 Email = "user@example.com",
-
                 UserName = "user@example.com"
             };
 
@@ -432,9 +492,7 @@ namespace HealthCareApp.Testing.Services
             var user = new IdentityUser
             {
                 Id = "user-1",
-
                 Email = "user@example.com",
-
                 UserName = "user@example.com"
             };
 
@@ -449,6 +507,13 @@ namespace HealthCareApp.Testing.Services
                     request.NewPassword))
                 .ReturnsAsync(IdentityResult.Success);
 
+            userManagerMock
+                .Setup(manager => manager.GetRolesAsync(user))
+                .ReturnsAsync(new List<string>
+                {
+                    "Patient"
+                });
+
             var result = await authService.ChangePasswordAsync(
                 "user-1",
                 request);
@@ -458,24 +523,90 @@ namespace HealthCareApp.Testing.Services
             result.Message.Should().Be("Password changed successfully.");
         }
 
+        [Fact]
+        public async Task ChangePasswordAsync_WhenDoctorMustChangePassword_ShouldSetMustChangePasswordFalse()
+        {
+            var request = GetValidChangePasswordDto();
+
+            var user = new IdentityUser
+            {
+                Id = "doctor-user-1",
+                Email = "doctor@example.com",
+                UserName = "doctor@example.com"
+            };
+
+            var doctor = new Doctor
+            {
+                DoctorId = 11,
+                DoctorName = "Test Doctor",
+                Email = "doctor@example.com",
+                Specialisation = SpecialisationType.GeneralPractitioner,
+                YearsOfExperience = 5,
+                ConsultationFee = 500,
+                IdentityUserId = user.Id,
+                IsActive = true,
+                MustChangePassword = true,
+                CreatedDate = DateTime.Now
+            };
+
+            userManagerMock
+                .Setup(manager => manager.FindByIdAsync(user.Id))
+                .ReturnsAsync(user);
+
+            userManagerMock
+                .Setup(manager => manager.ChangePasswordAsync(
+                    user,
+                    request.CurrentPassword,
+                    request.NewPassword))
+                .ReturnsAsync(IdentityResult.Success);
+
+            userManagerMock
+                .Setup(manager => manager.GetRolesAsync(user))
+                .ReturnsAsync(new List<string>
+                {
+                    "Doctor"
+                });
+
+            doctorRepositoryMock
+                .Setup(repository => repository.GetByIdentityUserIdAsync(user.Id, It.IsAny<CancellationToken>()))
+                .ReturnsAsync(doctor);
+
+            doctorRepositoryMock
+                .Setup(repository => repository.UpdateAsync(
+                    doctor.DoctorId,
+                    It.IsAny<Doctor>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync((int doctorId, Doctor entity, CancellationToken cancellationToken) => entity);
+
+            var result = await authService.ChangePasswordAsync(
+                user.Id,
+                request);
+
+            result.Success.Should().BeTrue();
+
+            result.Message.Should().Be("Password changed successfully.");
+
+            doctor.MustChangePassword.Should().BeFalse();
+
+            doctorRepositoryMock.Verify(
+                repository => repository.UpdateAsync(
+                    doctor.DoctorId,
+                    It.Is<Doctor>(savedDoctor => savedDoctor.MustChangePassword == false),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
         private static PatientRegisterDto GetValidPatientRegisterDto()
         {
             return new PatientRegisterDto
             {
                 FullName = "New Patient",
-
                 DateOfBirth = new DateTime(2001, 2, 2),
-
                 Gender = GenderType.Male,
-
                 Email = "newpatient@example.com",
-
                 PhoneNumber = "9876500000",
-
                 InsuranceId = "INS999",
-
                 Password = "Patient@123",
-
                 ConfirmPassword = "Patient@123"
             };
         }
@@ -485,7 +616,6 @@ namespace HealthCareApp.Testing.Services
             return new LoginDto
             {
                 Email = "admin@healthcare.com",
-
                 Password = "Admin@123"
             };
         }
@@ -495,9 +625,7 @@ namespace HealthCareApp.Testing.Services
             return new ChangePasswordDto
             {
                 CurrentPassword = "Old@123",
-
                 NewPassword = "New@123",
-
                 ConfirmNewPassword = "New@123"
             };
         }

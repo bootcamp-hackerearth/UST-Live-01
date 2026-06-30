@@ -1,215 +1,25 @@
 ﻿@page "/"
 @page "/login"
 
-@using HealthCareApp.Shared.Dtos.Auth
-@using HealthCareApp.AdminBlazor.Services.Interfaces
-
-@inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<PageTitle>Admin Login | HealthAxis</PageTitle>
+<PageTitle>Redirecting | HealthAxis</PageTitle>
 
-<div class="hc-login-page">
-    @if (isSigningIn)
-    {
-        <div class="hc-login-overlay">
-            <div class="hc-login-overlay-card">
-                <div class="hc-login-overlay-logo">
-                    HA
-                </div>
-
-                <h3>
-                    Verifying admin access
-                </h3>
-
-                <p>
-                    Preparing your HealthAxis workspace...
-                </p>
-
-                <div class="hc-login-overlay-bar">
-                    <span></span>
-                </div>
-            </div>
-        </div>
-    }
-
-    <section class="hc-login-hero">
-        <div class="hc-brand-badge">
-            HealthAxis Admin Portal
-        </div>
-
-        <h1 class="hc-login-title">
-            Manage care operations with <span>clarity</span>.
-        </h1>
-
-        <p class="hc-login-subtitle">
-            A secure and focused admin workspace to manage doctors, patients,
-            appointments, and health records from one modern HealthAxis dashboard.
-        </p>
-
-        <div class="ha-login-ecg-card">
-            <svg class="ha-login-ecg-svg"
-                 viewBox="0 0 520 120"
-                 preserveAspectRatio="none">
-
-                <path class="ha-login-ecg-shadow"
-                      d="M0 65 L70 65 L88 65 L102 45 L118 88 L138 65 L190 65 L212 65 L232 25 L258 98 L282 65 L330 65 L350 65 L365 50 L382 78 L398 65 L455 65 L474 35 L495 92 L520 65" />
-
-                <path class="ha-login-ecg-line"
-                      d="M0 65 L70 65 L88 65 L102 45 L118 88 L138 65 L190 65 L212 65 L232 25 L258 98 L282 65 L330 65 L350 65 L365 50 L382 78 L398 65 L455 65 L474 35 L495 92 L520 65" />
-            </svg>
-
-            <div class="ha-login-ecg-pulse"></div>
-        </div>
-
-        <div class="hc-hero-stats">
-            <div class="hc-stat-card">
-                <div class="hc-stat-number">
-                    Admin
-                </div>
-
-                <div class="hc-stat-label">
-                    Access only
-                </div>
-            </div>
-
-            <div class="hc-stat-card">
-                <div class="hc-stat-number">
-                    4
-                </div>
-
-                <div class="hc-stat-label">
-                    Core modules
-                </div>
-            </div>
-
-            <div class="hc-stat-card">
-                <div class="hc-stat-number">
-                    JWT
-                </div>
-
-                <div class="hc-stat-label">
-                    Secured access
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="hc-login-panel">
-        <div class="hc-login-card">
-            <div class="hc-login-card-header">
-                <h2 class="hc-login-card-title">
-                    Welcome back
-                </h2>
-
-                <p class="hc-login-card-subtitle">
-                    Sign in as Admin to continue to the HealthAxis management dashboard.
-                </p>
-            </div>
-
-            @if (SessionExpired)
-            {
-                <div class="hc-alert-error">
-                    Session timeout. Please login again to continue.
-                </div>
-            }
-            else if (!string.IsNullOrWhiteSpace(errorMessage))
-            {
-                <div class="hc-alert-error">
-                    @errorMessage
-                </div>
-            }
-
-            <EditForm Model="loginModel" OnValidSubmit="HandleLogin">
-                <DataAnnotationsValidator />
-
-                <div class="hc-form-group">
-                    <label class="hc-form-label">
-                        Email address
-                    </label>
-
-                    <InputText class="hc-form-control"
-                               placeholder="Enter your email"
-                               disabled="@isSigningIn"
-                               @bind-Value="loginModel.Email" />
-
-                    <ValidationMessage For="@(() => loginModel.Email)" />
-                </div>
-
-                <div class="hc-form-group">
-                    <label class="hc-form-label">
-                        Password
-                    </label>
-
-                    <InputText class="hc-form-control"
-                               type="password"
-                               placeholder="Enter admin password"
-                               disabled="@isSigningIn"
-                               @bind-Value="loginModel.Password" />
-
-                    <ValidationMessage For="@(() => loginModel.Password)" />
-                </div>
-
-                <div class="hc-login-actions">
-                   
-
-                    <span>
-                        Admin access only
-                    </span>
-                </div>
-
-                <button type="submit"
-                        class="hc-btn-primary"
-                        disabled="@isSigningIn">
-                    @(isSigningIn ? "Signing in securely..." : "Sign in to Dashboard")
-                </button>
-            </EditForm>
-        </div>
-    </section>
+<div style="min-height:100vh; display:grid; place-items:center; font-family:Arial;">
+    <div style="text-align:center;">
+        <h3>Redirecting to HealthAxis Login...</h3>
+        <p>Please continue from the Angular HealthAxis login page.</p>
+    </div>
 </div>
 
 @code {
-    private LoginDto loginModel = new LoginDto();
-
-    private bool rememberMe;
-
-    private bool isSigningIn;
-
-    private string? errorMessage;
-
-    [Parameter]
-    [SupplyParameterFromQuery(Name = "sessionExpired")]
-    public bool SessionExpired { get; set; }
-
-    private async Task HandleLogin()
+    protected override void OnAfterRender(bool firstRender)
     {
-        if (isSigningIn)
+        if (!firstRender)
         {
             return;
         }
 
-        try
-        {
-            isSigningIn = true;
-
-            errorMessage = null;
-
-            var response = await AuthService.LoginAsync(loginModel);
-
-            if (string.IsNullOrWhiteSpace(response.AccessToken))
-            {
-                errorMessage = response.Message;
-
-                return;
-            }
-
-            await Task.Delay(650);
-
-            Navigation.NavigateTo("/admin/dashboard");
-        }
-        finally
-        {
-            isSigningIn = false;
-        }
+        Navigation.NavigateTo("http://localhost:4200", true);
     }
 }

@@ -33,7 +33,7 @@
 
             <p>
                 Your current admin session will be closed. You can sign in again anytime
-                using your Admin credentials.
+                from the HealthAxis main login page.
             </p>
 
             <div class="ha-logout-actions">
@@ -50,6 +50,8 @@
 }
 
 @code {
+    private const string AngularHomeUrl = "http://localhost:4200";
+
     private string adminEmail = "Admin";
 
     private bool showLogoutConfirmation;
@@ -80,6 +82,6 @@
 
         showLogoutConfirmation = false;
 
-        Navigation.NavigateTo("/login", replace: true);
+        Navigation.NavigateTo(AngularHomeUrl, forceLoad: true);
     }
 }

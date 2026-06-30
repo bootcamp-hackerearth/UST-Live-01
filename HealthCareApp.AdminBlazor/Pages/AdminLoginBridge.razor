@@ -11,6 +11,8 @@
 </div>
 
 @code {
+    private const string TokenStorageKey = "token";
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
@@ -24,14 +26,11 @@
 
         if (string.IsNullOrWhiteSpace(token))
         {
-            Navigation.NavigateTo("/login", true);
+            Navigation.NavigateTo("http://localhost:4200", true);
             return;
         }
 
-        await JS.InvokeVoidAsync("localStorage.setItem", "authToken", token);
-        await JS.InvokeVoidAsync("localStorage.setItem", "token", token);
-        await JS.InvokeVoidAsync("localStorage.setItem", "accessToken", token);
-        await JS.InvokeVoidAsync("localStorage.setItem", "jwtToken", token);
+        await JS.InvokeVoidAsync("localStorage.setItem", TokenStorageKey, token);
 
         Navigation.NavigateTo("/admin/dashboard", true);
     }

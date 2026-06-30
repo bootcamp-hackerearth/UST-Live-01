@@ -4,6 +4,7 @@ using HealthCareApp.Models;
 using HealthCareApp.Repository.Interface;
 using HealthCareApp.Shared.Dtos.HealthRecords;
 using HealthCareApp.Shared.Enums;
+using HealthCareApp.Shared.Dtos.Pagination;
 
 namespace HealthCareApp.Services
 {
@@ -49,7 +50,111 @@ namespace HealthCareApp.Services
 
             return mapper.Map<List<HealthRecordDto>>(healthRecords);
         }
+        public async Task<PagedResponse<HealthRecordDto>> GetMyHealthRecordsForPatientPagedAsync(
+    string identityUserId,
+    HealthRecordPaginationQueryDto query)
+        {
+            var patient = await GetLoggedInPatientAsync(identityUserId);
 
+            query ??= new HealthRecordPaginationQueryDto();
+
+            var healthRecords = await healthRecordRepository.GetByPatientIdAsync(patient.PatientId);
+
+            return BuildPagedHealthRecordResponse(healthRecords, query);
+        }
+
+        public async Task<PagedResponse<HealthRecordDto>> GetMyHealthRecordsForDoctorPagedAsync(
+            string identityUserId,
+            HealthRecordPaginationQueryDto query)
+        {
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            query ??= new HealthRecordPaginationQueryDto();
+
+            var healthRecords = await healthRecordRepository.GetByDoctorIdAsync(doctor.DoctorId);
+
+            return BuildPagedHealthRecordResponse(healthRecords, query);
+        }
+
+        private PagedResponse<HealthRecordDto> BuildPagedHealthRecordResponse(
+            List<HealthRecord> healthRecords,
+            HealthRecordPaginationQueryDto query)
+        {
+            int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
+
+            int pageSize = query.PageSize <= 0 ? 10 : query.PageSize;
+
+            pageSize = pageSize > 100 ? 100 : pageSize;
+
+            var filteredRecords = healthRecords.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(query.SearchTerm))
+            {
+                string searchTerm = query.SearchTerm.Trim();
+
+                filteredRecords = filteredRecords.Where(record =>
+                    (record.Patient != null &&
+                     record.Patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (record.Doctor != null &&
+                     record.Doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    record.Diagnosis.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    record.Prescription.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    record.AppointmentId.ToString().Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (query.VisitDate is not null)
+            {
+                filteredRecords = filteredRecords.Where(record =>
+                    record.VisitDate.Date == query.VisitDate.Value.Date);
+            }
+
+            int totalRecords = filteredRecords.Count();
+
+            var pagedRecords = filteredRecords
+                .OrderByDescending(record => record.VisitDate)
+                .ThenByDescending(record => record.HealthRecordId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var mappedRecords = mapper.Map<List<HealthRecordDto>>(pagedRecords);
+
+            return new PagedResponse<HealthRecordDto>
+            {
+                Items = mappedRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalRecords = totalRecords,
+                TotalPages = (int)Math.Ceiling(totalRecords / (double)pageSize)
+            };
+        }
+        public async Task<List<HealthRecordDto>> GetPatientHealthRecordsForTreatingDoctorAsync(
+    int patientId,
+    string identityUserId)
+        {
+            ValidatePatientId(patientId);
+
+            var doctor = await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointments = await appointmentRepository.GetByDoctorIdAsync(doctor.DoctorId);
+
+            bool doctorTreatsPatient = appointments.Any(appointment =>
+                appointment.PatientId == patientId &&
+                (
+                    appointment.Status == AppointmentStatus.Confirmed ||
+                    appointment.Status == AppointmentStatus.Completed
+                ));
+
+            if (!doctorTreatsPatient)
+            {
+                throw new ForbiddenAccessException(
+                    "Doctors can view health records only for patients they are treating or have treated.");
+            }
+
+            var healthRecords = await healthRecordRepository.GetByPatientIdAsync(patientId);
+
+            return mapper.Map<List<HealthRecordDto>>(healthRecords);
+        }
         public async Task<List<HealthRecordDto>> GetHealthRecordsByDoctorIdAsync(int doctorId)
         {
             await ValidateDoctorExistsAsync(doctorId);

@@ -1,8 +1,15 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { timeout } from 'rxjs';
 
 import { AppointmentDto } from '../../../../../shared/models/appointment.models';
-import { DoctorFakeDataService } from '../../../../../core/services/doctor-fake-data.service';
+
+import {
+  AppointmentApiService,
+  AppointmentStatusText
+} from '../../../../../core/services/appointment-api.service';
+
+import { HealthRecordApiService } from '../../../../../core/services/health-record-api.service';
 
 type ToastType = 'success' | 'info' | 'warning';
 
@@ -24,24 +31,42 @@ interface HealthRecordForm {
   templateUrl: './doctor-appointment-list.html',
   styleUrl: './doctor-appointment-list.css'
 })
-export class DoctorAppointmentList {
+export class DoctorAppointmentList implements OnInit {
   appointments: AppointmentDto[] = [];
 
   searchTerm = '';
-  selectedStatus = '';
-  selectedTimeSlot = '';
+  selectedStatus: AppointmentStatusText | '' = '';
   selectedDate = '';
+
+  isLoading = false;
+  errorMessage = '';
+
+  pageNumber = 1;
+  pageSize = 5;
+  totalRecords = 0;
+  totalPages = 0;
+
+  pageSizeOptions: number[] = [5, 10, 15, 20];
+
+  statusOptions: AppointmentStatusText[] = [
+    'Pending',
+    'Confirmed',
+    'Completed',
+    'Cancelled'
+  ];
 
   todayDate = new Date().toISOString().split('T')[0];
 
   selectedAppointment?: AppointmentDto;
 
   isConfirmModalOpen = false;
+  isConfirming = false;
   confirmMessage = '';
 
   isHealthRecordModalOpen = false;
   isHealthRecordSaveConfirmOpen = false;
   isDiscardHealthRecordModalOpen = false;
+  isSavingHealthRecord = false;
 
   hasRecordSubmitted = false;
   recordMessage = '';
@@ -55,48 +80,30 @@ export class DoctorAppointmentList {
   @Output() refreshDashboard = new EventEmitter<void>();
   @Output() doctorToast = new EventEmitter<DoctorToastEvent>();
 
-  constructor(private service: DoctorFakeDataService) {
+  constructor(
+    private appointmentApiService: AppointmentApiService,
+    private healthRecordApiService: HealthRecordApiService
+  ) {
+  }
+
+  ngOnInit(): void {
     this.loadAppointments();
-  }
-
-  get filteredAppointments(): AppointmentDto[] {
-    const term = this.searchTerm.trim().toLowerCase();
-
-    return this.appointments.filter((appointment: AppointmentDto) =>
-      this.matchesSearchTerm(appointment, term) &&
-      this.matchesStatusFilter(appointment) &&
-      this.matchesTimeSlotFilter(appointment) &&
-      this.matchesDateFilter(appointment)
-    );
-  }
-
-  get statusOptions(): string[] {
-    return Array.from(
-      new Set(
-        this.appointments.map(
-          (appointment: AppointmentDto) => appointment.status
-        )
-      )
-    );
-  }
-
-  get timeSlotOptions(): string[] {
-    return Array.from(
-      new Set(
-        this.appointments.map(
-          (appointment: AppointmentDto) => appointment.timeSlot
-        )
-      )
-    );
   }
 
   get hasActiveFilters(): boolean {
     return (
       this.searchTerm.trim().length > 0 ||
       !!this.selectedStatus ||
-      !!this.selectedTimeSlot ||
       !!this.selectedDate
     );
+  }
+
+  get canGoPrevious(): boolean {
+    return this.pageNumber > 1;
+  }
+
+  get canGoNext(): boolean {
+    return this.pageNumber < this.totalPages;
   }
 
   get isDiagnosisInvalid(): boolean {
@@ -112,24 +119,77 @@ export class DoctorAppointmentList {
   }
 
   loadAppointments(): void {
-    this.appointments = this.service.getDoctorAppointments().sort(
-      (a: AppointmentDto, b: AppointmentDto) =>
-        new Date(b.scheduledDate).getTime() -
-        new Date(a.scheduledDate).getTime()
-    );
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.appointmentApiService.getMyAppointments({
+      pageNumber: this.pageNumber,
+      pageSize: this.pageSize,
+      searchTerm: this.searchTerm,
+      status: this.selectedStatus,
+      scheduledDate: this.selectedDate
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: (response) => {
+        this.appointments = response.items ?? [];
+        this.pageNumber = response.pageNumber;
+        this.pageSize = response.pageSize;
+        this.totalRecords = response.totalRecords;
+        this.totalPages = response.totalPages;
+        this.isLoading = false;
+      },
+      error: (error: unknown) => {
+        console.log('Doctor appointments API error:', error);
+        this.appointments = [];
+        this.totalRecords = 0;
+        this.totalPages = 0;
+        this.isLoading = false;
+        this.errorMessage = this.getErrorMessage(error);
+      }
+    });
+  }
+
+  applyFilters(): void {
+    this.pageNumber = 1;
+    this.loadAppointments();
   }
 
   clearFilters(): void {
     this.searchTerm = '';
     this.selectedStatus = '';
-    this.selectedTimeSlot = '';
     this.selectedDate = '';
+    this.pageNumber = 1;
+    this.loadAppointments();
+  }
+
+  changePageSize(): void {
+    this.pageNumber = 1;
+    this.loadAppointments();
+  }
+
+  goToPreviousPage(): void {
+    if (!this.canGoPrevious) {
+      return;
+    }
+
+    this.pageNumber--;
+    this.loadAppointments();
+  }
+
+  goToNextPage(): void {
+    if (!this.canGoNext) {
+      return;
+    }
+
+    this.pageNumber++;
+    this.loadAppointments();
   }
 
   canAddHealthRecord(appointment: AppointmentDto): boolean {
     return (
       appointment.status === 'Confirmed' &&
-      appointment.scheduledDate === this.todayDate
+      appointment.scheduledDate <= this.todayDate
     );
   }
 
@@ -140,13 +200,6 @@ export class DoctorAppointmentList {
     );
   }
 
-  isPastConfirmedAppointment(appointment: AppointmentDto): boolean {
-    return (
-      appointment.status === 'Confirmed' &&
-      appointment.scheduledDate < this.todayDate
-    );
-  }
-
   openConfirmModal(appointment: AppointmentDto): void {
     this.selectedAppointment = appointment;
     this.confirmMessage = '';
@@ -154,6 +207,10 @@ export class DoctorAppointmentList {
   }
 
   closeConfirmModal(): void {
+    if (this.isConfirming) {
+      return;
+    }
+
     this.selectedAppointment = undefined;
     this.confirmMessage = '';
     this.isConfirmModalOpen = false;
@@ -167,22 +224,32 @@ export class DoctorAppointmentList {
       return;
     }
 
-    try {
-      this.service.confirmAppointment(this.selectedAppointment.appointmentId);
+    this.isConfirming = true;
 
-      this.closeConfirmModal();
-      this.loadAppointments();
-      this.refreshDashboard.emit();
-      this.emitToast('Appointment confirmed successfully ✅', 'success');
-    } catch (error: unknown) {
-      this.confirmMessage = this.getErrorMessage(error);
-    }
+    this.appointmentApiService.confirmAppointment(
+      this.selectedAppointment.appointmentId
+    ).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isConfirming = false;
+        this.closeConfirmModal();
+        this.loadAppointments();
+        this.refreshDashboard.emit();
+        this.emitToast('Appointment confirmed successfully ✅', 'success');
+      },
+      error: (error: unknown) => {
+        console.log('Doctor confirm appointment API error:', error);
+        this.isConfirming = false;
+        this.confirmMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   openHealthRecordModal(appointment: AppointmentDto): void {
     if (!this.canAddHealthRecord(appointment)) {
       this.emitToast(
-        'Health record can be added only on the appointment date.',
+        'Health record can be added only on or after the appointment date.',
         'warning'
       );
       return;
@@ -196,6 +263,10 @@ export class DoctorAppointmentList {
   }
 
   requestCloseHealthRecordModal(): void {
+    if (this.isSavingHealthRecord) {
+      return;
+    }
+
     if (this.hasHealthRecordChanges()) {
       this.isDiscardHealthRecordModalOpen = true;
       return;
@@ -235,6 +306,10 @@ export class DoctorAppointmentList {
   }
 
   closeHealthRecordSaveConfirm(): void {
+    if (this.isSavingHealthRecord) {
+      return;
+    }
+
     this.isHealthRecordSaveConfirmOpen = false;
   }
 
@@ -245,39 +320,38 @@ export class DoctorAppointmentList {
       return;
     }
 
-    try {
-      /*
-        Important flow:
-        1. Add health record first.
-        2. Only if saving health record succeeds, mark appointment as Completed.
-        3. If saving fails, appointment remains Confirmed.
-      */
-      this.service.addHealthRecord({
-        patientId: this.selectedAppointment.patientId,
-        patientName: this.selectedAppointment.patientName,
-        doctorId: this.selectedAppointment.doctorId,
-        doctorName: this.selectedAppointment.doctorName,
-        appointmentId: this.selectedAppointment.appointmentId,
-        visitDate: this.selectedAppointment.scheduledDate,
-        diagnosis: this.recordForm.diagnosis,
-        prescription: this.recordForm.prescription,
-        notes: this.recordForm.notes
-      });
+    this.isSavingHealthRecord = true;
+    this.recordMessage = '';
 
-      this.service.completeAppointment(this.selectedAppointment.appointmentId);
+    this.healthRecordApiService.addHealthRecord({
+      patientId: this.selectedAppointment.patientId,
+      doctorId: this.selectedAppointment.doctorId,
+      appointmentId: this.selectedAppointment.appointmentId,
+      visitDate: this.selectedAppointment.scheduledDate,
+      diagnosis: this.recordForm.diagnosis.trim(),
+      prescription: this.recordForm.prescription.trim(),
+      notes: this.recordForm.notes.trim()
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: () => {
+        this.isSavingHealthRecord = false;
+        this.closeHealthRecordModal();
+        this.loadAppointments();
+        this.refreshDashboard.emit();
 
-      this.closeHealthRecordModal();
-      this.loadAppointments();
-      this.refreshDashboard.emit();
-
-      this.emitToast(
-        'Health record saved and appointment completed ✅',
-        'success'
-      );
-    } catch (error: unknown) {
-      this.isHealthRecordSaveConfirmOpen = false;
-      this.recordMessage = this.getErrorMessage(error);
-    }
+        this.emitToast(
+          'Health record saved and appointment completed ✅',
+          'success'
+        );
+      },
+      error: (error: unknown) => {
+        console.log('Doctor add health record API error:', error);
+        this.isSavingHealthRecord = false;
+        this.isHealthRecordSaveConfirmOpen = false;
+        this.recordMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   getStatusClass(status: string): string {
@@ -285,49 +359,17 @@ export class DoctorAppointmentList {
   }
 
   formatDate(date: string): string {
-    return new Date(date).toLocaleDateString('en-IN', {
+    const parsedDate = new Date(date);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'Not Available';
+    }
+
+    return parsedDate.toLocaleDateString('en-IN', {
       day: '2-digit',
       month: 'short',
       year: 'numeric'
     });
-  }
-
-  private matchesSearchTerm(
-    appointment: AppointmentDto,
-    term: string
-  ): boolean {
-    if (!term) {
-      return true;
-    }
-
-    return (
-      appointment.patientName.toLowerCase().includes(term) ||
-      appointment.appointmentId.toString().includes(term)
-    );
-  }
-
-  private matchesStatusFilter(appointment: AppointmentDto): boolean {
-    if (!this.selectedStatus) {
-      return true;
-    }
-
-    return appointment.status === this.selectedStatus;
-  }
-
-  private matchesTimeSlotFilter(appointment: AppointmentDto): boolean {
-    if (!this.selectedTimeSlot) {
-      return true;
-    }
-
-    return appointment.timeSlot === this.selectedTimeSlot;
-  }
-
-  private matchesDateFilter(appointment: AppointmentDto): boolean {
-    if (!this.selectedDate) {
-      return true;
-    }
-
-    return appointment.scheduledDate === this.selectedDate;
   }
 
   private hasHealthRecordChanges(): boolean {
@@ -354,8 +396,39 @@ export class DoctorAppointmentList {
   }
 
   private getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message;
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+          errors?: Record<string, string[]>;
+        };
+        name?: string;
+      };
+
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
+
+      if (apiError.error?.message) {
+        return apiError.error.message;
+      }
+
+      if (apiError.error?.Message) {
+        return apiError.error.Message;
+      }
+
+      if (apiError.error?.errors) {
+        const firstError = Object.values(apiError.error.errors)[0]?.[0];
+
+        if (firstError) {
+          return firstError;
+        }
+      }
     }
 
     return 'Something went wrong while updating the appointment.';

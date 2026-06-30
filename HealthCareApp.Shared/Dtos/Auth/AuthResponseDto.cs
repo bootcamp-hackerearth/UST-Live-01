@@ -1,5 +1,4 @@
-﻿
-namespace HealthCareApp.Shared.Dtos.Auth
+﻿namespace HealthCareApp.Shared.Dtos.Auth
 {
     public class AuthResponseDto
     {
@@ -8,5 +7,7 @@ namespace HealthCareApp.Shared.Dtos.Auth
         public string Message { get; set; } = string.Empty;
 
         public int ExpiresIn { get; set; }
+
+        public bool MustChangePassword { get; set; }
     }
 }

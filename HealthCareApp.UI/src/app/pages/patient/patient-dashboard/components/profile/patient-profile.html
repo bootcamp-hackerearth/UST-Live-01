@@ -12,7 +12,7 @@
       </p>
     </div>
 
-    @if (!isEditMode && !isPasswordMode) {
+    @if (!isEditMode && !isPasswordMode && !isLoading) {
       <div class="pp-hero-actions">
         <button
           type="button"
@@ -31,7 +31,19 @@
     }
   </div>
 
-  @if (patient) {
+  @if (isLoading) {
+    <div class="pp-form-message">
+      Loading patient profile...
+    </div>
+  }
+
+  @if (!isLoading && message && !isEditMode) {
+    <div class="pp-form-message">
+      {{ message }}
+    </div>
+  }
+
+  @if (!isLoading && patient) {
 
     @if (!isEditMode && !isPasswordMode) {
 
@@ -191,13 +203,14 @@
               <input
                 type="text"
                 name="phoneNumber"
-                placeholder="9876543210 or +91 9876543210"
+                placeholder="9876543210"
+                maxlength="10"
                 [(ngModel)]="form.phoneNumber">
             </label>
 
             @if (hasSubmitted && isPhoneInvalid) {
               <div class="pp-field-error">
-                Enter a valid Indian phone number.
+                Phone number must contain exactly 10 digits.
               </div>
             }
           </div>
@@ -209,13 +222,13 @@
               <input
                 type="text"
                 name="insuranceId"
-                maxlength="50"
+                maxlength="30"
                 [(ngModel)]="form.insuranceId">
             </label>
 
             @if (hasSubmitted && isInsuranceInvalid) {
               <div class="pp-field-error">
-                Insurance ID cannot exceed 50 characters.
+                Insurance ID is required and cannot exceed 30 characters.
               </div>
             }
           </div>

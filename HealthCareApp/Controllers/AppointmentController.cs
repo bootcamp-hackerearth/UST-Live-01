@@ -60,9 +60,9 @@ namespace HealthCareApp.Controllers
         // Patient/Doctor: View logged-in user's appointments
         [HttpGet("my")]
         [Authorize(
-            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-            Roles = "Patient,Doctor")]
-        public async Task<IActionResult> GetMyAppointments()
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = "Patient,Doctor")]
+        public async Task<IActionResult> GetMyAppointments([FromQuery] AppointmentPaginationQueryDto query)
         {
             var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -76,14 +76,18 @@ namespace HealthCareApp.Controllers
 
             if (User.IsInRole(PatientRoleName))
             {
-                var appointments = await service.GetMyAppointmentsForPatientAsync(identityUserId);
+                var appointments = await service.GetMyAppointmentsForPatientPagedAsync(
+                    identityUserId,
+                    query);
 
                 return Ok(appointments);
             }
 
             if (User.IsInRole(DoctorRoleName))
             {
-                var appointments = await service.GetMyAppointmentsForDoctorAsync(identityUserId);
+                var appointments = await service.GetMyAppointmentsForDoctorPagedAsync(
+                    identityUserId,
+                    query);
 
                 return Ok(appointments);
             }

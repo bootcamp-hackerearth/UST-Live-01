@@ -49,6 +49,10 @@ namespace HealthCareApp.Services
 
         Task<List<AppointmentDto>> GetMyPendingAppointmentsForPatientAsync(string identityUserId);
 
+        Task<PagedResponse<AppointmentDto>> GetMyAppointmentsForPatientPagedAsync(string identityUserId, AppointmentPaginationQueryDto query);
+
+        Task<PagedResponse<AppointmentDto>> GetMyAppointmentsForDoctorPagedAsync( string identityUserId,AppointmentPaginationQueryDto query);
+
         Task<AppointmentDto> GetAppointmentByIdForPatientAsync(int appointmentId, string identityUserId);
 
         Task<AppointmentDto> BookAppointmentForPatientAsync(BookAppointmentDto dto, string identityUserId);

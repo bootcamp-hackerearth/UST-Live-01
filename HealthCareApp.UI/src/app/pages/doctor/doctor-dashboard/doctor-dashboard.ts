@@ -1,15 +1,21 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { forkJoin, timeout } from 'rxjs';
 
 import { AppointmentDto } from '../../../shared/models/appointment.models';
 import { DoctorDto } from '../../../shared/models/doctor.models';
 import { HealthRecordDto } from '../../../shared/models/health-record.models';
-import { DoctorFakeDataService } from '../../../core/services/doctor-fake-data.service';
+
+import { AuthService } from '../../../core/services/auth.service';
+import { DoctorApiService } from '../../../core/services/doctor-api.service';
+import { AppointmentApiService } from '../../../core/services/appointment-api.service';
+import { HealthRecordApiService } from '../../../core/services/health-record-api.service';
 
 import { DoctorAppointmentList } from './components/appointment-list/doctor-appointment-list';
 import { DoctorHealthRecords } from './components/health-records/doctor-health-records';
 import { DoctorProfile } from './components/profile/doctor-profile';
+
 type DoctorDashboardSection =
   | 'dashboard'
   | 'appointments'
@@ -26,12 +32,6 @@ interface DoctorDashboardSummary {
   healthRecordCount: number;
 }
 
-interface DoctorPasswordForm {
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}
-
 interface DoctorToastEvent {
   message: string;
   type: ToastType;
@@ -43,7 +43,8 @@ interface DoctorToastEvent {
   imports: [
     FormsModule,
     DoctorAppointmentList,
-    DoctorHealthRecords,DoctorProfile
+    DoctorHealthRecords,
+    DoctorProfile
   ],
   templateUrl: './doctor-dashboard.html',
   styleUrl: './doctor-dashboard.css'
@@ -64,43 +65,28 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   upcomingAppointments: AppointmentDto[] = [];
   recentHealthRecords: HealthRecordDto[] = [];
 
+  isDashboardLoading = false;
+  dashboardErrorMessage = '';
+
   isSidebarOpen = false;
   isLogoutModalOpen = false;
-  mustChangeTemporaryPassword = false;
-
-  isTempPasswordConfirmOpen = false;
-  hasPasswordSubmitted = false;
 
   toastMessage = '';
   toastType: ToastType = 'info';
 
-  passwordMessage = '';
-
-  passwordForm: DoctorPasswordForm = {
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  };
-
   private toastTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
-    private doctorService: DoctorFakeDataService,
+    private authService: AuthService,
+    private doctorApiService: DoctorApiService,
+    private appointmentApiService: AppointmentApiService,
+    private healthRecordApiService: HealthRecordApiService,
     private router: Router
   ) {
   }
 
   ngOnInit(): void {
-    this.mustChangeTemporaryPassword =
-      this.doctorService.shouldChangeTemporaryPassword();
-
     this.loadDashboardData();
-
-    if (this.mustChangeTemporaryPassword) {
-      this.showToast('Please change your temporary password to continue.', 'warning');
-      return;
-    }
-
     this.showToast('Welcome to your HealthAxis doctor portal.', 'success');
   }
 
@@ -174,45 +160,6 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     `;
   }
 
-  get isCurrentPasswordInvalid(): boolean {
-    return !this.passwordForm.currentPassword.trim();
-  }
-
-  get isNewPasswordInvalid(): boolean {
-    const password = this.passwordForm.newPassword;
-    const passwordPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
-
-    return !passwordPattern.test(password);
-  }
-
-  get isConfirmPasswordInvalid(): boolean {
-    return !this.passwordForm.confirmPassword.trim();
-  }
-
-  get isPasswordMismatch(): boolean {
-    return (
-      this.passwordForm.confirmPassword.trim().length > 0 &&
-      this.passwordForm.newPassword !== this.passwordForm.confirmPassword
-    );
-  }
-
-  get isSamePasswordInvalid(): boolean {
-    return (
-      this.passwordForm.currentPassword.trim().length > 0 &&
-      this.passwordForm.currentPassword === this.passwordForm.newPassword
-    );
-  }
-
-  get isPasswordFormInvalid(): boolean {
-    return (
-      this.isCurrentPasswordInvalid ||
-      this.isNewPasswordInvalid ||
-      this.isConfirmPasswordInvalid ||
-      this.isPasswordMismatch ||
-      this.isSamePasswordInvalid
-    );
-  }
-
   toggleSidebar(): void {
     this.isSidebarOpen = !this.isSidebarOpen;
   }
@@ -222,47 +169,8 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   setActiveSection(section: DoctorDashboardSection): void {
-    if (this.mustChangeTemporaryPassword) {
-      this.showToast('Change your temporary password first.', 'warning');
-      return;
-    }
-
     this.activeSection = section;
     this.closeSidebar();
-  }
-
-  submitTemporaryPasswordChange(): void {
-    this.passwordMessage = '';
-    this.hasPasswordSubmitted = true;
-
-    if (this.isPasswordFormInvalid) {
-      this.passwordMessage = 'Please correct the highlighted password fields.';
-      return;
-    }
-
-    this.isTempPasswordConfirmOpen = true;
-  }
-
-  closeTempPasswordConfirm(): void {
-    this.isTempPasswordConfirmOpen = false;
-  }
-
-  confirmTemporaryPasswordChange(): void {
-    try {
-      this.doctorService.changeTemporaryPassword(this.passwordForm);
-
-      this.isTempPasswordConfirmOpen = false;
-      this.mustChangeTemporaryPassword = false;
-      this.hasPasswordSubmitted = false;
-
-      this.resetPasswordForm();
-      this.loadDashboardData();
-
-      this.showToast('Password changed successfully. Dashboard unlocked ✅', 'success');
-    } catch (error: unknown) {
-      this.isTempPasswordConfirmOpen = false;
-      this.passwordMessage = this.getErrorMessage(error);
-    }
   }
 
   handleDoctorDataChanged(): void {
@@ -283,8 +191,7 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   confirmLogout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
+    this.authService.logout();
 
     this.isLogoutModalOpen = false;
     this.router.navigate(['/']);
@@ -311,6 +218,10 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     }
   }
 
+  retryDashboardLoad(): void {
+    this.loadDashboardData();
+  }
+
   formatDate(dateValue: string): string {
     const parsedDate = new Date(dateValue);
 
@@ -330,29 +241,97 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   }
 
   private loadDashboardData(): void {
-    this.doctor = this.doctorService.getDoctorProfile();
-    this.summary = this.doctorService.getDashboardSummary();
-    this.upcomingAppointments = this.doctorService.getUpcomingAppointments();
-    this.recentHealthRecords = this.doctorService.getDoctorHealthRecords();
+    this.isDashboardLoading = true;
+    this.dashboardErrorMessage = '';
+
+    forkJoin({
+      doctor: this.doctorApiService.getMyProfile(),
+
+      upcomingAppointments: this.appointmentApiService.getMyUpcomingAppointments(),
+
+      pendingAppointments: this.appointmentApiService.getMyAppointments({
+        pageNumber: 1,
+        pageSize: 1,
+        status: 'Pending'
+      }),
+
+      confirmedAppointments: this.appointmentApiService.getMyAppointments({
+        pageNumber: 1,
+        pageSize: 1,
+        status: 'Confirmed'
+      }),
+
+      completedAppointments: this.appointmentApiService.getMyAppointments({
+        pageNumber: 1,
+        pageSize: 1,
+        status: 'Completed'
+      }),
+
+      healthRecords: this.healthRecordApiService.getMyHealthRecords({
+        pageNumber: 1,
+        pageSize: 3
+      })
+    }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next: (result) => {
+        this.doctor = result.doctor;
+
+        this.upcomingAppointments = result.upcomingAppointments.sort(
+          (a: AppointmentDto, b: AppointmentDto) =>
+            new Date(a.scheduledDate).getTime() -
+            new Date(b.scheduledDate).getTime()
+        );
+
+        this.recentHealthRecords = result.healthRecords.items;
+
+        this.summary = {
+          upcomingCount: this.upcomingAppointments.length,
+          pendingCount: result.pendingAppointments.totalRecords,
+          confirmedCount: result.confirmedAppointments.totalRecords,
+          completedCount: result.completedAppointments.totalRecords,
+          healthRecordCount: result.healthRecords.totalRecords
+        };
+
+        this.isDashboardLoading = false;
+      },
+      error: (error: unknown) => {
+        console.log('Doctor dashboard API error:', error);
+        this.isDashboardLoading = false;
+        this.dashboardErrorMessage = this.getErrorMessage(error);
+      }
+    });
   }
 
   private calculatePercentage(value: number): number {
     return Math.round((value / this.totalOverviewCount) * 100);
   }
 
-  private resetPasswordForm(): void {
-    this.passwordForm = {
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    };
-  }
-
   private getErrorMessage(error: unknown): string {
-    if (error instanceof Error) {
-      return error.message;
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+        };
+        name?: string;
+      };
+
+      if (apiError.name === 'TimeoutError') {
+        return 'The server is taking too long to respond. Please try again.';
+      }
+
+      return (
+        apiError.error?.message ??
+        apiError.error?.Message ??
+        'Unable to load doctor dashboard data.'
+      );
     }
 
-    return 'Something went wrong. Please try again.';
+    return 'Unable to load doctor dashboard data.';
   }
 }

@@ -95,13 +95,33 @@
         </div>
 
         <div>
-          <strong>{{ patient?.patientName }}</strong>
-          <span>{{ patient?.email }}</span>
+          <strong>{{ patient?.patientName || 'Patient' }}</strong>
+          <span>{{ patient?.email || 'Loading profile...' }}</span>
         </div>
       </div>
     </header>
 
-    @if (activeSection === 'dashboard') {
+    @if (isDashboardLoading && activeSection === 'dashboard') {
+      <section class="pd-empty-card">
+        Loading your HealthAxis workspace...
+      </section>
+    }
+
+    @if (!isDashboardLoading && dashboardErrorMessage && activeSection === 'dashboard') {
+      <section class="pd-empty-card">
+        <strong>Unable to load dashboard</strong>
+
+        <p>
+          {{ dashboardErrorMessage }}
+        </p>
+
+        <button type="button" (click)="retryDashboardLoad()">
+          Retry
+        </button>
+      </section>
+    }
+
+    @if (!isDashboardLoading && !dashboardErrorMessage && activeSection === 'dashboard') {
 
       <section class="pd-premium-dashboard">
 
@@ -310,7 +330,7 @@
                 </div>
 
                 <p>
-                  {{ latestHealthRecord.notes }}
+                  {{ latestHealthRecord.notes || latestHealthRecord.prescription }}
                 </p>
               </div>
             } @else {
@@ -343,50 +363,52 @@
 
     @if (activeSection === 'profile') {
       <app-patient-profile
-        (profileUpdated)="handleProfileUpdated()">
+        (profileUpdated)="handleProfileUpdated()"
+        (passwordChanged)="handlePasswordChanged()">
       </app-patient-profile>
     }
 
   </main>
+
   @if (isLogoutModalOpen) {
-  <div class="pd-confirm-backdrop" (click)="closeLogoutModal()">
+    <div class="pd-confirm-backdrop" (click)="closeLogoutModal()">
 
-    <section class="pd-confirm-modal" (click)="$event.stopPropagation()">
+      <section class="pd-confirm-modal" (click)="$event.stopPropagation()">
 
-      <div class="pd-confirm-icon">
-        ↪
-      </div>
+        <div class="pd-confirm-icon">
+          ↪
+        </div>
 
-      <div>
-        <span class="pd-confirm-kicker">Logout Confirmation</span>
+        <div>
+          <span class="pd-confirm-kicker">Logout Confirmation</span>
 
-        <h3>Do you want to logout?</h3>
+          <h3>Do you want to logout?</h3>
 
-        <p>
-          You will be redirected to the HealthAxis home page.
-        </p>
-      </div>
+          <p>
+            You will be redirected to the HealthAxis home page.
+          </p>
+        </div>
 
-      <div class="pd-confirm-actions">
-        <button
-          type="button"
-          class="pd-confirm-cancel"
-          (click)="closeLogoutModal()">
-          Stay Logged In
-        </button>
+        <div class="pd-confirm-actions">
+          <button
+            type="button"
+            class="pd-confirm-cancel"
+            (click)="closeLogoutModal()">
+            Stay Logged In
+          </button>
 
-        <button
-          type="button"
-          class="pd-confirm-logout"
-          (click)="confirmLogout()">
-          Yes, Logout
-        </button>
-      </div>
+          <button
+            type="button"
+            class="pd-confirm-logout"
+            (click)="confirmLogout()">
+            Yes, Logout
+          </button>
+        </div>
 
-    </section>
+      </section>
 
-  </div>
-}
+    </div>
+  }
 
   @if (toastMessage) {
     <div

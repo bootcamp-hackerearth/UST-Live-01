@@ -1,4 +1,5 @@
 ﻿using HealthCareApp.Shared.Dtos.HealthRecords;
+using HealthCareApp.Shared.Dtos.Pagination;
 namespace HealthCareApp.Services
 {
     public interface IHealthRecordService
@@ -24,6 +25,16 @@ namespace HealthCareApp.Services
         Task<HealthRecordDto> GetHealthRecordByIdForPatientAsync(int healthRecordId,string identityUserId);
 
         Task<List<HealthRecordDto>> GetMyHealthRecordsForDoctorAsync(string identityUserId);
+        Task<List<HealthRecordDto>> GetPatientHealthRecordsForTreatingDoctorAsync(
+    int patientId,
+    string identityUserId);
+        Task<PagedResponse<HealthRecordDto>> GetMyHealthRecordsForPatientPagedAsync(
+    string identityUserId,
+    HealthRecordPaginationQueryDto query);
+
+        Task<PagedResponse<HealthRecordDto>> GetMyHealthRecordsForDoctorPagedAsync(
+            string identityUserId,
+            HealthRecordPaginationQueryDto query);
 
         Task<HealthRecordDto> GetHealthRecordByIdForDoctorAsync(int healthRecordId,string identityUserId);
 

@@ -1,10 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 import { AppointmentDto } from '../../../shared/models/appointment.models';
 import { HealthRecordDto } from '../../../shared/models/health-record.models';
 import { PatientDto } from '../../../shared/models/patient.models';
-import { PatientFakeDataService } from '../../../core/services/patient-fake-data.service';
+
+import { AuthService } from '../../../core/services/auth.service';
+import { PatientApiService } from '../../../core/services/patient-api.service';
+import { AppointmentApiService } from '../../../core/services/appointment-api.service';
+import { HealthRecordApiService } from '../../../core/services/health-record-api.service';
 
 import { PatientBookAppointment } from './components/book-appointment/patient-book-appointment';
 import { PatientAppointmentList } from './components/appointment-list/patient-appointment-list';
@@ -54,6 +59,9 @@ export class PatientDashboard implements OnInit, OnDestroy {
   upcomingAppointments: AppointmentDto[] = [];
   healthRecords: HealthRecordDto[] = [];
 
+  isDashboardLoading = false;
+  dashboardErrorMessage = '';
+
   toastMessage = '';
   toastType: ToastType = 'info';
 
@@ -63,7 +71,10 @@ export class PatientDashboard implements OnInit, OnDestroy {
   private toastTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
-    private patientFakeDataService: PatientFakeDataService,
+    private authService: AuthService,
+    private patientApiService: PatientApiService,
+    private appointmentApiService: AppointmentApiService,
+    private healthRecordApiService: HealthRecordApiService,
     private router: Router
   ) {
   }
@@ -165,6 +176,10 @@ export class PatientDashboard implements OnInit, OnDestroy {
     this.showToast('Profile updated successfully ✅', 'success');
   }
 
+  handlePasswordChanged(): void {
+    this.showToast('Password changed successfully ✅', 'success');
+  }
+
   showToast(message: string, type: ToastType): void {
     this.toastMessage = message;
     this.toastType = type;
@@ -196,8 +211,7 @@ export class PatientDashboard implements OnInit, OnDestroy {
   }
 
   confirmLogout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRole');
+    this.authService.logout();
 
     this.isLogoutModalOpen = false;
     this.router.navigate(['/']);
@@ -221,29 +235,87 @@ export class PatientDashboard implements OnInit, OnDestroy {
     return `pd-status ${status.toLowerCase()}`;
   }
 
+  retryDashboardLoad(): void {
+    this.loadDashboardData();
+  }
+
   private calculatePercentage(value: number): number {
     return Math.round((value / this.totalOverviewCount) * 100);
   }
 
   private loadDashboardData(): void {
-    this.patient = this.patientFakeDataService.getPatientProfile();
+    this.isDashboardLoading = true;
+    this.dashboardErrorMessage = '';
 
-    this.summary = this.patientFakeDataService.getDashboardSummary();
+    forkJoin({
+      patient: this.patientApiService.getMyProfile(),
 
-    this.upcomingAppointments = this.patientFakeDataService
-      .getUpcomingAppointments()
-      .sort(
-        (a: AppointmentDto, b: AppointmentDto) =>
-          new Date(a.scheduledDate).getTime() -
-          new Date(b.scheduledDate).getTime()
+      upcomingAppointments: this.appointmentApiService.getMyUpcomingAppointments(),
+
+      pendingAppointments: this.appointmentApiService.getMyAppointments({
+        pageNumber: 1,
+        pageSize: 1,
+        status: 'Pending'
+      }),
+
+      completedAppointments: this.appointmentApiService.getMyAppointments({
+        pageNumber: 1,
+        pageSize: 1,
+        status: 'Completed'
+      }),
+
+      healthRecords: this.healthRecordApiService.getMyHealthRecords({
+        pageNumber: 1,
+        pageSize: 1
+      })
+    }).subscribe({
+      next: (result) => {
+        this.patient = result.patient;
+
+        this.upcomingAppointments = result.upcomingAppointments.sort(
+          (a: AppointmentDto, b: AppointmentDto) =>
+            new Date(a.scheduledDate).getTime() -
+            new Date(b.scheduledDate).getTime()
+        );
+
+        this.healthRecords = result.healthRecords.items;
+
+        this.summary = {
+          upcomingCount: this.upcomingAppointments.length,
+          pendingCount: result.pendingAppointments.totalRecords,
+          completedCount: result.completedAppointments.totalRecords,
+          healthRecordCount: result.healthRecords.totalRecords
+        };
+
+        this.isDashboardLoading = false;
+      },
+      error: (error: unknown) => {
+        this.isDashboardLoading = false;
+        this.dashboardErrorMessage = this.getErrorMessage(error);
+      }
+    });
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'error' in error
+    ) {
+      const apiError = error as {
+        error?: {
+          message?: string;
+          Message?: string;
+        };
+      };
+
+      return (
+        apiError.error?.message ??
+        apiError.error?.Message ??
+        'Unable to load patient dashboard data.'
       );
+    }
 
-    this.healthRecords = this.patientFakeDataService
-      .getHealthRecords()
-      .sort(
-        (a: HealthRecordDto, b: HealthRecordDto) =>
-          new Date(b.visitDate).getTime() -
-          new Date(a.visitDate).getTime()
-      );
+    return 'Unable to load patient dashboard data.';
   }
 }
