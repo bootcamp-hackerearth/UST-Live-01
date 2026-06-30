@@ -1,6 +1,6 @@
 ﻿namespace HealthAxis.Shared.DTO.AdminDtos
 {
-    public class AdminUserDto
+    public sealed class AdminUserDto
     {
         public string UserId { get; set; } = string.Empty;
 
@@ -11,5 +11,9 @@
         public string Role { get; set; } = string.Empty;
 
         public bool IsActive { get; set; }
+
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        public DateTime? CreatedDate { get; set; }
     }
 }

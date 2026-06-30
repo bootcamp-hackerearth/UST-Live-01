@@ -1,0 +1,169 @@
+<section class="records-page">
+  <section class="records-hero">
+    <div>
+      <a routerLink="/patient/dashboard" class="back-link">
+        ← Back to Dashboard
+      </a>
+
+      <h1>My Health Records</h1>
+
+      <p>
+        View diagnosis, prescriptions, notes, and visit history from your completed
+        appointments.
+      </p>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="loadHealthRecords()">
+      Refresh
+    </button>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  <section class="records-summary">
+    <article>
+      <span>📋</span>
+      <div>
+        <strong>{{ healthRecords().length }}</strong>
+        <p>Total Records</p>
+      </div>
+    </article>
+
+    <article>
+      <span>🩺</span>
+      <div>
+        <strong>{{ latestRecord()?.doctorName || 'N/A' }}</strong>
+        <p>Latest Doctor</p>
+      </div>
+    </article>
+
+    <article>
+      <span>📅</span>
+      <div>
+        <strong>
+          @if (latestRecord()) {
+            {{ latestRecord()?.visitDate | date: 'mediumDate' }}
+          } @else {
+            No Visit
+          }
+        </strong>
+        <p>Latest Visit</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="records-tools">
+    <div class="search-box">
+      <span>🔍</span>
+
+      <input
+        type="search"
+        placeholder="Search diagnosis, prescription, doctor, notes..."
+        (input)="onSearchInput($event)"
+      />
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="state-card">
+      <div class="loader"></div>
+      <strong>Loading your health records...</strong>
+    </div>
+  }
+
+  @if (!loading() && healthRecords().length === 0) {
+    <section class="empty-card">
+      <div class="empty-icon">📋</div>
+      <h2>No health records yet</h2>
+      <p>
+        Health records will appear here after your completed appointment is updated
+        by the doctor.
+      </p>
+      <a routerLink="/patient/book-appointment">Book Appointment</a>
+    </section>
+  }
+
+  @if (!loading() && healthRecords().length > 0) {
+    <section class="records-layout">
+      <div class="records-list">
+        @if (filteredRecords().length === 0) {
+          <div class="empty-filter">
+            <span>🔎</span>
+            <h3>No matching records</h3>
+            <p>Try searching with another doctor name, diagnosis, or prescription.</p>
+          </div>
+        }
+
+        @for (record of filteredRecords(); track getRecordId(record)) {
+          <article class="record-card">
+            <div class="record-top">
+              <div class="record-icon">📋</div>
+
+              <div>
+                <h3>{{ record.diagnosis || 'Diagnosis not provided' }}</h3>
+                <p>
+                  Dr. {{ record.doctorName || 'Doctor' }}
+                  @if (record.specialisation) {
+                    • {{ record.specialisation }}
+                  }
+                </p>
+              </div>
+            </div>
+
+            <div class="record-grid">
+              <div>
+                <span>Visit Date</span>
+                <strong>{{ record.visitDate | date: 'mediumDate' }}</strong>
+              </div>
+
+              <div>
+                <span>Appointment ID</span>
+                <strong>#{{ record.appointmentId }}</strong>
+              </div>
+
+              <div>
+                <span>Record ID</span>
+                <strong>#{{ getRecordId(record) }}</strong>
+              </div>
+            </div>
+
+            <div class="medical-section prescription">
+              <span>💊 Prescription</span>
+              <p>{{ record.prescription || 'No prescription added.' }}</p>
+            </div>
+
+            <div class="medical-section notes">
+              <span>📝 Doctor Notes</span>
+              <p>{{ record.notes || 'No notes added.' }}</p>
+            </div>
+          </article>
+        }
+      </div>
+
+      <aside class="records-side">
+        <div class="side-card">
+          <span>💙</span>
+          <h3>Patient Reminder</h3>
+          <p>
+            Always consult your doctor before changing or stopping any prescribed
+            medicine.
+          </p>
+        </div>
+
+        <div class="side-card light">
+          <span>📎</span>
+          <h3>Carry During Visit</h3>
+
+          <ul>
+            <li>Previous prescriptions</li>
+            <li>Test reports</li>
+            <li>Current medicines</li>
+            <li>Appointment ID</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+  }
+</section>

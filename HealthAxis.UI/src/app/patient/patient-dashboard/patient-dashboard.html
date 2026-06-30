@@ -1,0 +1,167 @@
+<section class="patient-dashboard">
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  <section class="hero-card">
+    <div>
+      <p>Patient Control Center</p>
+      <h1>
+        Welcome back,
+        {{ patient()?.fullName || 'Patient' }}
+      </h1>
+      <span>
+        Book appointments, view health records, and track every hospital visit from one secure dashboard.
+      </span>
+
+      <div class="hero-actions">
+        <a routerLink="/patient/book-appointment" class="primary-action">
+          Book Appointment
+        </a>
+
+        <a routerLink="/patient/health-records" class="secondary-action">
+          View Health Records
+        </a>
+      </div>
+    </div>
+
+    <div class="health-score-card">
+      <span>💙</span>
+      <strong>Care Status</strong>
+      <p>Profile active and ready for appointment booking.</p>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <article class="stat-card pending">
+      <span>⏳</span>
+      <div>
+        <strong>{{ pendingCount() }}</strong>
+        <p>Pending</p>
+      </div>
+    </article>
+
+    <article class="stat-card confirmed">
+      <span>📅</span>
+      <div>
+        <strong>{{ confirmedCount() }}</strong>
+        <p>Confirmed</p>
+      </div>
+    </article>
+
+    <article class="stat-card completed">
+      <span>✅</span>
+      <div>
+        <strong>{{ completedCount() }}</strong>
+        <p>Completed</p>
+      </div>
+    </article>
+
+    <article class="stat-card cancelled">
+      <span>🚫</span>
+      <div>
+        <strong>{{ cancelledCount() }}</strong>
+        <p>Cancelled</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="next-visit-card">
+      <div class="card-title">
+        <span>Upcoming Visit</span>
+        <h2>Next Appointment</h2>
+      </div>
+
+      @if (upcomingAppointment()) {
+        <div class="visit-details">
+          <div class="doctor-avatar">DR</div>
+
+          <div>
+            <h3>Dr. {{ upcomingAppointment()?.doctorName }}</h3>
+            <p>{{ upcomingAppointment()?.specialisation }}</p>
+          </div>
+        </div>
+
+        <div class="visit-info-grid">
+          <div>
+            <span>Date</span>
+            <strong>{{ upcomingAppointment()?.scheduledDate }}</strong>
+          </div>
+
+          <div>
+            <span>Time</span>
+            <strong>{{ upcomingAppointment()?.timeSlot }}</strong>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <strong>{{ upcomingAppointment()?.status }}</strong>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span>📅</span>
+          <h3>No upcoming appointments</h3>
+          <p>Book your first appointment with an available specialist.</p>
+          <a routerLink="/patient/book-appointment">Book Now</a>
+        </div>
+      }
+    </article>
+
+    <article class="quick-actions-card">
+      <div class="card-title">
+        <span>Quick Actions</span>
+        <h2>What do you want to do?</h2>
+      </div>
+
+      <div class="quick-actions">
+        <a routerLink="/patient/book-appointment">
+          <span>📅</span>
+          <div>
+            <strong>Book Appointment</strong>
+            <small>Choose doctor and time slot</small>
+          </div>
+        </a>
+
+        <a routerLink="/patient/my-appointments">
+          <span>🧾</span>
+          <div>
+            <strong>My Appointments</strong>
+            <small>Track all visit status</small>
+          </div>
+        </a>
+
+        <a routerLink="/patient/health-records">
+          <span>📋</span>
+          <div>
+            <strong>Health Records</strong>
+            <small>View diagnosis and prescription</small>
+          </div>
+        </a>
+
+        <a routerLink="/patient/profile">
+          <span>👤</span>
+          <div>
+            <strong>My Profile</strong>
+            <small>Update personal details</small>
+          </div>
+        </a>
+      </div>
+    </article>
+
+    <article class="tips-card">
+      <div class="card-title">
+        <span>Patient Tips</span>
+        <h2>Before visiting hospital</h2>
+      </div>
+
+      <ul>
+        <li>Carry previous medical reports if available.</li>
+        <li>Reach 10 minutes before your slot.</li>
+        <li>Keep your registered phone number active.</li>
+        <li>Check appointment status before leaving home.</li>
+      </ul>
+    </article>
+  </section>
+</section>

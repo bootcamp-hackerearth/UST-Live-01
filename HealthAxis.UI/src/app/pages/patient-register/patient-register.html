@@ -1,0 +1,252 @@
+<section class="register-page">
+  <div class="register-shell">
+    <aside class="register-showcase">
+      <div class="showcase-badge">
+        <span>👤</span>
+        New Patient Registration
+      </div>
+
+      <h1>Create your digital patient profile</h1>
+
+      <p>
+        Register once, then login to book hospital appointments, track visits,
+        and access your health records securely.
+      </p>
+
+      <div class="patient-benefits">
+        <article>
+          <span>📅</span>
+          <div>
+            <strong>Online Booking</strong>
+            <small>Choose doctors, dates, and time slots</small>
+          </div>
+        </article>
+
+        <article>
+          <span>🧾</span>
+          <div>
+            <strong>Appointment Tracking</strong>
+            <small>View pending, confirmed, and completed visits</small>
+          </div>
+        </article>
+
+        <article>
+          <span>📋</span>
+          <div>
+            <strong>Health Records</strong>
+            <small>Access prescriptions and diagnosis history</small>
+          </div>
+        </article>
+      </div>
+
+      <div class="registration-flow">
+        <div class="flow-step active">1</div>
+        <div class="flow-line"></div>
+        <div class="flow-step">2</div>
+        <div class="flow-line"></div>
+        <div class="flow-step">3</div>
+      </div>
+
+      <div class="flow-labels">
+        <span>Register</span>
+        <span>Login</span>
+        <span>Book</span>
+      </div>
+    </aside>
+
+    <main class="register-form-panel">
+      <div class="form-card">
+        <div class="form-header">
+          <span>Patient Details</span>
+          <h2>Register as Patient</h2>
+          <p>
+            Fill all required details carefully. Your account will be secured using Identity login.
+          </p>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="alert error">{{ errorMessage() }}</div>
+        }
+
+        @if (successMessage()) {
+          <div class="alert success">{{ successMessage() }}</div>
+        }
+
+        <form [formGroup]="registerForm" (ngSubmit)="registerPatient()">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="fullName">Full Name</label>
+
+              <div class="input-wrapper">
+                <span>👤</span>
+                <input
+                  id="fullName"
+                  type="text"
+                  formControlName="fullName"
+                  placeholder="Enter full name"
+                />
+              </div>
+
+              @if (fullName.invalid && fullName.touched) {
+                <small>
+                  @if (fullName.errors?.['required']) {
+                    Name is required.
+                  }
+
+                  @if (fullName.errors?.['pattern']) {
+                    Name should contain only letters and spaces.
+                  }
+
+                  @if (fullName.errors?.['minlength']) {
+                    Minimum 3 characters required.
+                  }
+                </small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="dateOfBirth">Date of Birth</label>
+
+              <div class="input-wrapper">
+                <span>🎂</span>
+                <input
+                  id="dateOfBirth"
+                  type="date"
+                  formControlName="dateOfBirth"
+                />
+              </div>
+
+              @if (dateOfBirth.invalid && dateOfBirth.touched) {
+                <small>
+                  @if (dateOfBirth.errors?.['required']) {
+                    Date of birth is required.
+                  }
+
+                  @if (dateOfBirth.errors?.['futureDate']) {
+                    Date of birth cannot be in the future.
+                  }
+                </small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="gender">Gender</label>
+
+              <div class="input-wrapper">
+                <span>⚕️</span>
+                <select id="gender" formControlName="gender">
+                  <option value="">Select gender</option>
+
+                  @for (genderOption of genderOptions; track genderOption.value) {
+                    <option [value]="genderOption.value">
+                      {{ genderOption.label }}
+                    </option>
+                  }
+                </select>
+              </div>
+
+              @if (gender.invalid && gender.touched) {
+                <small>Gender is required.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="phoneNumber">Phone Number</label>
+
+              <div class="input-wrapper">
+                <span>📞</span>
+                <input
+                  id="phoneNumber"
+                  type="text"
+                  formControlName="phoneNumber"
+                  placeholder="10 digit mobile number"
+                />
+              </div>
+
+              @if (phoneNumber.invalid && phoneNumber.touched) {
+                <small>Enter a valid 10 digit Indian mobile number.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+
+              <div class="input-wrapper">
+                <span>✉️</span>
+                <input
+                  id="email"
+                  type="email"
+                  formControlName="email"
+                  placeholder="example@email.com"
+                />
+              </div>
+
+              @if (email.invalid && email.touched) {
+                <small>Enter a valid email address.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+
+              <div class="input-wrapper">
+                <span>🔑</span>
+                <input
+                  id="password"
+                  type="password"
+                  formControlName="password"
+                  placeholder="Example: Mona@2004"
+                />
+              </div>
+
+              @if (password.invalid && password.touched) {
+                <small>
+                  Password must contain uppercase, lowercase, number, special character,
+                  and at least 8 characters.
+                </small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Confirm Password</label>
+
+              <div class="input-wrapper">
+                <span>✅</span>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  formControlName="confirmPassword"
+                  placeholder="Re-enter password"
+                />
+              </div>
+
+              @if (confirmPassword.invalid && confirmPassword.touched) {
+                <small>Confirm password is required.</small>
+              }
+
+              @if (registerForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
+                <small>Password and confirm password do not match.</small>
+              }
+            </div>
+          </div>
+
+          <div class="password-note">
+            <span>🔐</span>
+            <p>
+              Use at least 8 characters with uppercase, lowercase, number, and special character.
+            </p>
+          </div>
+
+          <button type="submit" [disabled]="loading()">
+            {{ loading() ? 'Creating Patient Account...' : 'Create Patient Account' }}
+          </button>
+        </form>
+
+        <p class="bottom-text">
+          Already registered?
+          <a routerLink="/login">Login here</a>
+        </p>
+      </div>
+    </main>
+  </div>
+</section>

@@ -1,0 +1,410 @@
+.patient-dashboard {
+  display: grid;
+  gap: 14px;
+}
+
+/* Alert */
+.alert {
+  padding: 12px 14px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Hero */
+.hero-card {
+  padding: 22px 26px;
+  border-radius: 26px;
+  color: white;
+  background:
+    radial-gradient(circle at top right, rgba(56, 189, 248, 0.24), transparent 30%),
+    linear-gradient(135deg, #0f172a, #075985);
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 20px;
+  align-items: center;
+  box-shadow: 0 18px 45px rgba(7, 89, 133, 0.2);
+}
+
+.hero-card p {
+  margin: 0;
+  color: #bae6fd;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+
+.hero-card h1 {
+  margin: 8px 0;
+  font-size: clamp(30px, 3vw, 42px);
+  line-height: 1;
+}
+
+.hero-card span {
+  color: #dbeafe;
+  line-height: 1.5;
+  font-size: 14px;
+  max-width: 760px;
+  display: block;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.primary-action,
+.secondary-action {
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.primary-action {
+  color: #0f172a;
+  background: white;
+}
+
+.secondary-action {
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.health-score-card {
+  width: 100%;
+  min-height: 170px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  padding: 18px;
+  display: grid;
+  align-content: center;
+}
+
+.health-score-card span {
+  font-size: 34px;
+}
+
+.health-score-card strong {
+  display: block;
+  margin: 8px 0 5px;
+  font-size: 19px;
+}
+
+.health-score-card p {
+  color: #dbeafe;
+  line-height: 1.45;
+  text-transform: none;
+  font-size: 13px;
+}
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 13px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 22px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.stat-card > span {
+  width: 48px;
+  height: 48px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+.stat-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 27px;
+  line-height: 1;
+}
+
+.stat-card p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.pending > span {
+  background: #fef3c7;
+}
+
+.confirmed > span {
+  background: #dbeafe;
+}
+
+.completed > span {
+  background: #dcfce7;
+}
+
+.cancelled > span {
+  background: #fee2e2;
+}
+
+/* Bottom cards */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.95fr 0.75fr;
+  gap: 13px;
+  align-items: stretch;
+}
+
+.next-visit-card,
+.quick-actions-card,
+.tips-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+  min-height: 220px;
+}
+
+.tips-card {
+  grid-column: auto;
+}
+
+.card-title span {
+  color: #0284c7;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.4px;
+}
+
+.card-title h2 {
+  margin: 5px 0 14px;
+  color: #0f172a;
+  font-size: 21px;
+}
+
+/* Upcoming Visit */
+.visit-details {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 18px;
+}
+
+.doctor-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: linear-gradient(135deg, #0284c7, #22c55e);
+  font-weight: 900;
+}
+
+.visit-details h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 17px;
+}
+
+.visit-details p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.visit-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.visit-info-grid div {
+  background: #eff6ff;
+  border-radius: 14px;
+  padding: 10px;
+}
+
+.visit-info-grid span,
+.visit-info-grid strong {
+  display: block;
+}
+
+.visit-info-grid span {
+  color: #64748b;
+  font-weight: 900;
+  font-size: 10px;
+}
+
+.visit-info-grid strong {
+  color: #0f172a;
+  margin-top: 4px;
+  font-size: 12px;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 16px;
+}
+
+.empty-state span {
+  font-size: 34px;
+}
+
+.empty-state h3 {
+  color: #0f172a;
+  margin: 7px 0;
+  font-size: 18px;
+}
+
+.empty-state p {
+  color: #64748b;
+  margin: 0;
+  font-size: 13px;
+}
+
+.empty-state a {
+  display: inline-flex;
+  margin-top: 10px;
+  background: #0f172a;
+  color: white;
+  text-decoration: none;
+  padding: 9px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: grid;
+  gap: 9px;
+}
+
+.quick-actions a {
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 16px;
+  text-decoration: none;
+  background: #f8fafc;
+  color: inherit;
+  transition: 0.2s ease;
+}
+
+.quick-actions a:hover {
+  background: #eff6ff;
+  transform: translateX(4px);
+}
+
+.quick-actions span {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: white;
+  font-size: 20px;
+}
+
+.quick-actions strong,
+.quick-actions small {
+  display: block;
+}
+
+.quick-actions strong {
+  color: #0f172a;
+  font-size: 13px;
+}
+
+.quick-actions small {
+  color: #64748b;
+  margin-top: 2px;
+  font-weight: 800;
+  font-size: 11px;
+}
+
+/* Tips */
+.tips-card ul {
+  color: #64748b;
+  line-height: 1.55;
+  font-weight: 800;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12px;
+}
+
+.tips-card li {
+  margin-bottom: 6px;
+}
+
+/* IMPORTANT: no overflow hidden now */
+@media (min-width: 1051px) {
+  .patient-dashboard {
+    overflow: visible;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tips-card {
+    grid-column: 1 / -1;
+    min-height: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-card,
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .health-score-card {
+    min-height: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .stats-grid,
+  .visit-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+}

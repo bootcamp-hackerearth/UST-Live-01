@@ -1,0 +1,129 @@
+<section class="login-page">
+  <div class="login-shell">
+    <aside class="login-showcase">
+      <div class="showcase-badge">
+        <span>🔐</span>
+        Secure Hospital Access
+      </div>
+
+      <h1>Welcome back to HealthAxis Hospital</h1>
+
+      <p>
+        One login for patients, doctors, and admins. Your role is identified
+        securely from the JWT token and redirected to the right dashboard.
+      </p>
+
+      <div class="role-preview">
+        <article>
+          <span>👤</span>
+          <div>
+            <strong>Patient Portal</strong>
+            <small>Book visits and track appointments</small>
+          </div>
+        </article>
+
+        <article>
+          <span>🩺</span>
+          <div>
+            <strong>Doctor Portal</strong>
+            <small>Manage consultations and records</small>
+          </div>
+        </article>
+
+        <article>
+          <span>🛡️</span>
+          <div>
+            <strong>Admin Console</strong>
+            <small>Redirects to Blazor admin dashboard</small>
+          </div>
+        </article>
+      </div>
+
+      <div class="security-strip">
+        <div>
+          <strong>JWT</strong>
+          <span>Authentication</span>
+        </div>
+
+        <div>
+          <strong>RBAC</strong>
+          <span>Role Access</span>
+        </div>
+
+        <div>
+          <strong>API</strong>
+          <span>Secured Calls</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="login-form-panel">
+      <div class="form-card">
+        <div class="form-header">
+          <span>Login</span>
+          <h2>Access your healthcare portal</h2>
+          <p>Use your registered email and password to continue.</p>
+        </div>
+
+        @if (errorMessage()) {
+          <div class="alert error">{{ errorMessage() }}</div>
+        }
+
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+
+            <div class="input-wrapper">
+              <span>✉️</span>
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="example@email.com"
+              />
+            </div>
+
+            @if (email.invalid && email.touched) {
+              <small>Valid email is required.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+
+            <div class="input-wrapper">
+              <span>🔑</span>
+              <input
+                id="password"
+                type="password"
+                formControlName="password"
+                placeholder="Enter password"
+              />
+            </div>
+
+            @if (password.invalid && password.touched) {
+              <small>Password is required.</small>
+            }
+          </div>
+
+          <button type="submit" [disabled]="loading()">
+            {{ loading() ? 'Checking credentials...' : 'Login Securely' }}
+          </button>
+        </form>
+
+        <div class="quick-note">
+          <span>💡</span>
+          <p>
+            Patient goes to Angular patient dashboard, Doctor goes to Angular
+            doctor dashboard, and Admin goes to Blazor admin dashboard.
+          </p>
+        </div>
+
+        <p class="bottom-text">
+          New patient?
+          <a routerLink="/register">Create patient account</a>
+        </p>
+      </div>
+    </main>
+  </div>
+</section>

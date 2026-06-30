@@ -1,0 +1,62 @@
+<header class="topbar">
+  <div class="topbar-title">
+    <p>{{ getGreeting() }}</p>
+    <h1>{{ authService.role() }} Dashboard</h1>
+  </div>
+
+  <div class="topbar-actions">
+    <div class="time-card">
+      <span class="time-icon">🕒</span>
+
+      <div>
+        <strong>{{ currentTime() | date: 'hh:mm a' }}</strong>
+        <small>{{ currentTime() | date: 'EEE, dd MMM yyyy' }}</small>
+      </div>
+    </div>
+
+    <div class="profile-menu" (click)="$event.stopPropagation()">
+      <button
+        type="button"
+        class="profile-button"
+        aria-label="Open profile menu"
+        (click)="toggleProfileMenu()"
+      >
+        <span class="profile-avatar">
+          <span class="people-icon">👥</span>
+        </span>
+
+        <span class="profile-short">
+          <strong>{{ authService.role() }}</strong>
+          <small>Account</small>
+        </span>
+
+        <span class="chevron">
+          {{ isProfileMenuOpen() ? '⌃' : '⌄' }}
+        </span>
+      </button>
+
+      @if (isProfileMenuOpen()) {
+        <div class="profile-dropdown">
+          <div class="dropdown-header">
+            <div class="mini-avatar">👥</div>
+
+            <div>
+              <strong>{{ authService.role() }} Account</strong>
+              <small>HealthAxis Portal</small>
+            </div>
+          </div>
+
+          <a [routerLink]="profileRoute()" (click)="closeProfileMenu()">
+            <span>👤</span>
+            View Profile
+          </a>
+
+          <button type="button" (click)="logout()">
+            <span>🚪</span>
+            Logout
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

@@ -12,10 +12,10 @@ namespace HealthAxis.API.Services.Interfaces
 
         Task<AppointmentDto> AddAsync(CreateAppointmentDto appointmentDto);
 
-        //Task<AppointmentDto?> UpdateAsync(int id, AppointmentDto appointmentDto);
-        Task<AppointmentDto> UpdateStatusAsync(int id, UpdateAppointmentStatusDto statusDto);
+        Task<AppointmentDto> UpdateStatusAsync(
+            int id,
+            UpdateAppointmentStatusDto statusDto);
 
         Task<AppointmentDto?> DeleteAsync(int id);
     }
 }
-

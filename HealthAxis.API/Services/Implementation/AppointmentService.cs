@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using HealthAxis.Shared.DTO.AppointmentDtos;
-using HealthAxis.Shared.Enums;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.AppointmentDtos;
+using HealthAxis.Shared.Enums;
 
 namespace HealthAxis.API.Services.Implementation
 {
@@ -14,10 +14,28 @@ namespace HealthAxis.API.Services.Implementation
         IDoctorRepository doctorRepository,
         IMapper mapper) : IAppointmentService
     {
+        private static readonly HashSet<string> AllowedTimeSlots =
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                "09:00 AM - 09:30 AM",
+                "09:30 AM - 10:00 AM",
+                "10:00 AM - 10:30 AM",
+                "10:30 AM - 11:00 AM",
+                "11:00 AM - 11:30 AM",
+                "11:30 AM - 12:00 PM",
+                "02:00 PM - 02:30 PM",
+                "02:30 PM - 03:00 PM",
+                "03:00 PM - 03:30 PM",
+                "03:30 PM - 04:00 PM",
+                "04:00 PM - 04:30 PM",
+                "04:30 PM - 05:00 PM"
+            };
+
         public async Task<List<AppointmentDto>> GetAllAsync()
         {
-            return mapper.Map<List<AppointmentDto>>(
-                await appointmentRepository.GetAllAsync());
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            return await MapAppointmentListAsync(appointments);
         }
 
         public async Task<AppointmentDto?> GetByIdAsync(int id)
@@ -29,7 +47,7 @@ namespace HealthAxis.API.Services.Implementation
                 return null;
             }
 
-            return mapper.Map<AppointmentDto>(appointment);
+            return await MapAppointmentAsync(appointment);
         }
 
         public async Task<List<AppointmentDto>> GetByPatientIdAsync(int patientId)
@@ -38,177 +56,348 @@ namespace HealthAxis.API.Services.Implementation
 
             if (patient == null)
             {
-                throw new NotFoundException("Patient not found");
+                throw new NotFoundException("Patient not found.");
             }
 
             var appointments = await appointmentRepository.GetAllAsync();
 
             var patientAppointments = appointments
-                .Where(a => a.PatientId == patientId)
+                .Where(appointment => appointment.PatientId == patientId)
+                .OrderByDescending(appointment => appointment.ScheduledDate)
+                .ThenBy(appointment => appointment.TimeSlot)
                 .ToList();
 
-            return mapper.Map<List<AppointmentDto>>(patientAppointments);
+            return await MapAppointmentListAsync(patientAppointments);
         }
 
         public async Task<AppointmentDto> AddAsync(CreateAppointmentDto appointmentDto)
         {
-            var patient = await patientRepository.GetByIdAsync(appointmentDto.PatientId);
+            ArgumentNullException.ThrowIfNull(appointmentDto);
+
+            ValidateAppointmentRequest(appointmentDto);
+
+            var patient = await patientRepository.GetByIdAsync(
+                appointmentDto.PatientId);
 
             if (patient == null)
             {
-                throw new NotFoundException("Patient not found");
+                throw new NotFoundException("Patient not found.");
             }
 
-            var doctor = await doctorRepository.GetByIdAsync(appointmentDto.DoctorId);
+            var doctor = await doctorRepository.GetByIdAsync(
+                appointmentDto.DoctorId);
 
             if (doctor == null)
             {
-                throw new NotFoundException("Doctor not found");
+                throw new NotFoundException("Doctor not found.");
             }
 
             if (!doctor.IsActive)
             {
                 throw new BusinessRuleException(
-                    "Doctor is not available for appointment");
+                    "Selected doctor is inactive. Please choose another doctor.");
             }
 
-            if (appointmentDto.ScheduledDate.Date < DateTime.Today)
-            {
-                throw new ValidationException(
-                    "Appointment date cannot be in the past");
-            }
-
-            if (appointmentDto.ScheduledDate.Date > DateTime.Today.AddMonths(6))
-            {
-                throw new ValidationException(
-                    "Appointment date cannot be more than 6 months ahead");
-            }
-
-            if (string.IsNullOrWhiteSpace(appointmentDto.TimeSlot))
-            {
-                throw new ValidationException("Time slot is required");
-            }
-
-            var appointments = await appointmentRepository.GetAllAsync();
-
-            var activeStatuses = new[]
-            {
-        AppointmentStatus.Pending,
-        AppointmentStatus.Confirmed
-    };
-
-            var normalizedTimeSlot = appointmentDto.TimeSlot.Trim().ToLower();
-
-            var doctorAlreadyBooked = appointments.Any(a =>
-                a.DoctorId == appointmentDto.DoctorId &&
-                a.ScheduledDate.Date == appointmentDto.ScheduledDate.Date &&
-                a.TimeSlot.Trim().ToLower() == normalizedTimeSlot &&
-                activeStatuses.Contains(a.Status));
-
-            if (doctorAlreadyBooked)
-            {
-                throw new BusinessRuleException(
-                    "This doctor already has an appointment at this time");
-            }
-
-            var patientAlreadyBooked = appointments.Any(a =>
-                a.PatientId == appointmentDto.PatientId &&
-                a.ScheduledDate.Date == appointmentDto.ScheduledDate.Date &&
-                a.TimeSlot.Trim().ToLower() == normalizedTimeSlot &&
-                activeStatuses.Contains(a.Status));
-
-            if (patientAlreadyBooked)
-            {
-                throw new BusinessRuleException(
-                    "You already have an appointment at this time");
-            }
+            await ValidateAppointmentConflictAsync(appointmentDto);
 
             var appointment = new Appointment
             {
                 PatientId = appointmentDto.PatientId,
                 DoctorId = appointmentDto.DoctorId,
                 ScheduledDate = appointmentDto.ScheduledDate.Date,
-                TimeSlot = appointmentDto.TimeSlot.Trim(),
-                Status = AppointmentStatus.Pending
+                TimeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot),
+                Status = AppointmentStatus.Pending,
+                CancellationReason = null
             };
 
             var savedAppointment = await appointmentRepository.AddAsync(appointment);
 
-            return mapper.Map<AppointmentDto>(savedAppointment);
+            return await MapAppointmentAsync(savedAppointment);
         }
 
         public async Task<AppointmentDto> UpdateStatusAsync(
-     int id,
-     UpdateAppointmentStatusDto statusDto)
+            int id,
+            UpdateAppointmentStatusDto statusDto)
         {
+            ArgumentNullException.ThrowIfNull(statusDto);
+
             var appointment = await appointmentRepository.GetByIdAsync(id);
 
             if (appointment == null)
             {
-                throw new NotFoundException("Appointment not found");
+                throw new NotFoundException("Appointment not found.");
             }
 
-            if (!Enum.IsDefined(typeof(AppointmentStatus), statusDto.Status))
-            {
-                throw new ValidationException("Invalid appointment status");
-            }
+            ValidateAppointmentStatus(statusDto.Status);
 
-            if (appointment.Status == AppointmentStatus.Completed ||
-                appointment.Status == AppointmentStatus.Cancelled)
-            {
-                throw new BusinessRuleException(
-                    "Completed or cancelled appointment cannot be changed");
-            }
-
-            if (appointment.Status == AppointmentStatus.Pending &&
-                statusDto.Status != AppointmentStatus.Confirmed &&
-                statusDto.Status != AppointmentStatus.Cancelled)
-            {
-                throw new BusinessRuleException(
-                    "Pending appointment can only be confirmed or cancelled");
-            }
-
-            if (appointment.Status == AppointmentStatus.Confirmed &&
-                statusDto.Status != AppointmentStatus.Completed)
-            {
-                throw new BusinessRuleException(
-                    "Confirmed appointment can only be completed");
-            }
-
-            if (statusDto.Status == AppointmentStatus.Cancelled &&
-                string.IsNullOrWhiteSpace(statusDto.CancellationReason))
-            {
-                throw new ValidationException("Cancellation reason is required");
-            }
+            ValidateStatusTransition(
+                appointment.Status,
+                statusDto.Status);
 
             appointment.Status = statusDto.Status;
 
             if (statusDto.Status == AppointmentStatus.Cancelled)
             {
-                appointment.CancellationReason = statusDto.CancellationReason;
+                appointment.CancellationReason =
+                    string.IsNullOrWhiteSpace(statusDto.CancellationReason)
+                        ? null
+                        : statusDto.CancellationReason.Trim();
             }
             else
             {
                 appointment.CancellationReason = null;
             }
 
-            var updated = await appointmentRepository.UpdateAsync(
-                id,
-                appointment);
+            var updatedAppointment = await appointmentRepository.UpdateAsync(
+      id,
+      appointment);
 
-            return mapper.Map<AppointmentDto>(updated);
-        }
-
-        public async Task<AppointmentDto?> DeleteAsync(int id)
-        {
-            var deleted = await appointmentRepository.DeleteAsync(id);
-
-            if (deleted == null)
+            if (updatedAppointment == null)
             {
-                throw new NotFoundException("Appointment not found");
+                throw new NotFoundException("Appointment not found.");
             }
 
-            return mapper.Map<AppointmentDto>(deleted);
+            return await MapAppointmentAsync(updatedAppointment);
+        }
+        public async Task<AppointmentDto?> DeleteAsync(int id)
+        {
+            var appointment = await appointmentRepository.GetByIdAsync(id);
+
+            if (appointment == null)
+            {
+                throw new NotFoundException("Appointment not found.");
+            }
+
+            if (appointment.Status != AppointmentStatus.Pending)
+            {
+                throw new BusinessRuleException(
+                    "Only pending appointments can be deleted.");
+            }
+
+            var deletedAppointment = await appointmentRepository.DeleteAsync(id);
+
+            if (deletedAppointment == null)
+            {
+                return null;
+            }
+
+            return await MapAppointmentAsync(deletedAppointment);
+        }
+
+        private async Task<List<AppointmentDto>> MapAppointmentListAsync(
+            IEnumerable<Appointment> appointments)
+        {
+            var appointmentList = appointments.ToList();
+
+            var patients = (await patientRepository.GetAllAsync())
+                .ToDictionary(patient => patient.PatientId);
+
+            var doctors = (await doctorRepository.GetAllAsync())
+                .ToDictionary(doctor => doctor.DoctorId);
+
+            return appointmentList
+                .Select(appointment =>
+                    MapAppointment(
+                        appointment,
+                        patients,
+                        doctors))
+                .ToList();
+        }
+
+        private async Task<AppointmentDto> MapAppointmentAsync(
+            Appointment appointment)
+        {
+            var patients = (await patientRepository.GetAllAsync())
+                .ToDictionary(patient => patient.PatientId);
+
+            var doctors = (await doctorRepository.GetAllAsync())
+                .ToDictionary(doctor => doctor.DoctorId);
+
+            return MapAppointment(
+                appointment,
+                patients,
+                doctors);
+        }
+
+        private AppointmentDto MapAppointment(
+    Appointment appointment,
+    IReadOnlyDictionary<int, Patient> patients,
+    IReadOnlyDictionary<int, Doctor> doctors)
+        {
+            var appointmentDto = mapper.Map<AppointmentDto>(appointment);
+
+            if (patients.TryGetValue(appointment.PatientId, out var patient))
+            {
+                appointmentDto.PatientName = patient.FullName;
+            }
+            else
+            {
+                appointmentDto.PatientName = "Not assigned";
+            }
+
+            if (doctors.TryGetValue(appointment.DoctorId, out var doctor))
+            {
+                appointmentDto.DoctorName = doctor.FullName;
+                appointmentDto.Specialisation = doctor.Specialisation;
+            }
+            else
+            {
+                appointmentDto.DoctorName = "Not assigned";
+            }
+
+            return appointmentDto;
+        }
+
+        private static void ValidateAppointmentRequest(
+            CreateAppointmentDto appointmentDto)
+        {
+            if (appointmentDto.PatientId <= 0)
+            {
+                throw new ValidationException("Valid patient id is required.");
+            }
+
+            if (appointmentDto.DoctorId <= 0)
+            {
+                throw new ValidationException("Please select a valid doctor.");
+            }
+
+            DateTime appointmentDate = appointmentDto.ScheduledDate.Date;
+            DateTime today = DateTime.Today;
+            DateTime maxAllowedDate = today.AddMonths(6);
+
+            if (appointmentDate < today)
+            {
+                throw new ValidationException(
+                    "Appointment date cannot be in the past.");
+            }
+
+            if (appointmentDate > maxAllowedDate)
+            {
+                throw new ValidationException(
+                    "Appointment date cannot be more than 6 months ahead.");
+            }
+
+            if (string.IsNullOrWhiteSpace(appointmentDto.TimeSlot))
+            {
+                throw new ValidationException("Time slot is required.");
+            }
+
+            string timeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
+
+            if (!AllowedTimeSlots.Contains(timeSlot))
+            {
+                throw new ValidationException(
+                    "Invalid time slot selected. Please choose a valid hospital time slot.");
+            }
+        }
+
+        private async Task ValidateAppointmentConflictAsync(
+            CreateAppointmentDto appointmentDto)
+        {
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            DateTime appointmentDate = appointmentDto.ScheduledDate.Date;
+            string requestedTimeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
+
+            bool doctorAlreadyBooked = appointments.Any(appointment =>
+                appointment.DoctorId == appointmentDto.DoctorId &&
+                appointment.ScheduledDate.Date == appointmentDate &&
+                IsSameTimeSlot(appointment.TimeSlot, requestedTimeSlot) &&
+                IsActiveAppointmentStatus(appointment.Status));
+
+            if (doctorAlreadyBooked)
+            {
+                throw new BusinessRuleException(
+                    "This doctor already has an appointment for the selected date and time slot. Please choose another slot.");
+            }
+
+            bool patientAlreadyBooked = appointments.Any(appointment =>
+                appointment.PatientId == appointmentDto.PatientId &&
+                appointment.ScheduledDate.Date == appointmentDate &&
+                IsSameTimeSlot(appointment.TimeSlot, requestedTimeSlot) &&
+                IsActiveAppointmentStatus(appointment.Status));
+
+            if (patientAlreadyBooked)
+            {
+                throw new BusinessRuleException(
+                    "You already have an appointment at this date and time slot.");
+            }
+        }
+
+        private static void ValidateAppointmentStatus(
+            AppointmentStatus status)
+        {
+            if (!Enum.IsDefined(typeof(AppointmentStatus), status))
+            {
+                throw new ValidationException("Invalid appointment status.");
+            }
+        }
+
+        private static void ValidateStatusTransition(
+            AppointmentStatus currentStatus,
+            AppointmentStatus newStatus)
+        {
+            if (currentStatus == AppointmentStatus.Completed ||
+                currentStatus == AppointmentStatus.Cancelled)
+            {
+                throw new BusinessRuleException(
+                    "Completed or cancelled appointment cannot be changed.");
+            }
+
+            if (currentStatus == AppointmentStatus.Pending)
+            {
+                ValidatePendingStatusTransition(newStatus);
+                return;
+            }
+
+            if (currentStatus == AppointmentStatus.Confirmed)
+            {
+                ValidateConfirmedStatusTransition(newStatus);
+            }
+        }
+
+        private static void ValidatePendingStatusTransition(
+            AppointmentStatus newStatus)
+        {
+            if (newStatus != AppointmentStatus.Confirmed &&
+                newStatus != AppointmentStatus.Cancelled)
+            {
+                throw new BusinessRuleException(
+                    "Pending appointment can only be confirmed or cancelled.");
+            }
+        }
+
+        private static void ValidateConfirmedStatusTransition(
+            AppointmentStatus newStatus)
+        {
+            if (newStatus != AppointmentStatus.Completed &&
+                newStatus != AppointmentStatus.Cancelled)
+            {
+                throw new BusinessRuleException(
+                    "Confirmed appointment can only be completed or cancelled.");
+            }
+        }
+
+        private static bool IsActiveAppointmentStatus(
+            AppointmentStatus status)
+        {
+            return status == AppointmentStatus.Pending ||
+                   status == AppointmentStatus.Confirmed;
+        }
+
+        private static bool IsSameTimeSlot(
+            string existingTimeSlot,
+            string requestedTimeSlot)
+        {
+            return string.Equals(
+                NormalizeTimeSlot(existingTimeSlot),
+                requestedTimeSlot,
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string NormalizeTimeSlot(string timeSlot)
+        {
+            return timeSlot.Trim();
         }
     }
 }

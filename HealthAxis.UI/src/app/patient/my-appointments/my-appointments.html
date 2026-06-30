@@ -1,0 +1,276 @@
+<section class="appointments-page">
+  <section class="page-header">
+    <div>
+      <p>Patient Services</p>
+      <h1>My Appointments</h1>
+      <span>
+        View your appointments and cancel pending or confirmed appointments if needed.
+      </span>
+    </div>
+
+    <a routerLink="/patient/book-appointment" class="book-button">
+      + Book Appointment
+    </a>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  <section class="stats-grid">
+    <div class="stat-card pending">
+      <span>⏳</span>
+
+      <div>
+        <strong>{{ pendingCount() }}</strong>
+        <p>Pending</p>
+      </div>
+    </div>
+
+    <div class="stat-card confirmed">
+      <span>📅</span>
+
+      <div>
+        <strong>{{ confirmedCount() }}</strong>
+        <p>Confirmed</p>
+      </div>
+    </div>
+
+    <div class="stat-card completed">
+      <span>✅</span>
+
+      <div>
+        <strong>{{ completedCount() }}</strong>
+        <p>Completed</p>
+      </div>
+    </div>
+
+    <div class="stat-card cancelled">
+      <span>❌</span>
+
+      <div>
+        <strong>{{ cancelledCount() }}</strong>
+        <p>Cancelled</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="toolbar-card">
+    <div class="search-box">
+      <span>🔍</span>
+
+      <input
+        type="search"
+        maxlength="80"
+        placeholder="Search doctor, specialization, date, status..."
+        [value]="searchText()"
+        (input)="onSearchInput($event)"
+      />
+    </div>
+
+    <div class="filter-pills">
+      @for (status of statusFilters; track status) {
+        <button
+          type="button"
+          [class.active]="selectedStatus() === status"
+          (click)="selectStatus(status)"
+        >
+          {{ status }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <section class="simple-summary-card">
+    <div class="section-title">
+      <p>Upcoming Visit</p>
+      <h2>Next Appointment</h2>
+    </div>
+
+    @if (nextAppointment()) {
+      <div class="next-grid">
+        <div class="summary-item">
+          <span>Doctor</span>
+          <strong>{{ nextAppointment()!.doctorName || 'Not assigned' }}</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Specialization</span>
+          <strong>{{ nextAppointment()!.specialisation || 'N/A' }}</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Date</span>
+          <strong>{{ nextAppointment()!.scheduledDate | date: 'mediumDate' }}</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Time Slot</span>
+          <strong>{{ nextAppointment()!.timeSlot }}</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Status</span>
+          <strong>{{ nextAppointment()!.status }}</strong>
+        </div>
+      </div>
+    } @else {
+      <div class="empty-box">
+        No upcoming appointments available.
+      </div>
+    }
+  </section>
+
+  <section class="list-card">
+    <div class="section-title">
+      <p>Appointment History</p>
+      <h2>All Appointments</h2>
+    </div>
+
+    @if (loading()) {
+      <div class="empty-box">Loading appointments...</div>
+    }
+
+    @if (!loading() && appointments().length === 0) {
+      <div class="empty-box">
+        You have no appointments yet.
+      </div>
+    }
+
+    @if (!loading() && appointments().length > 0 && filteredAppointments().length === 0) {
+      <div class="empty-box">
+        No appointments found for the selected filter.
+      </div>
+    }
+
+    @if (!loading() && filteredAppointments().length > 0) {
+      <div class="table-wrapper">
+        <table class="appointment-table">
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Specialization</th>
+              <th>Date</th>
+              <th>Time Slot</th>
+              <th>Status</th>
+              <th>Cancellation Reason</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (appointment of filteredAppointments(); track appointment.appointmentId) {
+              <tr>
+                <td>{{ appointment.doctorName || 'Not assigned' }}</td>
+                <td>{{ appointment.specialisation || 'N/A' }}</td>
+                <td>{{ appointment.scheduledDate | date: 'mediumDate' }}</td>
+                <td>{{ appointment.timeSlot }}</td>
+                <td>
+                  <span
+                    class="status-badge"
+                    [class]="getStatusClass(appointment.status)"
+                  >
+                    {{ appointment.status }}
+                  </span>
+                </td>
+                <td>{{ appointment.cancellationReason || '-' }}</td>
+                <td>
+                  @if (canCancel(appointment)) {
+                    <button
+                      type="button"
+                      class="cancel-action"
+                      (click)="openCancelDialog(appointment)"
+                    >
+                      Cancel
+                    </button>
+                  } @else {
+                    <span class="no-action">No action</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  @if (cancelTarget()) {
+    <div class="modal-backdrop">
+      <section class="cancel-modal">
+        <div class="modal-header">
+          <div>
+            <p>Cancel Appointment</p>
+            <h2>Confirm cancellation</h2>
+          </div>
+
+          <button
+            type="button"
+            class="close-button"
+            (click)="closeCancelDialog()"
+          >
+            ×
+          </button>
+        </div>
+
+        <div class="cancel-details">
+          <div>
+            <span>Doctor</span>
+            <strong>{{ cancelTarget()!.doctorName || 'Not assigned' }}</strong>
+          </div>
+
+          <div>
+            <span>Date</span>
+            <strong>{{ cancelTarget()!.scheduledDate | date: 'mediumDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Time</span>
+            <strong>{{ cancelTarget()!.timeSlot }}</strong>
+          </div>
+        </div>
+
+        <label for="cancelReason">
+          Cancellation Reason <span class="optional-text">(Optional)</span>
+        </label>
+
+        <textarea
+          id="cancelReason"
+          rows="4"
+          maxlength="200"
+          placeholder="Example: I am unable to visit the hospital today."
+          [value]="cancellationReason()"
+          (input)="onCancellationReasonInput($event)"
+        ></textarea>
+
+        <small>
+          You can leave this empty. Add a reason only if you want to inform the hospital.
+        </small>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="confirm-cancel-button"
+            [disabled]="cancelling()"
+            (click)="confirmCancelAppointment()"
+          >
+            {{ cancelling() ? 'Cancelling...' : 'Cancel Appointment' }}
+          </button>
+
+          <button
+            type="button"
+            class="keep-button"
+            [disabled]="cancelling()"
+            (click)="closeCancelDialog()"
+          >
+            Keep Appointment
+          </button>
+        </div>
+      </section>
+    </div>
+  }
+</section>

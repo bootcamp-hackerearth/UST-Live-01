@@ -1,0 +1,70 @@
+.public-navbar {
+  height: 76px;
+  padding: 0 7%;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #0f172a;
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #0ea5e9, #22c55e);
+  color: white;
+  display: grid;
+  place-items: center;
+  border-radius: 15px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #334155;
+  font-weight: 800;
+}
+
+.nav-links a.active {
+  color: #0284c7;
+}
+
+.login-btn {
+  background: #0f172a;
+  color: white !important;
+  padding: 11px 20px;
+  border-radius: 999px;
+}
+
+@media (max-width: 800px) {
+  .public-navbar {
+    height: auto;
+    padding: 18px;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

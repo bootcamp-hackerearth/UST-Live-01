@@ -13,6 +13,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,9 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNamingPolicy =
             JsonNamingPolicy.CamelCase;
+
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter());
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -164,11 +170,22 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 
+const string corsPolicyName = "AllowHealthAxisClients";
+
+string[] allowedOrigins =
+[
+    "http://localhost:4200",
+    "https://localhost:4200",
+    "http://localhost:58189",
+    "https://localhost:58189",
+    "https://localhost:7172"
+];
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowHealthAxisAdmin", policy =>
+    options.AddPolicy(corsPolicyName, policy =>
     {
-        policy.WithOrigins("https://localhost:7172")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -187,7 +204,7 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-app.UseCors("AllowHealthAxisAdmin");
+app.UseCors(corsPolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -195,12 +212,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Seed roles
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    await RoleSeeder.SeedRolesAsync(roleManager);
-}
 
 using (var scope = app.Services.CreateScope())
 {

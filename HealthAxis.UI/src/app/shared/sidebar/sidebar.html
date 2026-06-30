@@ -1,0 +1,44 @@
+<aside class="sidebar">
+  <div class="brand-card">
+    <div class="brand-icon">✚</div>
+
+    <div>
+      <h2>HealthAxis</h2>
+      <p>{{ authService.role() }} Portal</p>
+    </div>
+  </div>
+
+  <div class="care-status">
+    <div class="pulse"></div>
+
+    <div>
+      <strong>Hospital System Online</strong>
+      <span>JWT secured access</span>
+    </div>
+  </div>
+
+  <nav class="menu">
+    @for (item of menuItems(); track item.path) {
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+      >
+        <span class="menu-icon">{{ item.icon }}</span>
+        <span class="menu-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="help-card">
+      <span>💙</span>
+      <h3>Need support?</h3>
+      <p>Contact hospital desk for appointment help.</p>
+    </div>
+
+    <button type="button" class="logout-btn" (click)="logout()">
+      <span>🚪</span>
+      Logout
+    </button>
+  </div>
+</aside>

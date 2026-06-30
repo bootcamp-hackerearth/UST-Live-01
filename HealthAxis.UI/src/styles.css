@@ -1,0 +1,92 @@
+:root {
+  --healthaxis-ui-scale: 0.78;
+  --healthaxis-font: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: #f8fafc;
+}
+
+body {
+  margin: 0;
+  font-family: var(--healthaxis-font);
+  background: #f8fafc;
+  color: #0f172a;
+  overflow-x: hidden;
+}
+
+/*
+  This makes browser 100% look like your 80-85% view.
+  Your screenshot target looks closest to 0.86.
+  If still big: use 0.84.
+  If too small: use 0.88.
+*/
+app-root {
+  display: block;
+  zoom: var(--healthaxis-ui-scale);
+  min-height: calc(100vh / var(--healthaxis-ui-scale));
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+button:hover:not(:disabled),
+a:hover {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  opacity: 0.75;
+}
+
+a {
+  transition:
+    transform 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e2e8f0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+@media print {
+  app-root {
+    zoom: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  app-root {
+    zoom: 1;
+  }
+}

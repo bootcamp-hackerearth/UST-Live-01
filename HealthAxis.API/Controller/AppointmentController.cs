@@ -179,8 +179,8 @@ namespace HealthAxis.API.Controller
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> UpdateAppointmentStatus(
-            int id,
-            [FromBody] UpdateAppointmentStatusDto statusDto)
+    int id,
+    [FromBody] UpdateAppointmentStatusDto statusDto)
         {
             if (!ModelState.IsValid)
             {
@@ -244,13 +244,10 @@ namespace HealthAxis.API.Controller
                     });
                 }
 
-                if (string.IsNullOrWhiteSpace(statusDto.CancellationReason))
-                {
-                    return BadRequest(new
-                    {
-                        message = "Cancellation reason is required"
-                    });
-                }
+                statusDto.CancellationReason =
+                    string.IsNullOrWhiteSpace(statusDto.CancellationReason)
+                        ? null
+                        : statusDto.CancellationReason.Trim();
             }
 
             if (User.IsInRole("Doctor"))
@@ -288,9 +285,8 @@ namespace HealthAxis.API.Controller
 
             return Ok(updatedAppointment);
         }
-
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Patient")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
             var appointment = await _appointmentService.DeleteAsync(id);
