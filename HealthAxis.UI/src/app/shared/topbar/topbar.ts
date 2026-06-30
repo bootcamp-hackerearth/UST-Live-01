@@ -24,6 +24,8 @@ export class Topbar {
   readonly currentTime = signal(new Date());
   readonly isProfileMenuOpen = signal(false);
 
+  private readonly destroyRef = inject(DestroyRef);
+
   readonly profileRoute = computed(() => {
     const role = this.authService.role();
 
@@ -37,8 +39,6 @@ export class Topbar {
 
     return '/login';
   });
-
-  private readonly destroyRef = inject(DestroyRef);
 
   constructor() {
     const timerId = window.setInterval(() => {
@@ -58,15 +58,19 @@ export class Topbar {
   getGreeting(): string {
     const hour = this.currentTime().getHours();
 
-    if (hour < 12) {
+    if (hour >= 5 && hour < 12) {
       return 'Good Morning';
     }
 
-    if (hour < 17) {
+    if (hour >= 12 && hour < 17) {
       return 'Good Afternoon';
     }
 
-    return 'Good Evening';
+    if (hour >= 17 && hour < 21) {
+      return 'Good Evening';
+    }
+
+    return 'Welcome';
   }
 
   toggleProfileMenu(): void {

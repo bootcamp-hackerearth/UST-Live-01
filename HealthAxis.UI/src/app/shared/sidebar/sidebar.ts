@@ -32,12 +32,12 @@ export class Sidebar {
     },
     {
       label: 'My Appointments',
-      icon: '🧾',
+      icon: '📋',
       path: '/patient/my-appointments'
     },
     {
       label: 'Health Records',
-      icon: '📋',
+      icon: '🧾',
       path: '/patient/health-records'
     },
     {

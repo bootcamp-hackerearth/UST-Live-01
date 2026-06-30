@@ -12,7 +12,7 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 import { AppointmentService } from '../../core/services/appointment.service';
 import { Doctor } from '../../core/models/doctor.model';
@@ -21,7 +21,13 @@ import { Patient } from '../../core/models/patient.model';
 import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
-const REDIRECT_DELAY_IN_MS = 1200;
+interface AppointmentSuccessDialog {
+  doctorName: string;
+  specialisation: string;
+  scheduledDate: string;
+  timeSlot: string;
+  status: string;
+}
 
 const TIME_SLOTS: readonly string[] = [
   '09:00 AM - 09:30 AM',
@@ -50,7 +56,6 @@ export class BookAppointment {
   private readonly patientService = inject(PatientService);
   private readonly doctorService = inject(DoctorService);
   private readonly appointmentService = inject(AppointmentService);
-  private readonly router = inject(Router);
 
   readonly patient = signal<Patient | null>(null);
   readonly doctors = signal<Doctor[]>([]);
@@ -62,6 +67,7 @@ export class BookAppointment {
   readonly submitting = signal(false);
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
+  readonly successDialog = signal<AppointmentSuccessDialog | null>(null);
 
   readonly timeSlots = TIME_SLOTS;
   readonly minDate = this.formatDateForInput(new Date());
@@ -95,17 +101,9 @@ export class BookAppointment {
     const searchText = this.doctorSearch().trim().toLowerCase();
 
     return this.activeDoctors()
-      .filter((doctor) => {
-        const matchesSpecialisation =
-          !specialisation || doctor.specialisation === specialisation;
-
-        const matchesSearch =
-          !searchText ||
-          doctor.fullName.toLowerCase().includes(searchText) ||
-          doctor.specialisation.toLowerCase().includes(searchText);
-
-        return matchesSpecialisation && matchesSearch;
-      })
+      .filter((doctor) =>
+        this.isDoctorMatchingFilters(doctor, specialisation, searchText)
+      )
       .sort((first, second) => first.fullName.localeCompare(second.fullName));
   });
 
@@ -161,6 +159,10 @@ export class BookAppointment {
     this.clearSelectedDoctor();
   }
 
+  closeSuccessDialog(): void {
+    this.successDialog.set(null);
+  }
+
   bookAppointment(): void {
     this.errorMessage.set('');
     this.successMessage.set('');
@@ -201,11 +203,16 @@ export class BookAppointment {
     }).subscribe({
       next: () => {
         this.submitting.set(false);
-        this.successMessage.set('Appointment booked successfully. Status is Pending.');
 
-        window.setTimeout(() => {
-          void this.router.navigate(['/patient/my-appointments']);
-        }, REDIRECT_DELAY_IN_MS);
+        this.successDialog.set({
+          doctorName: doctor.fullName,
+          specialisation: doctor.specialisation,
+          scheduledDate: formValue.scheduledDate,
+          timeSlot: formValue.timeSlot,
+          status: 'Pending'
+        });
+
+        this.resetBookingSelection();
       },
       error: (error: unknown) => {
         this.submitting.set(false);
@@ -246,6 +253,35 @@ export class BookAppointment {
         );
       }
     });
+  }
+
+  private isDoctorMatchingFilters(
+    doctor: Doctor,
+    specialisation: string,
+    searchText: string
+  ): boolean {
+    const matchesSpecialisation =
+      !specialisation || doctor.specialisation === specialisation;
+
+    const matchesSearch =
+      !searchText ||
+      doctor.fullName.toLowerCase().includes(searchText) ||
+      doctor.specialisation.toLowerCase().includes(searchText);
+
+    return matchesSpecialisation && matchesSearch;
+  }
+
+  private resetBookingSelection(): void {
+    this.bookingForm.patchValue({
+      doctorId: 0,
+      scheduledDate: '',
+      timeSlot: ''
+    });
+
+    this.bookingForm.markAsPristine();
+    this.bookingForm.markAsUntouched();
+
+    this.selectedDoctorId.set(0);
   }
 
   private clearSelectedDoctor(): void {

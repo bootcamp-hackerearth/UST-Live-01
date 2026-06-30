@@ -1,26 +1,64 @@
 .dashboard-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 292px 1fr;
+  grid-template-columns: 300px minmax(0, 1fr);
   background:
     radial-gradient(circle at top left, rgba(14, 165, 233, 0.13), transparent 34%),
     radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.1), transparent 34%),
     #f8fafc;
 }
 
+.dashboard-shell.sidebar-closed {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .dashboard-main {
   min-width: 0;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .dashboard-content {
   padding: 16px 22px 22px;
+  min-width: 0;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: 116px;
+  left: 282px;
+  z-index: 90;
+  width: 38px;
+  height: 46px;
+  border: none;
+  border-radius: 0 16px 16px 0;
+  background: linear-gradient(135deg, #020617, #075985);
+  color: white;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
+}
+
+.sidebar-toggle:hover {
+  background: linear-gradient(135deg, #075985, #0284c7);
+  transform: none;
+}
+
+.sidebar-toggle.closed {
+  left: 0;
+  border-radius: 0 16px 16px 0;
+  background: linear-gradient(135deg, #075985, #22c55e);
 }
 
 @media (max-width: 950px) {
   .dashboard-shell {
     grid-template-columns: 1fr;
+  }
+
+  .sidebar-toggle {
+    display: none;
   }
 
   .dashboard-content {

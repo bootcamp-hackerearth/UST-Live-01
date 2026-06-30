@@ -6,12 +6,9 @@
   <section class="hero-card">
     <div>
       <p>Patient Control Center</p>
-      <h1>
-        Welcome back,
-        {{ patient()?.fullName || 'Patient' }}
-      </h1>
+      <h1>Welcome back, {{ patient()?.fullName || 'Patient' }}</h1>
       <span>
-        Book appointments, view health records, and track every hospital visit from one secure dashboard.
+        Book appointments, view health records, and track your hospital visits.
       </span>
 
       <div class="hero-actions">
@@ -25,7 +22,7 @@
       </div>
     </div>
 
-    <div class="health-score-card">
+    <div class="care-card">
       <span>💙</span>
       <strong>Care Status</strong>
       <p>Profile active and ready for appointment booking.</p>
@@ -58,7 +55,7 @@
     </article>
 
     <article class="stat-card cancelled">
-      <span>🚫</span>
+      <span>❌</span>
       <div>
         <strong>{{ cancelledCount() }}</strong>
         <p>Cancelled</p>
@@ -74,37 +71,32 @@
       </div>
 
       @if (upcomingAppointment()) {
-        <div class="visit-details">
-          <div class="doctor-avatar">DR</div>
-
+        <div class="next-grid">
           <div>
-            <h3>Dr. {{ upcomingAppointment()?.doctorName }}</h3>
-            <p>{{ upcomingAppointment()?.specialisation }}</p>
+            <span>Doctor</span>
+            <strong>{{ upcomingAppointment()!.doctorName || 'Not assigned' }}</strong>
           </div>
-        </div>
 
-        <div class="visit-info-grid">
           <div>
             <span>Date</span>
-            <strong>{{ upcomingAppointment()?.scheduledDate }}</strong>
+            <strong>{{ upcomingAppointment()!.scheduledDate }}</strong>
           </div>
 
           <div>
             <span>Time</span>
-            <strong>{{ upcomingAppointment()?.timeSlot }}</strong>
+            <strong>{{ upcomingAppointment()!.timeSlot }}</strong>
           </div>
 
           <div>
             <span>Status</span>
-            <strong>{{ upcomingAppointment()?.status }}</strong>
+            <strong>{{ upcomingAppointment()!.status }}</strong>
           </div>
         </div>
       } @else {
         <div class="empty-state">
           <span>📅</span>
-          <h3>No upcoming appointments</h3>
-          <p>Book your first appointment with an available specialist.</p>
-          <a routerLink="/patient/book-appointment">Book Now</a>
+          <h3>No upcoming appointment</h3>
+          <p>Book an appointment with an available doctor.</p>
         </div>
       }
     </article>
@@ -120,23 +112,23 @@
           <span>📅</span>
           <div>
             <strong>Book Appointment</strong>
-            <small>Choose doctor and time slot</small>
+            
           </div>
         </a>
 
         <a routerLink="/patient/my-appointments">
-          <span>🧾</span>
+          <span>📋</span>
           <div>
             <strong>My Appointments</strong>
-            <small>Track all visit status</small>
+            
           </div>
         </a>
 
         <a routerLink="/patient/health-records">
-          <span>📋</span>
+          <span>🧾</span>
           <div>
             <strong>Health Records</strong>
-            <small>View diagnosis and prescription</small>
+            
           </div>
         </a>
 
@@ -144,24 +136,10 @@
           <span>👤</span>
           <div>
             <strong>My Profile</strong>
-            <small>Update personal details</small>
+            
           </div>
         </a>
       </div>
-    </article>
-
-    <article class="tips-card">
-      <div class="card-title">
-        <span>Patient Tips</span>
-        <h2>Before visiting hospital</h2>
-      </div>
-
-      <ul>
-        <li>Carry previous medical reports if available.</li>
-        <li>Reach 10 minutes before your slot.</li>
-        <li>Keep your registered phone number active.</li>
-        <li>Check appointment status before leaving home.</li>
-      </ul>
     </article>
   </section>
 </section>

@@ -1,11 +1,30 @@
-<div class="dashboard-shell">
-  <app-sidebar></app-sidebar>
+<section
+  class="dashboard-shell"
+  [class.sidebar-closed]="isSidebarClosed()"
+>
+  @if (!isSidebarClosed()) {
+    <app-sidebar></app-sidebar>
+  }
 
   <main class="dashboard-main">
+    <button
+      type="button"
+      class="sidebar-toggle"
+      [class.closed]="isSidebarClosed()"
+      aria-label="Toggle sidebar"
+      (click)="toggleSidebar()"
+    >
+      @if (isSidebarClosed()) {
+        ☰
+      } @else {
+        ⋮
+      }
+    </button>
+
     <app-topbar></app-topbar>
 
     <section class="dashboard-content">
       <router-outlet></router-outlet>
     </section>
   </main>
-</div>
+</section>

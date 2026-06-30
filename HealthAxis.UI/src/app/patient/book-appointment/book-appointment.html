@@ -233,3 +233,48 @@
     </form>
   </section>
 </section>
+
+@if (successDialog()) {
+  <div class="modal-backdrop">
+    <section class="success-modal">
+      <div class="success-icon">✅</div>
+
+      <h2>Appointment Booked</h2>
+
+      <p>
+        Your appointment has been created successfully and is currently pending confirmation.
+      </p>
+
+      <div class="success-details">
+        <div>
+          <span>Doctor</span>
+          <strong>{{ successDialog()!.doctorName }}</strong>
+        </div>
+
+        <div>
+          <span>Specialization</span>
+          <strong>{{ successDialog()!.specialisation }}</strong>
+        </div>
+
+        <div>
+          <span>Date</span>
+          <strong>{{ successDialog()!.scheduledDate }}</strong>
+        </div>
+
+        <div>
+          <span>Time</span>
+          <strong>{{ successDialog()!.timeSlot }}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>{{ successDialog()!.status }}</strong>
+        </div>
+      </div>
+
+      <button type="button" (click)="closeSuccessDialog()">
+        Done
+      </button>
+    </section>
+  </div>
+}

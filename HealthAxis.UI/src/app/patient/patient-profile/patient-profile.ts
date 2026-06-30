@@ -32,7 +32,7 @@ export class PatientProfile {
   readonly loading = signal(false);
   readonly saving = signal(false);
   readonly changingPassword = signal(false);
-  readonly isEditing = signal(false);
+  readonly isEditDialogOpen = signal(false);
 
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
@@ -102,7 +102,6 @@ export class PatientProfile {
 
   constructor() {
     this.loadProfile();
-    this.profileForm.disable();
   }
 
   get fullName() {
@@ -146,8 +145,6 @@ export class PatientProfile {
       next: (patient) => {
         this.patient.set(patient);
         this.patchProfileForm(patient);
-        this.profileForm.disable();
-        this.isEditing.set(false);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -159,24 +156,26 @@ export class PatientProfile {
     });
   }
 
-  enableEdit(): void {
-    this.errorMessage.set('');
-    this.successMessage.set('');
-    this.profileForm.enable();
-    this.isEditing.set(true);
-  }
-
-  cancelEdit(): void {
+  openEditDialog(): void {
     const currentPatient = this.patient();
 
-    if (currentPatient) {
-      this.patchProfileForm(currentPatient);
+    if (!currentPatient) {
+      this.errorMessage.set('Profile data not loaded.');
+      return;
     }
 
-    this.profileForm.disable();
-    this.isEditing.set(false);
+    this.patchProfileForm(currentPatient);
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.isEditDialogOpen.set(true);
+  }
+
+  closeEditDialog(): void {
+    if (this.saving()) {
+      return;
+    }
+
+    this.isEditDialogOpen.set(false);
   }
 
   updateProfile(): void {
@@ -213,9 +212,8 @@ export class PatientProfile {
       next: (patient) => {
         this.patient.set(patient);
         this.patchProfileForm(patient);
-        this.profileForm.disable();
-        this.isEditing.set(false);
         this.saving.set(false);
+        this.isEditDialogOpen.set(false);
         this.successMessage.set('Profile updated successfully.');
       },
       error: (error: unknown) => {
@@ -247,10 +245,10 @@ export class PatientProfile {
     }
 
     const request: ChangePasswordRequest = {
-  currentPassword: formValue.currentPassword,
-  newPassword: formValue.newPassword,
-  confirmNewPassword: formValue.confirmPassword
-};
+      currentPassword: formValue.currentPassword,
+      newPassword: formValue.newPassword,
+      confirmNewPassword: formValue.confirmPassword
+    };
 
     this.changingPassword.set(true);
 

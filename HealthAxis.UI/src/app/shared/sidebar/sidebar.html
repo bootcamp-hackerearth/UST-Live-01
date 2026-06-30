@@ -1,12 +1,12 @@
 <aside class="sidebar">
-  <div class="brand-card">
+  <a routerLink="/" class="brand-card">
     <div class="brand-icon">✚</div>
 
     <div>
       <h2>HealthAxis</h2>
       <p>{{ authService.role() }} Portal</p>
     </div>
-  </div>
+  </a>
 
   <div class="care-status">
     <div class="pulse"></div>
@@ -30,11 +30,10 @@
   </nav>
 
   <div class="sidebar-bottom">
-    <div class="help-card">
-      <span>💙</span>
-      <h3>Need support?</h3>
-      <p>Contact hospital desk for appointment help.</p>
-    </div>
+    <a routerLink="/patient/contact-us" class="contact-btn">
+      <span>☎️</span>
+      Contact Us
+    </a>
 
     <button type="button" class="logout-btn" (click)="logout()">
       <span>🚪</span>

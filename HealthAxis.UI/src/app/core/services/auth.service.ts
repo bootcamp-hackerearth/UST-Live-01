@@ -1,7 +1,7 @@
 import { computed, Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -13,7 +13,7 @@ import {
   RegisterPatientRequest
 } from '../models/auth.model';
 
-type UserRole = 'Patient' | 'Doctor' | 'Admin' | '';
+export type UserRole = 'Patient' | 'Doctor' | 'Admin' | '';
 
 interface JwtPayload extends Record<string, unknown> {
   exp?: number | string;
@@ -39,8 +39,21 @@ export class AuthService {
   private readonly expiresAtKey = 'healthaxis_expires_at';
   private readonly expiresInMinutesKey = 'healthaxis_expires_in_minutes';
 
-  private readonly oldTokenKey = 'healthaxis_token';
-  private readonly oldExpiresInSecondsKey = 'healthaxis_expires_in_seconds';
+  private readonly tokenSubject = new BehaviorSubject<string | null>(
+    localStorage.getItem(this.accessTokenKey)
+  );
+
+  private readonly roleSubject = new BehaviorSubject<UserRole>(
+    this.normalizeRole(localStorage.getItem(this.roleKey) ?? '')
+  );
+
+  readonly token$: Observable<string | null> = this.tokenSubject.asObservable();
+
+  readonly role$: Observable<UserRole> = this.roleSubject.asObservable();
+
+  readonly isLoggedIn$: Observable<boolean> = this.token$.pipe(
+    map((token) => Boolean(token) && !this.isTokenExpired(token ?? ''))
+  );
 
   private readonly tokenSignal = signal<string | null>(
     localStorage.getItem(this.accessTokenKey)
@@ -60,7 +73,7 @@ export class AuthService {
     return !this.isTokenExpired(token);
   });
 
-  login(data: LoginRequest) {
+  login(data: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.authUrl}/login`, data).pipe(
       tap((response) => {
         this.storeAuthData(
@@ -72,11 +85,11 @@ export class AuthService {
     );
   }
 
-  registerPatient(data: RegisterPatientRequest) {
-    return this.http.post(`${this.authUrl}/register`, data);
+  registerPatient(data: RegisterPatientRequest): Observable<object> {
+    return this.http.post<object>(`${this.authUrl}/register`, data);
   }
 
-  refreshToken() {
+  refreshToken(): Observable<RefreshTokenResponse> {
     const accessToken = localStorage.getItem(this.accessTokenKey);
     const refreshToken = localStorage.getItem(this.refreshTokenKey);
 
@@ -102,8 +115,8 @@ export class AuthService {
       );
   }
 
-  changePassword(data: ChangePasswordRequest) {
-    return this.http.post(`${this.authUrl}/change-password`, data);
+  changePassword(data: ChangePasswordRequest): Observable<object> {
+    return this.http.post<object>(`${this.authUrl}/change-password`, data);
   }
 
   logout(): void {
@@ -145,23 +158,24 @@ export class AuthService {
     refreshToken: string,
     expiresInMinutes: number
   ): void {
-    this.removeOldStorageKeys();
-
     if (!accessToken) {
       throw new Error('Access token not received from API.');
     }
 
-    const role = this.normalizeRole(this.getRoleFromToken(accessToken));
+    const userRole = this.normalizeRole(this.getRoleFromToken(accessToken));
     const expiresAt = this.getExpiryDateTime(expiresInMinutes);
 
     localStorage.setItem(this.accessTokenKey, accessToken);
     localStorage.setItem(this.refreshTokenKey, refreshToken);
-    localStorage.setItem(this.roleKey, role);
+    localStorage.setItem(this.roleKey, userRole);
     localStorage.setItem(this.expiresAtKey, expiresAt);
     localStorage.setItem(this.expiresInMinutesKey, expiresInMinutes.toString());
 
     this.tokenSignal.set(accessToken);
-    this.role.set(role);
+    this.role.set(userRole);
+
+    this.tokenSubject.next(accessToken);
+    this.roleSubject.next(userRole);
   }
 
   private clearAuthData(): void {
@@ -171,15 +185,14 @@ export class AuthService {
     localStorage.removeItem(this.expiresAtKey);
     localStorage.removeItem(this.expiresInMinutesKey);
 
-    this.removeOldStorageKeys();
+    localStorage.removeItem('healthaxis_token');
+    localStorage.removeItem('healthaxis_expires_in_seconds');
 
     this.tokenSignal.set(null);
     this.role.set('');
-  }
 
-  private removeOldStorageKeys(): void {
-    localStorage.removeItem(this.oldTokenKey);
-    localStorage.removeItem(this.oldExpiresInSecondsKey);
+    this.tokenSubject.next(null);
+    this.roleSubject.next('');
   }
 
   private getExpiryDateTime(expiresInMinutes: number): string {
@@ -249,6 +262,10 @@ export class AuthService {
   }
 
   private isTokenExpired(token: string): boolean {
+    if (!token) {
+      return true;
+    }
+
     const expiresAt = localStorage.getItem(this.expiresAtKey);
 
     if (expiresAt) {

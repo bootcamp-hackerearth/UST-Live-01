@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { Sidebar } from '../../shared/sidebar/sidebar';
@@ -11,4 +11,10 @@ import { Topbar } from '../../shared/topbar/topbar';
   styleUrl: './dashboard-layout.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DashboardLayout {}
+export class DashboardLayout {
+  readonly isSidebarClosed = signal(false);
+
+  toggleSidebar(): void {
+    this.isSidebarClosed.update((isClosed) => !isClosed);
+  }
+}

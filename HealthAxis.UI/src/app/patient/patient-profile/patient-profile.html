@@ -8,20 +8,8 @@
       <h1>My Profile</h1>
 
       <p>
-        View your complete patient details, edit your profile, and update your password securely.
+        View patient details and update account security.
       </p>
-    </div>
-
-    <div class="hero-actions">
-      <button type="button" class="refresh-button" (click)="loadProfile()">
-        Refresh
-      </button>
-
-      @if (!isEditing()) {
-        <button type="button" class="edit-button" (click)="enableEdit()">
-          Edit Profile
-        </button>
-      }
     </div>
   </section>
 
@@ -33,15 +21,8 @@
     <div class="alert success">{{ successMessage() }}</div>
   }
 
-  @if (loading()) {
-    <div class="state-card">
-      <div class="loader"></div>
-      <strong>Loading your profile...</strong>
-    </div>
-  }
-
-  <section class="profile-layout">
-    <aside class="profile-card">
+  <section class="profile-grid">
+    <article class="patient-card">
       <div class="avatar-circle">
         {{ patient()?.fullName?.charAt(0) || 'P' }}
       </div>
@@ -49,7 +30,7 @@
       <h2>{{ patient()?.fullName || 'Patient' }}</h2>
       <p>{{ patient()?.email || 'Email not loaded' }}</p>
 
-      <div class="profile-meta">
+      <div class="detail-list">
         <div>
           <span>Patient ID</span>
           <strong>#{{ patient()?.patientId || '-' }}</strong>
@@ -80,161 +61,64 @@
             }
           </strong>
         </div>
+      </div>
+
+      <button type="button" class="edit-details-btn" (click)="openEditDialog()">
+        Edit Patient Details
+      </button>
+    </article>
+
+    <article class="details-card">
+      <div class="section-title">
+        <span>Patient Details</span>
+        <h2>Patient Information</h2>
+      </div>
+
+      <div class="readonly-grid">
+        <div>
+          <span>Full Name</span>
+          <strong>{{ patient()?.fullName || '-' }}</strong>
+        </div>
 
         <div>
-          <span>Account</span>
+          <span>Date of Birth</span>
+          <strong>
+            @if (patient()?.dateOfBirth) {
+              {{ patient()?.dateOfBirth | date: 'mediumDate' }}
+            } @else {
+              -
+            }
+          </strong>
+        </div>
+
+        <div>
+          <span>Gender</span>
+          <strong>{{ patient()?.gender || '-' }}</strong>
+        </div>
+
+        <div>
+          <span>Phone Number</span>
+          <strong>{{ patient()?.phoneNumber || '-' }}</strong>
+        </div>
+
+        <div>
+          <span>Email Address</span>
+          <strong>{{ patient()?.email || '-' }}</strong>
+        </div>
+
+        <div>
+          <span>Account Status</span>
           <strong>Active</strong>
         </div>
       </div>
-
-      <div class="profile-note">
-        <span>🔐</span>
-        <p>Your profile is protected using JWT secured patient access.</p>
-      </div>
-    </aside>
-
-    <main class="edit-card">
-      <div class="card-title">
-        <span>Patient Details</span>
-        <h2>{{ isEditing() ? 'Edit Patient Information' : 'View Patient Information' }}</h2>
-      </div>
-
-      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
-        <div class="form-grid">
-          <div class="form-group full-width">
-            <label for="fullName">Full Name</label>
-
-            <div class="input-wrapper">
-              <span>👤</span>
-              <input
-                id="fullName"
-                type="text"
-                formControlName="fullName"
-                placeholder="Enter full name"
-              />
-            </div>
-
-            @if (fullName.invalid && fullName.touched) {
-              <small>
-                @if (fullName.errors?.['required']) {
-                  Name is required.
-                }
-
-                @if (fullName.errors?.['pattern']) {
-                  Name should contain only letters and spaces.
-                }
-
-                @if (fullName.errors?.['minlength']) {
-                  Minimum 3 characters required.
-                }
-              </small>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="dateOfBirth">Date of Birth</label>
-
-            <div class="input-wrapper">
-              <span>🎂</span>
-              <input
-                id="dateOfBirth"
-                type="date"
-                formControlName="dateOfBirth"
-              />
-            </div>
-
-            @if (dateOfBirth.invalid && dateOfBirth.touched) {
-              <small>
-                @if (dateOfBirth.errors?.['required']) {
-                  Date of birth is required.
-                }
-
-                @if (dateOfBirth.errors?.['futureDate']) {
-                  Date of birth cannot be in the future.
-                }
-              </small>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="gender">Gender</label>
-
-            <div class="input-wrapper">
-              <span>⚕️</span>
-              <select id="gender" formControlName="gender">
-                <option value="">Select gender</option>
-
-                @for (genderOption of genderOptions; track genderOption.value) {
-                  <option [value]="genderOption.value">
-                    {{ genderOption.label }}
-                  </option>
-                }
-              </select>
-            </div>
-
-            @if (gender.invalid && gender.touched) {
-              <small>Gender is required.</small>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="phoneNumber">Phone Number</label>
-
-            <div class="input-wrapper">
-              <span>📞</span>
-              <input
-                id="phoneNumber"
-                type="text"
-                maxlength="10"
-                formControlName="phoneNumber"
-                placeholder="10 digit mobile number"
-              />
-            </div>
-
-            @if (phoneNumber.invalid && phoneNumber.touched) {
-              <small>Enter a valid 10 digit Indian mobile number.</small>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="email">Email Address</label>
-
-            <div class="input-wrapper">
-              <span>✉️</span>
-              <input
-                id="email"
-                type="email"
-                formControlName="email"
-                placeholder="example@email.com"
-              />
-            </div>
-
-            @if (email.invalid && email.touched) {
-              <small>Enter a valid email address.</small>
-            }
-          </div>
-        </div>
-
-        @if (isEditing()) {
-          <div class="form-actions">
-            <button type="submit" class="save-button" [disabled]="saving() || loading()">
-              {{ saving() ? 'Saving Profile...' : 'Save Changes' }}
-            </button>
-
-            <button type="button" class="cancel-button" (click)="cancelEdit()">
-              Cancel
-            </button>
-          </div>
-        }
-      </form>
-    </main>
+    </article>
   </section>
 
   <section class="password-card">
-    <div class="card-title">
+    <div class="section-title">
       <span>Security</span>
       <h2>Change Password</h2>
-      <p>Use a strong password to keep your patient account safe.</p>
+      <p>Use a strong password to keep your account safe.</p>
     </div>
 
     @if (passwordErrorMessage()) {
@@ -250,15 +134,12 @@
         <div class="form-group">
           <label for="currentPassword">Current Password</label>
 
-          <div class="input-wrapper">
-            <span>🔒</span>
-            <input
-              id="currentPassword"
-              type="password"
-              formControlName="currentPassword"
-              placeholder="Enter current password"
-            />
-          </div>
+          <input
+            id="currentPassword"
+            type="password"
+            formControlName="currentPassword"
+            placeholder="Enter current password"
+          />
 
           @if (currentPassword.invalid && currentPassword.touched) {
             <small>Current password is required.</small>
@@ -268,19 +149,16 @@
         <div class="form-group">
           <label for="newPassword">New Password</label>
 
-          <div class="input-wrapper">
-            <span>🔑</span>
-            <input
-              id="newPassword"
-              type="password"
-              formControlName="newPassword"
-              placeholder="Example: Mona@2004"
-            />
-          </div>
+          <input
+            id="newPassword"
+            type="password"
+            formControlName="newPassword"
+            placeholder="Enter new password"
+          />
 
           @if (newPassword.invalid && newPassword.touched) {
             <small>
-              New password must contain uppercase, lowercase, number, special character,
+              Password must contain uppercase, lowercase, number, special character,
               and at least 8 characters.
             </small>
           }
@@ -289,19 +167,12 @@
         <div class="form-group">
           <label for="confirmPassword">Confirm New Password</label>
 
-          <div class="input-wrapper">
-            <span>✅</span>
-            <input
-              id="confirmPassword"
-              type="password"
-              formControlName="confirmPassword"
-              placeholder="Re-enter new password"
-            />
-          </div>
-
-          @if (confirmPassword.invalid && confirmPassword.touched) {
-            <small>Confirm password is required.</small>
-          }
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Re-enter new password"
+          />
 
           @if (passwordForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
             <small>New password and confirm password do not match.</small>
@@ -309,16 +180,118 @@
         </div>
       </div>
 
-      <div class="password-note">
-        <span>💡</span>
-        <p>
-          New password must be different from current password and follow Identity password rules.
-        </p>
-      </div>
-
       <button type="submit" class="password-button" [disabled]="changingPassword()">
         {{ changingPassword() ? 'Changing Password...' : 'Change Password' }}
       </button>
     </form>
   </section>
+
+  @if (isEditDialogOpen()) {
+    <div class="modal-backdrop">
+      <section class="edit-modal">
+        <div class="modal-header">
+          <div>
+            <p>Edit Profile</p>
+            <h2>Update Patient Details</h2>
+          </div>
+
+          <button type="button" class="close-button" (click)="closeEditDialog()">
+            ×
+          </button>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="fullName">Full Name</label>
+
+              <input
+                id="fullName"
+                type="text"
+                formControlName="fullName"
+                placeholder="Enter full name"
+              />
+
+              @if (fullName.invalid && fullName.touched) {
+                <small>Name should contain only letters and spaces.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="dateOfBirth">Date of Birth</label>
+
+              <input
+                id="dateOfBirth"
+                type="date"
+                formControlName="dateOfBirth"
+              />
+
+              @if (dateOfBirth.invalid && dateOfBirth.touched) {
+                <small>Date of birth is required and cannot be future date.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="gender">Gender</label>
+
+              <select id="gender" formControlName="gender">
+                <option value="">Select gender</option>
+
+                @for (genderOption of genderOptions; track genderOption.value) {
+                  <option [value]="genderOption.value">
+                    {{ genderOption.label }}
+                  </option>
+                }
+              </select>
+
+              @if (gender.invalid && gender.touched) {
+                <small>Gender is required.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="phoneNumber">Phone Number</label>
+
+              <input
+                id="phoneNumber"
+                type="text"
+                maxlength="10"
+                formControlName="phoneNumber"
+                placeholder="10 digit mobile number"
+              />
+
+              @if (phoneNumber.invalid && phoneNumber.touched) {
+                <small>Enter a valid 10 digit Indian mobile number.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address</label>
+
+              <input
+                id="email"
+                type="email"
+                formControlName="email"
+                placeholder="example@email.com"
+              />
+
+              @if (email.invalid && email.touched) {
+                <small>Enter a valid email address.</small>
+              }
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="save-button" [disabled]="saving()">
+              {{ saving() ? 'Saving...' : 'Save Changes' }}
+            </button>
+
+            <button type="button" class="cancel-button" (click)="closeEditDialog()">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  }
 </section>

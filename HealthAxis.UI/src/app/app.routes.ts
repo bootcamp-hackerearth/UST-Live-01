@@ -12,6 +12,7 @@ import { BookAppointment } from './patient/book-appointment/book-appointment';
 import { MyAppointments } from './patient/my-appointments/my-appointments';
 import { HealthRecords } from './patient/health-records/health-records';
 import { PatientProfile } from './patient/patient-profile/patient-profile';
+import { ContactUs } from './patient/contact-us/contact-us';
 
 import { DoctorDashboard } from './doctor/doctor-dashboard/doctor-dashboard';
 import { UpcomingAppointments } from './doctor/upcoming-appointments/upcoming-appointments';
@@ -40,7 +41,6 @@ export const routes: Routes = [
       }
     ]
   },
-
   {
     path: 'patient',
     component: DashboardLayout,
@@ -68,10 +68,18 @@ export const routes: Routes = [
       {
         path: 'profile',
         component: PatientProfile
+      },
+      {
+        path: 'contact-us',
+        component: ContactUs
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
       }
     ]
   },
-
   {
     path: 'doctor',
     component: DashboardLayout,
@@ -95,10 +103,14 @@ export const routes: Routes = [
       {
         path: 'health-records',
         component: DoctorHealthRecords
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
       }
     ]
   },
-
   {
     path: '**',
     redirectTo: ''

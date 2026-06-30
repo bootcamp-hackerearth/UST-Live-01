@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
 
 import { Appointment } from '../../core/models/appointment.model';
 import { AppointmentService } from '../../core/services/appointment.service';
@@ -21,7 +20,6 @@ export class PatientDashboard {
 
   readonly patient = signal<Patient | null>(null);
   readonly appointments = signal<Appointment[]>([]);
-  readonly loading = signal(false);
   readonly errorMessage = signal('');
 
   readonly pendingCount = computed(() => this.countByStatus('Pending'));
@@ -29,48 +27,43 @@ export class PatientDashboard {
   readonly completedCount = computed(() => this.countByStatus('Completed'));
   readonly cancelledCount = computed(() => this.countByStatus('Cancelled'));
 
-readonly upcomingAppointment = computed<Appointment | null>(() => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  readonly upcomingAppointment = computed<Appointment | null>(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const appointment = this.appointments()
-    .filter((item) => {
-      const appointmentDate = new Date(item.scheduledDate);
-      appointmentDate.setHours(0, 0, 0, 0);
+    const appointment = this.appointments()
+      .filter((item) => this.isUpcomingAppointment(item, today))
+      .sort((first, second) =>
+        new Date(first.scheduledDate).getTime() -
+        new Date(second.scheduledDate).getTime()
+      )[0];
 
-      return appointmentDate >= today &&
-        item.status.toLowerCase() !== 'cancelled' &&
-        item.status.toLowerCase() !== 'completed';
-    })
-    .sort((first, second) =>
-      new Date(first.scheduledDate).getTime() -
-      new Date(second.scheduledDate).getTime()
-    )[0];
-
-  return appointment ?? null;
-});
+    return appointment ?? null;
+  });
 
   constructor() {
     this.loadDashboard();
   }
 
-  loadDashboard(): void {
-    this.loading.set(true);
-    this.errorMessage.set('');
-
-    forkJoin({
-      patient: this.patientService.getMyProfile(),
-      appointments: this.appointmentService.getMyAppointments()
-    }).subscribe({
-      next: (result) => {
-        this.patient.set(result.patient);
-        this.appointments.set(result.appointments);
-        this.loading.set(false);
+  private loadDashboard(): void {
+    this.patientService.getMyProfile().subscribe({
+      next: (patient) => {
+        this.patient.set(patient);
       },
       error: (error: unknown) => {
-        this.loading.set(false);
         this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Could not load patient dashboard.')
+          getFriendlyErrorMessage(error, 'Could not load patient profile.')
+        );
+      }
+    });
+
+    this.appointmentService.getMyAppointments().subscribe({
+      next: (appointments) => {
+        this.appointments.set(appointments);
+      },
+      error: (error: unknown) => {
+        this.errorMessage.set(
+          getFriendlyErrorMessage(error, 'Could not load appointments.')
         );
       }
     });
@@ -80,5 +73,19 @@ readonly upcomingAppointment = computed<Appointment | null>(() => {
     return this.appointments().filter(
       (appointment) => appointment.status.toLowerCase() === status.toLowerCase()
     ).length;
+  }
+
+  private isUpcomingAppointment(
+    appointment: Appointment,
+    today: Date
+  ): boolean {
+    const appointmentDate = new Date(appointment.scheduledDate);
+    appointmentDate.setHours(0, 0, 0, 0);
+
+    const status = appointment.status.toLowerCase();
+
+    return appointmentDate >= today &&
+      status !== 'cancelled' &&
+      status !== 'completed';
   }
 }

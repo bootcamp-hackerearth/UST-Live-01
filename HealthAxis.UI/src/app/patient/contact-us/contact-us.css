@@ -1,0 +1,77 @@
+.contact-page {
+  display: grid;
+  gap: 18px;
+}
+
+.contact-hero {
+  padding: 30px;
+  border-radius: 30px;
+  color: white;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 30%),
+    linear-gradient(135deg, #020617, #075985);
+}
+
+.contact-hero a {
+  color: #bae6fd;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.contact-hero h1 {
+  margin: 16px 0 8px;
+  font-size: 44px;
+}
+
+.contact-hero p {
+  color: #dbeafe;
+  margin: 0;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.contact-grid article {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 26px;
+  padding: 24px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.07);
+}
+
+.contact-grid span {
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+  font-size: 28px;
+}
+
+.contact-grid h2 {
+  margin: 14px 0 8px;
+  color: #0f172a;
+}
+
+.contact-grid p {
+  margin: 0;
+  color: #334155;
+  font-weight: 900;
+}
+
+.contact-grid small {
+  display: block;
+  margin-top: 8px;
+  color: #64748b;
+  font-weight: 800;
+}
+
+@media (max-width: 800px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
