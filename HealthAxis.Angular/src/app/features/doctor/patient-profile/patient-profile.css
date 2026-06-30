@@ -1,0 +1,149 @@
+:host {
+  display: block;
+  color: #172033;
+}
+
+.page-header {
+  margin-bottom: 22px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 32px;
+}
+
+.page-header p {
+  margin: 7px 0 0;
+  color: #667085;
+}
+
+.alert-error {
+  border-radius: 14px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  font-weight: 700;
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #ffd6d6;
+}
+
+.selector-card,
+.page-card,
+.profile-card,
+.records-card {
+  background: #ffffff;
+  border: 1px solid #dde7f0;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.selector-card {
+  margin-bottom: 20px;
+  display: grid;
+  gap: 8px;
+  max-width: 420px;
+}
+
+.selector-card label {
+  color: #1a3673;
+  font-weight: 850;
+}
+
+.selector-card select {
+  height: 46px;
+  border: 1px solid #dde7f0;
+  border-radius: 13px;
+  padding: 0 13px;
+  font: inherit;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 20px;
+}
+
+.profile-card h2,
+.records-card h2 {
+  margin: 0;
+  color: #1a3673;
+}
+
+.profile-card p {
+  margin: 6px 0 18px;
+  color: #667085;
+}
+
+.info-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.info-grid div {
+  background: #f8fcff;
+  border: 1px solid #dde7f0;
+  border-radius: 15px;
+  padding: 13px;
+}
+
+.info-grid span {
+  display: block;
+  color: #667085;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.info-grid strong {
+  color: #1a3673;
+}
+
+.record-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.record-item {
+  background: #f8fcff;
+  border: 1px solid #dde7f0;
+  border-radius: 16px;
+  padding: 15px;
+}
+
+.record-item strong {
+  color: #1a3673;
+}
+
+.record-item span {
+  display: block;
+  color: #667085;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.record-item p {
+  margin: 10px 0 0;
+  color: #172033;
+}
+
+.record-item small {
+  display: block;
+  margin-top: 8px;
+  color: #667085;
+}
+
+.empty-state {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px dashed #dde7f0;
+  border-radius: 15px;
+  color: #667085;
+}
+
+@media (max-width: 900px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

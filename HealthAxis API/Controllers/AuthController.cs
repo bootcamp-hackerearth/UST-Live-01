@@ -1,7 +1,10 @@
 ﻿using HealthAxis.API.DTOs.Auth;
 using HealthAxis.API.Services;
 using HealthAxis.Shared.DTOs.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthAxis.API.Controllers
 {
@@ -42,8 +45,8 @@ namespace HealthAxis.API.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(
-     LoginDto request,
-     CancellationToken ct)
+            LoginDto request,
+            CancellationToken ct)
         {
             var (
                 success,
@@ -104,6 +107,44 @@ namespace HealthAxis.API.Controllers
             };
 
             return Ok(response);
+        }
+
+        [HttpPut("change-password")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> ChangePassword(
+            ChangePasswordDto request,
+            CancellationToken ct)
+        {
+            string? userId =
+                User.FindFirst("UserId")?.Value ??
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "User id was not found in token."
+                });
+            }
+
+            var (success, message) =
+                await _service.ChangePasswordAsync(
+                    userId,
+                    request,
+                    ct);
+
+            if (!success)
+            {
+                return BadRequest(new
+                {
+                    message
+                });
+            }
+
+            return Ok(new
+            {
+                message
+            });
         }
     }
 }

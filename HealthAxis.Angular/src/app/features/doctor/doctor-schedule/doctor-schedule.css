@@ -1,0 +1,138 @@
+:host {
+  display: block;
+  color: #172033;
+}
+
+.page-header {
+  margin-bottom: 22px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 32px;
+}
+
+.page-header p {
+  margin: 7px 0 0;
+  color: #667085;
+}
+
+.alert-error {
+  border-radius: 14px;
+  padding: 13px 15px;
+  margin-bottom: 18px;
+  font-weight: 700;
+  background: #fff1f1;
+  color: #b42318;
+  border: 1px solid #ffd6d6;
+}
+
+.filter-card {
+  display: flex;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #dde7f0;
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.filter-card input,
+.filter-card select {
+  height: 46px;
+  border: 1px solid #dde7f0;
+  border-radius: 13px;
+  padding: 0 13px;
+  font: inherit;
+}
+
+.filter-card input {
+  flex: 1;
+}
+
+.appointment-list {
+  display: grid;
+  gap: 16px;
+}
+
+.appointment-card,
+.empty-state {
+  background: #ffffff;
+  border: 1px solid #dde7f0;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.appointment-card h2 {
+  margin: 0;
+  color: #1a3673;
+}
+
+.appointment-card p {
+  margin: 5px 0 0;
+  color: #667085;
+}
+
+.appointment-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.appointment-meta span {
+  background: #f8fcff;
+  border: 1px solid #dde7f0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #1a3673;
+  font-weight: 750;
+}
+
+.status-badge.status-scheduled {
+  background: #fff7e6;
+  color: #b54708;
+}
+
+.status-badge.status-confirmed {
+  background: #eaf6fd;
+  color: #286ce2;
+}
+
+.status-badge.status-cancelled {
+  background: #fff1f1;
+  color: #b42318;
+}
+
+.status-badge.status-completed {
+  background: #ecfdf3;
+  color: #087443;
+}
+
+.appointment-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.primary-btn,
+.secondary-btn {
+  text-decoration: none;
+  border-radius: 13px;
+  padding: 10px 14px;
+  font-weight: 850;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, #286ce2, #44b8f3);
+  color: #ffffff;
+}
+
+.secondary-btn {
+  border: 1px solid #dde7f0;
+  background: #ffffff;
+  color: #1a3673;
+}

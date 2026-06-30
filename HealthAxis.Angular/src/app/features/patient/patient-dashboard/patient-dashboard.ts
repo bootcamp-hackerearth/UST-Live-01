@@ -4,7 +4,7 @@ import { TokenService } from '../../../core/models/token.service';
 
 @Component({
   selector: 'app-patient-dashboard',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink],
   templateUrl: './patient-dashboard.html',
   styleUrls: ['./patient-dashboard.css']
 })

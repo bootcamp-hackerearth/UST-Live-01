@@ -11,5 +11,10 @@ namespace HealthAxis.API.Services
             DateTime date,
             string timeSlot,
             CancellationToken ct = default);
+
+        Task<List<string>> GetAvailableSlotsAsync(
+            int doctorId,
+            DateTime date,
+            CancellationToken ct = default);
     }
 }

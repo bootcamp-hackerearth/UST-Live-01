@@ -1,0 +1,371 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+  color: #172033;
+}
+
+.doctor-shell {
+  min-height: 100vh;
+  display: flex;
+  background: linear-gradient(180deg, #f7fbff 0%, #eef6fd 100%);
+}
+
+/* SIDEBAR RAIL */
+
+.sidebar-rail {
+  flex: 0 0 104px;
+  min-height: 100vh;
+  background: #f7fbff;
+  border-right: 1px solid #dde7f0;
+  z-index: 40;
+  transition: flex-basis 0.24s ease;
+
+  display: flex;
+  align-items: center;
+}
+
+.sidebar-rail:hover {
+  flex-basis: 316px;
+}
+
+/* FLOATING SIDEBAR */
+
+.floating-sidebar {
+  margin-left: 24px;
+  width: 72px;
+  height: auto;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at top left, rgba(68, 184, 243, 0.24), transparent 36%),
+    linear-gradient(180deg, #1a3673 0%, #132b5e 100%);
+  color: #ffffff;
+  padding: 18px 10px;
+  overflow: hidden;
+  box-shadow: 0 26px 64px rgba(26, 54, 115, 0.24);
+  transition:
+    width 0.24s ease,
+    border-radius 0.24s ease,
+    box-shadow 0.24s ease;
+}
+
+.sidebar-rail:hover .floating-sidebar {
+  width: 276px;
+  border-radius: 32px;
+  box-shadow: 0 34px 90px rgba(26, 54, 115, 0.32);
+}
+
+/* BRAND */
+
+.portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 6px 8px 20px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.brand-mark {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #1a3673;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 23px;
+}
+
+.brand-text {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.2s ease,
+    max-width 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sidebar-rail:hover .brand-text {
+  opacity: 1;
+  max-width: 190px;
+  transform: translateX(0);
+}
+
+.brand-text h2 {
+  margin: 0;
+  font-size: 23px;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+}
+
+.brand-text p {
+  margin: 3px 0 0;
+  color: #dff5ff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* NAVIGATION */
+
+.floating-nav {
+  display: grid;
+  gap: 12px;
+}
+
+.floating-nav a {
+  height: 58px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #eaf6fd;
+  text-decoration: none;
+  font-weight: 850;
+  font-size: 16px;
+  border-radius: 999px;
+  padding: 0 8px;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.floating-nav a:hover {
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
+}
+
+.floating-nav a.active {
+  background: #ffffff;
+  color: #1a3673;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+.nav-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border: 2px solid currentColor;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.nav-label {
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.2s ease,
+    max-width 0.2s ease,
+    transform 0.2s ease;
+}
+
+.sidebar-rail:hover .nav-label {
+  opacity: 1;
+  max-width: 190px;
+  transform: translateX(0);
+}
+
+/* MAIN CONTENT */
+
+.doctor-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.doctor-topbar {
+  height: 102px;
+  background: #ffffff;
+  border-bottom: 1px solid #dde7f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.topbar-title h1 {
+  margin: 0;
+  color: #1a3673;
+  font-size: 30px;
+  letter-spacing: -0.7px;
+}
+
+.topbar-title p {
+  margin: 6px 0 0;
+  color: #53627a;
+  font-size: 13px;
+}
+
+.doctor-view {
+  padding: 28px 34px;
+}
+
+/* USER MENU */
+
+.user-menu-wrapper {
+  position: relative;
+}
+
+.user-menu-button {
+  border: 1px solid #d7e3ef;
+  background: #ffffff;
+  border-radius: 999px;
+  padding: 7px 13px 7px 7px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #44b8f3, #286ce2);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 17px;
+}
+
+.user-text {
+  display: grid;
+  text-align: left;
+}
+
+.user-text strong {
+  color: #1a3673;
+  text-transform: capitalize;
+  font-size: 14px;
+}
+
+.user-text span {
+  color: #667085;
+  font-size: 12px;
+  max-width: 190px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  color: #1a3673;
+  font-weight: 900;
+  font-size: 17px;
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 230px;
+  background: #ffffff;
+  border: 1px solid #d7e3ef;
+  border-radius: 18px;
+  padding: 8px;
+  box-shadow: 0 24px 60px rgba(26, 54, 115, 0.16);
+  z-index: 100;
+}
+
+.user-dropdown a,
+.user-dropdown button {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #1a3673;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  padding: 12px 13px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.user-dropdown a:hover,
+.user-dropdown button:hover {
+  background: #eaf6fd;
+}
+
+.user-dropdown button {
+  appearance: none;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 980px) {
+  .doctor-shell {
+    display: block;
+  }
+
+  .sidebar-rail {
+    min-height: auto;
+    border-right: none;
+    display: block;
+  }
+
+  .sidebar-rail:hover {
+    flex-basis: auto;
+  }
+
+  .floating-sidebar {
+    margin: 18px;
+    width: auto;
+    border-radius: 28px;
+  }
+
+  .sidebar-rail:hover .floating-sidebar {
+    width: auto;
+  }
+
+  .brand-text,
+  .nav-label {
+    opacity: 1;
+    max-width: none;
+    transform: none;
+  }
+
+  .doctor-topbar {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .doctor-topbar {
+    height: auto;
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .doctor-view {
+    padding: 20px;
+  }
+
+  .floating-nav a {
+    font-size: 15px;
+  }
+
+  .user-menu-button {
+    width: 100%;
+  }
+}

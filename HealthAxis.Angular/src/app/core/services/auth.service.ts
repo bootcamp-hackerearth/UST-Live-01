@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { AuthResponse } from '../models/auth-response';
 import { LoginRequest } from '../models/login-request';
+import { ChangePasswordRequest } from '../models/change-password-request';
 import { RegisterPatientRequest } from '../models/register-patient-request';
 
 @Injectable({
@@ -24,4 +25,12 @@ export class AuthService {
       request
     );
   }
+
+  changePassword(request: ChangePasswordRequest) {
+  return this.http.put(
+    `${this.apiBaseUrl}/auth/change-password`,
+    request
+  );
+  }
+  
 }

@@ -4,7 +4,7 @@
     {
         Scheduled = 1,
         Confirmed = 2,
-        Completed = 3,
-        Cancelled = 4
+        Completed = 4,
+        Cancelled = 3
     }
 }

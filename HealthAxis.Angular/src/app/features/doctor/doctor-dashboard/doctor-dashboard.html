@@ -1,3 +1,125 @@
-<h1 style="padding: 40px; color: #1A3673;">
-  Doctor Dashboard Working
-</h1>
+<div class="dashboard-page">
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="alert-success">
+      {{ successMessage }}
+    </div>
+  }
+
+  <section class="page-header">
+    <div>
+      <h1>Doctor Dashboard</h1>
+      <p>Review appointment summary and today's consultations.</p>
+    </div>
+  </section>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-icon blue-icon">▦</div>
+      <div>
+        <span>Total Appointments</span>
+        <strong>{{ totalAppointments }}</strong>
+        <p>All assigned appointments.</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon orange-icon">⌛</div>
+      <div>
+        <span>Scheduled</span>
+        <strong>{{ scheduledCount }}</strong>
+        <p>Appointments awaiting action.</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon cyan-icon">✓</div>
+      <div>
+        <span>Confirmed</span>
+        <strong>{{ confirmedCount }}</strong>
+        <p>Confirmed consultations.</p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon green-icon">✓</div>
+      <div>
+        <span>Completed</span>
+        <strong>{{ completedCount }}</strong>
+        <p>Completed patient visits.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="dashboard-panel">
+    <div class="panel-header">
+      <h2>Today's Schedule</h2>
+      <p>Appointments scheduled for today.</p>
+    </div>
+
+    @if (isLoading) {
+      <div class="empty-state">
+        Loading appointments...
+      </div>
+    } @else {
+      @if (todaysAppointments.length === 0) {
+        <div class="empty-state">
+          <strong>No appointments today</strong>
+          <span>Your today's consultations will appear here.</span>
+        </div>
+      } @else {
+        <div class="appointments-table-wrapper">
+          <table class="appointments-table">
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time Slot</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (appointment of todaysAppointments; track appointment.appointmentId) {
+                <tr>
+                  <td>
+                    <strong>{{ getPatientDisplayName(appointment) }}</strong>
+                    <span>Appointment ID: {{ appointment.appointmentId }}</span>
+                  </td>
+
+                  <td>{{ formatDate(appointment.scheduledDate) }}</td>
+
+                  <td>{{ appointment.timeSlot }}</td>
+
+                  <td>
+                    <span
+                      class="status-badge"
+                      [class]="getStatusClass(appointment.status)"
+                    >
+                      {{ getStatusText(appointment.status) }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <a
+                      class="record-btn"
+                      [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
+                    >
+                      Add Record
+                    </a>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  </section>
+</div>

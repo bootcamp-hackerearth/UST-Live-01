@@ -1,0 +1,95 @@
+<div class="patient-profile-page">
+  <header class="page-header">
+    <div>
+      <h1>Patient Profile</h1>
+      <p>View patient details and previous health records.</p>
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <section class="selector-card">
+    <label>Select Patient</label>
+
+    <select
+      [(ngModel)]="selectedPatientId"
+      (ngModelChange)="onPatientChanged()"
+    >
+      <option value="">Select patient</option>
+
+      @for (option of patientOptions; track option.patientId) {
+        <option [value]="option.patientId">
+          {{ option.patientName }}
+        </option>
+      }
+    </select>
+  </section>
+
+  @if (isLoading) {
+    <div class="page-card">
+      Loading patient profile...
+    </div>
+  } @else {
+    @if (patient) {
+      <section class="profile-grid">
+        <article class="profile-card">
+          <h2>{{ patient.fullName }}</h2>
+          <p>Patient ID: {{ patient.patientId }}</p>
+
+          <div class="info-grid">
+            <div>
+              <span>Date of Birth</span>
+              <strong>{{ formatDate(patient.dateOfBirth) }}</strong>
+            </div>
+
+            <div>
+              <span>Gender</span>
+              <strong>{{ getGenderText(patient.gender) }}</strong>
+            </div>
+
+            <div>
+              <span>Phone</span>
+              <strong>{{ patient.phoneNumber }}</strong>
+            </div>
+
+            <div>
+              <span>Email</span>
+              <strong>{{ patient.email }}</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="records-card">
+          <h2>Health Records</h2>
+
+          @if (healthRecords.length === 0) {
+            <div class="empty-state">
+              No health records found.
+            </div>
+          } @else {
+            <div class="record-list">
+              @for (record of healthRecords; track record.healthRecordId) {
+                <div class="record-item">
+                  <div>
+                    <strong>{{ record.diagnosis }}</strong>
+                    <span>{{ formatDate(record.visitDate) }}</span>
+                  </div>
+
+                  <p>{{ record.prescription }}</p>
+
+                  @if (record.notes) {
+                    <small>{{ record.notes }}</small>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </article>
+      </section>
+    }
+  }
+</div>

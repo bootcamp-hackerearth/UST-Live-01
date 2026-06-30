@@ -5,6 +5,24 @@
   color: #172033;
 }
 
+.dashboard-header {
+    margin-bottom: 32px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 700;
+    color: #173f8a;
+    line-height: 1.2;
+}
+
+.dashboard-header p {
+    margin-top: 8px;
+    font-size: 16px;
+    color: #667085;
+}
+
 .patient-dashboard-page {
   min-height: 100vh;
   display: grid;
@@ -329,17 +347,22 @@
   color: #1a3673;
 }
 
-@media (max-width: 1100px) {
-  .patient-dashboard-page {
-    grid-template-columns: 1fr;
-  }
+@media (max-width:1100px){
 
-  .patient-sidebar {
-    position: relative;
-  }
+    .patient-dashboard-page{
+        grid-template-columns:1fr;
+    }
 
-  .summary-grid,
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
+    .patient-sidebar{
+        position:relative;
+    }
+
+    .summary-grid{
+        grid-template-columns:1fr;
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
 }
