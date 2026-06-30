@@ -149,6 +149,15 @@ namespace S3_HealthAxisApi.Repository.Implementation
         {
             return await _context.Appointments.AnyAsync(a => a.AppointmentId == id);
         }
+        public async Task<IEnumerable<Appointment>> GetDoctorPatientAppointmentsAsync(int doctorId)
+        {
+            return await _context.Appointments
+                .Include(a => a.Patient)
+                .Where(a => a.DoctorId == doctorId)
+                .OrderByDescending(a => a.ScheduledDate)
+                .ThenBy(a => a.TimeSlot)
+                .ToListAsync();
+        }
 
         public async Task SaveChangesAsync()
         {

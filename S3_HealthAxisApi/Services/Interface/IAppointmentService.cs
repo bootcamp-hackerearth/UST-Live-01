@@ -1,4 +1,5 @@
 ﻿using S3_HealthAxis.Shared.DTOs.Appointment;
+using S3_HealthAxis.Shared.DTOs.Doctor;
 
 namespace S3_HealthAxisApi.Services.Interface
 {
@@ -20,6 +21,7 @@ namespace S3_HealthAxisApi.Services.Interface
         Task<AppointmentDto> CreateAsync(CreateAppointmentDto dto);
 
         Task<IEnumerable<DoctorScheduleItemDto>> GetDoctorUpcomingScheduleAsync(int doctorId);
+        Task<IEnumerable<DoctorPatientDto>> GetDoctorPatientsAsync(int doctorId);
 
         Task UpdateAsync(int id, UpdateAppointmentDto dto);
         Task UpdateStatusAsync(int id, UpdateAppointmentStatusDto dto);

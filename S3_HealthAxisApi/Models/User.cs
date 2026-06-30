@@ -24,6 +24,7 @@ namespace S3_HealthAxisApi.Models
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         public string? RefreshToken { get; set; }
+        public bool MustChangePassword { get; set; } = false;
 
         public DateTime? RefreshTokenExpiryTime { get; set; }
     }

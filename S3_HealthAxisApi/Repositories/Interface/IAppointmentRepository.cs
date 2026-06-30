@@ -20,6 +20,7 @@ namespace S3_HealthAxisApi.Repository.Interface
         Task<bool> ExistsSamePatientSameSlotSameDateAsync(int patientId, DateOnly date, int timeSlot, int appointmentId);
 
         Task<bool> ExistsSameDoctorSameSlotSameDateAsync(int doctorId, DateOnly date, int timeSlot, int appointmentId);
+        Task<IEnumerable<Appointment>> GetDoctorPatientAppointmentsAsync(int doctorId);
 
         Task AddAsync(Appointment appointment);
         Task UpdateAsync(Appointment appointment);

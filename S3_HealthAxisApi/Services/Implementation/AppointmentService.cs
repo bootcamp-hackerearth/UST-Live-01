@@ -3,6 +3,7 @@ using S3_HealthAxis.Shared.Enums;
 using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using S3_HealthAxisApi.Services.Interface;
+using S3_HealthAxis.Shared.DTOs.Doctor;
 using System.ComponentModel.DataAnnotations;
 
 namespace S3_HealthAxisApi.Services.Implementation
@@ -321,6 +322,8 @@ namespace S3_HealthAxisApi.Services.Implementation
                 throw new InvalidOperationException("Doctor is already booked for this time slot.");
         }
 
+
+
         private static AppointmentDto MapToAppointmentDto(Appointment appointment)
         {
             return new AppointmentDto
@@ -350,6 +353,49 @@ namespace S3_HealthAxisApi.Services.Implementation
                 Status = (int)appointment.Status,
                 CancellationReason = appointment.CancellationReason
             };
+        }
+        public async Task<IEnumerable<DoctorPatientDto>> GetDoctorPatientsAsync(int doctorId)
+        {
+            var doctor = await _doctorRepository.GetByIdAsync(doctorId);
+
+            if (doctor == null)
+            {
+                throw new KeyNotFoundException($"Doctor with Id {doctorId} not found.");
+            }
+
+            var appointments =
+                await _appointmentRepository.GetDoctorPatientAppointmentsAsync(doctorId);
+
+            var patients = appointments
+                .Where(a => a.Patient != null)
+                .GroupBy(a => a.PatientId)
+                .Select(group =>
+                {
+                    var latestAppointment = group
+                        .OrderByDescending(a => a.ScheduledDate)
+                        .ThenByDescending(a => a.TimeSlot)
+                        .First();
+
+                    var patient = latestAppointment.Patient;
+
+                    return new DoctorPatientDto
+                    {
+                        PatientId = patient.PatientId,
+                        FullName = patient.FullName,
+                        DateOfBirth = patient.DateOfBirth,
+                        Gender = patient.Gender,
+                        PhoneNumber = patient.PhoneNumber,
+                        Email = patient.Email,
+                        InsuranceId = patient.InsuranceNumber,
+                        IsActive = patient.IsActive,
+                        TotalAppointments = group.Count(),
+                        LastVisitDate = latestAppointment.ScheduledDate
+                    };
+                })
+                .OrderBy(p => p.FullName)
+                .ToList();
+
+            return patients;
         }
 
         private static DoctorScheduleItemDto MapDoctorScheduleItem(Appointment appointment)

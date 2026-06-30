@@ -277,7 +277,7 @@ namespace S3_HealthAxisApi.Controllers
         }
 
         [HttpPut("{id:int}/cancel")]
-        [Authorize(Roles = "Patient,Admin")]
+        [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> Cancel(
             int id,
             [FromBody] CancelAppointmentDto dto)
@@ -301,10 +301,26 @@ namespace S3_HealthAxisApi.Controllers
                     {
                         return Forbid();
                     }
+
+                    dto.CancellationReason =
+                        $"Cancelled by Patient: {dto.CancellationReason}";
                 }
 
-                await _appointmentService
-                    .CancelAsync(id, dto);
+                if (User.IsInRole("Doctor"))
+                {
+                    var doctorIdFromToken = GetPatientReferenceIdFromToken();
+
+                    if (!doctorIdFromToken.HasValue ||
+                        existingAppointment.DoctorId != doctorIdFromToken.Value)
+                    {
+                        return Forbid();
+                    }
+
+                    dto.CancellationReason =
+                        $"Cancelled by Doctor: {dto.CancellationReason}";
+                }
+
+                await _appointmentService.CancelAsync(id, dto);
 
                 return NoContent();
             }

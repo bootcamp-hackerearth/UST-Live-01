@@ -11,11 +11,14 @@ namespace S3_HealthAxisApi.Controllers
     public class DoctorsController : ControllerBase
     {
         private readonly IDoctorService _doctorService;
+        private readonly IAppointmentService _appointmentService;
 
         public DoctorsController(
-            IDoctorService doctorService)
+            IDoctorService doctorService,
+            IAppointmentService appointmentService)
         {
             _doctorService = doctorService;
+            _appointmentService = appointmentService;
         }
 
         [HttpGet]
@@ -113,6 +116,34 @@ namespace S3_HealthAxisApi.Controllers
             return NoContent();
         }
 
+        [HttpGet("{id:int}/patients")]
+        [Authorize(Roles = "Admin,Doctor")]
+        public async Task<IActionResult> GetDoctorPatients(int id)
+        {
+            try
+            {
+                if (User.IsInRole("Doctor"))
+                {
+                    var doctorIdFromToken = GetReferenceIdFromToken();
+
+                    if (!doctorIdFromToken.HasValue ||
+                        doctorIdFromToken.Value != id)
+                    {
+                        return Forbid();
+                    }
+                }
+
+                var patients =
+                    await _appointmentService.GetDoctorPatientsAsync(id);
+
+                return Ok(patients);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         [HttpPut("{id:int}/deactivate")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Deactivate(
@@ -122,6 +153,19 @@ namespace S3_HealthAxisApi.Controllers
 
             return NoContent();
         }
+        private int? GetReferenceIdFromToken()
+        {
+            var referenceIdValue =
+                User.FindFirst("ReferenceId")?.Value;
+
+            if (int.TryParse(referenceIdValue, out var referenceId))
+            {
+                return referenceId;
+            }
+
+            return null;
+        }
+
     }
 
 }
