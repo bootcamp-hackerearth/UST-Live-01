@@ -7,5 +7,7 @@ namespace HealthAxisCore_Api.Repositories.Interfaces
         Task<List<HealthRecord>> GetByPatientIdAsync(int patientId, CancellationToken ct = default);
 
         Task<HealthRecord?> GetDetailsAsync(int healthRecordId, CancellationToken ct = default);
+
+        Task<bool> ExistsForAppointmentAsync(int appointmentId, CancellationToken ct = default);
     }
 }

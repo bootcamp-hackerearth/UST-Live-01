@@ -11,7 +11,6 @@ namespace HealthAxisCore_Api.Services.Implementation
     public class PatientService(
         IPatientRepository repository,
         IAppointmentRepository appointmentRepository,
-        IHealthRecordRepository healthRecordRepository,
         IMapper mapper
     ) : IPatientService
     {
@@ -50,6 +49,18 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (!user.IsPatient() || user.GetPatientId() != id)
             {
                 throw new UnauthorizedException("You can update only your own profile");
+            }
+
+            if (request.DateOfBirth.Date > DateTime.UtcNow.Date)
+            {
+                throw new InvalidException("Date of birth cannot be greater than today's date");
+            }
+
+            var minimumDateOfBirth = DateTime.UtcNow.Date.AddYears(-120);
+
+            if (request.DateOfBirth.Date < minimumDateOfBirth)
+            {
+                throw new InvalidException("Please enter a valid date of birth");
             }
 
             var patient = await repository.GetByIdAsync(id, ct)
@@ -139,17 +150,15 @@ namespace HealthAxisCore_Api.Services.Implementation
                     null,
                     ct);
 
-                var healthRecords = await healthRecordRepository.GetByPatientIdAsync(
-                    patientId,
-                    ct);
+                var hasValidAppointment = appointments.Any(appointment =>
+                    appointment.PatientId == patientId &&
+                    appointment.DoctorId == doctorId &&
+                    appointment.Status != "Cancelled");
 
-                var hasTreatedPatient =
-                    appointments.Any(appointment => appointment.DoctorId == doctorId) ||
-                    healthRecords.Any(record => record.DoctorId == doctorId);
-
-                if (!hasTreatedPatient)
+                if (!hasValidAppointment)
                 {
-                    throw new UnauthorizedException("You can view only patients treated by you");
+                    throw new UnauthorizedException(
+                        "You can view only patients with a valid appointment with you");
                 }
 
                 return;

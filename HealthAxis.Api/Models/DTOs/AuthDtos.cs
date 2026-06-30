@@ -4,43 +4,43 @@ namespace HealthAxisCore_Api.Models.Dtos
 {
     public class RegisterPatientDto
     {
-        [Required, RegularExpression(@"[A-Z][A-za-z\s]+"), MinLength(2)]
-        public string PatientName { get; set; }
+        [Required, RegularExpression(@"[A-Z][A-Za-z\s]+"), MinLength(2)]
+        public required string PatientName { get; set; }
 
         [Required]
         public DateTime DateOfBirth { get; set; }
 
         [Required, RegularExpression("(Male|Female|Transgender|Other)")]
-        public string Gender { get; set; }
+        public required string Gender { get; set; }
 
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required, Phone]
-        public string PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
 
         public string? InsuranceID { get; set; }
 
         [Required, MinLength(8)]
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 
     public class LoginDto
     {
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 
     public class RefreshTokenRequestDto
     {
         [Required]
-        public string UserId { get; set; }
+        public required string UserId { get; set; }
 
         [Required]
-        public string RefreshToken { get; set; }
+        public required string RefreshToken { get; set; }
     }
 
     public class AuthResponseDto
@@ -60,7 +60,7 @@ namespace HealthAxisCore_Api.Models.Dtos
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
     }
 
     public class ForgotPasswordResponseDto
@@ -74,13 +74,13 @@ namespace HealthAxisCore_Api.Models.Dtos
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
-        public string Token { get; set; }
+        public required string Token { get; set; }
 
         [Required]
         [MinLength(8)]
-        public string NewPassword { get; set; }
+        public required string NewPassword { get; set; }
     }
 }

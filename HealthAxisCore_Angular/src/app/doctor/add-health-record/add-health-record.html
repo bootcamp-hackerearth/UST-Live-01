@@ -1,0 +1,77 @@
+<section class="record-page">
+  <div class="record-hero">
+    <div>
+      <span class="page-kicker">Add Health Record</span>
+
+      <h1>Consultation notes.</h1>
+
+      <p>
+        Capture diagnosis, prescription, and follow-up notes after the consultation.
+      </p>
+    </div>
+
+    <a routerLink="/doctor/schedule" class="back-link">
+      Back to schedule
+    </a>
+  </div>
+
+  <form [formGroup]="recordForm"
+        (ngSubmit)="submitRecord()"
+        class="record-card">
+
+    <div class="form-group">
+      <label>Diagnosis</label>
+
+      <textarea formControlName="diagnosis"
+                placeholder="Enter diagnosis"
+                [class.input-invalid]="diagnosis?.invalid && (diagnosis?.touched || submitted)">
+      </textarea>
+
+      @if (diagnosis?.invalid && (diagnosis?.touched || submitted)) {
+      <small class="validation-message">
+        Diagnosis is required.
+      </small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Prescription</label>
+
+      <textarea formControlName="prescription"
+                placeholder="Enter prescribed medication or treatment"
+                [class.input-invalid]="prescription?.invalid && (prescription?.touched || submitted)">
+      </textarea>
+
+      @if (prescription?.invalid && (prescription?.touched || submitted)) {
+      <small class="validation-message">
+        Prescription is required.
+      </small>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Notes</label>
+
+      <textarea formControlName="notes"
+                placeholder="Enter additional notes"
+                [class.input-invalid]="notes?.invalid && (notes?.touched || submitted)">
+      </textarea>
+
+      @if (notes?.invalid && (notes?.touched || submitted)) {
+      <small class="validation-message">
+        Notes are required.
+      </small>
+      }
+    </div>
+
+    @if (successMessage) {
+    <div class="success-message">
+      {{ successMessage }}
+    </div>
+    }
+
+    <button type="submit" class="save-button">
+      Save Health Record
+    </button>
+  </form>
+</section>

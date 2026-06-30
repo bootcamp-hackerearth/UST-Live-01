@@ -1,0 +1,55 @@
+<section class="page-hero">
+  <div>
+    <span class="page-kicker">Today’s Schedule</span>
+
+    <h1>Consultation queue.</h1>
+
+    <p>
+      View today’s appointments, open patient profiles, and add consultation records.
+    </p>
+  </div>
+</section>
+
+<section class="schedule-list">
+  @for (appointment of appointments; track appointment.appointmentId) {
+  <article class="schedule-card">
+    <div class="patient-avatar">
+      {{ appointment.patientName.charAt(0) }}
+    </div>
+
+    <div class="patient-main">
+      <h2>{{ appointment.patientName }}</h2>
+      <p>{{ appointment.reason }}</p>
+
+      <div class="patient-meta">
+        <span>Age: {{ appointment.age }}</span>
+        <span>Time: {{ appointment.timeSlot }}</span>
+      </div>
+    </div>
+
+    <span [class]="getStatusClass(appointment.status)">
+      {{ appointment.status }}
+    </span>
+
+    <div class="schedule-actions">
+      <a [routerLink]="['/doctor/patient', appointment.patientId]"
+         class="secondary-action">
+        View Profile
+      </a>
+
+      <a [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
+         class="primary-action">
+        Add Record
+      </a>
+
+      @if (appointment.status !== 'Completed') {
+      <button type="button"
+              class="complete-button"
+              (click)="markCompleted(appointment)">
+        Complete
+      </button>
+      }
+    </div>
+  </article>
+  }
+</section>

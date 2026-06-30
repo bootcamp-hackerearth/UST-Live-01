@@ -24,11 +24,6 @@ namespace HealthAxisCore_Api.Services.Implementation
                 patientId,
                 ct);
 
-            if (user.IsAdmin())
-            {
-                return mapper.Map<List<HealthRecordDto>>(records);
-            }
-
             if (user.IsPatient())
             {
                 var loggedInPatientId = user.GetPatientId()
@@ -76,9 +71,9 @@ namespace HealthAxisCore_Api.Services.Implementation
         }
 
         public async Task<HealthRecordDto> CreateAsync(
-            CreateHealthRecordDto request,
-            ClaimsPrincipal user,
-            CancellationToken ct = default)
+     CreateHealthRecordDto request,
+     ClaimsPrincipal user,
+     CancellationToken ct = default)
         {
             var doctorId = user.GetDoctorId()
                 ?? throw new UnauthorizedException("DoctorId claim missing");
@@ -90,20 +85,33 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             if (appt.DoctorId != doctorId)
             {
-                throw new UnauthorizedException("Cannot complete another doctor's appointment");
+                throw new UnauthorizedException(
+                    "Cannot add health record for another doctor's appointment");
+            }
+
+            if (appt.PatientId != request.PatientId)
+            {
+                throw new InvalidException(
+                    "Appointment does not belong to the selected patient");
+            }
+
+            if (appt.Status != "Completed")
+            {
+                throw new InvalidException(
+                    "Health record can be added only after appointment completion");
+            }
+            var alreadyExists = await healthRecordRepository.ExistsForAppointmentAsync(request.AppointmentId, ct);
+
+            if (alreadyExists)
+            {
+                throw new InvalidException(
+                    "Health record already exists for this appointment");
             }
 
             var record = mapper.Map<HealthRecord>(request);
 
             record.DoctorId = doctorId;
             record.VisitDate = DateTime.UtcNow;
-
-            appt.Status = "Completed";
-
-            await appointmentRepository.UpdateAsync(
-                appt.AppointmentId,
-                appt,
-                ct);
 
             var saved = await healthRecordRepository.CreateAsync(
                 record,

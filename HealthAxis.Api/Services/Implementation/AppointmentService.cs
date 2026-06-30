@@ -44,12 +44,20 @@ namespace HealthAxisCore_Api.Services.Implementation
         }
 
         public async Task<AppointmentDto> CreateAsync(
-            CreateAppointmentDto request,
-            ClaimsPrincipal user,
-            CancellationToken ct = default)
+     CreateAppointmentDto request,
+     ClaimsPrincipal user,
+     CancellationToken ct = default)
         {
             var patientId = user.GetPatientId()
                 ?? throw new UnauthorizedException("PatientId claim missing");
+
+            var doctor = await doctorRepository.GetByIdAsync(request.DoctorId, ct)
+                ?? throw new NotFoundException("Doctor not found");
+
+            if (!doctor.IsActive)
+            {
+                throw new InvalidException("Cannot book appointment with inactive doctor");
+            }
 
             if (request.ScheduledDate.Date < DateTime.UtcNow.Date)
             {
@@ -88,6 +96,8 @@ namespace HealthAxisCore_Api.Services.Implementation
             var appt = mapper.Map<Appointment>(request);
 
             appt.PatientId = patientId;
+            appt.Status = "Pending";
+            appt.CancellationReason = string.Empty;
 
             var saved = await appointmentRepository.CreateAsync(
                 appt,
@@ -136,11 +146,33 @@ namespace HealthAxisCore_Api.Services.Implementation
                     throw new UnauthorizedException(
                         "You can update only your own appointment");
                 }
+
+                var allowedDoctorStatuses = new[] { "Confirmed", "Completed" };
+
+                if (!allowedDoctorStatuses.Contains(request.Status))
+                {
+                    throw new UnauthorizedException(
+                        "Doctors can only confirm or complete appointments");
+                }
             }
 
             if (request.Status == "Cancelled")
             {
+                if (string.IsNullOrWhiteSpace(request.CancellationReason))
+                {
+                    throw new InvalidException("Cancellation reason is required");
+                }
+
                 EnsureCancellationAllowed(appt);
+            }
+            if (appt.Status == "Cancelled")
+            {
+                throw new InvalidException("Cancelled appointment cannot be updated");
+            }
+
+            if (appt.Status == "Completed" && request.Status != "Completed")
+            {
+                throw new InvalidException("Completed appointment cannot be changed");
             }
 
             appt.Status = request.Status;

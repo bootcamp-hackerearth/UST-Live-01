@@ -93,10 +93,13 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAdminClient", policy =>
+    options.AddPolicy("AllowFrontendClient", policy =>
     {
         policy
-            .WithOrigins("https://localhost:7050")
+            .WithOrigins("https://localhost:7050",
+            "https://localhost:4200",
+            "http://localhost:4200",
+            "http://localhost:56902")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

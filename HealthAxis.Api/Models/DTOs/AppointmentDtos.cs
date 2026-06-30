@@ -25,13 +25,13 @@ namespace HealthAxisCore_Api.Models.Dtos
         public DateTime ScheduledDate { get; set; }
 
         [Required]
-        public string TimeSlot { get; set; }
+        public required string TimeSlot { get; set; }
     }
 
     public class UpdateAppointmentStatusDto
     {
         [Required, RegularExpression("(Pending|Confirmed|Cancelled|Completed)")]
-        public string Status { get; set; }
+        public required string Status { get; set; }
 
         [MaxLength(100)]
         public string CancellationReason { get; set; } = string.Empty;

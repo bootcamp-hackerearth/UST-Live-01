@@ -16,7 +16,7 @@ namespace HealthAxisCore_Api.Models.Dtos
 
     public class UpdatePatientDto
     {
-        [Required, RegularExpression(@"[A-Z][A-za-z\s]+"), MinLength(2)]
+        [Required, RegularExpression(@"[A-Z][A-Za-z\s]+"), MinLength(2)]
         public string PatientName { get; set; }
 
         [Required]

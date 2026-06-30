@@ -25,6 +25,25 @@ namespace HealthAxisCore_Api.Services.Implementation
             if (await userManager.FindByEmailAsync(request.Email) != null)
                 throw new InvalidException("Email already exists");
 
+            var emailDomainName = GetEmailDomainName(request.Email);
+
+            if (emailDomainName.Equals("healthaxis", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidException("Patients cannot register using HealthAxis email domain");
+            }
+
+            if (request.DateOfBirth.Date > DateTime.UtcNow.Date)
+            {
+                throw new InvalidException("Date of birth cannot be greater than today's date");
+            }
+
+            var minimumDateOfBirth = DateTime.UtcNow.Date.AddYears(-120);
+
+            if (request.DateOfBirth.Date < minimumDateOfBirth)
+            {
+                throw new InvalidException("Please enter a valid date of birth");
+            }
+
             if (!await roleManager.RoleExistsAsync("Patient"))
                 throw new InvalidException("Patient role does not exist");
 
@@ -284,6 +303,23 @@ namespace HealthAxisCore_Api.Services.Implementation
             }
 
             return "Password reset successfully";
+        }
+
+        private static string GetEmailDomainName(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
+            {
+                return string.Empty;
+            }
+
+            var domainPart = email.Split('@')[1];
+
+            if (string.IsNullOrWhiteSpace(domainPart) || !domainPart.Contains('.'))
+            {
+                return string.Empty;
+            }
+
+            return domainPart.Split('.')[0];
         }
     }
 }

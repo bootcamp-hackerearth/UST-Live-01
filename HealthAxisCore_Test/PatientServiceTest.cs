@@ -20,7 +20,6 @@ namespace HealthAxisCore_Api.Tests.Services
             return new PatientService(
                 patientRepo?.Object ?? new Mock<IPatientRepository>().Object,
                 appointmentRepo?.Object ?? new Mock<IAppointmentRepository>().Object,
-                healthRepo?.Object ?? new Mock<IHealthRecordRepository>().Object,
                 mapper?.Object ?? new Mock<IMapper>().Object);
         }
 

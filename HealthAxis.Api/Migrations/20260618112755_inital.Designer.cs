@@ -13,7 +13,7 @@ namespace HealthAxisCore_Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20260618112755_inital")]
-    partial class inital
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -5,7 +5,7 @@
 namespace HealthAxisCore_Api.Migrations
 {
     /// <inheritdoc />
-    public partial class inital : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,0 +1,62 @@
+<section class="dashboard-hero">
+  <div>
+    <span class="page-kicker">Doctor Dashboard</span>
+
+    <h1>
+      Welcome,
+      <span>{{ doctorName }}</span>
+    </h1>
+
+    <p>
+      Manage consultations, review patient history, and complete today’s appointments.
+    </p>
+  </div>
+
+  <a routerLink="/doctor/schedule" class="hero-action">
+    View Today’s Schedule
+  </a>
+</section>
+
+<section class="dashboard-grid">
+  @for (card of dashboardCards; track card.title) {
+  <a [routerLink]="card.route" class="dashboard-card">
+    <span class="card-value">{{ card.value }}</span>
+
+    <h2>{{ card.title }}</h2>
+
+    <p>{{ card.description }}</p>
+
+    <span class="card-link">Open</span>
+  </a>
+  }
+</section>
+
+<section class="dashboard-section">
+  <div class="section-header">
+    <div>
+      <span class="page-kicker">Upcoming</span>
+      <h2>Next Appointments</h2>
+    </div>
+
+    <a routerLink="/doctor/schedule">View all</a>
+  </div>
+
+  <div class="appointments-list">
+    @for (appointment of upcomingAppointments; track appointment.appointmentId) {
+    <div class="appointment-row">
+      <div class="patient-avatar">
+        {{ appointment.patientName.charAt(0) }}
+      </div>
+
+      <div>
+        <h3>{{ appointment.patientName }}</h3>
+        <p>{{ appointment.timeSlot }}</p>
+      </div>
+
+      <span class="status-badge">
+        {{ appointment.status }}
+      </span>
+    </div>
+    }
+  </div>
+</section>

@@ -12,6 +12,12 @@ import { MyAppointments } from './pages/patient/my-appointments/my-appointments'
 import { HealthHistory } from './pages/patient/health-history/health-history';
 import { NgModule } from '@angular/core';
 import { BookAppointment } from './pages/patient/book-appointment/book-appointment';
+import { DoctorLayout } from './doctor/doctor-layout/doctor-layout';
+import { DoctorDashboard } from './doctor/doctor-dashboard/doctor-dashboard';
+import { TodaySchedule } from './doctor/today-schedule/today-schedule';
+import { DoctorPatients } from './doctor/doctor-patients/doctor-patients';
+import { DoctorPatientProfile } from './doctor/doctor-patient-profile/doctor-patient-profile';
+import { AddHealthRecord } from './doctor/add-health-record/add-health-record';
 
 export const routes: Routes = [
   {
@@ -53,6 +59,37 @@ export const routes: Routes = [
       {
         path: 'health-history',
         component: HealthHistory
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
+    path: 'doctor',
+    component: DoctorLayout,
+    children: [
+      {
+        path: 'dashboard',
+        component: DoctorDashboard
+      },
+      {
+        path: 'schedule',
+        component: TodaySchedule
+      },
+      {
+        path: 'patients',
+        component: DoctorPatients
+      },
+      {
+        path: 'patient/:patientId',
+        component: DoctorPatientProfile
+      },
+      {
+        path: 'add-health-record/:appointmentId',
+        component: AddHealthRecord
       },
       {
         path: '',

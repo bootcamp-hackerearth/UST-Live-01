@@ -9,7 +9,7 @@ namespace HealthAxisCore_Api.Models
         public int RefreshTokenId { get; set; }
 
         [Required]
-        public string Token { get; set; }
+        public required string Token { get; set; }
 
         [Required]
         public DateTime ExpiresAt { get; set; }
@@ -18,9 +18,9 @@ namespace HealthAxisCore_Api.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [Required]
-        public string ApplicationUserId { get; set; }
+        public required string ApplicationUserId { get; set; }
 
         [ForeignKey(nameof(ApplicationUserId))]
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 }

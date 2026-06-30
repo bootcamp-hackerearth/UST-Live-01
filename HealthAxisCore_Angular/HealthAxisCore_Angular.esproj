@@ -6,5 +6,12 @@
     <ShouldRunBuildScript>false</ShouldRunBuildScript>
     <!-- Folder where production build objects will be placed -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\HealthAxisCore_Angular\browser\</BuildOutputFolder>
+    <!-- Exclude Angular project from SonarQube coverage -->
+    <SonarQubeExclude>true</SonarQubeExclude>
   </PropertyGroup>
+  <ItemGroup>
+    <SonarQubeSetting Include="sonar.exclusions">
+      <Value>**/*.css</Value>
+    </SonarQubeSetting>
+  </ItemGroup>
 </Project>

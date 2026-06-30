@@ -15,10 +15,10 @@ namespace HealthAxisCore_Api.Models.Dtos
     public class CreateDoctorDto
     {
         [Required, MinLength(2), RegularExpression(@"[A-Z][A-Za-z\s]+")]
-        public string DoctorName { get; set; }
+        public required string DoctorName { get; set; }
 
         [Required, RegularExpression("(Endocrinologist|Oncologist|Gynecologist|OrthopedicSurgeon|Psychiatrist|Pediatrician|Neurologist|Dermatologist|Cardiologist|GeneralPractitioner)")]
-        public string Specialisation { get; set; }
+        public required string Specialisation { get; set; }
 
         [Required]
         public int YearsOfExperience { get; set; }
@@ -27,22 +27,22 @@ namespace HealthAxisCore_Api.Models.Dtos
         public int ConsultationFee { get; set; }
 
         [Required, EmailAddress]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required, Phone]
-        public string PhoneNumber { get; set; }
+        public required string PhoneNumber { get; set; }
 
         [Required, MinLength(8)]
-        public string Password { get; set; }
+        public required string Password { get; set; }
     }
 
     public class UpdateDoctorDto
     {
         [Required, MinLength(2), RegularExpression(@"[A-Z][A-Za-z\s]+")]
-        public string DoctorName { get; set; }
+        public required string DoctorName { get; set; }
 
         [Required, RegularExpression("(Endocrinologist|Oncologist|Gynecologist|OrthopedicSurgeon|Psychiatrist|Pediatrician|Neurologist|Dermatologist|Cardiologist|GeneralPractitioner)")]
-        public string Specialisation { get; set; }
+        public required string Specialisation { get; set; }
 
         [Required]
         public int YearsOfExperience { get; set; }

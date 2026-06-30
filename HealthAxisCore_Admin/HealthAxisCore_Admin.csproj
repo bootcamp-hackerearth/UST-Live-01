@@ -39,6 +39,9 @@
 				**/RedirectToLogin.razor
 			</Value>
 		</SonarQubeSetting>
+		<SonarQubeSetting Include="sonar.exclusions">
+			<Value>**/*.css</Value>
+		</SonarQubeSetting>
 	</ItemGroup>
 
 </Project>

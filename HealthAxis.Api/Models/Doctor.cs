@@ -10,11 +10,11 @@ namespace HealthAxisCore_Api.Models
         [Required]
         [MinLength(2)]
         [RegularExpression(@"[A-Z][A-Za-z\s]+")]
-        public string DoctorName { get; set; }
+        public required string DoctorName { get; set; }
 
         [Required]
         [RegularExpression("(Endocrinologist|Oncologist|Gynecologist|OrthopedicSurgeon|Psychiatrist|Pediatrician|Neurologist|Dermatologist|Cardiologist|GeneralPractitioner)", ErrorMessage = "Invalid Specialisation")]
-        public string Specialisation { get; set; }
+        public required string Specialisation { get; set; }
 
         [Required]
         public int YearsOfExperience { get; set; }
