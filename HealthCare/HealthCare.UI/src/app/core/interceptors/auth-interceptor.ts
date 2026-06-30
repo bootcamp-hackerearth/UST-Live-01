@@ -6,7 +6,7 @@ import { AuthService } from '../services/auth.service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const authService = inject(AuthService);
-  const token = localStorage.getItem('token');
+  const token = authService.getToken();
 
   // Skip auth endpoints
   if (req.url.includes('/login') || req.url.includes('/register')) {
@@ -43,7 +43,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             return next(retryReq);
           }),
           catchError(err => {
-            //  Refresh failed → logout
+            //    Token expired
+            alert('Session expired. Please login again.');
             authService.logout();
             return throwError(() => err);
           })

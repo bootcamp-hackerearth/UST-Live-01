@@ -1,14 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-
+import { ReactiveFormsModule,FormBuilder,FormGroup,Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login-modal',
@@ -29,7 +24,8 @@ export class LoginModal {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
 
     this.loginForm = this.fb.group({
@@ -84,26 +80,33 @@ export class LoginModal {
           }
         },
 
-        error: (err) => {
+ error: (err: any) => {
 
-       if (err.status === 0) {
-        this.serverError =
-      'Unable to connect to server. Please try again later.';
-      }
-        else if (err.status === 401 || err.status === 400) {
-         this.serverError =
-          'Invalid email or password.';
-         }
-        else if (err.status === 500) {
-        this.serverError =
-       'Server error. Please try again later.';
-       }
-        else {
-        this.serverError =
-         'Login failed. Please try again.';
-      }
+  console.error(err);
+
+  const status = err?.status;
+
+  if (status === 0) {
+    this.serverError =
+      'Unable to connect to server.';
+  }
+  else if (status === 401 || status === 400) {
+    this.serverError =
+      'Invalid email or password.';
+  }
+  else if (status === 500) {
+    this.serverError =
+      'Server error. Please try again later.';
+  }
+  else {
+    this.serverError =
+      'Login failed.';
+  }
+
+  this.toastr.error(this.serverError); 
 }
-      });
+
+});
   }
 
   closeModal(): void {

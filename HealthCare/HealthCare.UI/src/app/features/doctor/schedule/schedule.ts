@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -8,6 +8,7 @@ from '../../../core/services/appointment.service';
 
 import { DoctorAppointment }
 from '../../../core/models/doctor.appointment.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-schedule',
@@ -22,16 +23,12 @@ from '../../../core/models/doctor.appointment.model';
 })
 export class ScheduleComponent implements OnInit {
 
-  appointments: DoctorAppointment[] = [];
+  appointments = signal<DoctorAppointment[]>([]);
+  loading = signal(false);
 
-  selectedDate =
-    new Date().toISOString().split('T')[0];
+  selectedDate = new Date().toISOString().split('T')[0];
 
-  loading = false;
-
-  constructor(
-    private appointmentService: AppointmentService
-  ) { }
+  constructor(private appointmentService: AppointmentService,private toastr:ToastrService) {}
 
   ngOnInit(): void {
     this.loadAppointments();
@@ -39,28 +36,29 @@ export class ScheduleComponent implements OnInit {
 
   loadAppointments(): void {
 
-    this.loading = true;
+    this.loading.set(true);
 
     this.appointmentService
       .getDoctorSchedule(this.selectedDate)
       .subscribe({
 
-        next: (res: DoctorAppointment[]) => {
+        next: (res) => {
 
-          this.appointments = res;
+          console.log('Schedule data:', res);
 
-          this.loading = false;
+          this.appointments.set(res); 
+
+          this.loading.set(false);
         },
 
         error: (err) => {
-
-          console.log(err);
-
-          this.loading = false;
+          console.error(err);
+          this.loading.set(false);
         }
 
       });
   }
+
 
   updateStatus(
     appointmentId: number,
@@ -84,17 +82,16 @@ export class ScheduleComponent implements OnInit {
       .subscribe({
 
         next: () => {
-
-          alert('Status updated successfully');
-
-          this.loadAppointments();
+       this.toastr.success(
+       'Status updated successfully',
+       'Success');
+       this.loadAppointments();
         },
 
         error: (err) => {
 
           console.log(err);
-
-          alert('Unable to update status');
+          this.toastr.error('Unable to update status','Error');
         }
 
       });

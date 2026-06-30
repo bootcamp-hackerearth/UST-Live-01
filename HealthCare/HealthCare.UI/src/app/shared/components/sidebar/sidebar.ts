@@ -21,6 +21,8 @@ export class SidebarComponent {
   showBookingModal = false;
   isSidebarOpen = false;
   menuItems: any[] = [];
+  showLogoutConfirm = false;
+
 
   constructor(
     private authService: AuthService,
@@ -69,12 +71,25 @@ export class SidebarComponent {
       label: 'Logout',
       icon: '🚪',
       type: 'action',
-      action: () => this.logout()
+      action: () => this.openLogoutConfirm()
     });
   }
 
+  openLogoutConfirm() {
+  this.showLogoutConfirm = true;
+}
+
+confirmLogout() {
+  this.authService.logout();
+  this.router.navigate(['/']);
+}
+
+cancelLogout() {
+  this.showLogoutConfirm = false;
+}
+
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
 }

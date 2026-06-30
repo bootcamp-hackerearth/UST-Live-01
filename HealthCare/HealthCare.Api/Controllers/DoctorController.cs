@@ -20,7 +20,7 @@ namespace HealthCare.Api.Controllers
             _service = service;
         }
 
-        [HttpPut("my-profile")]
+        [HttpGet("my-profile")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> GetMyProfile()
         {

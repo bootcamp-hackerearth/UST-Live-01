@@ -1,15 +1,16 @@
 export interface Doctor {
 
-  DoctorId?: number;
+ 
+  doctorId?: number;
 
-  FullName: string;
+  fullName: string;
 
-  Email: string;
+  email?: string;
 
-  Specialisation: string;
+  specialisation: string;
 
-  Experience: number;
+  yearsOfExperience: number;
 
-  ConsultationFee: number;
+  consultationFee: number;
 
 }

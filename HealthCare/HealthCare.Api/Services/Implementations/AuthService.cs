@@ -121,7 +121,7 @@ namespace HealthCare.Api.Services.Implementations
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user == null)
-                throw new Exception("Invalid email or password");
+                return null;
 
             var validPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
 

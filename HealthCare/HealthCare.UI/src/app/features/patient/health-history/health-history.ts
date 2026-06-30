@@ -17,7 +17,7 @@ from '../../../core/models/health-record.model';
 export class HealthHistoryComponent
 implements OnInit {
 
-  records: HealthRecord[] = [];
+  records: any[] = []
 
   loading = false;
 
@@ -41,7 +41,7 @@ implements OnInit {
 
         next: (res) => {
 
-          this.records = res;
+          this.records = res ?? [];
 
           this.loading = false;
         },
@@ -49,7 +49,7 @@ implements OnInit {
         error: err => {
 
           console.log(err);
-
+          this.records = [];
           this.loading = false;
         }
 

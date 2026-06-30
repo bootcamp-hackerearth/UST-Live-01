@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 import { DoctorService }
 from '../../../core/services/doctor.service';
@@ -18,73 +19,81 @@ from '../../../core/models/leave.model';
 export class LeaveComponent {
 
   selectedDate = '';
+  reason = '';
+  today = new Date().toISOString().split('T')[0];
 
-  leaves: Leave[] = [];
-
-  loading = false;
+  leaves = signal<Leave[]>([]);
+  loading = signal(false);
 
   constructor(
-    private doctorService: DoctorService
+    private doctorService: DoctorService,
+    private toastr: ToastrService
   ) {}
 
   addDate() {
 
-    if (!this.selectedDate)
-      return;
+    if (!this.selectedDate) return;
 
-    const exists = this.leaves.some(
+    //  prevent past dates
+    if (this.selectedDate < this.today) {
+      this.toastr.warning('Past dates are not allowed');
+      return;
+    }
+
+    const exists = this.leaves().some(
       x => x.leaveDate === this.selectedDate
     );
 
     if (exists) {
-
-      alert('Date already added');
+      this.toastr.info('Date already added');
       return;
     }
 
-    this.leaves.push({
-      leaveDate: this.selectedDate
-    });
+    this.leaves.update(list => [
+      ...list,
+      {
+        leaveDate: this.selectedDate,
+        reason: this.reason
+      }
+    ]);
 
     this.selectedDate = '';
+    this.reason = '';
   }
 
   removeDate(index: number) {
-
-    this.leaves.splice(index, 1);
+    this.leaves.update(list =>
+      list.filter((_, i) => i !== index)
+    );
   }
 
   submitLeaves() {
 
-    if (this.leaves.length === 0) {
-
-      alert('Please add at least one leave date');
+    if (this.leaves().length === 0) {
+      this.toastr.warning('Please add at least one leave date');
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
 
     this.doctorService
-      .addLeaves(this.leaves)
+      .addLeaves(this.leaves())
       .subscribe({
-
         next: () => {
 
-          alert('Leaves added successfully');
+          this.toastr.success('Leaves added successfully');
 
-          this.leaves = [];
+          this.leaves.set([]); 
 
-          this.loading = false;
+          this.loading.set(false);
         },
 
         error: () => {
 
-          alert('Unable to add leaves');
+          this.toastr.error('Unable to add leaves');
 
-          this.loading = false;
+          this.loading.set(false);
         }
-
       });
   }
-
 }

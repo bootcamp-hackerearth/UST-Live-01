@@ -1,98 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-
-import { PatientService } from '../../../core/services/patient.service';
+import { DoctorService } from '../../../core/services/doctor.service';
+import { Doctor } from '../../../core/models/doctor.model';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-doctor-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './profile.html',
-  styleUrl: './profile.css'
+  imports: [CommonModule],
+  templateUrl: './profile.html'
 })
-export class  DoctorProfileComponent implements OnInit {
+export class DoctorProfileComponent implements OnInit {
 
-  profileForm!: FormGroup;
+  doctor = signal<Doctor>({} as Doctor);
+  loading = signal(true);
 
-  patientId = 0;
-
-  loading = false;
-
-  constructor(
-    private fb: FormBuilder,
-    private patientService: PatientService
-  ) { }
+  constructor(private doctorService: DoctorService) {}
 
   ngOnInit(): void {
-
-    this.profileForm = this.fb.group({
-
-      firstName: ['', Validators.required],
-
-      email: [{ value: '', disabled: true }],
-
-      phoneNumber: ['', Validators.required],
-
-      gender: ['', Validators.required],
-
-      dateofbirth: ['', Validators.required]
-
-    });
-
     this.loadProfile();
   }
 
   loadProfile() {
 
-    this.loading = true;
+    this.loading.set(true);
 
-    this.patientService.getProfile()
+    this.doctorService.getProfile()
       .subscribe({
+        next: (res) => {
+          console.log('Doctor profile:', res);
 
-        next: (res: any) => {
+          this.doctor.set(res); 
 
-          this.patientId = res.patientId;
-
-          this.profileForm.patchValue(res);
-
-          this.loading = false;
+          this.loading.set(false);
         },
-
-        error: () => {
-
-          this.loading = false;
+        error: (err) => {
+          console.error(err);
+          this.loading.set(false);
         }
-
       });
   }
-
-  updateProfile() {
-
-    if (this.profileForm.invalid)
-      return;
-
-    this.patientService.updateProfile(
-      this.profileForm.getRawValue()
-    )
-    .subscribe({
-
-      next: () => {
-
-        alert('Profile updated successfully');
-      },
-
-      error: () => {
-
-        alert('Unable to update profile');
-      }
-
-    });
-  }
-
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AppointmentService }from '../../../core/services/appointment.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-doctor-dashboard',
@@ -23,12 +24,13 @@ export class DoctorDashboardComponent implements OnInit {
   todaySchedule: any[] = [];
 
   constructor(
-    private appointmentService: AppointmentService
+    private appointmentService: AppointmentService,
   ) {}
 
   ngOnInit(): void {
 
     this.loadSchedule();
+
   }
 
   loadSchedule() {

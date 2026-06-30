@@ -36,6 +36,7 @@ implements OnInit {
   patientId = 0;
 
   loading = false;
+  toastr: any;
 
   constructor(
     private fb: FormBuilder,
@@ -101,16 +102,12 @@ implements OnInit {
 
         next: () => {
 
-          this.loading = false;
-
-          alert(
-            'Health Record Added Successfully'
-          );
-
-          this.router.navigate([
-            '/doctor/schedule'
-          ]);
-
+         this.loading = false; 
+         this.toastr.success(
+        'Health Record Added Successfully',
+        'Success'
+         );
+          this.router.navigate(['/doctor/schedule' ]);
         },
 
         error: err => {

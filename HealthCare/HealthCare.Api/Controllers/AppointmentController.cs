@@ -89,7 +89,7 @@ namespace HealthCare.Api.Controllers
 
 
         [HttpGet("my-schedule")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> GetMySchedule([FromQuery] DateOnly date)
         {
             var patientId = GetPatientIdFromClaims();

@@ -40,7 +40,7 @@ getMyAppointments() {
   getDoctorSchedule(date: string) {
 
   return this.http.get<DoctorAppointment[]>(
-    `${this.api}/doctor/0/schedule?date=${date}`
+    `${this.api}/doctor/schedule?date=${date}`
   );
   }
 

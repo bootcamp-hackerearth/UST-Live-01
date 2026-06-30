@@ -54,15 +54,14 @@ updateProfile(id: number, doctor: Doctor) {
   );
 }
 
-createHealthRecord(
-  record: HealthRecord
-) {
+createHealthRecord(record: any) {
 
   return this.http.post(
-    `${this.api}/$healthrecords`,
+    `https://localhost:7225/api/healthrecords`, 
     record
   );
 }
+
 
 getHealthRecordById(id: number) {
 

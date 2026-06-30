@@ -27,8 +27,9 @@ namespace HealthCare.Api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            var doctorId = GetDoctorIdFromClaims();
 
-            await _healthRecordService.AddAsync(dto);
+            await _healthRecordService.AddAsync(dto, doctorId);
 
             return Ok(new { message = "Health record created successfully" });
         }

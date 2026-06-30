@@ -10,6 +10,7 @@ using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace HealthCare.Api.Services.Implementations
@@ -27,10 +28,20 @@ namespace HealthCare.Api.Services.Implementations
             _context = context;
         }
 
-        public async Task AddAsync(CreateHealthRecordDto dto)
+        public async Task AddAsync(CreateHealthRecordDto dto, int doctorId)
         {
-            var record=_mapper.Map<HealthRecord>(dto);
-            await _repository.AddAsync(record);
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(a => a.AppointmentId == dto.AppointmentId);
+
+            if (appointment == null)
+                throw new Exception("Invalid appointment");
+
+            var record = _mapper.Map<HealthRecord>(dto);
+
+            record.PatientId = appointment.PatientId; 
+            record.DoctorId = doctorId; 
+
+            await _context.HealthRecords.AddAsync(record);
             await _context.SaveChangesAsync();
         }
 

@@ -74,7 +74,7 @@
   ☰
 </button>
 
-<!-- ✅ OVERLAY -->
+<!--  OVERLAY -->
 @if(isSidebarOpen){
   <div
     class="fixed inset-0 bg-black/30 z-30 md:hidden"
@@ -82,9 +82,45 @@
   </div>
 }
 
-<!-- ✅ MODAL -->
+<!--  MODAL -->
 @if(showBookingModal){
   <app-book-appointment
     (close)="showBookingModal = false">
   </app-book-appointment>
+}
+
+@if(showLogoutConfirm){
+
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+
+    <div class="bg-white p-6 rounded-2xl shadow-lg w-80 text-center">
+
+      <h3 class="text-lg font-semibold mb-3">
+        Confirm Logout
+      </h3>
+
+      <p class="text-gray-600 mb-6 text-sm">
+        Are you sure you want to logout?
+      </p>
+
+      <div class="flex gap-3 justify-center">
+
+        <button
+          (click)="confirmLogout()"
+          class="px-4 py-2 bg-red-500 text-white rounded-lg text-sm">
+          Yes, Logout
+        </button>
+
+        <button
+          (click)="cancelLogout()"
+          class="px-4 py-2 bg-gray-200 rounded-lg text-sm">
+          Cancel
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
 }

@@ -59,7 +59,15 @@ export const routes: Routes = [
       {
         path: 'health-history',
         component: HealthHistoryComponent
+      },
+
+      
+      {
+       path: '',
+       redirectTo: 'dashboard',
+       pathMatch: 'full'
       }
+
     ]
   },
 
@@ -84,7 +92,7 @@ export const routes: Routes = [
        },
 
         {
-          path: 'doctor/schedule',
+          path: 'schedule',
           component: ScheduleComponent,
         },
 
@@ -96,7 +104,11 @@ export const routes: Routes = [
         {
         path: 'health-record',
         component: HealthRecordComponent,
-        }
+        },
+
+        { 
+          path: '', redirectTo: 'dashboard', pathMatch: 'full'
+         }
 
     ]
   },

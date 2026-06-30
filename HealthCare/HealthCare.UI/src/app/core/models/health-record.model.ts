@@ -1,6 +1,10 @@
 export interface HealthRecord {
 
-  healthRecordId: number;
+  recorId: number;
+
+  patientId:number;
+
+  doctorId:number;
 
   doctorName: string;
 

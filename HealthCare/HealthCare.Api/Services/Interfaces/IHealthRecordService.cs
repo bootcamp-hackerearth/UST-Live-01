@@ -6,7 +6,7 @@ namespace HealthCare.Api.Services.Interfaces
 {
     public interface IHealthRecordService
     {
-        Task AddAsync(CreateHealthRecordDto dto);
+        Task AddAsync(CreateHealthRecordDto dto,int doctorId);
         Task UpdateAsync(int id, UpdateHealthRecordDto dto);
         Task DeleteAsync(int  id);
         Task<HealthRecordListDto> GetByIdAsync(int id);

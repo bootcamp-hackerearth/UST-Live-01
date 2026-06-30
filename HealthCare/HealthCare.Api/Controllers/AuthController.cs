@@ -1,10 +1,11 @@
-﻿using HealthCare.Api.Services.Interfaces;
+﻿using Healthcare.Shared.DTOs.Authentication;
+using Healthcare.Shared.DTOs.Patient;
+using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Healthcare.Shared.DTOs.Authentication;
-using Healthcare.Shared.DTOs.Patient;
 
 
 namespace HealthCare.Api.Controllers
@@ -64,11 +65,12 @@ namespace HealthCare.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var response = await _authService.LoginAsync(dto);
 
+            if (response == null)
+            {
+                return Unauthorized("Invalid email or password"); 
+            }
             return Ok(response);
         }
 
