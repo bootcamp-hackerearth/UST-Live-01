@@ -52,7 +52,7 @@ public class AdminPatientController : ControllerBase
     }
 
     //Update status
-    [HttpPatch("{id}/status")]
+    [HttpPatch("patients/{id}/status")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> UpdatePatientStatus(int id, [FromBody] bool isActive)
     {
