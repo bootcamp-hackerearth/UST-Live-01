@@ -694,3 +694,9 @@
   font-size: 12px !important;
   border-radius: 14px !important;
 }
+
+.pp-field-card input:disabled {
+  cursor: not-allowed;
+  color: #64748b;
+  background: #e2e8f0;
+}

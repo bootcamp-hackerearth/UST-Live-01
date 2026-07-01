@@ -215,6 +215,7 @@ export class AppointmentApiService {
     if (!dateValue) {
       return '';
     }
+    
 
     return dateValue.split('T')[0];
   }

@@ -186,7 +186,8 @@
               <input
                 type="email"
                 name="email"
-                [(ngModel)]="form.email">
+                [(ngModel)]="form.email"
+                disabled>
             </label>
 
             @if (hasSubmitted && isEmailInvalid) {
