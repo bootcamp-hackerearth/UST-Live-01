@@ -90,11 +90,11 @@ namespace HealthCare.Api.Services.Implementations
 
             var totalCount = await query.CountAsync(); 
 
-    var items = await query
-        .OrderByDescending(d => d.YearsOfExperience)
-        .Skip((filter.PageNumber - 1) * filter.PageSize)
-        .Take(filter.PageSize)
-        .ToListAsync();
+            var items = await query
+              .OrderByDescending(d => d.YearsOfExperience)
+              .Skip((filter.PageNumber - 1) * filter.PageSize)
+              .Take(filter.PageSize)
+               .ToListAsync();
 
             return new PagedResult<DoctorListDto>
             {
@@ -177,6 +177,19 @@ namespace HealthCare.Api.Services.Implementations
             }
 
             return result;
+        }
+
+        public async Task<List<CreateLeaveDto>> GetLeavesByDoctorIdAsync(int doctorId)
+        {
+            var leaves = await _repository.GetLeavesByDoctorId(doctorId);
+
+            return leaves
+                .OrderBy(l => l.LeaveDate).Select(l => new CreateLeaveDto
+                 {
+                    LeaveDate = l.LeaveDate,
+                    Reason = l.Reason
+                 })
+                .ToList();
         }
 
         public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date) =>

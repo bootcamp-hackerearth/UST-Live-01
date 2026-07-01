@@ -63,10 +63,10 @@ export class SidebarComponent {
       ]
     };
 
-    // ✅ assign role menu
+    //  assign role menu
     this.menuItems = menusByRole[this.role || ''] || [];
 
-    // ✅ add logout always at bottom
+    //  add logout always at bottom
     this.menuItems.push({
       label: 'Logout',
       icon: '🚪',

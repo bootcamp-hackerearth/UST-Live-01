@@ -11,6 +11,7 @@ import { AuthService } from '../../../core/services/auth.service';
 })
 export class NavbarComponent {
 
+  showLogoutConfirm = false;
   role: string | null = null;
 
   constructor(
@@ -22,8 +23,17 @@ export class NavbarComponent {
     this.role = this.authService.getRole();
   }
 
-  logout() {
-    this.authService.logout();
-    this.router.navigate(['/']);
-  }
+openLogoutConfirm() {
+  this.showLogoutConfirm = true;
+}
+
+confirmLogout() {
+  this.authService.logout();
+  this.router.navigate(['/']);
+}
+
+cancelLogout() {
+  this.showLogoutConfirm = false;
+}
+
 }

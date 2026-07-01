@@ -1,193 +1,100 @@
 <div class="min-h-screen bg-slate-50 p-6">
 
-    <div class="mb-8">
+  <!--  HEADER -->
+  <div class="mb-8">
 
-        <h1 class="text-3xl font-bold text-slate-800">
-            My Health Records
- @if(loading){
+    <h1 class="text-3xl font-bold text-slate-800">
+      My Health Records
+    </h1>
 
-  <div class="text-center py-10">
-    Loading records...
+    <p class="text-slate-500">
+      View your consultation history
+    </p>
+
   </div>
 
-}
-@else if(records.length === 0){
+  <!--  LOADING -->
+  @if(loading()){
 
-  <div class="bg-white rounded-xl p-8 text-center shadow">
-    No Records Found
-  </div>
+    <div class="text-center py-10 text-sm text-gray-500">
+      Loading records...
+    </div>
 
-}
-@else {
+  }
 
-  <div class="space-y-6">
+  @else {
 
-    @for(record of records; track record.recordId){
+    <!--  EMPTY -->
+    @if(records().length === 0){
 
-      <div class="bg-white rounded-3xl shadow p-6">
+      <div class="bg-white rounded-xl p-6 text-center shadow text-sm text-gray-500">
+        No Records Found
+      </div>
 
-        <div class="flex justify-between items-center mb-4">
+    }
 
-          <div>
-            <h2 class="text-xl font-bold">
-              Dr. {{record.doctorName}}
-            </h2>
+    <!--  DATA -->
+    @else {
 
-            <p class="text-slate-500">
-              {{record.visitDate | date:'dd MMM yyyy'}}
-            </p>
+      <div class="space-y-4">
+
+        @for(record of records(); track $index){
+
+          <div class="bg-white rounded-xl shadow p-4 hover:shadow-md transition">
+
+            <!-- HEADER -->
+            <div class="mb-3">
+
+              <h2 class="text-sm font-semibold text-[#1E293B]">
+                 {{record.doctorName}}
+              </h2>
+
+              <p class="text-xs text-gray-500">
+                {{
+                  record.visitDate
+                  ? (record.visitDate | date:'dd MMM yyyy')
+                  : 'N/A'
+                }}
+              </p>
+
+            </div>
+
+            <!-- CONTENT -->
+            <div class="space-y-2 text-sm">
+
+              <div>
+                <span class="text-blue-600 font-medium">
+                  Diagnosis:
+                </span>
+                <p>{{record.diagnosis}}</p>
+              </div>
+
+              <div>
+                <span class="text-green-600 font-medium">
+                  Prescription:
+                </span>
+                <p>{{record.prescription}}</p>
+              </div>
+
+              <div>
+                <span class="text-gray-500 font-medium">
+                  Notes:
+                </span>
+                <p>
+                  {{record.notes || 'No additional notes'}}
+                </p>
+              </div>
+
+            </div>
+
           </div>
 
-        </div>
-
-        <div class="space-y-4">
-
-          <div>
-            <h3 class="font-semibold text-blue-600">Diagnosis</h3>
-            <p>{{record.diagnosis}}</p>
-          </div>
-
-          <div>
-            <h3 class="font-semibold text-green-600">Prescription</h3>
-            <p>{{record.prescription}}</p>
-          </div>
-
-          <div>
-            <h3 class="font-semibold text-slate-600">Notes</h3>
-            <p>{{record.notes || 'No additional notes'}}</p>
-          </div>
-
-        </div>
+        }
 
       </div>
 
     }
 
-  </div>
-
-}</h1>
-
-        <p class="text-slate-500">
-            View your consultation history
-        </p>
-
-    </div>
-
-    @if(loading){
-
-        <div class="text-center py-10">
-
-            Loading records...
-
-        </div>
-
-    }
-
-    @else {
-
-        <div class="space-y-6">
-
-            @for(record of records;
-                  track record.healthRecordId){
-
-                <div
-                    class="bg-white rounded-3xl
-                           shadow p-6">
-
-                    <div
-                        class="flex justify-between
-                               items-center mb-4">
-
-                        <div>
-
-                            <h2
-                             class="text-xl font-bold">
-
-                                Dr.
-                                {{record.doctorName}}
-
-                            </h2>
-
-                            <p class="text-slate-500">
-
-                                {{
-                                record.visitDate
-                                | date:'dd MMM yyyy'
-                                }}
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                    <div class="space-y-4">
-
-                        <div>
-
-                            <h3
-                              class="font-semibold
-                                     text-blue-600">
-
-                                Diagnosis
-
-                            </h3>
-
-                            <p>
-
-                                {{record.diagnosis}}
-
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <h3
-                              class="font-semibold
-                                     text-green-600">
-
-                                Prescription
-
-                            </h3>
-
-                            <p>
-
-                                {{record.prescription}}
-
-                            </p>
-
-                        </div>
-
-                        <div>
-
-                            <h3
-                              class="font-semibold
-                                     text-slate-600">
-
-                                Notes
-
-                            </h3>
-
-                            <p>
-
-                                {{
-                                record.notes ||
-                                'No additional notes'
-                                }}
-
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            }
-
-        </div>
-
-    }
+  }
 
 </div>

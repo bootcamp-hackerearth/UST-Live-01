@@ -1,4 +1,5 @@
 ﻿using Healthcare.Shared.DTOs.Patient;
+using HealthCare.Api.Services.Implementations;
 using HealthCare.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -11,10 +12,12 @@ namespace HealthCare.Api.Controllers
     public class PatientController : ControllerBase
     {
         private readonly IPatientService _service;
+        private readonly IHealthRecordService _healthRecordService;
 
-        public PatientController(IPatientService service)
+        public PatientController(IPatientService service,IHealthRecordService healthRecordService)
         {
             _service = service;
+            _healthRecordService = healthRecordService;
         }
 
         //Get Profile
@@ -42,6 +45,19 @@ namespace HealthCare.Api.Controllers
             return Ok(new { message = "Patient profile updated successfully" });
         }
 
+        [HttpGet("my-records")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient")]
+        public async Task<IActionResult> GetMyRecords()
+        {
+            var patientId = GetPatientIdFromClaims();
+
+            var result = await _healthRecordService
+                .GetHealthRecordByPatient(patientId);
+
+            return Ok(result);
+        }
+
+
 
         [HttpGet("dashboard/stats")]
         public IActionResult GetStats()
@@ -54,8 +70,6 @@ namespace HealthCare.Api.Controllers
                 prescriptions = 3
             });
         }
-
-
 
         private int GetPatientIdFromClaims()
         {

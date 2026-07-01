@@ -69,6 +69,17 @@ namespace HealthCare.Api.Controllers
 
             return Ok(result);
         }
+        //get doctor leave 
+        [HttpGet("my-leaves")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetMyLeaves()
+        {
+            var doctorId = GetDoctorIdFromClaims();
+
+            var leaves = await _service.GetLeavesByDoctorIdAsync(doctorId);
+
+            return Ok(leaves);
+        }
 
         private int GetDoctorIdFromClaims()
         {

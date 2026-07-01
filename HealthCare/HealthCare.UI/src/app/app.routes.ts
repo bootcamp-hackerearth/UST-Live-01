@@ -112,4 +112,7 @@ export const routes: Routes = [
 
     ]
   },
+
+  //Health record
+  
 ];

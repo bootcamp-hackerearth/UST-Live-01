@@ -39,6 +39,12 @@ getAvailableDoctors(specialization: string, date: string) {
     );
   }
 
+  getMyLeaves() {
+     return this.http.get<any[]>(
+    `${this.api}/my-leaves`
+  );
+}
+
   getProfile() {
 
   return this.http.get<Doctor>(

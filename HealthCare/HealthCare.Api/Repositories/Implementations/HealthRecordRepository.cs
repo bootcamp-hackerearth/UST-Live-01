@@ -12,6 +12,7 @@ namespace HealthCare.Api.Repositories.Implementations
         public async Task<List<HealthRecord>> GetHealthRecordByPatient(int id) =>
            await _dbSet
                .Where(hr => hr.PatientId == id)
+               .Include(hr => hr.Doctor)
                .ToListAsync();
 
         public async Task<List<HealthRecord>> GetHealthRecordByAppointment(int id) =>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { PatientService }
@@ -16,10 +16,9 @@ from '../../../core/models/health-record.model';
 })
 export class HealthHistoryComponent
 implements OnInit {
+  records = signal<HealthRecord[]>([]);
 
-  records: any[] = []
-
-  loading = false;
+  loading = signal(false);
 
   constructor(
     private patientService: PatientService
@@ -31,30 +30,31 @@ implements OnInit {
 
   }
 
-  loadRecords() {
+loadRecords() {
 
-    this.loading = true;
+  this.loading.set(true);
 
-    this.patientService
-      .getHealthRecords()
-      .subscribe({
+  this.patientService.getHealthRecords()
+    .subscribe({
 
-        next: (res) => {
+      next: (res: HealthRecord[]) => {
 
-          this.records = res ?? [];
+        this.records.set(res ?? []); 
 
-          this.loading = false;
-        },
+        this.loading.set(false);
 
-        error: err => {
+      },
 
-          console.log(err);
-          this.records = [];
-          this.loading = false;
-        }
+      error: (err) => {
 
-      });
+        console.error(err);
 
-  }
+        this.records.set([]);
 
+        this.loading.set(false);
+
+      }
+    });
 }
+}
+

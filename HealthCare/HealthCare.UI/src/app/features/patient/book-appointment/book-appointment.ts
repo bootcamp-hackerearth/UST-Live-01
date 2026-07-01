@@ -1,12 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-
+import { FormBuilder, FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { DoctorService } from '../../../core/services/doctor.service';
 import { AppointmentService } from '../../../core/services/appointment.service';
 
@@ -52,6 +47,7 @@ export class BookAppointmentComponent {
 
   constructor(
     private fb: FormBuilder,
+    private toastr: ToastrService,
     private doctorService: DoctorService,
     private appointmentService: AppointmentService
   ) {
@@ -92,7 +88,7 @@ export class BookAppointmentComponent {
     });
 }
 
- loadSlots() {
+loadSlots() {
 
   const doctorId = Number(this.form.get('doctorId')?.value);
   const date = this.form.get('scheduledDate')?.value;
@@ -100,19 +96,26 @@ export class BookAppointmentComponent {
   if (!doctorId || !date) return;
 
   const formatted = new Date(date).toISOString().split('T')[0];
-
-  console.log('Calling API with:', doctorId, formatted); 
+  const today = new Date().toISOString().split('T')[0];
+  const currentTime = this.getCurrentTime();
 
   this.appointmentService
     .getAvailableSlots(doctorId, formatted)
     .subscribe(res => {
 
-      console.log('Slots response:', res); 
+      //  FILTER only if today
+      if (formatted === today) {
 
-      this.slots = res;
+        this.slots = res.filter(slot => {
+          return slot >= currentTime; 
+        });
 
-      // 
+      } else {
+        this.slots = res; 
+      }
+
       this.form.get('timeSlot')?.enable();
+
     });
 }
 
@@ -130,18 +133,22 @@ export class BookAppointmentComponent {
     .subscribe({
       next: () => {
     this.isLoading = false;
-
-      this.showSuccessPopup = true;
-
-      setTimeout(() => {
-      this.close.emit(); 
+    this.toastr.success('Appointment booked successfully','Success');
+     setTimeout(() => {
+     this.close.emit(); 
       }, 2000);
     },
 
       error: () => {
         this.isLoading = false;
-        alert('Booking failed');
+        this.toastr.error('Unable to book appointment','Error');
       }
     });
+}
+
+getCurrentTime(): string {
+  const now = new Date();
+
+  return now.toTimeString().slice(0, 5); // "HH:mm"
 }
 }

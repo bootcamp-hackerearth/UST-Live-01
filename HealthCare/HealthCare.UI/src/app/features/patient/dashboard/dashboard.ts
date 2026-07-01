@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PatientService } from '../../../core/services/patient.service';
@@ -19,7 +19,7 @@ export class DashboardComponent implements OnInit {
   showBookingModal = false;
 
   stats: any[] = [];
-  appointments: any[] = [];
+  appointments = signal<any[]>([]);
 
   constructor(
     private patientService: PatientService
@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
     this.loadStats();
   }
 
-  // ✅ Load patient profile
+  //  Load patient profile
   loadProfile() {
     this.patientService.getProfile().subscribe({
       next: (res: any) => {
@@ -44,20 +44,22 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ✅ Load appointments
+  //  Load appointments
   loadAppointments() {
-    this.patientService.getAppointments().subscribe({
-      next: (res: any[]) => {
-        console.log('Appointments:', res);
-        this.appointments = res;
-      },
-      error: (err) => {
-        console.error('Error loading appointments', err);
-      }
-    });
-  }
+  this.patientService.getAppointments().subscribe({
 
-  // ✅ Load stats (backend required)
+    next: (res: any[]) => {
+      this.appointments.set(res);
+    },
+
+    error: (err) => {
+      console.error(err);
+    }
+  });
+}
+
+
+  //  Load stats (backend required)
   loadStats() {
     this.patientService.getDashboardStats().subscribe({
       next: (res: any) => {
@@ -94,5 +96,30 @@ export class DashboardComponent implements OnInit {
       }
     });
   }
+
+ upcomingAppointments = computed(() => {
+
+  const today = new Date();
+
+  return this.appointments()
+    .filter(a => {
+
+      const apptDate = new Date(a.scheduledDate);
+
+      return (
+        apptDate >= today &&
+        a.status !== 'Completed' &&
+        a.status !== 'Cancelled'
+      );
+
+    })
+    .sort((a, b) =>
+      new Date(a.scheduledDate).getTime() -
+      new Date(b.scheduledDate).getTime()
+    )
+    .slice(0, 5);
+
+});
+
 
 }

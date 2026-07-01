@@ -13,13 +13,13 @@
 
 
 
-@if(loading){
+@if(loading()){
   <div class="text-center py-10">
     Loading appointments...
   </div>
 }
 
-@else if(appointments.length === 0){
+@else if(appointments().length === 0){
   <div class="bg-white rounded-xl p-8 text-center shadow">
     No Appointments Found
   </div>
@@ -41,7 +41,7 @@
 
       <tbody>
 
-        @for(app of appointments; track app.appointmentId){
+        @for(app of appointments(); track app.appointmentId){
 
           <tr class="border-b hover:bg-gray-50 transition">
 

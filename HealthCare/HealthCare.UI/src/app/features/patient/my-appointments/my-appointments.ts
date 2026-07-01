@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef } from '@angular/core';
 import { AppointmentService }
@@ -14,9 +14,8 @@ from '../../../core/services/appointment.service';
 export class MyAppointmentsComponent
 implements OnInit {
 
-  appointments: any[] = [];
-
-  loading = true;
+ appointments = signal<any[]>([]);
+ loading = signal(true);
 
   constructor(
     private appointmentService: AppointmentService,
@@ -35,19 +34,16 @@ loadAppointments() {
 
       next: (res: any[]) => {
 
-        this.appointments = [...res]; 
-        
-        this.loading = false;
+        this.appointments.set(res); 
 
-        this.cd.detectChanges();
-
+        this.loading.set(false);
       },
 
       error: (err) => {
 
         console.error(err);
 
-        this.loading = false;
+        this.loading.set(false);
       }
 
     });

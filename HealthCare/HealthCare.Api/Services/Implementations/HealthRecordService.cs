@@ -119,19 +119,13 @@ namespace HealthCare.Api.Services.Implementations
         }
 
 
-        [HttpGet("patient/{patientId:int}")]
-        [Authorize(Roles = "Admin,Doctor")]
-        
-        public async Task<List<HealthRecordListDto>> GetHealthRecordByPatient(int id)
+        public async Task<List<HealthRecordListDto>> GetHealthRecordByPatient(int patientId)
         {
-            var records = await _repository.GetHealthRecordByPatient(id);
+            var records = await _repository.GetHealthRecordByPatient(patientId);
 
             return _mapper.Map<List<HealthRecordListDto>>(records);
         }
 
-
-        [HttpGet("appointment/{appointmentId:int}")]
-        [Authorize(Roles = "Admin,Doctor")]
         public async Task<List<HealthRecordListDto>> GetHealthRecordByAppointment(int id)
         {
             var records = await _repository.GetHealthRecordByAppointment(id);

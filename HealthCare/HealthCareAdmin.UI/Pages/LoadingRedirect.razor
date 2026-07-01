@@ -22,12 +22,10 @@
             if (!string.IsNullOrEmpty(Token))
             {
                 // Save token to localStorage
-                await JS.InvokeVoidAsync(
-                    "localStorage.setItem",
-                    "token",
-                    Token);
+                await JS.InvokeVoidAsync("localStorage.setItem", "token", Token);
+                await Task.Delay(100);
 
-                Navigation.NavigateTo("/dashboard", true);
+                Navigation.NavigateTo("/dashboard");
             }
 
             isLoading = false;

@@ -34,6 +34,8 @@ namespace HealthCare.Api.Mapping
             CreateMap<CreateHealthRecordDto, HealthRecord>();
             CreateMap<UpdateDoctorDto, HealthRecord>();
             CreateMap<HealthRecord, HealthRecordListDto>();
+            CreateMap<HealthRecord, HealthRecordListDto>().ForMember(dest => dest.DoctorName,
+               opt => opt.MapFrom(src => src.Doctor.FullName));
 
 
 
