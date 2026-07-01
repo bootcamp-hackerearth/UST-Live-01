@@ -20,6 +20,7 @@ import { DoctorService } from '../../core/services/doctor.service';
 import { Patient } from '../../core/models/patient.model';
 import { PatientService } from '../../core/services/patient.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
+// import { Pagination } from '../../shared/pagination/pagination';
 
 interface AppointmentSuccessDialog {
   doctorName: string;

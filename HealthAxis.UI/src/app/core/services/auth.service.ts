@@ -17,12 +17,16 @@ export type UserRole = 'Patient' | 'Doctor' | 'Admin' | '';
 
 interface JwtPayload extends Record<string, unknown> {
   exp?: number | string;
+  email?: unknown;
   role?: unknown;
   roles?: unknown;
 }
 
 const ROLE_CLAIM =
   'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+
+const EMAIL_CLAIM =
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress';
 
 @Injectable({
   providedIn: 'root'
@@ -123,7 +127,9 @@ export class AuthService {
     this.clearAuthData();
     void this.router.navigate(['/login']);
   }
-
+  clearSession(): void {
+  this.clearAuthData();
+}
   getToken(): string | null {
     return this.tokenSignal();
   }
@@ -146,11 +152,38 @@ export class AuthService {
     }
 
     if (currentRole === 'Admin') {
-      window.location.href = environment.blazorAdminUrl;
+      this.redirectToBlazorAdmin();
       return;
     }
 
     void this.router.navigate(['/login']);
+  }
+
+  private redirectToBlazorAdmin(): void {
+    const accessToken = localStorage.getItem(this.accessTokenKey);
+    const refreshToken = localStorage.getItem(this.refreshTokenKey);
+    const expiresIn = localStorage.getItem(this.expiresInMinutesKey);
+    const expiresAt = localStorage.getItem(this.expiresAtKey);
+
+    if (!accessToken || !refreshToken || !expiresIn || !expiresAt) {
+      this.clearAuthData();
+      void this.router.navigate(['/login']);
+      return;
+    }
+
+    const email = this.getEmailFromToken(accessToken);
+    const adminBaseUrl = environment.blazorAdminUrl.replace(/\/$/, '');
+
+    const fragment = new URLSearchParams({
+      accessToken,
+      refreshToken,
+      expiresIn,
+      expiresAt,
+      role: 'Admin',
+      email
+    });
+
+    window.location.href = `${adminBaseUrl}/external-login#${fragment.toString()}`;
   }
 
   private storeAuthData(
@@ -213,6 +246,17 @@ export class AuthService {
 
     if (typeof roleClaim === 'string') {
       return roleClaim;
+    }
+
+    return '';
+  }
+
+  private getEmailFromToken(token: string): string {
+    const payload = this.decodeToken(token);
+    const emailClaim = payload.email ?? payload[EMAIL_CLAIM];
+
+    if (typeof emailClaim === 'string') {
+      return emailClaim;
     }
 
     return '';

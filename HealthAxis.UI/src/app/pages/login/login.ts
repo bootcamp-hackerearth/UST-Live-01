@@ -4,7 +4,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
@@ -19,6 +19,7 @@ import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 export class Login {
   private readonly formBuilder = inject(FormBuilder);
   private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
 
   readonly loading = signal(false);
   readonly errorMessage = signal('');
@@ -27,6 +28,15 @@ export class Login {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
   });
+
+  constructor() {
+    const isAdminLogout =
+      this.route.snapshot.queryParamMap.get('adminLogout') === 'true';
+
+    if (isAdminLogout) {
+      this.authService.clearSession();
+    }
+  }
 
   get email() {
     return this.loginForm.controls.email;
@@ -55,7 +65,10 @@ export class Login {
       error: (error: unknown) => {
         this.loading.set(false);
         this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Login failed. Please check your credentials.')
+          getFriendlyErrorMessage(
+            error,
+            'Login failed. Please check your credentials.'
+          )
         );
       }
     });

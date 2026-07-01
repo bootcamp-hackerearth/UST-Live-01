@@ -5,20 +5,23 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 
-import { AuthService } from '../../core/services/auth.service';
-import { ChangePasswordRequest } from '../../core/models/auth.model';
-import { Gender } from '../../core/models/gender.enum';
 import { Patient } from '../../core/models/patient.model';
 import { PatientService } from '../../core/services/patient.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ChangePasswordRequest } from '../../core/models/auth.model';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
 @Component({
   selector: 'app-patient-profile',
-  imports: [ReactiveFormsModule, RouterLink, DatePipe],
+  imports: [ReactiveFormsModule, DatePipe],
   templateUrl: './patient-profile.html',
   styleUrl: './patient-profile.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,30 +34,15 @@ export class PatientProfile {
   readonly patient = signal<Patient | null>(null);
   readonly loading = signal(false);
   readonly saving = signal(false);
-  readonly changingPassword = signal(false);
-  readonly isEditDialogOpen = signal(false);
-
+  readonly passwordSaving = signal(false);
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
-  readonly passwordErrorMessage = signal('');
-  readonly passwordSuccessMessage = signal('');
+  readonly successDialogMessage = signal('');
+  readonly isEditDialogOpen = signal(false);
 
-  readonly genderOptions = [
-    {
-      label: 'Male',
-      value: Gender.Male
-    },
-    {
-      label: 'Female',
-      value: Gender.Female
-    },
-    {
-      label: 'Other',
-      value: Gender.Other
-    }
-  ] as const;
+  readonly maxDate = this.formatDateForInput(new Date());
 
-  readonly profileForm = this.formBuilder.nonNullable.group({
+  readonly editForm = this.formBuilder.nonNullable.group({
     fullName: [
       '',
       [
@@ -79,7 +67,14 @@ export class PatientProfile {
         Validators.pattern(/^[6-9][0-9]{9}$/)
       ]
     ],
-    email: ['', [Validators.required, Validators.email]]
+    email: [
+      '',
+      [
+        Validators.required,
+        Validators.email,
+        Validators.maxLength(100)
+      ]
+    ]
   });
 
   readonly passwordForm = this.formBuilder.nonNullable.group(
@@ -89,14 +84,14 @@ export class PatientProfile {
         '',
         [
           Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/)
+          Validators.minLength(6),
+          Validators.maxLength(50)
         ]
       ],
       confirmPassword: ['', [Validators.required]]
     },
     {
-      validators: PatientProfile.passwordsMatchValidator
+      validators: PatientProfile.passwordMatchValidator
     }
   );
 
@@ -105,23 +100,23 @@ export class PatientProfile {
   }
 
   get fullName() {
-    return this.profileForm.controls.fullName;
+    return this.editForm.controls.fullName;
   }
 
   get dateOfBirth() {
-    return this.profileForm.controls.dateOfBirth;
+    return this.editForm.controls.dateOfBirth;
   }
 
   get gender() {
-    return this.profileForm.controls.gender;
+    return this.editForm.controls.gender;
   }
 
   get phoneNumber() {
-    return this.profileForm.controls.phoneNumber;
+    return this.editForm.controls.phoneNumber;
   }
 
   get email() {
-    return this.profileForm.controls.email;
+    return this.editForm.controls.email;
   }
 
   get currentPassword() {
@@ -142,9 +137,8 @@ export class PatientProfile {
     this.successMessage.set('');
 
     this.patientService.getMyProfile().subscribe({
-      next: (patient) => {
+      next: (patient: Patient) => {
         this.patient.set(patient);
-        this.patchProfileForm(patient);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -157,16 +151,25 @@ export class PatientProfile {
   }
 
   openEditDialog(): void {
-    const currentPatient = this.patient();
+    const patient = this.patient();
 
-    if (!currentPatient) {
-      this.errorMessage.set('Profile data not loaded.');
+    if (!patient) {
+      this.errorMessage.set('Patient details not found.');
       return;
     }
 
-    this.patchProfileForm(currentPatient);
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.successDialogMessage.set('');
+
+    this.editForm.reset({
+      fullName: patient.fullName,
+      dateOfBirth: this.formatDateForInput(new Date(patient.dateOfBirth)),
+      gender: patient.gender,
+      phoneNumber: patient.phoneNumber,
+      email: patient.email
+    });
+
     this.isEditDialogOpen.set(true);
   }
 
@@ -178,26 +181,27 @@ export class PatientProfile {
     this.isEditDialogOpen.set(false);
   }
 
-  updateProfile(): void {
+  updatePatientDetails(): void {
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.successDialogMessage.set('');
 
-    if (this.profileForm.invalid) {
-      this.profileForm.markAllAsTouched();
-      this.errorMessage.set('Please correct the highlighted profile details.');
+    if (this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      this.errorMessage.set('Please correct the patient details.');
       return;
     }
 
     const currentPatient = this.patient();
 
     if (!currentPatient) {
-      this.errorMessage.set('Profile data not loaded. Please refresh the page.');
+      this.errorMessage.set('Patient details not found.');
       return;
     }
 
-    const formValue = this.profileForm.getRawValue();
+    const formValue = this.editForm.getRawValue();
 
-    const updatedPatient: Patient = {
+    const request: Patient = {
       ...currentPatient,
       fullName: formValue.fullName.trim(),
       dateOfBirth: formValue.dateOfBirth,
@@ -208,41 +212,43 @@ export class PatientProfile {
 
     this.saving.set(true);
 
-    this.patientService.updateMyProfile(updatedPatient).subscribe({
-      next: (patient) => {
-        this.patient.set(patient);
-        this.patchProfileForm(patient);
-        this.saving.set(false);
-        this.isEditDialogOpen.set(false);
-        this.successMessage.set('Profile updated successfully.');
-      },
-      error: (error: unknown) => {
-        this.saving.set(false);
-        this.errorMessage.set(
-          getFriendlyErrorMessage(error, 'Could not update patient profile.')
-        );
-      }
-    });
+    this.patientService
+      .updatePatientById(currentPatient.patientId, request)
+      .subscribe({
+        next: (updatedPatient: Patient) => {
+          this.patient.set(updatedPatient);
+          this.saving.set(false);
+          this.isEditDialogOpen.set(false);
+
+          this.successDialogMessage.set(
+            'Patient details updated successfully.'
+          );
+        },
+        error: (error: unknown) => {
+          this.saving.set(false);
+          this.errorMessage.set(
+            getFriendlyErrorMessage(error, 'Could not update patient details.')
+          );
+        }
+      });
+  }
+
+  closeSuccessDialog(): void {
+    this.successDialogMessage.set('');
   }
 
   changePassword(): void {
-    this.passwordErrorMessage.set('');
-    this.passwordSuccessMessage.set('');
+    this.errorMessage.set('');
+    this.successMessage.set('');
+    this.successDialogMessage.set('');
 
     if (this.passwordForm.invalid) {
       this.passwordForm.markAllAsTouched();
-      this.passwordErrorMessage.set('Please correct the password details.');
+      this.errorMessage.set('Please correct the password details.');
       return;
     }
 
     const formValue = this.passwordForm.getRawValue();
-
-    if (formValue.currentPassword === formValue.newPassword) {
-      this.passwordErrorMessage.set(
-        'New password must be different from current password.'
-      );
-      return;
-    }
 
     const request: ChangePasswordRequest = {
       currentPassword: formValue.currentPassword,
@@ -250,46 +256,34 @@ export class PatientProfile {
       confirmNewPassword: formValue.confirmPassword
     };
 
-    this.changingPassword.set(true);
+    this.passwordSaving.set(true);
 
     this.authService.changePassword(request).subscribe({
       next: () => {
-        this.changingPassword.set(false);
-        this.passwordForm.reset();
-        this.passwordSuccessMessage.set('Password changed successfully.');
+        this.passwordSaving.set(false);
+        this.passwordForm.reset({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        });
+
+        this.successDialogMessage.set('Password changed successfully.');
       },
       error: (error: unknown) => {
-        this.changingPassword.set(false);
-        this.passwordErrorMessage.set(
+        this.passwordSaving.set(false);
+        this.errorMessage.set(
           getFriendlyErrorMessage(error, 'Could not change password.')
         );
       }
     });
   }
 
-  private patchProfileForm(patient: Patient): void {
-    this.profileForm.patchValue({
-      fullName: patient.fullName,
-      dateOfBirth: patient.dateOfBirth.split('T')[0],
-      gender: patient.gender,
-      phoneNumber: patient.phoneNumber,
-      email: patient.email
-    });
-  }
+  private formatDateForInput(date: Date): string {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getDate()}`.padStart(2, '0');
 
-  private static passwordsMatchValidator(
-    control: AbstractControl
-  ): ValidationErrors | null {
-    const newPassword = control.get('newPassword')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-
-    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-      return {
-        passwordMismatch: true
-      };
-    }
-
-    return null;
+    return `${year}-${month}-${day}`;
   }
 
   private static noFutureDateValidator(
@@ -308,6 +302,25 @@ export class PatientProfile {
     if (selectedDate > today) {
       return {
         futureDate: true
+      };
+    }
+
+    return null;
+  }
+
+  private static passwordMatchValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+    const newPassword = control.get('newPassword')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+
+    if (!newPassword || !confirmPassword) {
+      return null;
+    }
+
+    if (newPassword !== confirmPassword) {
+      return {
+        passwordMismatch: true
       };
     }
 

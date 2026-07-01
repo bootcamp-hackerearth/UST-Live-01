@@ -1,192 +1,169 @@
 <section class="profile-page">
-  <section class="profile-hero">
+  <section class="profile-header">
     <div>
-      <a routerLink="/patient/dashboard" class="back-link">
-        ← Back to Dashboard
-      </a>
-
       <h1>My Profile</h1>
-
-      <p>
-        View patient details and update account security.
-      </p>
+      <p>View patient details and update account security.</p>
     </div>
   </section>
 
   @if (errorMessage()) {
-    <div class="alert error">{{ errorMessage() }}</div>
+    <div class="alert error">
+      {{ errorMessage() }}
+    </div>
   }
 
   @if (successMessage()) {
-    <div class="alert success">{{ successMessage() }}</div>
+    <div class="alert success">
+      {{ successMessage() }}
+    </div>
   }
 
-  <section class="profile-grid">
-    <article class="patient-card">
-      <div class="avatar-circle">
-        {{ patient()?.fullName?.charAt(0) || 'P' }}
-      </div>
-
-      <h2>{{ patient()?.fullName || 'Patient' }}</h2>
-      <p>{{ patient()?.email || 'Email not loaded' }}</p>
-
-      <div class="detail-list">
-        <div>
-          <span>Patient ID</span>
-          <strong>#{{ patient()?.patientId || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>Gender</span>
-          <strong>{{ patient()?.gender || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>Age</span>
-          <strong>{{ patient()?.age || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>Phone</span>
-          <strong>{{ patient()?.phoneNumber || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>DOB</span>
-          <strong>
-            @if (patient()?.dateOfBirth) {
-              {{ patient()?.dateOfBirth | date: 'mediumDate' }}
-            } @else {
-              -
-            }
-          </strong>
-        </div>
-      </div>
-
-      <button type="button" class="edit-details-btn" (click)="openEditDialog()">
-        Edit Patient Details
-      </button>
-    </article>
-
-    <article class="details-card">
-      <div class="section-title">
-        <span>Patient Details</span>
-        <h2>Patient Information</h2>
-      </div>
-
-      <div class="readonly-grid">
-        <div>
-          <span>Full Name</span>
-          <strong>{{ patient()?.fullName || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>Date of Birth</span>
-          <strong>
-            @if (patient()?.dateOfBirth) {
-              {{ patient()?.dateOfBirth | date: 'mediumDate' }}
-            } @else {
-              -
-            }
-          </strong>
-        </div>
-
-        <div>
-          <span>Gender</span>
-          <strong>{{ patient()?.gender || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>Phone Number</span>
-          <strong>{{ patient()?.phoneNumber || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>Email Address</span>
-          <strong>{{ patient()?.email || '-' }}</strong>
-        </div>
-
-        <div>
-          <span>Account Status</span>
-          <strong>Active</strong>
-        </div>
-      </div>
-    </article>
-  </section>
-
- <section class="password-card" id="change-password">
-    <div class="section-title">
-      <span>Security</span>
-      <h2>Change Password</h2>
-      <p>Use a strong password to keep your account safe.</p>
+  @if (loading()) {
+    <div class="loading-card">
+      Loading profile details...
     </div>
+  }
 
-    @if (passwordErrorMessage()) {
-      <div class="alert error">{{ passwordErrorMessage() }}</div>
-    }
-
-    @if (passwordSuccessMessage()) {
-      <div class="alert success">{{ passwordSuccessMessage() }}</div>
-    }
-
-    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="currentPassword">Current Password</label>
-
-          <input
-            id="currentPassword"
-            type="password"
-            formControlName="currentPassword"
-            placeholder="Enter current password"
-          />
-
-          @if (currentPassword.invalid && currentPassword.touched) {
-            <small>Current password is required.</small>
-          }
+  @if (!loading() && patient()) {
+    <section class="profile-grid">
+      <article class="profile-card">
+        <div class="avatar-circle">
+          {{ patient()!.fullName.charAt(0) }}
         </div>
 
-        <div class="form-group">
-          <label for="newPassword">New Password</label>
+        <h2>{{ patient()!.fullName }}</h2>
+        <p>{{ patient()!.email }}</p>
 
-          <input
-            id="newPassword"
-            type="password"
-            formControlName="newPassword"
-            placeholder="Enter new password"
-          />
+        <div class="summary-badge">
+          <span>Patient Portal Account</span>
+        </div>
+      </article>
 
-          @if (newPassword.invalid && newPassword.touched) {
-            <small>
-              Password must contain uppercase, lowercase, number, special character,
-              and at least 8 characters.
-            </small>
-          }
+      <article class="details-card">
+        <div class="details-header">
+          <div>
+            <p>PATIENT DETAILS</p>
+            <h2>Patient Information</h2>
+          </div>
+
+          <button
+            type="button"
+            class="edit-profile-button"
+            (click)="openEditDialog()"
+          >
+            Edit Patient Details
+          </button>
         </div>
 
-        <div class="form-group">
-          <label for="confirmPassword">Confirm New Password</label>
+        <div class="details-grid">
+          <div class="detail-row">
+            <span>Full Name</span>
+            <strong>{{ patient()!.fullName }}</strong>
+          </div>
 
-          <input
-            id="confirmPassword"
-            type="password"
-            formControlName="confirmPassword"
-            placeholder="Re-enter new password"
-          />
+          <div class="detail-row">
+            <span>Date of Birth</span>
+            <strong>{{ patient()!.dateOfBirth | date: 'mediumDate' }}</strong>
+          </div>
 
-          @if (passwordForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
-            <small>New password and confirm password do not match.</small>
-          }
+          <div class="detail-row">
+            <span>Gender</span>
+            <strong>{{ patient()!.gender }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Phone Number</span>
+            <strong>{{ patient()!.phoneNumber }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Email Address</span>
+            <strong>{{ patient()!.email }}</strong>
+          </div>
+
+          <div class="detail-row">
+            <span>Account Status</span>
+            <strong>Active</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="password-card" id="change-password">
+      <div class="password-header">
+        <div>
+          <p>SECURITY</p>
+          <h2>Change Password</h2>
+          <span>Use a strong password to keep your account safe.</span>
         </div>
       </div>
 
-      <button type="submit" class="password-button" [disabled]="changingPassword()">
-        {{ changingPassword() ? 'Changing Password...' : 'Change Password' }}
-      </button>
-    </form>
-  </section>
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+        <div class="password-grid">
+          <div class="form-group">
+            <label for="currentPassword">Current Password</label>
 
-  @if (isEditDialogOpen()) {
+            <input
+              id="currentPassword"
+              type="password"
+              placeholder="Enter current password"
+              formControlName="currentPassword"
+            />
+
+            @if (currentPassword.invalid && currentPassword.touched) {
+              <small>Current password is required.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">New Password</label>
+
+            <input
+              id="newPassword"
+              type="password"
+              placeholder="Enter new password"
+              formControlName="newPassword"
+            />
+
+            @if (newPassword.invalid && newPassword.touched) {
+              <small>New password must be at least 6 characters.</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm New Password</label>
+
+            <input
+              id="confirmPassword"
+              type="password"
+              placeholder="Re-enter new password"
+              formControlName="confirmPassword"
+            />
+
+            @if (confirmPassword.invalid && confirmPassword.touched) {
+              <small>Confirm password is required.</small>
+            }
+          </div>
+        </div>
+
+        @if (passwordForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
+          <small class="password-error">
+            New password and confirm password must match.
+          </small>
+        }
+
+        <button
+          type="submit"
+          class="change-password-button"
+          [disabled]="passwordSaving()"
+        >
+          {{ passwordSaving() ? 'Changing...' : 'Change Password' }}
+        </button>
+      </form>
+    </section>
+  }
+
+  @if (isEditDialogOpen() && patient()) {
     <div class="modal-backdrop">
       <section class="edit-modal">
         <div class="modal-header">
@@ -195,21 +172,26 @@
             <h2>Update Patient Details</h2>
           </div>
 
-          <button type="button" class="close-button" (click)="closeEditDialog()">
+          <button
+            type="button"
+            class="close-button"
+            (click)="closeEditDialog()"
+          >
             ×
           </button>
         </div>
 
-        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
-          <div class="form-grid">
-            <div class="form-group full-width">
+        <form [formGroup]="editForm" (ngSubmit)="updatePatientDetails()">
+          <div class="edit-form-grid">
+            <div class="form-group">
               <label for="fullName">Full Name</label>
 
               <input
                 id="fullName"
                 type="text"
-                formControlName="fullName"
+                maxlength="80"
                 placeholder="Enter full name"
+                formControlName="fullName"
               />
 
               @if (fullName.invalid && fullName.touched) {
@@ -224,6 +206,7 @@
                 id="dateOfBirth"
                 type="date"
                 formControlName="dateOfBirth"
+                [max]="maxDate"
               />
 
               @if (dateOfBirth.invalid && dateOfBirth.touched) {
@@ -236,12 +219,9 @@
 
               <select id="gender" formControlName="gender">
                 <option value="">Select gender</option>
-
-                @for (genderOption of genderOptions; track genderOption.value) {
-                  <option [value]="genderOption.value">
-                    {{ genderOption.label }}
-                  </option>
-                }
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
               </select>
 
               @if (gender.invalid && gender.touched) {
@@ -254,25 +234,25 @@
 
               <input
                 id="phoneNumber"
-                type="text"
+                type="tel"
                 maxlength="10"
+                placeholder="Enter phone number"
                 formControlName="phoneNumber"
-                placeholder="10 digit mobile number"
               />
 
               @if (phoneNumber.invalid && phoneNumber.touched) {
-                <small>Enter a valid 10 digit Indian mobile number.</small>
+                <small>Enter a valid 10 digit phone number.</small>
               }
             </div>
 
-            <div class="form-group">
+            <div class="form-group full-width">
               <label for="email">Email Address</label>
 
               <input
                 id="email"
                 type="email"
+                placeholder="Enter email address"
                 formControlName="email"
-                placeholder="example@email.com"
               />
 
               @if (email.invalid && email.touched) {
@@ -282,15 +262,42 @@
           </div>
 
           <div class="modal-actions">
-            <button type="submit" class="save-button" [disabled]="saving()">
-              {{ saving() ? 'Saving...' : 'Save Changes' }}
+            <button
+              type="submit"
+              class="save-button"
+              [disabled]="saving()"
+            >
+              {{ saving() ? 'Updating...' : 'Update Details' }}
             </button>
 
-            <button type="button" class="cancel-button" (click)="closeEditDialog()">
+            <button
+              type="button"
+              class="cancel-button"
+              [disabled]="saving()"
+              (click)="closeEditDialog()"
+            >
               Cancel
             </button>
           </div>
         </form>
+      </section>
+    </div>
+  }
+
+  @if (successDialogMessage()) {
+    <div class="modal-backdrop">
+      <section class="success-modal">
+        <div class="success-icon">✅</div>
+
+        <h2>Success</h2>
+
+        <p>
+          {{ successDialogMessage() }}
+        </p>
+
+        <button type="button" (click)="closeSuccessDialog()">
+          Done
+        </button>
       </section>
     </div>
   }

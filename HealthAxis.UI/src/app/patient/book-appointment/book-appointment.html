@@ -20,8 +20,22 @@
   </section>
 
   @if (errorMessage()) {
-    <div class="alert error">{{ errorMessage() }}</div>
-  }
+  <div class="modal-backdrop">
+    <section class="error-modal">
+      <div class="error-icon">⚠️</div>
+
+      <h2>Booking Failed</h2>
+
+      <p>
+        {{ errorMessage() }}
+      </p>
+
+      <button type="button" (click)="errorMessage.set('')">
+        Okay
+      </button>
+    </section>
+  </div>
+}
 
   @if (successMessage()) {
     <div class="alert success">{{ successMessage() }}</div>

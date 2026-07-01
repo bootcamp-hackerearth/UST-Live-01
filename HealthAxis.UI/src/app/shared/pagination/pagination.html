@@ -1,0 +1,41 @@
+@if (totalItems > pageSize) {
+  <section class="pagination-box">
+    <div class="pagination-info">
+      Showing
+      <strong>{{ startItem }}</strong>
+      -
+      <strong>{{ endItem }}</strong>
+      of
+      <strong>{{ totalItems }}</strong>
+    </div>
+
+    <div class="pagination-actions">
+      <button
+        type="button"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)"
+      >
+        ‹ Prev
+      </button>
+
+      @for (page of pages; track page) {
+        <button
+          type="button"
+          class="page-number"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+      }
+
+      <button
+        type="button"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)"
+      >
+        Next ›
+      </button>
+    </div>
+  </section>
+}
