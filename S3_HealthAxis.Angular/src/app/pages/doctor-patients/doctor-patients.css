@@ -1,0 +1,567 @@
+.ha-doctor-patients-page {
+  min-height: calc(100vh - 140px);
+  padding: 42px 30px 80px;
+}
+
+.ha-doctor-patients-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.ha-patients-hero,
+.ha-patients-summary-card,
+.ha-search-card,
+.ha-patient-list-panel,
+.ha-patient-details-panel,
+.ha-loading-card,
+.ha-empty-state,
+.ha-alert {
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.76);
+  border: 1px solid rgba(203, 232, 255, 0.95);
+  box-shadow: 0 22px 54px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.ha-patients-hero {
+  padding: 38px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
+  align-items: center;
+}
+
+.ha-patients-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: rgba(239, 246, 255, 0.96);
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 850;
+  font-size: 0.86rem;
+  margin-bottom: 18px;
+}
+
+.ha-patients-hero h1 {
+  margin: 0 0 16px;
+  color: #101827;
+  font-size: clamp(2.2rem, 4vw, 3.7rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.ha-patients-hero p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.8;
+  font-size: 1.04rem;
+}
+
+.ha-patients-summary-card {
+  padding: 26px;
+}
+
+.ha-patients-summary-card span {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-patients-summary-card strong {
+  display: block;
+  margin-top: 10px;
+  color: #101827;
+  font-size: 2.2rem;
+}
+
+.ha-patients-summary-card p {
+  margin: 8px 0 0;
+  color: #64748b;
+}
+
+.ha-search-card {
+  margin-top: 26px;
+  padding: 22px;
+}
+
+.ha-search-card label {
+  display: block;
+  color: #334155;
+  font-weight: 850;
+  margin-bottom: 8px;
+}
+
+.ha-search-input-wrap {
+  position: relative;
+}
+
+.ha-search-input-wrap i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+.ha-search-input-wrap input {
+  width: 100%;
+  height: 50px;
+  border-radius: 16px;
+  border: 1px solid #dbe5ef;
+  padding: 0 15px 0 42px;
+  outline: none;
+  background: #f8fbff;
+}
+
+.ha-search-input-wrap input:focus {
+  border-color: #60a5fa;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
+}
+
+.ha-alert {
+  margin-top: 22px;
+  padding: 15px 16px;
+  display: flex;
+  gap: 10px;
+  font-weight: 750;
+}
+
+.ha-alert.error {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.ha-loading-card,
+.ha-empty-state {
+  margin-top: 28px;
+  min-height: 260px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.ha-empty-state.compact {
+  margin-top: 0;
+  min-height: 220px;
+}
+
+.ha-loading-card p,
+.ha-empty-state p {
+  color: #64748b;
+  margin: 0;
+}
+
+.ha-empty-state i {
+  color: #2563eb;
+  font-size: 2rem;
+}
+
+.ha-empty-state h3 {
+  color: #112033;
+  margin: 0;
+}
+
+.ha-patients-grid {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 22px;
+}
+
+.ha-patient-list-panel,
+.ha-patient-details-panel {
+  padding: 28px;
+}
+
+.ha-panel-header span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-panel-header h2 {
+  margin: 8px 0 22px;
+  color: #101827;
+}
+
+.ha-patient-list {
+  display: grid;
+  gap: 12px;
+}
+
+.ha-patient-row {
+  width: 100%;
+  padding: 15px;
+  border-radius: 20px;
+  border: 1px solid #dbeafe;
+  background: #f8fbff;
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ha-patient-row:hover,
+.ha-patient-row.active {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.ha-patient-avatar,
+.ha-selected-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+}
+
+.ha-patient-main strong {
+  display: block;
+  color: #112033;
+}
+
+.ha-patient-main span {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.ha-patient-meta {
+  text-align: right;
+}
+
+.ha-patient-meta span {
+  display: block;
+  color: #2563eb;
+  font-weight: 850;
+}
+
+.ha-patient-meta small {
+  color: #64748b;
+}
+
+.ha-pagination-panel {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #dbeafe;
+  display: grid;
+  gap: 14px;
+}
+
+.ha-pagination-info {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.ha-page-size {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ha-page-size label {
+  color: #334155;
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+.ha-page-size select {
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid #bfdbfe;
+  background: #ffffff;
+  color: #112033;
+  padding: 0 10px;
+  outline: none;
+}
+
+.ha-pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ha-page-btn,
+.ha-page-number {
+  border: 1px solid #bfdbfe;
+  background: #ffffff;
+  color: #2563eb;
+  border-radius: 12px;
+  min-height: 38px;
+  padding: 0 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ha-page-btn:hover,
+.ha-page-number:hover,
+.ha-page-number.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.ha-page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f8fafc;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}
+
+.ha-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ha-selected-header {
+  display: grid;
+  grid-template-columns: 58px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.ha-selected-header span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-selected-header h2 {
+  margin: 6px 0 2px;
+  color: #112033;
+}
+
+.ha-selected-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.ha-clear-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 13px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.ha-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.ha-profile-grid div {
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+}
+
+.ha-profile-grid span {
+  display: block;
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 750;
+}
+
+.ha-profile-grid strong {
+  display: block;
+  margin-top: 6px;
+  color: #112033;
+}
+
+.ha-active-text {
+  color: #047857 !important;
+}
+
+.ha-inactive-text {
+  color: #b91c1c !important;
+}
+
+.ha-records-section {
+  margin-top: 24px;
+}
+
+.ha-records-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.ha-records-header span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-records-header h3 {
+  margin: 6px 0 0;
+  color: #112033;
+}
+
+.ha-records-header strong {
+  height: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.ha-small-loading {
+  padding: 24px;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.ha-record-list {
+  display: grid;
+  gap: 14px;
+}
+
+.ha-record-card {
+  padding: 18px;
+  border-radius: 22px;
+  background: #f8fbff;
+  border: 1px solid #dbeafe;
+}
+
+.ha-record-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ha-record-top span {
+  color: #2563eb;
+  font-weight: 850;
+}
+
+.ha-record-top strong {
+  display: block;
+  margin-top: 5px;
+  color: #112033;
+}
+
+.ha-record-top small {
+  color: #64748b;
+}
+
+.ha-record-section {
+  padding: 14px;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #e0f2fe;
+  margin-top: 10px;
+}
+
+.ha-record-section span {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ha-record-section p {
+  margin: 8px 0 0;
+  color: #475569;
+  line-height: 1.65;
+}
+
+@media (max-width: 1100px) {
+  .ha-patients-hero,
+  .ha-patients-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .ha-doctor-patients-page {
+    padding: 28px 18px 56px;
+  }
+
+  .ha-patients-hero,
+  .ha-patient-list-panel,
+  .ha-patient-details-panel {
+    padding: 28px;
+  }
+
+  .ha-patient-row {
+    grid-template-columns: 52px 1fr;
+  }
+
+  .ha-patient-meta {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .ha-selected-header {
+    grid-template-columns: 52px 1fr;
+  }
+
+  .ha-clear-btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .ha-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ha-records-header,
+  .ha-record-top {
+    flex-direction: column;
+  }
+
+  .ha-pagination-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ha-page-btn,
+  .ha-page-number {
+    width: 100%;
+  }
+
+  .ha-page-numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

@@ -407,7 +407,9 @@ namespace S3_HealthAxisApi.Services.Implementation
                 TimeSlot = (int)appointment.TimeSlot,
                 PatientId = appointment.PatientId,
                 PatientName = appointment.Patient.FullName,
-                Status = (int)appointment.Status
+                Status = (int)appointment.Status,
+                CancellationReason = appointment.CancellationReason,
+                HasHealthRecord = appointment.HealthRecord != null
             };
         }
     }

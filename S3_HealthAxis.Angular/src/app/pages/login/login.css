@@ -1,117 +1,271 @@
-.ha-auth-page {
+.ha-login-page {
   min-height: calc(100vh - 140px);
+  padding: 54px 24px 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 42px 20px;
 }
 
-.ha-auth-card {
+.ha-login-card {
   width: 100%;
-  max-width: 460px;
-  background: rgba(255, 255, 255, 0.78);
+  max-width: 520px;
+  padding: 38px;
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(203, 232, 255, 0.95);
-  border-radius: 28px;
-  padding: 36px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.12);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 }
 
-.ha-auth-badge {
+/* BRAND */
+
+.ha-login-brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 30px;
+}
+
+.ha-login-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
+}
+
+.ha-login-brand div {
+  display: flex;
+  flex-direction: column;
+}
+
+.ha-login-brand span:last-child,
+.ha-login-brand div span {
+  color: #101827;
+  font-weight: 950;
+  font-size: 1.08rem;
+}
+
+.ha-login-brand strong {
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+/* HEADER */
+
+.ha-login-header {
+  margin-bottom: 24px;
+}
+
+.ha-login-badge {
   width: fit-content;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
+  padding: 8px 13px;
   border-radius: 999px;
-  background: rgba(239, 246, 255, 0.96);
-  color: #1d4ed8;
+  background: #eff6ff;
+  color: #2563eb;
   border: 1px solid #bfdbfe;
-  font-weight: 850;
-  font-size: 0.84rem;
-  margin-bottom: 18px;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
 }
 
-.ha-auth-card h2 {
-  margin: 0 0 10px;
+.ha-login-header h1 {
+  margin: 0 0 12px;
   color: #101827;
-  font-size: 1.9rem;
-  font-weight: 850;
-  letter-spacing: -0.03em;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.05em;
 }
 
-.ha-auth-card p {
-  margin: 0 0 24px;
+.ha-login-header p {
+  margin: 0;
   color: #64748b;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
-.ha-auth-error {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 13px 14px;
-  border-radius: 14px;
+/* ALERT */
+
+.ha-login-alert {
+  margin-bottom: 18px;
+  padding: 14px 15px;
+  border-radius: 16px;
   background: #fef2f2;
   color: #b91c1c;
   border: 1px solid #fecaca;
-  font-weight: 700;
-  margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 750;
 }
 
-form {
+.ha-login-alert i {
+  margin-top: 2px;
+}
+
+/* FORM */
+
+.ha-login-form {
+  display: grid;
+  gap: 18px;
+}
+
+.ha-form-field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-label {
-  font-weight: 800;
+.ha-form-field label {
   color: #334155;
-  font-size: 0.9rem;
+  font-weight: 850;
+  font-size: 0.92rem;
 }
 
-input {
-  height: 48px;
-  border-radius: 14px;
+.ha-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ha-input-wrap > i {
+  position: absolute;
+  left: 15px;
+  color: #64748b;
+  font-size: 1rem;
+  z-index: 1;
+}
+
+.ha-input-wrap input {
+  width: 100%;
+  height: 52px;
+  border-radius: 17px;
   border: 1px solid #dbe5ef;
-  padding: 0 15px;
-  font-size: 0.95rem;
-  background: rgba(248, 251, 253, 0.95);
+  background: #f8fbff;
+  color: #334155;
   outline: none;
+  padding: 0 48px 0 43px;
+  font-size: 0.95rem;
+  transition:
+    border-color 0.22s ease,
+    background 0.22s ease,
+    box-shadow 0.22s ease;
 }
 
-input:focus {
+.ha-input-wrap input::placeholder {
+  color: #94a3b8;
+}
+
+.ha-input-wrap input:focus {
   border-color: #60a5fa;
+  background: #ffffff;
   box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
 }
 
-button {
-  margin-top: 14px;
-  height: 50px;
+.ha-password-toggle {
+  position: absolute;
+  right: 10px;
+  width: 36px;
+  height: 36px;
   border: none;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #ffffff;
-  font-weight: 850;
-  cursor: pointer;
-  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.22);
-}
-
-button:disabled {
-  opacity: 0.75;
-  cursor: not-allowed;
-}
-
-.ha-auth-link {
-  margin-top: 22px;
-  text-align: center;
+  border-radius: 13px;
+  background: transparent;
   color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease;
 }
 
-.ha-auth-link a {
+.ha-password-toggle:hover {
+  background: #eff6ff;
   color: #2563eb;
-  font-weight: 850;
+}
+
+/* BUTTON */
+
+.ha-login-btn {
+  margin-top: 4px;
+  width: 100%;
+  min-height: 52px;
+  border: none;
+  border-radius: 17px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  font-weight: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.ha-login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 38px rgba(37, 99, 235, 0.32);
+}
+
+.ha-login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* FOOTER */
+
+.ha-login-footer {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(203, 232, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.ha-login-footer a {
+  color: #2563eb;
+  font-weight: 900;
   text-decoration: none;
+}
+
+.ha-login-footer a:hover {
+  text-decoration: underline;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 700px) {
+  .ha-login-page {
+    padding: 34px 18px 60px;
+  }
+
+  .ha-login-card {
+    padding: 30px;
+    border-radius: 28px;
+  }
+
+  .ha-login-footer {
+    flex-direction: column;
+    align-items: center;
+  }
 }

@@ -33,262 +33,210 @@
     </div>
 
     @if (errorMessage) {
-      <div class="ha-auth-error">
-        <i class="bi bi-exclamation-triangle"></i>
-        <span>{{ errorMessage }}</span>
-      </div>
+    <div class="ha-auth-error">
+      <i class="bi bi-exclamation-triangle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
     }
 
     @if (successMessage) {
-      <div class="ha-auth-success">
-        <i class="bi bi-check-circle"></i>
-        <span>{{ successMessage }}</span>
-      </div>
+    <div class="ha-auth-success">
+      <i class="bi bi-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
     }
 
     <!-- STEP 1 -->
     @if (currentStep === 1) {
-      <form class="ha-form fade-slide-in" (ngSubmit)="goToStepTwo()">
-        <div class="ha-field">
-          <label>Full Name</label>
-          <input
-            type="text"
-            name="fullName"
-            placeholder="Enter full name"
-            [(ngModel)]="form.fullName"
-            (blur)="markTouched('fullName')"
-          />
+    <form class="ha-form fade-slide-in" (ngSubmit)="goToStepTwo()">
+      <div class="ha-field">
+        <label>Full Name</label>
 
-          @if (touched.fullName && !form.fullName) {
-            <small class="ha-field-error">Full name is required.</small>
+        <input type="text" name="fullName" placeholder="Enter full name" [(ngModel)]="form.fullName"
+          (blur)="markTouched('fullName')" />
+
+        @if (touched.fullName && !form.fullName) {
+        <small class="ha-field-error">
+          Full name is required.
+        </small>
+        }
+
+        @if (touched.fullName && form.fullName && form.fullName.trim().length < 3) { <small class="ha-field-error">
+          Full name must be at least 3 characters.
+          </small>
           }
 
-          @if (touched.fullName && form.fullName && form.fullName.trim().length < 3) {
-            <small class="ha-field-error">Full name must be at least 3 characters.</small>
+          @if (
+          touched.fullName &&
+          form.fullName &&
+          form.fullName.trim().length >= 3 &&
+          !isValidFullName(form.fullName)
+          ) {
+          <small class="ha-field-error">
+            Full name can contain only letters and spaces.
+          </small>
           }
+      </div>
+      <div class="ha-field">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Enter email" [(ngModel)]="form.email"
+          (blur)="markTouched('email')" />
 
-          @if (touched.fullName && nameHasNumber) {
-            <small class="ha-field-error">Full name cannot contain numbers.</small>
-          }
+        @if (touched.email && !form.email) {
+        <small class="ha-field-error">Email is required.</small>
+        }
+
+        @if (touched.email && form.email && !isEmailValid) {
+        <small class="ha-field-error">Please enter a valid email address.</small>
+        }
+      </div>
+
+      <div class="ha-field">
+        <label>Phone Number</label>
+        <input type="text" name="phoneNumber" placeholder="Enter 10 digit phone number" maxlength="10"
+          [(ngModel)]="form.phoneNumber" (blur)="markTouched('phoneNumber')" />
+
+        @if (touched.phoneNumber && !form.phoneNumber) {
+        <small class="ha-field-error">Phone number is required.</small>
+        }
+
+        @if (touched.phoneNumber && form.phoneNumber && !isPhoneValid) {
+        <small class="ha-field-error">Phone number must contain exactly 10 digits.</small>
+        }
+      </div>
+
+      <div class="ha-field">
+        <label>Password</label>
+
+        <div class="ha-password-input-wrap">
+          <input [type]="showPassword ? 'text' : 'password'" name="password" placeholder="Create password"
+            [(ngModel)]="form.password" (blur)="markTouched('password')" />
+
+          <button type="button" class="ha-password-toggle" (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+            <i class="bi" [class.bi-eye]="!showPassword" [class.bi-eye-slash]="showPassword">
+            </i>
+          </button>
         </div>
 
-        <div class="ha-field">
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="Enter email"
-            [(ngModel)]="form.email"
-            (blur)="markTouched('email')"
-          />
-
-          @if (touched.email && !form.email) {
-            <small class="ha-field-error">Email is required.</small>
-          }
-
-          @if (touched.email && form.email && !isEmailValid) {
-            <small class="ha-field-error">Please enter a valid email address.</small>
-          }
-        </div>
-
-        <div class="ha-field">
-          <label>Phone Number</label>
-          <input
-            type="text"
-            name="phoneNumber"
-            placeholder="Enter 10 digit phone number"
-            maxlength="10"
-            [(ngModel)]="form.phoneNumber"
-            (blur)="markTouched('phoneNumber')"
-          />
-
-          @if (touched.phoneNumber && !form.phoneNumber) {
-            <small class="ha-field-error">Phone number is required.</small>
-          }
-
-          @if (touched.phoneNumber && form.phoneNumber && !isPhoneValid) {
-            <small class="ha-field-error">Phone number must contain exactly 10 digits.</small>
-          }
-        </div>
-
-        <div class="ha-field">
-          <label>Password</label>
-
-          <div class="ha-password-input-wrap">
-            <input
-              [type]="showPassword ? 'text' : 'password'"
-              name="password"
-              placeholder="Create password"
-              [(ngModel)]="form.password"
-              (blur)="markTouched('password')"
-            />
-
-            <button
-              type="button"
-              class="ha-password-toggle"
-              (click)="togglePasswordVisibility()"
-              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
-            >
-              <i
-                class="bi"
-                [class.bi-eye]="!showPassword"
-                [class.bi-eye-slash]="showPassword">
-              </i>
-            </button>
+        @if (form.password) {
+        <div class="ha-password-strength">
+          <div class="ha-strength-track">
+            <span [class]="passwordStrengthClass"></span>
           </div>
 
-          @if (form.password) {
-            <div class="ha-password-strength">
-              <div class="ha-strength-track">
-                <span [class]="passwordStrengthClass"></span>
-              </div>
-
-              <div class="ha-strength-info">
-                <small>Password strength:</small>
-                <strong [class]="passwordStrengthClass">
-                  {{ passwordStrengthLabel }}
-                </strong>
-              </div>
-            </div>
-          }
-
-          @if (touched.password && !form.password) {
-            <small class="ha-field-error">Password is required.</small>
-          }
-
-          @if (touched.password && form.password && !isPasswordValid) {
-            <small class="ha-field-error">
-              Password must be at least 8 characters and include uppercase, lowercase, number, or symbol.
-            </small>
-          }
-        </div>
-
-        <div class="ha-field">
-          <label>Confirm Password</label>
-
-          <div class="ha-password-input-wrap">
-            <input
-              [type]="showConfirmPassword ? 'text' : 'password'"
-              name="confirmPassword"
-              placeholder="Confirm password"
-              [(ngModel)]="form.confirmPassword"
-              (blur)="markTouched('confirmPassword')"
-            />
-
-            <button
-              type="button"
-              class="ha-password-toggle"
-              (click)="toggleConfirmPasswordVisibility()"
-              [attr.aria-label]="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'"
-            >
-              <i
-                class="bi"
-                [class.bi-eye]="!showConfirmPassword"
-                [class.bi-eye-slash]="showConfirmPassword">
-              </i>
-            </button>
+          <div class="ha-strength-info">
+            <small>Password strength:</small>
+            <strong [class]="passwordStrengthClass">
+              {{ passwordStrengthLabel }}
+            </strong>
           </div>
+        </div>
+        }
 
-          @if (touched.confirmPassword && !form.confirmPassword) {
-            <small class="ha-field-error">Confirm password is required.</small>
-          }
+        @if (touched.password && !form.password) {
+        <small class="ha-field-error">Password is required.</small>
+        }
 
-          @if (touched.confirmPassword && form.confirmPassword && !passwordsMatch) {
-            <small class="ha-field-error">Passwords do not match.</small>
-          }
+        @if (touched.password && form.password && !isPasswordValid) {
+        <small class="ha-field-error">
+          Password must be at least 8 characters and include uppercase, lowercase, number, or symbol.
+        </small>
+        }
+      </div>
+
+      <div class="ha-field">
+        <label>Confirm Password</label>
+
+        <div class="ha-password-input-wrap">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" name="confirmPassword"
+            placeholder="Confirm password" [(ngModel)]="form.confirmPassword" (blur)="markTouched('confirmPassword')" />
+
+          <button type="button" class="ha-password-toggle" (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'">
+            <i class="bi" [class.bi-eye]="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword">
+            </i>
+          </button>
         </div>
 
-        <button type="submit" class="ha-primary-action">
-          Continue
-          <i class="bi bi-arrow-right"></i>
-        </button>
+        @if (touched.confirmPassword && !form.confirmPassword) {
+        <small class="ha-field-error">Confirm password is required.</small>
+        }
 
-        <div class="ha-auth-link">
-          Already registered?
-          <a routerLink="/login">Login</a>
-        </div>
-      </form>
+        @if (touched.confirmPassword && form.confirmPassword && !passwordsMatch) {
+        <small class="ha-field-error">Passwords do not match.</small>
+        }
+      </div>
+
+      <button type="submit" class="ha-primary-action">
+        Continue
+        <i class="bi bi-arrow-right"></i>
+      </button>
+
+      <div class="ha-auth-link">
+        Already registered?
+        <a routerLink="/login">Login</a>
+      </div>
+    </form>
     }
 
     <!-- STEP 2 -->
     @if (currentStep === 2) {
-      <form class="ha-form fade-slide-in" (ngSubmit)="register()">
-        <div class="ha-field">
-          <label>Date of Birth</label>
-          <input
-            type="date"
-            name="dateOfBirth"
-            [(ngModel)]="form.dateOfBirth"
-            (blur)="markTouched('dateOfBirth')"
-          />
+    <form class="ha-form fade-slide-in" (ngSubmit)="register()">
+      <div class="ha-field">
+        <label>Date of Birth</label>
+        <input type="date" name="dateOfBirth" [(ngModel)]="form.dateOfBirth" (blur)="markTouched('dateOfBirth')" />
 
-          @if (touched.dateOfBirth && !form.dateOfBirth) {
-            <small class="ha-field-error">Date of birth is required.</small>
+        @if (touched.dateOfBirth && !form.dateOfBirth) {
+        <small class="ha-field-error">Date of birth is required.</small>
+        }
+
+        @if (touched.dateOfBirth && form.dateOfBirth && !isDateOfBirthValid) {
+        <small class="ha-field-error">Date of birth cannot be today or a future date.</small>
+        }
+      </div>
+
+      <div class="ha-field">
+        <label>Gender</label>
+        <select name="gender" [(ngModel)]="form.gender" (blur)="markTouched('gender')">
+          <option [ngValue]="0" disabled>Select gender</option>
+          <option [ngValue]="1">Male</option>
+          <option [ngValue]="2">Female</option>
+          <option [ngValue]="3">Non-binary</option>
+          <option [ngValue]="4">Prefer not to say</option>
+        </select>
+
+        @if (touched.gender && !isGenderValid) {
+        <small class="ha-field-error">Please select a gender option.</small>
+        }
+      </div>
+
+      <div class="ha-field">
+        <label>
+          Insurance Number
+          <span>Optional</span>
+        </label>
+
+        <input type="text" name="insuranceNumber" placeholder="Enter insurance number if available"
+          [(ngModel)]="form.insuranceNumber" />
+      </div>
+
+      <div class="ha-step-actions">
+        <button type="button" class="ha-secondary-action" (click)="goBackToStepOne()">
+          <i class="bi bi-arrow-left"></i>
+          Back
+        </button>
+
+        <button type="submit" class="ha-primary-action" [disabled]="loading">
+          @if (loading) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Creating Account...
+          } @else {
+          Create Patient Account
           }
-
-          @if (touched.dateOfBirth && form.dateOfBirth && !isDateOfBirthValid) {
-            <small class="ha-field-error">Date of birth cannot be today or a future date.</small>
-          }
-        </div>
-
-        <div class="ha-field">
-          <label>Gender</label>
-          <select
-            name="gender"
-            [(ngModel)]="form.gender"
-            (blur)="markTouched('gender')"
-          >
-            <option [ngValue]="0" disabled>Select gender</option>
-            <option [ngValue]="1">Male</option>
-            <option [ngValue]="2">Female</option>
-            <option [ngValue]="3">Non-binary</option>
-            <option [ngValue]="4">Prefer not to say</option>
-          </select>
-
-          @if (touched.gender && !isGenderValid) {
-            <small class="ha-field-error">Please select a gender option.</small>
-          }
-        </div>
-
-        <div class="ha-field">
-          <label>
-            Insurance Number
-            <span>Optional</span>
-          </label>
-
-          <input
-            type="text"
-            name="insuranceNumber"
-            placeholder="Enter insurance number if available"
-            [(ngModel)]="form.insuranceNumber"
-          />
-        </div>
-
-        <div class="ha-step-actions">
-          <button
-            type="button"
-            class="ha-secondary-action"
-            (click)="goBackToStepOne()"
-          >
-            <i class="bi bi-arrow-left"></i>
-            Back
-          </button>
-
-          <button
-            type="submit"
-            class="ha-primary-action"
-            [disabled]="loading"
-          >
-            @if (loading) {
-              <span class="spinner-border spinner-border-sm me-2"></span>
-              Creating Account...
-            } @else {
-              Create Patient Account
-            }
-          </button>
-        </div>
-      </form>
+        </button>
+      </div>
+    </form>
     }
   </div>
 </section>
-

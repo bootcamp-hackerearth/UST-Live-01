@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+
 import { AuthResponse } from '../../shared/models/auth.models';
 
 @Injectable({
@@ -10,16 +11,18 @@ export class TokenService {
   private readonly emailKey = 'healthaxis_email';
   private readonly roleKey = 'healthaxis_role';
   private readonly referenceIdKey = 'healthaxis_reference_id';
+  private readonly mustChangePasswordKey = 'healthaxis_must_change_password';
 
-  saveAuthData(auth: AuthResponse): void {
-    localStorage.setItem(this.accessTokenKey, auth.accessToken);
-    localStorage.setItem(this.refreshTokenKey, auth.refreshToken);
-    localStorage.setItem(this.emailKey, auth.email);
-    localStorage.setItem(this.roleKey, auth.role);
-
-    if (auth.referenceId !== null && auth.referenceId !== undefined) {
-      localStorage.setItem(this.referenceIdKey, auth.referenceId.toString());
-    }
+  saveAuthData(response: AuthResponse): void {
+    localStorage.setItem(this.accessTokenKey, response.accessToken);
+    localStorage.setItem(this.refreshTokenKey, response.refreshToken);
+    localStorage.setItem(this.emailKey, response.email);
+    localStorage.setItem(this.roleKey, response.role);
+    localStorage.setItem(this.referenceIdKey, String(response.referenceId));
+    localStorage.setItem(
+      this.mustChangePasswordKey,
+      String(response.mustChangePassword)
+    );
   }
 
   getAccessToken(): string | null {
@@ -45,9 +48,17 @@ export class TokenService {
       return null;
     }
 
-    const parsedValue = Number(value);
+    const referenceId = Number(value);
 
-    return Number.isNaN(parsedValue) ? null : parsedValue;
+    return Number.isNaN(referenceId) ? null : referenceId;
+  }
+
+  setMustChangePassword(value: boolean): void {
+    localStorage.setItem(this.mustChangePasswordKey, String(value));
+  }
+
+  getMustChangePassword(): boolean {
+    return localStorage.getItem(this.mustChangePasswordKey) === 'true';
   }
 
   isLoggedIn(): boolean {
@@ -60,6 +71,7 @@ export class TokenService {
     localStorage.removeItem(this.emailKey);
     localStorage.removeItem(this.roleKey);
     localStorage.removeItem(this.referenceIdKey);
+    localStorage.removeItem(this.mustChangePasswordKey);
   }
 }
 

@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { forkJoin, switchMap } from 'rxjs';
+import { forkJoin } from 'rxjs';
 
 import { DoctorDashboardService } from '../../core/services/doctor-dashboard.service';
 import { TokenService } from '../../core/services/token.service';
@@ -31,6 +31,7 @@ export class DoctorDashboard implements OnInit {
   doctorId: number | null = null;
 
   loading = true;
+  actionLoading = false;
   errorMessage = '';
   successMessage = '';
 
@@ -99,6 +100,74 @@ export class DoctorDashboard implements OnInit {
         }
 
         this.errorMessage = 'Could not load today’s schedule. Please try again.';
+      }
+    });
+  }
+
+  confirmAppointment(appointment: DoctorScheduleItem): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.actionLoading = true;
+
+    this.doctorDashboardService.confirmAppointment(appointment.appointmentId).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.successMessage = 'Appointment confirmed successfully.';
+        this.loadTodaySchedule();
+      },
+      error: (error) => {
+        this.actionLoading = false;
+
+        if (error.status === 400 && typeof error.error === 'string') {
+          this.errorMessage = error.error;
+          return;
+        }
+
+        if (error.status === 401 || error.status === 403) {
+          this.errorMessage = 'You are not authorized to confirm this appointment.';
+          return;
+        }
+
+        if (error.status === 0) {
+          this.errorMessage = 'Could not connect to the API. Please make sure the API is running.';
+          return;
+        }
+
+        this.errorMessage = 'Could not confirm appointment. Please try again.';
+      }
+    });
+  }
+
+  completeAppointment(appointment: DoctorScheduleItem): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    this.actionLoading = true;
+
+    this.doctorDashboardService.completeAppointment(appointment.appointmentId).subscribe({
+      next: () => {
+        this.actionLoading = false;
+        this.successMessage = 'Appointment marked as completed. You can now add a health record.';
+        this.loadTodaySchedule();
+      },
+      error: (error) => {
+        this.actionLoading = false;
+
+        if (error.status === 400 && typeof error.error === 'string') {
+          this.errorMessage = error.error;
+          return;
+        }
+
+        if (error.status === 401 || error.status === 403) {
+          this.errorMessage = 'You are not authorized to complete this appointment.';
+          return;
+        }
+
+        if (error.status === 0) {
+          this.errorMessage = 'Could not connect to the API. Please make sure the API is running.';
+          return;
+        }
+
+        this.errorMessage = 'Could not complete appointment. Please try again.';
       }
     });
   }
@@ -191,6 +260,11 @@ export class DoctorDashboard implements OnInit {
       return;
     }
 
+    if (this.selectedAppointment.status !== AppointmentStatus.Completed) {
+      this.errorMessage = 'Health record can only be added after completing the appointment.';
+      return;
+    }
+
     if (!this.healthRecordForm.diagnosis.trim()) {
       this.errorMessage = 'Diagnosis is required.';
       return;
@@ -212,24 +286,12 @@ export class DoctorDashboard implements OnInit {
 
     this.savingHealthRecord = true;
 
-    const createRecord$ =
-      this.selectedAppointment.status === AppointmentStatus.Completed
-        ? this.doctorDashboardService.createHealthRecord(request)
-        : this.doctorDashboardService
-            .completeAppointment(this.selectedAppointment.appointmentId)
-            .pipe(
-              switchMap(() =>
-                this.doctorDashboardService.createHealthRecord(request)
-              )
-            );
-
-    createRecord$.subscribe({
+    this.doctorDashboardService.createHealthRecord(request).subscribe({
       next: () => {
         this.savingHealthRecord = false;
         this.showHealthRecordPanel = false;
 
-        this.successMessage =
-          'Health record added and appointment completed successfully.';
+        this.successMessage = 'Health record added successfully.';
 
         this.healthRecordForm = {
           diagnosis: '',
@@ -291,11 +353,16 @@ export class DoctorDashboard implements OnInit {
     ).length;
   }
 
+  canConfirmAppointment(appointment: DoctorScheduleItem): boolean {
+    return appointment.status === AppointmentStatus.Pending;
+  }
+
+  canCompleteAppointment(appointment: DoctorScheduleItem): boolean {
+    return appointment.status === AppointmentStatus.Confirmed;
+  }
+
   canAddHealthRecord(appointment: DoctorScheduleItem): boolean {
-    return (
-      appointment.status === AppointmentStatus.Confirmed ||
-      appointment.status === AppointmentStatus.Completed
-    );
+    return appointment.status === AppointmentStatus.Completed;
   }
 
   statusText(status: number): string {

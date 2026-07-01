@@ -1,19 +1,21 @@
 ﻿@page "/login"
 @layout EmptyLayout
 
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
 @using S3_HealthAxis.Blazor.Services
 @using S3_HealthAxis.Shared.DTOs.Auth
 
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <div class="ha-login-page">
 
-    <!-- LEFT PANEL -->
     <section class="ha-login-visual">
         <div class="login-left">
 
-            <!-- Background Visual Layer -->
             <div class="login-left-visual">
                 <img src="images/login-healthcare-hero.png"
                      alt="Healthcare admin illustration"
@@ -21,7 +23,6 @@
                 <div class="login-left-overlay"></div>
             </div>
 
-            <!-- Text Content -->
             <div class="left-content">
                 <div class="left-text">
                     <h3>HealthAxis Login Portal</h3>
@@ -32,7 +33,6 @@
         </div>
     </section>
 
-    <!-- RIGHT PANEL -->
     <section class="ha-login-form-panel">
         <div class="ha-login-form-shell">
             <div class="ha-login-form-card">
@@ -93,6 +93,7 @@
                 <div class="ha-login-footer-note">
                     Authorized admin access only.
                 </div>
+
             </div>
         </div>
     </section>
@@ -100,10 +101,74 @@
 </div>
 
 @code {
-    private  readonly LoginDto _login = new();
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "accessToken")]
+    public string? AccessToken { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "refreshToken")]
+    public string? RefreshToken { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "email")]
+    public string? Email { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "role")]
+    public string? Role { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "referenceId")]
+    public string? ReferenceId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "mustChangePassword")]
+    public string? MustChangePassword { get; set; }
+
+    private readonly LoginDto _login = new();
     private string? _error;
     private bool _isLoading = false;
     private bool _showPassword = false;
+    private bool _handledAngularLogin = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || _handledAngularLogin)
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(AccessToken) &&
+            string.IsNullOrWhiteSpace(RefreshToken) &&
+            string.IsNullOrWhiteSpace(Role))
+        {
+            return;
+        }
+
+        _handledAngularLogin = true;
+
+        if (string.IsNullOrWhiteSpace(AccessToken) ||
+            string.IsNullOrWhiteSpace(RefreshToken) ||
+            !string.Equals(Role, "Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            _error = "Invalid admin login handoff. Please login again.";
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        await JS.InvokeVoidAsync("localStorage.setItem", "authToken", AccessToken);
+        await JS.InvokeVoidAsync("localStorage.setItem", "refreshToken", RefreshToken);
+        await JS.InvokeVoidAsync("localStorage.setItem", "authEmail", Email ?? string.Empty);
+        await JS.InvokeVoidAsync("localStorage.setItem", "authRole", Role);
+        await JS.InvokeVoidAsync("localStorage.setItem", "authReferenceId", ReferenceId ?? string.Empty);
+
+        if (AuthenticationStateProvider is CustomAuthStateProvider customAuthStateProvider)
+        {
+            customAuthStateProvider.NotifyUserAuthentication(AccessToken);
+        }
+
+        Navigation.NavigateTo("/dashboard", forceLoad: true);
+    }
 
     private async Task Login()
     {
@@ -129,3 +194,4 @@
         _showPassword = !_showPassword;
     }
 }
+

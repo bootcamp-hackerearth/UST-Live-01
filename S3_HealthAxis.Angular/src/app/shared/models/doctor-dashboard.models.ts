@@ -5,6 +5,8 @@ export interface DoctorScheduleItem {
   patientId: number;
   patientName: string;
   status: number;
+  cancellationReason?: string | null;
+  hasHealthRecord: boolean;
 }
 
 export interface DoctorPatientProfile {
@@ -40,3 +42,15 @@ export interface CreateHealthRecordRequest {
   notes?: string;
 }
 
+export interface DoctorPatient {
+  patientId: number;
+  fullName: string;
+  dateOfBirth: string;
+  gender: number;
+  phoneNumber: string;
+  email?: string;
+  insuranceId?: string;
+  isActive: boolean;
+  totalAppointments: number;
+  lastVisitDate?: string | null;
+}

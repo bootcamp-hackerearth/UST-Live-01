@@ -2485,3 +2485,16 @@ code {
     background: linear-gradient(180deg, rgba(239, 246, 255, 0.96) 0%, rgba(219, 234, 254, 0.96) 100%);
     box-shadow: 0 14px 28px rgba(37, 99, 235, 0.14);
 }
+
+.ha-logout-btn {
+    width: 100%;
+    border: none;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+}
+
+    .ha-logout-btn:hover {
+        background: rgba(239, 246, 255, 0.95);
+    }
+

@@ -1,0 +1,303 @@
+<div class="profile-page">
+
+  <div class="page-header">
+    <div>
+      <h1>My Profile</h1>
+      <p>View and manage your personal information and appointment summary.</p>
+    </div>
+
+    <button
+      class="primary-btn"
+      *ngIf="patient && !editMode"
+      type="button"
+      (click)="enableEdit()">
+      Edit Profile
+    </button>
+  </div>
+
+  <div class="alert error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </div>
+
+  <div class="alert success" *ngIf="successMessage">
+    {{ successMessage }}
+  </div>
+
+  <div class="loading-box" *ngIf="loading">
+    Loading profile details...
+  </div>
+
+  <ng-container *ngIf="!loading && patient">
+
+    <div class="summary-grid">
+
+      <div class="summary-card">
+        <span class="summary-label">Total Appointments</span>
+        <strong>{{ totalAppointments }}</strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">Active</span>
+        <strong>{{ activeAppointments }}</strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">Completed</span>
+        <strong>{{ completedAppointments }}</strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">Cancelled</span>
+        <strong>{{ cancelledAppointments }}</strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">Health Records</span>
+        <strong>{{ totalHealthRecords }}</strong>
+      </div>
+
+      <div class="summary-card">
+        <span class="summary-label">Most Visited Doctor</span>
+        <strong class="doctor-name">{{ mostVisitedDoctor }}</strong>
+      </div>
+
+    </div>
+
+    <div class="content-grid">
+
+      <section class="profile-card">
+
+        <div class="card-header">
+          <div>
+            <h2>Personal Details</h2>
+            <p>Email is read-only and cannot be changed.</p>
+          </div>
+        </div>
+
+        <div class="profile-avatar-row">
+          <div class="avatar">
+            {{ patient.fullName ? patient.fullName.charAt(0).toUpperCase() : 'P' }}
+          </div>
+
+          <div>
+            <h3>{{ patient.fullName }}</h3>
+            <p>{{ patient.email }}</p>
+          </div>
+        </div>
+
+        <form class="profile-form" (ngSubmit)="saveProfile()">
+
+          <div class="form-row">
+            <label>Full Name</label>
+
+            <input
+              *ngIf="editMode"
+              type="text"
+              name="fullName"
+              [(ngModel)]="editForm.fullName"
+              placeholder="Enter full name">
+
+            <div class="readonly-value" *ngIf="!editMode">
+              {{ patient.fullName }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Date of Birth</label>
+
+            <input
+              *ngIf="editMode"
+              type="date"
+              name="dateOfBirth"
+              [(ngModel)]="editForm.dateOfBirth">
+
+            <div class="readonly-value" *ngIf="!editMode">
+              {{ patient.dateOfBirth | date:'dd MMM yyyy' }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Gender</label>
+
+            <select
+              *ngIf="editMode"
+              name="gender"
+              [(ngModel)]="editForm.gender">
+              <option [ngValue]="1">Male</option>
+              <option [ngValue]="2">Female</option>
+              <option [ngValue]="3">Non-binary</option>
+              <option [ngValue]="4">Prefer not to say</option>
+            </select>
+
+            <div class="readonly-value" *ngIf="!editMode">
+              {{ genderText(patient.gender) }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Phone Number</label>
+
+            <input
+              *ngIf="editMode"
+              type="text"
+              name="phoneNumber"
+              [(ngModel)]="editForm.phoneNumber"
+              placeholder="Enter phone number">
+
+            <div class="readonly-value" *ngIf="!editMode">
+              {{ patient.phoneNumber }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Email</label>
+
+            <input
+              *ngIf="editMode"
+              type="email"
+              name="email"
+              [value]="patient.email"
+              readonly
+              class="readonly-input">
+
+            <div class="readonly-value" *ngIf="!editMode">
+              {{ patient.email }}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label>Insurance Number</label>
+
+            <input
+              *ngIf="editMode"
+              type="text"
+              name="insuranceNumber"
+              [(ngModel)]="editForm.insuranceNumber"
+              placeholder="Enter insurance number">
+
+            <div class="readonly-value" *ngIf="!editMode">
+              {{ patient.insuranceNumber || patient.insuranceId || 'Not provided' }}
+            </div>
+          </div>
+
+          <div class="form-actions" *ngIf="editMode">
+            <button
+              class="primary-btn"
+              type="submit"
+              [disabled]="saving">
+              {{ saving ? 'Saving...' : 'Save Changes' }}
+            </button>
+
+            <button
+              class="secondary-btn"
+              type="button"
+              [disabled]="saving"
+              (click)="cancelEdit()">
+              Cancel
+            </button>
+          </div>
+
+        </form>
+
+      </section>
+
+      <section class="appointment-card">
+
+        <div class="card-header">
+          <div>
+            <h2>Appointment Snapshot</h2>
+            <p>Quick view of your latest and upcoming appointment activity.</p>
+          </div>
+        </div>
+
+        <div class="appointment-block" *ngIf="lastAppointment; else noLastAppointment">
+          <span class="block-label">Last Appointment</span>
+
+          <div class="appointment-title">
+            {{ lastAppointment.doctorName || 'Doctor not available' }}
+          </div>
+
+          <div class="appointment-meta">
+            {{ lastAppointment.scheduledDate | date:'dd MMM yyyy' }}
+          </div>
+
+          <div class="appointment-meta">
+            {{ timeSlotText(lastAppointment.timeSlot) }}
+          </div>
+
+          <span class="status-chip">
+            {{ statusText(lastAppointment.status) }}
+          </span>
+        </div>
+
+        <ng-template #noLastAppointment>
+          <div class="empty-state">
+            No appointment history available.
+          </div>
+        </ng-template>
+
+        <div class="divider"></div>
+
+        <div class="appointment-block" *ngIf="nextAppointment; else noNextAppointment">
+          <span class="block-label">Next Upcoming Appointment</span>
+
+          <div class="appointment-title">
+            {{ nextAppointment.doctorName || 'Doctor not available' }}
+          </div>
+
+          <div class="appointment-meta">
+            {{ nextAppointment.scheduledDate | date:'dd MMM yyyy' }}
+          </div>
+
+          <div class="appointment-meta">
+            {{ timeSlotText(nextAppointment.timeSlot) }}
+          </div>
+
+          <span class="status-chip upcoming">
+            {{ statusText(nextAppointment.status) }}
+          </span>
+        </div>
+
+        <ng-template #noNextAppointment>
+          <div class="empty-state">
+            No upcoming appointment found.
+          </div>
+        </ng-template>
+
+      </section>
+
+    </div>
+
+  </ng-container>
+
+  <div class="modal-backdrop" *ngIf="showSaveConfirmModal">
+    <div class="confirm-modal">
+
+      <h3>Confirm Profile Update</h3>
+
+      <p>
+        Are you sure you want to save these profile changes?
+      </p>
+
+      <div class="modal-actions">
+        <button
+          class="secondary-btn"
+          type="button"
+          [disabled]="saving"
+          (click)="cancelSaveConfirmation()">
+          No, Cancel
+        </button>
+
+        <button
+          class="primary-btn"
+          type="button"
+          [disabled]="saving"
+          (click)="confirmSaveProfile()">
+          {{ saving ? 'Saving...' : 'Yes, Save Changes' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

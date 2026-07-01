@@ -3,14 +3,6 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  email: string;
-  role: string;
-  referenceId?: number;
-}
-
 export interface RegisterPatientRequest {
   fullName: string;
   dateOfBirth: string;
@@ -22,7 +14,17 @@ export interface RegisterPatientRequest {
   confirmPassword: string;
 }
 
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  email: string;
+  role: string;
+  referenceId: number;
+  mustChangePassword: boolean;
+}
+
 export interface ChangePasswordRequest {
+  currentPassword: string;
   newPassword: string;
   confirmNewPassword: string;
 }
@@ -30,4 +32,3 @@ export interface ChangePasswordRequest {
 export interface ApiMessageResponse {
   message: string;
 }
-

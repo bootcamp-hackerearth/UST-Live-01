@@ -1,0 +1,189 @@
+:host {
+  display: block;
+}
+
+/* Main wrapper */
+.ha-doctor-layout {
+  position: relative;
+  min-height: calc(100vh - 76px);
+}
+
+/* Sidebar */
+.ha-doctor-sidebar {
+  position: fixed;
+  top: 76px;
+  left: 0;
+  bottom: 0;
+  width: 78px;
+  z-index: 1200;
+  padding: 20px 12px;
+  background: rgba(255, 255, 255, 0.88);
+  border-right: 1px solid rgba(203, 232, 255, 0.95);
+  box-shadow: 16px 0 40px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+  transition:
+    width 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.ha-doctor-sidebar:hover {
+  width: 250px;
+  box-shadow: 22px 0 54px rgba(15, 23, 42, 0.12);
+}
+
+/* Sidebar header */
+.ha-sidebar-top {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.ha-sidebar-logo {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.24);
+}
+
+.ha-sidebar-title {
+  color: #101827;
+  font-weight: 900;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.ha-doctor-sidebar:hover .ha-sidebar-title {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Navigation */
+.ha-sidebar-nav {
+  display: grid;
+  gap: 10px;
+}
+
+.ha-sidebar-link {
+  height: 48px;
+  border-radius: 17px;
+  color: #475569;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 14px;
+  font-weight: 850;
+  overflow: hidden;
+  transition:
+    background 0.22s ease,
+    color 0.22s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.ha-sidebar-link i {
+  width: 24px;
+  min-width: 24px;
+  text-align: center;
+  font-size: 1.2rem;
+}
+
+.ha-sidebar-link span {
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-8px);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.ha-doctor-sidebar:hover .ha-sidebar-link span {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ha-sidebar-link:hover {
+  background: #eff6ff;
+  color: #1d4ed8;
+  transform: translateX(2px);
+}
+
+.ha-sidebar-link.active {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  box-shadow: 0 14px 26px rgba(37, 99, 235, 0.22);
+}
+
+/* Page content offset */
+.ha-doctor-layout-content {
+  padding-left: 78px;
+}
+
+/* Make child pages sit properly inside sidebar layout */
+.ha-doctor-layout-content > * {
+  display: block;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .ha-doctor-layout {
+    min-height: auto;
+  }
+
+  .ha-doctor-sidebar {
+    position: sticky;
+    top: 76px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    padding: 12px;
+    border-right: none;
+    border-bottom: 1px solid rgba(203, 232, 255, 0.95);
+    overflow-x: auto;
+  }
+
+  .ha-doctor-sidebar:hover {
+    width: 100%;
+  }
+
+  .ha-sidebar-top {
+    display: none;
+  }
+
+  .ha-sidebar-nav {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+  }
+
+  .ha-sidebar-link {
+    min-width: fit-content;
+    padding: 0 16px;
+  }
+
+  .ha-sidebar-link span,
+  .ha-doctor-sidebar:hover .ha-sidebar-link span {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ha-doctor-layout-content {
+    padding-left: 0;
+  }
+}

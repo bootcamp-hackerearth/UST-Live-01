@@ -11,7 +11,6 @@
 
 <div class="ha-layout">
 
-    <!-- Top Navbar -->
     <header class="ha-topbar">
 
         <div class="ha-topbar-left">
@@ -63,21 +62,17 @@
         </div>
     </header>
 
-    <!-- Body -->
     <div class="ha-body">
 
-        <!-- Mobile backdrop -->
         @if (_isSidebarOpen)
         {
             <div class="ha-sidebar-backdrop" @onclick="CloseSidebar"></div>
         }
 
-        <!-- Sidebar -->
         <aside class="ha-sidebar @(_isSidebarOpen ? "open" : "")">
             <NavMenu OnNavigate="HandleNavClick" />
         </aside>
 
-        <!-- Main Content -->
         <main class="ha-content" @onclick="CloseUserMenu">
             @Body
         </main>
@@ -178,7 +173,8 @@
         _isSidebarOpen = false;
 
         await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/login", forceLoad: true);
+
+        Navigation.NavigateTo("http://localhost:4200/login", forceLoad: true);
     }
 
     private static string GetInitials(string name)

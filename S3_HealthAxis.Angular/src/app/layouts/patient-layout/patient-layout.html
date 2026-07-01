@@ -1,0 +1,64 @@
+<section class="ha-patient-layout">
+  <aside class="ha-patient-sidebar">
+    <div class="ha-patient-sidebar-top">
+      <span class="ha-patient-sidebar-logo">
+        <i class="bi bi-heart-pulse"></i>
+      </span>
+
+      <span class="ha-patient-sidebar-title">
+        Patient Portal
+      </span>
+    </div>
+
+    <nav class="ha-patient-sidebar-nav">
+      <a
+        routerLink="/patient/dashboard"
+        routerLinkActive="active"
+        class="ha-patient-sidebar-link"
+      >
+        <i class="bi bi-grid-1x2"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        routerLink="/patient/doctors"
+        routerLinkActive="active"
+        class="ha-patient-sidebar-link"
+      >
+        <i class="bi bi-calendar-plus"></i>
+        <span>Book Appointment</span>
+      </a>
+
+      <a
+        routerLink="/patient/appointments"
+        routerLinkActive="active"
+        class="ha-patient-sidebar-link"
+      >
+        <i class="bi bi-calendar2-week"></i>
+        <span>My Appointments</span>
+      </a>
+
+      <a
+        routerLink="/patient/history"
+        routerLinkActive="active"
+        class="ha-patient-sidebar-link"
+      >
+        <i class="bi bi-journal-medical"></i>
+        <span>Health History</span>
+      </a>
+
+      <a
+        routerLink="/patient/profile"
+        routerLinkActive="active"
+        class="ha-patient-sidebar-link"
+      >
+        <i class="bi bi-person-vcard"></i>
+        <span>My Profile</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="ha-patient-layout-content">
+    <router-outlet></router-outlet>
+  </main>
+</section>

@@ -1,0 +1,351 @@
+<section class="ha-schedule-page">
+  <div class="ha-schedule-shell">
+
+    <!-- HERO -->
+    <section class="ha-schedule-hero">
+      <div>
+        <span class="ha-schedule-badge">
+          <i class="bi bi-calendar2-week"></i>
+          Doctor Schedule
+        </span>
+
+        <h1>Manage appointments and consultations.</h1>
+
+        <p>
+          View today’s appointments or this week’s schedule, confirm bookings,
+          complete consultations, cancel appointments, and add health records.
+        </p>
+      </div>
+
+      <div class="ha-schedule-summary-card">
+        <span>{{ activeView === 'today' ? 'Today' : 'This Week' }}</span>
+        <strong>{{ schedule.length }} Appointment(s)</strong>
+        <p>Current schedule view.</p>
+      </div>
+    </section>
+
+    <!-- VIEW SWITCH -->
+    <section class="ha-view-switch-card">
+      <div class="ha-switch-buttons">
+        <button type="button" [class.active]="activeView === 'today'" (click)="switchView('today')">
+          <i class="bi bi-calendar-day"></i>
+          Today
+        </button>
+
+        <button type="button" [class.active]="activeView === 'week'" (click)="switchView('week')">
+          <i class="bi bi-calendar-week"></i>
+          This Week
+        </button>
+      </div>
+    </section>
+
+    <!-- ALERTS -->
+    @if (successMessage) {
+    <div class="ha-alert success">
+      <i class="bi bi-check-circle"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+    }
+
+    @if (errorMessage) {
+    <div class="ha-alert error">
+      <i class="bi bi-exclamation-triangle"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+    }
+
+    <!-- CONTENT -->
+    @if (loading) {
+    <div class="ha-loading-card">
+      <div class="spinner-border text-primary"></div>
+      <p>Loading schedule...</p>
+    </div>
+    } @else if (schedule.length === 0) {
+    <div class="ha-empty-state">
+      <i class="bi bi-calendar-x"></i>
+      <h3>No appointments found</h3>
+      <p>No appointments are available for the selected schedule view.</p>
+    </div>
+    } @else {
+    <section class="ha-schedule-list">
+      @for (appointment of schedule; track appointment.appointmentId) {
+      <article class="ha-schedule-card" [class.expanded]="
+              (selectedAppointment?.appointmentId === appointment.appointmentId && showHealthRecordPanel) ||
+              (selectedReasonAppointment?.appointmentId === appointment.appointmentId && showReasonPanel) ||
+              (selectedCancelAppointment?.appointmentId === appointment.appointmentId && showCancelPanel)
+            ">
+        <!-- CARD TOP -->
+        <div class="ha-schedule-card-top">
+          <div>
+            <span>Appointment #{{ appointment.appointmentId }}</span>
+            <h3>{{ appointment.patientName }}</h3>
+            <p>Patient ID: {{ appointment.patientId }}</p>
+          </div>
+
+          <span [attr.class]="'ha-status ' + statusClass(appointment.status)">
+            {{ statusText(appointment.status) }}
+          </span>
+        </div>
+
+        <!-- DATE / TIME -->
+        <div class="ha-schedule-info">
+          <div>
+            <i class="bi bi-calendar2-check"></i>
+            <span>{{ appointment.scheduledDate | date:'dd MMM yyyy' }}</span>
+          </div>
+
+          <div>
+            <i class="bi bi-clock"></i>
+            <span>{{ timeSlotText(appointment.timeSlot) }}</span>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="ha-schedule-actions">
+          @if (canConfirmAppointment(appointment)) {
+          <button type="button" class="ha-confirm-btn" [disabled]="actionLoading"
+            (click)="openActionConfirmModal(appointment, 'confirm')">
+            Confirm
+          </button>
+          }
+
+          @if (canCompleteAppointment(appointment)) {
+          <button type="button" class="ha-complete-btn" [disabled]="actionLoading"
+            (click)="openActionConfirmModal(appointment, 'complete')">
+            Complete
+          </button>
+          }
+
+          @if (canCancelAppointment(appointment)) {
+          <button type="button" class="ha-cancel-btn" [disabled]="cancellingAppointment"
+            (click)="toggleCancelPanel(appointment)">
+            @if (selectedCancelAppointment?.appointmentId === appointment.appointmentId && showCancelPanel) {
+            Hide Cancel
+            } @else {
+            Cancel
+            }
+          </button>
+          }
+
+          @if (canAddHealthRecord(appointment)) {
+          <button type="button" class="ha-record-btn" (click)="toggleHealthRecordPanel(appointment)">
+            @if (selectedAppointment?.appointmentId === appointment.appointmentId && showHealthRecordPanel) {
+            Hide Form
+            } @else {
+            Add Health Record
+            }
+          </button>
+          }
+
+          @if (hasHealthRecordAdded(appointment)) {
+          <span class="ha-record-added-badge">
+            <i class="bi bi-check-circle"></i>
+            Health Record Added
+          </span>
+          }
+
+          @if (isCancelled(appointment)) {
+          <button type="button" class="ha-reason-btn" (click)="toggleReasonPanel(appointment)">
+            @if (selectedReasonAppointment?.appointmentId === appointment.appointmentId && showReasonPanel) {
+            Hide Reason
+            } @else {
+            See Reason
+            }
+          </button>
+          }
+
+          @if (
+          !canConfirmAppointment(appointment) &&
+          !canCompleteAppointment(appointment) &&
+          !canCancelAppointment(appointment) &&
+          !canAddHealthRecord(appointment) &&
+          !hasHealthRecordAdded(appointment) &&
+          !isCancelled(appointment)
+          ) {
+          <span class="ha-muted-action">
+            No action available
+          </span>
+          }
+        </div>
+
+        <!-- INLINE CANCEL PANEL -->
+        @if (selectedCancelAppointment?.appointmentId === appointment.appointmentId && showCancelPanel) {
+        <div class="ha-inline-cancel-panel">
+          <div class="ha-inline-form-header">
+            <div>
+              <span>Cancel Appointment</span>
+              <h4>{{ appointment.patientName }}</h4>
+            </div>
+
+            <button type="button" class="ha-inline-close-btn" [disabled]="cancellingAppointment"
+              (click)="closeCancelPanel()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <p class="ha-cancel-help">
+            Please provide a reason for cancelling this appointment.
+          </p>
+
+          <div class="ha-form-field">
+            <label>Cancellation Reason</label>
+
+            <textarea rows="4" placeholder="Enter cancellation reason" [(ngModel)]="cancellationReason"></textarea>
+          </div>
+
+          <button type="button" class="ha-cancel-submit-btn"
+            [disabled]="cancellingAppointment || !cancellationReason.trim()" (click)="submitCancelAppointment()">
+            @if (cancellingAppointment) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Cancelling...
+            } @else {
+            Confirm Cancellation
+            }
+          </button>
+        </div>
+        }
+
+        <!-- INLINE CANCELLATION REASON PANEL -->
+        @if (selectedReasonAppointment?.appointmentId === appointment.appointmentId && showReasonPanel) {
+        <div class="ha-inline-reason-panel">
+          <div class="ha-inline-form-header">
+            <div>
+              <span>Cancellation Reason</span>
+              <h4>{{ appointment.patientName }}</h4>
+            </div>
+
+            <button type="button" class="ha-inline-close-btn" (click)="closeReasonPanel()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="ha-reason-content">
+            <strong>Reason</strong>
+            <p>
+              {{ appointment.cancellationReason || 'No cancellation reason available.' }}
+            </p>
+          </div>
+        </div>
+        }
+
+        <!-- INLINE HEALTH RECORD FORM -->
+        @if (selectedAppointment?.appointmentId === appointment.appointmentId && showHealthRecordPanel) {
+        <div class="ha-inline-record-form">
+          <div class="ha-inline-form-header">
+            <div>
+              <span>Add Health Record</span>
+              <h4>{{ appointment.patientName }}</h4>
+            </div>
+
+            <button type="button" class="ha-inline-close-btn" [disabled]="savingHealthRecord"
+              (click)="closeHealthRecordPanel()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <div class="ha-form-field">
+            <label>Diagnosis</label>
+
+            <textarea rows="4" placeholder="Enter diagnosis" [(ngModel)]="healthRecordForm.diagnosis"></textarea>
+          </div>
+
+          <div class="ha-form-field">
+            <label>Prescription</label>
+
+            <textarea rows="4" placeholder="Enter prescription" [(ngModel)]="healthRecordForm.prescription"></textarea>
+          </div>
+
+          <div class="ha-form-field">
+            <label>Notes</label>
+
+            <textarea rows="4" placeholder="Enter optional notes" [(ngModel)]="healthRecordForm.notes"></textarea>
+          </div>
+
+          <button type="button" class="ha-record-submit-btn" [disabled]="savingHealthRecord"
+            (click)="submitHealthRecord()">
+            @if (savingHealthRecord) {
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Saving...
+            } @else {
+            Save Health Record
+            }
+          </button>
+        </div>
+        }
+      </article>
+      }
+    </section>
+    }
+  </div>
+
+  <!-- CONFIRM / COMPLETE ACTION MODAL -->
+  @if (showActionConfirmModal && selectedActionAppointment) {
+  <div class="ha-action-modal-backdrop">
+    <div class="ha-action-modal-card">
+      <button type="button" class="ha-action-modal-close" [disabled]="actionLoading"
+        (click)="closeActionConfirmModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+      <div class="ha-action-modal-icon">
+        <i class="bi" [class.bi-patch-check]="pendingAction === 'confirm'"
+          [class.bi-check2-circle]="pendingAction === 'complete'"></i>
+      </div>
+
+      <h2>{{ actionTitle }}</h2>
+
+      <p class="ha-action-message">
+        {{ actionMessage }}
+      </p>
+
+      <div class="ha-action-details">
+        <div>
+          <span>Patient</span>
+          <strong>{{ selectedActionAppointment.patientName }}</strong>
+        </div>
+
+        <div>
+          <span>Date</span>
+          <strong>{{ selectedActionAppointment.scheduledDate | date:'dd MMM yyyy' }}</strong>
+        </div>
+
+        <div>
+          <span>Time</span>
+          <strong>{{ timeSlotText(selectedActionAppointment.timeSlot) }}</strong>
+        </div>
+
+        <div>
+          <span>Current Status</span>
+          <strong>{{ statusText(selectedActionAppointment.status) }}</strong>
+        </div>
+      </div>
+
+      @if (pendingAction === 'complete') {
+      <div class="ha-action-note">
+        <i class="bi bi-info-circle"></i>
+        <span>
+          After completing this appointment, you can add a health record for the patient.
+        </span>
+      </div>
+      }
+
+      <div class="ha-action-modal-actions">
+        <button type="button" class="ha-action-secondary-btn" [disabled]="actionLoading"
+          (click)="closeActionConfirmModal()">
+          Cancel
+        </button>
+
+        <button type="button" class="ha-action-primary-btn" [disabled]="actionLoading"
+          (click)="confirmSelectedAction()">
+          @if (actionLoading) {
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Processing...
+          } @else {
+          {{ actionButtonText }}
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+</section>

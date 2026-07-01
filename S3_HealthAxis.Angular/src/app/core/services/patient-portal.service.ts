@@ -1,63 +1,116 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, forkJoin, map, Observable, of } from 'rxjs';
+import { Observable, forkJoin, map, of } from 'rxjs';
 
-import {
-  AppointmentStatus,
-  PatientAppointment,
-  PatientHealthRecord,
-  PatientProfile
-} from '../../shared/models/patient-dashboard.models';
+import { PatientHealthRecord } from '../../shared/models/patient-dashboard.models';
+import { HealthHistoryRecord } from '../../shared/models/health-history.models';
+import { getDoctorSpecialisationText } from '../../shared/models/doctor.models';
+
+export interface PatientProfileDetails {
+  patientId: number;
+  fullName: string;
+  dateOfBirth: string;
+  gender: number;
+  phoneNumber: string;
+  email: string;
+  insuranceNumber?: string;
+  insuranceId?: string;
+  isActive?: boolean;
+}
+
+export interface UpdatePatientProfileRequest {
+  fullName: string;
+  dateOfBirth: string;
+  gender: number;
+  phoneNumber: string;
+  email: string;
+  insuranceNumber?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientPortalService {
-  private readonly apiBaseUrl = 'https://localhost:7258/api';
+  private baseUrl = 'https://localhost:7258/api';
+
+  private patientUrl = `${this.baseUrl}/patients`;
+  private appointmentUrl = `${this.baseUrl}/appointments`;
 
   constructor(private http: HttpClient) {}
 
-  getPatientProfile(patientId: number): Observable<PatientProfile> {
-    return this.http.get<PatientProfile>(
-      `${this.apiBaseUrl}/patients/${patientId}`
+  getPatientProfile(patientId: number): Observable<PatientProfileDetails> {
+    return this.http.get<PatientProfileDetails>(
+      `${this.patientUrl}/${patientId}`
     );
   }
 
-  getPatientAppointments(patientId: number): Observable<PatientAppointment[]> {
-    return this.http.get<PatientAppointment[]>(
-      `${this.apiBaseUrl}/appointments/patient/${patientId}`
+  updatePatientProfile(
+    patientId: number,
+    request: UpdatePatientProfileRequest
+  ): Observable<any> {
+    return this.http.put(
+      `${this.patientUrl}/${patientId}`,
+      request
     );
   }
 
-  getHealthRecordByAppointment(appointmentId: number): Observable<PatientHealthRecord | null> {
-    return this.http
-      .get<PatientHealthRecord>(
-        `${this.apiBaseUrl}/healthrecords/appointment/${appointmentId}`
-      )
-      .pipe(
-        catchError(() => of(null))
-      );
+  getPatientAppointments(patientId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.appointmentUrl}/patient/${patientId}`
+    );
+  }
+
+  getPatientHealthRecords(patientId: number): Observable<HealthHistoryRecord[]> {
+    return this.http.get<HealthHistoryRecord[]>(
+      `${this.patientUrl}/${patientId}/health-records`
+    );
   }
 
   getHealthRecordsForAppointments(
-    appointments: PatientAppointment[]
+    appointments: any[]
   ): Observable<PatientHealthRecord[]> {
-    const completedAppointments = appointments.filter(
-      appointment => appointment.status === AppointmentStatus.Completed
-    );
-
-    if (!completedAppointments.length) {
+    if (!appointments || appointments.length === 0) {
       return of([]);
     }
 
-    const requests = completedAppointments.map(appointment =>
-      this.getHealthRecordByAppointment(appointment.appointmentId)
+    const patientIds = [
+      ...new Set(
+        appointments
+          .map(appointment => appointment.patientId)
+          .filter(patientId => patientId !== null && patientId !== undefined)
+      )
+    ];
+
+    if (patientIds.length === 0) {
+      return of([]);
+    }
+
+    const requests = patientIds.map(patientId =>
+      this.http.get<HealthHistoryRecord[]>(
+        `${this.patientUrl}/${patientId}/health-records`
+      )
     );
 
     return forkJoin(requests).pipe(
-      map(records =>
-        records.filter((record): record is PatientHealthRecord => record !== null)
+      map(results =>
+        results
+          .flat()
+          .map(record => this.mapToPatientHealthRecord(record))
       )
     );
+  }
+
+  private mapToPatientHealthRecord(
+    record: HealthHistoryRecord
+  ): PatientHealthRecord {
+    return {
+      healthRecordId: record.healthRecordId,
+      appointmentId: record.appointmentId,
+      doctorName: record.doctorName,
+      doctorSpecialisation: getDoctorSpecialisationText(record.doctorSpecialisation),
+      diagnosis: record.diagnosis,
+      prescription: record.prescription,
+      notes: record.notes
+    };
   }
 }

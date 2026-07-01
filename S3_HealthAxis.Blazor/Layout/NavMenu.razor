@@ -51,6 +51,9 @@
     private async Task NotifyNavigate()
     {
         if (OnNavigate.HasDelegate)
+        {
             await OnNavigate.InvokeAsync();
+        }
     }
 }
+

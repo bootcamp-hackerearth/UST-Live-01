@@ -531,3 +531,73 @@
   }
 }
 
+/* LOGOUT CONFIRMATION MODAL */
+
+.ha-logout-confirm-card {
+  text-align: center;
+}
+
+.ha-logout-modal-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 22px;
+  background: #fef2f2;
+  color: #b91c1c;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 18px;
+}
+
+.ha-logout-danger-btn {
+  min-height: 48px;
+  padding: 0 18px;
+  border-radius: 15px;
+  font-weight: 850;
+  border: none;
+  color: #ffffff;
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 14px 26px rgba(185, 28, 28, 0.22);
+}
+
+.ha-logout-danger-btn:hover {
+  background: linear-gradient(135deg, #ef4444, #991b1b);
+}
+
+@media (max-width: 700px) {
+  .ha-logout-danger-btn {
+    width: 100%;
+  }
+}
+
+.ha-password-rules {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: grid;
+  gap: 6px;
+}
+
+.ha-password-rules li {
+  color: #b91c1c;
+  font-size: 0.83rem;
+  font-weight: 750;
+}
+
+.ha-password-rules li::before {
+  content: "✕";
+  margin-right: 7px;
+}
+
+.ha-password-rules li.valid {
+  color: #047857;
+}
+
+.ha-password-rules li.valid::before {
+  content: "✓";
+}

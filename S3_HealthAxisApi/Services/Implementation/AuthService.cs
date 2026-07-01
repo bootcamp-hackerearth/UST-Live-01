@@ -222,12 +222,17 @@ namespace S3_HealthAxisApi.Services.Implementation
         }
 
         public async Task<(bool Success, string Message)> ChangePasswordAsync(
-            string email,
-            ChangePasswordDto request)
+    string email,
+    ChangePasswordDto request)
         {
             if (string.IsNullOrWhiteSpace(email))
             {
                 return (false, "Invalid authenticated user.");
+            }
+
+            if (string.IsNullOrWhiteSpace(request.CurrentPassword))
+            {
+                return (false, "Current password is required.");
             }
 
             if (string.IsNullOrWhiteSpace(request.NewPassword))
@@ -242,12 +247,19 @@ namespace S3_HealthAxisApi.Services.Implementation
 
             if (request.NewPassword != request.ConfirmNewPassword)
             {
-                return (false, "Passwords do not match.");
+                return (false, "New password and confirm password do not match.");
             }
 
-            if (request.NewPassword.Length < 8)
+            if (request.CurrentPassword == request.NewPassword)
             {
-                return (false, "Password must be at least 8 characters long.");
+                return (false, "New password cannot be the same as current password.");
+            }
+
+            var passwordValidationMessage = ValidatePasswordStrength(request.NewPassword);
+
+            if (!string.IsNullOrWhiteSpace(passwordValidationMessage))
+            {
+                return (false, passwordValidationMessage);
             }
 
             var user =
@@ -259,15 +271,51 @@ namespace S3_HealthAxisApi.Services.Implementation
                 return (false, "User account not found.");
             }
 
+            var currentPasswordHash = HashPassword(request.CurrentPassword);
+
+            if (user.PasswordHash != currentPasswordHash)
+            {
+                return (false, "Current password is incorrect.");
+            }
+
             user.PasswordHash = HashPassword(request.NewPassword);
 
-            // Doctor first-login password reset completed.
             user.MustChangePassword = false;
 
             await _userRepository.UpdateAsync(user);
             await _userRepository.SaveChangesAsync();
 
             return (true, "Password changed successfully.");
+        }
+
+        private static string? ValidatePasswordStrength(string password)
+        {
+            if (password.Length < 8)
+            {
+                return "Password must be at least 8 characters long.";
+            }
+
+            if (!password.Any(char.IsUpper))
+            {
+                return "Password must contain at least one uppercase letter.";
+            }
+
+            if (!password.Any(char.IsLower))
+            {
+                return "Password must contain at least one lowercase letter.";
+            }
+
+            if (!password.Any(char.IsDigit))
+            {
+                return "Password must contain at least one number.";
+            }
+
+            if (!password.Any(ch => !char.IsLetterOrDigit(ch)))
+            {
+                return "Password must contain at least one special character.";
+            }
+
+            return null;
         }
 
         private string GenerateToken(User user)

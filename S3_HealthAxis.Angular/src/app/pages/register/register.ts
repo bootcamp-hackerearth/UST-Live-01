@@ -15,6 +15,7 @@ import { RegisterPatientRequest } from '../../shared/models/auth.models';
   styleUrl: './register.css'
 })
 export class Register {
+
   currentStep = 1;
   loading = false;
   errorMessage = '';
@@ -61,12 +62,19 @@ export class Register {
     this.showConfirmPassword = !this.showConfirmPassword;
   }
 
-  get nameHasNumber(): boolean {
-    return /\d/.test(this.form.fullName);
+  /**
+   * Allows only alphabets and spaces.
+   */
+  isValidFullName(fullName: string): boolean {
+    const fullNamePattern = /^[A-Za-z ]+$/;
+    return fullNamePattern.test(fullName.trim());
   }
 
   get isNameValid(): boolean {
-    return this.form.fullName.trim().length >= 3 && !this.nameHasNumber;
+    return (
+      this.form.fullName.trim().length >= 3 &&
+      this.isValidFullName(this.form.fullName)
+    );
   }
 
   get isEmailValid(): boolean {
@@ -100,7 +108,7 @@ export class Register {
       return 'Weak';
     }
 
-    if (this.passwordStrengthScore === 3 || this.passwordStrengthScore === 4) {
+    if (this.passwordStrengthScore <= 4) {
       return 'Medium';
     }
 
@@ -114,7 +122,7 @@ export class Register {
       return 'weak';
     }
 
-    if (this.passwordStrengthScore === 3 || this.passwordStrengthScore === 4) {
+    if (this.passwordStrengthScore <= 4) {
       return 'medium';
     }
 
@@ -140,7 +148,8 @@ export class Register {
   }
 
   get isGenderValid(): boolean {
-    return Number(this.form.gender) >= 1 && Number(this.form.gender) <= 4;
+    return Number(this.form.gender) >= 1 &&
+           Number(this.form.gender) <= 4;
   }
 
   get canContinueToStepTwo(): boolean {
@@ -171,7 +180,8 @@ export class Register {
     this.touched.confirmPassword = true;
 
     if (!this.canContinueToStepTwo) {
-      this.errorMessage = 'Please fix the highlighted fields before continuing.';
+      this.errorMessage =
+        'Please fix the highlighted fields before continuing.';
       return;
     }
 
@@ -191,7 +201,8 @@ export class Register {
     this.touched.gender = true;
 
     if (!this.canSubmit) {
-      this.errorMessage = 'Please complete all required patient details correctly.';
+      this.errorMessage =
+        'Please complete all required patient details correctly.';
       return;
     }
 
@@ -211,7 +222,8 @@ export class Register {
     this.authService.registerPatient(request).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Registration successful. Redirecting to patient portal...';
+        this.successMessage =
+          'Registration successful. Redirecting to patient portal...';
 
         setTimeout(() => {
           this.router.navigate(['/patient/dashboard']);
@@ -226,11 +238,13 @@ export class Register {
         }
 
         if (error.status === 0) {
-          this.errorMessage = 'Unable to connect to the API. Please make sure the API is running.';
+          this.errorMessage =
+            'Unable to connect to the API. Please make sure the API is running.';
           return;
         }
 
-        this.errorMessage = 'Registration failed. Please try again.';
+        this.errorMessage =
+          'Registration failed. Please try again.';
       }
     });
   }

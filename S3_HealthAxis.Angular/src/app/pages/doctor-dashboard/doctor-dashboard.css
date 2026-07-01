@@ -590,3 +590,35 @@
     border-radius: 0;
   }
 }
+
+
+.ha-confirm-btn,
+.ha-complete-btn {
+  min-height: 40px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 850;
+  cursor: pointer;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ha-confirm-btn {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.ha-complete-btn {
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+}
+
+.ha-confirm-btn:disabled,
+.ha-complete-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

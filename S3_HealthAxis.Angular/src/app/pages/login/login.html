@@ -1,57 +1,101 @@
-<section class="ha-auth-page">
-  <div class="ha-auth-card">
-    <span class="ha-auth-badge">
-      <i class="bi bi-shield-lock"></i>
-      Secure Login
-    </span>
+<section class="ha-login-page">
+  <div class="ha-login-card">
+    <div class="ha-login-brand">
+      <span class="ha-login-icon">
+        <i class="bi bi-heart-pulse"></i>
+      </span>
 
-    <h2>Login to HealthAxis</h2>
+      <div>
+        <span>HealthAxis</span>
+        <strong>Secure Portal Login</strong>
+      </div>
+    </div>
 
-    <p>
-      Access your patient or doctor portal using your registered email and password.
-    </p>
+    <div class="ha-login-header">
+      <span class="ha-login-badge">
+        Welcome Back
+      </span>
+
+      <h1>Login to your account.</h1>
+
+      <p>
+        Access your HealthAxis dashboard using your registered credentials.
+      </p>
+    </div>
 
     @if (errorMessage) {
-      <div class="ha-auth-error">
+      <div class="ha-login-alert">
         <i class="bi bi-exclamation-triangle"></i>
         <span>{{ errorMessage }}</span>
       </div>
     }
 
-    <form (ngSubmit)="login()" #loginForm="ngForm">
-      <label>Email</label>
-      <input
-        type="email"
-        name="email"
-        placeholder="Enter your email"
-        [(ngModel)]="loginRequest.email"
-        autocomplete="email"
-        required
-      />
+    <form class="ha-login-form" (ngSubmit)="login()">
+      <div class="ha-form-field">
+        <label>Email Address</label>
 
-      <label>Password</label>
-      <input
-        type="password"
-        name="password"
-        placeholder="Enter your password"
-        [(ngModel)]="loginRequest.password"
-        autocomplete="current-password"
-        required
-      />
+        <div class="ha-input-wrap">
+          <i class="bi bi-envelope"></i>
 
-      <button type="submit" [disabled]="loading">
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            [(ngModel)]="loginRequest.email"
+            autocomplete="email"
+          />
+        </div>
+      </div>
+
+      <div class="ha-form-field">
+        <label>Password</label>
+
+        <div class="ha-input-wrap">
+          <i class="bi bi-lock"></i>
+
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            name="password"
+            placeholder="Enter your password"
+            [(ngModel)]="loginRequest.password"
+            autocomplete="current-password"
+          />
+
+          <button
+            type="button"
+            class="ha-password-toggle"
+            (click)="togglePasswordVisibility()"
+          >
+            <i
+              class="bi"
+              [class.bi-eye]="!showPassword"
+              [class.bi-eye-slash]="showPassword">
+            </i>
+          </button>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="ha-login-btn"
+        [disabled]="loading"
+      >
         @if (loading) {
           <span class="spinner-border spinner-border-sm me-2"></span>
           Logging in...
         } @else {
           Login
+          <i class="bi bi-arrow-right"></i>
         }
       </button>
     </form>
 
-    <div class="ha-auth-link">
-      New patient?
-      <a routerLink="/register">Create an account</a>
+    <div class="ha-login-footer">
+      <span>New patient?</span>
+
+      <a routerLink="/register">
+        Create an account
+      </a>
     </div>
   </div>
 </section>

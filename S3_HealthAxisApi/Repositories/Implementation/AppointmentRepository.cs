@@ -5,7 +5,6 @@ using S3_HealthAxisApi.Models;
 using S3_HealthAxisApi.Repository.Interface;
 using System.Diagnostics.CodeAnalysis;
 
-
 namespace S3_HealthAxisApi.Repository.Implementation
 {
     [ExcludeFromCodeCoverage]
@@ -23,8 +22,9 @@ namespace S3_HealthAxisApi.Repository.Implementation
             return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
+                .Include(a => a.HealthRecord)
                 .OrderByDescending(a => a.ScheduledDate)
-                .ThenBy(a => a.TimeSlot)    
+                .ThenBy(a => a.TimeSlot)
                 .ToListAsync();
         }
 
@@ -33,6 +33,7 @@ namespace S3_HealthAxisApi.Repository.Implementation
             return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
+                .Include(a => a.HealthRecord)
                 .FirstOrDefaultAsync(a => a.AppointmentId == id);
         }
 
@@ -40,6 +41,7 @@ namespace S3_HealthAxisApi.Repository.Implementation
         {
             return await _context.Appointments
                 .Include(a => a.Doctor)
+                .Include(a => a.HealthRecord)
                 .Where(a => a.PatientId == patientId)
                 .OrderByDescending(a => a.ScheduledDate)
                 .ThenBy(a => a.TimeSlot)
@@ -50,6 +52,7 @@ namespace S3_HealthAxisApi.Repository.Implementation
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
+                .Include(a => a.HealthRecord)
                 .Where(a => a.DoctorId == doctorId && a.ScheduledDate == today)
                 .OrderBy(a => a.TimeSlot)
                 .ToListAsync();
@@ -59,15 +62,20 @@ namespace S3_HealthAxisApi.Repository.Implementation
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
-                .Where(a => a.DoctorId == doctorId &&
-                            a.ScheduledDate >= startDate &&
-                            a.ScheduledDate <= endDate)
+                .Include(a => a.HealthRecord)
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate >= startDate &&
+                    a.ScheduledDate <= endDate)
                 .OrderBy(a => a.ScheduledDate)
                 .ThenBy(a => a.TimeSlot)
                 .ToListAsync();
         }
 
-        public async Task<bool> ExistsSamePatientSameDoctorSameDateAsync(int patientId, int doctorId, DateOnly date)
+        public async Task<bool> ExistsSamePatientSameDoctorSameDateAsync(
+            int patientId,
+            int doctorId,
+            DateOnly date)
         {
             return await _context.Appointments.AnyAsync(a =>
                 a.PatientId == patientId &&
@@ -76,7 +84,10 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 a.Status != AppointmentStatus.Cancelled);
         }
 
-        public async Task<bool> ExistsSamePatientSameSlotSameDateAsync(int patientId, DateOnly date, int timeSlot)
+        public async Task<bool> ExistsSamePatientSameSlotSameDateAsync(
+            int patientId,
+            DateOnly date,
+            int timeSlot)
         {
             if (!Enum.IsDefined(typeof(AppointmentTimeSlot), timeSlot))
                 throw new ArgumentException("Invalid appointment time slot.");
@@ -90,7 +101,10 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 a.Status != AppointmentStatus.Cancelled);
         }
 
-        public async Task<bool> ExistsSameDoctorSameSlotSameDateAsync(int doctorId, DateOnly date, int timeSlot)
+        public async Task<bool> ExistsSameDoctorSameSlotSameDateAsync(
+            int doctorId,
+            DateOnly date,
+            int timeSlot)
         {
             if (!Enum.IsDefined(typeof(AppointmentTimeSlot), timeSlot))
                 throw new ArgumentException("Invalid appointment time slot.");
@@ -104,7 +118,11 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 a.Status != AppointmentStatus.Cancelled);
         }
 
-        public async Task<bool> ExistsSamePatientSameDoctorSameDateAsync(int patientId, int doctorId, DateOnly date, int appointmentId)
+        public async Task<bool> ExistsSamePatientSameDoctorSameDateAsync(
+            int patientId,
+            int doctorId,
+            DateOnly date,
+            int appointmentId)
         {
             return await _context.Appointments.AnyAsync(a =>
                 a.AppointmentId != appointmentId &&
@@ -114,7 +132,11 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 a.Status != AppointmentStatus.Cancelled);
         }
 
-        public async Task<bool> ExistsSamePatientSameSlotSameDateAsync(int patientId, DateOnly date, int timeSlot, int appointmentId)
+        public async Task<bool> ExistsSamePatientSameSlotSameDateAsync(
+            int patientId,
+            DateOnly date,
+            int timeSlot,
+            int appointmentId)
         {
             return await _context.Appointments.AnyAsync(a =>
                 a.AppointmentId != appointmentId &&
@@ -124,7 +146,11 @@ namespace S3_HealthAxisApi.Repository.Implementation
                 a.Status != AppointmentStatus.Cancelled);
         }
 
-        public async Task<bool> ExistsSameDoctorSameSlotSameDateAsync(int doctorId, DateOnly date, int timeSlot, int appointmentId)
+        public async Task<bool> ExistsSameDoctorSameSlotSameDateAsync(
+            int doctorId,
+            DateOnly date,
+            int timeSlot,
+            int appointmentId)
         {
             return await _context.Appointments.AnyAsync(a =>
                 a.AppointmentId != appointmentId &&
@@ -147,12 +173,16 @@ namespace S3_HealthAxisApi.Repository.Implementation
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Appointments.AnyAsync(a => a.AppointmentId == id);
+            return await _context.Appointments.AnyAsync(a =>
+                a.AppointmentId == id);
         }
-        public async Task<IEnumerable<Appointment>> GetDoctorPatientAppointmentsAsync(int doctorId)
+
+        public async Task<IEnumerable<Appointment>> GetDoctorPatientAppointmentsAsync(
+            int doctorId)
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
+                .Include(a => a.HealthRecord)
                 .Where(a => a.DoctorId == doctorId)
                 .OrderByDescending(a => a.ScheduledDate)
                 .ThenBy(a => a.TimeSlot)

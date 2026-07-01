@@ -9,6 +9,8 @@ import {
 import { filter, Subscription } from 'rxjs';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { DoctorService } from '../../../core/services/doctor.service';
+import { PatientPortalService } from '../../../core/services/patient-portal.service';
 import { TokenService } from '../../../core/services/token.service';
 
 @Component({
@@ -26,15 +28,21 @@ export class Navbar implements OnInit, OnDestroy {
   isMenuOpen = false;
 
   showChangePasswordModal = false;
+  showLogoutConfirmModal = false;
+
   changingPassword = false;
 
   passwordSuccessMessage = '';
   passwordErrorMessage = '';
 
+  showCurrentPassword = false;
   showNewPassword = false;
   showConfirmPassword = false;
 
+  fullName = '';
+
   changePasswordForm = {
+    currentPassword: '',
     newPassword: '',
     confirmNewPassword: ''
   };
@@ -44,17 +52,23 @@ export class Navbar implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private tokenService: TokenService,
-    private authService: AuthService
+    private authService: AuthService,
+    private patientPortalService: PatientPortalService,
+    private doctorService: DoctorService
   ) {}
 
   ngOnInit(): void {
     this.setCurrentPath(this.router.url);
+    this.loadLoggedInUserName();
 
     this.routerSubscription = this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      )
       .subscribe((event) => {
         this.setCurrentPath(event.urlAfterRedirects);
         this.isMenuOpen = false;
+        this.loadLoggedInUserName();
       });
   }
 
@@ -65,6 +79,48 @@ export class Navbar implements OnInit, OnDestroy {
   private setCurrentPath(url: string): void {
     const cleanUrl = url.split('?')[0].split('#')[0];
     this.currentPath = cleanUrl === '' ? '/' : cleanUrl;
+  }
+
+  private loadLoggedInUserName(): void {
+    if (!this.isLoggedIn) {
+      this.fullName = '';
+      return;
+    }
+
+    const referenceId = this.tokenService.getReferenceId();
+
+    if (!referenceId) {
+      this.fullName = '';
+      return;
+    }
+
+    if (this.isPatient) {
+      this.patientPortalService.getPatientProfile(referenceId).subscribe({
+        next: (patient) => {
+          this.fullName = patient.fullName || '';
+        },
+        error: () => {
+          this.fullName = '';
+        }
+      });
+
+      return;
+    }
+
+    if (this.isDoctor) {
+      this.doctorService.getDoctorById(referenceId).subscribe({
+        next: (doctor) => {
+          this.fullName = doctor.fullName || '';
+        },
+        error: () => {
+          this.fullName = '';
+        }
+      });
+
+      return;
+    }
+
+    this.fullName = '';
   }
 
   get isLoggedIn(): boolean {
@@ -88,6 +144,10 @@ export class Navbar implements OnInit, OnDestroy {
   }
 
   get displayName(): string {
+    if (this.fullName.trim()) {
+      return this.fullName.trim();
+    }
+
     const email = this.userEmail;
 
     if (!email) {
@@ -125,15 +185,66 @@ export class Navbar implements OnInit, OnDestroy {
     return !this.isRegisterPage && !this.isLoggedIn;
   }
 
+  get hasMinLength(): boolean {
+    return this.changePasswordForm.newPassword.length >= 8;
+  }
+
+  get hasUppercase(): boolean {
+    return /[A-Z]/.test(this.changePasswordForm.newPassword);
+  }
+
+  get hasLowercase(): boolean {
+    return /[a-z]/.test(this.changePasswordForm.newPassword);
+  }
+
+  get hasNumber(): boolean {
+    return /[0-9]/.test(this.changePasswordForm.newPassword);
+  }
+
+  get hasSpecialCharacter(): boolean {
+    return /[^A-Za-z0-9]/.test(this.changePasswordForm.newPassword);
+  }
+
+  get isNewPasswordStrong(): boolean {
+    return (
+      this.hasMinLength &&
+      this.hasUppercase &&
+      this.hasLowercase &&
+      this.hasNumber &&
+      this.hasSpecialCharacter
+    );
+  }
+
+  get isNewPasswordSameAsCurrent(): boolean {
+    return (
+      !!this.changePasswordForm.currentPassword &&
+      !!this.changePasswordForm.newPassword &&
+      this.changePasswordForm.currentPassword === this.changePasswordForm.newPassword
+    );
+  }
+
   get passwordStrengthScore(): number {
-    const password = this.changePasswordForm.newPassword;
     let score = 0;
 
-    if (password.length >= 8) score++;
-    if (/[A-Z]/.test(password)) score++;
-    if (/[a-z]/.test(password)) score++;
-    if (/[0-9]/.test(password)) score++;
-    if (/[^A-Za-z0-9]/.test(password)) score++;
+    if (this.hasMinLength) {
+      score++;
+    }
+
+    if (this.hasUppercase) {
+      score++;
+    }
+
+    if (this.hasLowercase) {
+      score++;
+    }
+
+    if (this.hasNumber) {
+      score++;
+    }
+
+    if (this.hasSpecialCharacter) {
+      score++;
+    }
 
     return score;
   }
@@ -179,8 +290,11 @@ export class Navbar implements OnInit, OnDestroy {
 
   get canSubmitChangePassword(): boolean {
     return (
-      this.passwordStrengthScore >= 3 &&
+      !!this.changePasswordForm.currentPassword &&
+      !!this.changePasswordForm.newPassword &&
       !!this.changePasswordForm.confirmNewPassword &&
+      this.isNewPasswordStrong &&
+      !this.isNewPasswordSameAsCurrent &&
       this.passwordsMatch
     );
   }
@@ -191,6 +305,7 @@ export class Navbar implements OnInit, OnDestroy {
 
   openChangePasswordModal(): void {
     this.isMenuOpen = false;
+    this.showLogoutConfirmModal = false;
     this.showChangePasswordModal = true;
     this.resetPasswordMessages();
   }
@@ -204,6 +319,10 @@ export class Navbar implements OnInit, OnDestroy {
     this.resetPasswordForm();
   }
 
+  toggleCurrentPasswordVisibility(): void {
+    this.showCurrentPassword = !this.showCurrentPassword;
+  }
+
   toggleNewPasswordVisibility(): void {
     this.showNewPassword = !this.showNewPassword;
   }
@@ -215,6 +334,11 @@ export class Navbar implements OnInit, OnDestroy {
   submitChangePassword(): void {
     this.resetPasswordMessages();
 
+    if (!this.changePasswordForm.currentPassword) {
+      this.passwordErrorMessage = 'Current password is required.';
+      return;
+    }
+
     if (!this.changePasswordForm.newPassword) {
       this.passwordErrorMessage = 'New password is required.';
       return;
@@ -225,20 +349,26 @@ export class Navbar implements OnInit, OnDestroy {
       return;
     }
 
-    if (!this.passwordsMatch) {
-      this.passwordErrorMessage = 'Passwords do not match.';
+    if (this.isNewPasswordSameAsCurrent) {
+      this.passwordErrorMessage = 'New password cannot be the same as current password.';
       return;
     }
 
-    if (this.passwordStrengthScore < 3) {
+    if (!this.passwordsMatch) {
+      this.passwordErrorMessage = 'New password and confirm password do not match.';
+      return;
+    }
+
+    if (!this.isNewPasswordStrong) {
       this.passwordErrorMessage =
-        'Password must be stronger. Use at least 8 characters with uppercase, lowercase, number, or symbol.';
+        'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.';
       return;
     }
 
     this.changingPassword = true;
 
     this.authService.changePassword({
+      currentPassword: this.changePasswordForm.currentPassword,
       newPassword: this.changePasswordForm.newPassword,
       confirmNewPassword: this.changePasswordForm.confirmNewPassword
     }).subscribe({
@@ -278,8 +408,20 @@ export class Navbar implements OnInit, OnDestroy {
     });
   }
 
-  logout(): void {
+  openLogoutConfirmModal(): void {
+    this.isMenuOpen = false;
+    this.showChangePasswordModal = false;
+    this.showLogoutConfirmModal = true;
+  }
+
+  closeLogoutConfirmModal(): void {
+    this.showLogoutConfirmModal = false;
+  }
+
+  confirmLogout(): void {
     this.tokenService.clearAuthData();
+    this.fullName = '';
+    this.showLogoutConfirmModal = false;
     this.isMenuOpen = false;
     this.router.navigate(['/login']);
   }
@@ -291,10 +433,12 @@ export class Navbar implements OnInit, OnDestroy {
 
   private resetPasswordForm(): void {
     this.changePasswordForm = {
+      currentPassword: '',
       newPassword: '',
       confirmNewPassword: ''
     };
 
+    this.showCurrentPassword = false;
     this.showNewPassword = false;
     this.showConfirmPassword = false;
     this.resetPasswordMessages();

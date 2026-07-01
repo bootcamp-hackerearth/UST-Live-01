@@ -1,0 +1,47 @@
+<section class="ha-doctor-layout">
+  <aside class="ha-doctor-sidebar">
+    <div class="ha-sidebar-top">
+      <span class="ha-sidebar-logo">
+        <i class="bi bi-activity"></i>
+      </span>
+
+      <span class="ha-sidebar-title">
+        Doctor Portal
+      </span>
+    </div>
+
+    <nav class="ha-sidebar-nav">
+      <a
+        routerLink="/doctor/dashboard"
+        routerLinkActive="active"
+        class="ha-sidebar-link"
+      >
+        <i class="bi bi-grid-1x2"></i>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        routerLink="/doctor/schedule"
+        routerLinkActive="active"
+        class="ha-sidebar-link"
+      >
+        <i class="bi bi-calendar2-week"></i>
+        <span>Schedule</span>
+      </a>
+
+      <a
+        routerLink="/doctor/patients"
+        routerLinkActive="active"
+        class="ha-sidebar-link"
+      >
+        <i class="bi bi-person-lines-fill"></i>
+        <span>Patient Profile</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="ha-doctor-layout-content">
+    <router-outlet></router-outlet>
+  </main>
+</section>
+

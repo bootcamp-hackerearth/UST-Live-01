@@ -1,0 +1,279 @@
+<section class="ha-doctor-patients-page">
+  <div class="ha-doctor-patients-shell">
+
+    <section class="ha-patients-hero">
+      <div>
+        <span class="ha-patients-badge">
+          <i class="bi bi-person-lines-fill"></i>
+          Patient Profiles
+        </span>
+
+        <h1>Search treated patients and review history.</h1>
+
+        <p>
+          View patients linked to your appointments and check their previous health records
+          before or after consultations.
+        </p>
+      </div>
+
+      <div class="ha-patients-summary-card">
+        <span>Total Patients</span>
+        <strong>{{ totalPatients }}</strong>
+        <p>Patients linked to your appointments.</p>
+      </div>
+    </section>
+
+    <section class="ha-search-card">
+      <label>Search patient</label>
+
+      <div class="ha-search-input-wrap">
+        <i class="bi bi-search"></i>
+
+        <input
+          type="text"
+          placeholder="Search by name, patient ID, email, or phone"
+          [ngModel]="searchText"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </div>
+    </section>
+
+    @if (errorMessage) {
+      <div class="ha-alert error">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    @if (loading) {
+      <div class="ha-loading-card">
+        <div class="spinner-border text-primary"></div>
+        <p>Loading patients...</p>
+      </div>
+    } @else if (filteredPatients.length === 0) {
+      <div class="ha-empty-state">
+        <i class="bi bi-person-x"></i>
+        <h3>No patients found</h3>
+        <p>No treated patients match your search.</p>
+      </div>
+    } @else {
+      <section class="ha-patients-grid">
+
+        <div class="ha-patient-list-panel">
+          <div class="ha-panel-header">
+            <div>
+              <span>Patients</span>
+              <h2>{{ filteredPatients.length }} result(s)</h2>
+            </div>
+          </div>
+
+          <div class="ha-patient-list">
+            @for (patient of paginatedPatients; track trackPatient($index, patient)) {
+              <button
+                type="button"
+                class="ha-patient-row"
+                [class.active]="selectedPatient?.patientId === patient.patientId"
+                (click)="selectPatient(patient)"
+              >
+                <div class="ha-patient-avatar">
+                  <i class="bi bi-person-heart"></i>
+                </div>
+
+                <div class="ha-patient-main">
+                  <strong>{{ patient.fullName }}</strong>
+
+                  <span>
+                    Patient ID: {{ patient.patientId }}
+                  </span>
+                </div>
+
+                <div class="ha-patient-meta">
+                  <span>{{ patient.totalAppointments }} visit(s)</span>
+
+                  @if (patient.lastVisitDate) {
+                    <small>
+                      Last: {{ patient.lastVisitDate | date:'dd MMM yyyy' }}
+                    </small>
+                  }
+                </div>
+              </button>
+            }
+          </div>
+
+          <div class="ha-pagination-panel">
+            <div class="ha-pagination-info">
+              Showing {{ paginationStart }} - {{ paginationEnd }}
+              of {{ filteredPatients.length }}
+            </div>
+
+            <div class="ha-page-size">
+              <label>Rows</label>
+
+              <select
+                name="pageSize"
+                [(ngModel)]="pageSize"
+                (ngModelChange)="onPageSizeChange()">
+                @for (size of pageSizeOptions; track size) {
+                  <option [ngValue]="size">{{ size }}</option>
+                }
+              </select>
+            </div>
+
+            <div class="ha-pagination-actions">
+              <button
+                type="button"
+                class="ha-page-btn"
+                [disabled]="currentPage === 1"
+                (click)="previousPage()">
+                Previous
+              </button>
+
+              <div class="ha-page-numbers">
+                @for (page of pageNumbers; track page) {
+                  <button
+                    type="button"
+                    class="ha-page-number"
+                    [class.active]="currentPage === page"
+                    (click)="goToPage(page)">
+                    {{ page }}
+                  </button>
+                }
+              </div>
+
+              <button
+                type="button"
+                class="ha-page-btn"
+                [disabled]="currentPage === totalPages"
+                (click)="nextPage()">
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ha-patient-details-panel">
+          @if (!selectedPatient) {
+            <div class="ha-empty-state compact">
+              <i class="bi bi-person-vcard"></i>
+              <h3>Select a patient</h3>
+              <p>Choose a patient from the list to view profile and health records.</p>
+            </div>
+          } @else {
+            <div class="ha-selected-header">
+              <div class="ha-selected-avatar">
+                <i class="bi bi-person-heart"></i>
+              </div>
+
+              <div>
+                <span>Selected Patient</span>
+                <h2>{{ selectedPatient.fullName }}</h2>
+                <p>Patient ID: {{ selectedPatient.patientId }}</p>
+              </div>
+
+              <button
+                type="button"
+                class="ha-clear-btn"
+                (click)="clearSelectedPatient()"
+              >
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <div class="ha-profile-grid">
+              <div>
+                <span>Date of Birth</span>
+                <strong>{{ selectedPatient.dateOfBirth | date:'dd MMM yyyy' }}</strong>
+              </div>
+
+              <div>
+                <span>Gender</span>
+                <strong>{{ genderText(selectedPatient.gender) }}</strong>
+              </div>
+
+              <div>
+                <span>Phone</span>
+                <strong>{{ selectedPatient.phoneNumber }}</strong>
+              </div>
+
+              <div>
+                <span>Email</span>
+                <strong>{{ selectedPatient.email || 'Not available' }}</strong>
+              </div>
+
+              <div>
+                <span>Insurance</span>
+                <strong>{{ selectedPatient.insuranceId || 'Not available' }}</strong>
+              </div>
+
+              <div>
+                <span>Status</span>
+
+                @if (selectedPatient.isActive) {
+                  <strong class="ha-active-text">Active</strong>
+                } @else {
+                  <strong class="ha-inactive-text">Inactive</strong>
+                }
+              </div>
+            </div>
+
+            <section class="ha-records-section">
+              <div class="ha-records-header">
+                <div>
+                  <span>Health Records</span>
+                  <h3>Previous consultation history</h3>
+                </div>
+
+                <strong>{{ selectedPatientRecords.length }} record(s)</strong>
+              </div>
+
+              @if (loadingRecords) {
+                <div class="ha-small-loading">
+                  <div class="spinner-border spinner-border-sm text-primary"></div>
+                  <span>Loading records...</span>
+                </div>
+              } @else if (selectedPatientRecords.length === 0) {
+                <div class="ha-empty-state compact">
+                  <i class="bi bi-journal-x"></i>
+                  <p>No previous health records found.</p>
+                </div>
+              } @else {
+                <div class="ha-record-list">
+                  @for (record of selectedPatientRecords; track trackRecord($index, record)) {
+                    <article class="ha-record-card">
+                      <div class="ha-record-top">
+                        <div>
+                          <span>{{ record.createdOn | date:'dd MMM yyyy' }}</span>
+                          <strong>{{ record.doctorName || 'Doctor' }}</strong>
+                        </div>
+
+                        <small>{{ specialisationText(record.doctorSpecialisation) }}</small>
+                      </div>
+
+                      <div class="ha-record-section">
+                        <span>Diagnosis</span>
+                        <p>{{ record.diagnosis || 'Diagnosis not available' }}</p>
+                      </div>
+
+                      <div class="ha-record-section">
+                        <span>Prescription</span>
+                        <p>{{ record.prescription || 'Prescription not available' }}</p>
+                      </div>
+
+                      @if (record.notes) {
+                        <div class="ha-record-section">
+                          <span>Notes</span>
+                          <p>{{ record.notes }}</p>
+                        </div>
+                      }
+                    </article>
+                  }
+                </div>
+              }
+            </section>
+          }
+        </div>
+
+      </section>
+    }
+  </div>
+</section>
