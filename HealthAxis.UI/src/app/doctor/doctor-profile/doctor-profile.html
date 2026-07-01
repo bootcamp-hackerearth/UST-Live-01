@@ -1,0 +1,179 @@
+<section class="profile-page">
+  <section class="profile-hero">
+    <div>
+      <a routerLink="/doctor/dashboard" class="back-link">
+        ← Back to Dashboard
+      </a>
+
+      <p>Doctor Account</p>
+      <h1>My Profile</h1>
+
+      <span>
+        View your doctor information and update your password securely.
+      </span>
+    </div>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  <section class="profile-grid">
+    <article class="doctor-card">
+      <div class="avatar-circle">
+        {{ doctor()?.fullName?.charAt(0) || 'D' }}
+      </div>
+
+      <h2>Dr. {{ doctor()?.fullName || 'Doctor' }}</h2>
+      <p>{{ doctor()?.specialisation || 'Specialist' }}</p>
+
+      <div class="detail-list">
+        <div>
+          <span>Doctor ID</span>
+          <strong>#{{ doctor()?.doctorId || '-' }}</strong>
+        </div>
+
+        <div>
+          <span>Specialisation</span>
+          <strong>{{ doctor()?.specialisation || '-' }}</strong>
+        </div>
+
+        <div>
+          <span>Experience</span>
+          <strong>{{ doctor()?.yearsOfExperience || 0 }} years</strong>
+        </div>
+
+        <div>
+          <span>Consultation Fee</span>
+          <strong>₹{{ doctor()?.consultationFee || 0 }}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>{{ doctor()?.isActive ? 'Active' : 'Inactive' }}</strong>
+        </div>
+      </div>
+    </article>
+
+    <article class="details-card">
+      <div class="section-title">
+        <span>Professional Details</span>
+        <h2>Doctor Information</h2>
+      </div>
+
+      <div class="readonly-grid">
+        <div>
+          <span>Full Name</span>
+          <strong>Dr. {{ doctor()?.fullName || '-' }}</strong>
+        </div>
+
+        <div>
+          <span>Specialisation</span>
+          <strong>{{ doctor()?.specialisation || '-' }}</strong>
+        </div>
+
+        <div>
+          <span>Years of Experience</span>
+          <strong>{{ doctor()?.yearsOfExperience || 0 }} years</strong>
+        </div>
+
+        <div>
+          <span>Consultation Fee</span>
+          <strong>₹{{ doctor()?.consultationFee || 0 }}</strong>
+        </div>
+
+        <div>
+          <span>Account Status</span>
+          <strong>{{ doctor()?.isActive ? 'Active' : 'Inactive' }}</strong>
+        </div>
+
+        <div>
+          <span>Login Security</span>
+          <strong>JWT Protected</strong>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="password-card" id="change-password">
+    <div class="section-title">
+      <span>Security</span>
+      <h2>Change Password</h2>
+      <p>
+        Use the temporary password given by admin as your current password, then set a strong new password.
+      </p>
+    </div>
+
+    @if (passwordErrorMessage()) {
+      <div class="alert error">{{ passwordErrorMessage() }}</div>
+    }
+
+    @if (passwordSuccessMessage()) {
+      <div class="alert success">{{ passwordSuccessMessage() }}</div>
+    }
+
+    <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+
+          <input
+            id="currentPassword"
+            type="password"
+            formControlName="currentPassword"
+            placeholder="Enter current password"
+          />
+
+          @if (currentPassword.invalid && currentPassword.touched) {
+            <small>Current password is required.</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+
+          <input
+            id="newPassword"
+            type="password"
+            formControlName="newPassword"
+            placeholder="Enter New Password"
+          />
+
+          @if (newPassword.invalid && newPassword.touched) {
+            <small>
+              Password must contain uppercase, lowercase, number, special character,
+              and at least 8 characters.
+            </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password</label>
+
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Re-enter New password"
+          />
+
+          @if (passwordForm.errors?.['passwordMismatch'] && confirmPassword.touched) {
+            <small>New password and confirm password do not match.</small>
+          }
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="password-button"
+        [disabled]="changingPassword()"
+      >
+        {{ changingPassword() ? 'Changing Password...' : 'Change Password' }}
+      </button>
+    </form>
+  </section>
+</section>

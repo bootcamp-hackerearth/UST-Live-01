@@ -70,6 +70,25 @@ namespace HealthAxis.API.Services.Implementation
             return await MapAppointmentListAsync(patientAppointments);
         }
 
+        public async Task<List<AppointmentDto>> GetByDoctorIdAsync(int doctorId)
+        {
+            var doctor = await doctorRepository.GetByIdAsync(doctorId);
+
+            if (doctor == null)
+            {
+                throw new NotFoundException("Doctor not found.");
+            }
+
+            var appointments = await appointmentRepository.GetAllAsync();
+
+            var doctorAppointments = appointments
+                .Where(appointment => appointment.DoctorId == doctorId)
+                .OrderBy(appointment => appointment.ScheduledDate)
+                .ThenBy(appointment => appointment.TimeSlot)
+                .ToList();
+
+            return await MapAppointmentListAsync(doctorAppointments);
+        }
         public async Task<AppointmentDto> AddAsync(CreateAppointmentDto appointmentDto)
         {
             ArgumentNullException.ThrowIfNull(appointmentDto);

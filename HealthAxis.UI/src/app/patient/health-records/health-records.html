@@ -102,9 +102,16 @@
               <div class="record-icon">📋</div>
 
               <div>
-                <h3>{{ record.diagnosis || 'Diagnosis not provided' }}</h3>
-                <p>
-                  Dr. {{ record.doctorName || 'Doctor' }}
+  <div class="record-heading-line">
+    <h3>{{ record.diagnosis || 'Diagnosis not provided' }}</h3>
+
+    @if (hasUpdated(record)) {
+      <span class="updated-badge">Updated by doctor</span>
+    }
+  </div>
+
+  <p>
+    Dr. {{ record.doctorName || 'Doctor' }}
                   @if (record.specialisation) {
                     • {{ record.specialisation }}
                   }
@@ -128,7 +135,13 @@
                 <strong>#{{ getRecordId(record) }}</strong>
               </div>
             </div>
-
+                @if (hasUpdated(record)) {
+  <div class="update-note">
+    <span>🔄</span>
+    Last updated by doctor:
+    <strong>{{ record.updatedDate | date: 'medium' }}</strong>
+  </div>
+}
             <div class="medical-section prescription">
               <span>💊 Prescription</span>
               <p>{{ record.prescription || 'No prescription added.' }}</p>

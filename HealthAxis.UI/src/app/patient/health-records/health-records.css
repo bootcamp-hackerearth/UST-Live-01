@@ -351,3 +351,30 @@
     flex-direction: column;
   }
 }
+.record-heading-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.updated-badge {
+  border-radius: 999px;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.update-note {
+  border-radius: 16px;
+  background: #fffbeb;
+  color: #92400e;
+  padding: 11px 13px;
+  font-weight: 800;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}

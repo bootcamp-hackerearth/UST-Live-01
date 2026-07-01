@@ -1,12 +1,12 @@
 <header class="topbar">
-  <div class="topbar-title">
+  <div class="topbar-left">
     <p>{{ getGreeting() }}</p>
     <h1>{{ authService.role() }} Portal</h1>
   </div>
 
-  <div class="topbar-actions">
+  <div class="topbar-right">
     <div class="time-card">
-      <span class="time-icon">🕒</span>
+      <span>🕘</span>
 
       <div>
         <strong>{{ currentTime() | date: 'hh:mm a' }}</strong>
@@ -14,31 +14,35 @@
       </div>
     </div>
 
-    <div class="profile-menu" (click)="$event.stopPropagation()">
+    <div class="profile-wrapper" (click)="$event.stopPropagation()">
       <button
         type="button"
         class="profile-button"
-        aria-label="Open profile menu"
         (click)="toggleProfileMenu()"
       >
-        <span class="profile-avatar">👥</span>
+        <span class="profile-icon">👥</span>
 
-        <span class="profile-short">
+        <div>
           <strong>{{ authService.role() }}</strong>
           <small>Account</small>
-        </span>
+        </div>
 
-        <span class="chevron">
+        <span class="dropdown-arrow">
           {{ isProfileMenuOpen() ? '⌃' : '⌄' }}
         </span>
       </button>
 
       @if (isProfileMenuOpen()) {
-        <div class="profile-dropdown">
-          <a [routerLink]="profileRoute()" (click)="closeProfileMenu()">
+        <div class="profile-menu">
+          <a [routerLink]="profileRoute()" (click)="isProfileMenuOpen.set(false)">
             <span>👤</span>
             View Profile
           </a>
+
+          <button type="button" (click)="goToChangePassword()">
+            <span>🔐</span>
+            Change Password
+          </button>
 
           <button type="button" (click)="logout()">
             <span>🚪</span>

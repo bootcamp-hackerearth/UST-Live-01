@@ -34,15 +34,19 @@ export class HealthRecords {
   });
 
   readonly latestRecord = computed<HealthRecord | null>(() => {
-  const record = this.healthRecords()
-    .slice()
-    .sort((first, second) =>
-      new Date(second.visitDate).getTime() -
-      new Date(first.visitDate).getTime()
-    )[0];
+    const record = this.healthRecords()
+      .slice()
+      .sort((first, second) =>
+        new Date(second.visitDate).getTime() -
+        new Date(first.visitDate).getTime()
+      )[0];
 
-  return record ?? null;
-});
+    return record ?? null;
+  });
+
+  readonly updatedRecordsCount = computed(() =>
+    this.healthRecords().filter((record) => this.hasUpdated(record)).length
+  );
 
   constructor() {
     this.loadHealthRecords();
@@ -73,6 +77,10 @@ export class HealthRecords {
 
   getRecordId(record: HealthRecord): number {
     return record.healthRecordId ?? record.recordId ?? record.appointmentId;
+  }
+
+  hasUpdated(record: HealthRecord): boolean {
+    return Boolean(record.updatedDate);
   }
 
   private includesSearchValue(record: HealthRecord, searchValue: string): boolean {

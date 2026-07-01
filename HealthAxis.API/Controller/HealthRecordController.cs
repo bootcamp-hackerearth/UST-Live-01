@@ -163,6 +163,45 @@ namespace HealthAxis.API.Controller
             return Ok(record);
         }
 
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> UpdateHealthRecord(
+    int id,
+    [FromBody] UpdateHealthRecordDto healthRecordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found"
+                });
+            }
+
+            var updatedRecord = await _healthRecordService.UpdateAsync(
+                id,
+                healthRecordDto,
+                doctor.DoctorId);
+
+            return Ok(updatedRecord);
+        }
+
         [HttpGet("{id}")]
         [Authorize(Roles = "Patient,Doctor")]
         public async Task<IActionResult> GetById(int id)

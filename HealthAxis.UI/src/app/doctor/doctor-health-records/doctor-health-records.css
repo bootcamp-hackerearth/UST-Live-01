@@ -1,0 +1,523 @@
+.records-page {
+  display: grid;
+  gap: 18px;
+}
+
+.page-header {
+  padding: 26px 30px;
+  border-radius: 30px;
+  color: white;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.18), transparent 30%),
+    linear-gradient(135deg, #020617, #075985);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 18px;
+  box-shadow: 0 20px 50px rgba(7, 89, 133, 0.2);
+}
+
+.back-link {
+  color: #bae6fd;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+.page-header p {
+  margin: 14px 0 0;
+  color: #7dd3fc;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.page-header h1 {
+  margin: 8px 0 6px;
+  font-size: 40px;
+}
+
+.page-header span {
+  color: #dbeafe;
+  line-height: 1.6;
+}
+
+.refresh-button {
+  border: none;
+  border-radius: 999px;
+  padding: 13px 18px;
+  background: white;
+  color: #0f172a;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.alert {
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-weight: 900;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 16px;
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.stat-card > span {
+  width: 48px;
+  height: 48px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 25px;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.stat-card p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-weight: 900;
+}
+
+.patients > span {
+  background: #e0f2fe;
+}
+
+.records > span {
+  background: #dcfce7;
+}
+
+.latest > span {
+  background: #fef3c7;
+}
+
+.toolbar-card,
+.list-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 26px;
+  padding: 22px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+}
+
+.search-box {
+  height: 50px;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fafc;
+}
+
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+}
+
+.section-title {
+  margin-bottom: 16px;
+}
+
+.section-title p {
+  margin: 0;
+  color: #0284c7;
+  font-weight: 900;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.section-title h2 {
+  margin: 6px 0 0;
+  color: #0f172a;
+  font-size: 28px;
+}
+
+.empty-box,
+.empty-state {
+  padding: 22px;
+  border-radius: 18px;
+  background: #f8fafc;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.empty-state {
+  text-align: center;
+}
+
+.empty-state span {
+  font-size: 36px;
+}
+
+.empty-state h3 {
+  margin: 8px 0;
+  color: #0f172a;
+}
+
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.record-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 22px;
+  padding: 16px;
+  background: linear-gradient(135deg, #ffffff, #f8fafc);
+  display: grid;
+  gap: 14px;
+}
+
+.record-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.record-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #eff6ff;
+}
+
+.record-top h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.record-top p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-weight: 800;
+}
+
+.record-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.record-info div {
+  border-radius: 15px;
+  padding: 11px;
+  background: white;
+  border: 1px solid #e2e8f0;
+}
+
+.record-info span,
+.record-summary span,
+.record-details-grid span,
+.detail-block span,
+.readonly-visit-date span {
+  display: block;
+  color: #64748b;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.record-info strong {
+  display: block;
+  color: #0f172a;
+  margin-top: 5px;
+}
+
+.record-summary {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.record-summary p {
+  margin: 6px 0 0;
+  color: #0f172a;
+  line-height: 1.45;
+}
+
+.record-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.record-card button,
+.done-button {
+  height: 46px;
+  border: none;
+  border-radius: 15px;
+  color: white;
+  background: linear-gradient(135deg, #0f172a, #0284c7);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.edit-record-button {
+  background: linear-gradient(135deg, #166534, #22c55e) !important;
+}
+
+.updated-chip {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.56);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+  padding: 18px;
+}
+
+.record-modal {
+  width: min(760px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.modal-header p {
+  margin: 0;
+  color: #0284c7;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.modal-header h2 {
+  margin: 6px 0 0;
+  color: #0f172a;
+}
+
+.close-button {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #0f172a;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.record-details-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 11px;
+  margin-bottom: 16px;
+}
+
+.record-details-grid div,
+.detail-block,
+.readonly-visit-date {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 13px;
+}
+
+.record-details-grid strong,
+.readonly-visit-date strong {
+  display: block;
+  margin-top: 5px;
+  color: #0f172a;
+}
+
+.detail-block {
+  margin-bottom: 12px;
+}
+
+.detail-block p {
+  margin: 6px 0 0;
+  color: #0f172a;
+  line-height: 1.6;
+  font-weight: 700;
+}
+
+.done-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.readonly-visit-date {
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.form-group {
+  display: grid;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #334155;
+  font-weight: 900;
+}
+
+.form-group textarea {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 13px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  resize: vertical;
+}
+
+.form-group textarea:focus {
+  outline: none;
+  border-color: #0284c7;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.12);
+}
+
+.form-group small {
+  color: #dc2626;
+  font-weight: 800;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.save-button,
+.cancel-button {
+  height: 50px;
+  border: none;
+  border-radius: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.save-button {
+  flex: 1;
+  color: white;
+  background: linear-gradient(135deg, #0f172a, #0284c7);
+}
+
+.cancel-button {
+  width: 140px;
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.success-modal {
+  width: min(430px, 100%);
+  background: white;
+  border-radius: 28px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.3);
+}
+
+.success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px;
+  background: #dcfce7;
+  font-size: 34px;
+}
+
+.success-modal h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 26px;
+}
+
+.success-modal p {
+  margin: 12px 0 22px;
+  color: #64748b;
+  line-height: 1.6;
+  font-weight: 800;
+}
+
+.success-modal button {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  background: linear-gradient(135deg, #0f172a, #0284c7);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+@media (max-width: 1100px) {
+  .records-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .record-details-grid,
+  .record-info {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal-actions,
+  .record-actions {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .cancel-button {
+    width: 100%;
+  }
+}

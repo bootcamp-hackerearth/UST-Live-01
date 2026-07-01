@@ -1,1 +1,178 @@
-<p>upcoming-appointments works!</p>
+<section class="appointments-page">
+  <section class="page-header">
+    <div>
+      <a routerLink="/doctor/dashboard" class="back-link">
+        ← Back to Dashboard
+      </a>
+
+      <p>Doctor Appointments</p>
+      <h1>Upcoming Appointments</h1>
+
+      <span>
+        View assigned patient appointments and confirm pending visits.
+      </span>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="loadAppointments()">
+      Refresh
+    </button>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  @if (successMessage()) {
+    <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  <section class="stats-grid">
+    <article class="stat-card today">
+      <span>📅</span>
+
+      <div>
+        <strong>{{ todayCount() }}</strong>
+        <p>Today</p>
+      </div>
+    </article>
+
+    <article class="stat-card pending">
+      <span>⏳</span>
+
+      <div>
+        <strong>{{ pendingCount() }}</strong>
+        <p>Pending</p>
+      </div>
+    </article>
+
+    <article class="stat-card confirmed">
+      <span>✅</span>
+
+      <div>
+        <strong>{{ confirmedCount() }}</strong>
+        <p>Confirmed</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="toolbar-card">
+    <div class="search-box">
+      <span>🔍</span>
+
+      <input
+        type="search"
+        maxlength="80"
+        placeholder="Search patient, date, time, status..."
+        [value]="searchText()"
+        (input)="onSearchInput($event)"
+      />
+    </div>
+
+    <div class="filter-pills">
+      @for (filter of filters; track filter) {
+        <button
+          type="button"
+          [class.active]="selectedFilter() === filter"
+          (click)="selectFilter(filter)"
+        >
+          {{ filter }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <section class="list-card">
+    <div class="section-title">
+      <p>Assigned Visits</p>
+      <h2>Patient Appointments</h2>
+    </div>
+
+    @if (loading()) {
+      <div class="empty-box">
+        Loading appointments...
+      </div>
+    }
+
+    @if (!loading() && upcomingAppointments().length === 0) {
+      <div class="empty-state">
+        <span>🩺</span>
+        <h3>No upcoming appointments</h3>
+        <p>Pending and confirmed appointments assigned to you will appear here.</p>
+      </div>
+    }
+
+    @if (!loading() && upcomingAppointments().length > 0 && filteredAppointments().length === 0) {
+      <div class="empty-box">
+        No appointments found for the selected filter.
+      </div>
+    }
+
+    @if (!loading() && filteredAppointments().length > 0) {
+      <div class="table-wrapper">
+        <table class="appointment-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Date</th>
+              <th>Time Slot</th>
+              <th>Status</th>
+              <th>Doctor Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (appointment of filteredAppointments(); track appointment.appointmentId) {
+              <tr>
+                <td>
+                  <div class="patient-cell">
+                    <span>👤</span>
+
+                    <div>
+                      <strong>{{ appointment.patientName || 'Patient' }}</strong>
+                      <small>Appointment #{{ appointment.appointmentId }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <td>{{ appointment.scheduledDate | date: 'mediumDate' }}</td>
+
+                <td>{{ appointment.timeSlot }}</td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class]="getStatusClass(appointment.status)"
+                  >
+                    {{ getStatusLabel(appointment.status) }}
+                  </span>
+                </td>
+
+                <td>
+                  @if (canConfirm(appointment)) {
+                    <button
+                      type="button"
+                      class="confirm-button"
+                      [disabled]="confirmingAppointmentId() === appointment.appointmentId"
+                      (click)="confirmAppointment(appointment)"
+                    >
+                      @if (confirmingAppointmentId() === appointment.appointmentId) {
+                        Confirming...
+                      } @else {
+                        Confirm
+                      }
+                    </button>
+                  } @else {
+                    <span class="no-action">
+                      Confirmed
+                    </span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+
+  

@@ -1,1 +1,317 @@
-<p>doctor-health-records works!</p>
+<section class="records-page">
+  <section class="page-header">
+    <div>
+      <a routerLink="/doctor/dashboard" class="back-link">
+        ← Back to Dashboard
+      </a>
+
+      <p>Doctor Records</p>
+      <h1>Health Records</h1>
+
+      <span>
+        View treatment records only for patients handled through your completed appointments.
+      </span>
+    </div>
+
+    <button type="button" class="refresh-button" (click)="loadDoctorHealthRecords()">
+      Refresh
+    </button>
+  </section>
+
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  <section class="stats-grid">
+    <article class="stat-card patients">
+      <span>👥</span>
+
+      <div>
+        <strong>{{ treatedPatientCount() }}</strong>
+        <p>Treated Patients</p>
+      </div>
+    </article>
+
+    <article class="stat-card records">
+      <span>🧾</span>
+
+      <div>
+        <strong>{{ recordCount() }}</strong>
+        <p>Records</p>
+      </div>
+    </article>
+
+    <article class="stat-card latest">
+      <span>📅</span>
+
+      <div>
+        @if (latestRecord()) {
+          <strong>{{ latestRecord()!.visitDate | date: 'mediumDate' }}</strong>
+        } @else {
+          <strong>-</strong>
+        }
+
+        <p>Latest Visit</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="toolbar-card">
+    <div class="search-box">
+      <span>🔍</span>
+
+      <input
+        type="search"
+        maxlength="80"
+        placeholder="Search patient, diagnosis, prescription, date..."
+        [value]="searchText()"
+        (input)="onSearchInput($event)"
+      />
+    </div>
+  </section>
+
+  <section class="list-card">
+    <div class="section-title">
+      <p>Treatment History</p>
+      <h2>Patient Health Records</h2>
+    </div>
+
+    @if (loading()) {
+      <div class="empty-box">
+        Loading health records...
+      </div>
+    }
+
+    @if (!loading() && completedAppointments().length === 0) {
+      <div class="empty-state">
+        <span>🩺</span>
+        <h3>No treated patients yet</h3>
+        <p>
+          Health records will appear after you complete appointments by adding treatment details.
+        </p>
+      </div>
+    }
+
+    @if (!loading() && completedAppointments().length > 0 && filteredRecords().length === 0) {
+      <div class="empty-box">
+        No health records found.
+      </div>
+    }
+
+    @if (!loading() && filteredRecords().length > 0) {
+      <div class="records-grid">
+        @for (record of filteredRecords(); track getRecordId(record)) {
+          <article class="record-card">
+            <div class="record-top">
+              <div class="record-icon">🧾</div>
+
+              <div>
+                <h3>{{ record.patientName || 'Patient' }}</h3>
+                <p>Appointment #{{ record.appointmentId }}</p>
+              </div>
+            </div>
+
+            <div class="record-info">
+              <div>
+                <span>Visit Date</span>
+                <strong>{{ record.visitDate | date: 'mediumDate' }}</strong>
+              </div>
+
+              <div>
+                <span>Specialization</span>
+                <strong>{{ record.specialisation || 'N/A' }}</strong>
+              </div>
+            </div>
+
+            <div class="record-summary">
+              <span>Diagnosis</span>
+              <p>{{ record.diagnosis }}</p>
+            </div>
+
+            <div class="record-actions">
+              <button type="button" (click)="openRecord(record)">
+                View Full Record
+              </button>
+
+              <button
+                type="button"
+                class="edit-record-button"
+                (click)="openEditDialog(record)"
+              >
+                Edit Record
+              </button>
+            </div>
+
+            @if (hasUpdated(record)) {
+              <span class="updated-chip">
+                Updated by doctor
+              </span>
+            }
+          </article>
+        }
+      </div>
+    }
+  </section>
+
+  @if (selectedRecord()) {
+    <div class="modal-backdrop">
+      <section class="record-modal">
+        <div class="modal-header">
+          <div>
+            <p>Health Record</p>
+            <h2>{{ selectedRecord()!.patientName || 'Patient' }}</h2>
+          </div>
+
+          <button type="button" class="close-button" (click)="closeRecord()">
+            ×
+          </button>
+        </div>
+
+        <div class="record-details-grid">
+          <div>
+            <span>Record ID</span>
+            <strong>#{{ getRecordId(selectedRecord()!) }}</strong>
+          </div>
+
+          <div>
+            <span>Appointment ID</span>
+            <strong>#{{ selectedRecord()!.appointmentId }}</strong>
+          </div>
+
+          <div>
+            <span>Visit Date</span>
+            <strong>{{ selectedRecord()!.visitDate | date: 'mediumDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Doctor</span>
+            <strong>{{ selectedRecord()!.doctorName || 'Doctor' }}</strong>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <span>Diagnosis</span>
+          <p>{{ selectedRecord()!.diagnosis }}</p>
+        </div>
+
+        <div class="detail-block">
+          <span>Prescription</span>
+          <p>{{ selectedRecord()!.prescription }}</p>
+        </div>
+
+        <div class="detail-block">
+          <span>Notes</span>
+          <p>{{ selectedRecord()!.notes || 'No notes added.' }}</p>
+        </div>
+
+        <button type="button" class="done-button" (click)="closeRecord()">
+          Done
+        </button>
+      </section>
+    </div>
+  }
+
+  @if (editingRecord()) {
+    <div class="modal-backdrop">
+      <section class="record-modal">
+        <div class="modal-header">
+          <div>
+            <p>Edit Health Record</p>
+            <h2>{{ editingRecord()!.patientName || 'Patient' }}</h2>
+          </div>
+
+          <button type="button" class="close-button" (click)="closeEditDialog()">
+            ×
+          </button>
+        </div>
+
+        <div class="readonly-visit-date">
+          <span>Visit Date</span>
+          <strong>{{ editingRecord()!.visitDate | date: 'mediumDate' }}</strong>
+        </div>
+
+        <form [formGroup]="editForm" (ngSubmit)="updateRecord()">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="diagnosis">Diagnosis</label>
+
+              <textarea
+                id="diagnosis"
+                rows="3"
+                maxlength="500"
+                formControlName="diagnosis"
+              ></textarea>
+
+              @if (diagnosis.invalid && diagnosis.touched) {
+                <small>Diagnosis is required and should be at least 3 characters.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="prescription">Prescription</label>
+
+              <textarea
+                id="prescription"
+                rows="3"
+                maxlength="500"
+                formControlName="prescription"
+              ></textarea>
+
+              @if (prescription.invalid && prescription.touched) {
+                <small>Prescription is required and should be at least 3 characters.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="notes">Notes</label>
+
+              <textarea
+                id="notes"
+                rows="3"
+                maxlength="1000"
+                formControlName="notes"
+              ></textarea>
+
+              @if (notes.invalid && notes.touched) {
+                <small>Notes cannot exceed 1000 characters.</small>
+              }
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="submit" class="save-button" [disabled]="saving()">
+              {{ saving() ? 'Updating...' : 'Update Health Record' }}
+            </button>
+
+            <button
+              type="button"
+              class="cancel-button"
+              [disabled]="saving()"
+              (click)="closeEditDialog()"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </section>
+    </div>
+  }
+
+  @if (successDialogMessage()) {
+    <div class="modal-backdrop">
+      <section class="success-modal">
+        <div class="success-icon">✅</div>
+
+        <h2>Health Record Updated</h2>
+
+        <p>
+          {{ successDialogMessage() }}
+        </p>
+
+        <button type="button" (click)="closeSuccessDialog()">
+          Done
+        </button>
+      </section>
+    </div>
+  }
+</section>

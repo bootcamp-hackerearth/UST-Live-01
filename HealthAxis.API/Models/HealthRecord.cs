@@ -34,6 +34,7 @@ namespace HealthAxis.API.Models
 
         [StringLength(ValidationLimits.NotesLength)]
         public string Notes { get; set; } = string.Empty;
+        public DateTime? UpdatedDate { get; set; }
 
         // Navigation properties
         [ForeignKey(nameof(AppointmentId))]

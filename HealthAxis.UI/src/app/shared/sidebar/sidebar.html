@@ -8,14 +8,14 @@
     </div>
   </a>
 
-  <div class="care-status">
+  <!-- <div class="care-status">
     <div class="pulse"></div>
 
     <div>
       <strong>Hospital System Online</strong>
       <span>JWT secured access</span>
     </div>
-  </div>
+  </div> -->
 
   <nav class="menu">
     @for (item of menuItems(); track item.path) {
@@ -30,7 +30,7 @@
   </nav>
 
   <div class="sidebar-bottom">
-    <a routerLink="/patient/contact-us" class="contact-btn">
+    <a [routerLink]="contactRoute()" class="contact-btn">
       <span>☎️</span>
       Contact Us
     </a>

@@ -1,8 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
+import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +41,7 @@ export class Login {
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.errorMessage.set('Please enter valid email and password.');
       return;
     }
 
@@ -49,19 +55,9 @@ export class Login {
       error: (error: unknown) => {
         this.loading.set(false);
         this.errorMessage.set(
-          this.getFriendlyMessage(error, 'Invalid email or password.')
+          getFriendlyErrorMessage(error, 'Login failed. Please check your credentials.')
         );
       }
     });
-  }
-
-  private getFriendlyMessage(error: unknown, fallback: string): string {
-    const possibleError = error as { friendlyMessage?: unknown };
-
-    if (typeof possibleError.friendlyMessage === 'string') {
-      return possibleError.friendlyMessage;
-    }
-
-    return fallback;
   }
 }

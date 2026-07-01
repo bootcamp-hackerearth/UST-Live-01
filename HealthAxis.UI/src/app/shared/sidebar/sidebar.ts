@@ -54,19 +54,24 @@ export class Sidebar {
       path: '/doctor/dashboard'
     },
     {
-      label: 'Upcoming Appointments',
+      label: 'Appointments',
       icon: '📅',
       path: '/doctor/upcoming-appointments'
     },
     {
-      label: 'Completed Appointments',
+      label: 'Completed Visits',
       icon: '✅',
       path: '/doctor/completed-appointments'
     },
     {
       label: 'Health Records',
-      icon: '📋',
+      icon: '🧾',
       path: '/doctor/health-records'
+    },
+    {
+      label: 'My Profile',
+      icon: '👤',
+      path: '/doctor/profile'
     }
   ];
 
@@ -82,6 +87,16 @@ export class Sidebar {
     }
 
     return [];
+  });
+
+  readonly contactRoute = computed(() => {
+    const role = this.authService.role();
+
+    if (role === 'Doctor') {
+      return '/doctor/contact-us';
+    }
+
+    return '/patient/contact-us';
   });
 
   logout(): void {

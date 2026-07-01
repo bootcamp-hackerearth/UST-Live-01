@@ -1,7 +1,7 @@
-﻿using HealthAxis.Shared.DTO.AppointmentDtos;
-using HealthAxis.Shared.Enums;
-using HealthAxis.API.Services;
+﻿using HealthAxis.API.Services;
 using HealthAxis.API.Services.Interfaces;
+using HealthAxis.Shared.DTO.AppointmentDtos;
+using HealthAxis.Shared.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -66,6 +66,36 @@ namespace HealthAxis.API.Controller
 
             var appointments = await _appointmentService.GetByPatientIdAsync(
                 patient.PatientId);
+
+            return Ok(appointments);
+        }
+
+        [HttpGet("doctor/my")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetMyDoctorAppointments()
+        {
+            var userId = GetLoggedInUserId();
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid token"
+                });
+            }
+
+            var doctor = await _doctorService.GetByUserIdAsync(userId);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found"
+                });
+            }
+
+            var appointments = await _appointmentService.GetByDoctorIdAsync(
+                doctor.DoctorId);
 
             return Ok(appointments);
         }
@@ -179,8 +209,8 @@ namespace HealthAxis.API.Controller
         [HttpPut("{id}/status")]
         [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> UpdateAppointmentStatus(
-    int id,
-    [FromBody] UpdateAppointmentStatusDto statusDto)
+            int id,
+            [FromBody] UpdateAppointmentStatusDto statusDto)
         {
             if (!ModelState.IsValid)
             {
@@ -285,8 +315,9 @@ namespace HealthAxis.API.Controller
 
             return Ok(updatedAppointment);
         }
+
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Patient")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAppointment(int id)
         {
             var appointment = await _appointmentService.DeleteAsync(id);

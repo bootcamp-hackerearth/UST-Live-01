@@ -12,6 +12,7 @@ import { BookAppointment } from './patient/book-appointment/book-appointment';
 import { MyAppointments } from './patient/my-appointments/my-appointments';
 import { HealthRecords } from './patient/health-records/health-records';
 import { PatientProfile } from './patient/patient-profile/patient-profile';
+import { DoctorProfile } from './doctor/doctor-profile/doctor-profile';
 import { ContactUs } from './patient/contact-us/contact-us';
 
 import { DoctorDashboard } from './doctor/doctor-dashboard/doctor-dashboard';
@@ -104,6 +105,14 @@ export const routes: Routes = [
         path: 'health-records',
         component: DoctorHealthRecords
       },
+      {
+        path: 'profile',
+        component: DoctorProfile
+      },
+      {
+        path: 'contact-us',
+        component: ContactUs
+      },  
       {
         path: '',
         redirectTo: 'dashboard',

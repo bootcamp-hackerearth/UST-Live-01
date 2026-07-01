@@ -1,1 +1,183 @@
-<p>doctor-dashboard works!</p>
+<section class="doctor-dashboard">
+  @if (errorMessage()) {
+    <div class="alert error">{{ errorMessage() }}</div>
+  }
+
+  <section class="hero-card">
+    <div>
+      <p>Doctor Control Center</p>
+      <h1>Welcome, Dr. {{ doctor()?.fullName || 'Doctor' }}</h1>
+      <span>
+        View today’s appointments, confirm patient visits, and manage treatment records.
+      </span>
+
+      <div class="hero-actions">
+        <a routerLink="/doctor/upcoming-appointments" class="primary-action">
+          View Appointments
+        </a>
+
+        <a routerLink="/doctor/health-records" class="secondary-action">
+          Health Records
+        </a>
+      </div>
+    </div>
+
+    <div class="doctor-card">
+      <span>🩺</span>
+      <strong>{{ doctor()?.specialisation || 'Specialist' }}</strong>
+      <p>{{ doctor()?.yearsOfExperience || 0 }} years experience</p>
+    </div>
+  </section>
+
+  <section class="stats-grid">
+    <article class="stat-card pending">
+      <span>⏳</span>
+      <div>
+        <strong>{{ pendingCount() }}</strong>
+        <p>Pending</p>
+      </div>
+    </article>
+
+    <article class="stat-card confirmed">
+      <span>📅</span>
+      <div>
+        <strong>{{ confirmedCount() }}</strong>
+        <p>Confirmed</p>
+      </div>
+    </article>
+
+    <article class="stat-card completed">
+      <span>✅</span>
+      <div>
+        <strong>{{ completedCount() }}</strong>
+        <p>Completed</p>
+      </div>
+    </article>
+
+    <article class="stat-card cancelled">
+      <span>❌</span>
+      <div>
+        <strong>{{ cancelledCount() }}</strong>
+        <p>Cancelled</p>
+      </div>
+    </article>
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="schedule-card">
+      <div class="card-title">
+        <span>Today</span>
+        <h2>Today’s Schedule</h2>
+      </div>
+
+      @if (loading()) {
+        <div class="empty-state">Loading schedule...</div>
+      }
+
+      @if (!loading() && todayAppointments().length === 0) {
+        <div class="empty-state">
+          <span>📅</span>
+          <h3>No appointments today</h3>
+          <p>Your schedule is clear for today.</p>
+        </div>
+      }
+
+      @if (!loading() && todayAppointments().length > 0) {
+        <div class="appointment-list">
+          @for (appointment of todayAppointments(); track appointment.appointmentId) {
+            <div class="appointment-row">
+              <div class="patient-icon">👤</div>
+
+              <div>
+                <strong>{{ appointment.patientName || 'Patient' }}</strong>
+                <small>{{ appointment.timeSlot }}</small>
+              </div>
+
+              <span>{{ appointment.status }}</span>
+            </div>
+          }
+        </div>
+      }
+    </article>
+
+    <article class="next-card">
+      <div class="card-title">
+        <span>Next Visit</span>
+        <h2>Next Appointment</h2>
+      </div>
+
+      @if (nextAppointment()) {
+        <div class="next-grid">
+          <div>
+            <span>Patient</span>
+            <strong>{{ nextAppointment()!.patientName || 'Patient' }}</strong>
+          </div>
+
+          <div>
+            <span>Date</span>
+            <strong>{{ nextAppointment()!.scheduledDate | date: 'mediumDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Time</span>
+            <strong>{{ nextAppointment()!.timeSlot }}</strong>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <strong>{{ nextAppointment()!.status }}</strong>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <span>🩺</span>
+          <h3>No upcoming visits</h3>
+          <p>Upcoming appointments will appear here.</p>
+        </div>
+      }
+    </article>
+  </section>
+
+  <section class="wide-card">
+    <div class="card-title">
+      <span>This Week</span>
+      <h2>Week Schedule</h2>
+    </div>
+
+    @if (weekAppointments().length === 0) {
+      <div class="empty-state">
+        No appointments scheduled for this week.
+      </div>
+    }
+
+    @if (weekAppointments().length > 0) {
+      <div class="week-table-wrapper">
+        <table class="week-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Date</th>
+              <th>Time Slot</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (appointment of weekAppointments(); track appointment.appointmentId) {
+              <tr>
+                <td>{{ appointment.patientName || 'Patient' }}</td>
+                <td>{{ appointment.scheduledDate | date: 'mediumDate' }}</td>
+                <td>{{ appointment.timeSlot }}</td>
+                <td>
+                  <span class="status-badge">
+                    {{ appointment.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</section>

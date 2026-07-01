@@ -3,23 +3,35 @@
   [class.sidebar-closed]="isSidebarClosed()"
 >
   @if (!isSidebarClosed()) {
-    <app-sidebar></app-sidebar>
+    <aside class="sidebar-area">
+      <app-sidebar></app-sidebar>
+
+      <button
+        type="button"
+        class="sidebar-toggle inside-sidebar"
+        aria-label="Close sidebar"
+        (click)="toggleSidebar()"
+      >
+        <span class="toggle-lines">
+  <span></span>
+  <span></span>
+  <span></span>
+</span>
+      </button>
+    </aside>
   }
 
   <main class="dashboard-main">
-    <button
-      type="button"
-      class="sidebar-toggle"
-      [class.closed]="isSidebarClosed()"
-      aria-label="Toggle sidebar"
-      (click)="toggleSidebar()"
-    >
-      @if (isSidebarClosed()) {
+    @if (isSidebarClosed()) {
+      <button
+        type="button"
+        class="sidebar-toggle open-sidebar"
+        aria-label="Open sidebar"
+        (click)="toggleSidebar()"
+      >
         ☰
-      } @else {
-        ⋮
-      }
-    </button>
+      </button>
+    }
 
     <app-topbar></app-topbar>
 

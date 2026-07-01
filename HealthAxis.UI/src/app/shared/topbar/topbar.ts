@@ -8,7 +8,7 @@ import {
   signal
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth.service';
 
@@ -24,6 +24,7 @@ export class Topbar {
   readonly currentTime = signal(new Date());
   readonly isProfileMenuOpen = signal(false);
 
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly profileRoute = computed(() => {
@@ -34,7 +35,7 @@ export class Topbar {
     }
 
     if (role === 'Doctor') {
-      return '/doctor/dashboard';
+      return '/doctor/profile';
     }
 
     return '/login';
@@ -75,6 +76,19 @@ export class Topbar {
 
   toggleProfileMenu(): void {
     this.isProfileMenuOpen.update((isOpen) => !isOpen);
+  }
+
+  goToChangePassword(): void {
+    this.isProfileMenuOpen.set(false);
+
+    void this.router.navigateByUrl(`${this.profileRoute()}#change-password`).then(() => {
+      window.setTimeout(() => {
+        document.getElementById('change-password')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 150);
+    });
   }
 
   logout(): void {
