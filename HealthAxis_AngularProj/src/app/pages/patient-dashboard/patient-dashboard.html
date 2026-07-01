@@ -1,0 +1,746 @@
+<div class="patient-layout-page" [class.sidebar-collapsed]="sidebarCollapsed">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M24 10c-6 0-11 5-11 11 0 11 19 24 19 24s19-13 19-24c0-6-5-11-11-11-4 0-7 2-8 5-1-3-4-5-8-5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-linejoin="round" />
+          <path d="M18 32h8l4-9 6 18 4-9h7"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <div class="brand-text">
+        <h2>HealthAxis</h2>
+        <p>Patient Portal</p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="fold-toggle"
+      (click)="toggleSidebar()"
+      [title]="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      {{ sidebarCollapsed ? '›' : '‹' }}
+    </button>
+
+    <nav class="side-nav">
+
+      <button type="button" (click)="switchTab('overview')" [class.active]="activeTab === 'overview'">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Overview</span>
+      </button>
+
+      <button type="button" (click)="switchTab('profile')" [class.active]="activeTab === 'profile'">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </button>
+
+      <button type="button" (click)="switchTab('change-password')" [class.active]="activeTab === 'change-password'">
+        <span class="nav-icon">🔐</span>
+        <span class="nav-label">Change Password</span>
+      </button>
+
+      <button type="button" (click)="switchTab('find-doctor')" [class.active]="activeTab === 'find-doctor'">
+        <span class="nav-icon">🔎</span>
+        <span class="nav-label">Find Doctor</span>
+      </button>
+
+      <button type="button" (click)="switchTab('appointments')" [class.active]="activeTab === 'appointments'">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Appointments</span>
+      </button>
+
+      <button type="button" (click)="switchTab('records')" [class.active]="activeTab === 'records'">
+        <span class="nav-icon">🩺</span>
+        <span class="nav-label">Health Records</span>
+      </button>
+
+      <button type="button" (click)="switchTab('book')" [class.active]="activeTab === 'book'">
+        <span class="nav-icon">➕</span>
+        <span class="nav-label">Book Appointment</span>
+      </button>
+
+    </nav>
+
+    <button type="button" class="logout-btn" (click)="logout()">
+      <span class="nav-icon">↩</span>
+      <span class="nav-label">Logout</span>
+    </button>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- OVERVIEW -->
+    <section *ngIf="activeTab === 'overview'" class="content-section overview-section">
+
+      <div class="overview-hero" *ngIf="patient">
+
+        <div class="hero-content">
+          <p class="small-label">Welcome back</p>
+          <h1>{{ patient.patientName }}</h1>
+          <p>
+            Your health journey at a glance — manage appointments, records, profile updates,
+            and care access from one personalized dashboard.
+          </p>
+
+          <div class="hero-actions">
+            <button type="button" class="primary-btn" (click)="switchTab('book')">
+              Book Appointment
+            </button>
+
+            <button type="button" class="secondary-btn" (click)="switchTab('find-doctor')">
+              Find Doctor
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-profile-card">
+          <div class="profile-avatar">
+            {{ patient.patientName?.charAt(0) || 'P' }}
+          </div>
+
+          <div>
+            <h3>{{ patient.patientName }}</h3>
+            <p>{{ patient.email }}</p>
+          </div>
+
+          <div class="mini-profile-list">
+            <p>
+              <strong>Phone</strong>
+              <span>{{ patient.phoneNumber }}</span>
+            </p>
+
+            <p>
+              <strong>Gender</strong>
+              <span>{{ genderMap[patient?.gender] }}</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="quick-grid premium-stats">
+
+        <div class="quick-card">
+          <div class="quick-icon">📅</div>
+          <div>
+            <h3>{{ appointmentTotalCount || appointments.length }}</h3>
+            <p>Appointments</p>
+          </div>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-icon">🩺</div>
+          <div>
+            <h3>{{ recordTotalCount || records.length }}</h3>
+            <p>Health Records</p>
+          </div>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-icon">👨‍⚕️</div>
+          <div>
+            <h3>{{ doctorTotalCount || doctors.length }}</h3>
+            <p>Available Doctors</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="overview-grid enhanced-overview-grid">
+
+        <div class="info-card profile-overview-card" *ngIf="patient">
+          <div class="card-heading-row">
+            <div>
+              <p class="tiny-label">Profile</p>
+              <h3>Patient Summary</h3>
+            </div>
+
+            <button type="button" class="soft-icon-btn" (click)="switchTab('profile')">
+              →
+            </button>
+          </div>
+
+          <p>
+            <strong>Email</strong>
+            <span>{{ patient.email }}</span>
+          </p>
+
+          <p>
+            <strong>Phone</strong>
+            <span>{{ patient.phoneNumber }}</span>
+          </p>
+
+          <p>
+            <strong>Gender</strong>
+            <span>{{ genderMap[patient?.gender] }}</span>
+          </p>
+
+          <button type="button" class="secondary-btn" (click)="switchTab('profile')">
+            Manage Profile
+          </button>
+        </div>
+
+        <div class="info-card care-actions-card">
+          <div class="card-heading-row">
+            <div>
+              <p class="tiny-label">Care access</p>
+              <h3>Quick Actions</h3>
+            </div>
+          </div>
+
+          <div class="action-list">
+
+            <button type="button" (click)="switchTab('find-doctor')">
+              <span>🔎</span>
+              <div>
+                <strong>Find Doctor</strong>
+                <p>Explore available doctors by specialisation, fees, and experience.</p>
+              </div>
+            </button>
+
+            <button type="button" (click)="switchTab('book')">
+              <span>➕</span>
+              <div>
+                <strong>Book Appointment</strong>
+                <p>Schedule a consultation with an available doctor.</p>
+              </div>
+            </button>
+
+            <button type="button" (click)="switchTab('appointments')">
+              <span>📅</span>
+              <div>
+                <strong>View Appointments</strong>
+                <p>Track upcoming and previous appointments.</p>
+              </div>
+            </button>
+
+            <button type="button" (click)="switchTab('records')">
+              <span>🩺</span>
+              <div>
+                <strong>Health Records</strong>
+                <p>Review prescriptions, diagnosis, and visit history.</p>
+              </div>
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- PROFILE -->
+    <section *ngIf="activeTab === 'profile'" class="content-section">
+
+      <div class="section-header">
+        <p class="small-label">Patient Profile</p>
+        <h1>Profile</h1>
+        <p>View and manage your profile information.</p>
+      </div>
+
+      <div class="profile-toggle">
+        <button type="button" [class.active]="profileMode === 'view'" (click)="profileMode = 'view'">
+          View Profile
+        </button>
+
+        <button type="button" [class.active]="profileMode === 'edit'" (click)="editProfile()">
+          Edit Profile
+        </button>
+      </div>
+
+      <div class="profile-card" *ngIf="profileMode === 'view' && patient">
+        <p><strong>Name</strong><span>{{ patient.patientName }}</span></p>
+        <p><strong>Email</strong><span>{{ patient.email }}</span></p>
+        <p><strong>Phone</strong><span>{{ patient.phoneNumber }}</span></p>
+        <p><strong>Gender</strong><span>{{ genderMap[patient?.gender] }}</span></p>
+        <p><strong>Date of Birth</strong><span>{{ patient.dateOfBirth | date:'mediumDate' }}</span></p>
+      </div>
+
+      <form class="profile-form" *ngIf="profileMode === 'edit'" (ngSubmit)="saveProfile()">
+
+        <div class="field">
+          <label>Patient Name</label>
+          <input type="text" [(ngModel)]="editProfileData.patientName" name="patientName" />
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="editProfileData.email" name="email" readonly />
+        </div>
+
+        <div class="field">
+          <label>Date of Birth</label>
+          <input type="date" [(ngModel)]="editProfileData.dateOfBirth" name="dateOfBirth" />
+        </div>
+
+        <div class="field">
+          <label>Gender</label>
+          <select [(ngModel)]="editProfileData.gender" name="gender">
+            <option [value]="0">Male</option>
+            <option [value]="1">Female</option>
+            <option [value]="2">Transgender</option>
+            <option [value]="3">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="text" [(ngModel)]="editProfileData.phoneNumber" name="phoneNumber" />
+        </div>
+
+        <div class="error-box" *ngIf="profileError">
+          {{ profileError }}
+        </div>
+
+        <div class="success-box" *ngIf="profileSuccess">
+          {{ profileSuccess }}
+        </div>
+
+        <div class="button-row">
+          <button type="submit" class="primary-btn">Save Changes</button>
+          <button type="button" class="secondary-btn" (click)="cancelEditProfile()">Cancel</button>
+        </div>
+
+      </form>
+
+    </section>
+
+    <!-- CHANGE PASSWORD -->
+    <section *ngIf="activeTab === 'change-password'" class="content-section">
+
+      <div class="section-header">
+        <p class="small-label">Account Security</p>
+        <h1>Change Password</h1>
+        <p>Update your password to keep your HealthAxis account secure.</p>
+      </div>
+
+      <form class="password-form" (ngSubmit)="changePassword()">
+
+        <div class="field">
+          <label>Old Password</label>
+          <input
+            type="password"
+            [(ngModel)]="passwordData.oldPassword"
+            name="oldPassword"
+            placeholder="Enter old password"
+          />
+        </div>
+
+        <div class="field">
+          <label>New Password</label>
+          <input
+            type="password"
+            [(ngModel)]="passwordData.newPassword"
+            name="newPassword"
+            placeholder="Enter new password"
+          />
+        </div>
+
+        <div class="field">
+          <label>Confirm New Password</label>
+          <input
+            type="password"
+            [(ngModel)]="passwordData.confirmNewPassword"
+            name="confirmNewPassword"
+            placeholder="Confirm new password"
+          />
+        </div>
+
+        <div class="error-box" *ngIf="passwordError">
+          {{ passwordError }}
+        </div>
+
+        <div class="success-box" *ngIf="passwordSuccess">
+          {{ passwordSuccess }}
+        </div>
+
+        <button type="submit" class="primary-btn full">
+          Update Password
+        </button>
+
+      </form>
+
+    </section>
+
+    <!-- FIND DOCTOR -->
+    <section *ngIf="activeTab === 'find-doctor'" class="content-section">
+
+      <div class="section-header">
+        <p class="small-label">Find Doctor</p>
+        <h1>Available Doctors</h1>
+        <p>Search doctors by specialisation and view consultation details before booking.</p>
+      </div>
+
+      <div class="doctor-filter-bar">
+
+        <div class="field">
+          <label>Search Doctor</label>
+          <input
+            type="text"
+            [(ngModel)]="doctorSearch"
+            name="doctorSearch"
+            placeholder="Search by doctor name, email, or specialisation"
+            (input)="onDoctorSearchChange()"
+          />
+        </div>
+
+        <div class="field">
+          <label>Filter by Specialisation</label>
+          <select
+            [(ngModel)]="findDoctorSpecialisation"
+            name="findDoctorSpecialisation"
+            (change)="onFindSpecialisationChange()">
+            <option value="">All specialisations</option>
+            <option *ngFor="let s of specializationOptions" [value]="s.value">
+              {{ s.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Status</label>
+          <select
+            [(ngModel)]="doctorStatus"
+            name="doctorStatus"
+            (change)="onDoctorStatusChange()">
+            <option value="">All statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+
+        <button type="button" class="secondary-btn" (click)="clearDoctorFilters()">
+          Clear Filter
+        </button>
+
+      </div>
+
+      <div *ngIf="filteredDoctorsForFind.length === 0" class="empty-state">
+        <h3>No doctors found</h3>
+        <p>Try changing the search, status, or specialisation filter.</p>
+      </div>
+
+      <div class="doctor-card-grid" *ngIf="filteredDoctorsForFind.length > 0">
+
+        <article class="doctor-card" *ngFor="let d of filteredDoctorsForFind">
+
+          <div class="doctor-card-top">
+            <div class="doctor-avatar">
+              {{ d.doctorName?.charAt(0) || 'D' }}
+            </div>
+
+            <div>
+              <h3>{{ d.doctorName }}</h3>
+              <p>{{ getDoctorSpecialisationName(d) }}</p>
+            </div>
+          </div>
+
+          <div class="doctor-detail-list">
+            <p>
+              <strong>Email</strong>
+              <span>{{ d.email }}</span>
+            </p>
+
+            <p>
+              <strong>Experience</strong>
+              <span>{{ d.yearsOfExperience ?? 0 }} years</span>
+            </p>
+
+            <p>
+              <strong>Consultation Fee</strong>
+              <span>₹{{ d.consultationFee ?? 0 }}</span>
+            </p>
+
+            <p>
+              <strong>Status</strong>
+              <span
+                class="doctor-status"
+                [class.active-status]="getDoctorIsActive(d)"
+                [class.inactive-status]="!getDoctorIsActive(d)">
+                {{ getDoctorIsActive(d) ? 'Active' : 'Inactive' }}
+              </span>
+            </p>
+          </div>
+
+          <button type="button" class="primary-btn full" (click)="selectDoctorForBooking(d)">
+            Book Appointment
+          </button>
+
+        </article>
+
+      </div>
+
+      <div class="pagination" *ngIf="doctorTotalPages > 1">
+
+        <button
+          type="button"
+          (click)="goToDoctorPage(doctorPageNumber - 1)"
+          [disabled]="doctorPageNumber === 1">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          *ngFor="let page of getPaginationPages(doctorTotalPages)"
+          (click)="goToDoctorPage(page)"
+          [class.active]="page === doctorPageNumber">
+          {{ page }}
+        </button>
+
+        <button
+          type="button"
+          (click)="goToDoctorPage(doctorPageNumber + 1)"
+          [disabled]="doctorPageNumber === doctorTotalPages">
+          Next
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- APPOINTMENTS -->
+    <section *ngIf="activeTab === 'appointments'" class="content-section">
+
+      <div class="section-header">
+        <p class="small-label">Care schedule</p>
+        <h1>Your Appointments</h1>
+        <p>Track upcoming, confirmed, completed, or cancelled appointments.</p>
+      </div>
+
+      <div *ngIf="appointments.length === 0" class="empty-state">
+        <h3>No appointments yet</h3>
+        <p>Book your first appointment with a specialist.</p>
+
+        <button type="button" class="primary-btn" (click)="switchTab('book')">
+          Book Appointment
+        </button>
+      </div>
+
+      <div class="list-grid" *ngIf="appointments.length > 0">
+
+        <article class="appointment-card" *ngFor="let a of appointments">
+
+          <div class="card-top">
+            <div>
+              <h3>{{ a.doctorName || ('Doctor #' + a.doctorId) }}</h3>
+
+              <p>
+                {{ (a.scheduledDate || a.appointmentDate) | date:'mediumDate' }}
+                <span *ngIf="a.timeSlot"> at {{ a.timeSlot }}</span>
+              </p>
+            </div>
+
+            <span
+              class="status"
+              [ngClass]="{
+                'pending': statusMap[a.status] === 'Pending',
+                'confirmed': statusMap[a.status] === 'Confirmed',
+                'cancelled': statusMap[a.status] === 'Cancelled',
+                'completed': statusMap[a.status] === 'Completed'
+              }">
+              {{ statusMap[a.status] }}
+            </span>
+          </div>
+
+          <div class="appointment-details">
+            <p>
+              <strong>Doctor ID</strong>
+              <span>{{ a.doctorId }}</span>
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="danger-btn"
+            *ngIf="statusMap[a.status] !== 'Cancelled'"
+            (click)="cancelAppointment(a.appointmentId)">
+            Cancel Appointment
+          </button>
+
+        </article>
+
+      </div>
+
+      <div class="pagination" *ngIf="appointmentTotalPages > 1">
+
+        <button
+          type="button"
+          (click)="goToAppointmentPage(appointmentPageNumber - 1)"
+          [disabled]="appointmentPageNumber === 1">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          *ngFor="let page of getPaginationPages(appointmentTotalPages)"
+          (click)="goToAppointmentPage(page)"
+          [class.active]="page === appointmentPageNumber">
+          {{ page }}
+        </button>
+
+        <button
+          type="button"
+          (click)="goToAppointmentPage(appointmentPageNumber + 1)"
+          [disabled]="appointmentPageNumber === appointmentTotalPages">
+          Next
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- HEALTH RECORDS -->
+    <section *ngIf="activeTab === 'records'" class="content-section">
+
+      <div class="section-header">
+        <p class="small-label">Medical history</p>
+        <h1>Health Records</h1>
+        <p>View diagnosis, prescription, and visit history shared by your doctors.</p>
+      </div>
+
+      <div *ngIf="records.length === 0" class="empty-state">
+        <h3>No records found</h3>
+        <p>Your health records will appear here once added by a doctor.</p>
+      </div>
+
+      <div class="list-grid" *ngIf="records.length > 0">
+
+        <article class="record-card" *ngFor="let r of records">
+          <div class="record-icon">🩺</div>
+
+          <div>
+            <h3>{{ r.diagnosis }}</h3>
+            <p>{{ r.prescription }}</p>
+            <span>{{ (r.visitDate || r.date) | date:'mediumDate' }}</span>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="pagination" *ngIf="recordTotalPages > 1">
+
+        <button
+          type="button"
+          (click)="goToRecordPage(recordPageNumber - 1)"
+          [disabled]="recordPageNumber === 1">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          *ngFor="let page of getPaginationPages(recordTotalPages)"
+          (click)="goToRecordPage(page)"
+          [class.active]="page === recordPageNumber">
+          {{ page }}
+        </button>
+
+        <button
+          type="button"
+          (click)="goToRecordPage(recordPageNumber + 1)"
+          [disabled]="recordPageNumber === recordTotalPages">
+          Next
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- BOOK APPOINTMENT -->
+    <section *ngIf="activeTab === 'book'" class="content-section booking-layout">
+
+      <div class="booking-info">
+        <p class="small-label">Schedule care</p>
+        <h1>Book Appointment</h1>
+
+        <p>
+          Select a specialisation, choose a doctor, pick a preferred date,
+          and select an available time slot.
+        </p>
+
+        <div class="booking-note">
+          <strong>Note</strong>
+          <span>Your appointment will be created with Pending status until confirmed.</span>
+        </div>
+      </div>
+
+      <form class="booking-form" (ngSubmit)="bookAppointment()">
+
+        <div class="field">
+          <label>Specialisation</label>
+          <select
+            [(ngModel)]="bookingSpecialisation"
+            name="bookingSpecialisation"
+            (change)="onBookingSpecialisationChange()">
+            <option value="" disabled>Select specialisation</option>
+            <option *ngFor="let s of specializationOptions" [value]="s.value">
+              {{ s.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Doctor</label>
+          <select [(ngModel)]="bookingData.doctorId" name="doctorId">
+            <option value="" disabled>Select doctor</option>
+            <option *ngFor="let d of filteredBookingDoctors" [value]="d.doctorId">
+              {{ d.doctorName }} -
+              {{ getDoctorSpecialisationName(d) }} -
+              ₹{{ d.consultationFee ?? 0 }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Appointment Date</label>
+          <input
+            type="date"
+            [min]="todayDate"
+            [max]="maxBookingDate"
+            [(ngModel)]="bookingData.scheduledDate"
+            name="scheduledDate"
+          />
+        </div>
+
+        <div class="field">
+          <label>Time Slot</label>
+          <select [(ngModel)]="bookingData.timeSlot" name="timeSlot">
+            <option value="" disabled>Select time slot</option>
+            <option *ngFor="let slot of timeSlots" [value]="slot">
+              {{ slot }}
+            </option>
+          </select>
+        </div>
+
+        <div class="booking-error" *ngIf="bookingError">
+          {{ bookingError }}
+        </div>
+
+        <div class="booking-success" *ngIf="bookingSuccess">
+          {{ bookingSuccess }}
+        </div>
+
+        <button type="submit" class="primary-btn full">
+          Confirm Booking
+        </button>
+
+      </form>
+
+    </section>
+
+  </main>
+
+</div>

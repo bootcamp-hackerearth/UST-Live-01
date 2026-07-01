@@ -1,131 +1,22 @@
 ﻿@page "/admin/health-records"
-@attribute [Authorize(Roles = "Admin")]
 
-@using Microsoft.AspNetCore.Authorization
-@using HealthAxis.Shared.DTOs.HealthRecord
-@using HealthAxisAdminLayout.Services.Interfaces
+@inject NavigationManager Navigation
 
-@layout HealthAxisAdminLayout.Layout.AdminLayout
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Arial;background:#f7fbfa;">
+    <div style="text-align:center;padding:32px;border-radius:20px;background:white;box-shadow:0 20px 60px rgba(2,44,44,0.12);">
+        <h3 style="margin-bottom:8px;color:#0f3f39;">
+            Access not available
+        </h3>
 
-@inject IHealthRecordApiService HealthRecordService
-
-<h3 class="page-title">Health Records</h3>
-<p class="page-subtitle">View and manage patient health records</p>
-
-@if (!string.IsNullOrWhiteSpace(message))
-{
-    <div class="alert alert-info">
-        @message
+        <p style="color:#637a76;margin:0;">
+            Redirecting to admin dashboard...
+        </p>
     </div>
-}
-
-<div class="table-card">
-    @if (isLoading)
-    {
-        <p>Loading health records...</p>
-    }
-    else if (records.Count == 0)
-    {
-        <p>No health records found.</p>
-    }
-    else
-    {
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Record Id</th>
-                    <th>Patient Id</th>
-                    <th>Doctor Id</th>
-                    <th>Appointment Id</th>
-                    <th>Visit Date</th>
-                    <th>Diagnosis</th>
-                    <th>Prescription</th>
-                    <th>Notes</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach (var record in records)
-                {
-                    <tr>
-                        <td>@record.HealthRecordId</td>
-                        <td>@record.PatientId</td>
-                        <td>@(record.DoctorId?.ToString() ?? "-")</td>
-                        <td>@record.AppointmentId</td>
-                        <td>@record.VisitDate.ToString("dd-MMM-yyyy")</td>
-                        <td>@record.Diagnosis</td>
-                        <td>@record.Prescription</td>
-                        <td>@(record.Notes ?? "-")</td>
-                        <td>
-                            <button class="btn btn-sm btn-danger"
-                                    @onclick="@(() => DeleteHealthRecord(record.HealthRecordId))"
-                                    disabled="@isLoading">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    }
 </div>
 
 @code {
-    private List<HealthRecordResponseDTO> records = new();
-    private string message = string.Empty;
-    private bool isLoading = false;
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await LoadHealthRecords();
-    }
-
-    private async Task LoadHealthRecords()
-    {
-        isLoading = true;
-        message = string.Empty;
-
-        try
-        {
-            records = await HealthRecordService.GetHealthRecordsAsync();
-        }
-        catch
-        {
-            message = "Failed to load health records.";
-        }
-        finally
-        {
-            isLoading = false;
-        }
-    }
-
-    private async Task DeleteHealthRecord(int healthRecordId)
-    {
-        message = string.Empty;
-        isLoading = true;
-
-        try
-        {
-            var success = await HealthRecordService.DeleteHealthRecordAsync(healthRecordId);
-
-            if (success)
-            {
-                message = "Health record deleted successfully.";
-                await LoadHealthRecords();
-            }
-            else
-            {
-                message = "Failed to delete health record.";
-            }
-        }
-        catch
-        {
-            message = "Error occurred while deleting record.";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        Navigation.NavigateTo("/admin/dashboard", true);
     }
 }

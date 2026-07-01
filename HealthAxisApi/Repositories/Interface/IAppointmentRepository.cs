@@ -9,10 +9,16 @@ namespace HealthAxisCore_Api.Repositories
 
         Task<IEnumerable<Appointment>> GetByPatient(int patientId);
 
-        Task<IEnumerable<Appointment>> FilterAppointments(AppointmentStatus? status, DateTime? startDate, DateTime? endDate);
+        Task<IEnumerable<Appointment>> FilterAppointments(
+            AppointmentStatus? status,
+            DateTime? startDate,
+            DateTime? endDate
+        );
 
         Task CancelAppointment(int id, string reason);
 
         Task ConfirmAppointment(int id);
+
+        Task CompleteAppointment(int id);
     }
 }

@@ -10,26 +10,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using Microsoft.OpenApi.Models; // ✅ REQUIRED
+using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//  Add services to the container
+// Add services to the container
 builder.Services.AddControllers();
 
-//  Register DbContext
+// Register DbContext
 builder.Services.AddDbContext<HealthAppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
-//  Register Identity
+// Register Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<HealthAppDbContext>()
     .AddDefaultTokenProviders();
 
-//  Configure JWT Authentication
+// Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
@@ -55,31 +55,31 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-//  Register AutoMapper
+// Register AutoMapper
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<MappingProfile>();
 });
 
-//  Register Generic Repository
+// Register Generic Repository
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-//  Register Entity Repositories
+// Register Entity Repositories
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IHealthRecordRepository, HealthRecordRepository>();
 
-//  Register Services
+// Register Services
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IHealthRecordService, HealthRecordService>();
 
-//  AUTH SERVICE 
+// AUTH SERVICE
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// ✅ ✅ ✅ Swagger (UPDATED WITH JWT SUPPORT ONLY)
+// ✅ Swagger (UNCHANGED)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -90,7 +90,6 @@ builder.Services.AddSwaggerGen(options =>
         Description = "API for HealthAxis Healthcare System"
     });
 
-    // ✅ Enable JWT authentication in Swagger
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -117,22 +116,26 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-const string BlazorCorsPolicy = "BlazorCorsPolicy";
+/* ✅ ✅ ✅ UPDATED CORS (ONLY CHANGE) */
+const string CorsPolicy = "CorsPolicy";
 
-builder.Services.AddCors(options => {
-    options.AddPolicy(BlazorCorsPolicy, policy =>
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(CorsPolicy, policy =>
     {
-       policy.WithOrigins("https://localhost:7107")
-      .AllowAnyHeader()
-      .AllowAnyMethod()
-      .AllowCredentials();
-
+        policy.WithOrigins(
+                "http://localhost:4200",    // ✅ Angular
+                "https://localhost:7107"    // ✅ Blazor
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
 var app = builder.Build();
 
-//  ROLE SEEDER + ADMIN SEEDER
+// ROLE SEEDER + ADMIN SEEDER
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -142,7 +145,7 @@ using (var scope = app.Services.CreateScope())
     await AdminSeeder.SeedAdminAsync(userManager);
 }
 
-//  Middleware pipeline
+// Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -154,8 +157,8 @@ app.UseHttpsRedirection();
 // ✅ Global Exception Handler
 app.UseMiddleware<GlobalExceptionHandler>();
 
-app.UseCors(BlazorCorsPolicy);
-
+/* ✅ UPDATED USAGE */
+app.UseCors(CorsPolicy);
 
 app.UseAuthentication();
 app.UseAuthorization();

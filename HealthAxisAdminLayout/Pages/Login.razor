@@ -1,200 +1,26 @@
 ﻿@page "/login"
-@layout HealthAxisAdminLayout.Layout.EmptyLayout
+@using HealthAxisAdminLayout.Layout
+@layout EmptyLayout
 
-@using HealthAxis.Shared.DTOs.Auth
-@using HealthAxisAdminLayout.Services.Interfaces
-
-@inject IAuthService AuthService
 @inject NavigationManager Navigation
 
-<div class="login-container">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Arial;background:#f7fbfa;">
+    <div style="text-align:center;padding:32px;border-radius:20px;background:white;box-shadow:0 20px 60px rgba(2,44,44,0.12);">
+        <h3 style="margin-bottom:8px;color:#0f3f39;">
+            Redirecting to HealthAxis login...
+        </h3>
 
-    <div class="login-left green-theme">
-        <div class="login-overlay"></div>
-
-        <div class="login-left-content">
-            <div class="brand-chip">HealthAxis Admin Portal</div>
-
-            <h1>
-                Manage care <br />
-                operations with <span>clarity</span>
-            </h1>
-
-            <p>
-                Simplify healthcare management with a secure, powerful,
-                and intuitive admin dashboard.
-            </p>
-
-            <div class="feature-cards">
-                <div class="feature-box">
-                    <h4>Admin</h4>
-                    <p>Access control</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>Smart</h4>
-                    <p>Automation</p>
-                </div>
-
-                <div class="feature-box">
-                    <h4>Secure</h4>
-                    <p>JWT Auth</p>
-                </div>
-            </div>
-        </div>
+        <p style="color:#637a76;margin:0;">
+            Please sign in from the main HealthAxis portal.
+        </p>
     </div>
-
-    <div class="login-right">
-
-        <div class="login-card">
-
-            <h2>Welcome back</h2>
-            <p class="subtitle">Login to access your dashboard</p>
-
-            @if (!string.IsNullOrWhiteSpace(errorMessage))
-            {
-                <div class="alert alert-danger">
-                    @errorMessage
-                </div>
-            }
-
-            <div class="login-field">
-                <input placeholder="Email address"
-                       @bind="loginDto.Email" />
-            </div>
-
-            <div class="login-field password-field">
-                <input type="@passwordType"
-                       placeholder="Password"
-                       @bind="loginDto.Password" />
-
-                <button type="button"
-                        class="password-toggle"
-                        title="@passwordToggleTitle"
-                        @onclick="TogglePassword">
-
-                    @if (IsPasswordHidden)
-                    {
-                        <svg class="password-eye-icon"
-                             viewBox="0 0 24 24"
-                             fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 12C3.8 7.8 7.4 5.5 12 5.5C16.6 5.5 20.2 7.8 22 12C20.2 16.2 16.6 18.5 12 18.5C7.4 18.5 3.8 16.2 2 12Z"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round" />
-                            <circle cx="12"
-                                    cy="12"
-                                    r="3"
-                                    stroke="currentColor"
-                                    stroke-width="2" />
-                        </svg>
-                    }
-                    else
-                    {
-                        <svg class="password-eye-icon"
-                             viewBox="0 0 24 24"
-                             fill="none"
-                             xmlns="http://www.w3.org/2000/svg">
-                            <path d="M2 12C3.8 7.8 7.4 5.5 12 5.5C16.6 5.5 20.2 7.8 22 12C21.2 13.9 19.9 15.4 18.4 16.5"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round" />
-                            <path d="M14.1 14.1C13.6 14.6 12.9 15 12 15C10.3 15 9 13.7 9 12C9 11.1 9.4 10.4 9.9 9.9"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round" />
-                            <path d="M4 4L20 20"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round" />
-                            <path d="M9.5 5.9C10.3 5.6 11.1 5.5 12 5.5C16.6 5.5 20.2 7.8 22 12"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round" />
-                            <path d="M6.2 7.2C4.4 8.3 3 10 2 12C3.8 16.2 7.4 18.5 12 18.5C13.5 18.5 14.9 18.2 16.1 17.6"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round" />
-                        </svg>
-                    }
-
-                </button>
-            </div>
-
-            <button class="login-btn"
-                    @onclick="HandleLogin"
-                    disabled="@isLoading">
-
-                @if (isLoading)
-                {
-                    <span class="spinner"></span>
-                }
-                else
-                {
-                    <span>Sign in to Dashboard</span>
-                }
-
-            </button>
-
-        </div>
-
-    </div>
-
 </div>
 
 @code {
-    private LoginDTO loginDto = new();
-    private string errorMessage = string.Empty;
-    private bool isLoading = false;
-    private string passwordType = "password";
+    private const string AngularLoginUrl = "http://localhost:4200/login";
 
-    private bool IsPasswordHidden => passwordType == "password";
-
-    private string passwordToggleTitle => IsPasswordHidden
-        ? "Show password"
-        : "Hide password";
-
-    private void TogglePassword()
+    protected override void OnInitialized()
     {
-        passwordType = IsPasswordHidden ? "text" : "password";
-    }
-
-    private async Task HandleLogin()
-    {
-        errorMessage = string.Empty;
-        isLoading = true;
-
-        try
-        {
-            var result = await AuthService.LoginAsync(loginDto);
-
-            if (result == null)
-            {
-                errorMessage = "Invalid email or password";
-                return;
-            }
-
-            if (!string.Equals(result.Role, "Admin", StringComparison.OrdinalIgnoreCase))
-            {
-                errorMessage = "Access denied. Admins only.";
-                return;
-            }
-
-            Navigation.NavigateTo("/admin/dashboard", true);
-        }
-        catch
-        {
-            errorMessage = "Something went wrong. Please try again.";
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        Navigation.NavigateTo(AngularLoginUrl, true);
     }
 }

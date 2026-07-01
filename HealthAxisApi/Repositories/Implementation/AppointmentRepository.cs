@@ -28,7 +28,10 @@ namespace HealthAxisCore_Api.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Appointment>> FilterAppointments(AppointmentStatus? status, DateTime? startDate, DateTime? endDate)
+        public async Task<IEnumerable<Appointment>> FilterAppointments(
+            AppointmentStatus? status,
+            DateTime? startDate,
+            DateTime? endDate)
         {
             return await _context.Appointments
                 .Where(a =>
@@ -41,10 +44,12 @@ namespace HealthAxisCore_Api.Repositories
         public async Task CancelAppointment(int id, string reason)
         {
             var appt = await _context.Appointments.FindAsync(id);
+
             if (appt != null)
             {
                 appt.Status = AppointmentStatus.Cancelled;
                 appt.CancellationReason = reason;
+
                 await _context.SaveChangesAsync();
             }
         }
@@ -52,9 +57,23 @@ namespace HealthAxisCore_Api.Repositories
         public async Task ConfirmAppointment(int id)
         {
             var appt = await _context.Appointments.FindAsync(id);
+
             if (appt != null)
             {
                 appt.Status = AppointmentStatus.Confirmed;
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task CompleteAppointment(int id)
+        {
+            var appt = await _context.Appointments.FindAsync(id);
+
+            if (appt != null)
+            {
+                appt.Status = AppointmentStatus.Completed;
+
                 await _context.SaveChangesAsync();
             }
         }

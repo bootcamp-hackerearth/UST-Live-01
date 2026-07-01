@@ -1,0 +1,550 @@
+<div class="doctor-layout-page" [class.sidebar-collapsed]="sidebarCollapsed">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path
+            d="M24 10c-6 0-11 5-11 11 0 11 19 24 19 24s19-13 19-24c0-6-5-11-11-11-4 0-7 2-8 5-1-3-4-5-8-5Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="4"
+            stroke-linejoin="round" />
+          <path
+            d="M18 32h8l4-9 6 18 4-9h7"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <div class="brand-text">
+        <h2>HealthAxis</h2>
+        <p>Doctor Portal</p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="fold-toggle"
+      (click)="toggleSidebar()"
+      [title]="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
+      {{ sidebarCollapsed ? '›' : '‹' }}
+    </button>
+
+    <nav class="side-nav">
+
+      <button
+        type="button"
+        (click)="switchTab('overview')"
+        [class.active]="activeTab === 'overview'">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Overview</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="switchTab('appointments')"
+        [class.active]="activeTab === 'appointments'">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Appointments</span>
+      </button>
+
+      <button
+        type="button"
+        (click)="switchTab('patient')"
+        [class.active]="activeTab === 'patient'">
+        <span class="nav-icon">🩺</span>
+        <span class="nav-label">Patient Records</span>
+      </button>
+
+    </nav>
+
+    <button type="button" class="logout-btn" (click)="logout()">
+      <span class="nav-icon">↩</span>
+      <span class="nav-label">Logout</span>
+    </button>
+
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- GLOBAL ACTION MESSAGES -->
+    <div class="message-wrap" *ngIf="actionError || actionSuccess">
+      <div class="error-message" *ngIf="actionError">
+        {{ actionError }}
+      </div>
+
+      <div class="success-message" *ngIf="actionSuccess">
+        {{ actionSuccess }}
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section *ngIf="activeTab === 'overview'" class="content-section overview-section">
+
+      <div class="overview-hero" *ngIf="doctor">
+
+        <div class="hero-content">
+          <p class="small-label">Welcome doctor</p>
+          <h1>{{ doctor.doctorName }}</h1>
+          <p>
+            Review appointment requests, confirm consultations, complete appointments,
+            and create patient health records after consultation completion.
+          </p>
+
+          <div class="hero-actions">
+            <button type="button" class="primary-btn" (click)="switchTab('appointments')">
+              View Appointments
+            </button>
+
+            <button type="button" class="secondary-btn" (click)="switchTab('patient')">
+              Patient Records
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-profile-card">
+          <div class="profile-avatar">
+            {{ doctor.doctorName?.charAt(0) || 'D' }}
+          </div>
+
+          <div>
+            <h3>{{ doctor.doctorName }}</h3>
+            <p>{{ doctor.email }}</p>
+          </div>
+
+          <div class="mini-profile-list">
+            <p>
+              <strong>Specialisation</strong>
+              <span>{{ specializationMap[doctor.specialisation] || 'Doctor' }}</span>
+            </p>
+
+            <p>
+              <strong>Experience</strong>
+              <span>{{ doctor.yearsOfExperience ?? 0 }} years</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- STATS -->
+      <div class="quick-grid premium-stats">
+
+        <div class="quick-card">
+          <div class="quick-icon">📅</div>
+          <div>
+            <h3>{{ appointmentTotalCount || appointments.length }}</h3>
+            <p>Total Appointments</p>
+          </div>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-icon">⏳</div>
+          <div>
+            <h3>{{ pendingCount }}</h3>
+            <p>Pending This Page</p>
+          </div>
+        </div>
+
+        <div class="quick-card">
+          <div class="quick-icon">✅</div>
+          <div>
+            <h3>{{ confirmedCount }}</h3>
+            <p>Confirmed This Page</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- LOWER OVERVIEW CARDS -->
+      <div class="overview-grid enhanced-overview-grid">
+
+        <div class="info-card doctor-overview-card" *ngIf="doctor">
+
+          <div class="card-heading-row">
+            <div>
+              <p class="tiny-label">Profile</p>
+              <h3>Doctor Details</h3>
+            </div>
+
+            <span
+              class="doctor-status"
+              [class.active-status]="doctor.isActive"
+              [class.inactive-status]="!doctor.isActive">
+              {{ doctor.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+
+          <p>
+            <strong>Email</strong>
+            <span>{{ doctor.email }}</span>
+          </p>
+
+          <p>
+            <strong>Specialisation</strong>
+            <span>{{ specializationMap[doctor.specialisation] || 'Not specified' }}</span>
+          </p>
+
+          <p>
+            <strong>Experience</strong>
+            <span>{{ doctor.yearsOfExperience ?? 0 }} years</span>
+          </p>
+
+          <p>
+            <strong>Consultation Fee</strong>
+            <span>₹{{ doctor.consultationFee ?? 0 }}</span>
+          </p>
+
+        </div>
+
+        <div class="info-card care-actions-card">
+
+          <div class="card-heading-row">
+            <div>
+              <p class="tiny-label">Today’s work</p>
+              <h3>Quick Actions</h3>
+            </div>
+          </div>
+
+          <div class="action-list">
+
+            <button type="button" (click)="switchTab('appointments')">
+              <span>📅</span>
+              <div>
+                <strong>Review Appointments</strong>
+                <p>Confirm, complete, cancel, or view patient appointment requests.</p>
+              </div>
+            </button>
+
+            <button type="button" (click)="switchTab('patient')">
+              <span>🩺</span>
+              <div>
+                <strong>Patient Records</strong>
+                <p>Create health records only after appointments are completed.</p>
+              </div>
+            </button>
+
+            <button type="button" (click)="switchTab('appointments')">
+              <span>✅</span>
+              <div>
+                <strong>{{ appointmentTotalCount || appointments.length }} Total</strong>
+                <p>Manage all assigned patient appointments.</p>
+              </div>
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- APPOINTMENTS -->
+    <section *ngIf="activeTab === 'appointments'" class="content-section">
+
+      <div class="section-header">
+        <p class="small-label">Schedule</p>
+        <h1>Your Appointments</h1>
+        <p>Confirm appointment requests, mark consultations as completed, and manage patient care.</p>
+      </div>
+
+      <div class="empty-state" *ngIf="appointments.length === 0">
+        <h3>No appointments assigned</h3>
+        <p>Appointments booked by patients will appear here.</p>
+      </div>
+
+      <div class="list-grid" *ngIf="appointments.length > 0">
+
+        <article class="appointment-card" *ngFor="let a of appointments">
+
+          <div class="card-top">
+            <div>
+              <h3>{{ a.patientName || ('Patient #' + a.patientId) }}</h3>
+
+              <p>
+                {{ (a.scheduledDate || a.appointmentDate) | date:'mediumDate' }}
+                <span *ngIf="a.timeSlot"> at {{ a.timeSlot }}</span>
+              </p>
+            </div>
+
+            <span
+              class="status"
+              [ngClass]="{
+                'pending': statusMap[a.status] === 'Pending',
+                'confirmed': statusMap[a.status] === 'Confirmed',
+                'cancelled': statusMap[a.status] === 'Cancelled',
+                'completed': statusMap[a.status] === 'Completed'
+              }">
+              {{ statusMap[a.status] || 'Unknown' }}
+            </span>
+          </div>
+
+          <div class="appointment-details">
+            <p>
+              <strong>Patient ID</strong>
+              <span>{{ a.patientId }}</span>
+            </p>
+
+            <p>
+              <strong>Appointment ID</strong>
+              <span>{{ a.appointmentId }}</span>
+            </p>
+          </div>
+
+          <div class="button-row">
+
+            <button
+              type="button"
+              class="primary-btn"
+              *ngIf="canConfirmAppointment(a)"
+              (click)="confirmAppointment(a.appointmentId)">
+              Confirm
+            </button>
+
+            <button
+              type="button"
+              class="primary-btn"
+              *ngIf="canCompleteAppointment(a)"
+              (click)="completeAppointment(a.appointmentId)">
+              Complete
+            </button>
+
+            <button
+              type="button"
+              class="secondary-btn"
+              (click)="viewPatientDetails(a)">
+              View Patient
+            </button>
+
+            <button
+              type="button"
+              class="danger-btn"
+              *ngIf="canCancelAppointment(a)"
+              (click)="cancelAppointment(a.appointmentId)">
+              Cancel
+            </button>
+
+          </div>
+
+        </article>
+
+      </div>
+
+      <div class="pagination" *ngIf="appointmentTotalPages > 1">
+
+        <button
+          type="button"
+          (click)="goToAppointmentPage(appointmentPageNumber - 1)"
+          [disabled]="appointmentPageNumber === 1">
+          Previous
+        </button>
+
+        <button
+          type="button"
+          *ngFor="let page of getPaginationPages(appointmentTotalPages)"
+          (click)="goToAppointmentPage(page)"
+          [class.active]="page === appointmentPageNumber">
+          {{ page }}
+        </button>
+
+        <button
+          type="button"
+          (click)="goToAppointmentPage(appointmentPageNumber + 1)"
+          [disabled]="appointmentPageNumber === appointmentTotalPages">
+          Next
+        </button>
+
+      </div>
+
+    </section>
+
+    <!-- PATIENT RECORDS -->
+    <section *ngIf="activeTab === 'patient'" class="content-section patient-record-layout">
+
+      <!-- LEFT PATIENT DETAILS + RECORDS -->
+      <div class="patient-info">
+
+        <div class="section-header">
+          <p class="small-label">Patient details</p>
+          <h1>{{ selectedPatient?.patientName || 'Select an appointment' }}</h1>
+
+          <p *ngIf="!selectedPatient">
+            Choose an appointment and click “View Patient” to manage patient records.
+          </p>
+
+          <p *ngIf="selectedAppointment">
+            Appointment Status:
+            <strong>{{ getAppointmentStatus(selectedAppointment) }}</strong>
+          </p>
+        </div>
+
+        <div class="profile-card" *ngIf="selectedPatient">
+
+          <p>
+            <strong>Email</strong>
+            <span>{{ selectedPatient.email }}</span>
+          </p>
+
+          <p>
+            <strong>Phone</strong>
+            <span>{{ selectedPatient.phoneNumber }}</span>
+          </p>
+
+        </div>
+
+        <div class="records-list" *ngIf="patientRecords.length > 0">
+
+          <h3>Existing Records</h3>
+
+          <article class="record-card" *ngFor="let r of patientRecords">
+            <div class="record-icon">🩺</div>
+
+            <div>
+              <h4>{{ r.diagnosis }}</h4>
+              <p>{{ r.prescription }}</p>
+              <span>{{ (r.visitDate || r.date) | date:'mediumDate' }}</span>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="pagination" *ngIf="recordTotalPages > 1">
+
+          <button
+            type="button"
+            (click)="goToRecordPage(recordPageNumber - 1)"
+            [disabled]="recordPageNumber === 1">
+            Previous
+          </button>
+
+          <button
+            type="button"
+            *ngFor="let page of getPaginationPages(recordTotalPages)"
+            (click)="goToRecordPage(page)"
+            [class.active]="page === recordPageNumber">
+            {{ page }}
+          </button>
+
+          <button
+            type="button"
+            (click)="goToRecordPage(recordPageNumber + 1)"
+            [disabled]="recordPageNumber === recordTotalPages">
+            Next
+          </button>
+
+        </div>
+
+        <div class="empty-state small" *ngIf="selectedPatient && patientRecords.length === 0">
+          <h3>No records found</h3>
+          <p>This patient does not have health records yet.</p>
+        </div>
+
+      </div>
+
+      <!-- RIGHT CREATE HEALTH RECORD FORM - ONLY COMPLETED -->
+      <form
+        class="record-form"
+        *ngIf="selectedAppointment && canCreateHealthRecord()"
+        (ngSubmit)="createHealthRecord()">
+
+        <h3>Create Health Record</h3>
+
+        <div class="field">
+          <label>Visit Date</label>
+          <input
+            type="datetime-local"
+            [(ngModel)]="healthRecordForm.visitDate"
+            name="visitDate"
+          />
+        </div>
+
+        <div class="field">
+          <label>Diagnosis</label>
+          <input
+            type="text"
+            [(ngModel)]="healthRecordForm.diagnosis"
+            name="diagnosis"
+            placeholder="Enter diagnosis"
+          />
+        </div>
+
+        <div class="field">
+          <label>Prescription</label>
+          <input
+            type="text"
+            [(ngModel)]="healthRecordForm.prescription"
+            name="prescription"
+            placeholder="Enter prescription"
+          />
+        </div>
+
+        <div class="field">
+          <label>Notes</label>
+          <textarea
+            [(ngModel)]="healthRecordForm.notes"
+            name="notes"
+            placeholder="Additional notes">
+          </textarea>
+        </div>
+
+        <div class="error-message" *ngIf="recordError">
+          {{ recordError }}
+        </div>
+
+        <div class="success-message" *ngIf="recordSuccess">
+          {{ recordSuccess }}
+        </div>
+
+        <button type="submit" class="primary-btn full">
+          Save Health Record
+        </button>
+
+      </form>
+
+      <!-- LOCKED HEALTH RECORD STATE -->
+      <div
+        class="record-form empty-form-card"
+        *ngIf="selectedAppointment && !canCreateHealthRecord()">
+
+        <h3>Health Record Locked</h3>
+
+        <p>
+          Health record can be added only after this appointment is marked as completed.
+        </p>
+
+        <div class="appointment-details" style="margin-top: 18px;">
+          <p>
+            <strong>Current Status</strong>
+            <span>{{ getAppointmentStatus(selectedAppointment) }}</span>
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="primary-btn full"
+          *ngIf="canCompleteAppointment(selectedAppointment)"
+          (click)="completeAppointment(selectedAppointment.appointmentId)">
+          Complete Appointment
+        </button>
+
+      </div>
+
+      <!-- EMPTY FORM PLACEHOLDER -->
+      <div class="record-form empty-form-card" *ngIf="!selectedAppointment">
+        <h3>Create Health Record</h3>
+        <p>Select an appointment first, then click “View Patient” to create a record.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>

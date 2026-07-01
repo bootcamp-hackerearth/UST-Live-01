@@ -1,0 +1,172 @@
+<div class="register-page">
+
+  <section class="register-shell">
+
+    <button type="button" class="back-btn" (click)="goHome()">
+      ← Back to Home
+    </button>
+
+    <div class="brand-block">
+
+      <div class="brand-icon">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <path d="M24 10c-6 0-11 5-11 11 0 11 19 24 19 24s19-13 19-24c0-6-5-11-11-11-4 0-7 2-8 5-1-3-4-5-8-5Z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-linejoin="round" />
+          <path d="M18 32h8l4-9 6 18 4-9h7"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+      </div>
+
+      <span>HealthAxis</span>
+
+    </div>
+
+    <div class="register-card">
+
+      <div class="form-header">
+        <p class="small-label">Patient onboarding</p>
+        <h2>Create account</h2>
+        <p>Register to access appointments, records, and care services.</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="register()">
+
+        <div class="field">
+          <label>Email address</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="name@example.com"
+            [class.invalid]="email?.invalid && (email?.touched || submitted)"
+          />
+
+          <div class="error-text" *ngIf="email?.invalid && (email?.touched || submitted)">
+            <span *ngIf="email?.errors?.['required']">Email is required.</span>
+            <span *ngIf="email?.errors?.['email']">Enter a valid email address.</span>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Password</label>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="Create password"
+              [class.invalid]="password?.invalid && (password?.touched || submitted)"
+            />
+
+            <div class="error-text" *ngIf="password?.invalid && (password?.touched || submitted)">
+              <span *ngIf="password?.errors?.['required']">Password is required.</span>
+              <span *ngIf="password?.errors?.['minlength']">Password must be at least 6 characters.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Confirm password</label>
+            <input
+              type="password"
+              formControlName="confirmPassword"
+              placeholder="Confirm password"
+              [class.invalid]="
+                (confirmPassword?.invalid || registerForm.errors?.['passwordMismatch'])
+                && (confirmPassword?.touched || submitted)
+              "
+            />
+
+            <div
+              class="error-text"
+              *ngIf="
+                (confirmPassword?.invalid || registerForm.errors?.['passwordMismatch'])
+                && (confirmPassword?.touched || submitted)
+              ">
+              <span *ngIf="confirmPassword?.errors?.['required']">Confirm password is required.</span>
+              <span *ngIf="registerForm.errors?.['passwordMismatch']">Passwords do not match.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Patient name</label>
+          <input
+            type="text"
+            formControlName="patientName"
+            placeholder="Enter full name"
+            [class.invalid]="patientName?.invalid && (patientName?.touched || submitted)"
+          />
+
+          <div class="error-text" *ngIf="patientName?.invalid && (patientName?.touched || submitted)">
+            <span *ngIf="patientName?.errors?.['required']">Patient name is required.</span>
+            <span *ngIf="patientName?.errors?.['minlength']">Patient name must be at least 2 characters.</span>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field">
+            <label>Date of birth</label>
+            <input
+              type="date"
+              formControlName="dateOfBirth"
+              [class.invalid]="dateOfBirth?.invalid && (dateOfBirth?.touched || submitted)"
+            />
+
+            <div class="error-text" *ngIf="dateOfBirth?.invalid && (dateOfBirth?.touched || submitted)">
+              <span>Date of birth is required.</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Gender</label>
+            <select
+              formControlName="gender"
+              [class.invalid]="gender?.invalid && (gender?.touched || submitted)">
+              <option [value]="0">Male</option>
+              <option [value]="1">Female</option>
+              <option [value]="2">Transgender</option>
+              <option [value]="3">Other</option>
+            </select>
+
+            <div class="error-text" *ngIf="gender?.invalid && (gender?.touched || submitted)">
+              <span>Gender is required.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Phone number</label>
+          <input
+            type="text"
+            formControlName="phoneNumber"
+            placeholder="Enter 10 digit phone number"
+            [class.invalid]="phoneNumber?.invalid && (phoneNumber?.touched || submitted)"
+          />
+
+          <div class="error-text" *ngIf="phoneNumber?.invalid && (phoneNumber?.touched || submitted)">
+            <span *ngIf="phoneNumber?.errors?.['required']">Phone number is required.</span>
+            <span *ngIf="phoneNumber?.errors?.['pattern']">Enter a valid 10 digit phone number.</span>
+          </div>
+        </div>
+
+        <button type="submit" class="register-btn">
+          Create Account
+        </button>
+
+      </form>
+
+      <p class="login-line">
+        Already have an account?
+        <a routerLink="/login">Sign in</a>
+      </p>
+
+    </div>
+
+  </section>
+
+</div>

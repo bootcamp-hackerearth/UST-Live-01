@@ -7,7 +7,6 @@ using HealthAxisCore_Api.Models;
 using HealthAxisCore_Api.Repositories;
 using HealthAxisCore_Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace HealthAxisCore_Api.Services.Implementations
 {
@@ -16,7 +15,6 @@ namespace HealthAxisCore_Api.Services.Implementations
         private readonly IDoctorRepository _repository;
         private readonly IMapper _mapper;
         private readonly UserManager<ApplicationUser> _userManager;
-
 
         public DoctorService(
             IDoctorRepository repository,
@@ -29,11 +27,11 @@ namespace HealthAxisCore_Api.Services.Implementations
         }
 
         public async Task<PagedResponseDTO<DoctorResponseDTO>> GetPagedAsync(
-     int pageNumber,
-     int pageSize,
-     string? search,
-     string? specialisation,
-     string? status)
+            int pageNumber,
+            int pageSize,
+            string? search,
+            string? specialisation,
+            string? status)
         {
             if (pageNumber < 1)
             {
@@ -108,43 +106,42 @@ namespace HealthAxisCore_Api.Services.Implementations
                 TotalPages = totalPages
             };
         }
+
         public async Task<IEnumerable<DoctorResponseDTO>> GetAllAsync()
         {
             var doctors = await _repository.GetAllAsync();
+
             return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
         }
 
-        
         public async Task<DoctorResponseDTO?> GetByIdAsync(int id)
         {
             var doctor = await _repository.GetByIdAsync(id);
 
             if (doctor == null)
+            {
                 throw new EntityNotFoundException("Doctor not found");
+            }
 
             return _mapper.Map<DoctorResponseDTO>(doctor);
         }
 
-        
-        public async Task<DoctorResponseDTO> CreateAsync(CreateDoctorDTO dto)
+        public async Task<CreateDoctorResultDTO> CreateAsync(CreateDoctorDTO dto)
         {
-            
             var doctor = _mapper.Map<Doctor>(dto);
             doctor.CreatedDate = DateTime.Now;
 
             await _repository.AddAsync(doctor);
 
-            
             var tempPassword = "Temp@" + new Random().Next(1000, 9999);
 
-            
             var user = new ApplicationUser
             {
                 UserName = doctor.Email,
                 Email = doctor.Email,
                 Role = "Doctor",
                 ReferenceId = doctor.DoctorId,
-                IsFirstLogin = true, 
+                IsFirstLogin = true,
                 TemporaryPassword = tempPassword
             };
 
@@ -153,27 +150,35 @@ namespace HealthAxisCore_Api.Services.Implementations
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+
                 throw new BusinessRuleException(errors);
             }
 
-            
             await _userManager.AddToRoleAsync(user, "Doctor");
 
-            
             Console.WriteLine($"Doctor Temporary Password: {tempPassword}");
 
-            
-
-            return _mapper.Map<DoctorResponseDTO>(doctor);
+            return new CreateDoctorResultDTO
+            {
+                DoctorId = doctor.DoctorId,
+                DoctorName = doctor.DoctorName,
+                Specialisation = doctor.Specialisation,
+                YearsOfExperience = doctor.YearsOfExperience,
+                ConsultationFee = doctor.ConsultationFee,
+                IsActive = doctor.IsActive,
+                Email = doctor.Email,
+                TemporaryPassword = tempPassword
+            };
         }
 
-        
         public async Task<bool> UpdateAsync(int id, CreateDoctorDTO dto)
         {
             var doctor = await _repository.GetByIdAsync(id);
 
             if (doctor == null)
+            {
                 throw new EntityNotFoundException("Doctor not found");
+            }
 
             _mapper.Map(dto, doctor);
 
@@ -182,20 +187,20 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
-        
         public async Task<bool> DeleteAsync(int id)
         {
             var exists = await _repository.Exists(id);
 
             if (!exists)
+            {
                 throw new EntityNotFoundException("Doctor not found");
+            }
 
             await _repository.DeleteAsync(id);
 
             return true;
         }
 
-        
         public async Task<IEnumerable<DoctorResponseDTO>> FilterAsync(
             string? name,
             SpecialisationType? specialization,
@@ -206,13 +211,14 @@ namespace HealthAxisCore_Api.Services.Implementations
             return _mapper.Map<IEnumerable<DoctorResponseDTO>>(doctors);
         }
 
-        
         public async Task<bool> SetStatusAsync(int doctorId, bool status)
         {
             var doctor = await _repository.GetByIdAsync(doctorId);
 
             if (doctor == null)
+            {
                 throw new EntityNotFoundException("Doctor not found");
+            }
 
             await _repository.SetStatus(doctorId, status);
 

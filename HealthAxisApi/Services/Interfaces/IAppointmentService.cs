@@ -26,6 +26,8 @@ namespace HealthAxisCore_Api.Services.Interfaces
 
         Task<bool> ConfirmAsync(int id);
 
+        Task<bool> CompleteAsync(int id);
+
         Task<bool> CancelAsync(int id, string reason);
 
         Task<PagedResponseDTO<AppointmentResponseDTO>> GetPagedAsync(

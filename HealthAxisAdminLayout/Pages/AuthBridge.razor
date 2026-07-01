@@ -1,0 +1,91 @@
+﻿@page "/auth-bridge"
+@using HealthAxisAdminLayout.Layout
+@layout EmptyLayout
+
+@inject IJSRuntime JS
+@inject NavigationManager Navigation
+
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Segoe UI,Arial;background:#f7fbfa;">
+    <div style="text-align:center;padding:32px;border-radius:20px;background:white;box-shadow:0 20px 60px rgba(2,44,44,0.12);">
+        <h3 style="margin-bottom:8px;color:#0f3f39;">
+            Signing you in...
+        </h3>
+
+        <p style="color:#637a76;margin:0;">
+            Please wait while HealthAxis opens the admin dashboard.
+        </p>
+    </div>
+</div>
+
+@code {
+    private const string AngularLoginUrl = "http://localhost:4200/login";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var queryValues = ParseQueryString(uri.Query);
+
+        queryValues.TryGetValue("token", out var token);
+        queryValues.TryGetValue("email", out var email);
+        queryValues.TryGetValue("role", out var role);
+        queryValues.TryGetValue("referenceId", out var referenceId);
+        queryValues.TryGetValue("isFirstLogin", out var isFirstLogin);
+
+        if (string.IsNullOrWhiteSpace(token) ||
+            !string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            await ClearAdminStorageAsync();
+            Navigation.NavigateTo(AngularLoginUrl, true);
+            return;
+        }
+
+        await JS.InvokeVoidAsync("authLocalStorage.setItem", "token", token);
+        await JS.InvokeVoidAsync("authLocalStorage.setItem", "email", email ?? "");
+        await JS.InvokeVoidAsync("authLocalStorage.setItem", "role", role ?? "");
+        await JS.InvokeVoidAsync("authLocalStorage.setItem", "referenceId", referenceId ?? "");
+        await JS.InvokeVoidAsync("authLocalStorage.setItem", "isFirstLogin", isFirstLogin ?? "false");
+
+        Navigation.NavigateTo("/admin/dashboard", true);
+    }
+
+    private static Dictionary<string, string> ParseQueryString(string query)
+    {
+        var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return result;
+        }
+
+        if (query.StartsWith("?"))
+        {
+            query = query[1..];
+        }
+
+        var pairs = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var pair in pairs)
+        {
+            var parts = pair.Split('=', 2);
+
+            var key = Uri.UnescapeDataString(parts[0]);
+
+            var value = parts.Length > 1
+                ? Uri.UnescapeDataString(parts[1].Replace("+", " "))
+                : string.Empty;
+
+            result[key] = value;
+        }
+
+        return result;
+    }
+
+    private async Task ClearAdminStorageAsync()
+    {
+        await JS.InvokeVoidAsync("authLocalStorage.removeItem", "token");
+        await JS.InvokeVoidAsync("authLocalStorage.removeItem", "email");
+        await JS.InvokeVoidAsync("authLocalStorage.removeItem", "role");
+        await JS.InvokeVoidAsync("authLocalStorage.removeItem", "referenceId");
+        await JS.InvokeVoidAsync("authLocalStorage.removeItem", "isFirstLogin");
+    }
+}

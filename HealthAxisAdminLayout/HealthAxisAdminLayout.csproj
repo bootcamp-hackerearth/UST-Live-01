@@ -18,4 +18,8 @@
     <ProjectReference Include="..\HealthAxis_Shared\HealthAxis.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\Doctor\" />
+  </ItemGroup>
+
 </Project>

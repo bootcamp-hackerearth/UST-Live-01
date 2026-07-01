@@ -40,8 +40,6 @@
                 <span>Appointments</span>
             </NavLink>
 
-            
-
         </nav>
 
     </aside>
@@ -83,6 +81,8 @@
 </div>
 
 @code {
+    private const string AngularLoginUrl = "http://localhost:4200/login";
+
     private string adminEmail = "Admin";
 
     protected override async Task OnInitializedAsync()
@@ -93,6 +93,7 @@
     private async Task Logout()
     {
         await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/login", true);
+
+        Navigation.NavigateTo(AngularLoginUrl, true);
     }
 }

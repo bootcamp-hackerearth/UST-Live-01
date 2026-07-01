@@ -6,6 +6,7 @@
 @using HealthAxis.Shared.DTOs.Doctor
 @using HealthAxis.Shared.DTOs.Appointment
 @using HealthAxis.Shared.Enums
+
 @using HealthAxisAdminLayout.Services.Interfaces
 
 @layout HealthAxisAdminLayout.Layout.AdminLayout
@@ -32,6 +33,66 @@
     {
         <div class="@messageCssClass">
             @message
+        </div>
+    }
+
+    @if (showTempPasswordBox)
+    {
+        <div class="doctor-temp-password-card">
+
+            <div class="doctor-temp-password-header">
+                <div>
+                    <h3>Temporary Password Generated</h3>
+
+                    <p>
+                        Share these credentials with the doctor. This password is shown only after doctor creation.
+                    </p>
+                </div>
+
+                <button type="button"
+                        class="doctor-temp-close-btn"
+                        @onclick="CloseTempPasswordBox">
+                    ×
+                </button>
+            </div>
+
+            <div class="doctor-temp-details">
+
+                <div>
+                    <span>Doctor</span>
+                    <strong>@createdDoctorName</strong>
+                </div>
+
+                <div>
+                    <span>Email</span>
+                    <strong>@createdDoctorEmail</strong>
+                </div>
+
+                <div>
+                    <span>Temporary Password</span>
+                    <strong class="doctor-temp-password">@temporaryPassword</strong>
+                </div>
+
+            </div>
+
+            <div class="doctor-temp-actions">
+                <button type="button"
+                        class="doctor-copy-btn"
+                        @onclick="CopyTempPassword">
+                    Copy Password
+                </button>
+
+                <button type="button"
+                        class="doctor-copy-all-btn"
+                        @onclick="CopyDoctorCredentials">
+                    Copy Login Details
+                </button>
+            </div>
+
+            <div class="doctor-temp-warning">
+                Ask the doctor to login from the main HealthAxis portal and change the password on first login.
+            </div>
+
         </div>
     }
 
@@ -502,6 +563,14 @@
 
     private readonly int[] pageSizeOptions = new[] { 5, 10, 20 };
 
+    private string temporaryPassword = string.Empty;
+
+    private string createdDoctorEmail = string.Empty;
+
+    private string createdDoctorName = string.Empty;
+
+    private bool showTempPasswordBox = false;
+
     private int TotalDoctors => totalCount;
 
     private int ActiveDoctors => doctors.Count(d => d.IsActive);
@@ -614,6 +683,7 @@
         ResetForm();
         showForm = true;
         message = string.Empty;
+        validationErrors.Clear();
     }
 
     private void StartEdit(DoctorResponseDTO doctor)
@@ -657,40 +727,120 @@
         isLoading = true;
         message = string.Empty;
 
+        temporaryPassword = string.Empty;
+        createdDoctorEmail = string.Empty;
+        createdDoctorName = string.Empty;
+        showTempPasswordBox = false;
+
         try
         {
-            bool success;
-
             if (isEditMode)
             {
-                success = await DoctorService.UpdateDoctorAsync(editingDoctorId, doctorForm);
-            }
-            else
-            {
-                success = await DoctorService.CreateDoctorAsync(doctorForm);
-            }
+                var success = await DoctorService.UpdateDoctorAsync(editingDoctorId, doctorForm);
 
-            if (success)
-            {
-                SetSuccessMessage(isEditMode ? "Doctor updated successfully." : "Doctor created successfully.");
-                ResetForm();
-                showForm = false;
-                currentPage = 1;
-                await LoadDoctors();
+                if (success)
+                {
+                    SetSuccessMessage("Doctor updated successfully.");
+
+                    ResetForm();
+                    showForm = false;
+                    currentPage = 1;
+
+                    await LoadDoctors();
+                }
+                else
+                {
+                    SetErrorMessage("Failed to update doctor.");
+                }
             }
             else
             {
-                SetErrorMessage(isEditMode ? "Failed to update doctor." : "Failed to create doctor.");
+                var createdDoctor = await DoctorService.CreateDoctorAsync(doctorForm);
+
+                if (createdDoctor != null)
+                {
+                    temporaryPassword = createdDoctor.DisplayTemporaryPassword ?? string.Empty;
+                    createdDoctorEmail = createdDoctor.Email ?? doctorForm.Email;
+                    createdDoctorName = createdDoctor.DoctorName ?? doctorForm.DoctorName;
+
+                    showTempPasswordBox = !string.IsNullOrWhiteSpace(temporaryPassword);
+
+                    if (showTempPasswordBox)
+                    {
+                        SetSuccessMessage("Doctor created successfully. Share the temporary password with the doctor.");
+                    }
+                    else
+                    {
+                        SetSuccessMessage("Doctor created successfully, but temporary password was not returned by backend.");
+                    }
+
+                    ResetForm();
+                    showForm = false;
+                    currentPage = 1;
+
+                    await LoadDoctors();
+                }
+                else
+                {
+                    SetErrorMessage("Failed to create doctor.");
+                }
             }
         }
         catch
         {
-            SetErrorMessage(isEditMode ? "Error occurred while updating doctor." : "Error occurred while creating doctor.");
+            SetErrorMessage(
+                isEditMode
+                    ? "Error occurred while updating doctor."
+                    : "Error occurred while creating doctor."
+            );
         }
         finally
         {
             isLoading = false;
         }
+    }
+
+    private void CloseTempPasswordBox()
+    {
+        showTempPasswordBox = false;
+        temporaryPassword = string.Empty;
+        createdDoctorEmail = string.Empty;
+        createdDoctorName = string.Empty;
+    }
+
+    private async Task CopyTempPassword()
+    {
+        if (string.IsNullOrWhiteSpace(temporaryPassword))
+        {
+            SetErrorMessage("Temporary password is not available.");
+            return;
+        }
+
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", temporaryPassword);
+
+        SetSuccessMessage("Temporary password copied.");
+    }
+
+    private async Task CopyDoctorCredentials()
+    {
+        if (string.IsNullOrWhiteSpace(createdDoctorEmail) ||
+            string.IsNullOrWhiteSpace(temporaryPassword))
+        {
+            SetErrorMessage("Doctor login details are not available.");
+            return;
+        }
+
+        var loginDetails =
+            $"HealthAxis Doctor Login\n" +
+            $"Doctor: {createdDoctorName}\n" +
+            $"Email: {createdDoctorEmail}\n" +
+            $"Temporary Password: {temporaryPassword}\n" +
+            $"Login URL: http://localhost:4200/login\n" +
+            $"Please change your password after first login.";
+
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", loginDetails);
+
+        SetSuccessMessage("Doctor login details copied.");
     }
 
     private async Task ToggleStatus(DoctorResponseDTO doctor)

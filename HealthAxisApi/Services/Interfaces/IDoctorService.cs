@@ -10,7 +10,7 @@ namespace HealthAxisCore_Api.Services.Interfaces
 
         Task<DoctorResponseDTO?> GetByIdAsync(int id);
 
-        Task<DoctorResponseDTO> CreateAsync(CreateDoctorDTO dto);
+        Task<CreateDoctorResultDTO> CreateAsync(CreateDoctorDTO dto);
 
         Task<bool> UpdateAsync(int id, CreateDoctorDTO dto);
 

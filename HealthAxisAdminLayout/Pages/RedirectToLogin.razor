@@ -1,8 +1,12 @@
-﻿@inject NavigationManager Navigation
+﻿@using Microsoft.AspNetCore.Components
+@using HealthAxisAdminLayout.Pages
+@inject NavigationManager Navigation
 
 @code {
+    private const string AngularLoginUrl = "http://localhost:4200/login";
+
     protected override void OnInitialized()
     {
-        Navigation.NavigateTo("/login", true);
+        Navigation.NavigateTo(AngularLoginUrl, true);
     }
 }

@@ -1,0 +1,28 @@
+<div class="modal-backdrop" *ngIf="confirmService.visible">
+
+  <div class="confirm-card" [ngClass]="confirmService.type">
+
+    <div class="confirm-icon">
+      <span *ngIf="confirmService.type === 'default'">?</span>
+      <span *ngIf="confirmService.type === 'danger'">!</span>
+      <span *ngIf="confirmService.type === 'success'">✓</span>
+    </div>
+
+    <div class="confirm-content">
+      <h2>{{ confirmService.title }}</h2>
+      <p>{{ confirmService.message }}</p>
+    </div>
+
+    <div class="confirm-actions">
+      <button type="button" class="cancel-btn" (click)="reject()">
+        {{ confirmService.cancelText }}
+      </button>
+
+      <button type="button" class="confirm-btn" (click)="accept()">
+        {{ confirmService.confirmText }}
+      </button>
+    </div>
+
+  </div>
+
+</div>

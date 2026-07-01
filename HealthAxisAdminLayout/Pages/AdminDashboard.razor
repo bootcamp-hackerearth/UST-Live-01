@@ -83,12 +83,12 @@
             </div>
 
             <div class="hx-stat-card hx-orange">
-                <div class="hx-stat-icon">□</div>
+                <div class="hx-stat-icon">✓</div>
 
                 <div>
-                    <span>Health Records</span>
-                    <h2>@dashboard.TotalHealthRecords</h2>
-                    <p>Medical records available</p>
+                    <span>Active Doctors</span>
+                    <h2>@dashboard.ActiveDoctors</h2>
+                    <p>Currently active doctor profiles</p>
                 </div>
             </div>
 
@@ -157,7 +157,7 @@
 
                     <div>
                         <strong>Manage Patients</strong>
-                        <p>View registered patient details and records.</p>
+                        <p>View registered patient details and profiles.</p>
                     </div>
                 </button>
 
@@ -167,15 +167,6 @@
                     <div>
                         <strong>View Appointments</strong>
                         <p>Review appointment schedules and appointment status.</p>
-                    </div>
-                </button>
-
-                <button class="hx-action-row" @onclick="GoToHealthRecords">
-                    <span class="hx-action-icon">□</span>
-
-                    <div>
-                        <strong>Health Records</strong>
-                        <p>Manage patient health record information.</p>
                     </div>
                 </button>
 
@@ -228,10 +219,5 @@
     private void GoToAppointments()
     {
         Navigation.NavigateTo("/admin/appointments");
-    }
-
-    private void GoToHealthRecords()
-    {
-        Navigation.NavigateTo("/admin/health-records");
     }
 }

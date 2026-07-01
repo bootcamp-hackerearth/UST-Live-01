@@ -1,5 +1,6 @@
 ﻿using HealthAxis.Shared.DTOs.Common;
 using HealthAxis.Shared.DTOs.Doctor;
+
 using HealthAxisAdminLayout.Services.Interfaces;
 using System.Net.Http.Json;
 
@@ -20,18 +21,19 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
             return result ?? new List<DoctorResponseDTO>();
         }
+
         public async Task<PagedResponseDTO<DoctorResponseDTO>> GetDoctorsPagedAsync(
-    int pageNumber,
-    int pageSize,
-    string? search,
-    string? specialisation,
-    string? status)
+            int pageNumber,
+            int pageSize,
+            string? search,
+            string? specialisation,
+            string? status)
         {
             var query = new List<string>
-    {
-        $"pageNumber={pageNumber}",
-        $"pageSize={pageSize}"
-    };
+            {
+                $"pageNumber={pageNumber}",
+                $"pageSize={pageSize}"
+            };
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -54,16 +56,24 @@ namespace HealthAxisAdminLayout.Services.Implementations
 
             return result ?? new PagedResponseDTO<DoctorResponseDTO>();
         }
+
         public async Task<DoctorResponseDTO?> GetDoctorByIdAsync(int id)
         {
             return await _http.GetFromJsonAsync<DoctorResponseDTO>($"api/doctor/{id}");
         }
 
-        public async Task<bool> CreateDoctorAsync(CreateDoctorDTO dto)
+        public async Task<CreateDoctorResultDTO?> CreateDoctorAsync(CreateDoctorDTO dto)
         {
             var response = await _http.PostAsJsonAsync("api/doctor", dto);
 
-            return response.IsSuccessStatusCode;
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var result = await response.Content.ReadFromJsonAsync<CreateDoctorResultDTO>();
+
+            return result;
         }
 
         public async Task<bool> UpdateDoctorAsync(int id, CreateDoctorDTO dto)
