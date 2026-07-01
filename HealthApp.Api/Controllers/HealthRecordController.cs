@@ -205,6 +205,26 @@ namespace HealthApp.Api.Controllers
             return Ok(exists);
         }
 
+        [HttpGet("~/api/appointments/{id:int}/healthrecord/details")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetHealthRecordByAppointmentId(int id)
+        {
+            var loggedInDoctorId = User.GetDoctorId();
+
+            if (loggedInDoctorId == null)
+            {
+                throw new ForbiddenAccessException(DoctorProfileNotLinkedMessage);
+            }
+
+            await EnsureDoctorOwnsAppointmentAsync(
+                loggedInDoctorId.Value,
+                id);
+
+            var record = await _healthRecordService.GetByAppointmentIdAsync(id);
+
+            return Ok(record);
+        }
+
         private async Task EnsureDoctorOwnsAppointmentAsync(int doctorId, int appointmentId)
         {
             var appointment = await _appointmentService.GetAppointmentByIdAsync(appointmentId);

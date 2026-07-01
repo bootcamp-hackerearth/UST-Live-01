@@ -1,5 +1,7 @@
 ﻿@inject IAuthService AuthService
+@inject ITokenService TokenService
 @inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
 
 <AuthorizeView Roles="Admin">
     <Authorized>
@@ -141,8 +143,22 @@
     {
         showLogoutConfirm = false;
 
-        await AuthService.Logout();
+        await TokenService.RemoveToken();
 
-        NavigationManager.NavigateTo("/login", true);
+        NavigationManager.NavigateTo(
+            "https://localhost:4200/login",
+            forceLoad: true);
+    }
+
+    private string GetAngularLoginUrl()
+    {
+        var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(angularBaseUrl))
+        {
+            angularBaseUrl = "https://localhost:4200";
+        }
+
+        return $"{angularBaseUrl}/login";
     }
 }

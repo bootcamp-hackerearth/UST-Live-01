@@ -16,5 +16,7 @@ namespace HealthApp.Api.Services.Interfaces
         Task<IEnumerable<HealthRecordDto>> GetByPatientIdAsync(int patientId);
 
         Task<bool> ExistsByAppointmentIdAsync(int appointmentId);
+
+        Task<HealthRecordDto> GetByAppointmentIdAsync(int appointmentId);
     }
 }

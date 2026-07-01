@@ -1,4 +1,8 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using HealthApp.AdminPortal.Services
+@using HealthApp.AdminPortal.Services.Interface
+
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
 @inject INotificationService NotificationService
 @inject AuthRedirectState AuthRedirectState
 
@@ -12,6 +16,15 @@
             NotificationService.Warning(message);
         }
 
-        NavigationManager.NavigateTo("/login");
+        var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(angularBaseUrl))
+        {
+            angularBaseUrl = "https://localhost:4200";
+        }
+
+        NavigationManager.NavigateTo(
+            $"{angularBaseUrl}/login",
+            forceLoad: true);
     }
 }

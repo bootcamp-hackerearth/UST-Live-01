@@ -39,5 +39,26 @@ namespace HealthApp.Api.Controllers
 
             return Ok(doctor);
         }
+
+        [HttpPatch("status")]
+        public async Task<IActionResult> ChangeMyStatus([FromQuery] bool isActive)
+        {
+            var doctorId = User.GetDoctorId();
+
+            if (doctorId == null)
+            {
+                throw new ForbiddenAccessException(
+                    "Doctor profile is not linked to this user.");
+            }
+
+            await _doctorService.ChangeStatusAsync(doctorId.Value, isActive);
+
+            return Ok(new
+            {
+                message = isActive
+                    ? "You are now available for appointments."
+                    : "You are now unavailable for appointments."
+            });
+        }
     }
 }

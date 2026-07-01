@@ -4,6 +4,7 @@
 @inject ITokenService TokenService
 @inject IAuthService AuthService
 @inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
 
 <PageTitle>My Profile - HealthApp Admin</PageTitle>
 
@@ -218,8 +219,23 @@ else
         showLogoutConfirm = false;
 
         await AuthService.Logout();
+        await TokenService.RemoveToken();
 
-        NavigationManager.NavigateTo("/login", true);
+        NavigationManager.NavigateTo(
+            GetAngularLoginUrl(),
+            forceLoad: true);
+    }
+
+    private string GetAngularLoginUrl()
+    {
+        var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(angularBaseUrl))
+        {
+            angularBaseUrl = "https://localhost:4200";
+        }
+
+        return $"{angularBaseUrl}/login";
     }
 
     private sealed class ProfileModel

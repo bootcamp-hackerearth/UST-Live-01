@@ -285,5 +285,29 @@ namespace HealthApp.Api.Services.Impl
                     record.AppointmentId.Value);
             }
         }
+        public async Task<HealthRecordDto> GetByAppointmentIdAsync(int appointmentId)
+        {
+            if (appointmentId <= 0)
+            {
+                throw new InvalidRequestException("Valid appointment is required.");
+            }
+
+            var records = await _healthRecordRepository.GetHealthRecordsAsync(
+                null,
+                appointmentId);
+
+            var record = records.FirstOrDefault();
+
+            if (record == null)
+            {
+                throw new EntityNotFoundException(
+                    "Health record for appointment",
+                    appointmentId);
+            }
+
+            await LoadHealthRecordNavigationDataAsync(record);
+
+            return _mapper.Map<HealthRecordDto>(record);
+        }
     }
 }

@@ -1,135 +1,149 @@
-﻿@page "/"
-@page "/login"
-@layout EmptyLayout
+﻿@page "/login"
 
-@using HealthApp.Shared.Dtos
+@using Microsoft.AspNetCore.Components.Authorization
+@using HealthApp.AdminPortal.Auth
+@using HealthApp.AdminPortal.Services.Interface
 
 @inject NavigationManager NavigationManager
-@inject IAuthService AuthService
+@inject IConfiguration Configuration
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ITokenService TokenService
 
-<PageTitle>Login - HealthApp Admin</PageTitle>
-
-<div class="login-page">
-    <div class="login-card row g-0 shadow-lg overflow-hidden">
-
-        <div class="col-md-6 d-none d-md-flex flex-column justify-content-center align-items-center text-white p-5 login-left-panel">
-            <div class="text-center">
-                <i class="bi bi-heart-pulse-fill login-icon"></i>
-
-                <h1 class="fw-bold mt-4 mb-3 text-center">
-                    HealthApp Admin
-                </h1>
-
-                <p class="lead mb-2 text-center">
-                    Admin Portal
-                </p>
-
-                <p class="text-white-50 mb-0 text-center">
-                    Manage doctors, patients, appointments and reports.
-                </p>
-            </div>
+<div class="admin-login-bridge-page">
+    <div class="admin-login-bridge-card">
+        <div class="admin-login-bridge-icon">
+            <i class="bi bi-shield-lock"></i>
         </div>
 
-        <div class="col-md-6 d-flex align-items-center">
-            <div class="login-form-wrapper w-100">
+        <h3>@TitleText</h3>
 
-                <div class="mb-4">
-                    <div class="top-nav-brand-icon mb-3">
-                        <i class="bi bi-shield-lock"></i>
-                    </div>
+        <p>@MessageText</p>
 
-                    <h3 class="fw-bold mb-1">
-                        Welcome Back
-                    </h3>
-
-                    <p class="text-muted mb-0">
-                        Login to your admin account.
-                    </p>
-                </div>
-
-                @if (!string.IsNullOrWhiteSpace(ErrorMessage))
-                {
-                    <div class="alert alert-danger rounded-4 border-0 fw-semibold mb-4">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        @ErrorMessage
-                    </div>
-                }
-
-                <EditForm Model="@LoginModel" OnValidSubmit="HandleLogin">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
-
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">
-                            Email
-                        </label>
-
-                        <InputText class="form-control form-control-lg"
-                                   placeholder="Enter your email"
-                                   @bind-Value="LoginModel.Email" />
-
-                        <ValidationMessage For="@(() => LoginModel.Email)" />
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-semibold">
-                            Password
-                        </label>
-
-                        <InputText type="password"
-                                   class="form-control form-control-lg"
-                                   placeholder="Enter your password"
-                                   @bind-Value="LoginModel.Password" />
-
-                        <ValidationMessage For="@(() => LoginModel.Password)" />
-                    </div>
-
-                    <button type="submit"
-                            class="btn btn-health btn-lg w-100 rounded-pill"
-                            disabled="@isLoading">
-
-                        @if (isLoading)
-                        {
-                            <span class="spinner-border spinner-border-sm me-2"></span>
-                            <span>Logging in...</span>
-                        }
-                        else
-                        {
-                            <i class="bi bi-box-arrow-in-right me-2"></i>
-                            <span>Login</span>
-                        }
-                    </button>
-                </EditForm>
-
+        @if (!string.IsNullOrWhiteSpace(ErrorText))
+        {
+            <div class="alert alert-danger mt-3" role="alert">
+                @ErrorText
             </div>
-        </div>
-
+        }
     </div>
 </div>
 
 @code {
-    private readonly LoginDto LoginModel = new();
+    private bool _hasProcessedToken;
 
-    private string? ErrorMessage;
-    private bool isLoading = false;
+    private string TitleText { get; set; } = "Signing you in...";
 
-    private async Task HandleLogin()
+    private string MessageText { get; set; } =
+        "Please wait while we securely connect your admin session.";
+
+    private string ErrorText { get; set; } = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        isLoading = true;
-        ErrorMessage = null;
-
-        var result = await AuthService.Login(LoginModel);
-
-        isLoading = false;
-
-        if (result.IsSuccess)
+        if (!firstRender || _hasProcessedToken)
         {
-            LoginModel.Password = string.Empty;
-            NavigationManager.NavigateTo("/dashboard");
+            return;
         }
-        else
+
+        _hasProcessedToken = true;
+
+        await ProcessTokenLoginAsync();
+    }
+
+    private async Task ProcessTokenLoginAsync()
+    {
+        try
         {
-            ErrorMessage = result.Message;
+            var token = GetTokenFromQuery();
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                RedirectToAngularLogin();
+                return;
+            }
+
+            await TokenService.SetToken(token);
+
+            if (AuthenticationStateProvider is CustomAuthStateProvider customAuthProvider)
+            {
+                customAuthProvider.NotifyUserAuthentication(token);
+            }
+            else
+            {
+                TitleText = "Authentication provider error";
+                MessageText = "The admin portal authentication provider is not configured correctly.";
+                ErrorText = "AuthenticationStateProvider could not be converted to CustomAuthStateProvider.";
+                StateHasChanged();
+                return;
+            }
+
+            TitleText = "Login successful";
+            MessageText = "Redirecting to admin dashboard...";
+            StateHasChanged();
+
+            NavigationManager.NavigateTo("/dashboard", forceLoad: true);
         }
+        catch (Exception ex)
+        {
+            TitleText = "Login failed";
+            MessageText = "Unable to complete admin login. Please login again from HealthApp.";
+            ErrorText = ex.Message;
+            StateHasChanged();
+        }
+    }
+
+    private string? GetTokenFromQuery()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = uri.Query;
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return null;
+        }
+
+        if (query.StartsWith("?"))
+        {
+            query = query[1..];
+        }
+
+        var queryParts = query.Split(
+            '&',
+            StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var part in queryParts)
+        {
+            var keyValue = part.Split('=', 2);
+
+            if (keyValue.Length != 2)
+            {
+                continue;
+            }
+
+            var key = Uri.UnescapeDataString(keyValue[0]);
+
+            if (!string.Equals(key, "token", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            return Uri.UnescapeDataString(keyValue[1]);
+        }
+
+        return null;
+    }
+
+    private void RedirectToAngularLogin()
+    {
+        var angularBaseUrl = Configuration["AngularApp:BaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(angularBaseUrl))
+        {
+            angularBaseUrl = "https://localhost:4200";
+        }
+
+        NavigationManager.NavigateTo(
+            $"{angularBaseUrl}/login",
+            forceLoad: true);
     }
 }

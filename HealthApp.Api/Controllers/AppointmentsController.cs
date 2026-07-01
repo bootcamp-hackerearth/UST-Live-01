@@ -256,10 +256,10 @@ namespace HealthApp.Api.Controllers
         }
 
         [HttpPost("{id:int}/cancel")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> CancelAppointment(
-            int id,
-            [FromBody] CancelAppointmentDto dto)
+    int id,
+    [FromBody] CancelAppointmentDto dto)
         {
             var appointment = await _appointmentService.GetAppointmentByIdAsync(id);
 
@@ -276,6 +276,22 @@ namespace HealthApp.Api.Controllers
                 {
                     throw new ForbiddenAccessException(
                         "You cannot cancel another patient's appointment.");
+                }
+            }
+
+            if (User.IsDoctor())
+            {
+                var loggedInDoctorId = User.GetDoctorId();
+
+                if (loggedInDoctorId == null)
+                {
+                    throw new ForbiddenAccessException(DoctorNotLinked);
+                }
+
+                if (appointment.DoctorId != loggedInDoctorId.Value)
+                {
+                    throw new ForbiddenAccessException(
+                        "You cannot cancel another doctor's appointment.");
                 }
             }
 
