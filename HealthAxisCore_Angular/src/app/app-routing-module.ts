@@ -1,25 +1,33 @@
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { Home } from './pages/home/home';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
+import { Forbidden } from './pages/forbidden/forbidden';
 
-import { PatientLayout } from './pages/patient/patient-layout/patient-layout'
+import { PatientLayout } from './pages/patient/patient-layout/patient-layout';
 import { PatientDashboard } from './pages/patient/patient-dashboard/patient-dashboard';
 import { PatientProfile } from './pages/patient/patient-profile/patient-profile';
 import { FindDoctors } from './pages/patient/find-doctors/find-doctors';
+import { BookAppointment } from './pages/patient/book-appointment/book-appointment';
 import { MyAppointments } from './pages/patient/my-appointments/my-appointments';
 import { HealthHistory } from './pages/patient/health-history/health-history';
-import { NgModule } from '@angular/core';
-import { BookAppointment } from './pages/patient/book-appointment/book-appointment';
-import { DoctorLayout } from './doctor/doctor-layout/doctor-layout';
-import { DoctorDashboard } from './doctor/doctor-dashboard/doctor-dashboard';
-import { TodaySchedule } from './doctor/today-schedule/today-schedule';
-import { DoctorPatients } from './doctor/doctor-patients/doctor-patients';
-import { DoctorPatientProfile } from './doctor/doctor-patient-profile/doctor-patient-profile';
-import { AddHealthRecord } from './doctor/add-health-record/add-health-record';
 
-export const routes: Routes = [
+import { DoctorLayout } from './pages/doctor/doctor-layout/doctor-layout';
+import { DoctorDashboard } from './pages/doctor/doctor-dashboard/doctor-dashboard';
+import { TodaySchedule } from './pages/doctor/today-schedule/today-schedule';
+import { DoctorPatients } from './pages/doctor/doctor-patients/doctor-patients';
+import { DoctorPatientProfile } from './pages/doctor/doctor-patient-profile/doctor-patient-profile';
+import { AddHealthRecord } from './pages/doctor/add-health-record/add-health-record';
+import { ChangePassword } from './pages/doctor/change-password/change-password';
+import { firstLoginGuard } from './core/guards/first-login.guard';
+import { DoctorProfile } from './pages/doctor/doctor-profile/doctor-profile';
+
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
+
+const routes: Routes = [
   {
     path: '',
     component: Home
@@ -33,8 +41,19 @@ export const routes: Routes = [
     component: Register
   },
   {
+    path: 'forbidden',
+    component: Forbidden
+  },
+  {
     path: 'patient',
     component: PatientLayout,
+    canActivate: [
+      authGuard,
+      roleGuard
+    ],
+    data: {
+      roles: ['Patient']
+    },
     children: [
       {
         path: 'dashboard',
@@ -70,26 +89,59 @@ export const routes: Routes = [
   {
     path: 'doctor',
     component: DoctorLayout,
+    canActivate: [
+      authGuard,
+      roleGuard
+    ],
+    data: {
+      roles: ['Doctor']
+    },
     children: [
       {
+        path: 'change-password',
+        component: ChangePassword
+      },
+      {
+        path: 'profile',
+        component: DoctorProfile,
+        canActivate: [
+          firstLoginGuard
+        ]
+      },
+      {
         path: 'dashboard',
-        component: DoctorDashboard
+        component: DoctorDashboard,
+        canActivate: [
+          firstLoginGuard
+        ]
       },
       {
         path: 'schedule',
-        component: TodaySchedule
+        component: TodaySchedule,
+        canActivate: [
+          firstLoginGuard
+        ]
       },
       {
         path: 'patients',
-        component: DoctorPatients
+        component: DoctorPatients,
+        canActivate: [
+          firstLoginGuard
+        ]
       },
       {
         path: 'patient/:patientId',
-        component: DoctorPatientProfile
+        component: DoctorPatientProfile,
+        canActivate: [
+          firstLoginGuard
+        ]
       },
       {
         path: 'add-health-record/:appointmentId',
-        component: AddHealthRecord
+        component: AddHealthRecord,
+        canActivate: [
+          firstLoginGuard
+        ]
       },
       {
         path: '',
@@ -105,7 +157,12 @@ export const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes)
+  ],
+  exports: [
+    RouterModule
+  ]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

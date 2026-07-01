@@ -3,11 +3,18 @@
     <div>
       <span class="page-kicker">Book Appointment</span>
 
-      <h1>{{ doctor.doctorName }}</h1>
+      @if (doctor()) {
+      <h1>{{ doctor()?.doctorName }}</h1>
 
       <p>
-        {{ doctor.specialisation }} · {{ doctor.yearsOfExperience }} years experience
+        {{ doctor()?.specialisation }} ·
+        {{ doctor()?.yearsOfExperience }} years experience
       </p>
+      } @else {
+      <h1>Doctor details</h1>
+
+      <p>Loading selected doctor information.</p>
+      }
     </div>
 
     <a routerLink="/patient/doctors" class="back-link">
@@ -15,25 +22,44 @@
     </a>
   </div>
 
+  @if (isLoading()) {
+  <div class="info-message">
+    Loading doctor details...
+  </div>
+  }
+
+  @if (errorMessage()) {
+  <div class="error-message">
+    {{ errorMessage() }}
+  </div>
+  }
+
+  @if (successMessage()) {
+  <div class="success-message">
+    {{ successMessage() }}
+  </div>
+  }
+
+  @if (doctor()) {
   <div class="booking-grid">
     <section class="doctor-summary-card">
       <div class="doctor-avatar">
-        {{ doctor.doctorName.charAt(0) }}
+        {{ doctor()?.doctorName?.charAt(0) }}
       </div>
 
-      <h2>{{ doctor.doctorName }}</h2>
+      <h2>{{ doctor()?.doctorName }}</h2>
 
-      <p>{{ doctor.specialisation }}</p>
+      <p>{{ doctor()?.specialisation }}</p>
 
       <div class="summary-details">
         <div>
           <span>Experience</span>
-          <strong>{{ doctor.yearsOfExperience }} yrs</strong>
+          <strong>{{ doctor()?.yearsOfExperience }} yrs</strong>
         </div>
 
         <div>
           <span>Consultation Fee</span>
-          <strong>₹{{ doctor.consultationFee }}</strong>
+          <strong>₹{{ doctor()?.consultationFee }}</strong>
         </div>
       </div>
     </section>
@@ -45,32 +71,77 @@
         <label>Date</label>
 
         <input type="date"
-               [(ngModel)]="selectedDate"
+               [ngModel]="selectedDate()"
+               (ngModelChange)="selectedDate.set($event); loadSlots()"
                [min]="today" />
       </div>
 
-      <h2>Available slots</h2>
+      <div class="slots-heading-row">
+        <h2>Available slots</h2>
 
-      <div class="slot-grid">
-        @for (slot of availableSlots; track slot) {
-        <button type="button"
-                class="slot-button"
-                [class.selected]="selectedSlot === slot"
-                (click)="selectSlot(slot)">
-          {{ slot }}
-        </button>
+        @if (selectedDate()) {
+        <span class="slot-help">
+          Red slots are unavailable.
+        </span>
         }
       </div>
 
-      @if (successMessage) {
-      <div class="booking-message">
-        {{ successMessage }}
-      </div>
-      }
+      <div class="slot-legend">
+        <span>
+          <i class="legend-dot available-dot"></i>
+          Available
+        </span>
 
-      <button type="button" class="book-button" (click)="bookAppointment()">
-        Confirm Appointment
+        <span>
+          <i class="legend-dot selected-dot"></i>
+          Selected
+        </span>
+
+        <span>
+          <i class="legend-dot unavailable-dot"></i>
+          Unavailable
+        </span>
+      </div>
+
+      <div class="slot-grid">
+        @if (!selectedDate()) {
+        <div class="empty-state">
+          Please select a date to view slots.
+        </div>
+        }
+
+        @if (selectedDate()) {
+        @for (slot of slotViews(); track slot.time) {
+        <button type="button"
+                [class]="getSlotClass(slot)"
+                [disabled]="!slot.isAvailable"
+                [title]="slot.label"
+                (click)="selectSlot(slot)">
+          <span>{{ slot.time }}</span>
+
+          @if (slot.isPast) {
+          <small>Past</small>
+          }
+
+          @if (slot.isPatientBusy) {
+          <small>Your booking</small>
+          }
+
+          @if (slot.isBooked && !slot.isPatientBusy) {
+          <small>Booked</small>
+          }
+        </button>
+        }
+        }
+      </div>
+
+      <button type="button"
+              class="book-button"
+              [disabled]="!canConfirmAppointment()"
+              (click)="bookAppointment()">
+        {{ isSaving() ? 'Booking...' : 'Confirm Appointment' }}
       </button>
     </section>
   </div>
+  }
 </section>

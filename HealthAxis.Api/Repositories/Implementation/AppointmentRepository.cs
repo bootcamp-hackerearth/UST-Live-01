@@ -83,5 +83,20 @@ namespace HealthAxisCore_Api.Repositories.Implementation
                 a.Status != "Cancelled",
                 ct);
         }
+
+        public async Task<bool> PatientHasAppointmentAtSlotAsync(
+    int patientId,
+    DateTime scheduledDate,
+    string timeSlot,
+    CancellationToken ct = default)
+        {
+            return await _context.Appointments.AnyAsync(
+                appointment =>
+                    appointment.PatientId == patientId &&
+                    appointment.ScheduledDate.Date == scheduledDate.Date &&
+                    appointment.TimeSlot == timeSlot &&
+                    appointment.Status != "Cancelled",
+                ct);
+        }
     }
 }

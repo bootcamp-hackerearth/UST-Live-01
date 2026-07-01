@@ -15,14 +15,16 @@
     <label>Search doctor</label>
 
     <input type="text"
-           [(ngModel)]="searchText"
+           [ngModel]="searchText()"
+           (ngModelChange)="searchText.set($event)"
            placeholder="Search by doctor name or specialisation" />
   </div>
 
   <div class="filter-group">
     <label>Specialisation</label>
 
-    <select [(ngModel)]="selectedSpecialisation">
+    <select [ngModel]="selectedSpecialisation()"
+            (ngModelChange)="selectedSpecialisation.set($event); onSpecialisationChange()">
       <option value="">All specialisations</option>
 
       @for (specialisation of specialisations; track specialisation) {
@@ -38,15 +40,27 @@
   </button>
 </section>
 
+@if (isLoading()) {
+<div class="info-message">
+  Loading doctors...
+</div>
+}
+
+@if (errorMessage()) {
+<div class="error-message">
+  {{ errorMessage() }}
+</div>
+}
+
 <section class="doctor-grid">
-  @if (filteredDoctors.length === 0) {
+  @if (!isLoading() && filteredDoctors().length === 0) {
   <div class="empty-state">
     <h2>No doctors found</h2>
     <p>Try changing your search or specialisation filter.</p>
   </div>
   }
 
-  @for (doctor of filteredDoctors; track doctor.doctorId) {
+  @for (doctor of filteredDoctors(); track doctor.doctorId) {
   <article class="doctor-card">
     <div class="doctor-top">
       <div class="doctor-avatar">

@@ -1,74 +1,24 @@
 ﻿@page "/login"
-@inject AuthService AuthService
+
 @inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
 
-<div class="login-page">
-    <div class="login-card glass">
-        <h1 class="login-title">HealthAxis Admin</h1>
+<h1 class="page-title">Redirecting to login...</h1>
 
-        <EditForm Model="@loginRequest"
-                  OnValidSubmit="@LoginAsync">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="form-group">
-                <label class="form-label">Email</label>
-                <InputText class="form-input"
-                           @bind-Value="loginRequest.Email"
-                           placeholder="Enter admin email" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-label">Password</label>
-                <InputText class="form-input"
-                           type="password"
-                           @bind-Value="loginRequest.Password"
-                           placeholder="Enter password" />
-            </div>
-
-            <button class="primary-button"
-                    type="submit"
-                    disabled="@isLoggingIn">
-                @(isLoggingIn ? "Logging in..." : "Login")
-            </button>
-
-            @if (!string.IsNullOrWhiteSpace(errorMessage))
-            {
-                <div class="error-text">
-                    @errorMessage
-                </div>
-            }
-        </EditForm>
-    </div>
+<div class="table-card glass">
+    <p>Please wait while HealthAxis redirects you to the secure login page.</p>
 </div>
 
 @code {
-    private LoginRequestDto loginRequest = new();
-
-    private string? errorMessage;
-
-    private bool isLoggingIn;
-
-    private async Task LoginAsync()
+    protected override void OnInitialized()
     {
-        errorMessage = null;
-        isLoggingIn = true;
+        var angularLoginUrl = Configuration["AngularLoginUrl"];
 
-        try
+        if (string.IsNullOrWhiteSpace(angularLoginUrl))
         {
-            var loginSucceeded = await AuthService.LoginAsync(loginRequest);
-
-            if (!loginSucceeded)
-            {
-                errorMessage = "Invalid admin credentials";
-                return;
-            }
-
-            NavigationManager.NavigateTo("/dashboard");
+            angularLoginUrl = "http://localhost:56902/login";
         }
-        finally
-        {
-            isLoggingIn = false;
-        }
+
+        NavigationManager.NavigateTo(angularLoginUrl, forceLoad: true);
     }
 }

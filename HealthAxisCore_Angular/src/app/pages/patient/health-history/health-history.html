@@ -10,13 +10,31 @@
   </div>
 </section>
 
+@if (isLoading()) {
+<div class="info-message">
+  Loading health records...
+</div>
+}
+
+@if (errorMessage()) {
+<div class="error-message">
+  {{ errorMessage() }}
+</div>
+}
+
 <section class="history-table-card">
+  @if (!isLoading() && records().length === 0) {
+  <div class="empty-state">
+    No health records found.
+  </div>
+  }
+
+  @if (records().length > 0) {
   <table>
     <thead>
       <tr>
         <th>Visit Date</th>
         <th>Doctor</th>
-        <th>Specialisation</th>
         <th>Diagnosis</th>
         <th>Prescription</th>
         <th>Notes</th>
@@ -24,16 +42,16 @@
     </thead>
 
     <tbody>
-      @for (record of records; track record.recordId) {
+      @for (record of records(); track record.healthRecordId) {
       <tr>
-        <td>{{ record.visitDate }}</td>
+        <td>{{ record.visitDate | date: 'yyyy-MM-dd' }}</td>
         <td>{{ record.doctorName }}</td>
-        <td>{{ record.specialisation }}</td>
         <td>{{ record.diagnosis }}</td>
         <td>{{ record.prescription }}</td>
-        <td>{{ record.notes }}</td>
+        <td>{{ record.notes || '-' }}</td>
       </tr>
       }
     </tbody>
   </table>
+  }
 </section>

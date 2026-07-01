@@ -122,7 +122,50 @@ namespace HealthAxisCore_Api.Services.Implementation
                     saved.HealthRecordId,
                     ct) ?? saved);
         }
+        public async Task<bool> ExistsForAppointmentAsync(
+    int appointmentId,
+    ClaimsPrincipal user,
+    CancellationToken ct = default)
+        {
+            var appt = await appointmentRepository.GetDetailsAsync(
+                appointmentId,
+                ct)
+                ?? throw new NotFoundException("Appointment not found");
 
+            if (user.IsDoctor())
+            {
+                var doctorId = user.GetDoctorId()
+                    ?? throw new UnauthorizedException("DoctorId claim missing");
+
+                if (appt.DoctorId != doctorId)
+                {
+                    throw new UnauthorizedException(
+                        "Cannot check health record for another doctor's appointment");
+                }
+
+                return await healthRecordRepository.ExistsForAppointmentAsync(
+                    appointmentId,
+                    ct);
+            }
+
+            if (user.IsPatient())
+            {
+                var patientId = user.GetPatientId()
+                    ?? throw new UnauthorizedException("PatientId claim missing");
+
+                if (appt.PatientId != patientId)
+                {
+                    throw new UnauthorizedException(
+                        "Cannot check health record for another patient's appointment");
+                }
+
+                return await healthRecordRepository.ExistsForAppointmentAsync(
+                    appointmentId,
+                    ct);
+            }
+
+            throw new UnauthorizedException("Unauthorized access");
+        }
         private static void EnsureCanAccessHealthRecord(
             HealthRecord record,
             ClaimsPrincipal user)

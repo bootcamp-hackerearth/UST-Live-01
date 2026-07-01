@@ -26,6 +26,6 @@ namespace HealthAxisCore_Api.Models
         [Required]
         public bool IsActive { get; set; }
 
-        public bool FirstLogin { get; set; } = true;
+       
     }
 }

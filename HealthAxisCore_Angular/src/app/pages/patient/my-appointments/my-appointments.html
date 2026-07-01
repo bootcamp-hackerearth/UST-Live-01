@@ -10,8 +10,43 @@
   </div>
 </section>
 
+@if (isLoading()) {
+<div class="info-message">
+  Loading appointments...
+</div>
+}
+
+@if (successMessage()) {
+<div class="success-message">
+  {{ successMessage() }}
+</div>
+}
+
+@if (errorMessage()) {
+<div class="error-message">
+  {{ errorMessage() }}
+</div>
+}
+
+@if (!isLoading() && !errorMessage() && appointments().length === 0) {
+<section class="appointments-empty-card">
+  <div class="empty-icon">A</div>
+
+  <h2>No appointments found</h2>
+
+  <p>
+    You have not booked any appointments yet. Find a doctor and schedule your first visit.
+  </p>
+
+  <a routerLink="/patient/doctors" class="empty-action">
+    Find Doctors
+  </a>
+</section>
+}
+
+@if (appointments().length > 0) {
 <section class="appointments-grid">
-  @for (appointment of appointments; track appointment.appointmentId) {
+  @for (appointment of appointments(); track appointment.appointmentId) {
   <article class="appointment-card">
     <div class="appointment-top">
       <div class="doctor-avatar">
@@ -32,7 +67,7 @@
     <div class="appointment-details">
       <div>
         <span>Date</span>
-        <strong>{{ appointment.scheduledDate }}</strong>
+        <strong>{{ appointment.scheduledDate | date: 'yyyy-MM-dd' }}</strong>
       </div>
 
       <div>
@@ -41,11 +76,85 @@
       </div>
     </div>
 
-    @if (appointment.status !== 'Cancelled' && appointment.status !== 'Completed') {
-    <button type="button" class="cancel-button" (click)="cancelAppointment(appointment)">
+    @if (appointment.status === 'Cancelled' && appointment.cancellationReason) {
+    <div class="cancel-reason-box">
+      <span>Cancellation Reason</span>
+      <strong>{{ appointment.cancellationReason }}</strong>
+    </div>
+    }
+
+    @if (canCancelAppointment(appointment)) {
+    <button type="button"
+            class="cancel-button"
+            (click)="openCancelModal(appointment)">
       Cancel Appointment
+    </button>
+    } @else {
+    <button type="button"
+            class="disabled-cancel-button"
+            disabled>
+      Cannot Cancel
     </button>
     }
   </article>
   }
 </section>
+}
+
+@if (selectedAppointment()) {
+<div class="modal-backdrop">
+  <section class="cancel-modal">
+    <div class="modal-header">
+      <div>
+        <span class="modal-kicker">Cancel Appointment</span>
+
+        <h2>
+          {{ selectedAppointment()?.doctorName }}
+        </h2>
+
+        <p>
+          {{ selectedAppointment()?.scheduledDate | date: 'yyyy-MM-dd' }}
+          ·
+          {{ selectedAppointment()?.timeSlot }}
+        </p>
+      </div>
+
+      <button type="button"
+              class="modal-close-button"
+              (click)="closeCancelModal()">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <label>Cancellation reason</label>
+
+      <textarea [ngModel]="cancellationReason()"
+                (ngModelChange)="cancellationReason.set($event)"
+                placeholder="Enter the reason for cancelling this appointment"
+                [class.input-invalid]="cancellationSubmitted() && !cancellationReason().trim()">
+        </textarea>
+
+      @if (cancellationSubmitted() && !cancellationReason().trim()) {
+      <small class="validation-message">
+        Cancellation reason is required.
+      </small>
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button type="button"
+              class="secondary-modal-button"
+              (click)="closeCancelModal()">
+        Keep Appointment
+      </button>
+
+      <button type="button"
+              class="danger-modal-button"
+              (click)="confirmCancellation()">
+        Confirm Cancellation
+      </button>
+    </div>
+  </section>
+</div>
+}

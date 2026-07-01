@@ -1,17 +1,36 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using HealthAxisCore_Admin.Layout
+
+@inject NavigationManager NavigationManager
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData"
-                                DefaultLayout="@typeof(MainLayout)">
-                <NotAuthorized>
-                    <RedirectToLogin />
-                </NotAuthorized>
+            @{
+                var currentPath = NavigationManager
+                    .ToBaseRelativePath(NavigationManager.Uri)
+                    .Split('?')[0]
+                    .Trim('/');
+            }
 
-                <Authorizing>
-                    <p>Checking authorization...</p>
-                </Authorizing>
-            </AuthorizeRouteView>
+            @if (currentPath.StartsWith("auth/external-login", StringComparison.OrdinalIgnoreCase))
+            {
+                <RouteView RouteData="@routeData"
+                           DefaultLayout="@typeof(PublicLayout)" />
+            }
+            else
+            {
+                <AuthorizeRouteView RouteData="@routeData"
+                                    DefaultLayout="@typeof(MainLayout)">
+                    <NotAuthorized>
+                        <RedirectToLogin />
+                    </NotAuthorized>
+
+                    <Authorizing>
+                        <p>Checking authorization...</p>
+                    </Authorizing>
+                </AuthorizeRouteView>
+            }
 
             <FocusOnNavigate RouteData="@routeData"
                              Selector="h1" />

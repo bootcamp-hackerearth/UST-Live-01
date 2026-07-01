@@ -50,6 +50,19 @@ namespace HealthAxisCore_Api.Services.Implementation
         {
             var patientId = user.GetPatientId()
                 ?? throw new UnauthorizedException("PatientId claim missing");
+            
+            var patientAlreadyBookedAtSameTime =
+    await appointmentRepository.PatientHasAppointmentAtSlotAsync(
+        patientId,
+        request.ScheduledDate,
+        request.TimeSlot,
+        ct);
+
+            if (patientAlreadyBookedAtSameTime)
+            {
+                throw new InvalidException(
+                    "You already have an appointment booked at this date and time.");
+            }
 
             var doctor = await doctorRepository.GetByIdAsync(request.DoctorId, ct)
                 ?? throw new NotFoundException("Doctor not found");

@@ -253,3 +253,53 @@
     border-radius: 28px;
   }
 }
+.info-message,
+.error-message,
+.empty-state {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  font-weight: 900;
+}
+
+.info-message {
+  color: #075985;
+  background: rgba(236, 254, 255, 0.78);
+  border: 1px solid rgba(20, 154, 178, 0.24);
+}
+
+.error-message {
+  color: #991b1b;
+  background: rgba(254, 226, 226, 0.80);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+}
+
+.empty-state {
+  color: #1f4e5f;
+  background: rgba(236, 254, 255, 0.58);
+  border: 1px solid rgba(20, 154, 178, 0.18);
+}
+
+.status-pending {
+  color: #92400e;
+  background: rgba(254, 243, 199, 0.82);
+  border: 1px solid rgba(245, 158, 11, 0.24);
+}
+
+.status-confirmed {
+  color: #075985;
+  background: rgba(219, 234, 254, 0.82);
+  border: 1px solid rgba(59, 130, 246, 0.24);
+}
+
+.status-completed {
+  color: #166534;
+  background: rgba(220, 252, 231, 0.82);
+  border: 1px solid rgba(34, 197, 94, 0.24);
+}
+
+.status-cancelled {
+  color: #991b1b;
+  background: rgba(254, 226, 226, 0.82);
+  border: 1px solid rgba(239, 68, 68, 0.24);
+}

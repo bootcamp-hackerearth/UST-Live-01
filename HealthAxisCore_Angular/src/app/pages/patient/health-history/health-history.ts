@@ -1,40 +1,49 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 
-interface HealthRecord {
-  recordId: number;
-  visitDate: string;
-  doctorName: string;
-  specialisation: string;
-  diagnosis: string;
-  prescription: string;
-  notes: string;
-}
+import { AuthService } from '../../../core/services/auth.service';
+import { PatientService } from '../../../core/services/patient.service';
+import { HealthRecordDto } from '../../../core/models/health-record.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-health-history',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './health-history.html',
   styleUrl: './health-history.css'
 })
 export class HealthHistory {
-  records: HealthRecord[] = [
-    {
-      recordId: 1,
-      visitDate: '2026-06-20',
-      doctorName: 'Dr. Isha Nair',
-      specialisation: 'Dermatologist',
-      diagnosis: 'Skin allergy',
-      prescription: 'Antihistamine medication',
-      notes: 'Avoid irritants and follow up if symptoms continue.'
-    },
-    {
-      recordId: 2,
-      visitDate: '2026-05-16',
-      doctorName: 'Dr. Aravind Menon',
-      specialisation: 'Cardiologist',
-      diagnosis: 'Routine checkup',
-      prescription: 'Lifestyle management',
-      notes: 'Continue regular exercise and balanced diet.'
+  records = signal<HealthRecordDto[]>([]);
+
+  isLoading = signal(false);
+
+  errorMessage = signal('');
+
+  constructor(
+    private authService: AuthService,
+    private patientService: PatientService
+  ) {
+    this.loadRecords();
+  }
+
+  loadRecords(): void {
+    const patientId = this.authService.patientId();
+
+    if (!patientId) {
+      this.errorMessage.set('Patient ID missing. Please login again.');
+      return;
     }
-  ];
+
+    this.isLoading.set(true);
+
+    this.patientService.getHealthRecords(patientId).subscribe({
+      next: records => {
+        this.records.set(records);
+        this.isLoading.set(false);
+      },
+      error: error => {
+        this.errorMessage.set(this.authService.getErrorMessage(error));
+        this.isLoading.set(false);
+      }
+    });
+  }
 }

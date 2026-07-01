@@ -23,5 +23,11 @@ namespace HealthAxisCore_Api.Repositories.Interfaces
             DateTime scheduledDate,
             string timeSlot,
             CancellationToken ct = default);
+
+        Task<bool> PatientHasAppointmentAtSlotAsync(
+            int patientId,
+            DateTime scheduledDate,
+            string timeSlot,
+            CancellationToken ct = default);
     }
 }

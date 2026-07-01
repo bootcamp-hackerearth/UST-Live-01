@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
@@ -8,12 +8,17 @@ import {
   Validators
 } from '@angular/forms';
 
+import { AuthService } from '../../core/services/auth.service';
+import { LoginRequest } from '../../core/models/login-request';
+import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
+
 @Component({
   selector: 'app-login',
   imports: [
     CommonModule,
     RouterLink,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ThemeToggle
   ],
   templateUrl: './login.html',
   styleUrl: './login.css'
@@ -21,11 +26,18 @@ import {
 export class Login {
   loginForm: FormGroup;
 
-  showPassword = false;
+  showPassword = signal(false);
 
-  submitted = false;
+  submitted = signal(false);
 
-  constructor(private formBuilder: FormBuilder) {
+  isLoading = signal(false);
+
+  errorMessage = signal('');
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService
+  ) {
     this.loginForm = this.formBuilder.group({
       email: [
         '',
@@ -37,8 +49,7 @@ export class Login {
       password: [
         '',
         [
-          Validators.required,
-          Validators.minLength(8)
+          Validators.required
         ]
       ],
       rememberMe: [true]
@@ -54,19 +65,35 @@ export class Login {
   }
 
   togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+    this.showPassword.update(value => !value);
   }
 
   submitLogin(): void {
-    this.submitted = true;
+    this.submitted.set(true);
+    this.errorMessage.set('');
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
     }
 
-    console.log('Login form submitted:', this.loginForm.value);
+    const request: LoginRequest = {
+      email: this.loginForm.value.email,
+      password: this.loginForm.value.password
+    };
 
-    // API connection will be added later.
+    this.isLoading.set(true);
+
+    this.authService.login(request).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+      },
+      error: error => {
+        this.isLoading.set(false);
+        this.errorMessage.set(
+          this.authService.getErrorMessage(error)
+        );
+      }
+    });
   }
 }

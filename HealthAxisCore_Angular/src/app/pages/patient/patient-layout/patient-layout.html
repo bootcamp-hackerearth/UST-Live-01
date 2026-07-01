@@ -5,6 +5,7 @@
         <img src="HealthAxisAngularLogo.png"
              alt="HealthAxis Logo" />
       </span>
+
       <span class="brand-copy">
         <strong>HealthAxis</strong>
         <small>Patient Portal</small>
@@ -40,12 +41,12 @@
     <div class="navbar-actions">
       <a routerLink="/patient/profile" class="profile-button">
         <span class="profile-avatar">
-          {{ patientName.charAt(0) }}
+          {{ patientName().charAt(0) }}
         </span>
 
         <span class="profile-copy">
           <small>Logged in as</small>
-          <strong>{{ patientName }}</strong>
+          <strong>{{ patientName() }}</strong>
         </span>
       </a>
 

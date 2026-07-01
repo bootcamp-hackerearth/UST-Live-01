@@ -66,7 +66,8 @@ namespace HealthAxisCore_Api.Services.Implementation
                 PhoneNumber = request.PhoneNumber,
                 DoctorId = saved.DoctorId,
                 IsActive = true,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                FirstLogin = true
             };
 
             var cr = await userManager.CreateAsync(

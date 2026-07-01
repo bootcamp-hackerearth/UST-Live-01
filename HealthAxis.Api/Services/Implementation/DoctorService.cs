@@ -128,5 +128,33 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             return await repository.GetAvailableSlotsAsync(id, date, ct);
         }
+
+        public async Task<DoctorDto> UpdateOwnStatusAsync(
+    int id,
+    bool isActive,
+    ClaimsPrincipal user,
+    CancellationToken ct = default)
+        {
+            var loggedInDoctorId = user.GetDoctorId()
+                ?? throw new UnauthorizedException("DoctorId claim missing");
+
+            if (loggedInDoctorId != id)
+            {
+                throw new UnauthorizedException("You can update only your own doctor profile status");
+            }
+
+            var doctor = await repository.GetByIdAsync(id, ct)
+                ?? throw new NotFoundException("Doctor not found");
+
+            doctor.IsActive = isActive;
+
+            var updated = await repository.UpdateAsync(
+                id,
+                doctor,
+                ct)
+                ?? throw new NotFoundException("Doctor not found");
+
+            return mapper.Map<DoctorDto>(updated);
+        }
     }
 }

@@ -1,0 +1,162 @@
+<section class="page-hero">
+  <div>
+    <span class="page-kicker">Today’s Schedule</span>
+
+    <h1>Consultation queue.</h1>
+
+    <p>
+      View today’s appointments, open patient profiles, complete consultations,
+      cancel appointments, and add consultation records after completion.
+    </p>
+  </div>
+</section>
+
+@if (isLoading()) {
+<div class="info-message">
+  Loading schedule...
+</div>
+}
+
+@if (successMessage()) {
+<div class="success-message">
+  {{ successMessage() }}
+</div>
+}
+
+@if (errorMessage()) {
+<div class="error-message">
+  {{ errorMessage() }}
+</div>
+}
+
+<section class="schedule-list">
+  @if (!isLoading() && appointments().length === 0) {
+  <div class="empty-state">
+    No appointments scheduled for today.
+  </div>
+  }
+
+  @for (appointment of appointments(); track appointment.appointmentId) {
+  <article class="schedule-card">
+    <div class="patient-avatar">
+      {{ appointment.patientName.charAt(0) }}
+    </div>
+
+    <div class="patient-main">
+      <h2>{{ appointment.patientName }}</h2>
+
+      <p>{{ appointment.specialisation }}</p>
+
+      <div class="patient-meta">
+        <span>Time: {{ appointment.timeSlot }}</span>
+        <span>Date: {{ appointment.scheduledDate | date: 'yyyy-MM-dd' }}</span>
+      </div>
+
+      @if (appointment.status === 'Cancelled' && appointment.cancellationReason) {
+      <div class="cancel-reason">
+        <strong>Cancellation Reason:</strong>
+        {{ appointment.cancellationReason }}
+      </div>
+      }
+    </div>
+
+    <span [class]="getStatusClass(appointment.status)">
+      {{ appointment.status }}
+    </span>
+
+    <div class="schedule-actions">
+      <a [routerLink]="['/doctor/patient', appointment.patientId]"
+         class="secondary-action">
+        View Profile
+      </a>
+
+      @if (canAddHealthRecord(appointment)) {
+      <a [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
+         class="primary-action">
+        Add Record
+      </a>
+      } @else {
+      <button type="button"
+              class="disabled-action"
+              disabled>
+        {{ getAddRecordText(appointment) }}
+      </button>
+      }
+
+      @if (canCompleteAppointment(appointment)) {
+      <button type="button"
+              class="complete-button"
+              (click)="markCompleted(appointment)">
+        Complete
+      </button>
+      }
+
+      @if (canCancelAppointment(appointment)) {
+      <button type="button"
+              class="cancel-button"
+              (click)="openCancelModal(appointment)">
+        Cancel
+      </button>
+      }
+    </div>
+  </article>
+  }
+</section>
+
+@if (selectedAppointment()) {
+<div class="modal-backdrop">
+  <section class="cancel-modal">
+    <div class="modal-header">
+      <div>
+        <span class="modal-kicker">Cancel Appointment</span>
+
+        <h2>
+          {{ selectedAppointment()?.patientName }}
+        </h2>
+
+        <p>
+          {{ selectedAppointment()?.scheduledDate | date: 'yyyy-MM-dd' }}
+          ·
+          {{ selectedAppointment()?.timeSlot }}
+        </p>
+      </div>
+
+      <button type="button"
+              class="modal-close-button"
+              (click)="closeCancelModal()">
+        ×
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <label>Cancellation reason</label>
+
+      <textarea [ngModel]="cancellationReason()"
+                (ngModelChange)="cancellationReason.set($event)"
+                placeholder="Enter the reason for cancelling this appointment"
+                [class.input-invalid]="cancellationSubmitted() && !cancellationReason().trim()">
+        </textarea>
+
+      @if (cancellationSubmitted() && !cancellationReason().trim()) {
+      <small class="validation-message">
+        Cancellation reason is required.
+      </small>
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button type="button"
+              class="secondary-modal-button"
+              (click)="closeCancelModal()">
+        Keep Appointment
+      </button>
+
+      <button type="button"
+              class="danger-modal-button"
+              (click)="confirmCancellation()">
+        Confirm Cancellation
+      </button>
+    </div>
+  </section>
+</div>
+}

@@ -5,6 +5,7 @@ using HealthAxisCore_Api.Models.Dtos;
 using HealthAxisCore_Api.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HealthAxisCore_Api.Services.Implementation
 {
@@ -71,7 +72,8 @@ namespace HealthAxisCore_Api.Services.Implementation
                 PhoneNumber = request.PhoneNumber,
                 PatientId = patient.PatientId,
                 IsActive = true,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                FirstLogin = false
             };
 
             var createResult = await userManager.CreateAsync(
@@ -246,29 +248,30 @@ namespace HealthAxisCore_Api.Services.Implementation
             };
 
         private async Task<AuthResponseDto> CreateResponse(
-            ApplicationUser user,
-            string role,
-            string refresh
-        ) =>
-            new AuthResponseDto
-            {
-                UserId = user.Id,
-                PatientId = user.PatientId,
-                DoctorId = user.DoctorId,
-                FullName =
-                    user.Patient?.PatientName
-                    ?? user.Doctor?.DoctorName
-                    ?? "System Admin",
-                Email = user.Email ?? string.Empty,
-                Role = role,
-                AccessToken =
-                    await jwtService.GenerateAccessTokenAsync(user),
-                RefreshToken = refresh,
-                ExpiresIn =
-                    Convert.ToInt32(
-                        configuration["Jwt:AccessTokenExpirationMinutes"]
-                    ) * 60
-            };
+     ApplicationUser user,
+     string role,
+     string refresh
+ ) =>
+     new AuthResponseDto
+     {
+         UserId = user.Id,
+         PatientId = user.PatientId,
+         DoctorId = user.DoctorId,
+         FullName =
+             user.Patient?.PatientName
+             ?? user.Doctor?.DoctorName
+             ?? "System Admin",
+         Email = user.Email ?? string.Empty,
+         Role = role,
+         AccessToken =
+             await jwtService.GenerateAccessTokenAsync(user),
+         RefreshToken = refresh,
+         ExpiresIn =
+             Convert.ToInt32(
+                 configuration["Jwt:AccessTokenExpirationMinutes"]
+             ) * 60,
+         FirstLogin = user.FirstLogin
+     };
 
         public async Task<ForgotPasswordResponseDto> ForgotPasswordAsync(
     ForgotPasswordDto request)
@@ -304,7 +307,65 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             return "Password reset successfully";
         }
+        public async Task<string> ChangeFirstLoginPasswordAsync(
+    ChangeFirstLoginPasswordDto request,
+    ClaimsPrincipal claimsPrincipal,
+    CancellationToken ct = default)
+        {
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                throw new InvalidException("New password and confirm password do not match");
+            }
 
+            var userId = claimsPrincipal
+                .FindFirst(ClaimTypes.NameIdentifier)
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new UnauthorizedException("User ID claim missing");
+            }
+
+            var user = await context.Users
+                .FirstOrDefaultAsync(applicationUser => applicationUser.Id == userId, ct)
+                ?? throw new NotFoundException("User not found");
+
+            if (!user.IsActive)
+            {
+                throw new UnauthorizedException("User is inactive");
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            if (!roles.Contains("Doctor"))
+            {
+                throw new UnauthorizedException("Only doctors can change first login password");
+            }
+
+            if (!user.FirstLogin)
+            {
+                throw new InvalidException("Password has already been changed");
+            }
+
+            var changePasswordResult = await userManager.ChangePasswordAsync(
+                user,
+                request.CurrentPassword,
+                request.NewPassword);
+
+            if (!changePasswordResult.Succeeded)
+            {
+                throw new InvalidException(
+                    string.Join(
+                        ", ",
+                        changePasswordResult.Errors.Select(error => error.Description)));
+            }
+
+            user.FirstLogin = false;
+
+            await context.SaveChangesAsync(ct);
+
+            return "Password changed successfully";
+        }
         private static string GetEmailDomainName(string email)
         {
             if (string.IsNullOrWhiteSpace(email) || !email.Contains('@'))
@@ -320,6 +381,57 @@ namespace HealthAxisCore_Api.Services.Implementation
             }
 
             return domainPart.Split('.')[0];
+        }
+
+        public async Task<string> ChangePasswordAsync(
+    ChangePasswordDto request,
+    ClaimsPrincipal claimsPrincipal,
+    CancellationToken ct = default)
+        {
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                throw new InvalidException("New password and confirm password do not match");
+            }
+
+            var userId = claimsPrincipal
+                .FindFirst(ClaimTypes.NameIdentifier)
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new UnauthorizedException("User ID claim missing");
+            }
+
+            var user = await context.Users
+                .FirstOrDefaultAsync(applicationUser => applicationUser.Id == userId, ct)
+                ?? throw new NotFoundException("User not found");
+
+            if (!user.IsActive)
+            {
+                throw new UnauthorizedException("User is inactive");
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            if (!roles.Contains("Patient") && !roles.Contains("Doctor"))
+            {
+                throw new UnauthorizedException("Only patients and doctors can change password here");
+            }
+
+            var result = await userManager.ChangePasswordAsync(
+                user,
+                request.CurrentPassword,
+                request.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                throw new InvalidException(
+                    string.Join(
+                        ", ",
+                        result.Errors.Select(error => error.Description)));
+            }
+
+            return "Password changed successfully";
         }
     }
 }

@@ -26,7 +26,7 @@ builder.Services.AddScoped(sp =>
 });
 
 builder.Services.AddAuthorizationCore();
-
+builder.Services.AddScoped<AdminHandoffService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<DoctorAdminService>();

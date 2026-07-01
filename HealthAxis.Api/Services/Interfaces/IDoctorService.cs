@@ -22,6 +22,12 @@ namespace HealthAxisCore_Api.Services.Interfaces
             ClaimsPrincipal user,
             CancellationToken ct = default);
 
+        Task<DoctorDto> UpdateOwnStatusAsync(
+            int id,
+            bool isActive,
+            ClaimsPrincipal user,
+            CancellationToken ct = default);
+
         Task<List<string>> GetAvailabilityAsync(
             int id,
             DateTime date,

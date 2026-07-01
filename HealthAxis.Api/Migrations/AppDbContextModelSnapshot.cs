@@ -22,6 +22,36 @@ namespace HealthAxisCore_Api.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("HealthAxisCore_Api.Models.AdminHandoffCode", b =>
+                {
+                    b.Property<int>("AdminHandoffCodeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AdminHandoffCodeId"));
+
+                    b.Property<string>("CodeHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("AdminHandoffCodeId");
+
+                    b.ToTable("AdminHandoffCodes");
+                });
+
             modelBuilder.Entity("HealthAxisCore_Api.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -42,6 +72,9 @@ namespace HealthAxisCore_Api.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FirstLogin")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsActive")
@@ -113,7 +146,6 @@ namespace HealthAxisCore_Api.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AppointmentId"));
 
                     b.Property<string>("CancellationReason")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
@@ -157,9 +189,6 @@ namespace HealthAxisCore_Api.Migrations
                     b.Property<string>("DoctorName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("FirstLogin")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");

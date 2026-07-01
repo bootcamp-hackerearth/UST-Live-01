@@ -20,3 +20,8 @@ public class LoginResponseDto
 
     public int ExpiresIn { get; set; }
 }
+
+public class ExchangeAdminHandoffRequestDto
+{
+    public string Code { get; set; } = string.Empty;
+}

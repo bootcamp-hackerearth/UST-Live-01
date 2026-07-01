@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   AbstractControl,
@@ -10,12 +10,17 @@ import {
   Validators
 } from '@angular/forms';
 
+import { AuthService } from '../../core/services/auth.service';
+import { RegisterPatientRequest } from '../../core/models/register-patient-request';
+import { ThemeToggle } from '../../shared/theme-toggle/theme-toggle';
+
 @Component({
   selector: 'app-register',
   imports: [
     CommonModule,
     RouterLink,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ThemeToggle
   ],
   templateUrl: './register.html',
   styleUrl: './register.css'
@@ -23,24 +28,32 @@ import {
 export class Register {
   registerForm: FormGroup;
 
-  showPassword = false;
+  showPassword = signal(false);
 
-  showConfirmPassword = false;
+  showConfirmPassword = signal(false);
 
-  submitted = false;
+  submitted = signal(false);
+
+  isLoading = signal(false);
+
+  errorMessage = signal('');
 
   todayDate = this.getTodayDate();
 
   minimumDateOfBirth = this.getMinimumDateOfBirth();
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService
+  ) {
     this.registerForm = this.formBuilder.group(
       {
         patientName: [
           '',
           [
             Validators.required,
-            Validators.minLength(2)
+            Validators.minLength(2),
+            Validators.pattern(/^[a-zA-Z\s]+$/)
           ]
         ],
         dateOfBirth: [
@@ -72,10 +85,7 @@ export class Register {
           ]
         ],
         insuranceID: [
-          '',
-          [
-            Validators.required
-          ]
+          ''
         ],
         password: [
           '',
@@ -141,34 +151,49 @@ export class Register {
 
   get passwordsDoNotMatch() {
     return this.registerForm.errors?.['passwordMismatch'] &&
-      (this.confirmPassword?.touched || this.submitted);
+      (this.confirmPassword?.touched || this.submitted());
   }
 
   togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+    this.showPassword.update(value => !value);
   }
 
   toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
+    this.showConfirmPassword.update(value => !value);
   }
 
   submitRegister(): void {
-    this.submitted = true;
+    this.submitted.set(true);
+    this.errorMessage.set('');
 
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
 
-    const emailValue = this.registerForm.get('email')?.value;
+    const request: RegisterPatientRequest = {
+      patientName: this.registerForm.value.patientName,
+      dateOfBirth: this.registerForm.value.dateOfBirth,
+      gender: this.registerForm.value.gender,
+      email: this.registerForm.value.email,
+      phoneNumber: this.registerForm.value.phoneNumber,
+      insuranceID: this.registerForm.value.insuranceID,
+      password: this.registerForm.value.password
+    };
 
-    const emailDomainName = this.getEmailDomainName(emailValue);
+    this.isLoading.set(true);
 
-    console.log('Extracted email domain:', emailDomainName);
-
-    console.log('Register form submitted:', this.registerForm.value);
-
-    // API connection will be added later.
+    this.authService.registerPatient(request).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+      },
+      error: error => {
+        this.isLoading.set(false);
+        this.errorMessage.set(
+          this.authService.getErrorMessage(error)
+        );
+      }
+    });
   }
 
   private static emailDomainValidator(control: AbstractControl): ValidationErrors | null {
@@ -263,19 +288,5 @@ export class Register {
     );
 
     return minimumDate.toISOString().split('T')[0];
-  }
-
-  private getEmailDomainName(email: string): string {
-    if (!email || !email.includes('@')) {
-      return '';
-    }
-
-    const domainPart = email.split('@')[1];
-
-    if (!domainPart || !domainPart.includes('.')) {
-      return '';
-    }
-
-    return domainPart.split('.')[0];
   }
 }

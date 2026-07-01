@@ -1,15 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
-interface DoctorCard {
-  doctorId: number;
-  doctorName: string;
-  specialisation: string;
-  yearsOfExperience: number;
-  consultationFee: number;
-  isActive: boolean;
-}
+import { DoctorService } from '../../../core/services/doctor.service';
+import { DoctorDto } from '../../../core/models/doctor.model';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-find-doctors',
@@ -21,9 +16,15 @@ interface DoctorCard {
   styleUrl: './find-doctors.css'
 })
 export class FindDoctors {
-  searchText = '';
+  doctors = signal<DoctorDto[]>([]);
 
-  selectedSpecialisation = '';
+  searchText = signal('');
+
+  selectedSpecialisation = signal('');
+
+  isLoading = signal(false);
+
+  errorMessage = signal('');
 
   specialisations = [
     'Cardiologist',
@@ -38,58 +39,49 @@ export class FindDoctors {
     'OrthopedicSurgeon'
   ];
 
-  doctors: DoctorCard[] = [
-    {
-      doctorId: 1,
-      doctorName: 'Dr. Isha Nair',
-      specialisation: 'Dermatologist',
-      yearsOfExperience: 10,
-      consultationFee: 1000,
-      isActive: true
-    },
-    {
-      doctorId: 2,
-      doctorName: 'Dr. Aravind Menon',
-      specialisation: 'Cardiologist',
-      yearsOfExperience: 14,
-      consultationFee: 1200,
-      isActive: true
-    },
-    {
-      doctorId: 3,
-      doctorName: 'Dr. Meera Thomas',
-      specialisation: 'Pediatrician',
-      yearsOfExperience: 8,
-      consultationFee: 800,
-      isActive: true
-    },
-    {
-      doctorId: 4,
-      doctorName: 'Dr. Nikhil Rao',
-      specialisation: 'Neurologist',
-      yearsOfExperience: 12,
-      consultationFee: 1500,
-      isActive: false
-    }
-  ];
+  constructor(
+    private doctorService: DoctorService,
+    private authService: AuthService
+  ) {
+    this.loadDoctors();
+  }
 
-  get filteredDoctors(): DoctorCard[] {
-    return this.doctors.filter(doctor => {
+  filteredDoctors(): DoctorDto[] {
+    return this.doctors().filter(doctor => {
+      const search = this.searchText().toLowerCase();
+
       const matchesSearch =
-        !this.searchText ||
-        doctor.doctorName.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        doctor.specialisation.toLowerCase().includes(this.searchText.toLowerCase());
+        !search ||
+        doctor.doctorName.toLowerCase().includes(search) ||
+        doctor.specialisation.toLowerCase().includes(search);
 
-      const matchesSpecialisation =
-        !this.selectedSpecialisation ||
-        doctor.specialisation === this.selectedSpecialisation;
-
-      return matchesSearch && matchesSpecialisation;
+      return matchesSearch;
     });
   }
 
+  loadDoctors(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
+    this.doctorService.getDoctors(this.selectedSpecialisation()).subscribe({
+      next: doctors => {
+        this.doctors.set(doctors);
+        this.isLoading.set(false);
+      },
+      error: error => {
+        this.errorMessage.set(this.authService.getErrorMessage(error));
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  onSpecialisationChange(): void {
+    this.loadDoctors();
+  }
+
   clearFilters(): void {
-    this.searchText = '';
-    this.selectedSpecialisation = '';
+    this.searchText.set('');
+    this.selectedSpecialisation.set('');
+    this.loadDoctors();
   }
 }

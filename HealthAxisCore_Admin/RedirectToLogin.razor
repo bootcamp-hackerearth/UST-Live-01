@@ -1,13 +1,26 @@
 ﻿@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
 
 @code {
     protected override void OnInitialized()
     {
-        var currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        var currentPath = NavigationManager
+            .ToBaseRelativePath(NavigationManager.Uri)
+            .Split('?')[0]
+            .Trim('/');
 
-        if (!currentPath.StartsWith("login", StringComparison.OrdinalIgnoreCase))
+        if (currentPath.StartsWith("auth/external-login", StringComparison.OrdinalIgnoreCase))
         {
-            NavigationManager.NavigateTo("/login");
+            return;
         }
+
+        var angularLoginUrl = Configuration["AngularLoginUrl"];
+
+        if (string.IsNullOrWhiteSpace(angularLoginUrl))
+        {
+            angularLoginUrl = "http://localhost:56902/login";
+        }
+
+        NavigationManager.NavigateTo(angularLoginUrl, forceLoad: true);
     }
 }

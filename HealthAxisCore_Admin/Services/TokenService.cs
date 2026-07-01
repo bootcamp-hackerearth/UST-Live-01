@@ -36,12 +36,16 @@ public class TokenService
 
     public async Task<string?> GetAccessTokenAsync()
     {
-        return await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", AccessTokenKey);
+        return await _jsRuntime.InvokeAsync<string?>(
+            "localStorage.getItem",
+            AccessTokenKey);
     }
 
     public async Task<string?> GetRefreshTokenAsync()
     {
-        return await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", RefreshTokenKey);
+        return await _jsRuntime.InvokeAsync<string?>(
+            "localStorage.getItem",
+            RefreshTokenKey);
     }
 
     public async Task ClearTokensAsync()

@@ -105,7 +105,9 @@ builder.Services.AddCors(options =>
     });
 });
 builder.Services.AddAuthorization();
+builder.Services.AddMemoryCache();
 
+builder.Services.AddScoped<IAdminHandoffService, AdminHandoffService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
@@ -124,7 +126,7 @@ var app = builder.Build();
 app.UseExceptionHandler();
 if (app.Environment.IsDevelopment()) { app.MapOpenApi(); app.UseSwagger(); app.UseSwaggerUI(); }
 app.UseHttpsRedirection();
-app.UseCors("AllowAdminClient");
+app.UseCors("AllowFrontendClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

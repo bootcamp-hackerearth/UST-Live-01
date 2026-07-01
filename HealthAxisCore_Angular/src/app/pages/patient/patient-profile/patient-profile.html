@@ -15,70 +15,205 @@
     </a>
   </div>
 
-  <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="profile-card">
+  @if (isLoading()) {
+  <div class="info-message">
+    Loading profile...
+  </div>
+  }
+
+  @if (errorMessage()) {
+  <div class="error-message">
+    {{ errorMessage() }}
+  </div>
+  }
+
+  @if (successMessage()) {
+  <div class="success-message">
+    {{ successMessage() }}
+  </div>
+  }
+
+  <form [formGroup]="profileForm"
+        (ngSubmit)="saveProfile()"
+        class="profile-card">
+    <div>
+      <span class="page-kicker">Profile Details</span>
+
+      <h2>Personal information</h2>
+
+      <p>
+        Update your personal details used for appointments and health records.
+      </p>
+    </div>
+
     <div class="form-grid">
-
-
       <div class="form-group">
-        <label for="fullName">Full name</label>
-        <input id="fullName"
-               type="text"
-               formControlName="fullName" />
+        <label>Full name</label>
+
+        <input type="text"
+               formControlName="patientName" />
       </div>
 
-
       <div class="form-group">
-        <label for="email">Email</label>
-        <input id="email"
-               type="email"
-               formControlName="email" />
+        <label>Email</label>
+
+        <input type="email"
+               formControlName="email"
+               readonly />
       </div>
 
-
       <div class="form-group">
-        <label for="phoneNumber">Phone number</label>
-        <input id="phoneNumber"
-               type="text"
+        <label>Phone number</label>
+
+        <input type="text"
                formControlName="phoneNumber" />
       </div>
 
       <div class="form-group">
-        <label for="dateOfBirth">Date of birth</label>
-        <input id="dateOfBirth"
-               type="date"
+        <label>Date of birth</label>
+
+        <input type="date"
                formControlName="dateOfBirth" />
       </div>
 
-
       <div class="form-group">
-        <label for="gender">Gender</label>
+        <label>Gender</label>
 
-        <select id="gender"
-                formControlName="gender">
+        <select formControlName="gender">
           <option value="">Select gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
+          <option value="Transgender">Transgender</option>
           <option value="Other">Other</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="insuranceID">Insurance ID</label>
-        <input id="insuranceID"
-               type="text"
+        <label>Insurance ID</label>
+
+        <input type="text"
                formControlName="insuranceID" />
       </div>
-
     </div>
 
-    @if (successMessage) {
-    <div class="success-message">
-      {{ successMessage }}
+    <button type="submit"
+            class="save-button"
+            [disabled]="isSaving()">
+      {{ isSaving() ? 'Saving...' : 'Save Profile' }}
+    </button>
+  </form>
+
+  <form [formGroup]="passwordForm"
+        (ngSubmit)="changePassword()"
+        class="profile-card password-card">
+    <div>
+      <span class="page-kicker">Security</span>
+
+      <h2>Change password</h2>
+
+      <p>
+        Enter your current password and choose a new secure password.
+      </p>
+    </div>
+
+    @if (passwordErrorMessage()) {
+    <div class="error-message">
+      {{ passwordErrorMessage() }}
     </div>
     }
 
-    <button type="submit" class="save-button">
-      Save Profile
+    @if (passwordSuccessMessage()) {
+    <div class="success-message">
+      {{ passwordSuccessMessage() }}
+    </div>
+    }
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Current password</label>
+
+        <div class="password-wrapper">
+          <input [type]="showCurrentPassword() ? 'text' : 'password'"
+                 formControlName="currentPassword"
+                 placeholder="Enter current password" />
+
+          <button type="button"
+                  class="password-toggle"
+                  (click)="toggleCurrentPassword()">
+            {{ showCurrentPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+
+        @if (currentPassword?.invalid && (currentPassword?.touched || passwordSubmitted())) {
+        <small class="validation-message">
+          Current password is required.
+        </small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label>New password</label>
+
+        <div class="password-wrapper">
+          <input [type]="showNewPassword() ? 'text' : 'password'"
+                 formControlName="newPassword"
+                 placeholder="Enter new password" />
+
+          <button type="button"
+                  class="password-toggle"
+                  (click)="toggleNewPassword()">
+            {{ showNewPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+
+        @if (newPassword?.invalid && (newPassword?.touched || passwordSubmitted())) {
+        @if (newPassword?.errors?.['required']) {
+        <small class="validation-message">
+          New password is required.
+        </small>
+        }
+
+        @if (newPassword?.errors?.['minlength']) {
+        <small class="validation-message">
+          Password must be at least 8 characters.
+        </small>
+        }
+        }
+      </div>
+
+      <div class="form-group">
+        <label>Confirm password</label>
+
+        <div class="password-wrapper">
+          <input [type]="showConfirmPassword() ? 'text' : 'password'"
+                 formControlName="confirmPassword"
+                 placeholder="Confirm new password" />
+
+          <button type="button"
+                  class="password-toggle"
+                  (click)="toggleConfirmPassword()">
+            {{ showConfirmPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+
+        @if (confirmPassword?.invalid && (confirmPassword?.touched || passwordSubmitted())) {
+        <small class="validation-message">
+          Confirm password is required.
+        </small>
+        }
+
+        @if (passwordsDoNotMatch() && (confirmPassword?.touched || passwordSubmitted())) {
+        <small class="validation-message">
+          Passwords do not match.
+        </small>
+        }
+      </div>
+    </div>
+
+    <button type="submit"
+            class="save-button"
+            [disabled]="isChangingPassword()">
+      {{ isChangingPassword() ? 'Changing...' : 'Change Password' }}
     </button>
   </form>
 </section>

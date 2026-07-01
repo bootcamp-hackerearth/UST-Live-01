@@ -35,5 +35,19 @@ namespace HealthAxisCore_Api.Controllers
         {
             return Ok(await service.GetAvailabilityAsync(id, date, ct));
         }
+
+        [HttpPut("{id:int}/status")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<ActionResult<DoctorDto>> UpdateOwnStatus(
+    int id,
+    [FromQuery] bool isActive,
+    CancellationToken ct)
+        {
+            return Ok(await service.UpdateOwnStatusAsync(
+                id,
+                isActive,
+                User,
+                ct));
+        }
     }
 }

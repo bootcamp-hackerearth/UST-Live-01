@@ -1,10 +1,11 @@
+
 <section class="dashboard-hero">
   <div>
     <span class="page-kicker">Patient Dashboard</span>
 
     <h1>
       Welcome back,
-      <span>{{ patientName }}</span>
+      <span>{{ patientName() }}</span>
     </h1>
 
     <p>
@@ -17,12 +18,26 @@
   </a>
 </section>
 
+@if (isLoading()) {
+<div class="info-message">
+  Loading dashboard...
+</div>
+}
+
+@if (errorMessage()) {
+<div class="error-message">
+  {{ errorMessage() }}
+</div>
+}
+
 <section class="dashboard-grid">
-  @for (card of dashboardCards; track card.title) {
+  @for (card of dashboardCards(); track card.title) {
   <a [routerLink]="card.route" class="dashboard-card">
     <div>
       <span class="card-value">{{ card.value }}</span>
+
       <h2>{{ card.title }}</h2>
+
       <p>{{ card.description }}</p>
     </div>
 
@@ -35,6 +50,7 @@
   <div class="section-header">
     <div>
       <span class="page-kicker">Upcoming Care</span>
+
       <h2>Upcoming Appointments</h2>
     </div>
 
@@ -44,7 +60,13 @@
   </div>
 
   <div class="appointments-list">
-    @for (appointment of upcomingAppointments; track appointment.doctorName) {
+    @if (!isLoading() && upcomingAppointments().length === 0) {
+    <div class="empty-state">
+      No upcoming appointments found.
+    </div>
+    }
+
+    @for (appointment of upcomingAppointments(); track appointment.appointmentId) {
     <div class="appointment-row">
       <div class="doctor-icon">
         {{ appointment.doctorName.charAt(0) }}
@@ -52,15 +74,17 @@
 
       <div class="appointment-main">
         <h3>{{ appointment.doctorName }}</h3>
+
         <p>{{ appointment.specialisation }}</p>
       </div>
 
       <div class="appointment-time">
-        <strong>{{ appointment.date }}</strong>
-        <span>{{ appointment.time }}</span>
+        <strong>{{ appointment.scheduledDate | date: 'yyyy-MM-dd' }}</strong>
+
+        <span>{{ appointment.timeSlot }}</span>
       </div>
 
-      <span class="status-badge">
+      <span [class]="getStatusClass(appointment.status)">
         {{ appointment.status }}
       </span>
     </div>

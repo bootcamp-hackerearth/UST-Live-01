@@ -32,7 +32,6 @@
   backdrop-filter: blur(22px) saturate(145%);
   -webkit-backdrop-filter: blur(22px) saturate(145%);
 }
-
 .brand {
   display: inline-flex;
   align-items: center;

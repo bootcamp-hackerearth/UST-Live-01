@@ -10,5 +10,9 @@ namespace HealthAxisCore_Api.Services.Interfaces
         Task<HealthRecordDto> GetByIdAsync(int id, ClaimsPrincipal user, CancellationToken ct = default);
 
         Task<HealthRecordDto> CreateAsync(CreateHealthRecordDto request, ClaimsPrincipal user, CancellationToken ct = default);
+        Task<bool> ExistsForAppointmentAsync(
+    int appointmentId,
+    ClaimsPrincipal user,
+    CancellationToken ct = default);
     }
 }

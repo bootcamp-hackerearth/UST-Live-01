@@ -22,8 +22,8 @@
         </h1>
 
         <p>
-          Login as a patient or doctor to manage appointments, consultations,
-          and healthcare records through a protected digital care experience.
+          Login as a patient, doctor, or admin. HealthAxis will redirect you
+          to the correct portal based on your account role.
         </p>
       </div>
 
@@ -35,12 +35,12 @@
 
         <div class="brand-point">
           <span></span>
-          Patient and doctor role portals
+          Role-based Patient and Doctor portals
         </div>
 
         <div class="brand-point">
           <span></span>
-          Appointment and record management
+          Admin users redirect to Blazor Admin
         </div>
       </div>
     </section>
@@ -63,18 +63,20 @@
           <input type="email"
                  formControlName="email"
                  placeholder="example@healthaxis.com"
-                 [class.input-invalid]="email?.invalid && (email?.touched || submitted)" />
+                 [class.input-invalid]="email?.invalid && (email?.touched || submitted())" />
 
-          @if (email?.invalid && (email?.touched || submitted)) {
+          @if (email?.invalid && (email?.touched || submitted())) {
+          @if (email?.errors?.['required']) {
           <small class="validation-message">
-            @if (email?.errors?.['required']) {
             Email is required.
-            }
-
-            @if (email?.errors?.['email']) {
-            Enter a valid email address.
-            }
           </small>
+          }
+
+          @if (email?.errors?.['email']) {
+          <small class="validation-message">
+            Enter a valid email address.
+          </small>
+          }
           }
         </div>
 
@@ -82,32 +84,28 @@
           <label>Password</label>
 
           <div class="password-wrapper">
-            <input [type]="showPassword ? 'text' : 'password'"
+            <input [type]="showPassword() ? 'text' : 'password'"
                    formControlName="password"
                    placeholder="Enter password"
-                   [class.input-invalid]="password?.invalid && (password?.touched || submitted)" />
+                   [class.input-invalid]="password?.invalid && (password?.touched || submitted())" />
 
             <button type="button"
                     class="password-toggle"
                     (click)="togglePasswordVisibility()">
-              {{ showPassword ? 'Hide' : 'Show' }}
+              {{ showPassword() ? 'Hide' : 'Show' }}
             </button>
           </div>
 
-          @if (password?.invalid && (password?.touched || submitted)) {
+          @if (password?.invalid && (password?.touched || submitted())) {
+          @if (password?.errors?.['required']) {
           <small class="validation-message">
-            @if (password?.errors?.['required']) {
             Password is required.
-            }
-
-            @if (password?.errors?.['minlength']) {
-            Password must be at least 8 characters.
-            }
           </small>
+          }
           }
         </div>
 
-        <div class="form-row">
+        <!--<div class="form-row">
           <label class="remember-me">
             <input type="checkbox" formControlName="rememberMe" />
             Remember me
@@ -116,10 +114,18 @@
           <a routerLink="/login" class="soft-link">
             Forgot password?
           </a>
-        </div>
+        </div>-->
 
-        <button type="submit" class="primary-auth-button">
-          Login
+        @if (errorMessage()) {
+        <div class="error-message">
+          {{ errorMessage() }}
+        </div>
+        }
+
+        <button type="submit"
+                class="primary-auth-button"
+                [disabled]="isLoading()">
+          {{ isLoading() ? 'Logging in...' : 'Login' }}
         </button>
       </form>
 

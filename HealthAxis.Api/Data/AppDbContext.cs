@@ -15,7 +15,7 @@ namespace HealthAxisCore_Api.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<HealthRecord> HealthRecords { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-
+        public DbSet<AdminHandoffCode> AdminHandoffCodes { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

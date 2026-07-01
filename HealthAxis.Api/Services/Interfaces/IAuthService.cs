@@ -1,4 +1,5 @@
 using HealthAxisCore_Api.Models.Dtos;
+using System.Security.Claims;
 
 namespace HealthAxisCore_Api.Services.Interfaces
 {
@@ -21,5 +22,14 @@ namespace HealthAxisCore_Api.Services.Interfaces
 
         Task<string> ResetPasswordAsync(
             ResetPasswordDto request);
+        Task<string> ChangeFirstLoginPasswordAsync(
+    ChangeFirstLoginPasswordDto request,
+    ClaimsPrincipal user,
+    CancellationToken ct = default);
+
+        Task<string> ChangePasswordAsync(
+    ChangePasswordDto request,
+    ClaimsPrincipal user,
+    CancellationToken ct = default);
     }
 }
