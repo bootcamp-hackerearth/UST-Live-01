@@ -1,0 +1,34 @@
+@if (totalItems > pageSize) {
+  <nav class="pagination-wrapper">
+    <button
+      type="button"
+      class="pagination-btn"
+      [disabled]="currentPage === 1"
+      (click)="goToPrevious()"
+    >
+      Previous
+    </button>
+
+    <div class="page-numbers">
+      @for (page of pages; track page) {
+        <button
+          type="button"
+          class="page-number"
+          [class.active]="page === currentPage"
+          (click)="goToPage(page)"
+        >
+          {{ page }}
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="pagination-btn"
+      [disabled]="currentPage === totalPages"
+      (click)="goToNext()"
+    >
+      Next
+    </button>
+  </nav>
+}

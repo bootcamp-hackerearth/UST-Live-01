@@ -28,6 +28,114 @@ namespace HealthAxis.API.Services
             _mapper = mapper;
         }
 
+        public new async Task<AppointmentReadDto> CreateAsync(
+            AppointmentCreateDto createDto,
+            CancellationToken ct = default)
+        {
+            if (createDto.ScheduledDate.Date < DateTime.Today)
+            {
+                throw new InvalidOperationException(
+                    "Past dates are not allowed.");
+            }
+
+            if (string.IsNullOrWhiteSpace(createDto.TimeSlot))
+            {
+                throw new InvalidOperationException(
+                    "Time slot is required.");
+            }
+
+            if (createDto.ScheduledDate.Date == DateTime.Today &&
+                IsPastSlot(createDto.TimeSlot))
+            {
+                throw new InvalidOperationException(
+                    "Past time slots are not allowed.");
+            }
+
+            DateTime maxAllowedDate =
+            DateTime.Today.AddMonths(6);
+
+            if (createDto.ScheduledDate.Date > maxAllowedDate)
+            {
+                throw new InvalidOperationException(
+                    "Appointments can only be booked up to 6 months in advance.");
+            }
+
+            Doctor? doctor =
+                await _doctorRepository.GetByIdAsync(
+                    createDto.DoctorId,
+                    ct);
+
+            if (doctor == null)
+            {
+                throw new InvalidOperationException(
+                    "Doctor not found.");
+            }
+
+            if (!doctor.IsActive)
+            {
+                throw new InvalidOperationException(
+                    "This doctor is currently inactive and cannot accept appointments.");
+            }
+
+            Patient? patient =
+                await _patientRepository.GetByIdAsync(
+                    createDto.PatientId,
+                    ct);
+
+            if (patient == null)
+            {
+                throw new InvalidOperationException(
+                    "Patient not found.");
+            }
+
+            List<Appointment> appointments =
+                await _appointmentRepository.GetAllAsync(ct);
+
+            bool doctorAlreadyBooked =
+                appointments.Any(appointment =>
+                    appointment.DoctorId == createDto.DoctorId &&
+                    appointment.ScheduledDate.Date == createDto.ScheduledDate.Date &&
+                    appointment.TimeSlot == createDto.TimeSlot &&
+                    appointment.Status != AppointmentStatus.Cancelled);
+
+            if (doctorAlreadyBooked)
+            {
+                throw new InvalidOperationException(
+                    "This doctor is already booked for the selected date and time slot.");
+            }
+
+            bool patientAlreadyBookedAtSameTime =
+                appointments.Any(appointment =>
+                    appointment.PatientId == createDto.PatientId &&
+                    appointment.ScheduledDate.Date == createDto.ScheduledDate.Date &&
+                    appointment.TimeSlot == createDto.TimeSlot &&
+                    appointment.Status != AppointmentStatus.Cancelled);
+
+            if (patientAlreadyBookedAtSameTime)
+            {
+                throw new InvalidOperationException(
+                    "You already have an appointment booked at this date and time slot.");
+            }
+
+            Appointment appointmentToCreate =
+                _mapper.Map<Appointment>(createDto);
+
+            appointmentToCreate.ScheduledDate =
+                createDto.ScheduledDate.Date;
+
+            appointmentToCreate.Status =
+                AppointmentStatus.Scheduled;
+
+            Appointment createdAppointment =
+                await _appointmentRepository.CreateAsync(
+                    appointmentToCreate,
+                    ct);
+
+            return await MapAppointmentWithNamesAsync(
+                createdAppointment,
+                ct);
+        }
+
         public async Task<List<AppointmentReadDto>> GetAllWithDetailsAsync(
             CancellationToken ct = default)
         {
@@ -109,7 +217,8 @@ namespace HealthAxis.API.Services
             }
             else
             {
-                appointment.Status = statusUpdateDto.Status;
+                appointment.Status =
+                    statusUpdateDto.Status;
             }
 
             await _appointmentRepository.SaveChangesAsync(ct);
@@ -234,6 +343,23 @@ namespace HealthAxis.API.Services
                 Status = appointment.Status,
                 CancellationReason = appointment.CancellationReason
             };
+        }
+
+        private static bool IsPastSlot(
+            string timeSlot)
+        {
+            string startTime =
+                timeSlot.Split('-')[0];
+
+            if (!TimeSpan.TryParse(startTime, out TimeSpan slotStartTime))
+            {
+                return true;
+            }
+
+            TimeSpan currentTime =
+                DateTime.Now.TimeOfDay;
+
+            return slotStartTime <= currentTime;
         }
     }
 }

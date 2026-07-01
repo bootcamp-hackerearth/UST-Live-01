@@ -1,6 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router } from '@angular/router';
+
+import { RouterLink } from '@angular/router';
 
 import { Appointment } from '../../../core/models/appointment.model';
 import { PagedResult } from '../../../core/models/paged-result.model';
@@ -9,11 +11,13 @@ import { TokenService } from '../../../core/models/token.service';
 
 @Component({
   selector: 'app-doctor-dashboard',
+  standalone: true,
   imports: [RouterLink],
   templateUrl: './doctor-dashboard.html',
   styleUrls: ['./doctor-dashboard.css']
 })
 export class DoctorDashboard implements OnInit {
+
   isLoading = false;
   isUpdating = false;
 
@@ -55,6 +59,7 @@ export class DoctorDashboard implements OnInit {
 
     this.doctorService.getMyAppointments().subscribe({
       next: (result: Appointment[] | PagedResult<Appointment>) => {
+
         if (Array.isArray(result)) {
           this.appointments = result;
         } else {
@@ -65,6 +70,7 @@ export class DoctorDashboard implements OnInit {
       },
 
       error: (error: HttpErrorResponse) => {
+
         console.log('Doctor appointments error:', error);
 
         this.errorMessage =
@@ -78,18 +84,50 @@ export class DoctorDashboard implements OnInit {
     });
   }
 
+  confirmAppointment(appointmentId: number): void {
+
+    this.isUpdating = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.doctorService.confirmAppointment(appointmentId).subscribe({
+
+      next: () => {
+        this.successMessage = 'Appointment confirmed successfully.';
+        this.loadAppointments();
+      },
+
+      error: (error: HttpErrorResponse) => {
+
+        console.log('Confirm appointment error:', error);
+
+        this.errorMessage =
+          error.error?.message ??
+          `Unable to confirm appointment. Status: ${error.status}`;
+      },
+
+      complete: () => {
+        this.isUpdating = false;
+      }
+
+    });
+  }
+
   completeAppointment(appointmentId: number): void {
+
     this.isUpdating = true;
     this.errorMessage = '';
     this.successMessage = '';
 
     this.doctorService.completeAppointment(appointmentId).subscribe({
+
       next: () => {
         this.successMessage = 'Appointment completed successfully.';
         this.loadAppointments();
       },
 
       error: (error: HttpErrorResponse) => {
+
         console.log('Complete appointment error:', error);
 
         this.errorMessage =
@@ -100,6 +138,7 @@ export class DoctorDashboard implements OnInit {
       complete: () => {
         this.isUpdating = false;
       }
+
     });
   }
 
@@ -108,16 +147,20 @@ export class DoctorDashboard implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  canComplete(status: number | string): boolean {
-    const normalizedStatus = this.getStatusText(status).toLowerCase();
+  canConfirm(status: number | string): boolean {
+    return this.getStatusText(status).toLowerCase() === 'scheduled';
+  }
 
-    return (
-      normalizedStatus === 'scheduled' ||
-      normalizedStatus === 'confirmed'
-    );
+  canComplete(status: number | string): boolean {
+    return this.getStatusText(status).toLowerCase() === 'confirmed';
+  }
+
+  canAddHealthRecord(status: number | string): boolean {
+    return this.getStatusText(status).toLowerCase() === 'completed';
   }
 
   getStatusText(status: number | string): string {
+
     if (typeof status === 'string') {
       return status;
     }
@@ -133,24 +176,27 @@ export class DoctorDashboard implements OnInit {
   }
 
   getStatusClass(status: number | string): string {
-    const normalizedStatus = this.getStatusText(status).toLowerCase();
 
-    if (normalizedStatus === 'completed') {
-      return 'status-completed';
+    const value = this.getStatusText(status).toLowerCase();
+
+    switch (value) {
+
+      case 'completed':
+        return 'status-completed';
+
+      case 'confirmed':
+        return 'status-confirmed';
+
+      case 'cancelled':
+        return 'status-cancelled';
+
+      default:
+        return 'status-scheduled';
     }
-
-    if (normalizedStatus === 'confirmed') {
-      return 'status-confirmed';
-    }
-
-    if (normalizedStatus === 'cancelled') {
-      return 'status-cancelled';
-    }
-
-    return 'status-scheduled';
   }
 
   formatDate(value: string): string {
+
     if (!value) {
       return '-';
     }
@@ -168,47 +214,46 @@ export class DoctorDashboard implements OnInit {
   }
 
   private prepareDashboardData(): void {
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    this.appointments = this.appointments.sort(
+    this.appointments.sort(
       (a, b) =>
         new Date(a.scheduledDate).getTime() -
         new Date(b.scheduledDate).getTime()
     );
 
-    this.todaysAppointments = this.appointments.filter((appointment) => {
+    this.todaysAppointments = this.appointments.filter(appointment => {
+
       const appointmentDate = new Date(appointment.scheduledDate);
       appointmentDate.setHours(0, 0, 0, 0);
 
       return appointmentDate.getTime() === today.getTime();
+
     });
 
     this.totalAppointments = this.appointments.length;
 
     this.scheduledCount = this.appointments.filter(
-      appointment =>
-        this.getStatusText(appointment.status).toLowerCase() === 'scheduled'
+      a => this.getStatusText(a.status).toLowerCase() === 'scheduled'
     ).length;
 
     this.confirmedCount = this.appointments.filter(
-      appointment =>
-        this.getStatusText(appointment.status).toLowerCase() === 'confirmed'
+      a => this.getStatusText(a.status).toLowerCase() === 'confirmed'
     ).length;
 
     this.completedCount = this.appointments.filter(
-      appointment =>
-        this.getStatusText(appointment.status).toLowerCase() === 'completed'
+      a => this.getStatusText(a.status).toLowerCase() === 'completed'
     ).length;
   }
 
   private getFirstNameFromEmail(email: string): string {
-    const namePart = email.split('@')[0];
 
-    const firstName =
-      namePart
-        .split(/[._-]/)
-        .filter(Boolean)[0];
+    const firstName = email
+      .split('@')[0]
+      .split(/[._-]/)
+      .filter(Boolean)[0];
 
     return firstName || 'Doctor';
   }

@@ -111,6 +111,30 @@
   gap: 10px;
 }
 
+.floating-nav a.active {
+  background: transparent;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.floating-nav a.active .nav-icon {
+  background: #ffffff;
+  color: #1a3673;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-rail:hover .floating-nav a.active {
+  background: #ffffff;
+  color: #1a3673;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-rail:hover .floating-nav a.active .nav-icon {
+  background: transparent;
+  color: inherit;
+  box-shadow: none;
+}
+
 .floating-nav a {
   height: 58px;
   display: flex;

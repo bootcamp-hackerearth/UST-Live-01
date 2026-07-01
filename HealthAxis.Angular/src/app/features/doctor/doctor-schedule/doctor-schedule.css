@@ -46,10 +46,17 @@
   border-radius: 13px;
   padding: 0 13px;
   font: inherit;
+  outline: none;
 }
 
 .filter-card input {
   flex: 1;
+}
+
+.filter-card input:focus,
+.filter-card select:focus {
+  border-color: #44b8f3;
+  box-shadow: 0 0 0 4px rgba(68, 184, 243, 0.14);
 }
 
 .appointment-list {
@@ -64,6 +71,28 @@
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.empty-state {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  color: #667085;
+  text-align: center;
+}
+
+.empty-state strong {
+  color: #1a3673;
+}
+
+.appointment-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .appointment-card h2 {
@@ -92,28 +121,51 @@
   font-weight: 750;
 }
 
-.status-badge.status-scheduled {
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.record-added-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 13px;
+  padding: 10px 14px;
+  background: #ecfdf3;
+  color: #087443;
+  border: 1px solid #b7efd0;
+  font-weight: 850;
+  font-size: 14px;
+}
+
+.status-scheduled {
   background: #fff7e6;
   color: #b54708;
 }
 
-.status-badge.status-confirmed {
+.status-confirmed {
   background: #eaf6fd;
   color: #286ce2;
 }
 
-.status-badge.status-cancelled {
+.status-cancelled {
   background: #fff1f1;
   color: #b42318;
 }
 
-.status-badge.status-completed {
+.status-completed {
   background: #ecfdf3;
   color: #087443;
 }
 
 .appointment-actions {
   display: flex;
+  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -135,4 +187,48 @@
   border: 1px solid #dde7f0;
   background: #ffffff;
   color: #1a3673;
+}
+
+.disabled-action {
+  color: #667085;
+  font-weight: 750;
+  font-size: 13px;
+}
+
+.confirm-btn,
+.complete-btn {
+  border: none;
+  border-radius: 13px;
+  padding: 10px 14px;
+  font-weight: 850;
+  cursor: pointer;
+  font: inherit;
+}
+
+.confirm-btn {
+  background: #eaf6fd;
+  color: #286ce2;
+  border: 1px solid #bfe7ff;
+}
+
+.complete-btn {
+  background: #ecfdf3;
+  color: #087443;
+  border: 1px solid #b7efd0;
+}
+
+.confirm-btn:disabled,
+.complete-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .filter-card {
+    flex-direction: column;
+  }
+
+  .appointment-main {
+    flex-direction: column;
+  }
 }

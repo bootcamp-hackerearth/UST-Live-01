@@ -13,7 +13,10 @@ import { TokenService } from '../../../core/models/token.service';
 })
 export class DoctorMyInformation implements OnInit {
   isLoading = false;
+  isSaving = false;
+
   errorMessage = '';
+  successMessage = '';
 
   doctor: DoctorInfo | null = null;
 
@@ -23,10 +26,12 @@ export class DoctorMyInformation implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const referenceId = this.tokenService.getReferenceId();
+    const referenceId =
+      this.tokenService.getReferenceId();
 
     if (!referenceId) {
-      this.errorMessage = 'Doctor information was not found. Please login again.';
+      this.errorMessage =
+        'Doctor information was not found. Please login again.';
       return;
     }
 
@@ -36,6 +41,7 @@ export class DoctorMyInformation implements OnInit {
   loadDoctor(doctorId: number): void {
     this.isLoading = true;
     this.errorMessage = '';
+    this.successMessage = '';
 
     this.doctorService.getMyInformation(doctorId).subscribe({
       next: (doctor: DoctorInfo) => {
@@ -54,6 +60,44 @@ export class DoctorMyInformation implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  toggleActiveStatus(): void {
+    if (!this.doctor) {
+      return;
+    }
+
+    this.isSaving = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const nextStatus =
+      !this.doctor.isActive;
+
+    this.doctorService
+      .updateMyActiveStatus(this.doctor.doctorId, nextStatus)
+      .subscribe({
+        next: (updatedDoctor: DoctorInfo) => {
+          this.doctor = updatedDoctor;
+
+          this.successMessage =
+            updatedDoctor.isActive
+              ? 'You are now marked as Active.'
+              : 'You are now marked as Inactive.';
+        },
+
+        error: (error: HttpErrorResponse) => {
+          console.log('Doctor active status update error:', error);
+
+          this.errorMessage =
+            error.error?.message ??
+            `Unable to update status. Status: ${error.status}`;
+        },
+
+        complete: () => {
+          this.isSaving = false;
+        }
+      });
   }
 
   getSpecialisationName(value: number | string): string {
@@ -79,5 +123,13 @@ export class DoctorMyInformation implements OnInit {
       style: 'currency',
       currency: 'INR'
     }).format(value);
+  }
+
+  getValue(value: string | number | null | undefined): string {
+    if (value === null || value === undefined || value === '') {
+      return '-';
+    }
+
+    return value.toString();
   }
 }

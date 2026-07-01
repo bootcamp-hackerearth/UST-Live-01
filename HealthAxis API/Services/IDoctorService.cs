@@ -16,5 +16,11 @@ namespace HealthAxis.API.Services
             int doctorId,
             DateTime date,
             CancellationToken ct = default);
+
+        Task<DoctorReadDto?> UpdateActiveStatusAsync(
+            int doctorId,
+            bool isActive,
+            CancellationToken ct = default);
+
     }
 }

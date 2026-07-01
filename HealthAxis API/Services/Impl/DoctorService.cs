@@ -12,6 +12,7 @@ namespace HealthAxis.API.Services
     {
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IMapper _mapper;
 
         public DoctorService(
             IDoctorRepository doctorRepository,
@@ -21,6 +22,7 @@ namespace HealthAxis.API.Services
         {
             _doctorRepository = doctorRepository;
             _appointmentRepository = appointmentRepository;
+            _mapper = mapper;
         }
 
         public async Task<DoctorAvailabilityDto?> GetAvailabilityAsync(
@@ -66,10 +68,32 @@ namespace HealthAxis.API.Services
             };
         }
 
-        public async Task<List<string>> GetAvailableSlotsAsync(
+        public async Task<DoctorReadDto?> UpdateActiveStatusAsync(
             int doctorId,
-            DateTime date,
+            bool isActive,
             CancellationToken ct = default)
+                {
+                    Doctor? doctor =
+                        await _doctorRepository.GetByIdAsync(
+                            doctorId,
+                            ct);
+
+                    if (doctor == null)
+                    {
+                        return null;
+                    }
+
+                    doctor.IsActive = isActive;
+
+                    await _doctorRepository.SaveChangesAsync(ct);
+
+                    return _mapper.Map<DoctorReadDto>(doctor);
+        }
+
+        public async Task<List<string>> GetAvailableSlotsAsync(
+        int doctorId,
+        DateTime date,
+        CancellationToken ct = default)
         {
             Doctor? doctor =
                 await _doctorRepository.GetByIdAsync(
@@ -86,21 +110,31 @@ namespace HealthAxis.API.Services
                 return new List<string>();
             }
 
-            List<string> allSlots = new()
+            if (date.Date < DateTime.Today)
             {
-                "09:00-09:30",
-                "09:30-10:00",
-                "10:00-10:30",
-                "10:30-11:00",
-                "11:00-11:30",
-                "11:30-12:00",
-                "14:00-14:30",
-                "14:30-15:00",
-                "15:00-15:30",
-                "15:30-16:00",
-                "16:00-16:30",
-                "16:30-17:00"
-            };
+                return new List<string>();
+            }
+
+            if (date.Date > DateTime.Today.AddMonths(6))
+            {
+                return new List<string>();
+            }
+
+            List<string> allSlots = new()
+    {
+        "09:00-09:30",
+        "09:30-10:00",
+        "10:00-10:30",
+        "10:30-11:00",
+        "11:00-11:30",
+        "11:30-12:00",
+        "14:00-14:30",
+        "14:30-15:00",
+        "15:00-15:30",
+        "15:30-16:00",
+        "16:00-16:30",
+        "16:30-17:00"
+    };
 
             List<Appointment> appointments =
                 await _appointmentRepository.GetAllAsync(ct);
@@ -121,7 +155,32 @@ namespace HealthAxis.API.Services
                         !bookedSlots.Contains(slot))
                     .ToList();
 
+            if (date.Date == DateTime.Today)
+            {
+                availableSlots =
+                    availableSlots
+                        .Where(slot =>
+                            !IsPastSlot(slot))
+                        .ToList();
+            }
+
             return availableSlots;
+        }
+
+        private static bool IsPastSlot(string timeSlot)
+        {
+            string startTime =
+                timeSlot.Split('-')[0];
+
+            if (!TimeSpan.TryParse(startTime, out TimeSpan slotStartTime))
+            {
+                return true;
+            }
+
+            TimeSpan currentTime =
+                DateTime.Now.TimeOfDay;
+
+            return slotStartTime <= currentTime;
         }
     }
 }

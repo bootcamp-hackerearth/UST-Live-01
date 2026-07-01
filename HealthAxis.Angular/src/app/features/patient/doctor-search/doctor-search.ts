@@ -1,19 +1,24 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+
 import { Doctor } from '../../../core/models/doctor.model';
 import { PagedResult } from '../../../core/models/paged-result.model';
 import { PatientService } from '../../../core/services/patient.service';
+import { Pagination } from '../../../shared/pagination/pagination';
+
+import {
+  SPECIALISATION_OPTIONS,
+  getSpecialisationName
+} from '../../../core/constants/specialisation.constants';
 
 @Component({
   selector: 'app-doctor-search',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, Pagination],
   templateUrl: './doctor-search.html',
   styleUrls: ['./doctor-search.css']
 })
 export class DoctorSearch implements OnInit {
-  private readonly pageSize = 50;
-
   isLoading = false;
   errorMessage = '';
 
@@ -22,13 +27,13 @@ export class DoctorSearch implements OnInit {
 
   doctors: Doctor[] = [];
   filteredDoctors: Doctor[] = [];
+  pagedDoctors: Doctor[] = [];
 
-  specialisations: { value: string; label: string }[] = [
-    {
-      value: '',
-      label: 'All Specialisations'
-    }
-  ];
+  specialisations = SPECIALISATION_OPTIONS;
+
+  currentPage = 1;
+  pageSize = 6;
+  totalItems = 0;
 
   constructor(private patientService: PatientService) {}
 
@@ -43,21 +48,18 @@ export class DoctorSearch implements OnInit {
     this.patientService
       .getDoctors(
         1,
-        this.pageSize,
+        100,
         '',
         ''
       )
       .subscribe({
         next: (result: Doctor[] | PagedResult<Doctor>) => {
-          console.log('Doctors API response:', result);
-
           if (Array.isArray(result)) {
             this.doctors = result;
           } else {
             this.doctors = result.items ?? [];
           }
 
-          this.buildSpecialisationOptions();
           this.applyFilters();
         },
 
@@ -66,6 +68,7 @@ export class DoctorSearch implements OnInit {
 
           this.doctors = [];
           this.filteredDoctors = [];
+          this.pagedDoctors = [];
 
           this.errorMessage =
             error?.error?.message ??
@@ -79,17 +82,25 @@ export class DoctorSearch implements OnInit {
   }
 
   onSearchChanged(): void {
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   onSpecialisationChanged(): void {
+    this.currentPage = 1;
     this.applyFilters();
   }
 
   clearFilters(): void {
     this.searchText = '';
     this.selectedSpecialisation = '';
+    this.currentPage = 1;
     this.applyFilters();
+  }
+
+  onPageChanged(page: number): void {
+    this.currentPage = page;
+    this.updatePagedDoctors();
   }
 
   private applyFilters(): void {
@@ -107,10 +118,14 @@ export class DoctorSearch implements OnInit {
         const doctorSpecialisation =
           String(doctor.specialisation ?? '');
 
+        const specialisationName =
+          this.getSpecialisationName(doctor.specialisation).toLowerCase();
+
         const matchesSearch =
           !search ||
           doctorName.includes(search) ||
-          doctorId.includes(search);
+          doctorId.includes(search) ||
+          specialisationName.includes(search);
 
         const matchesSpecialisation =
           !this.selectedSpecialisation ||
@@ -118,67 +133,28 @@ export class DoctorSearch implements OnInit {
 
         return matchesSearch && matchesSpecialisation;
       });
+
+    this.totalItems = this.filteredDoctors.length;
+    this.updatePagedDoctors();
   }
 
-  private buildSpecialisationOptions(): void {
-    const options =
-      new Map<string, string>();
+  private updatePagedDoctors(): void {
+    const startIndex =
+      (this.currentPage - 1) * this.pageSize;
 
-    this.doctors.forEach((doctor) => {
-      const value =
-        String(doctor.specialisation ?? '');
+    const endIndex =
+      startIndex + this.pageSize;
 
-      if (!value) {
-        return;
-      }
-
-      options.set(
-        value,
-        this.getSpecialisationName(doctor.specialisation)
-      );
-    });
-
-    this.specialisations = [
-      {
-        value: '',
-        label: 'All Specialisations'
-      },
-      ...Array.from(options.entries()).map(([value, label]) => ({
-        value,
-        label
-      }))
-    ];
+    this.pagedDoctors =
+      this.filteredDoctors.slice(startIndex, endIndex);
   }
 
   getSpecialisationName(value: number | string): string {
-    if (value === null || value === undefined) {
+    if (value === null || value === undefined || value === '') {
       return 'Not specified';
     }
 
-    if (typeof value === 'string' && isNaN(Number(value))) {
-      return this.formatSpecialisationText(value);
-    }
-
-    const specialisationMap: Record<number, string> = {
-      0: 'Cardiology',
-      1: 'General Medicine',
-      2: 'Dermatology',
-      3: 'Pediatrics',
-      4: 'Orthopedics',
-      5: 'Neurology'
-    };
-
-    const numberValue =
-      Number(value);
-
-    return specialisationMap[numberValue] ??
-      `Specialisation ${value}`;
-  }
-
-  private formatSpecialisationText(value: string): string {
-    return value
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      .trim();
+    return getSpecialisationName(value);
   }
 
   formatFee(value: number): string {

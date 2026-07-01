@@ -17,45 +17,66 @@ export class DoctorService {
 
   constructor(private http: HttpClient) {}
 
-  getMyInformation(doctorId: number): Observable<DoctorInfo> {
-  return this.http.get<DoctorInfo>(
-    `${this.apiBaseUrl}/doctors/${doctorId}`
-  );
-}
-  getMyAppointments(): Observable<Appointment[] | PagedResult<Appointment>> {
-    return this.http.get<Appointment[] | PagedResult<Appointment>>(
-      `${this.apiBaseUrl}/appointments`
+    getMyInformation(doctorId: number): Observable<DoctorInfo> {
+    return this.http.get<DoctorInfo>(
+        `${this.apiBaseUrl}/doctors/${doctorId}`
     );
-  }
+    }
+    getMyAppointments(): Observable<Appointment[] | PagedResult<Appointment>> {
+        return this.http.get<Appointment[] | PagedResult<Appointment>>(
+        `${this.apiBaseUrl}/appointments`
+        );
+    }
 
-  completeAppointment(appointmentId: number): Observable<Appointment> {
+    confirmAppointment(appointmentId: number): Observable<Appointment> {
     return this.http.put<Appointment>(
-      `${this.apiBaseUrl}/appointments/${appointmentId}/status`,
-      {
-        status: 4,
+        `${this.apiBaseUrl}/appointments/${appointmentId}/status`,
+        {
+        status: 2,
         cancellationReason: ''
-      }
+        }
     );
-  }
+    }
+    completeAppointment(appointmentId: number): Observable<Appointment> {
+        return this.http.put<Appointment>(
+        `${this.apiBaseUrl}/appointments/${appointmentId}/status`,
+        {
+            status: 4,
+            cancellationReason: ''
+        }
+        );
+    }
 
-  getPatientProfile(patientId: number): Observable<Patient> {
-    return this.http.get<Patient>(
-      `${this.apiBaseUrl}/doctors/patients/${patientId}`
-    );
-  }
+    getPatientProfile(patientId: number): Observable<Patient> {
+        return this.http.get<Patient>(
+        `${this.apiBaseUrl}/doctors/patients/${patientId}`
+        );
+    }
 
-  getPatientHealthRecords(patientId: number): Observable<HealthRecord[]> {
-    return this.http.get<HealthRecord[]>(
-      `${this.apiBaseUrl}/doctors/patients/${patientId}/health-records`
-    );
-  }
+    getPatientHealthRecords(patientId: number): Observable<HealthRecord[]> {
+        return this.http.get<HealthRecord[]>(
+        `${this.apiBaseUrl}/doctors/patients/${patientId}/health-records`
+        );
+    }
 
-  addHealthRecord(
-    request: HealthRecordCreateRequest
-  ): Observable<HealthRecord> {
-    return this.http.post<HealthRecord>(
-      `${this.apiBaseUrl}/health-records`,
-      request
-    );
-  }
+    updateMyActiveStatus(
+        doctorId: number,
+        isActive: boolean
+        ): Observable<DoctorInfo> {
+        return this.http.patch<DoctorInfo>(
+            `${this.apiBaseUrl}/doctors/${doctorId}/active-status`,
+            {
+            isActive
+            }
+        );
+    }
+
+    addHealthRecord(
+        request: HealthRecordCreateRequest
+    ): Observable<HealthRecord> {
+        return this.http.post<HealthRecord>(
+        `${this.apiBaseUrl}/health-records`,
+        request
+        );
+    }
 }

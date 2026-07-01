@@ -1,0 +1,111 @@
+﻿@page "/auth-callback"
+@layout HealthAxis.Admin.Layout.EmptyLayout
+
+@inject IJSRuntime Js
+@inject NavigationManager NavigationManager
+
+<div class="auth-callback-page">
+    <div class="auth-callback-card">
+        <h2>Signing you in...</h2>
+        <p>Please wait while we open the admin dashboard.</p>
+    </div>
+</div>
+
+@code {
+    private bool hasProcessed;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || hasProcessed)
+        {
+            return;
+        }
+
+        hasProcessed = true;
+
+        try
+        {
+            AuthCallbackPayload? payload =
+                await Js.InvokeAsync<AuthCallbackPayload?>(
+                    "healthAxisAuth.readAuthPayloadFromHash");
+
+            if (payload == null ||
+                string.IsNullOrWhiteSpace(payload.AccessToken))
+            {
+                RedirectToAngularLogin();
+                return;
+            }
+
+            if (!string.Equals(
+                    payload.Role,
+                    "Admin",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                RedirectToAngularLogin();
+                return;
+            }
+
+            await Js.InvokeVoidAsync(
+                "localStorage.setItem",
+                "healthaxis_access_token",
+                payload.AccessToken);
+
+            await Js.InvokeVoidAsync(
+                "localStorage.setItem",
+                "healthaxis_refresh_token",
+                payload.RefreshToken ?? string.Empty);
+
+            await Js.InvokeVoidAsync(
+                "localStorage.setItem",
+                "healthaxis_user_role",
+                payload.Role ?? string.Empty);
+
+            await Js.InvokeVoidAsync(
+                "localStorage.setItem",
+                "healthaxis_user_email",
+                payload.Email ?? string.Empty);
+
+            await Js.InvokeVoidAsync(
+                "localStorage.setItem",
+                "healthaxis_user_id",
+                payload.UserId ?? string.Empty);
+
+            await Js.InvokeVoidAsync(
+                "localStorage.setItem",
+                "healthaxis_reference_id",
+                payload.ReferenceId.ToString());
+
+            NavigationManager.NavigateTo(
+                "/dashboard",
+                forceLoad: true,
+                replace: true);
+        }
+        catch
+        {
+            RedirectToAngularLogin();
+        }
+    }
+
+    private void RedirectToAngularLogin()
+    {
+        NavigationManager.NavigateTo(
+            "http://localhost:4200/login",
+            forceLoad: true,
+            replace: true);
+    }
+
+    private class AuthCallbackPayload
+    {
+        public string AccessToken { get; set; } = string.Empty;
+
+        public string RefreshToken { get; set; } = string.Empty;
+
+        public string Role { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public string UserId { get; set; } = string.Empty;
+
+        public int ReferenceId { get; set; }
+    }
+}
