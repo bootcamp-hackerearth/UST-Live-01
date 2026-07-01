@@ -43,8 +43,7 @@ export class BookAppointment implements OnInit {
     const idFromRoute =
       this.route.snapshot.paramMap.get('doctorId');
 
-    this.doctorId =
-      Number(idFromRoute);
+    this.doctorId = Number(idFromRoute);
 
     if (!this.doctorId) {
       this.errorMessage = 'Invalid doctor selected.';
@@ -78,10 +77,16 @@ export class BookAppointment implements OnInit {
   }
 
   onDateChanged(): void {
+    this.errorMessage = '';
     this.selectedSlot = '';
     this.availableSlots = [];
 
     if (!this.selectedDate) {
+      return;
+    }
+
+    if (this.isPastDate(this.selectedDate)) {
+      this.errorMessage = 'Past dates are not allowed.';
       return;
     }
 
@@ -98,16 +103,21 @@ export class BookAppointment implements OnInit {
         next: (slots: string[]) => {
           console.log('Availability response:', slots);
 
-          this.availableSlots = slots ?? [];
+          this.availableSlots =
+            (slots ?? []).filter(slot =>
+              !this.isPastSlot(this.selectedDate, slot)
+            );
         },
 
         error: (error: HttpErrorResponse) => {
           console.log('Availability error:', error);
+          console.log('Availability response body:', error.error);
 
           this.availableSlots = [];
 
           this.errorMessage =
             error.error?.message ??
+            this.getValidationErrors(error) ??
             `Unable to load available slots. Status: ${error.status}`;
         },
 
@@ -126,8 +136,18 @@ export class BookAppointment implements OnInit {
       return;
     }
 
+    if (this.isPastDate(this.selectedDate)) {
+      this.errorMessage = 'Past dates are not allowed.';
+      return;
+    }
+
     if (!this.selectedSlot) {
       this.errorMessage = 'Please select an available time slot.';
+      return;
+    }
+
+    if (this.isPastSlot(this.selectedDate, this.selectedSlot)) {
+      this.errorMessage = 'Past time slots are not allowed.';
       return;
     }
 
@@ -135,7 +155,8 @@ export class BookAppointment implements OnInit {
       this.tokenService.getReferenceId();
 
     if (!patientReferenceId) {
-      this.errorMessage = 'Patient details were not found. Please login again.';
+      this.errorMessage =
+        'Patient details were not found. Please login again.';
       return;
     }
 
@@ -150,7 +171,8 @@ export class BookAppointment implements OnInit {
 
     this.patientService.bookAppointment(request).subscribe({
       next: () => {
-        this.successMessage = 'Appointment booked successfully.';
+        this.successMessage =
+          'Appointment booked successfully.';
 
         setTimeout(() => {
           this.router.navigate(['/patient/appointments']);
@@ -159,9 +181,11 @@ export class BookAppointment implements OnInit {
 
       error: (error: HttpErrorResponse) => {
         console.log('Book appointment error:', error);
+        console.log('Book appointment response body:', error.error);
 
         this.errorMessage =
           error.error?.message ??
+          this.getValidationErrors(error) ??
           `Unable to book appointment. Status: ${error.status}`;
       },
 
@@ -169,6 +193,64 @@ export class BookAppointment implements OnInit {
         this.isBooking = false;
       }
     });
+  }
+
+  private isPastDate(date: string): boolean {
+    const selected =
+      new Date(date);
+
+    selected.setHours(0, 0, 0, 0);
+
+    const today =
+      new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    return selected.getTime() < today.getTime();
+  }
+
+  private isPastSlot(date: string, slot: string): boolean {
+    const todayString =
+      new Date().toISOString().split('T')[0];
+
+    if (date !== todayString) {
+      return false;
+    }
+
+    const startTime =
+      slot.split('-')[0];
+
+    const [hours, minutes] =
+      startTime.split(':').map(Number);
+
+    const slotDateTime =
+      new Date();
+
+    slotDateTime.setHours(hours, minutes, 0, 0);
+
+    return slotDateTime.getTime() <= new Date().getTime();
+  }
+
+  private getValidationErrors(error: HttpErrorResponse): string | null {
+    const validationErrors = error.error?.errors;
+
+    if (!validationErrors) {
+      return null;
+    }
+
+    const messages: string[] = [];
+
+    Object.keys(validationErrors).forEach((key) => {
+      const fieldErrors = validationErrors[key];
+
+      if (Array.isArray(fieldErrors)) {
+        messages.push(...fieldErrors);
+      }
+    });
+
+    return messages.length > 0
+      ? messages.join(' ')
+      : null;
   }
 
   getSpecialisationName(value: number | string): string {

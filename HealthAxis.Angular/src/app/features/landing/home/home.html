@@ -1,105 +1,301 @@
-<div class="home-page">
-  <header class="home-header">
-    <div class="brand">
-      <div class="brand-logo">H</div>
+<div class="landing-page">
+  <header class="site-header">
+    <a routerLink="/" class="brand">
+      <div class="brand-mark">H</div>
 
-      <div>
-        <h1>HealthAxis</h1>
-        <p>Healthcare Management Platform</p>
+      <div class="brand-text">
+        <strong>HealthAxis</strong>
+        <span>Connected Healthcare Platform</span>
       </div>
-    </div>
+    </a>
 
-    <nav class="home-nav">
-      <a routerLink="/login">Login</a>
-      <a routerLink="/register" class="nav-register">Register</a>
-    </nav>
+   <nav class="main-nav">
+  <a href="#who-we-are">
+    Who We Are
+  </a>
+  <a href="#approach">
+    Our Approach
+  </a>
+  <a href="#solutions">
+    Solutions
+  </a>
+
+  <a href="#journey">
+    Care Journey
+  </a>
+</nav>
+
+    <div class="header-actions">
+      <a routerLink="/login" class="login-link">Login</a>
+      <a routerLink="/register" class="header-btn">Get Started</a>
+    </div>
   </header>
 
-  <main class="hero-section">
-    <section class="hero-content">
-      <p class="hero-badge">Secure Digital Healthcare</p>
+  <main>
+    <section class="hero-section">
+      <div class="hero-copy">
+        <div class="eyebrow">
+          Whole-health access, simplified
+        </div>
 
-      <h2>
-        Smarter healthcare access for patients, doctors, and administrators.
-      </h2>
+        <h1>
+          Elevating digital care for every appointment, record, and consultation.
+        </h1>
 
-      <p class="hero-description">
-        HealthAxis helps patients book appointments, doctors manage consultations,
-        and administrators monitor healthcare operations through one secure platform.
-      </p>
+        <p>
+          HealthAxis connects patients and doctors through secure appointment booking,
+          health record access, consultation workflows, and role-based healthcare portals.
+        </p>
 
-      <div class="hero-actions">
-        <a routerLink="/register" class="primary-action">
-          Register as Patient
+        <div class="hero-actions">
+          <a routerLink="/register" class="primary-btn">
+            Create Patient Account
+          </a>
+
+          <a routerLink="/login" class="secondary-btn">
+            Sign In
+          </a>
+        </div>
+
+        <div class="hero-metrics">
+          <div>
+            <strong>Secure</strong>
+            <span>JWT protected access</span>
+          </div>
+
+          <div>
+            <strong>Smart</strong>
+            <span>No double booking</span>
+          </div>
+
+          <div>
+            <strong>Connected</strong>
+            <span>Records and visits together</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="care-card-main">
+          <div class="care-card-header">
+            <div class="medical-symbol">⚕</div>
+
+            <div>
+              <strong>Upcoming Care Visit</strong>
+              <span>Patient appointment overview</span>
+            </div>
+          </div>
+
+          <div class="care-grid">
+            <div>
+              <span>Doctor</span>
+              <strong>Dr. Meera Nair</strong>
+            </div>
+
+            <div>
+              <span>Specialisation</span>
+              <strong>General Medicine</strong>
+            </div>
+
+            <div>
+              <span>Date</span>
+              <strong>29 Jun 2026</strong>
+            </div>
+
+            <div>
+              <span>Status</span>
+              <strong class="status-pill">Confirmed</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="floating-insight insight-top">
+          <span>✓</span>
+          <strong>Appointment confirmed</strong>
+        </div>
+
+        <div class="floating-insight insight-bottom">
+          <span>▧</span>
+          <strong>Health record updated</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="who-we-are" class="who-section">
+      <div class="section-label">Who We Are</div>
+
+      <div class="who-layout">
+        <div>
+          <h2>
+            A healthcare platform designed around access, clarity, and continuity.
+          </h2>
+        </div>
+
+        <div>
+          <p>
+            HealthAxis helps simplify how patients and doctors interact.
+            Patients can find doctors, book appointments, manage cancellations,
+            and view health history. Doctors can manage schedules, complete visits,
+            and add health records after consultations.
+          </p>
+
+          <p>
+            The platform is designed to support connected healthcare experiences
+            with secure role-based access and clear digital workflows.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="approach" class="approach-section">
+      <div class="section-heading">
+        <span>Our Approach</span>
+        <h2>Built for the full care journey</h2>
+        <p>
+          From appointment discovery to completed consultation records, HealthAxis keeps
+          important healthcare steps organized in one place.
+        </p>
+      </div>
+
+      <div class="approach-grid">
+        <article class="approach-card">
+          <div class="approach-icon">01</div>
+          <h3>Find the right doctor</h3>
+          <p>
+            Patients can search by specialisation and view available doctors before booking.
+          </p>
+        </article>
+
+        <article class="approach-card">
+          <div class="approach-icon">02</div>
+          <h3>Book with confidence</h3>
+          <p>
+            Appointment validation prevents duplicate bookings and blocks unavailable slots.
+          </p>
+        </article>
+
+        <article class="approach-card">
+          <div class="approach-icon">03</div>
+          <h3>Manage consultations</h3>
+          <p>
+            Doctors can confirm, complete, and document consultations through a dedicated portal.
+          </p>
+        </article>
+
+        <article class="approach-card">
+          <div class="approach-icon">04</div>
+          <h3>Review health history</h3>
+          <p>
+            Patients can access diagnoses, prescriptions, visit notes, and completed records.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="solutions" class="solutions-section">
+      <div class="solution-card patient-solution">
+        <div class="solution-copy">
+          <span class="section-label">For Patients</span>
+          <h2>One place to manage your care</h2>
+          <p>
+            Search doctors, book appointments, cancel when needed, and view health history
+            from a secure patient portal.
+          </p>
+
+          <ul>
+            <li>Doctor search by specialisation</li>
+            <li>Appointment booking and cancellation</li>
+            <li>Health history and prescriptions</li>
+          </ul>
+        </div>
+
+        <a routerLink="/register" class="primary-btn">
+          Start as Patient
         </a>
+      </div>
 
-        <a routerLink="/login" class="secondary-action">
-          Login to Portal
+      <div class="solution-card doctor-solution">
+        <div class="solution-copy">
+          <span class="section-label">For Doctors</span>
+          <h2>Streamline daily consultations</h2>
+          <p>
+            Doctors can view schedules, confirm appointments, complete consultations,
+            and add health records only after visits are complete.
+          </p>
+
+          <ul>
+            <li>Schedule management</li>
+            <li>Patient profile access</li>
+            <li>Consultation record creation</li>
+          </ul>
+        </div>
+
+        <a routerLink="/login" class="secondary-btn dark-secondary">
+          Doctor Login
         </a>
       </div>
     </section>
 
-    <section class="hero-visual">
-      <div class="health-card">
-        <div class="health-card-header">
-          <div class="health-icon">+</div>
-          <span>HealthAxis Care</span>
+    <section id="journey" class="journey-section">
+      <div class="section-heading">
+        <span>Care Journey</span>
+        <h2>Simple steps. Better coordination.</h2>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Search</h3>
+          <p>Patients discover doctors by specialisation and availability.</p>
         </div>
 
-        <h3>Healthcare made simple</h3>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Book</h3>
+          <p>Patients select a valid future slot without double booking.</p>
+        </div>
 
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Consult</h3>
+          <p>Doctors confirm and complete appointments through their portal.</p>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <h3>Record</h3>
+          <p>Health records are added after completion and visible to patients.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div>
+        <span class="section-label">Ready to begin?</span>
+        <h2>Bring appointments, records, and care teams together.</h2>
         <p>
-          A unified platform for appointments, patient records, doctor access,
-          and administrative reporting.
+          Start using HealthAxis to simplify patient access and doctor workflows.
         </p>
+      </div>
 
-        <div class="health-list">
-          <div>
-            <span>✓</span>
-            <p>Book appointments securely</p>
-          </div>
+      <div class="cta-actions">
+        <a routerLink="/register" class="primary-btn">
+          Register Now
+        </a>
 
-          <div>
-            <span>✓</span>
-            <p>Access patient and doctor dashboards</p>
-          </div>
-
-          <div>
-            <span>✓</span>
-            <p>Manage healthcare operations efficiently</p>
-          </div>
-        </div>
+        <a routerLink="/login" class="secondary-btn">
+          Login
+        </a>
       </div>
     </section>
   </main>
 
-  <section class="audience-section">
-    <div class="audience-card">
-      <div class="audience-icon">👤</div>
-      <h3>For Patients</h3>
-      <p>
-        Register, login, book appointments, and manage your healthcare journey.
-      </p>
+  <footer class="site-footer">
+    <div>
+      <strong>HealthAxis</strong>
+      <span>Connected Healthcare Platform</span>
     </div>
 
-    <div class="audience-card">
-      <div class="audience-icon">⚕</div>
-      <h3>For Doctors</h3>
-      <p>
-        View appointments, manage consultations, and support patient care.
-      </p>
-    </div>
-
-    <div class="audience-card">
-      <div class="audience-icon">▦</div>
-      <h3>For Admins</h3>
-      <p>
-        Manage doctors, patients, appointments, and operational reports.
-      </p>
-    </div>
-  </section>
-
-  <footer class="home-footer">
-    <p>© 2026 HealthAxis. Secure healthcare management platform.</p>
+    <p>© 2026 HealthAxis. Built for secure digital healthcare access.</p>
   </footer>
 </div>

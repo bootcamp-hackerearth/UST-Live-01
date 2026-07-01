@@ -12,4 +12,6 @@ export interface Appointment {
 
   status: number | string;
   cancellationReason?: string;
+
+  hasHealthRecord?: boolean;
 }

@@ -59,15 +59,33 @@ namespace HealthAxis.API.Controllers
         [HttpPost]
         [Authorize(Roles = "Patient,Admin")]
         public async Task<IActionResult> Create(
-            AppointmentCreateDto request,
-            CancellationToken ct)
+             AppointmentCreateDto request,
+             CancellationToken ct)
         {
-            var appointment =
-                await _appointmentService.CreateAsync(
-                    request,
-                    ct);
+            try
+            {
+                if (User.IsInRole("Patient"))
+                {
+                    int patientId =
+                        GetReferenceIdFromToken();
 
-            return Ok(appointment);
+                    request.PatientId = patientId;
+                }
+
+                var appointment =
+                    await _appointmentService.CreateAsync(
+                        request,
+                        ct);
+
+                return Ok(appointment);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new
+                {
+                    message = ex.Message
+                });
+            }
         }
 
         [HttpPut("{id:int}/status")]

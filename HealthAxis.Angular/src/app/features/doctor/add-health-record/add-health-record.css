@@ -4,11 +4,15 @@
 }
 
 .health-record-page {
-  max-width: 900px;
+  max-width: 980px;
 }
 
 .page-header {
   margin-bottom: 22px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
 }
 
 .page-header h1 {
@@ -22,13 +26,53 @@
   color: #667085;
 }
 
+.secondary-link,
+.primary-link {
+  text-decoration: none;
+  border-radius: 13px;
+  font-weight: 850;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.secondary-link {
+  color: #1a3673;
+  background: #ffffff;
+  border: 1px solid #dde7f0;
+  padding: 11px 15px;
+}
+
+.primary-link {
+  margin-top: 14px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #286ce2, #44b8f3);
+  padding: 11px 15px;
+}
+
 .page-card,
 .record-card {
   background: #ffffff;
   border: 1px solid #dde7f0;
-  border-radius: 22px;
+  border-radius: 24px;
   padding: 24px;
   box-shadow: 0 12px 30px rgba(26, 54, 115, 0.08);
+}
+
+.empty-card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  text-align: center;
+  color: #667085;
+}
+
+.empty-card strong {
+  color: #1a3673;
+  font-size: 18px;
 }
 
 .alert-error,
@@ -51,6 +95,71 @@
   border: 1px solid #b7efd0;
 }
 
+.readonly-section,
+.editable-section {
+  margin-bottom: 22px;
+}
+
+.readonly-section h2,
+.editable-section h2 {
+  margin: 0 0 15px;
+  color: #1a3673;
+  font-size: 21px;
+}
+
+.appointment-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.appointment-summary div {
+  background: #f8fcff;
+  border: 1px solid #dde7f0;
+  border-radius: 15px;
+  padding: 14px;
+}
+
+.appointment-summary span {
+  display: block;
+  color: #667085;
+  font-size: 12px;
+  margin-bottom: 5px;
+  font-weight: 750;
+}
+
+.appointment-summary strong {
+  color: #1a3673;
+}
+
+.status-badge {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.status-scheduled {
+  background: #fff7e6;
+  color: #b54708 !important;
+}
+
+.status-confirmed {
+  background: #eaf6fd;
+  color: #286ce2 !important;
+}
+
+.status-cancelled {
+  background: #fff1f1;
+  color: #b42318 !important;
+}
+
+.status-completed {
+  background: #ecfdf3;
+  color: #087443 !important;
+}
+
 .form-group {
   display: grid;
   gap: 7px;
@@ -63,17 +172,17 @@
 }
 
 .form-group input,
-.form-group select,
 .form-group textarea {
   border: 1px solid #dde7f0;
   border-radius: 13px;
   padding: 12px 13px;
   font: inherit;
   outline: none;
+  color: #172033;
+  background: #ffffff;
 }
 
-.form-group input,
-.form-group select {
+.form-group input {
   height: 48px;
 }
 
@@ -82,35 +191,15 @@
 }
 
 .form-group input:focus,
-.form-group select:focus,
 .form-group textarea:focus {
   border-color: #44b8f3;
   box-shadow: 0 0 0 4px rgba(68, 184, 243, 0.14);
 }
 
-.appointment-summary {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  margin-bottom: 18px;
-}
-
-.appointment-summary div {
-  background: #f8fcff;
-  border: 1px solid #dde7f0;
-  border-radius: 15px;
-  padding: 13px;
-}
-
-.appointment-summary span {
-  display: block;
-  color: #667085;
-  font-size: 12px;
-  margin-bottom: 5px;
-}
-
-.appointment-summary strong {
-  color: #1a3673;
+.form-group input:disabled,
+.form-group textarea:disabled {
+  background: #f3f6fa;
+  cursor: not-allowed;
 }
 
 .primary-btn {
@@ -129,8 +218,12 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .appointment-summary {
     grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    flex-direction: column;
   }
 }

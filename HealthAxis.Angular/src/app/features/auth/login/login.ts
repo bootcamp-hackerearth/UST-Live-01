@@ -7,6 +7,7 @@ import {
   Validators
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+
 import { LoginRequest } from '../../../core/models/login-request';
 import { AuthService } from '../../../core/services/auth.service';
 import { TokenService } from '../../../core/models/token.service';
@@ -24,7 +25,8 @@ export class Login {
 
   loginForm: FormGroup;
 
-  private readonly blazorAdminUrl = 'https://localhost:7051/dashboard';
+  private readonly blazorAdminUrl =
+    'https://localhost:7051/auth-callback';
 
   constructor(
     private fb: FormBuilder,
@@ -79,7 +81,7 @@ export class Login {
     this.authService.login(request).subscribe({
       next: (response) => {
         this.tokenService.saveAuthData(response);
-        this.redirectByRole(response.role);
+        this.redirectByRole(response);
       },
 
       error: (error: HttpErrorResponse) => {
@@ -98,11 +100,12 @@ export class Login {
     });
   }
 
-  private redirectByRole(role: string): void {
-    const normalizedRole = role.toLowerCase();
+  private redirectByRole(response: any): void {
+    const normalizedRole =
+      response.role?.toLowerCase();
 
     if (normalizedRole === 'admin') {
-      window.location.href = this.blazorAdminUrl;
+      this.redirectAdminToBlazor(response);
       return;
     }
 
@@ -118,5 +121,24 @@ export class Login {
 
     this.errorMessage = 'Unknown user role. Please contact support.';
     this.tokenService.clearAuthData();
+  }
+
+  private redirectAdminToBlazor(response: any): void {
+    const payload = {
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+      role: response.role,
+      email: response.email,
+      userId: response.userId,
+      referenceId: response.referenceId
+    };
+
+    const encodedPayload =
+      encodeURIComponent(
+        btoa(JSON.stringify(payload))
+      );
+
+    window.location.href =
+      `${this.blazorAdminUrl}#auth=${encodedPayload}`;
   }
 }

@@ -31,9 +31,7 @@ namespace HealthAxis.API.Controllers
         [Authorize(Roles = "Patient,Doctor,Admin")]
         public async Task<IActionResult> GetAll(CancellationToken ct)
         {
-            var doctors =
-                await _doctorService.GetAllAsync(ct);
-
+            var doctors = await _doctorService.GetAllAsync(ct);
             return Ok(doctors);
         }
 
@@ -43,8 +41,7 @@ namespace HealthAxis.API.Controllers
             int id,
             CancellationToken ct)
         {
-            var doctor =
-                await _doctorService.GetByIdAsync(id, ct);
+            var doctor = await _doctorService.GetByIdAsync(id, ct);
 
             if (doctor == null)
             {
@@ -80,7 +77,18 @@ namespace HealthAxis.API.Controllers
                 });
             }
 
-            List<string> availableSlots =
+            DateTime maxAllowedDate =
+            DateTime.Today.AddMonths(6);
+
+            if (date.Date > maxAllowedDate)
+            {
+                return BadRequest(new
+                {
+                    message = "Appointments can only be booked up to 6 months in advance."
+                });
+            }
+
+            var availableSlots =
                 await _doctorService.GetAvailableSlotsAsync(
                     id,
                     date.Date,
@@ -89,19 +97,52 @@ namespace HealthAxis.API.Controllers
             return Ok(availableSlots);
         }
 
+        [HttpPatch("{id:int}/active-status")]
+        [Authorize(Roles = "Doctor,Admin")]
+        public async Task<IActionResult> UpdateActiveStatus(
+            int id,
+            [FromBody] DoctorActiveStatusUpdateDto request,
+            CancellationToken ct)
+        {
+            bool isAdmin = User.IsInRole("Admin");
+
+            if (!isAdmin)
+            {
+                int loggedInDoctorId = GetReferenceIdFromToken();
+
+                if (loggedInDoctorId != id)
+                {
+                    return Forbid();
+                }
+            }
+
+            var doctor = await _doctorService.UpdateActiveStatusAsync(
+                id,
+                request.IsActive,
+                ct);
+
+            if (doctor == null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor not found."
+                });
+            }
+
+            return Ok(doctor);
+        }
+
         [HttpGet("patients/{patientId:int}")]
         [Authorize(Roles = "Doctor,Admin")]
         public async Task<IActionResult> GetPatientForDoctor(
             int patientId,
             CancellationToken ct)
         {
-            bool isAdmin =
-                User.IsInRole("Admin");
+            bool isAdmin = User.IsInRole("Admin");
 
             if (!isAdmin)
             {
-                int doctorId =
-                    GetReferenceIdFromToken();
+                int doctorId = GetReferenceIdFromToken();
 
                 var doctorAppointments =
                     await _appointmentService.GetAppointmentsByDoctorIdAsync(
@@ -109,8 +150,7 @@ namespace HealthAxis.API.Controllers
                         ct);
 
                 bool hasAppointmentWithPatient =
-                    doctorAppointments.Any(appointment =>
-                        appointment.PatientId == patientId);
+                    doctorAppointments.Any(a => a.PatientId == patientId);
 
                 if (!hasAppointmentWithPatient)
                 {
@@ -140,13 +180,11 @@ namespace HealthAxis.API.Controllers
             int patientId,
             CancellationToken ct)
         {
-            bool isAdmin =
-                User.IsInRole("Admin");
+            bool isAdmin = User.IsInRole("Admin");
 
             if (!isAdmin)
             {
-                int doctorId =
-                    GetReferenceIdFromToken();
+                int doctorId = GetReferenceIdFromToken();
 
                 var doctorAppointments =
                     await _appointmentService.GetAppointmentsByDoctorIdAsync(
@@ -154,8 +192,7 @@ namespace HealthAxis.API.Controllers
                         ct);
 
                 bool hasAppointmentWithPatient =
-                    doctorAppointments.Any(appointment =>
-                        appointment.PatientId == patientId);
+                    doctorAppointments.Any(a => a.PatientId == patientId);
 
                 if (!hasAppointmentWithPatient)
                 {

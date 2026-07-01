@@ -1,100 +1,182 @@
-<div class="dashboard-content">
-
-  <!-- Summary Cards -->
-  <div class="summary-grid">
-
-    <div class="summary-card">
-      <div class="summary-icon blue-icon">⚕</div>
+<div class="dashboard-page">
+  <section class="summary-grid">
+    <article class="summary-card">
+      <div class="summary-icon blue-icon">▦</div>
 
       <div>
-        <span>Find Doctors</span>
-        <strong>Search</strong>
-        <p>Browse doctors by specialisation and availability.</p>
+        <span>Total Appointments</span>
+        <strong>{{ totalAppointments }}</strong>
+        <p>Your overall consultation activity.</p>
       </div>
-    </div>
+    </article>
 
-    <div class="summary-card">
+    <article class="summary-card">
+      <div class="summary-icon cyan-icon">⌛</div>
+
+      <div>
+        <span>Upcoming</span>
+        <strong>{{ upcomingCount }}</strong>
+        <p>Appointments requiring your attention.</p>
+      </div>
+    </article>
+
+    <article class="summary-card">
       <div class="summary-icon green-icon">✓</div>
 
       <div>
-        <span>Appointments</span>
-        <strong>Track</strong>
-        <p>View upcoming and past appointment details.</p>
+        <span>Completed Visits</span>
+        <strong>{{ completedCount }}</strong>
+        <p>Consultations completed so far.</p>
       </div>
-    </div>
+    </article>
 
-    <div class="summary-card">
+    <article class="summary-card">
       <div class="summary-icon orange-icon">▤</div>
 
       <div>
-        <span>Health History</span>
-        <strong>Records</strong>
-        <p>Access diagnosis, prescriptions and visit history.</p>
+        <span>Health Records</span>
+        <strong>{{ healthRecordCount }}</strong>
+        <p>Medical records available to review.</p>
       </div>
-    </div>
+    </article>
+  </section>
 
-  </div>
-
-  <!-- Main Content -->
-  <div class="dashboard-grid">
-
-    <section class="dashboard-panel">
-
+  <section class="dashboard-grid">
+    <article class="dashboard-panel upcoming-panel">
       <div class="panel-header">
-        <h2>Quick Actions</h2>
-        <p>Start common patient activities quickly.</p>
+        <div>
+          <h2>Upcoming Appointments</h2>
+          <p>Your next scheduled or confirmed consultations.</p>
+        </div>
+
+        <a routerLink="/patient/appointments" class="panel-link">
+          View All
+        </a>
       </div>
 
-      <div class="action-list">
+      @if (appointmentErrorMessage) {
+        <div class="alert-error">
+          {{ appointmentErrorMessage }}
+        </div>
+      }
 
-        <a routerLink="/patient/doctors">
-          <span>⚕</span>
+      @if (isLoadingAppointments) {
+        <div class="empty-state">
+          Loading appointments...
+        </div>
+      } @else {
+        @if (upcomingAppointments.length === 0) {
+          <div class="empty-state">
+            <strong>No upcoming appointments</strong>
+            <span>Book a consultation with an available doctor.</span>
 
-          <div>
-            <strong>Find a Doctor</strong>
-            <p>Search available doctors and book an appointment.</p>
+            <a routerLink="/patient/doctors" class="primary-btn">
+              Find Doctors
+            </a>
           </div>
-        </a>
+        } @else {
+          <div class="appointment-list">
+            @for (appointment of upcomingAppointments; track appointment.appointmentId) {
+              <div class="appointment-item">
+                <div class="doctor-avatar">
+                  {{ getDoctorDisplayName(appointment).charAt(0).toUpperCase() }}
+                </div>
 
-        <a routerLink="/patient/appointments">
-          <span>▦</span>
+                <div class="appointment-info">
+                  <strong>{{ getDoctorDisplayName(appointment) }}</strong>
+                  <span>
+                    {{ formatDate(appointment.scheduledDate) }} · {{ appointment.timeSlot }}
+                  </span>
+                </div>
 
-          <div>
-            <strong>My Appointments</strong>
-            <p>View appointment status and cancellation options.</p>
+                <span
+                  class="status-badge"
+                  [class]="getStatusClass(appointment.status)"
+                >
+                  {{ getStatusText(appointment.status) }}
+                </span>
+              </div>
+            }
           </div>
-        </a>
+        }
+      }
+    </article>
 
-        <a routerLink="/patient/health-history">
-          <span>▤</span>
-
-          <div>
-            <strong>Health History</strong>
-            <p>Review your past visits and medical records.</p>
-          </div>
-        </a>
-
-      </div>
-
-    </section>
-
-    <section class="dashboard-panel">
-
+    <article class="dashboard-panel records-panel">
       <div class="panel-header">
-        <h2>Portal Overview</h2>
-        <p>Your healthcare activity summary.</p>
+        <div>
+          <h2>Recent Health Records</h2>
+          <p>Latest diagnosis, prescription, and visit notes.</p>
+        </div>
+
+        <a routerLink="/patient/health-history" class="panel-link">
+          View History
+        </a>
       </div>
 
-      <div class="empty-state">
-        <strong>Dashboard data will appear here soon</strong>
+      @if (healthRecordErrorMessage) {
+        <div class="alert-error">
+          {{ healthRecordErrorMessage }}
+        </div>
+      }
 
-        <span>
-          Upcoming appointments, recent visits and health updates will be connected from the API next.
-        </span>
+      @if (isLoadingHealthRecords) {
+        <div class="empty-state">
+          Loading health records...
+        </div>
+      } @else {
+        @if (recentHealthRecords.length === 0) {
+          <div class="empty-state">
+            <strong>No health records yet</strong>
+            <span>Your completed consultation records will appear here.</span>
+          </div>
+        } @else {
+          <div class="record-list">
+            @for (record of recentHealthRecords; track record.healthRecordId) {
+              <div class="record-item">
+                <div>
+                  <strong>{{ record.diagnosis }}</strong>
+                  <span>{{ formatDate(record.visitDate) }}</span>
+                </div>
+
+                <p>{{ record.prescription }}</p>
+              </div>
+            }
+          </div>
+        }
+      }
+    </article>
+  </section>
+
+  <section class="care-section">
+    <article class="care-card">
+      <div class="care-icon">⚕</div>
+
+      <div>
+        <h2>Need a consultation?</h2>
+        <p>
+          Search doctors by specialisation and book from available time slots.
+        </p>
       </div>
 
-    </section>
+      <a routerLink="/patient/doctors" class="primary-btn">
+        Book Appointment
+      </a>
+    </article>
 
-  </div>
+    <article class="care-card soft-card">
+      <div class="care-icon">▧</div>
 
+      <div>
+        <h2>Review your medical timeline</h2>
+        <p>
+          Check prescriptions, diagnoses, and notes from completed consultations.
+        </p>
+      </div>
+
+      <a routerLink="/patient/health-history" class="secondary-btn">
+        Open Records
+      </a>
+    </article>
+  </section>
 </div>

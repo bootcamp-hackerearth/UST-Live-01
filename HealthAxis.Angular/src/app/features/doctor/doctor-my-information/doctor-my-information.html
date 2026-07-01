@@ -2,13 +2,19 @@
   <header class="page-header">
     <div>
       <h1>My Information</h1>
-      <p>View your doctor profile details.</p>
+      <p>View your doctor profile details. Only active status can be changed.</p>
     </div>
   </header>
 
   @if (errorMessage) {
     <div class="alert-error">
       {{ errorMessage }}
+    </div>
+  }
+
+  @if (successMessage) {
+    <div class="alert-success">
+      {{ successMessage }}
     </div>
   }
 
@@ -30,6 +36,26 @@
           </div>
         </div>
 
+        <div class="status-toggle-card">
+          <div>
+            <span>Availability Status</span>
+            <strong>{{ doctor.isActive ? 'Active' : 'Inactive' }}</strong>
+            <p>
+              Toggle this status to control whether patients can book appointments with you.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            class="toggle-switch"
+            [class.active]="doctor.isActive"
+            [disabled]="isSaving"
+            (click)="toggleActiveStatus()"
+          >
+            <span></span>
+          </button>
+        </div>
+
         <div class="info-grid">
           <div>
             <span>Doctor ID</span>
@@ -37,13 +63,8 @@
           </div>
 
           <div>
-            <span>Email</span>
-            <strong>{{ doctor.email }}</strong>
-          </div>
-
-          <div>
-            <span>Phone Number</span>
-            <strong>{{ doctor.phoneNumber }}</strong>
+            <span>Specialisation</span>
+            <strong>{{ getSpecialisationName(doctor.specialisation) }}</strong>
           </div>
 
           <div>
@@ -54,11 +75,6 @@
           <div>
             <span>Consultation Fee</span>
             <strong>{{ formatFee(doctor.consultationFee) }}</strong>
-          </div>
-
-          <div>
-            <span>Status</span>
-            <strong>{{ doctor.isActive ? 'Active' : 'Inactive' }}</strong>
           </div>
         </div>
       </section>

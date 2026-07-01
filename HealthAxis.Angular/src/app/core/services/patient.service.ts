@@ -15,7 +15,10 @@ import { UpdateAppointmentStatusRequest } from '../models/update-appointment-sta
 @Injectable({
   providedIn: 'root'
 })
+ 
+
 export class PatientService {
+
   private readonly apiBaseUrl = 'https://localhost:7224/api';
 
   constructor(private http: HttpClient) {}
@@ -71,20 +74,18 @@ updateMyInformation(
     );
   }
 
-  cancelAppointment(
-    appointmentId: number,
-    cancellationReason: string
-  ): Observable<Appointment> {
-    const request: UpdateAppointmentStatusRequest = {
-      status: 4,
-      cancellationReason: cancellationReason
-    };
-
-    return this.http.put<Appointment>(
-      `${this.apiBaseUrl}/appointments/${appointmentId}/status`,
-      request
-    );
-  }
+ cancelAppointment(
+  appointmentId: number,
+  cancellationReason: string
+): Observable<Appointment> {
+  return this.http.put<Appointment>(
+    `${this.apiBaseUrl}/appointments/${appointmentId}/status`,
+    {
+      status: 3,
+      cancellationReason: cancellationReason?.trim() ?? ''
+    }
+  );
+}
     getDoctorById(doctorId: number): Observable<Doctor> {
     return this.http.get<Doctor>(
     `${this.apiBaseUrl}/doctors/${doctorId}`

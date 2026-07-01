@@ -12,9 +12,16 @@
     </div>
   }
 
+  @if (successMessage) {
+    <div class="alert-success">
+      {{ successMessage }}
+    </div>
+  }
+
   <section class="filter-card">
     <input
       type="text"
+      placeholder="Search by patient name or appointment ID"
       [(ngModel)]="searchText"
       (ngModelChange)="applyFilters()"
     />
@@ -26,8 +33,8 @@
       <option value="">All Status</option>
       <option value="scheduled">Scheduled</option>
       <option value="confirmed">Confirmed</option>
-      <option value="cancelled">Cancelled</option>
       <option value="completed">Completed</option>
+      <option value="cancelled">Cancelled</option>
     </select>
   </section>
 
@@ -36,39 +43,99 @@
       Loading schedule...
     </div>
   } @else {
-    <section class="appointment-list">
-      @for (appointment of filteredAppointments; track appointment.appointmentId) {
-        <article class="appointment-card">
-          <div>
-            <h2>{{ getPatientDisplayName(appointment) }}</h2>
-            <p>Appointment ID: {{ appointment.appointmentId }}</p>
-          </div>
+    @if (filteredAppointments.length === 0) {
+      <div class="empty-state">
+        <strong>No appointments found</strong>
+        <span>Try changing the search text or status filter.</span>
+      </div>
+    } @else {
+      <section class="appointment-list">
+        @for (appointment of pagedAppointments; track appointment.appointmentId) {
+          <article class="appointment-card">
+            <div class="appointment-main">
+              <div>
+                <h2>{{ getPatientDisplayName(appointment) }}</h2>
+                <p>Appointment ID: {{ appointment.appointmentId }}</p>
+              </div>
 
-          <div class="appointment-meta">
-            <span>{{ formatDate(appointment.scheduledDate) }}</span>
-            <span>{{ appointment.timeSlot }}</span>
-            <span class="status-badge" [class]="getStatusClass(appointment.status)">
-              {{ getStatusText(appointment.status) }}
-            </span>
-          </div>
+              <span
+                class="status-badge"
+                [class]="getStatusClass(appointment.status)"
+              >
+                {{ getStatusText(appointment.status) }}
+              </span>
+            </div>
 
-          <div class="appointment-actions">
-            <a
-              [routerLink]="['/doctor/patient-profile', appointment.patientId]"
-              class="secondary-btn"
-            >
-              View Patient
-            </a>
+            <div class="appointment-meta">
+              <span>Date: {{ formatDate(appointment.scheduledDate) }}</span>
+              <span>Time: {{ appointment.timeSlot }}</span>
+              <span>Status: {{ getStatusText(appointment.status) }}</span>
+            </div>
 
-            <a
-              [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
-              class="primary-btn"
-            >
-              Add Health Record
-            </a>
-          </div>
-        </article>
-      }
-    </section>
+            <div class="appointment-actions">
+              <a
+                [routerLink]="['/doctor/patient-profile', appointment.patientId]"
+                class="secondary-btn"
+              >
+                View Patient
+              </a>
+
+              @if (canConfirm(appointment.status)) {
+                <button
+                  type="button"
+                  class="confirm-btn"
+                  [disabled]="isUpdating"
+                  (click)="confirmAppointment(appointment.appointmentId)"
+                >
+                  Confirm
+                </button>
+              }
+
+              @if (canComplete(appointment.status)) {
+                <button
+                  type="button"
+                  class="complete-btn"
+                  [disabled]="isUpdating"
+                  (click)="completeAppointment(appointment.appointmentId)"
+                >
+                  Complete
+                </button>
+              }
+
+              @if (canAddHealthRecord(appointment)) {
+                <a
+                  [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
+                  class="primary-btn"
+                >
+                  Add Health Record
+                </a>
+              }
+              
+                @if (hasHealthRecord(appointment)) {
+                    <span class="record-added-badge">
+                    Health Record Added
+                    </span>
+                }
+
+              @if (
+                !canConfirm(appointment.status) &&
+                !canComplete(appointment.status) &&
+                !canAddHealthRecord(appointment)
+              ) {
+                <span class="disabled-action">
+                  No action available
+                </span>
+              }
+            </div>
+          </article>
+        }
+      </section>
+      <app-pagination
+  [currentPage]="currentPage"
+  [pageSize]="pageSize"
+  [totalItems]="totalItems"
+  (pageChanged)="onPageChanged($event)"
+></app-pagination>
+    }
   }
 </div>

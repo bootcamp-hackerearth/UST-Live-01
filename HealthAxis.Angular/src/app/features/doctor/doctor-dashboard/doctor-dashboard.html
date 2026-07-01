@@ -107,12 +107,47 @@
                   </td>
 
                   <td>
-                    <a
-                      class="record-btn"
-                      [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
-                    >
-                      Add Record
-                    </a>
+                    @if (canConfirm(appointment.status)) {
+                      <button
+                        class="confirm-btn"
+                        type="button"
+                        [disabled]="isUpdating"
+                        (click)="confirmAppointment(appointment.appointmentId)"
+                      >
+                        Confirm
+                      </button>
+                    }
+
+                    @if (canComplete(appointment.status)) {
+                      <button
+                        class="complete-btn"
+                        type="button"
+                        [disabled]="isUpdating"
+                        (click)="completeAppointment(appointment.appointmentId)"
+                      >
+                        Complete
+                      </button>
+                    }
+
+                    @if (canAddHealthRecord(appointment.status)) {
+                      <a
+                        class="record-btn"
+                        [routerLink]="['/doctor/add-health-record', appointment.appointmentId]"
+                      >
+                        Add Record
+                      </a>
+                    }
+
+                    @if (
+                      !canConfirm(appointment.status) &&
+                      !canComplete(appointment.status) &&
+                      !canAddHealthRecord(appointment.status)
+                    ) {
+                      <span class="disabled-action">
+                        No Action
+                      </span>
+                    }
+
                   </td>
                 </tr>
               }

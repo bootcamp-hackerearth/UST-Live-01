@@ -4,10 +4,6 @@
       <h1>My Appointments</h1>
       <p>View your appointment history, current status, and cancellation options.</p>
     </div>
-
-    <a routerLink="/patient/dashboard" class="secondary-btn">
-      Back to Dashboard
-    </a>
   </header>
 
   @if (errorMessage) {
@@ -23,24 +19,20 @@
   }
 
   @if (isLoading) {
-    <div class="page-card">
-      <p>Loading appointments...</p>
+    <div class="empty-state">
+      Loading appointments...
     </div>
   } @else {
-    @if (appointments.length === 0) {
+    @if (pagedAppointments.length === 0) {
       <div class="empty-state">
         <strong>No appointments found</strong>
         <span>Your booked appointments will appear here.</span>
-
-        <a routerLink="/patient/doctors" class="primary-btn">
-          Find Doctors
-        </a>
       </div>
     } @else {
-      <section class="appointment-grid">
-        @for (appointment of appointments; track appointment.appointmentId) {
+      <section class="appointments-grid">
+        @for (appointment of pagedAppointments; track appointment.appointmentId) {
           <article class="appointment-card">
-            <div class="appointment-card-header">
+            <div class="appointment-header">
               <div class="doctor-avatar">
                 {{ getDoctorDisplayName(appointment).charAt(0).toUpperCase() }}
               </div>
@@ -64,16 +56,17 @@
 
               <div>
                 <span>Status</span>
-                <strong>
-                  <span class="status-badge" [class]="getStatusClass(appointment.status)">
-                    {{ getStatusText(appointment.status) }}
-                  </span>
+                <strong
+                  class="status-badge"
+                  [class]="getStatusClass(appointment.status)"
+                >
+                  {{ getStatusText(appointment.status) }}
                 </strong>
               </div>
             </div>
 
             @if (appointment.cancellationReason) {
-              <div class="cancel-reason">
+              <div class="cancel-reason-view">
                 <span>Cancellation Reason</span>
                 <p>{{ appointment.cancellationReason }}</p>
               </div>
@@ -89,7 +82,7 @@
                   Cancel Appointment
                 </button>
               } @else {
-                <span class="muted-action">
+                <span class="disabled-action">
                   No action available
                 </span>
               }
@@ -97,21 +90,29 @@
 
             @if (selectedAppointmentId === appointment.appointmentId) {
               <div class="cancel-box">
+                <div class="cancel-box-header">
+                  <div>
+                    <h3>Cancel Appointment</h3>
+                    <p>Cancellation reason is optional.</p>
+                  </div>
+                </div>
+
                 <label>Cancellation Reason</label>
 
                 <textarea
                   rows="3"
+                  placeholder="Optional: Add a reason for cancellation"
                   [(ngModel)]="cancellationReason"
                 ></textarea>
 
                 <div class="cancel-actions">
                   <button
                     type="button"
-                    class="primary-btn"
+                    class="danger-submit-btn"
                     [disabled]="isCancelling"
                     (click)="submitCancellation(appointment.appointmentId)"
                   >
-                    {{ isCancelling ? 'Cancelling...' : 'Submit Cancellation' }}
+                    {{ isCancelling ? 'Cancelling...' : 'Confirm Cancellation' }}
                   </button>
 
                   <button
@@ -128,6 +129,13 @@
           </article>
         }
       </section>
+
+      <app-pagination
+        [currentPage]="currentPage"
+        [pageSize]="pageSize"
+        [totalItems]="totalItems"
+        (pageChanged)="onPageChanged($event)"
+      ></app-pagination>
     }
   }
 </div>

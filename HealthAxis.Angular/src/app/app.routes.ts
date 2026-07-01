@@ -3,6 +3,8 @@ import { Routes } from '@angular/router';
 import { Home } from './features/landing/home/home';
 import { Register } from './features/auth/register/register';
 import { Login } from './features/auth/login/login';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 import { PatientLayout } from './layouts/patient-layout/patient-layout';
 import { PatientDashboard } from './features/patient/patient-dashboard/patient-dashboard';
@@ -39,6 +41,10 @@ export const routes: Routes = [
   {
     path: 'patient',
     component: PatientLayout,
+    canActivate: [authGuard, roleGuard],
+    data:{
+      roles: ['patient']
+    },
     children: [
       {
         path: '',
@@ -79,6 +85,10 @@ export const routes: Routes = [
  {
   path: 'doctor',
   component: DoctorLayout,
+  canActivate: [authGuard, roleGuard],
+  data:{
+    roles: ['Doctor']
+  },
   children: [
     {
       path: '',
@@ -124,4 +134,5 @@ export const routes: Routes = [
     path: '**',
     redirectTo: ''
   }
+
 ];

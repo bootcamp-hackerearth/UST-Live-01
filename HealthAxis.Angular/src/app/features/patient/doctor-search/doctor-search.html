@@ -22,9 +22,9 @@
       </div>
 
       <select
-        [(ngModel)]="selectedSpecialisation"
-        (ngModelChange)="onSpecialisationChanged()"
-      >
+          [(ngModel)]="selectedSpecialisation"
+          (ngModelChange)="onSpecialisationChanged()"
+        >
         @for (specialisation of specialisations; track specialisation.value) {
           <option [value]="specialisation.value">
             {{ specialisation.label }}
@@ -56,12 +56,12 @@
       </div>
     } @else {
       <section class="doctor-grid">
-        @for (doctor of filteredDoctors; track doctor.doctorId) {
+       @for (doctor of pagedDoctors; track doctor.doctorId) {
           <article class="doctor-card">
             <div class="doctor-card-header">
-              <div class="doctor-avatar">
-                {{ doctor.fullName.charAt(0).toUpperCase() }}
-              </div>
+              <div class="doctor-avatar doctor-icon-avatar">
+              <span class="doctor-symbol">🩺</span>
+            </div>
 
               <div>
                 <h2>{{ doctor.fullName }}</h2>
@@ -106,6 +106,20 @@
           </article>
         }
       </section>
+      <section class="doctor-grid">
+  @for (doctor of pagedDoctors; track doctor.doctorId) {
+    <!-- existing doctor card here -->
+  }
+</section>
+
+<app-pagination
+  [currentPage]="currentPage"
+  [pageSize]="pageSize"
+  [totalItems]="totalItems"
+  (pageChanged)="onPageChanged($event)"
+></app-pagination>
+
+
     }
   }
 </div>
