@@ -7,13 +7,10 @@
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    <LayoutView Layout="@typeof(AuthLayout)">
-                        <div class="auth-message-card">
-                            <h3>Access Denied</h3>
-                            <p>Please login as admin to access this page.</p>
-                        </div>
-                    </LayoutView>
-                </NotAuthorized>
+    <LayoutView Layout="@typeof(AuthLayout)">
+        <RedirectToLogin />
+    </LayoutView>
+</NotAuthorized>
             </AuthorizeRouteView>
 
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />

@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EmployeeApp.Shared\HealthcareAxis.Shared.csproj" />
     <ProjectReference Include="..\Healthcare.netcore\Healthcare.netcore.csproj" />
     <ProjectReference Include="..\HealthcareAxis.Shared\HealthcareAxis.Shared.csproj" />
   </ItemGroup>

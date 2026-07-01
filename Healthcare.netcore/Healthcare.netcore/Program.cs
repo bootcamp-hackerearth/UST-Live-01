@@ -96,10 +96,15 @@ builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 
 // ✅ Doctor
+// ✅ Doctor
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 
 builder.Services.AddScoped<IDoctorService>(sp =>
-    new DoctorService(sp.GetRequiredService<HealthAxisDbContext>()));
+    new DoctorService(
+        sp.GetRequiredService<HealthAxisDbContext>(),
+        sp.GetRequiredService<UserManager<ApplicationUser>>()
+    ));
+
 
 // ✅ Appointment
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();

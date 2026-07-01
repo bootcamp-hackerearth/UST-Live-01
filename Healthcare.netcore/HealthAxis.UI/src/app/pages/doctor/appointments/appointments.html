@@ -1,0 +1,319 @@
+<div class="appointments-page">
+
+  <p class="portal-text">DOCTOR PORTAL</p>
+  <h1>Appointments</h1>
+
+  <!-- FILTER CARD -->
+  <div class="filter-card">
+
+    <div class="filter-header">
+      <div>
+        <h3>Appointment Filters</h3>
+        <p>Filter appointments by patient, status, and date range.</p>
+      </div>
+    </div>
+
+    <div class="filter-body">
+      <div class="filter-grid">
+
+        <div class="field">
+          <label>Search Patient</label>
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            placeholder="Enter patient name">
+        </div>
+
+        <div class="field">
+          <label>Status</label>
+          <select [(ngModel)]="selectedStatus">
+            <option value="">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Date Filter</label>
+          <select [(ngModel)]="selectedDateFilter">
+            <option value="All">All</option>
+            <option value="Upcoming">Upcoming</option>
+            <option value="Past">Past</option>
+            <option value="Custom">Custom</option>
+          </select>
+        </div>
+
+        <div class="field" *ngIf="selectedDateFilter === 'Custom'">
+          <label>Custom Date</label>
+          <input type="date" [(ngModel)]="customDate">
+        </div>
+
+        <button
+          type="button"
+          class="clear-btn"
+          (click)="clearFilters()">
+          Clear
+        </button>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- APPOINTMENT LIST -->
+  <div class="appointment-card">
+
+    <div class="card-header">
+      <h3>Appointment list</h3>
+      <span>
+        Showing {{ filteredAppointments().length }} of {{ appointments.length }} appointment(s)
+      </span>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredAppointments().length === 0">
+      No appointments found for selected filters.
+    </div>
+
+    <div class="table" *ngIf="filteredAppointments().length > 0">
+
+      <div class="table-head">
+        <span>Date</span>
+        <span>Time</span>
+        <span>Patient</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
+
+      <div class="table-row" *ngFor="let a of filteredAppointments()">
+
+        <span class="date-text">{{ a.date }}</span>
+        <span>{{ a.time }}</span>
+        <span class="patient-name">{{ a.patient }}</span>
+
+        <span>
+          <span class="status" [ngClass]="a.status.toLowerCase()">
+            {{ a.status }}
+          </span>
+        </span>
+
+        <span class="actions">
+
+          <button
+            type="button"
+            class="blue-btn"
+            *ngIf="a.status === 'Completed' && a.hasRecord"
+            (click)="viewRecord(a)">
+            View Record
+          </button>
+
+          <button
+            type="button"
+            class="green-btn"
+            *ngIf="a.status === 'Completed' && !a.hasRecord"
+            (click)="openAddRecord(a)">
+            Add Record
+          </button>
+
+
+          <button
+            type="button"
+            class="green-btn"
+            *ngIf="a.status === 'Confirmed'"
+            (click)="completeAppointment(a)">
+            Complete
+          </button>
+
+          <button
+            type="button"
+            class="red-btn"
+            *ngIf="a.status === 'Confirmed'"
+            (click)="cancelAppointment(a)">
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="green-btn"
+            *ngIf="a.status === 'Pending'"
+            (click)="confirmAppointment(a)">
+            Confirm
+          </button>
+
+          <button
+            type="button"
+            class="red-btn"
+            *ngIf="a.status === 'Pending'"
+            (click)="cancelAppointment(a)">
+            Cancel
+          </button>
+
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ADD HEALTH RECORD MODAL -->
+  <div class="modal-backdrop" *ngIf="showRecordModal && selectedAppointment">
+
+    <div class="modal-card">
+
+      <div class="modal-header">
+        <div>
+          <h3>Add Health Record</h3>
+          <p>
+            {{ selectedAppointment?.patient }} ·
+            {{ selectedAppointment?.date }} ·
+            {{ selectedAppointment?.time }}
+          </p>
+        </div>
+
+        <button type="button" class="close-btn" (click)="closeRecordModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="field">
+          <label>Diagnosis</label>
+          <input
+            type="text"
+            [(ngModel)]="recordForm.diagnosis"
+            placeholder="Enter diagnosis">
+        </div>
+
+        <div class="field">
+          <label>Prescription</label>
+          <textarea
+            [(ngModel)]="recordForm.prescription"
+            placeholder="Enter prescription"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Notes</label>
+          <textarea
+            [(ngModel)]="recordForm.notes"
+            placeholder="Enter consultation notes"></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-modal-btn" (click)="closeRecordModal()">
+          Cancel
+        </button>
+
+        <button
+  type="button"
+  class="save-modal-btn"
+  (click)="saveHealthRecord()"
+  [disabled]="isSavingRecord">
+  {{ isSavingRecord ? 'Saving...' : 'Save Record' }}
+</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CANCEL REASON MODAL -->
+  <div class="modal-backdrop" *ngIf="showCancelModal && selectedCancelAppointment">
+
+    <div class="modal-card">
+
+      <div class="modal-header">
+        <div>
+          <h3>Cancel Appointment</h3>
+          <p>
+            {{ selectedCancelAppointment?.patient }} ·
+            {{ selectedCancelAppointment?.date }} ·
+            {{ selectedCancelAppointment?.time }}
+          </p>
+        </div>
+
+        <button type="button" class="close-btn" (click)="closeCancelModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="field">
+          <label>Cancellation Reason</label>
+          <textarea
+            [(ngModel)]="cancelReason"
+            placeholder="Enter reason for cancelling this appointment"></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-modal-btn" (click)="closeCancelModal()">
+          Close
+        </button>
+
+        <button type="button" class="danger-modal-btn" (click)="submitCancellation()">
+          Cancel Appointment
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+  <!-- VIEW HEALTH RECORD MODAL -->
+<div class="modal-backdrop" *ngIf="showViewRecordModal && selectedHealthRecord">
+
+  <div class="modal-card">
+
+    <div class="modal-header">
+      <div>
+        <h3>Health Record Details</h3>
+        <p>
+          {{ selectedHealthRecord?.patient }} ·
+          {{ selectedHealthRecord?.date }} ·
+          {{ selectedHealthRecord?.time }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="closeViewRecordModal()">
+        ×
+      </button>
+    </div>
+
+    <div class="record-detail-box">
+
+      <div class="detail-row">
+        <label>Diagnosis</label>
+        <p>{{ selectedHealthRecord?.diagnosis }}</p>
+      </div>
+
+      <div class="detail-row">
+        <label>Prescription</label>
+        <p>{{ selectedHealthRecord?.prescription }}</p>
+      </div>
+
+      <div class="detail-row">
+        <label>Notes</label>
+        <p>{{ selectedHealthRecord?.notes }}</p>
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="cancel-modal-btn"
+        (click)="closeViewRecordModal()">
+        Close
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+</div>

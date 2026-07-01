@@ -1,0 +1,116 @@
+<div class="book-page">
+
+  <p class="portal-text">PATIENT PORTAL</p>
+  <h1>Book Appointment</h1>
+
+  <!-- FILTER CARD -->
+  <div class="search-card">
+
+    <h3>Search available slots</h3>
+
+    <div class="search-row">
+
+      <div class="field">
+        <label>Date</label>
+        <input
+          type="date"
+          [min]="todayDate"
+          [(ngModel)]="appointmentDate" />
+
+        <small class="error-text" *ngIf="dateError">
+          {{ dateError }}
+        </small>
+      </div>
+
+      <div class="field">
+        <label>Specialisation</label>
+        <select [(ngModel)]="selectedSpecialisation">
+          <option *ngFor="let s of specialisations" [value]="s.value">
+            {{ s.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Search</label>
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Enter doctor name" />
+      </div>
+
+      <button class="clear-btn" (click)="clearFilters()">Clear</button>
+
+    </div>
+
+  </div>
+
+  <!-- SLOT ERROR -->
+  <div class="page-error" *ngIf="slotError">
+    {{ slotError }}
+  </div>
+
+  <!-- DOCTORS CARD -->
+  <div class="available-card">
+
+    <div class="available-header">
+      <h3>Available doctors</h3>
+      <span>Showing {{ filteredDoctors().length }} doctor(s)</span>
+    </div>
+
+    <div class="doctor-list">
+
+      <div class="doctor-card" *ngFor="let d of filteredDoctors()">
+
+        <div class="doctor-top">
+
+          <div>
+            <h2>{{ d.fullName }}</h2>
+
+            <p class="spec">
+              {{ getSpecialisationName(d.specialisation) }}
+            </p>
+
+            <p class="meta">
+              {{ d.yearsOfExperience }} years experience · ₹{{ d.consultationFee }} consultation
+            </p>
+          </div>
+
+          <span class="badge" [class.available]="d.isActive">
+            {{ d.isActive ? 'Available' : 'Not Available' }}
+          </span>
+
+        </div>
+
+        <div class="slot-section">
+
+          <h4>
+            Slots for {{ displayAppointmentDate }}
+          </h4>
+
+          <div class="slots">
+            <button
+  *ngFor="let slot of slots"
+  [class.active]="selectedDoctor?.doctorId === d.doctorId && selectedSlot === slot"
+  (click)="selectSlot(d, slot)"
+  [disabled]="!d.isActive || !isValidAppointmentDate">
+  {{ slot }}
+</button>
+          </div>
+
+        </div>
+
+        <button
+          class="request-btn"
+          (click)="confirmAppointment(d)"
+          [disabled]="!d.isActive || isBooking">
+          {{ isBooking ? 'Booking...' : 'Request Appointment' }}
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

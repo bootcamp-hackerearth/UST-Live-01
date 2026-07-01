@@ -1,0 +1,48 @@
+<div class="login-container">
+
+  <div class="left-panel">
+    <h1>HealthAxis</h1>
+    <p>
+      A smarter way to manage your health, appointments and records — all in one place.
+    </p>
+
+    <img src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" />
+  </div>
+
+  <div class="right-panel">
+    <div class="login-box">
+
+      <h2>Login</h2>
+
+      <input
+        type="text"
+        placeholder="Email Address"
+        [(ngModel)]="email"
+        [class.input-error]="emailError" />
+
+      <small class="error-text" *ngIf="emailError">
+        {{ emailError }}
+      </small>
+
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+        [class.input-error]="passwordError" />
+
+      <small class="error-text" *ngIf="passwordError">
+        {{ passwordError }}
+      </small>
+
+      <button type="button" (click)="login()">
+        Login
+      </button>
+
+      <p class="bottom-text">
+        New user? Register from landing page
+      </p>
+
+    </div>
+  </div>
+
+</div>

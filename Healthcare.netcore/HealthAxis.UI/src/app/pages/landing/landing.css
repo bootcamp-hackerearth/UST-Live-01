@@ -1,0 +1,165 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* HEADER */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;   /* ✅ important */
+  padding: 15px 40px;
+  background: white;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  z-index: 1000;
+}
+
+/* LOGO FIX */
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  color: #2c7be5;
+}
+
+/* NAV BUTTONS FIX */
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* BUTTONS */
+.btn-primary {
+  background: linear-gradient(135deg, #2c7be5, #00aaff);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.btn-outline {
+  border: 1px solid #2c7be5;
+  color: #2c7be5;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+/* HERO */
+.hero {
+  position: relative;   /* ✅ ADD THIS */
+  height: 100vh;
+  background: url('https://images.unsplash.com/photo-1588776814546-ec7e2b9d7c1b') no-repeat center;
+  background-size: cover;
+}
+
+
+.hero-overlay {
+  position: relative;   /* ✅ ADD THIS */
+  z-index: 1;           /* ✅ ADD THIS */
+
+  background: linear-gradient(
+    to right,
+    rgba(0, 40, 120, 0.6),
+    rgba(0, 140, 255, 0.5)
+  );
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 80px;
+  color: white;
+}
+.hero-content {
+  max-width: 600px;
+  margin-top: 80px;
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin: 15px 0;
+  font-weight: bold;
+}
+
+.hero p {
+  font-size: 18px;
+}
+
+.hero-buttons {
+  position: relative;
+  z-index: 2;   /* ✅ makes buttons clickable */
+  margin-top: 25px;
+}
+
+.big-btn {
+  padding: 12px 25px;
+}
+
+/* FEATURES */
+.features {
+  display: flex;
+  justify-content: space-around;
+  padding: 70px 40px;
+  background: #eef3ff;   /* ✅ changed from dull white */
+}
+
+.card {
+  width: 28%;
+  padding: 25px;
+  text-align: center;
+  border-radius: 10px;
+  background: white;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+}
+
+/* INFO SECTION */
+.info-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 70px;
+  background: white;
+}
+
+.info-left {
+  width: 50%;
+}
+
+.info-left h2 {
+  font-size: 30px;
+}
+
+.info-left ul {
+  list-style: none;
+  padding: 0;
+}
+
+.info-left li {
+  margin-bottom: 10px;
+}
+
+.info-right img {
+  width: 400px;
+  border-radius: 10px;
+}
+
+/* FOOTER */
+.footer {
+  background: #0f1e35;
+  color: white;
+  padding: 40px 50px;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+}

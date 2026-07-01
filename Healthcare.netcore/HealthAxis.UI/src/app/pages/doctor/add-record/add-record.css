@@ -1,0 +1,391 @@
+.records-page {
+  font-family: "Segoe UI", sans-serif;
+}
+
+.portal-text {
+  color: #0f7db8;
+  font-size: 13px;
+  font-weight: 900;
+  margin: 0 0 6px;
+  letter-spacing: 1px;
+}
+
+.records-page h1 {
+  margin: 0 0 24px;
+  font-size: 34px;
+  font-weight: 900;
+  color: #172554;
+}
+
+/* FILTER CARD */
+.filter-card {
+  background: linear-gradient(135deg, #ffffff, #eef8ff);
+  border: 1px solid #dbeafe;
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* TABS */
+.tab-row {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.tab-row button {
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.tab-row button.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* FILTER GRID */
+.filter-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr auto;
+  gap: 18px;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  color: #334155;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.field input {
+  height: 46px;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
+  padding: 0 14px;
+  outline: none;
+  background: white;
+  font-weight: 700;
+}
+
+.field input:focus {
+  border-color: #0f7db8;
+  box-shadow: 0 0 0 3px rgba(15, 125, 184, 0.14);
+}
+
+.clear-btn {
+  height: 46px;
+  border: none;
+  border-radius: 16px;
+  padding: 0 24px;
+  background: #e2e8f0;
+  color: #334155;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.clear-btn:hover {
+  background: #cbd5e1;
+}
+
+/* MAIN CARD */
+.records-card {
+  background: white;
+  border: 1px solid #dbe4ee;
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.08);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #172554;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.card-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.card-header span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* INFO */
+.info-banner {
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+/* TABLE */
+.table-head,
+.table-row {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+}
+
+.created-head,
+.created-row {
+  grid-template-columns: 1fr 1.3fr 2fr 1fr;
+}
+
+.history-head,
+.history-row {
+  grid-template-columns: 1.2fr 1.5fr 1.6fr 0.7fr 1fr;
+}
+
+.table-head {
+  padding: 14px 18px;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.table-row {
+  padding: 16px 18px;
+  border-bottom: 1px solid #eef2f7;
+  color: #334155;
+  font-size: 14px;
+}
+
+.table-row:hover {
+  background: #f8fbff;
+}
+
+.patient-name {
+  font-weight: 900;
+  color: #1e293b;
+}
+
+/* BUTTON */
+.view-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 15px;
+  background: #2563eb;
+  color: white;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.view-btn:hover {
+  background: #1d4ed8;
+}
+
+/* EMPTY */
+.empty-state {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: #64748b;
+  font-weight: 800;
+  padding: 24px;
+  border-radius: 18px;
+  text-align: center;
+}
+/* RECORD DETAILS MODAL */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.modal-card {
+  width: 560px;
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #172554;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.modal-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.close-btn {
+  border: none;
+  background: #eef2f7;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.record-detail-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detail-row {
+  background: #f8fbff;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.detail-row label {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.detail-row p {
+  margin: 0;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.close-detail-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  background: #2563eb;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.modal-card {
+  width: 560px;
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.close-btn {
+  border: none;
+  background: #eef2f7;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.record-detail-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detail-row {
+  background: #f8fbff;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.detail-row label {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.detail-row p {
+  margin: 0;
+  color: #0f172a;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+
+.close-detail-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  background: #2563eb;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}

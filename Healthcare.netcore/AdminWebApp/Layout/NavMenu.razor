@@ -43,20 +43,24 @@
             </NotAuthorized>
         </AuthorizeView>
     </nav>
-
-    <div class="sidebar-footer">
-        <small>Sprint 3</small>
-        <span>Blazor Admin UI</span>
-    </div>
 </div>
 
 @code {
     private async Task HandleLogout()
     {
+        var confirmed = await JS.InvokeAsync<bool>(
+            "confirm",
+            "Are you sure you want to logout?");
+
+        if (!confirmed)
+        {
+            return;
+        }
+
         await JS.InvokeVoidAsync("localStorage.removeItem", "token");
 
         AuthStateProvider.NotifyUserLoggedOut();
 
-        Nav.NavigateTo("/login", true);
+        Nav.NavigateTo("http://localhost:4200/login", true);
     }
 }

@@ -1,0 +1,239 @@
+.book-page {
+  padding: 6px 4px 30px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.portal-text {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.book-page h1 {
+  margin: 6px 0 22px;
+  font-size: 34px;
+  font-weight: 800;
+  color: #243044;
+}
+
+/* FILTER CARD */
+.search-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #dbe4ee;
+  border-radius: 22px;
+  padding: 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.search-card h3 {
+  margin: 0 0 18px;
+  color: #2563eb;
+  font-size: 20px;
+}
+
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr 1fr auto;
+  gap: 18px;
+  align-items: start;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #334155;
+}
+
+.field input,
+.field select {
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  padding: 0 14px;
+  background: white;
+  outline: none;
+  font-size: 14px;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.clear-btn {
+  height: 44px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 14px;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* ERRORS */
+.error-text {
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.page-error {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+/* AVAILABLE DOCTORS */
+.available-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbe4ee;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.available-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.available-header h3 {
+  margin: 0;
+  color: #334155;
+  font-size: 22px;
+}
+
+.available-header span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.doctor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.doctor-card {
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.doctor-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+}
+
+.doctor-top h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #243044;
+}
+
+.spec {
+  color: #2563eb;
+  font-weight: 800;
+  margin: 6px 0;
+}
+
+.meta {
+  color: #64748b;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* BADGE */
+.badge {
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  background: #fee2e2;
+  color: #b91c1c;
+  white-space: nowrap;
+}
+
+.badge.available {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+/* SLOTS */
+.slot-section {
+  margin-top: 18px;
+}
+
+.slot-section h4 {
+  margin: 0 0 10px;
+  color: #334155;
+  font-size: 15px;
+}
+
+.slots {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.slots button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  background: #60a5fa;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.slots button.active {
+  background: #1d4ed8;
+  box-shadow: 0 8px 18px rgba(29, 78, 216, 0.25);
+}
+
+.slots button:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+/* REQUEST BUTTON */
+.request-btn {
+  margin-top: 18px;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 22px;
+  background: #2563eb;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.request-btn:hover {
+  background: #1d4ed8;
+}
+
+.request-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}

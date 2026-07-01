@@ -1,0 +1,259 @@
+.profile-page {
+  padding: 6px 4px 30px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.portal-text {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.profile-page h1 {
+  margin: 6px 0 22px;
+  font-size: 34px;
+  font-weight: 800;
+  color: #243044;
+}
+
+/* HERO CARD */
+.profile-hero {
+  background: linear-gradient(135deg, #2563eb, #0f7db8);
+  color: white;
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.25);
+}
+
+.avatar-box {
+  width: 82px;
+  height: 82px;
+  background: white;
+  color: #2563eb;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.hero-info {
+  flex: 1;
+}
+
+.hero-info h2 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.hero-info p {
+  margin: 6px 0 12px;
+  opacity: 0.9;
+}
+
+.status-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.edit-btn {
+  border: none;
+  background: white;
+  color: #2563eb;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* DETAILS CARD */
+.details-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbe4ee;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  margin-bottom: 24px;
+}
+
+.card-header {
+  margin-bottom: 22px;
+}
+
+.card-header h3 {
+  margin: 0;
+  color: #334155;
+  font-size: 22px;
+}
+
+.card-header p {
+  color: #64748b;
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.detail-item {
+  background: #f8fbff;
+  border: 1px solid #eef2f7;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.detail-item label {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.detail-item p {
+  margin: 8px 0 0;
+  color: #243044;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.detail-item input,
+.detail-item select {
+  width: 100%;
+  margin-top: 8px;
+  height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 0 12px;
+  outline: none;
+  font-weight: 700;
+}
+
+.detail-item input:focus,
+.detail-item select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.error-text {
+  display: block;
+  margin-top: 6px;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* ACCOUNT CARD */
+.account-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #dbe4ee;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.account-card h3 {
+  margin: 0;
+  color: #334155;
+}
+
+.account-card p {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.cancel-btn,
+.save-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #eef2f7;
+  color: #334155;
+}
+
+.save-btn {
+  background: #2563eb;
+  color: white;
+}
+.loading-card {
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  font-weight: 800;
+  color: #64748b;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.password-btn {
+  border: none;
+  background: #eef2ff;
+  color: #1d4ed8;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.cancel-btn,
+.save-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #eef2f7;
+  color: #334155;
+}
+
+.save-btn {
+  background: #2563eb;
+  color: white;
+}
+
+.error-text {
+  display: block;
+  margin-top: 6px;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 800;
+}

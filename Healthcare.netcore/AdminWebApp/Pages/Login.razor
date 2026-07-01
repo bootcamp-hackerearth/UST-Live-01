@@ -13,7 +13,6 @@
 
 <div class="login-container">
 
-    <!-- LEFT SIDE -->
     <div class="login-left">
         <h2>Healthcare Admin Portal</h2>
 
@@ -26,7 +25,6 @@
         </ul>
     </div>
 
-    <!-- RIGHT SIDE -->
     <div class="login-right">
         <div class="admin-login-card">
 
@@ -70,7 +68,6 @@
                     <ValidationMessage For="() => LoginRequest.Password" />
                 </div>
 
-                <!-- ✅ TEXT UPDATED -->
                 <button type="submit" class="login-button" disabled="@IsLoading">
                     @(IsLoading ? "Logging in..." : "Log in")
                 </button>
@@ -83,9 +80,30 @@
 
 @code {
     private LoginDto LoginRequest = new();
+
     private string ErrorMessage = string.Empty;
     private string StatusMessage = string.Empty;
+
     private bool IsLoading = false;
+    private bool CheckedExistingLogin = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || CheckedExistingLogin)
+        {
+            return;
+        }
+
+        CheckedExistingLogin = true;
+
+        var token = await JS.InvokeAsync<string>("localStorage.getItem", "token");
+
+        if (!string.IsNullOrWhiteSpace(token))
+        {
+            AuthStateProvider.NotifyUserLoggedIn(token);
+            Nav.NavigateTo("/dashboard", true);
+        }
+    }
 
     private async Task HandleLogin()
     {
@@ -125,10 +143,12 @@
                 return;
             }
 
-            await JS.InvokeVoidAsync(
-                "localStorage.setItem",
-                "token",
-                authResponse.AccessToken);
+            await JS.InvokeVoidAsync("localStorage.setItem", "token", authResponse.AccessToken);
+
+            if (!string.IsNullOrWhiteSpace(authResponse.RefreshToken))
+            {
+                await JS.InvokeVoidAsync("localStorage.setItem", "refreshToken", authResponse.RefreshToken);
+            }
 
             AuthStateProvider.NotifyUserLoggedIn(authResponse.AccessToken);
 

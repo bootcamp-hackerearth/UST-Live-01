@@ -21,11 +21,12 @@ namespace HealthAxis.API.Controllers
         // Patient can see appointments, Doctor can see schedule, Admin can view for reports/support
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get() 
         {
             var result = await _service.GetAllAsync();
             return Ok(result);
         }
+
 
         // ✅ POST /api/appointments
         // Patient books appointment

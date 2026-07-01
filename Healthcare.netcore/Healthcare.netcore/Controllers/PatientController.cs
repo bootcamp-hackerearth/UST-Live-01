@@ -42,6 +42,21 @@ namespace HealthAxis.API.Controllers
             var result = await _service.GetDoctorPatientsAsync(doctorUserId, paginationParams);
             return Ok(result);
         }
+        [Authorize(Roles = "Patient")]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentPatient()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var patient = await _service.GetByUserIdAsync(userId);
+
+            return Ok(patient);
+        }
 
         [Authorize(Roles = "Patient")]
         [HttpGet("{id}")]

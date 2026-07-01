@@ -242,5 +242,18 @@ namespace HealthAxis.API.Services.Implementations
 
             return _mapper.Map<IEnumerable<HealthRecordDto>>(patientRecords);
         }
+        public async Task<PatientDto?> GetByUserIdAsync(string userId)
+        {
+            var patients = await _patientRepository.GetAllAsync();
+
+            var patient = patients.FirstOrDefault(p => p.UserId == userId);
+
+            if (patient == null)
+            {
+                throw new NotFoundException("Patient profile not found.");
+            }
+
+            return _mapper.Map<PatientDto>(patient);
+        }
     }
 }

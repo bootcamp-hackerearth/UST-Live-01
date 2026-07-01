@@ -1,0 +1,166 @@
+<div class="doctor-profile-page">
+
+  <div class="profile-header">
+    <div>
+      <p class="portal-text">DOCTOR PORTAL</p>
+      <h1>Profile Details</h1>
+    </div>
+
+    <span class="active-badge" [class.inactive-badge]="!doctor.isActive">
+      ● {{ doctor.status }}
+    </span>
+  </div>
+
+  <!-- DOCTOR INFORMATION -->
+  <div class="profile-card">
+
+    <h3>Doctor Information</h3>
+
+    <div class="details-grid">
+
+      <div class="detail-item">
+        <label>Full Name</label>
+        <p>{{ doctor.fullName }}</p>
+      </div>
+
+      <div class="detail-item">
+        <label>Email</label>
+        <p>{{ doctor.email }}</p>
+      </div>
+
+      <div class="detail-item">
+        <label>Specialisation</label>
+        <p>{{ doctor.specialisation }}</p>
+      </div>
+
+      <div class="detail-item">
+        <label>Experience</label>
+        <p>{{ doctor.experience }}</p>
+      </div>
+
+      <div class="detail-item">
+        <label>Consultation Fee</label>
+        <p>{{ doctor.consultationFee }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ACTIVATION STATUS -->
+  <div class="profile-card">
+
+    <h3>Activation Status</h3>
+
+    <div class="status-content">
+      <div>
+        <label>Current Status</label>
+
+        <p class="active-text" [class.inactive-text]="!doctor.isActive">
+          {{
+            doctor.isActive
+              ? 'Active and accepting appointment requests'
+              : 'Inactive and not accepting appointment requests'
+          }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="danger-btn"
+        [class.activate-btn]="!doctor.isActive"
+        (click)="toggleActivationStatus()"
+        [disabled]="isUpdatingStatus">
+        {{
+          isUpdatingStatus
+            ? 'Updating...'
+            : doctor.isActive
+              ? 'Deactivate Profile'
+              : 'Activate Profile'
+        }}
+      </button>
+    </div>
+
+  </div>
+
+  <!-- PASSWORD -->
+  <div class="profile-card">
+
+    <div class="password-header">
+      <div>
+        <h3>Password</h3>
+        <p>Use this section to update your password.</p>
+      </div>
+
+      <button
+        type="button"
+        class="change-btn"
+        (click)="togglePasswordForm()">
+        {{ showPasswordForm ? 'Close' : 'Change' }}
+      </button>
+    </div>
+
+    <div class="password-form" *ngIf="showPasswordForm">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Old Password</label>
+          <input
+            type="password"
+            [(ngModel)]="passwordModel.oldPassword"
+            placeholder="Enter old password">
+
+          <small class="error-text" *ngIf="oldPasswordError">
+            {{ oldPasswordError }}
+          </small>
+        </div>
+
+        <div class="field">
+          <label>New Password</label>
+          <input
+            type="password"
+            [(ngModel)]="passwordModel.newPassword"
+            placeholder="Enter new password">
+
+          <small class="error-text" *ngIf="newPasswordError">
+            {{ newPasswordError }}
+          </small>
+        </div>
+
+        <div class="field">
+          <label>Confirm Password</label>
+          <input
+            type="password"
+            [(ngModel)]="passwordModel.confirmPassword"
+            placeholder="Confirm new password">
+
+          <small class="error-text" *ngIf="confirmPasswordError">
+            {{ confirmPasswordError }}
+          </small>
+        </div>
+
+      </div>
+
+      <div class="password-actions">
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="togglePasswordForm()">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="save-btn"
+          (click)="changePassword()"
+          [disabled]="isChangingPassword">
+          {{ isChangingPassword ? 'Updating...' : 'Update Password' }}
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,218 @@
+.search-page {
+  padding: 6px 4px 30px;
+  font-family:0.25;  font-family: "Segoe UI", sans-serif;
+}
+
+.book-btn:hover {
+  background: #1d4ed8;
+}
+
+
+.search-page h1 {
+  margin: 0 0 22px;
+  font-size: 34px;
+  font-weight: 800;
+  color: #243044;
+}
+
+/* FILTER CARD */
+.filter-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #dbe4ee;
+  border-radius: 22px;
+  padding: 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.filter-row {
+  display: flex;
+  align-items: end;
+  gap: 18px;
+}
+
+.second-row {
+  margin-top: 18px;
+  justify-content: space-between;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-field {
+  flex: 1;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.field input,
+.field select {
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  padding: 0 14px;
+  min-width: 240px;
+  background: #ffffff;
+  outline: none;
+  font-size: 14px;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.clear-btn {
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 14px;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.checkbox-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.checkbox-line input {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+
+.sort-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sort-box span {
+  font-weight: 700;
+  color: #334155;
+}
+
+.sort-box button {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  background: #eef2f7;
+  color: #334155;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sort-box button.active {
+  background: #2563eb;
+  color: white;
+}
+
+/* DOCTOR TABLE */
+.doctor-table-card {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #dbe4ee;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.table-header h2 {
+  margin: 0;
+  color: #334155;
+  font-size: 22px;
+}
+
+.table-header span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* TABLE GRID */
+.table {
+  width: 100%;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1.4fr 1fr 0.8fr 1fr 0.7fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.table-row {
+  padding: 16px 18px;
+  border-bottom: 1px solid #eef2f7;
+  color: #334155;
+  font-size: 14px;
+}
+
+.table-row:hover {
+  background: #f8fbff;
+}
+
+.doctor-name {
+  font-weight: 800;
+  color: #1f2937;
+}
+
+/* BADGES */
+.badge {
+  display: inline-block;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.badge.available {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.badge.not-available {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* BUTTON */
+.book-btn {
+  border: none;
+  padding: 9px 16px;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}

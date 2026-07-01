@@ -1,0 +1,63 @@
+﻿@page "/admin-token-login"
+
+@using AdminWebApp.Auth
+
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@inject CustomAuthStateProvider AuthStateProvider
+
+<p>Signing you in...</p>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = Nav.ToAbsoluteUri(Nav.Uri);
+
+        var accessToken = GetQueryValue(uri.Query, "accessToken");
+        var refreshToken = GetQueryValue(uri.Query, "refreshToken");
+
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            Nav.NavigateTo("/login", true);
+            return;
+        }
+
+        await JS.InvokeVoidAsync("localStorage.setItem", "token", accessToken);
+
+        if (!string.IsNullOrWhiteSpace(refreshToken))
+        {
+            await JS.InvokeVoidAsync("localStorage.setItem", "refreshToken", refreshToken);
+        }
+
+        AuthStateProvider.NotifyUserLoggedIn(accessToken);
+
+        Nav.NavigateTo("/dashboard", true);
+    }
+
+    private string GetQueryValue(string query, string key)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return string.Empty;
+        }
+
+        if (query.StartsWith("?"))
+        {
+            query = query.Substring(1);
+        }
+
+        var pairs = query.Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var pair in pairs)
+        {
+            var parts = pair.Split('=', 2);
+
+            if (parts.Length == 2 && parts[0] == key)
+            {
+                return Uri.UnescapeDataString(parts[1]);
+            }
+        }
+
+        return string.Empty;
+    }
+}

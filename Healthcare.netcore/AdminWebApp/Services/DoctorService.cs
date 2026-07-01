@@ -24,7 +24,7 @@ namespace AdminWebApp.Services
             await AttachTokenAsync();
 
             return await _http.GetFromJsonAsync<PagedResponse<DoctorDto>>(
-                $"api/doctors?pageNumber={pageNumber}&pageSize={pageSize}");
+              $"api/admin/doctors?pageNumber={pageNumber}&pageSize={pageSize}");
         }
 
         public async Task<HttpResponseMessage> AddDoctorAsync(CreateDoctorDto doctor)

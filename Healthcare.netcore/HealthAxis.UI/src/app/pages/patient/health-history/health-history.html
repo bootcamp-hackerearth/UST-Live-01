@@ -1,0 +1,168 @@
+<div class="records-page">
+
+  <p class="portal-text">PATIENT PORTAL</p>
+  <h1>Health Records</h1>
+
+  <div class="summary-grid">
+
+    <div class="summary-card blue">
+      <span>Total Records</span>
+      <h2>{{ records.length }}</h2>
+      <p>Medical visits recorded</p>
+    </div>
+
+    <div class="summary-card green">
+      <span>Latest Visit</span>
+      <h2>{{ latestVisitText }}</h2>
+      <p>Most recent consultation</p>
+    </div>
+
+    <div class="summary-card orange">
+      <span>Care History</span>
+      <h2>{{ careHistoryText }}</h2>
+      <p>Records available for review</p>
+    </div>
+
+  </div>
+
+  <div class="filter-card">
+
+    <div class="filter-header">
+      <h3>Filters</h3>
+
+      <button class="filter-btn" (click)="toggleFilters()">
+        {{ showFilters ? 'Hide filters' : 'View filters' }}
+      </button>
+    </div>
+
+    <div class="filter-body" *ngIf="showFilters">
+
+      <div class="field">
+        <label>Search</label>
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Search doctor, diagnosis, prescription" />
+      </div>
+
+      <div class="field">
+        <label>Specialisation</label>
+        <select [(ngModel)]="selectedSpecialisation">
+          <option value="">All</option>
+          <option value="General Medicine">General Medicine</option>
+          <option value="Pediatrician">Pediatrician</option>
+          <option value="Cardiology">Cardiology</option>
+          <option value="Dermatology">Dermatology</option>
+          <option value="Orthopaedics">Orthopaedics</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Visit Date</label>
+        <input type="date" [(ngModel)]="selectedDate" />
+      </div>
+
+      <button class="clear-btn" (click)="clearFilters()">Clear</button>
+
+    </div>
+
+  </div>
+
+  <div class="records-card">
+
+    <div class="records-header">
+      <h3>Medical Visit History</h3>
+      <span>Showing {{ filteredRecords().length }} record(s)</span>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredRecords().length === 0">
+      No health records found for this patient.
+    </div>
+
+    <div class="record-list" *ngIf="filteredRecords().length > 0">
+
+      <div class="record-item" *ngFor="let r of filteredRecords()">
+
+        <div class="record-date">
+          <span>{{ r.displayDate }}</span>
+        </div>
+
+        <div class="record-main">
+          <h3>{{ r.diagnosis }}</h3>
+          <p>Consulted by {{ r.doctorName }}</p>
+
+          <div class="record-meta">
+            <span>{{ r.specialisation }}</span>
+            <span>{{ r.prescription }}</span>
+          </div>
+        </div>
+
+        <div class="record-action">
+          <button (click)="viewDetails(r)">View Details</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+  <!-- HEALTH RECORD DETAILS MODAL -->
+<div class="modal-backdrop" *ngIf="showDetailsModal && selectedRecord">
+
+  <div class="modal-card">
+
+    <div class="modal-header">
+      <div>
+        <h3>Health Record Details</h3>
+        <p>
+          {{ selectedRecord?.doctorName }} ·
+          {{ selectedRecord?.displayDate }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="closeDetailsModal()">
+        ×
+      </button>
+    </div>
+
+    <div class="record-detail-box">
+
+      <div class="detail-row">
+        <label>Doctor</label>
+        <p>{{ selectedRecord?.doctorName }}</p>
+      </div>
+
+      <div class="detail-row">
+        <label>Diagnosis</label>
+        <p>{{ selectedRecord?.diagnosis }}</p>
+      </div>
+
+      <div class="detail-row">
+        <label>Prescription</label>
+        <p>{{ selectedRecord?.prescription }}</p>
+      </div>
+
+      <div class="detail-row">
+        <label>Notes</label>
+        <p>{{ selectedRecord?.notes }}</p>
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="close-detail-btn"
+        (click)="closeDetailsModal()">
+        Close
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+</div>

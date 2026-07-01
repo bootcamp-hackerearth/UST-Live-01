@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using HealthAxis.API.Data;
-using Microsoft.Extensions.DependencyInjection;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Models.Auth;
@@ -11,6 +10,7 @@ using HealthAxis.Shared.DTOs.Doctor;
 using HealthAxis.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using ValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace HealthAxis.API.Services.Implementations
@@ -22,16 +22,25 @@ namespace HealthAxis.API.Services.Implementations
         private readonly UserManager<ApplicationUser>? _userManager;
         private readonly IMapper? _mapper;
 
-        // Used by API runtime
-
+        // ✅ Runtime DI constructor
+        // This constructor is used by API at runtime.
+        // It allows Admin doctor creation to also create ApplicationUser login.
         [ActivatorUtilitiesConstructor]
+        public DoctorService(
+            HealthAxisDbContext context,
+            UserManager<ApplicationUser> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+
+        // ✅ Keep this constructor for old tests / old direct usages
         public DoctorService(HealthAxisDbContext context)
         {
             _context = context;
         }
 
-
-        // Used by unit tests
+        // ✅ Repository constructor used by unit tests
         public DoctorService(
             IDoctorRepository doctorRepository,
             UserManager<ApplicationUser> userManager,
@@ -42,7 +51,6 @@ namespace HealthAxis.API.Services.Implementations
             _mapper = mapper;
         }
 
-        // Backward-compatible method used by old test cases
         public async Task<IEnumerable<DoctorDto>> GetAllAsync()
         {
             if (_doctorRepository != null && _mapper != null)
@@ -68,12 +76,17 @@ namespace HealthAxis.API.Services.Implementations
             PaginationParams paginationParams,
             CancellationToken ct = default)
         {
+            var pageNumber = paginationParams.PageNumber <= 0
+                ? 1
+                : paginationParams.PageNumber;
+
+            var pageSize = paginationParams.PageSize <= 0
+                ? 10
+                : paginationParams.PageSize;
+
             if (_context == null)
             {
                 var doctors = await GetAllAsync();
-
-                var pageNumber = paginationParams.PageNumber <= 0 ? 1 : paginationParams.PageNumber;
-                var pageSize = paginationParams.PageSize <= 0 ? 10 : paginationParams.PageSize;
 
                 var totalRecords = doctors.Count();
 
@@ -101,8 +114,8 @@ namespace HealthAxis.API.Services.Implementations
 
             var doctorsList = await query
                 .OrderBy(d => d.DoctorId)
-                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
-                .Take(paginationParams.PageSize)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .Select(d => new DoctorDto
                 {
                     DoctorId = d.DoctorId,
@@ -120,10 +133,10 @@ namespace HealthAxis.API.Services.Implementations
             return new PagedResponse<DoctorDto>
             {
                 Items = doctorsList,
-                PageNumber = paginationParams.PageNumber,
-                PageSize = paginationParams.PageSize,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
                 TotalRecords = total,
-                TotalPages = (int)Math.Ceiling(total / (double)paginationParams.PageSize)
+                TotalPages = (int)Math.Ceiling(total / (double)pageSize)
             };
         }
 
@@ -159,6 +172,42 @@ namespace HealthAxis.API.Services.Implementations
             }
 
             return MapToDto(doctor);
+        }
+
+        public async Task<DoctorDto?> GetByUserIdAsync(
+            string userId,
+            CancellationToken ct = default)
+        {
+            if (_context != null)
+            {
+                var doctor = await _context.Doctors
+                    .Include(d => d.Appointments)
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(d => d.UserId == userId, ct);
+
+                if (doctor == null)
+                {
+                    throw new NotFoundException("Doctor profile not found.");
+                }
+
+                return MapToDto(doctor);
+            }
+
+            if (_doctorRepository != null && _mapper != null)
+            {
+                var doctors = await _doctorRepository.GetAllAsync();
+
+                var doctor = doctors.FirstOrDefault(d => d.UserId == userId);
+
+                if (doctor == null)
+                {
+                    throw new NotFoundException("Doctor profile not found.");
+                }
+
+                return _mapper.Map<DoctorDto>(doctor);
+            }
+
+            throw new NotFoundException("Doctor profile not found.");
         }
 
         public async Task<object> GetAvailabilityAsync(
@@ -208,14 +257,12 @@ namespace HealthAxis.API.Services.Implementations
                     throw new BusinessRuleException("Doctor login already exists with this email.");
                 }
 
-
                 var user = new ApplicationUser
                 {
                     UserName = dto.Email,
                     Email = dto.Email,
                     MustChangePassword = true
                 };
-
 
                 var createResult = await _userManager.CreateAsync(user, dto.TemporaryPassword);
 
@@ -252,13 +299,48 @@ namespace HealthAxis.API.Services.Implementations
                 return _mapper.Map<DoctorDto>(savedDoctor);
             }
 
-            if (_context == null)
+            if (_context == null || _userManager == null)
             {
-                throw new InvalidOperationException("Database context is not available.");
+                throw new InvalidOperationException("Database context or user manager is not available.");
+            }
+
+            var existingDbUser = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (existingDbUser != null)
+            {
+                throw new BusinessRuleException("Doctor login already exists with this email.");
+            }
+
+            var dbUser = new ApplicationUser
+            {
+                UserName = dto.Email,
+                Email = dto.Email,
+                MustChangePassword = true
+            };
+
+            var dbCreateResult = await _userManager.CreateAsync(dbUser, dto.TemporaryPassword);
+
+            if (!dbCreateResult.Succeeded)
+            {
+                var errorMessage = dbCreateResult.Errors.FirstOrDefault()?.Description
+                    ?? "Doctor login creation failed.";
+
+                throw new ValidationException(errorMessage);
+            }
+
+            var dbRoleResult = await _userManager.AddToRoleAsync(dbUser, "Doctor");
+
+            if (!dbRoleResult.Succeeded)
+            {
+                var errorMessage = dbRoleResult.Errors.FirstOrDefault()?.Description
+                    ?? "Doctor role assignment failed.";
+
+                throw new ValidationException(errorMessage);
             }
 
             var dbDoctor = new Doctor
             {
+                UserId = dbUser.Id,
                 FullName = dto.FullName,
                 Specialisation = dto.Specialisation,
                 YearsOfExperience = dto.YearsOfExperience,
@@ -328,9 +410,9 @@ namespace HealthAxis.API.Services.Implementations
                 YearsOfExperience = doctor.YearsOfExperience,
                 ConsultationFee = doctor.ConsultationFee,
                 IsActive = doctor.IsActive,
-                UpcomingAppointmentCount = doctor.Appointments.Count(a =>
+                UpcomingAppointmentCount = doctor.Appointments?.Count(a =>
                     a.ScheduledDate.Date >= DateTime.Today &&
-                    a.Status != AppointmentStatus.Cancelled)
+                    a.Status != AppointmentStatus.Cancelled) ?? 0
             };
         }
     }

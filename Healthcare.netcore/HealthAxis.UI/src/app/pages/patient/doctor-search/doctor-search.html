@@ -1,0 +1,105 @@
+<div class="search-page">
+
+  <h1>Search Doctors</h1>
+
+  <!-- FILTER CARD -->
+  <div class="filter-card">
+
+    <div class="filter-row">
+
+      <div class="field search-field">
+        <label>Search</label>
+        <input
+          type="text"
+          [(ngModel)]="searchText"
+          placeholder="Enter doctor name" />
+      </div>
+
+      <div class="field">
+        <label>Specialisation</label>
+        <select [(ngModel)]="selectedSpecialisation">
+          <option *ngFor="let s of specialisations" [value]="s.value">
+            {{ s.label }}
+          </option>
+        </select>
+      </div>
+
+      <button class="clear-btn" (click)="clearFilters()">Clear</button>
+
+    </div>
+
+    <div class="filter-row second-row">
+
+      <label class="checkbox-line">
+        <input type="checkbox" [(ngModel)]="onlyAvailable" />
+        Only show available doctors
+      </label>
+
+      <div class="sort-box">
+        <span>Sort by</span>
+
+        <button
+          [class.active]="sortBy === 'experience'"
+          (click)="sortBy = 'experience'">
+          Experience
+        </button>
+
+        <button
+          [class.active]="sortBy === 'fee'"
+          (click)="sortBy = 'fee'">
+          Fee
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- DOCTOR TABLE CARD -->
+  <div class="doctor-table-card">
+
+    <div class="table-header">
+      <h2>Doctors</h2>
+      <span>Showing {{ filteredDoctors().length }} doctor(s)</span>
+    </div>
+
+    <div class="table">
+
+      <div class="table-head">
+        <span>Doctor</span>
+        <span>Specialisation</span>
+        <span>Experience</span>
+        <span>Fee</span>
+        <span>Availability</span>
+        <span>Action</span>
+      </div>
+
+      <div class="table-row" *ngFor="let d of filteredDoctors()">
+
+        <span class="doctor-name">{{ d.fullName }}</span>
+
+        <span>{{ getSpecialisationName(d.specialisation) }}</span>
+
+        <span>{{ d.yearsOfExperience }} years</span>
+
+        <span>₹{{ d.consultationFee }}</span>
+
+        <span>
+          <span class="badge" [class.available]="d.isActive" [class.not-available]="!d.isActive">
+            {{ d.isActive ? 'Available' : 'Not Available' }}
+          </span>
+        </span>
+
+        <span>
+          <button class="book-btn" (click)="selectDoctor(d)">
+            Book
+          </button>
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

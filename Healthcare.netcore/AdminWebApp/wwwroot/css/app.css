@@ -1214,3 +1214,56 @@ h1 {
         overflow-x: auto;
     }
 }
+/* ================= BLAZOR LOADING SCREEN ================= */
+
+.loading-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef4ff;
+}
+
+.loading-ring {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 12px solid #dbeafe;
+    border-top-color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 900;
+    animation: spin-loader 1s linear infinite;
+}
+
+    .loading-ring span {
+        animation: spin-text 1s linear infinite;
+    }
+
+@keyframes spin-loader {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes spin-text {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(-360deg);
+    }
+}
+
+/* Hide default Blazor error bar */
+#blazor-error-ui {
+    display: none !important;
+}

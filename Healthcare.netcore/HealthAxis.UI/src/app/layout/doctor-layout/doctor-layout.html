@@ -1,0 +1,53 @@
+<div class="doctor-shell">
+
+  <aside class="doctor-sidebar">
+
+    <div class="brand">
+      <div class="brand-icon">+</div>
+
+      <div>
+        <h2>HealthAxis</h2>
+        <p>Doctor Portal</p>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-avatar">
+        {{ doctorInitial }}
+      </div>
+
+      <div>
+        <h4>{{ doctorName }}</h4>
+        <p>{{ doctorEmail }}</p>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/doctor/dashboard" routerLinkActive="active">
+        Dashboard
+      </a>
+
+      <a routerLink="/doctor/appointments" routerLinkActive="active">
+        Appointments
+      </a>
+
+      <a routerLink="/doctor/add-record" routerLinkActive="active">
+        Health Records
+      </a>
+
+      <a routerLink="/doctor/profile" routerLinkActive="active">
+        Profile
+      </a>
+    </nav>
+
+    <div class="bottom-menu">
+      <button (click)="logout()">Logout</button>
+    </div>
+
+  </aside>
+
+  <main class="doctor-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

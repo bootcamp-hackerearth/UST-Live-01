@@ -1,0 +1,87 @@
+<div class="dashboard-page">
+
+  <div class="dashboard-header">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Welcome back, {{ patientName }}. Manage your healthcare journey from one place.</p>
+    </div>
+
+    <button class="logout-small" routerLink="/patient/profile">View Profile</button>
+  </div>
+
+  <div class="feature-grid">
+
+    <div class="feature-card" routerLink="/patient/search">
+      <div class="feature-icon blue">S</div>
+      <div>
+        <span>Find Doctors</span>
+        <h2>{{ totalDoctors }}</h2>
+        <p>Available doctors to browse by specialisation.</p>
+      </div>
+    </div>
+
+    <div class="feature-card" routerLink="/patient/appointments">
+      <div class="feature-icon green">A</div>
+      <div>
+        <span>Appointments</span>
+        <h2>{{ appointmentCount }}</h2>
+        <p>Your booked appointment records.</p>
+      </div>
+    </div>
+
+    <div class="feature-card" routerLink="/patient/history">
+      <div class="feature-icon orange">H</div>
+      <div>
+        <span>Health History</span>
+        <h2>{{ healthRecordCount }}</h2>
+        <p>Medical records available for review.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="dashboard-body">
+
+    <div class="quick-card">
+      <h3>Quick Actions</h3>
+      <p>Start common patient activities quickly.</p>
+
+      <div class="quick-item" routerLink="/patient/search">
+        <div class="quick-icon">1</div>
+        <div>
+          <h4>Find a Doctor</h4>
+          <p>Search available doctors and request an appointment.</p>
+        </div>
+      </div>
+
+      <div class="quick-item" routerLink="/patient/book">
+        <div class="quick-icon">2</div>
+        <div>
+          <h4>Book Appointment</h4>
+          <p>Select date, doctor, and available slot.</p>
+        </div>
+      </div>
+
+      <div class="quick-item" routerLink="/patient/history">
+        <div class="quick-icon">3</div>
+        <div>
+          <h4>Health History</h4>
+          <p>Review previous visits and medical records.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="overview-card">
+      <h3>Portal Overview</h3>
+      <p>Your healthcare activity summary.</p>
+
+      <div class="empty-state">
+        <h4>{{ upcomingAppointmentText }}</h4>
+        <p>Upcoming appointment details will appear here after booking.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>

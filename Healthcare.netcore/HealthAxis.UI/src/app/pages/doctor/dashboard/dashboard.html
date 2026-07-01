@@ -1,0 +1,94 @@
+<div class="dashboard-page">
+
+  <div class="dashboard-header">
+    <div>
+      <p class="portal-text">DOCTOR DASHBOARD</p>
+      <h1>Welcome, {{ doctorName }}</h1>
+      <p class="subtitle">
+        Manage appointments, consultations, and patient health records.
+      </p>
+    </div>
+
+   <button
+  type="button"
+  class="profile-btn"
+  routerLink="/doctor/profile">
+  Doctor Profile
+</button>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="feature-grid">
+
+    <div class="feature-card" routerLink="/doctor/appointments">
+      <div class="feature-icon blue">T</div>
+
+      <div>
+        <span>Today</span>
+        <h2>{{ todayAppointments }}</h2>
+        <p>Appointments scheduled for today.</p>
+      </div>
+    </div>
+
+    <div class="feature-card" routerLink="/doctor/appointments">
+      <div class="feature-icon orange">P</div>
+
+      <div>
+        <span>Pending</span>
+        <h2>{{ pendingAppointments }}</h2>
+        <p>Appointments waiting for confirmation.</p>
+      </div>
+    </div>
+
+    <div class="feature-card" routerLink="/doctor/add-record">
+      <div class="feature-icon green">R</div>
+
+      <div>
+        <span>Records</span>
+        <h2>{{ completedAppointments }}</h2>
+        <p>Completed consultations and records.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BODY -->
+  <div class="dashboard-body">
+
+    <div class="quick-card">
+      <h3>Quick Actions</h3>
+      <p>Start common doctor activities quickly.</p>
+
+      <div class="quick-item" routerLink="/doctor/appointments">
+        <div class="quick-icon">1</div>
+
+        <div>
+          <h4>View Appointments</h4>
+          <p>Check pending, confirmed, and completed appointments.</p>
+        </div>
+      </div>
+
+      <div class="quick-item" routerLink="/doctor/add-record">
+        <div class="quick-icon">2</div>
+
+        <div>
+          <h4>Add Health Record</h4>
+          <p>Add diagnosis, prescription, and consultation notes.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="overview-card">
+      <h3>Doctor Overview</h3>
+      <p>Your consultation activity summary.</p>
+
+      <div class="empty-state">
+        <h4>No appointment selected</h4>
+        <p>Appointment summary will appear here once backend is connected.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>

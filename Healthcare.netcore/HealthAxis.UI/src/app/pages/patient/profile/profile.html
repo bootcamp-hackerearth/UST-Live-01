@@ -1,0 +1,196 @@
+<div class="profile-page">
+
+  <p class="portal-text">PATIENT PORTAL</p>
+  <h1>Profile</h1>
+
+  <div class="profile-hero">
+
+    <div class="avatar-box">
+      {{ avatarInitial }}
+    </div>
+
+    <div class="hero-info">
+      <h2>{{ patient.fullName }}</h2>
+      <p>{{ patient.email }}</p>
+      <span class="status-badge">{{ patient.status }}</span>
+    </div>
+
+    <div class="hero-actions">
+      <button
+        class="edit-btn"
+        *ngIf="!isEditMode && !isPasswordMode"
+        (click)="enableEdit()">
+        Edit Profile
+      </button>
+
+      <button
+        class="password-btn"
+        *ngIf="!isEditMode && !isPasswordMode"
+        (click)="enablePasswordChange()">
+        Change Password
+      </button>
+    </div>
+
+  </div>
+
+  <div class="details-card">
+
+    <div class="card-header">
+      <h3>Personal Information</h3>
+      <p>Basic patient profile and contact details.</p>
+    </div>
+
+    <div class="details-grid">
+
+      <div class="detail-item">
+        <label>Full Name</label>
+
+        <input
+          *ngIf="isEditMode"
+          type="text"
+          [(ngModel)]="patient.fullName" />
+
+        <p *ngIf="!isEditMode">{{ patient.fullName }}</p>
+
+        <small class="error-text" *ngIf="fullNameError">
+          {{ fullNameError }}
+        </small>
+      </div>
+
+      <div class="detail-item">
+        <label>Email Address</label>
+
+        <input
+          *ngIf="isEditMode"
+          type="email"
+          [(ngModel)]="patient.email" />
+
+        <p *ngIf="!isEditMode">{{ patient.email }}</p>
+
+        <small class="error-text" *ngIf="emailError">
+          {{ emailError }}
+        </small>
+      </div>
+
+      <div class="detail-item">
+        <label>Phone Number</label>
+
+        <input
+          *ngIf="isEditMode"
+          type="text"
+          maxlength="10"
+          [(ngModel)]="patient.phoneNumber" />
+
+        <p *ngIf="!isEditMode">{{ patient.phoneNumber }}</p>
+
+        <small class="error-text" *ngIf="phoneError">
+          {{ phoneError }}
+        </small>
+      </div>
+
+      <div class="detail-item">
+        <label>Date of Birth</label>
+
+        <input
+          *ngIf="isEditMode"
+          type="date"
+          [(ngModel)]="patient.dateOfBirth" />
+
+        <p *ngIf="!isEditMode">{{ patient.dateOfBirth }}</p>
+
+        <small class="error-text" *ngIf="dobError">
+          {{ dobError }}
+        </small>
+      </div>
+
+      <div class="detail-item">
+        <label>Gender</label>
+
+        <select *ngIf="isEditMode" [(ngModel)]="patient.gender">
+          <option [ngValue]="0">Male</option>
+          <option [ngValue]="1">Female</option>
+          <option [ngValue]="2">Other</option>
+        </select>
+
+        <p *ngIf="!isEditMode">{{ getGenderName(patient.gender) }}</p>
+      </div>
+
+    </div>
+
+    <div class="action-buttons" *ngIf="isEditMode">
+      <button class="cancel-btn" (click)="cancelEdit()">Cancel</button>
+
+      <button class="save-btn" (click)="saveProfile()">
+        {{ isSaving ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+
+  </div>
+
+  <div class="details-card" *ngIf="isPasswordMode">
+
+    <div class="card-header">
+      <h3>Change Password</h3>
+      <p>Update your account password securely.</p>
+    </div>
+
+    <div class="details-grid">
+
+      <div class="detail-item">
+        <label>Old Password</label>
+
+        <input
+          type="password"
+          [(ngModel)]="passwordModel.oldPassword" />
+
+        <small class="error-text" *ngIf="oldPasswordError">
+          {{ oldPasswordError }}
+        </small>
+      </div>
+
+      <div class="detail-item">
+        <label>New Password</label>
+
+        <input
+          type="password"
+          [(ngModel)]="passwordModel.newPassword" />
+
+        <small class="error-text" *ngIf="newPasswordError">
+          {{ newPasswordError }}
+        </small>
+      </div>
+
+      <div class="detail-item">
+        <label>Confirm Password</label>
+
+        <input
+          type="password"
+          [(ngModel)]="passwordModel.confirmPassword" />
+
+        <small class="error-text" *ngIf="confirmPasswordError">
+          {{ confirmPasswordError }}
+        </small>
+      </div>
+
+    </div>
+
+    <div class="action-buttons">
+      <button class="cancel-btn" (click)="cancelPasswordChange()">Cancel</button>
+
+      <button class="save-btn" (click)="changePassword()">
+        {{ isChangingPassword ? 'Updating...' : 'Update Password' }}
+      </button>
+    </div>
+
+  </div>
+
+  <div class="account-card">
+
+    <div>
+      <h3>Account Summary</h3>
+      <p>Your patient account is active and ready for appointment booking.</p>
+    </div>
+
+  </div>
+
+</div>

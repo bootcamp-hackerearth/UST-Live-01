@@ -1,0 +1,101 @@
+<div class="login-container">
+
+  <div class="left-panel">
+    <h1>HealthAxis</h1>
+    <p>Create your patient account and manage your healthcare journey easily</p>
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135768.png" />
+  </div>
+
+  <div class="right-panel">
+    <div class="login-box">
+
+      <h2>Patient Register</h2>
+
+      <input
+        type="text"
+        placeholder="Full Name"
+        [(ngModel)]="fullName"
+        [class.input-error]="fullNameError" />
+
+      <small class="error-text" *ngIf="fullNameError">
+        {{ fullNameError }}
+      </small>
+
+      <input
+        type="date"
+        [(ngModel)]="dateOfBirth"
+        min="1900-01-01"
+        [max]="todayDate"
+        [class.input-error]="dateOfBirthError" />
+
+      <small class="error-text" *ngIf="dateOfBirthError">
+        {{ dateOfBirthError }}
+      </small>
+
+      <select
+        [(ngModel)]="gender"
+        [class.input-error]="genderError">
+
+        <option value="">Select Gender</option>
+        <option value="0">Male</option>
+        <option value="1">Female</option>
+        <option value="2">Other</option>
+      </select>
+
+      <small class="error-text" *ngIf="genderError">
+        {{ genderError }}
+      </small>
+
+      <input
+        type="text"
+        placeholder="Phone Number"
+        [(ngModel)]="phoneNumber"
+        [class.input-error]="phoneNumberError" />
+
+      <small class="error-text" *ngIf="phoneNumberError">
+        {{ phoneNumberError }}
+      </small>
+
+      <input
+        type="text"
+        placeholder="Email"
+        [(ngModel)]="email"
+        [class.input-error]="emailError" />
+
+      <small class="error-text" *ngIf="emailError">
+        {{ emailError }}
+      </small>
+
+      <input
+        type="password"
+        placeholder="Password"
+        [(ngModel)]="password"
+        [class.input-error]="passwordError" />
+
+      <small class="error-text" *ngIf="passwordError">
+        {{ passwordError }}
+      </small>
+
+      <input
+        type="password"
+        placeholder="Confirm Password"
+        [(ngModel)]="confirmPassword"
+        [class.input-error]="confirmPasswordError" />
+
+      <small class="error-text" *ngIf="confirmPasswordError">
+        {{ confirmPasswordError }}
+      </small>
+
+      
+
+      <button
+  type="button"
+  (click)="register()"
+  [disabled]="isRegistering">
+  {{ isRegistering ? 'Registering...' : 'Register' }}
+</button>
+
+    </div>
+  </div>
+
+</div>

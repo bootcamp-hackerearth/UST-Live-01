@@ -22,5 +22,6 @@
             int id,
             UpdateDoctorDto dto,
             CancellationToken ct = default);
+        Task<DoctorDto?> GetByUserIdAsync(string userId, CancellationToken ct = default);
     }
 }

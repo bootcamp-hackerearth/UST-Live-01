@@ -1,0 +1,40 @@
+<div class="patient-shell">
+
+  <aside class="patient-sidebar">
+
+    <div class="brand">
+      <div class="brand-icon">+</div>
+      <div>
+        <h2>HealthAxis</h2>
+        <p>Patient Portal</p>
+      </div>
+    </div>
+
+    <div class="profile-card">
+      <div class="profile-avatar">{{ patientInitial }}</div>
+      <div>
+        <h4>{{ patientName }}</h4>
+        <p>{{ patientEmail }}</p>
+      </div>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/patient/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/patient/search" routerLinkActive="active">Find Doctors</a>
+      <a routerLink="/patient/book" routerLinkActive="active">Book Appointment</a>
+      <a routerLink="/patient/appointments" routerLinkActive="active">My Appointments</a>
+      <a routerLink="/patient/history" routerLinkActive="active">Health History</a>
+      <a routerLink="/patient/profile" routerLinkActive="active">Profile</a>
+    </nav>
+
+    <div class="bottom-menu">
+      <button (click)="logout()">Logout</button>
+    </div>
+
+  </aside>
+
+  <main class="patient-content">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>
