@@ -1,153 +1,52 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MockAuth, MockUser } from '../../../services/mock-auth';
-import {
-  AppointmentDto,
-  HealthRecordDto,
-  MockPatientData,
-  PatientDto
-} from '../../../services/mock-patient-data';
+
+import { Appointment, AppointmentStatus } from '../../../core/models/appointment.model';
+import { AddHealthRecordRequest } from '../../../core/models/health-record.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { DoctorPortalStateService } from '../../../core/services/doctor-portal-state.service';
+import { Pagination } from '../../../shared/pagination/pagination';
+
+type DateFilter = 'All' | 'Today' | 'Upcoming' | 'Past';
+type StatusFilter = AppointmentStatus | 'All';
 
 @Component({
   selector: 'app-doctor-appointments',
-  imports: [FormsModule],
+  imports: [FormsModule, Pagination],
   templateUrl: './doctor-appointments.html',
   styleUrl: './doctor-appointments.css',
 })
 export class DoctorAppointments implements OnInit {
-  private auth = inject(MockAuth);
-  private patientData = inject(MockPatientData);
-  private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  readonly doctorState = inject(DoctorPortalStateService);
 
-  currentUser?: MockUser;
-  appointments: AppointmentDto[] = [];
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
-  selectedPatient?: PatientDto;
-  selectedPatientHistory: HealthRecordDto[] = [];
+  readonly searchText = signal('');
+  readonly statusFilter = signal<StatusFilter>('All');
+  readonly dateFilter = signal<DateFilter>('All');
 
-  selectedCancelAppointment?: AppointmentDto;
-  cancellationReason = '';
-  selectedCancelledAppointment?: AppointmentDto;
+  readonly currentPage = signal(1);
+  readonly pageSize = 5;
 
-  selectedRecordAppointment?: AppointmentDto;
-  diagnosis = '';
-  prescription = '';
-  notes = '';
+  readonly selectedCancelAppointment = signal<Appointment | null>(null);
+  readonly selectedRecordAppointment = signal<Appointment | null>(null);
+  readonly selectedCancelledAppointment = signal<Appointment | null>(null);
 
-  selectedViewRecord?: HealthRecordDto;
-  selectedViewRecordPatient?: PatientDto;
-  
+  readonly cancellationReason = signal('');
+  readonly diagnosis = signal('');
+  readonly prescription = signal('');
+  readonly notes = signal('');
 
-  message = '';
-  isError = false;
-  searchText = '';
-  statusFilter = 'All';
-  dateFilter = 'All';
+  readonly message = signal('');
+  readonly isError = signal(false);
 
-  ngOnInit(): void {
-    const user = this.auth.getCurrentUser();
+  readonly filteredAppointments = computed(() => {
+    let result = [...this.doctorState.appointments()];
 
-    if (!user || user.role !== 'Doctor') {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.currentUser = user;
-    this.loadAppointments();
-
-    const status = this.route.snapshot.queryParamMap.get('status');
-
-    if (
-      status === 'Pending' ||
-      status === 'Confirmed' ||
-      status === 'Completed' ||
-      status === 'Cancelled'
-    ) {
-      this.statusFilter = status;
-    }
-  }
-
-  loadAppointments(): void {
-    if (!this.currentUser?.doctorId) {
-      this.appointments = [];
-      return;
-    }
-
-    this.appointments = this.patientData.getAppointmentsByDoctor(this.currentUser.doctorId);
-  }
-
-  openPatientModal(appointment: AppointmentDto): void {
-    const patient = this.patientData.getPatientById(appointment.patientId);
-
-    if (!patient) {
-      this.showError('Patient details were not found.');
-      return;
-    }
-
-    this.selectedPatient = patient;
-    this.selectedPatientHistory = this.patientData.getPatientHealthHistory(patient.patientId);
-  }
-
-  closePatientModal(): void {
-    this.selectedPatient = undefined;
-    this.selectedPatientHistory = [];
-  }
-
-  confirmAppointment(appointment: AppointmentDto): void {
-    if (!this.currentUser?.doctorId) {
-      return;
-    }
-
-    const result = this.patientData.confirmAppointment(
-      appointment.appointmentId,
-      this.currentUser.doctorId
-    );
-
-    if (!result.success) {
-      this.showError(result.message);
-      return;
-    }
-
-    this.showSuccess(result.message);
-    this.loadAppointments();
-  }
-
-  openCancelModal(appointment: AppointmentDto): void {
-    this.selectedCancelAppointment = appointment;
-    this.cancellationReason = '';
-    this.clearMessage();
-  }
-
-  closeCancelModal(): void {
-    this.selectedCancelAppointment = undefined;
-    this.cancellationReason = '';
-  }
-
-  cancelAppointment(): void {
-    if (!this.selectedCancelAppointment) {
-      return;
-    }
-
-    const result = this.patientData.cancelAppointment({
-      appointmentId: this.selectedCancelAppointment.appointmentId,
-      reason: this.cancellationReason
-    });
-
-    if (!result.success) {
-      this.showError(result.message);
-      return;
-    }
-
-    this.showSuccess(result.message);
-    this.closeCancelModal();
-    this.loadAppointments();
-  }
-  get filteredAppointments(): AppointmentDto[] {
-    let result = [...this.appointments];
-
-    const search = this.searchText.trim().toLowerCase();
+    const search = this.searchText().trim().toLowerCase();
 
     if (search) {
       result = result.filter(appointment =>
@@ -158,88 +57,180 @@ export class DoctorAppointments implements OnInit {
       );
     }
 
-    if (this.statusFilter !== 'All') {
-      result = result.filter(appointment => appointment.status === this.statusFilter);
+    if (this.statusFilter() !== 'All') {
+      result = result.filter(appointment => appointment.status === this.statusFilter());
     }
 
     const today = this.toDateOnly(new Date());
 
-    if (this.dateFilter === 'Today') {
-      result = result.filter(appointment => appointment.scheduledDate === today);
+    if (this.dateFilter() === 'Today') {
+      result = result.filter(appointment => this.toDateOnly(appointment.scheduledDate) === today);
     }
 
-    if (this.dateFilter === 'Upcoming') {
-      result = result.filter(appointment => appointment.scheduledDate > today);
+    if (this.dateFilter() === 'Upcoming') {
+      result = result.filter(appointment => this.toDateOnly(appointment.scheduledDate) > today);
     }
 
-    if (this.dateFilter === 'Past') {
-      result = result.filter(appointment => appointment.scheduledDate < today);
+    if (this.dateFilter() === 'Past') {
+      result = result.filter(appointment => this.toDateOnly(appointment.scheduledDate) < today);
     }
 
     return result;
+  });
+
+  readonly pagedFilteredAppointments = computed(() => {
+    const startIndex = (this.currentPage() - 1) * this.pageSize;
+
+    return this.filteredAppointments().slice(startIndex, startIndex + this.pageSize);
+  });
+
+  ngOnInit(): void {
+    if (this.authService.currentRole() !== 'Doctor') {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const status = this.route.snapshot.queryParamMap.get('status');
+
+    if (
+      status === 'Pending' ||
+      status === 'Confirmed' ||
+      status === 'Completed' ||
+      status === 'Cancelled'
+    ) {
+      this.statusFilter.set(status);
+    }
+
+    this.doctorState.loadDoctorPortal();
   }
-  
-  openAddRecordPanel(appointment: AppointmentDto): void {
-    this.selectedRecordAppointment = appointment;
-    this.diagnosis = '';
-    this.prescription = '';
-    this.notes = '';
+
+  updateSearchText(value: string): void {
+    this.searchText.set(value);
+    this.resetPage();
+  }
+
+  updateStatusFilter(value: string): void {
+    this.statusFilter.set(this.toStatusFilter(value));
+    this.resetPage();
+  }
+
+  updateDateFilter(value: string): void {
+    this.dateFilter.set(this.toDateFilter(value));
+    this.resetPage();
+  }
+
+  clearFilters(): void {
+    this.searchText.set('');
+    this.statusFilter.set('All');
+    this.dateFilter.set('All');
+    this.currentPage.set(1);
+    this.router.navigate(['/doctor/appointments']);
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage.set(page);
+  }
+
+  openPatientModal(appointment: Appointment): void {
+    this.doctorState.loadPatientContext(appointment.patientId);
+  }
+
+  closePatientModal(): void {
+    this.doctorState.closePatientContext();
+  }
+
+  confirmAppointment(appointment: Appointment): void {
+    this.doctorState.confirmAppointment(appointment.appointmentId).subscribe({
+      next: () => this.showSuccess('Appointment confirmed successfully.'),
+      error: error => this.showError(this.authService.getErrorMessage(error))
+    });
+  }
+
+  openCancelModal(appointment: Appointment): void {
+    this.selectedCancelAppointment.set(appointment);
+    this.cancellationReason.set('');
+    this.clearMessage();
+  }
+
+  closeCancelModal(): void {
+    this.selectedCancelAppointment.set(null);
+    this.cancellationReason.set('');
+  }
+
+  cancelAppointment(): void {
+    const appointment = this.selectedCancelAppointment();
+
+    if (!appointment) {
+      return;
+    }
+
+    this.doctorState.cancelAppointment(
+      appointment.appointmentId,
+      this.cancellationReason()
+    ).subscribe({
+      next: () => {
+        this.showSuccess('Appointment cancelled successfully.');
+        this.closeCancelModal();
+      },
+      error: error => this.showError(this.authService.getErrorMessage(error))
+    });
+  }
+
+  openAddRecordPanel(appointment: Appointment): void {
+    this.selectedRecordAppointment.set(appointment);
+    this.diagnosis.set('');
+    this.prescription.set('');
+    this.notes.set('');
     this.clearMessage();
   }
 
   closeAddRecordPanel(): void {
-    this.selectedRecordAppointment = undefined;
-    this.diagnosis = '';
-    this.prescription = '';
-    this.notes = '';
+    this.selectedRecordAppointment.set(null);
+    this.diagnosis.set('');
+    this.prescription.set('');
+    this.notes.set('');
   }
 
   addHealthRecord(): void {
-    if (!this.selectedRecordAppointment || !this.currentUser?.doctorId) {
+    const appointment = this.selectedRecordAppointment();
+
+    if (!appointment) {
       return;
     }
 
-    const result = this.patientData.addHealthRecordForAppointment({
-      appointmentId: this.selectedRecordAppointment.appointmentId,
-      doctorId: this.currentUser.doctorId,
-      diagnosis: this.diagnosis,
-      prescription: this.prescription,
-      notes: this.notes
+    const request: AddHealthRecordRequest = {
+      patientId: appointment.patientId,
+      doctorId: appointment.doctorId,
+      appointmentId: appointment.appointmentId,
+      diagnosis: this.diagnosis(),
+      prescription: this.prescription(),
+      notes: this.notes(),
+      visitDate: appointment.scheduledDate
+    };
+
+    this.doctorState.addHealthRecord(request).subscribe({
+      next: () => {
+        this.showSuccess('Health record added successfully.');
+        this.closeAddRecordPanel();
+      },
+      error: error => this.showError(this.authService.getErrorMessage(error))
     });
-
-    if (!result.success) {
-      this.showError(result.message);
-      return;
-    }
-
-    this.showSuccess(result.message);
-    this.closeAddRecordPanel();
-    this.loadAppointments();
   }
 
-  openRecordModal(appointment: AppointmentDto): void {
-    const record = this.patientData.getHealthRecordByAppointmentId(appointment.appointmentId);
-
-    if (!record) {
-      this.showError('No health record found for this completed appointment.');
-      return;
-    }
-
-    this.selectedViewRecord = record;
-    this.selectedViewRecordPatient = this.patientData.getPatientById(record.patientId);
+  openRecordModal(appointment: Appointment): void {
+    this.doctorState.loadRecordByAppointment(appointment);
   }
 
   closeRecordModal(): void {
-    this.selectedViewRecord = undefined;
-    this.selectedViewRecordPatient = undefined;
+    this.doctorState.closeRecord();
   }
 
-  openCancelledDetailsModal(appointment: AppointmentDto): void {
-    this.selectedCancelledAppointment = appointment;
+  openCancelledDetailsModal(appointment: Appointment): void {
+    this.selectedCancelledAppointment.set(appointment);
   }
 
   closeCancelledDetailsModal(): void {
-    this.selectedCancelledAppointment = undefined;
+    this.selectedCancelledAppointment.set(null);
   }
 
   formatDate(dateText: string): string {
@@ -250,23 +241,51 @@ export class DoctorAppointments implements OnInit {
     });
   }
 
-  private toDateOnly(date: Date): string {
-    return date.toISOString().split('T')[0];
+  private resetPage(): void {
+    this.currentPage.set(1);
   }
-  
+
   private showSuccess(message: string): void {
-    this.message = message;
-    this.isError = false;
+    this.message.set(message);
+    this.isError.set(false);
   }
 
   private showError(message: string): void {
-    this.message = message;
-    this.isError = true;
+    this.message.set(message);
+    this.isError.set(true);
   }
 
   private clearMessage(): void {
-    this.message = '';
-    this.isError = false;
+    this.message.set('');
+    this.isError.set(false);
   }
-  
+
+  private toStatusFilter(value: string): StatusFilter {
+    if (
+      value === 'Pending' ||
+      value === 'Confirmed' ||
+      value === 'Completed' ||
+      value === 'Cancelled'
+    ) {
+      return value;
+    }
+
+    return 'All';
+  }
+
+  private toDateFilter(value: string): DateFilter {
+    if (
+      value === 'Today' ||
+      value === 'Upcoming' ||
+      value === 'Past'
+    ) {
+      return value;
+    }
+
+    return 'All';
+  }
+
+  private toDateOnly(value: string | Date): string {
+    return new Date(value).toISOString().split('T')[0];
+  }
 }

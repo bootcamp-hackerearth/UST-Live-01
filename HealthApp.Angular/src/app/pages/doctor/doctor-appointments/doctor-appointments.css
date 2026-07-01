@@ -48,9 +48,34 @@
   box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
 
   display: grid;
-  grid-template-columns: 1.4fr 0.65fr 0.65fr;
+  grid-template-columns: minmax(320px, 1.35fr) minmax(190px, 0.65fr) minmax(190px, 0.65fr) auto;
   gap: 16px;
   align-items: center;
+}
+
+.doctor-clear-filter-button {
+  height: 56px;
+  min-width: 112px;
+  padding: 0 22px;
+  border-radius: 18px;
+  border: 1px solid #c7d2fe;
+  background: #ffffff;
+  color: #3730a3;
+  font-size: 15px;
+  font-weight: 950;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+  transition: 0.18s ease;
+}
+
+.doctor-clear-filter-button:hover {
+  background: #eef2ff;
+  border-color: #a5b4fc;
+  transform: translateY(-1px);
+}
+
+.doctor-clear-filter-button:active {
+  transform: translateY(0);
 }
 
 .doctor-search-box {

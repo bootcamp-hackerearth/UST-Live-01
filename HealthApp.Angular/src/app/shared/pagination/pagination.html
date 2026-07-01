@@ -1,0 +1,35 @@
+<div class="pagination-bar">
+  <div class="pagination-summary">
+    Showing
+    <strong>{{ startItem }}</strong>
+    to
+    <strong>{{ endItem }}</strong>
+    of
+    <strong>{{ totalItems }}</strong>
+    records
+  </div>
+
+  <div class="pagination-actions">
+    <button
+      type="button"
+      class="pagination-button"
+      [disabled]="currentPage <= 1"
+      (click)="goToPreviousPage()"
+    >
+      Previous
+    </button>
+
+    <span class="pagination-page-pill">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button
+      type="button"
+      class="pagination-button"
+      [disabled]="currentPage >= totalPages"
+      (click)="goToNextPage()"
+    >
+      Next
+    </button>
+  </div>
+</div>

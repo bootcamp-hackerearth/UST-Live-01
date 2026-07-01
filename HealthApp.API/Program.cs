@@ -14,14 +14,14 @@ using Microsoft.OpenApi;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddControllers()
+builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -127,7 +127,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAdminBlazor", policy =>
     {
-        policy.WithOrigins("https://localhost:7083")
+        policy.WithOrigins("https://localhost:7083","http://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });

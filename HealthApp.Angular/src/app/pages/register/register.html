@@ -14,10 +14,10 @@
       </p>
     </div>
 
-    @if (message) {
-      <div class="register-message" [class.error]="isError" [class.success]="!isError">
-        <strong>{{ isError ? 'Action Failed' : 'Success' }}</strong>
-        <span>{{ message }}</span>
+    @if (message()) {
+      <div class="register-message" [class.error]="isError()" [class.success]="!isError()">
+        <strong>{{ isError() ? 'Action Failed' : 'Success' }}</strong>
+        <span>{{ message() }}</span>
       </div>
     }
 
@@ -123,8 +123,8 @@
         </div>
       </div>
 
-      <button class="register-submit-button" type="submit" [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Creating account...' : 'Register Patient' }}
+      <button class="register-submit-button" type="submit" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Creating account...' : 'Register Patient' }}
       </button>
     </form>
 
@@ -134,7 +134,7 @@
     </div>
   </section>
 
-  @if (isSubmitting) {
+  @if (isSubmitting()) {
     <div class="register-loading-backdrop">
       <div class="register-loading-box">
         <div class="loading-logo">H</div>

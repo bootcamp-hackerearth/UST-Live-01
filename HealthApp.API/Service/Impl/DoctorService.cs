@@ -127,13 +127,16 @@ public class DoctorService(
             .Select(a => a.TimeSlots)
             .ToList();
 
+        var availableSlots = TimeSlots.Slots
+            .Where(slot => !booked.Contains(slot))
+            .Where(slot => !IsPastTimeSlot(date.Date, slot))
+            .ToList();
+
         return new DoctorAvailabilityDto
         {
             DoctorId = doctorId,
             Date = date.Date,
-            AvailableSlots = TimeSlots.Slots
-                .Where(slot => !booked.Contains(slot))
-                .ToList()
+            AvailableSlots = availableSlots
         };
     }
 
@@ -171,5 +174,30 @@ public class DoctorService(
             throw new BusinessRuleException(
                 "Please provide a valid doctor reference.");
         }
+    }
+    private static bool IsPastTimeSlot(DateTime scheduledDate, string timeSlot)
+    {
+        if (scheduledDate.Date != DateTime.Today)
+        {
+            return false;
+        }
+
+        var slotStartTime = GetSlotStartTime(timeSlot);
+
+        var slotStartDateTime = scheduledDate.Date.Add(slotStartTime);
+
+        return slotStartDateTime <= DateTime.Now;
+    }
+
+    private static TimeSpan GetSlotStartTime(string timeSlot)
+    {
+        var startText = timeSlot.Split('-')[0].Trim();
+
+        if (!DateTime.TryParse(startText, out var parsedStartTime))
+        {
+            throw new BusinessRuleException("Invalid time slot format.");
+        }
+
+        return parsedStartTime.TimeOfDay;
     }
 }

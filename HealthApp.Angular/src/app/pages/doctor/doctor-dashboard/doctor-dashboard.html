@@ -2,7 +2,7 @@
   <section class="doctor-hero-card">
     <div>
       <span class="doctor-kicker">Doctor Portal</span>
-      <h1>Welcome back, {{ currentUser?.fullName }}</h1>
+      <h1>Welcome back, {{ doctorDisplayName }}</h1>
       <p>Your consultation dashboard is ready.</p>
     </div>
 
@@ -17,25 +17,25 @@
   <section class="doctor-metric-grid">
     <div class="doctor-metric-card today">
       <span>Today's Appointments</span>
-      <strong>{{ todayCount }}</strong>
+      <strong>{{ doctorState.todayCount() }}</strong>
       <p>Scheduled for today</p>
     </div>
 
     <div class="doctor-metric-card pending">
       <span>Pending</span>
-      <strong>{{ pendingCount }}</strong>
+      <strong>{{ doctorState.pendingCount() }}</strong>
       <p>Waiting for confirmation</p>
     </div>
 
     <div class="doctor-metric-card confirmed">
       <span>Confirmed</span>
-      <strong>{{ confirmedCount }}</strong>
+      <strong>{{ doctorState.confirmedCount() }}</strong>
       <p>Upcoming consultations</p>
     </div>
 
     <div class="doctor-metric-card completed">
       <span>Completed</span>
-      <strong>{{ completedCount }}</strong>
+      <strong>{{ doctorState.completedCount() }}</strong>
       <p>Finished consultations</p>
     </div>
   </section>
@@ -60,7 +60,7 @@
           </thead>
 
           <tbody>
-            @if (todayAppointments.length === 0) {
+            @if (doctorState.todayAppointments().length === 0) {
               <tr>
                 <td colspan="4">
                   <div class="doctor-empty-state">
@@ -70,7 +70,7 @@
                 </td>
               </tr>
             } @else {
-              @for (appointment of todayAppointments; track appointment.appointmentId) {
+              @for (appointment of doctorState.todayAppointments(); track appointment.appointmentId) {
                 <tr>
                   <td>
                     <div class="patient-name-cell">

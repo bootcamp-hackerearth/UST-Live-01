@@ -1,28 +1,43 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MockAuth } from '../../../services/mock-auth';
-import {
-  DoctorDto,
-  MockPatientData,
-  PatientDto,
-  SpecialisationType
-} from '../../../services/mock-patient-data';
+
+import { AuthService } from '../../../core/services/auth.service';
+import { AppointmentApiService } from '../../../core/services/appointment-api.service';
+import { DoctorApiService } from '../../../core/services/doctor-api.service';
+import { PatientApiService } from '../../../core/services/patient-api.service';
+import { Doctor, SpecialisationType } from '../../../core/models/doctor.model';
+import { Patient } from '../../../core/models/patient.model';
 
 @Component({
   selector: 'app-book-appointment',
-  imports: [RouterLink, FormsModule],
+  imports: [FormsModule],
   templateUrl: './book-appointment.html',
   styleUrl: './book-appointment.css',
 })
-export class BookAppointment {
-  private auth = inject(MockAuth);
-  private patientData = inject(MockPatientData);
-  private router = inject(Router);
+export class BookAppointment implements OnInit {
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly authService = inject(AuthService);
+  private readonly doctorApi = inject(DoctorApiService);
+  private readonly patientApi = inject(PatientApiService);
+  private readonly appointmentApi = inject(AppointmentApiService);
+  private readonly router = inject(Router);
 
-  patient?: PatientDto = this.auth.getCurrentPatient();
+  patient?: Patient;
 
-  specialisations = this.patientData.specialisations;
+  specialisations: SpecialisationType[] = [
+    'Endocrinologist',
+    'Oncologist',
+    'Gynecologist',
+    'OrthopedicSurgeon',
+    'Psychiatrist',
+    'Pediatrician',
+    'Neurologist',
+    'Dermatologist',
+    'Cardiologist',
+    'GeneralPractitioner'
+  ];
+
+  doctors: Doctor[] = [];
 
   selectedSpecialisation: SpecialisationType | '' = '';
   selectedDoctorId = 0;
@@ -35,22 +50,34 @@ export class BookAppointment {
   isError = false;
   isBooking = false;
 
-  today = this.getTodayDate();
+  today = new Date().toISOString().split('T')[0];
 
-  get filteredDoctors(): DoctorDto[] {
-    if (!this.selectedSpecialisation) {
-      return [];
+  ngOnInit(): void {
+    const user = this.authService.currentUser();
+
+    if (!user?.patientId) {
+      this.router.navigate(['/login']);
+      return;
     }
 
-    return this.patientData.getDoctorsBySpecialisation(this.selectedSpecialisation);
+    this.patientApi.getPatientById(user.patientId).subscribe({
+      next: patient => {
+        this.patient = patient;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.showError(this.authService.getErrorMessage(error));
+        this.cdr.detectChanges();
+      }
+    });
   }
 
-  get selectedDoctor(): DoctorDto | undefined {
-    if (!this.selectedDoctorId) {
-      return undefined;
-    }
+  get filteredDoctors(): Doctor[] {
+    return this.doctors;
+  }
 
-    return this.patientData.getDoctorById(this.selectedDoctorId);
+  get selectedDoctor(): Doctor | undefined {
+    return this.doctors.find(doctor => doctor.doctorId === this.selectedDoctorId);
   }
 
   onSpecialisationChanged(): void {
@@ -58,7 +85,22 @@ export class BookAppointment {
     this.selectedDate = '';
     this.selectedSlot = '';
     this.availableSlots = [];
-    this.clearMessage();
+    this.doctors = [];
+
+    if (!this.selectedSpecialisation) {
+      return;
+    }
+
+    this.doctorApi.getDoctors(this.selectedSpecialisation).subscribe({
+      next: doctors => {
+        this.doctors = doctors;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        this.showError(this.authService.getErrorMessage(error));
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   onDoctorChanged(): void {
@@ -77,10 +119,18 @@ export class BookAppointment {
       return;
     }
 
-    this.availableSlots = this.patientData.getAvailableSlots(
-      this.selectedDoctorId,
-      this.selectedDate
-    );
+    this.doctorApi
+      .getDoctorAvailability(this.selectedDoctorId, this.selectedDate)
+      .subscribe({
+        next: availability => {
+          this.availableSlots = availability.availableSlots;
+          this.cdr.detectChanges();
+        },
+        error: error => {
+          this.showError(this.authService.getErrorMessage(error));
+          this.cdr.detectChanges();
+        }
+      });
   }
 
   selectSlot(slot: string): void {
@@ -91,56 +141,34 @@ export class BookAppointment {
   bookAppointment(): void {
     this.clearMessage();
 
-    if (!this.patient) {
-      this.showError('Patient details are missing. Please login again.');
-      return;
-    }
-
-    if (!this.selectedSpecialisation) {
-      this.showError('Please select a specialisation.');
-      return;
-    }
-
-    if (!this.selectedDoctorId) {
-      this.showError('Please select a doctor.');
-      return;
-    }
-
-    if (!this.selectedDate) {
-      this.showError('Please select an appointment date.');
-      return;
-    }
-
-    if (!this.selectedSlot) {
-      this.showError('Please select an available time slot.');
+    if (!this.selectedDoctorId || !this.selectedDate || !this.selectedSlot) {
+      this.showError('Please select doctor, date, and slot.');
       return;
     }
 
     this.isBooking = true;
 
-    setTimeout(() => {
-      const result = this.patientData.bookAppointment({
-        patientId: this.patient!.patientId,
-        doctorId: this.selectedDoctorId,
-        scheduledDate: this.selectedDate,
-        timeSlot: this.selectedSlot
-      });
+    this.appointmentApi.bookAppointment({
+      doctorId: this.selectedDoctorId,
+      scheduledDate: this.selectedDate,
+      timeSlot: this.selectedSlot
+    }).subscribe({
+      next: () => {
+        this.isBooking = false;
+        this.message = 'Appointment booked successfully.';
+        this.isError = false;
+        this.cdr.detectChanges();
 
-      this.isBooking = false;
-
-      if (!result.success) {
-        this.showError(result.message);
-        this.onDateChanged();
-        return;
+        setTimeout(() => {
+          this.router.navigate(['/patient/appointments']);
+        }, 800);
+      },
+      error: error => {
+        this.isBooking = false;
+        this.showError(this.authService.getErrorMessage(error));
+        this.cdr.detectChanges();
       }
-
-      this.message = result.message;
-      this.isError = false;
-
-      setTimeout(() => {
-        this.router.navigate(['/patient/appointments']);
-      }, 1000);
-    }, 600);
+    });
   }
 
   goBack(): void {
@@ -155,9 +183,5 @@ export class BookAppointment {
   private showError(message: string): void {
     this.message = message;
     this.isError = true;
-  }
-
-  private getTodayDate(): string {
-    return new Date().toISOString().split('T')[0];
   }
 }

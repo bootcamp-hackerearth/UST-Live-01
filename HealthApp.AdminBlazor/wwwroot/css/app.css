@@ -3917,3 +3917,48 @@ body {
         font-size: 18px;
         font-weight: 950;
     }
+
+.auth-bridge-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.22), transparent 32%), radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.18), transparent 34%), linear-gradient(135deg, #0f172a, #172554);
+    font-family: Segoe UI, Arial, sans-serif;
+}
+
+.auth-bridge-card {
+    width: min(380px, calc(100% - 32px));
+    padding: 34px;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 30px 75px rgba(0, 0, 0, 0.32);
+    text-align: center;
+}
+
+.auth-bridge-logo {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    border-radius: 23px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #14b8a6, #22c55e);
+    font-size: 32px;
+    font-weight: 950;
+}
+
+.auth-bridge-card h3 {
+    margin: 0;
+    color: #111827;
+    font-size: 24px;
+    font-weight: 900;
+}
+
+.auth-bridge-card p {
+    margin: 10px 0 0;
+    color: #64748b;
+    font-size: 15px;
+    font-weight: 600;
+}

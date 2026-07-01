@@ -1,11 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
-import { MockAuth } from '../../../services/mock-auth';
-import {
-  HealthRecordDto,
-  MockPatientData,
-  PatientDto
-} from '../../../services/mock-patient-data';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { HealthRecord } from '../../../core/models/health-record.model';
+import { Patient } from '../../../core/models/patient.model';
+import { PatientApiService } from '../../../core/services/patient-api.service';
 
 @Component({
   selector: 'app-patient-health-records',
@@ -14,31 +11,45 @@ import {
   styleUrl: './patient-health-records.css',
 })
 export class PatientHealthRecords implements OnInit {
-  private auth = inject(MockAuth);
-  private patientData = inject(MockPatientData);
-  private router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly authService = inject(AuthService);
+  private readonly patientApi = inject(PatientApiService);
+  private readonly router = inject(Router);
 
-  patient?: PatientDto;
-  healthRecords: HealthRecordDto[] = [];
+  patient?: Patient;
+  healthRecords: HealthRecord[] = [];
 
   ngOnInit(): void {
-    if (!this.auth.isLoggedIn() || !this.auth.isPatient()) {
+    const user = this.authService.currentUser();
+
+    if (!user?.patientId) {
       this.router.navigate(['/login']);
       return;
     }
 
-    this.patient = this.auth.getCurrentPatient();
+    this.patientApi.getPatientById(user.patientId).subscribe({
+      next: patient => {
+        this.patient = patient;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        console.error(error);
+      }
+    });
 
-    if (!this.patient) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.healthRecords = this.patientData.getHealthRecordsByPatient(this.patient.patientId);
+    this.patientApi.getPatientHealthRecords(user.patientId).subscribe({
+      next: records => {
+        this.healthRecords = records;
+        this.cdr.detectChanges();
+      },
+      error: error => {
+        console.error(error);
+      }
+    });
   }
 
-  getDoctorSpecialisation(doctorId: number): string {
-    return this.patientData.getDoctorSpecialisation(doctorId) ?? 'Specialisation unavailable';
+  getDoctorSpecialisation(): string {
+    return '';
   }
 
   formatDate(dateText: string): string {

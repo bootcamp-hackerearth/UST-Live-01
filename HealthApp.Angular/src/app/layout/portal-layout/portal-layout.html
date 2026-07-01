@@ -289,60 +289,69 @@
     </div>
   </div>
 }
-@if (showDoctorProfileModal && doctorProfile) {
+@if (showDoctorProfileModal) {
   <div class="profile-modal-backdrop">
     <div class="profile-modal doctor-profile-modal">
       <div class="profile-modal-header">
         <div>
           <span>Doctor Profile</span>
-          <h2>{{ doctorProfile.fullName }}</h2>
+          <h2>{{ realDoctorProfile?.fullName || currentUser?.fullName }}</h2>
         </div>
 
         <button class="profile-modal-x" type="button" (click)="closeDoctorProfileModal()">×</button>
       </div>
 
-      <div class="doctor-profile-hero">
-        <div class="doctor-profile-avatar">
-          {{ getInitials(doctorProfile.fullName) }}
+      @if (doctorProfileLoadError) {
+        <div class="profile-message-card error">
+          <strong>Action Failed</strong>
+          <span>{{ doctorProfileLoadError }}</span>
+        </div>
+      }
+
+      @if (realDoctorProfile) {
+        <div class="doctor-profile-hero">
+          <div class="doctor-profile-avatar">
+            {{ getInitials(realDoctorProfile.fullName) }}
+          </div>
+
+          <div>
+            <strong>{{ realDoctorProfile.fullName }}</strong>
+            <span>{{ realDoctorProfile.specialisation }}</span>
+          </div>
         </div>
 
-        <div>
-          <strong>{{ doctorProfile.fullName }}</strong>
-          <span>{{ doctorProfile.specialisation }}</span>
-        </div>
-      </div>
+        <div class="profile-form-grid">
+          <div class="profile-readonly-card">
+            <span>Doctor ID</span>
+            <strong>#{{ realDoctorProfile.doctorId }}</strong>
+          </div>
 
-      <div class="profile-form-grid">
-        <div class="profile-readonly-card">
-          <span>Doctor ID</span>
-          <strong>#{{ doctorProfile.doctorId }}</strong>
-        </div>
+          <div class="profile-readonly-card">
+            <span>Specialisation</span>
+            <strong>{{ realDoctorProfile.specialisation }}</strong>
+          </div>
 
-        <div class="profile-readonly-card">
-          <span>Specialisation</span>
-          <strong>{{ doctorProfile.specialisation }}</strong>
-        </div>
+          <div class="profile-readonly-card">
+            <span>Experience</span>
+            <strong>{{ realDoctorProfile.yearsOfExperience }} years</strong>
+          </div>
 
-        <div class="profile-readonly-card">
-          <span>Experience</span>
-          <strong>{{ doctorProfile.yearsOfExperience }} years</strong>
-        </div>
+          <div class="profile-readonly-card">
+            <span>Consultation Fee</span>
+            <strong>₹{{ realDoctorProfile.consultationFee }}</strong>
+          </div>
 
-        <div class="profile-readonly-card">
-          <span>Consultation Fee</span>
-          <strong>₹{{ doctorProfile.consultationFee }}</strong>
-        </div>
+          <div class="profile-readonly-card">
+            <span>Status</span>
+            <strong>{{ realDoctorProfile.isActive ? 'Active' : 'Inactive' }}</strong>
+          </div>
 
-        <div class="profile-readonly-card">
-          <span>Status</span>
-          <strong>{{ doctorProfile.isActive ? 'Active' : 'Inactive' }}</strong>
+          <div class="profile-readonly-card">
+            <span>Account</span>
+            <strong>{{ realUser?.email }}</strong>
+          </div>
         </div>
-
-        <div class="profile-readonly-card">
-          <span>Account</span>
-          <strong>{{ currentUser?.email }}</strong>
-        </div>
-      </div>
+      }
 
       <div class="profile-modal-actions">
         <button class="profile-close-outline" type="button" (click)="closeDoctorProfileModal()">

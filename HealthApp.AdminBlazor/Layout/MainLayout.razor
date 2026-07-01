@@ -74,6 +74,7 @@
                     <div class="topbar-actions">
                         <div class="admin-profile-card">
                             <div class="admin-avatar">A</div>
+
                             <div class="admin-profile-text">
                                 <strong>@GetEmail(authContext.User)</strong>
                                 <span>Administrator</span>
@@ -84,12 +85,8 @@
                             Logout
                         </button>
                     </div>
-                </Authorized>
-
-                <NotAuthorized>
-                    <a class="btn btn-primary" href="/login">Admin Login</a>
-                </NotAuthorized>
-            </AuthorizeView>
+                    </Authorized>
+                </AuthorizeView>
         </header>
 
         <main class="main-content">
@@ -129,6 +126,8 @@
 }
 
 @code {
+    private const string AngularLoginUrl = "http://localhost:4200/login";
+
     private bool isSidebarCollapsed = true;
     private bool showSidebarClickAway;
     private bool showLogoutConfirmModal;
@@ -174,8 +173,10 @@
     private async Task ConfirmLogout()
     {
         showLogoutConfirmModal = false;
+
         await AuthApi.LogoutAsync();
-        Navigation.NavigateTo("/login", replace: true);
+
+        Navigation.NavigateTo(AngularLoginUrl, forceLoad: true);
     }
 
     private static string GetEmail(ClaimsPrincipal user)

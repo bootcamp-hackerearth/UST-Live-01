@@ -18,7 +18,8 @@ public class AuthService(
     UserManager<ApplicationUser> userManager,
     IConfiguration config,
     IRefreshTokenRepository refreshTokenRepository,
-    IPatientRepository patientRepository) : IAuthService
+    IPatientRepository patientRepository,
+    IDoctorRepository doctorRepository) : IAuthService
 {
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto dto)
     {
@@ -74,10 +75,37 @@ public class AuthService(
             throw new BusinessRuleException("Invalid email or password.");
         }
 
+        var roles = await userManager.GetRolesAsync(user);
+        var role = roles.FirstOrDefault() ?? Roles.Patient;
+
         if (user.MustChangePassword)
         {
-            throw new PasswordChangeRequiredException(
-                "Password change required before login.");
+            int? patientId = null;
+            int? doctorId = null;
+
+            if (role == Roles.Patient)
+            {
+                patientId = (await patientRepository.GetByUserIdAsync(user.Id))?.PatientId;
+            }
+
+            if (role == Roles.Doctor)
+            {
+                doctorId = (await doctorRepository.GetByUserIdAsync(user.Id))?.DoctorId;
+            }
+
+            return new AuthResponseDto
+            {
+                Message = "Password change required before login.",
+                UserId = user.Id,
+                Email = user.Email ?? string.Empty,
+                Role = role,
+                MustChangePassword = true,
+                AccessToken = string.Empty,
+                RefreshToken = string.Empty,
+                AccessTokenExpiresAt = DateTime.MinValue,
+                PatientId = patientId,
+                DoctorId = doctorId
+            };
         }
 
         return await GenerateAuthResponseAsync(user);
@@ -228,6 +256,19 @@ public class AuthService(
                 int.Parse(config["Jwt:RefreshTokenExpirationDays"] ?? "14"))
         });
 
+        int? patientId = null;
+        int? doctorId = null;
+
+        if (role == Roles.Patient)
+        {
+            patientId = (await patientRepository.GetByUserIdAsync(user.Id))?.PatientId;
+        }
+
+        if (role == Roles.Doctor)
+        {
+            doctorId = (await doctorRepository.GetByUserIdAsync(user.Id))?.DoctorId;
+        }
+
         return new AuthResponseDto
         {
             UserId = user.Id,
@@ -235,7 +276,10 @@ public class AuthService(
             Role = role,
             AccessToken = access,
             RefreshToken = refresh,
-            AccessTokenExpiresAt = expires
+            AccessTokenExpiresAt = expires,
+            MustChangePassword = user.MustChangePassword,
+            PatientId = patientId,
+            DoctorId = doctorId
         };
     }
 }

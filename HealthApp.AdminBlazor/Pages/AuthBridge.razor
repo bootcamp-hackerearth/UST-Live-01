@@ -1,0 +1,71 @@
+﻿@page "/auth-bridge"
+
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using HealthApp.AdminBlazor.Services
+
+@attribute [AllowAnonymous]
+
+@inject NavigationManager Navigation
+@inject TokenStorageService TokenStorageService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div class="auth-bridge-page">
+    <div class="auth-bridge-card">
+        <div class="auth-bridge-logo">H</div>
+
+        <h3>Signing you in</h3>
+        <p>Please wait while HealthApp opens the admin dashboard.</p>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromQuery(Name = "accessToken")]
+    public string? AccessToken { get; set; }
+
+    [SupplyParameterFromQuery(Name = "refreshToken")]
+    public string? RefreshToken { get; set; }
+
+    [SupplyParameterFromQuery(Name = "userId")]
+    public string? UserId { get; set; }
+
+    [SupplyParameterFromQuery(Name = "email")]
+    public string? Email { get; set; }
+
+    [SupplyParameterFromQuery(Name = "role")]
+    public string? Role { get; set; }
+
+    [SupplyParameterFromQuery(Name = "accessTokenExpiresAt")]
+    public string? AccessTokenExpiresAt { get; set; }
+
+    private bool hasProcessed;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || hasProcessed)
+        {
+            return;
+        }
+
+        hasProcessed = true;
+
+        if (string.IsNullOrWhiteSpace(AccessToken) ||
+            string.IsNullOrWhiteSpace(Role) ||
+            !string.Equals(Role, "Admin", StringComparison.OrdinalIgnoreCase))
+        {
+            Navigation.NavigateTo("/login", replace: true);
+            return;
+        }
+
+        await TokenStorageService.SetTokensAsync(
+            AccessToken,
+            RefreshToken ?? string.Empty);
+
+        if (AuthenticationStateProvider is AdminAuthenticationStateProvider adminAuthProvider)
+        {
+            adminAuthProvider.NotifyUserAuthentication(AccessToken);
+        }
+
+        Navigation.NavigateTo("/dashboard", replace: true);
+    }
+}

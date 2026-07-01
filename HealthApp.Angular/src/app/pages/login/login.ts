@@ -1,7 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MockAuth } from '../../services/mock-auth';
+
+import { API_CONFIG } from '../../core/config/api.config';
+import { AuthResponse } from '../../core/models/auth-response';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -10,8 +13,8 @@ import { MockAuth } from '../../services/mock-auth';
   styleUrl: './login.css',
 })
 export class Login {
-  private auth = inject(MockAuth);
-  private router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   email = '';
   password = '';
@@ -28,38 +31,56 @@ export class Login {
 
     this.isLoading = true;
 
-    setTimeout(() => {
-      const result = this.auth.login({
-        email: this.email,
-        password: this.password
-      });
+    this.authService.login({
+      email: this.email.trim(),
+      password: this.password
+    }).subscribe({
+      next: response => this.handleLoginSuccess(response),
+      error: error => this.handleLoginError(error)
+    });
+  }
 
-      this.isLoading = false;
+  private handleLoginSuccess(response: AuthResponse): void {
+    this.isLoading = false;
 
-      if (!result.success || !result.user) {
-        this.errorMessage = result.message;
-        return;
-      }
+    if (response.mustChangePassword) {
+      this.router.navigate(['/change-password']);
+      return;
+    }
 
-      if (result.user.role === 'Patient') {
-        this.router.navigate(['/patient/dashboard']);
-        return;
-      }
+    if (response.role === 'Admin') {
+      this.redirectToAdminPortal(response);
+      return;
+    }
 
-      if (result.user.role === 'Doctor') {
-        if (result.user.mustChangePassword) {
-          this.router.navigate(['/change-password']);
-          return;
-        }
+    if (response.role === 'Doctor') {
+      this.router.navigate(['/doctor/dashboard']);
+      return;
+    }
 
-        this.router.navigate(['/doctor/dashboard']);
-        return;
-      }
+    if (response.role === 'Patient') {
+      this.router.navigate(['/patient/dashboard']);
+      return;
+    }
 
-      if (result.user.role === 'Admin') {
-        this.errorMessage = 'Admin redirect to Blazor will be connected later.';
-        return;
-      }
-    }, 700);
+    this.errorMessage = 'Invalid user role.';
+  }
+
+  private handleLoginError(error: unknown): void {
+    this.isLoading = false;
+    this.errorMessage = this.authService.getErrorMessage(error);
+  }
+
+  private redirectToAdminPortal(response: AuthResponse): void {
+    const queryParams = new URLSearchParams({
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+      userId: response.userId,
+      email: response.email,
+      role: response.role,
+      accessTokenExpiresAt: response.accessTokenExpiresAt
+    });
+
+    window.location.href = `${API_CONFIG.adminAuthBridgeUrl}?${queryParams.toString()}`;
   }
 }

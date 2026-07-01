@@ -7,42 +7,60 @@
     </div>
   </section>
 
-  @if (message) {
-    <div class="doctor-message-card" [class.error]="isError" [class.success]="!isError">
-      <strong>{{ isError ? 'Action Failed' : 'Success' }}</strong>
-      <span>{{ message }}</span>
+  @if (message()) {
+    <div class="doctor-message-card" [class.error]="isError()" [class.success]="!isError()">
+      <strong>{{ isError() ? 'Action Failed' : 'Success' }}</strong>
+      <span>{{ message() }}</span>
     </div>
   }
-    <section class="doctor-filter-card">
+
+  <section class="doctor-filter-card">
     <div class="doctor-search-box">
-        <span>⌕</span>
-        <input
+      <span>⌕</span>
+      <input
         type="text"
         placeholder="Search by patient, appointment ID, patient ID, or time slot..."
-        [(ngModel)]="searchText"
-        />
+        [ngModel]="searchText()"
+        (ngModelChange)="updateSearchText($event)"
+      />
     </div>
 
-    <select class="doctor-filter-select" [(ngModel)]="statusFilter">
-        <option value="All">All Status</option>
-        <option value="Pending">Pending</option>
-        <option value="Confirmed">Confirmed</option>
-        <option value="Completed">Completed</option>
-        <option value="Cancelled">Cancelled</option>
+    <select
+      class="doctor-filter-select"
+      [ngModel]="statusFilter()"
+      (ngModelChange)="updateStatusFilter($event)"
+    >
+      <option value="All">All Status</option>
+      <option value="Pending">Pending</option>
+      <option value="Confirmed">Confirmed</option>
+      <option value="Completed">Completed</option>
+      <option value="Cancelled">Cancelled</option>
     </select>
 
-    <select class="doctor-filter-select" [(ngModel)]="dateFilter">
-        <option value="All">All Dates</option>
-        <option value="Today">Today</option>
-        <option value="Upcoming">Upcoming</option>
-        <option value="Past">Past</option>
+    <select
+      class="doctor-filter-select"
+      [ngModel]="dateFilter()"
+      (ngModelChange)="updateDateFilter($event)"
+    >
+      <option value="All">All Dates</option>
+      <option value="Today">Today</option>
+      <option value="Upcoming">Upcoming</option>
+      <option value="Past">Past</option>
     </select>
-    </section>
+
+    <button class="doctor-clear-filter-button" type="button" (click)="clearFilters()">
+      Clear
+    </button>
+  </section>
+
   <section class="doctor-table-card">
     <div class="doctor-table-header">
       <div>
         <h2>Appointment List</h2>
-        <p>{{ filteredAppointments.length }} appointment(s) shown from {{ appointments.length }} assigned</p>
+        <p>
+          {{ filteredAppointments().length }} appointment(s) shown from
+          {{ doctorState.appointments().length }} assigned
+        </p>
       </div>
     </div>
 
@@ -60,7 +78,7 @@
         </thead>
 
         <tbody>
-          @if (filteredAppointments.length === 0) {
+          @if (filteredAppointments().length === 0) {
             <tr>
               <td colspan="6">
                 <div class="doctor-empty-state">
@@ -70,9 +88,11 @@
               </td>
             </tr>
           } @else {
-            @for (appointment of filteredAppointments; track appointment.appointmentId) {
+            @for (appointment of pagedFilteredAppointments(); track appointment.appointmentId) {
               <tr>
-                <td><strong>#{{ appointment.appointmentId }}</strong></td>
+                <td>
+                  <strong>#{{ appointment.appointmentId }}</strong>
+                </td>
 
                 <td>
                   <div class="patient-name-cell">
@@ -89,7 +109,9 @@
 
                 <td>{{ formatDate(appointment.scheduledDate) }}</td>
 
-                <td><strong>{{ appointment.timeSlot }}</strong></td>
+                <td>
+                  <strong>{{ appointment.timeSlot }}</strong>
+                </td>
 
                 <td>
                   <span class="doctor-status-pill {{ appointment.status.toLowerCase() }}">
@@ -100,47 +122,75 @@
                 <td>
                   <div class="doctor-action-buttons">
                     @if (appointment.status === 'Pending') {
-                      <button class="action-btn view" type="button" (click)="openPatientModal(appointment)">
+                      <button
+                        class="action-btn view"
+                        type="button"
+                        (click)="openPatientModal(appointment)"
+                      >
                         View Patient
                       </button>
 
-                      <button class="action-btn confirm" type="button" (click)="confirmAppointment(appointment)">
+                      <button
+                        class="action-btn confirm"
+                        type="button"
+                        (click)="confirmAppointment(appointment)"
+                      >
                         Confirm
                       </button>
 
-                      <button class="action-btn cancel" type="button" (click)="openCancelModal(appointment)">
+                      <button
+                        class="action-btn cancel"
+                        type="button"
+                        (click)="openCancelModal(appointment)"
+                      >
                         Cancel
                       </button>
                     }
 
                     @if (appointment.status === 'Confirmed') {
-                      <button class="action-btn view" type="button" (click)="openPatientModal(appointment)">
+                      <button
+                        class="action-btn view"
+                        type="button"
+                        (click)="openPatientModal(appointment)"
+                      >
                         View Patient
                       </button>
 
-                      <button class="action-btn record" type="button" (click)="openAddRecordPanel(appointment)">
+                      <button
+                        class="action-btn record"
+                        type="button"
+                        (click)="openAddRecordPanel(appointment)"
+                      >
                         Add Record
                       </button>
 
-                      <button class="action-btn cancel" type="button" (click)="openCancelModal(appointment)">
+                      <button
+                        class="action-btn cancel"
+                        type="button"
+                        (click)="openCancelModal(appointment)"
+                      >
                         Cancel
                       </button>
                     }
 
                     @if (appointment.status === 'Completed') {
-                      <button class="action-btn record" type="button" (click)="openRecordModal(appointment)">
+                      <button
+                        class="action-btn record"
+                        type="button"
+                        (click)="openRecordModal(appointment)"
+                      >
                         View Record
                       </button>
                     }
 
                     @if (appointment.status === 'Cancelled') {
-                    <button
+                      <button
                         class="action-btn view"
                         type="button"
                         (click)="openCancelledDetailsModal(appointment)"
-                    >
+                      >
                         View Details
-                    </button>
+                      </button>
                     }
                   </div>
                 </td>
@@ -150,10 +200,17 @@
         </tbody>
       </table>
     </div>
+
+    <app-pagination
+      [totalItems]="filteredAppointments().length"
+      [pageSize]="pageSize"
+      [currentPage]="currentPage()"
+      (pageChange)="onPageChange($event)"
+    ></app-pagination>
   </section>
 </div>
 
-@if (selectedPatient) {
+@if (doctorState.selectedPatient(); as selectedPatient) {
   <div class="doctor-modal-backdrop">
     <div class="doctor-modal">
       <div class="doctor-modal-header">
@@ -195,15 +252,18 @@
       <div class="history-section">
         <h3>Health History</h3>
 
-        @if (selectedPatientHistory.length === 0) {
-          <div class="history-empty">No health records found for this patient.</div>
+        @if (doctorState.selectedPatientHistory().length === 0) {
+          <div class="history-empty">
+            No health records found for this patient.
+          </div>
         } @else {
           <div class="history-list">
-            @for (record of selectedPatientHistory; track record.healthRecordId) {
+            @for (record of doctorState.selectedPatientHistory(); track record.healthRecordId) {
               <div class="history-item">
                 <strong>{{ formatDate(record.visitDate) }} · {{ record.doctorName }}</strong>
                 <span>Diagnosis: {{ record.diagnosis }}</span>
                 <span>Prescription: {{ record.prescription }}</span>
+
                 @if (record.notes) {
                   <span>Notes: {{ record.notes }}</span>
                 }
@@ -216,7 +276,7 @@
   </div>
 }
 
-@if (selectedCancelAppointment) {
+@if (selectedCancelAppointment(); as appointmentToCancel) {
   <div class="doctor-modal-backdrop">
     <div class="doctor-modal small">
       <div class="doctor-modal-header">
@@ -229,8 +289,10 @@
       </div>
 
       <p class="modal-info-text">
-        Cancelling appointment <strong>#{{ selectedCancelAppointment.appointmentId }}</strong>
-        for <strong>{{ selectedCancelAppointment.patientName }}</strong>.
+        Cancelling appointment
+        <strong>#{{ appointmentToCancel.appointmentId }}</strong>
+        for
+        <strong>{{ appointmentToCancel.patientName }}</strong>.
       </p>
 
       <div class="doctor-field">
@@ -239,19 +301,25 @@
           rows="4"
           class="doctor-textarea"
           placeholder="Enter cancellation reason"
-          [(ngModel)]="cancellationReason"
+          [ngModel]="cancellationReason()"
+          (ngModelChange)="cancellationReason.set($event)"
         ></textarea>
       </div>
 
       <div class="doctor-modal-actions">
-        <button class="outline-btn" type="button" (click)="closeCancelModal()">Close</button>
-        <button class="danger-btn" type="button" (click)="cancelAppointment()">Confirm Cancel</button>
+        <button class="outline-btn" type="button" (click)="closeCancelModal()">
+          Close
+        </button>
+
+        <button class="danger-btn" type="button" (click)="cancelAppointment()">
+          Confirm Cancel
+        </button>
       </div>
     </div>
   </div>
 }
 
-@if (selectedCancelledAppointment) {
+@if (selectedCancelledAppointment(); as cancelledAppointment) {
   <div class="doctor-modal-backdrop">
     <div class="doctor-modal small">
       <div class="doctor-modal-header">
@@ -272,27 +340,27 @@
       <div class="cancelled-detail-grid">
         <div>
           <span>Appointment ID</span>
-          <strong>#{{ selectedCancelledAppointment.appointmentId }}</strong>
+          <strong>#{{ cancelledAppointment.appointmentId }}</strong>
         </div>
 
         <div>
           <span>Patient</span>
-          <strong>{{ selectedCancelledAppointment.patientName }}</strong>
+          <strong>{{ cancelledAppointment.patientName }}</strong>
         </div>
 
         <div>
           <span>Date</span>
-          <strong>{{ formatDate(selectedCancelledAppointment.scheduledDate) }}</strong>
+          <strong>{{ formatDate(cancelledAppointment.scheduledDate) }}</strong>
         </div>
 
         <div>
           <span>Time Slot</span>
-          <strong>{{ selectedCancelledAppointment.timeSlot }}</strong>
+          <strong>{{ cancelledAppointment.timeSlot }}</strong>
         </div>
 
         <div>
           <span>Status</span>
-          <strong>{{ selectedCancelledAppointment.status }}</strong>
+          <strong>{{ cancelledAppointment.status }}</strong>
         </div>
       </div>
 
@@ -300,7 +368,7 @@
         <span>Cancellation Reason</span>
         <strong>
           {{
-            selectedCancelledAppointment.cancellationReason ||
+            cancelledAppointment.cancellationReason ||
             'No cancellation reason was provided.'
           }}
         </strong>
@@ -319,14 +387,14 @@
   </div>
 }
 
-@if (selectedRecordAppointment) {
+@if (selectedRecordAppointment(); as recordAppointment) {
   <div class="record-drawer-backdrop">
     <aside class="record-drawer">
       <div class="record-drawer-header">
         <div>
           <span>Add Health Record</span>
-          <h2>{{ selectedRecordAppointment.patientName }}</h2>
-          <p>Appointment #{{ selectedRecordAppointment.appointmentId }}</p>
+          <h2>{{ recordAppointment.patientName }}</h2>
+          <p>Appointment #{{ recordAppointment.appointmentId }}</p>
         </div>
 
         <button class="doctor-modal-x" type="button" (click)="closeAddRecordPanel()">×</button>
@@ -338,7 +406,8 @@
           rows="4"
           class="doctor-textarea"
           placeholder="Enter diagnosis"
-          [(ngModel)]="diagnosis"
+          [ngModel]="diagnosis()"
+          (ngModelChange)="diagnosis.set($event)"
         ></textarea>
       </div>
 
@@ -348,7 +417,8 @@
           rows="4"
           class="doctor-textarea"
           placeholder="Enter prescription"
-          [(ngModel)]="prescription"
+          [ngModel]="prescription()"
+          (ngModelChange)="prescription.set($event)"
         ></textarea>
       </div>
 
@@ -358,25 +428,31 @@
           rows="4"
           class="doctor-textarea"
           placeholder="Optional notes"
-          [(ngModel)]="notes"
+          [ngModel]="notes()"
+          (ngModelChange)="notes.set($event)"
         ></textarea>
       </div>
 
       <div class="doctor-modal-actions">
-        <button class="outline-btn" type="button" (click)="closeAddRecordPanel()">Close</button>
-        <button class="save-btn" type="button" (click)="addHealthRecord()">Save Record</button>
+        <button class="outline-btn" type="button" (click)="closeAddRecordPanel()">
+          Close
+        </button>
+
+        <button class="save-btn" type="button" (click)="addHealthRecord()">
+          Save Record
+        </button>
       </div>
     </aside>
   </div>
 }
 
-@if (selectedViewRecord) {
+@if (doctorState.selectedRecord(); as selectedRecord) {
   <div class="doctor-modal-backdrop">
     <div class="doctor-modal">
       <div class="doctor-modal-header">
         <div>
           <span>Health Record</span>
-          <h2>{{ selectedViewRecordPatient?.fullName }}</h2>
+          <h2>{{ selectedRecord.patientName }}</h2>
         </div>
 
         <button class="doctor-modal-x" type="button" (click)="closeRecordModal()">×</button>
@@ -385,28 +461,28 @@
       <div class="record-detail-section">
         <div>
           <span>Visit Date</span>
-          <strong>{{ formatDate(selectedViewRecord.visitDate) }}</strong>
+          <strong>{{ formatDate(selectedRecord.visitDate) }}</strong>
         </div>
 
         <div>
           <span>Doctor</span>
-          <strong>{{ selectedViewRecord.doctorName }}</strong>
+          <strong>{{ selectedRecord.doctorName }}</strong>
         </div>
 
         <div>
           <span>Diagnosis</span>
-          <strong>{{ selectedViewRecord.diagnosis }}</strong>
+          <strong>{{ selectedRecord.diagnosis }}</strong>
         </div>
 
         <div>
           <span>Prescription</span>
-          <strong>{{ selectedViewRecord.prescription }}</strong>
+          <strong>{{ selectedRecord.prescription }}</strong>
         </div>
 
-        @if (selectedViewRecord.notes) {
+        @if (selectedRecord.notes) {
           <div>
             <span>Notes</span>
-            <strong>{{ selectedViewRecord.notes }}</strong>
+            <strong>{{ selectedRecord.notes }}</strong>
           </div>
         }
       </div>

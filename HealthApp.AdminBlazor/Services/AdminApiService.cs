@@ -1,18 +1,29 @@
-﻿using HealthApp.Shared.DTOs;
+﻿using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
-using System.Net.Http.Json;
 
 namespace HealthApp.AdminBlazor.Services;
 
 public class AdminApiService(HttpClient httpClient)
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters =
+        {
+            new JsonStringEnumConverter()
+        }
+    };
+
     public async Task<PagedResultDto<DoctorDto>> GetDoctorsAsync(
         int pageNumber = 1,
         int pageSize = 5)
     {
         var url = $"api/admin/doctors?pageNumber={pageNumber}&pageSize={pageSize}";
 
-        return await httpClient.GetFromJsonAsync<PagedResultDto<DoctorDto>>(url)
+        return await httpClient.GetFromJsonAsync<PagedResultDto<DoctorDto>>(url, JsonOptions)
             ?? new PagedResultDto<DoctorDto>
             {
                 Items = new List<DoctorDto>(),
@@ -24,14 +35,17 @@ public class AdminApiService(HttpClient httpClient)
 
     public async Task<CreateDoctorResponseDto?> CreateDoctorAsync(CreateDoctorDto dto)
     {
-        var response = await httpClient.PostAsJsonAsync("api/admin/doctors", dto);
+        var response = await httpClient.PostAsJsonAsync(
+            "api/admin/doctors",
+            dto,
+            JsonOptions);
 
         if (!response.IsSuccessStatusCode)
         {
             return null;
         }
 
-        return await response.Content.ReadFromJsonAsync<CreateDoctorResponseDto>();
+        return await response.Content.ReadFromJsonAsync<CreateDoctorResponseDto>(JsonOptions);
     }
 
     public async Task<DoctorDto?> UpdateDoctorAsync(
@@ -40,29 +54,32 @@ public class AdminApiService(HttpClient httpClient)
     {
         var response = await httpClient.PutAsJsonAsync(
             $"api/admin/doctors/{doctorId}",
-            dto);
+            dto,
+            JsonOptions);
 
         if (!response.IsSuccessStatusCode)
         {
             return null;
         }
 
-        return await response.Content.ReadFromJsonAsync<DoctorDto>();
+        return await response.Content.ReadFromJsonAsync<DoctorDto>(JsonOptions);
     }
 
     public async Task<List<UserDto>> GetUsersAsync(string? role = null)
     {
         var url = string.IsNullOrWhiteSpace(role) || role == "All"
             ? "api/admin/users"
-            : $"api/admin/users?role={role}";
+            : $"api/admin/users?role={Uri.EscapeDataString(role)}";
 
-        return await httpClient.GetFromJsonAsync<List<UserDto>>(url)
+        return await httpClient.GetFromJsonAsync<List<UserDto>>(url, JsonOptions)
             ?? new List<UserDto>();
     }
 
     public async Task<List<AppointmentDto>> GetAppointmentsAsync()
     {
-        return await httpClient.GetFromJsonAsync<List<AppointmentDto>>("api/appointments")
+        return await httpClient.GetFromJsonAsync<List<AppointmentDto>>(
+                "api/appointments",
+                JsonOptions)
             ?? new List<AppointmentDto>();
     }
 
@@ -72,7 +89,7 @@ public class AdminApiService(HttpClient httpClient)
     {
         var url = $"api/admin/reports/appointments?pageNumber={pageNumber}&pageSize={pageSize}";
 
-        return await httpClient.GetFromJsonAsync<PagedResultDto<AppointmentReportDto>>(url)
+        return await httpClient.GetFromJsonAsync<PagedResultDto<AppointmentReportDto>>(url, JsonOptions)
             ?? new PagedResultDto<AppointmentReportDto>
             {
                 Items = new List<AppointmentReportDto>(),
@@ -112,7 +129,7 @@ public class AdminApiService(HttpClient httpClient)
 
         var url = $"api/admin/patients?{string.Join("&", queryParams)}";
 
-        return await httpClient.GetFromJsonAsync<PagedResultDto<PatientDto>>(url)
+        return await httpClient.GetFromJsonAsync<PagedResultDto<PatientDto>>(url, JsonOptions)
             ?? new PagedResultDto<PatientDto>
             {
                 Items = new List<PatientDto>(),

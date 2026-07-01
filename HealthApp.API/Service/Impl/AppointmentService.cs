@@ -248,6 +248,11 @@ public class AppointmentService(
             throw new AppointmentRuleException("Invalid time slot selected.");
         }
 
+        if (IsPastTimeSlot(dto.ScheduledDate.Date, dto.TimeSlot))
+        {
+            throw new AppointmentRuleException("Selected time slot has already passed.");
+        }
+
         if (await appointmentRepository.IsSlotBookedAsync(
                 dto.DoctorId,
                 dto.ScheduledDate.Date,
@@ -526,5 +531,30 @@ public class AppointmentService(
 
         return await doctorRepository.GetByIdAsync(id)
             ?? throw new EntityNotFoundException("Doctor", id);
+    }
+    private static bool IsPastTimeSlot(DateTime scheduledDate, string timeSlot)
+    {
+        if (scheduledDate.Date != DateTime.Today)
+        {
+            return false;
+        }
+
+        var slotStartTime = GetSlotStartTime(timeSlot);
+
+        var slotStartDateTime = scheduledDate.Date.Add(slotStartTime);
+
+        return slotStartDateTime <= DateTime.Now;
+    }
+
+    private static TimeSpan GetSlotStartTime(string timeSlot)
+    {
+        var startText = timeSlot.Split('-')[0].Trim();
+
+        if (!DateTime.TryParse(startText, out var parsedStartTime))
+        {
+            throw new AppointmentRuleException("Invalid time slot format.");
+        }
+
+        return parsedStartTime.TimeOfDay;
     }
 }

@@ -18,14 +18,15 @@ builder.Services.AddScoped<TokenStorageService>();
 
 builder.Services.AddScoped<AdminAuthenticationStateProvider>();
 
-builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
-    sp.GetRequiredService<AdminAuthenticationStateProvider>());
+builder.Services.AddScoped<AuthenticationStateProvider>(serviceProvider =>
+    serviceProvider.GetRequiredService<AdminAuthenticationStateProvider>());
 
 builder.Services.AddScoped<AdminAuthorizationMessageHandler>();
 
-builder.Services.AddScoped(sp =>
+builder.Services.AddScoped(serviceProvider =>
 {
-    var tokenStorageService = sp.GetRequiredService<TokenStorageService>();
+    var tokenStorageService =
+        serviceProvider.GetRequiredService<TokenStorageService>();
 
     var handler = new AdminAuthorizationMessageHandler(tokenStorageService)
     {
@@ -39,7 +40,6 @@ builder.Services.AddScoped(sp =>
 });
 
 builder.Services.AddScoped<AuthApiService>();
-
 builder.Services.AddScoped<AdminApiService>();
 
 await builder.Build().RunAsync();

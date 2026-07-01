@@ -1,10 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { MockAuth, MockUser } from '../../../services/mock-auth';
-import {
-  AppointmentDto,
-  MockPatientData
-} from '../../../services/mock-patient-data';
+
+import { Appointment } from '../../../core/models/appointment.model';
+import { AuthService } from '../../../core/services/auth.service';
+import { DoctorPortalStateService } from '../../../core/services/doctor-portal-state.service';
 
 @Component({
   selector: 'app-doctor-dashboard',
@@ -12,56 +11,32 @@ import {
   templateUrl: './doctor-dashboard.html',
   styleUrl: './doctor-dashboard.css',
 })
-export class DoctorDashboard {
-  private auth = inject(MockAuth);
-  private patientData = inject(MockPatientData);
-  private router = inject(Router);
+export class DoctorDashboard implements OnInit {
+  readonly doctorState = inject(DoctorPortalStateService);
 
-  currentUser?: MockUser = this.auth.getCurrentUser();
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   today = new Date();
 
-  get doctorId(): number {
-    return this.currentUser?.doctorId ?? 0;
+  ngOnInit(): void {
+    this.doctorState.loadDoctorPortal();
   }
 
-  get todayAppointments(): AppointmentDto[] {
-    if (!this.doctorId) {
-      return [];
-    }
-
-    return this.patientData.getTodayAppointmentsByDoctor(this.doctorId);
+  get doctorDisplayName(): string {
+    return (
+      this.doctorState.doctorProfile()?.fullName ??
+      this.authService.currentUser()?.email ??
+      'Doctor'
+    );
   }
 
-  get todayCount(): number {
-    if (!this.doctorId) {
-      return 0;
-    }
-
-    return this.patientData.getDoctorTodayCount(this.doctorId);
-  }
-
-  get pendingCount(): number {
-    if (!this.doctorId) {
-      return 0;
-    }
-
-    return this.patientData.getDoctorStatusCount(this.doctorId, 'Pending');
-  }
-
-  get confirmedCount(): number {
-    if (!this.doctorId) {
-      return 0;
-    }
-
-    return this.patientData.getDoctorStatusCount(this.doctorId, 'Confirmed');
-  }
-
-  get completedCount(): number {
-    if (!this.doctorId) {
-      return 0;
-    }
-
-    return this.patientData.getDoctorStatusCount(this.doctorId, 'Completed');
+  viewPatient(appointment: Appointment): void {
+    this.router.navigate(['/doctor/appointments'], {
+      queryParams: {
+        patientId: appointment.patientId
+      }
+    });
   }
 
   formatDate(dateText: string): string {
@@ -70,10 +45,5 @@ export class DoctorDashboard {
       month: 'short',
       year: 'numeric'
     });
-  }
-
-  viewPatient(appointment: AppointmentDto): void {
-    // Patient profile modal will be added in the Doctor Appointments phase.
-    alert(`Patient profile modal will be added for ${appointment.patientName}.`);
   }
 }

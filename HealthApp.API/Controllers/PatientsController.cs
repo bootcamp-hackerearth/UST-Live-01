@@ -14,7 +14,7 @@ public class PatientsController(
     IHealthRecordService healthRecordService) : ControllerBase
 {
     [HttpGet("{id:int}")]
-    [Authorize(Roles = Roles.Patient + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor + "," + Roles.Admin)]
     public async Task<ActionResult<PatientDto>> Get(int id)
         => Ok(await patientService.GetPatientByIdAsync(id));
 
@@ -24,7 +24,7 @@ public class PatientsController(
         => Ok(await patientService.UpdatePatientAsync(id, dto));
 
     [HttpGet("{id:int}/health-records")]
-    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]
     public async Task<ActionResult<List<HealthRecordDto>>> Records(int id)
     {
         await patientService.EnsurePatientAccessAsync(id);

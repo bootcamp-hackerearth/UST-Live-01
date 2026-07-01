@@ -1,8 +1,17 @@
 ﻿@inject NavigationManager Navigation
 
 @code {
+    private const string AngularLoginUrl = "http://localhost:4200/login";
+
     protected override void OnInitialized()
     {
-        Navigation.NavigateTo("/login", replace: true);
+        var relativePath = Navigation.ToBaseRelativePath(Navigation.Uri);
+
+        if (relativePath.StartsWith("auth-bridge", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        Navigation.NavigateTo(AngularLoginUrl, forceLoad: true);
     }
 }

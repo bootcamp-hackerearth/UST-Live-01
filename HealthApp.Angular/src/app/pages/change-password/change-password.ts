@@ -1,7 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MockAuth, MockUser } from '../../services/mock-auth';
+
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-change-password',
@@ -10,11 +11,10 @@ import { MockAuth, MockUser } from '../../services/mock-auth';
   styleUrl: './change-password.css',
 })
 export class ChangePassword implements OnInit {
-  private auth = inject(MockAuth);
-  private router = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  currentUser?: MockUser;
-
+  email = '';
   currentPassword = '';
   newPassword = '';
   confirmPassword = '';
@@ -24,19 +24,11 @@ export class ChangePassword implements OnInit {
   isError = false;
 
   ngOnInit(): void {
-    const user = this.auth.getCurrentUser();
+    this.email = this.authService.getPasswordChangeEmail();
 
-    if (!user) {
+    if (!this.email) {
       this.router.navigate(['/login']);
-      return;
     }
-
-    if (!user.mustChangePassword) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.currentUser = user;
   }
 
   updatePassword(): void {
@@ -48,34 +40,47 @@ export class ChangePassword implements OnInit {
       return;
     }
 
+    if (this.newPassword.length < 6) {
+      this.showError('New password must be at least 6 characters long.');
+      return;
+    }
+
+    if (this.newPassword !== this.confirmPassword) {
+      this.showError('New password and confirm password do not match.');
+      return;
+    }
+
     this.isSubmitting = true;
 
+    this.authService.changePassword({
+      email: this.email,
+      currentPassword: this.currentPassword,
+      newPassword: this.newPassword,
+      confirmNewPassword: this.confirmPassword
+    }).subscribe({
+      next: response => this.handlePasswordChangeSuccess(response.message),
+      error: error => this.handlePasswordChangeError(error)
+    });
+  }
+
+  private handlePasswordChangeSuccess(message: string): void {
+    this.isSubmitting = false;
+    this.message = message;
+    this.isError = false;
+
+    this.authService.clearPasswordChangeEmail();
+
     setTimeout(() => {
-      const result = this.auth.changeTemporaryPassword(
-        this.currentPassword,
-        this.newPassword,
-        this.confirmPassword
-      );
+      this.router.navigate(['/login']);
+    }, 1000);
+  }
 
-      this.isSubmitting = false;
-
-      if (!result.success) {
-        this.showError(result.message);
-        return;
-      }
-
-      this.message = result.message;
-      this.isError = false;
-
-      setTimeout(() => {
-        this.auth.logout();
-        this.router.navigate(['/login']);
-      }, 1000);
-    }, 600);
+  private handlePasswordChangeError(error: unknown): void {
+    this.isSubmitting = false;
+    this.showError(this.authService.getErrorMessage(error));
   }
 
   private showError(message: string): void {
-    this.isSubmitting = false;
     this.message = message;
     this.isError = true;
   }

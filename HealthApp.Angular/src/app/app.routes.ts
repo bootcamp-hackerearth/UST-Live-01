@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
+import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { PortalLayout } from './layout/portal-layout/portal-layout';
@@ -31,6 +33,8 @@ export const routes: Routes = [
   {
     path: 'patient',
     component: PortalLayout,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Patient'] },
     children: [
       {
         path: '',
@@ -58,6 +62,8 @@ export const routes: Routes = [
   {
   path: 'doctor',
   component: PortalLayout,
+  canActivate: [authGuard, roleGuard],
+  data: { roles: ['Doctor'] },
   children: [
     {
       path: '',

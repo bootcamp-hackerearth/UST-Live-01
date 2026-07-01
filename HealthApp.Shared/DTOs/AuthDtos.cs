@@ -10,7 +10,8 @@ public class RegisterRequestDto
     public string FullName { get; set; } = string.Empty;
     [Required, EmailAddress(ErrorMessage = "Invalid email address.")] 
     public string Email { get; set; } = string.Empty;
-    [Required, MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")] 
+    [Required, MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
+    [RegularExpression(@"^[A-Z][a-z]+(?=.*\d)(?=.*[^a-zA-Z0-9]).*$", ErrorMessage = "Password must start with a capital letter followed by lowercase letters, and contain at least one number and one special character.")]
     public string Password { get; set; } = string.Empty;
     [Required] 
     public DateTime? DateOfBirth { get; set; }
@@ -40,4 +41,8 @@ public class AuthResponseDto
     public string AccessToken { get; set; } = string.Empty;
     public string RefreshToken { get; set; } = string.Empty;
     public DateTime AccessTokenExpiresAt { get; set; }
+    public bool MustChangePassword { get; set; }
+
+    public int? PatientId { get; set; }
+    public int? DoctorId { get; set; }
 }

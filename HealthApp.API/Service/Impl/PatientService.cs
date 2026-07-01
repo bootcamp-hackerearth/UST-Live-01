@@ -6,17 +6,23 @@ using HealthApp.API.Repository.Interface;
 using HealthApp.API.Service.Interface;
 using HealthApp.Shared.Constants;
 using HealthApp.Shared.DTOs;
+using HealthApp.Shared.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace HealthApp.API.Service.Impl;
 
 public class PatientService(
-    IPatientRepository repository,
+    IPatientRepository patientRepository,
+    IDoctorRepository doctorRepository,
+    IAppointmentRepository appointmentRepository,
     IHttpContextAccessor httpContextAccessor,
     IMapper mapper) : IPatientService
 {
     public async Task<List<PatientDto>> GetAllPatientsAsync()
-        => mapper.Map<List<PatientDto>>(await repository.GetAllAsync());
+    {
+        return mapper.Map<List<PatientDto>>(
+            await patientRepository.GetAllAsync());
+    }
 
     public async Task<PatientDto> GetPatientByIdAsync(int patientId)
     {
@@ -24,7 +30,7 @@ public class PatientService(
 
         await EnsurePatientAccessAsync(patientId);
 
-        var patient = await repository.GetByIdAsync(patientId)
+        var patient = await patientRepository.GetByIdAsync(patientId)
             ?? throw new EntityNotFoundException("Patient", patientId);
 
         return mapper.Map<PatientDto>(patient);
@@ -32,6 +38,11 @@ public class PatientService(
 
     public async Task<PatientDto> RegisterPatientAsync(CreatePatientDto dto)
     {
+        if (dto is null)
+        {
+            throw new BusinessRuleException("Patient details are required.");
+        }
+
         Validate(
             dto.FullName,
             dto.DateOfBirth,
@@ -39,10 +50,12 @@ public class PatientService(
             dto.PhoneNumber);
 
         var patient = mapper.Map<Patient>(dto);
+
         patient.DateOfBirth = dto.DateOfBirth.Date;
         patient.CreatedDate = DateTime.Now;
 
-        return mapper.Map<PatientDto>(await repository.AddAsync(patient));
+        return mapper.Map<PatientDto>(
+            await patientRepository.AddAsync(patient));
     }
 
     public async Task<PatientDto> UpdatePatientAsync(
@@ -51,9 +64,14 @@ public class PatientService(
     {
         ValidatePatientId(patientId);
 
+        if (dto is null)
+        {
+            throw new BusinessRuleException("Patient details are required.");
+        }
+
         await EnsurePatientAccessAsync(patientId);
 
-        var existing = await repository.GetByIdAsync(patientId)
+        var existing = await patientRepository.GetByIdAsync(patientId)
             ?? throw new EntityNotFoundException("Patient", patientId);
 
         Validate(
@@ -68,7 +86,7 @@ public class PatientService(
         patient.UserId = existing.UserId;
         patient.CreatedDate = existing.CreatedDate;
 
-        var updated = await repository.UpdateAsync(patientId, patient)
+        var updated = await patientRepository.UpdateAsync(patientId, patient)
             ?? throw new EntityNotFoundException("Patient", patientId);
 
         return mapper.Map<PatientDto>(updated);
@@ -78,38 +96,19 @@ public class PatientService(
     {
         ValidatePatientId(patientId);
 
-        var user = httpContextAccessor.HttpContext?.User;
-
-        if (user is null || user.Identity?.IsAuthenticated != true)
+        if (await patientRepository.GetByIdAsync(patientId) is null)
         {
-            throw new ForbiddenAccessException("Access denied.");
+            throw new EntityNotFoundException("Patient", patientId);
         }
 
-        if (user.IsInRole(Roles.Admin))
+        if (IsAdmin())
         {
             return;
         }
 
-        if (user.IsInRole(Roles.Doctor))
+        if (IsPatient())
         {
-            return;
-        }
-
-        if (user.IsInRole(Roles.Patient))
-        {
-            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                throw new ForbiddenAccessException("Unable to identify logged-in user.");
-            }
-
-            var loggedInPatient = await repository.GetByUserIdAsync(userId);
-
-            if (loggedInPatient is null)
-            {
-                throw new EntityNotFoundException("Patient", userId);
-            }
+            var loggedInPatient = await GetLoggedInPatientAsync();
 
             if (loggedInPatient.PatientId != patientId)
             {
@@ -120,7 +119,83 @@ public class PatientService(
             return;
         }
 
+        if (IsDoctor())
+        {
+            var loggedInDoctor = await GetLoggedInDoctorAsync();
+
+            var doctorAppointments = await appointmentRepository
+                .GetByDoctorIdAsync(loggedInDoctor.DoctorId);
+
+            var hasAppointmentRelation = doctorAppointments.Any(appointment =>
+                appointment.PatientId == patientId &&
+                appointment.Status != AppointmentStatus.Cancelled.ToString());
+
+            if (!hasAppointmentRelation)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access this patient's information.");
+            }
+
+            return;
+        }
+
         throw new ForbiddenAccessException("Access denied.");
+    }
+
+    private async Task<Patient> GetLoggedInPatientAsync()
+    {
+        var userId = CurrentUser?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ForbiddenAccessException("Unable to identify logged-in user.");
+        }
+
+        var patient = await patientRepository.GetByUserIdAsync(userId);
+
+        if (patient is null)
+        {
+            throw new EntityNotFoundException("Patient", userId);
+        }
+
+        return patient;
+    }
+
+    private async Task<Doctor> GetLoggedInDoctorAsync()
+    {
+        var userId = CurrentUser?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ForbiddenAccessException("Unable to identify logged-in user.");
+        }
+
+        var doctor = await doctorRepository.GetByUserIdAsync(userId);
+
+        if (doctor is null)
+        {
+            throw new EntityNotFoundException("Doctor", userId);
+        }
+
+        return doctor;
+    }
+
+    private ClaimsPrincipal? CurrentUser =>
+        httpContextAccessor.HttpContext?.User;
+
+    private bool IsPatient()
+    {
+        return CurrentUser?.IsInRole(Roles.Patient) == true;
+    }
+
+    private bool IsDoctor()
+    {
+        return CurrentUser?.IsInRole(Roles.Doctor) == true;
+    }
+
+    private bool IsAdmin()
+    {
+        return CurrentUser?.IsInRole(Roles.Admin) == true;
     }
 
     private static void ValidatePatientId(int id)
