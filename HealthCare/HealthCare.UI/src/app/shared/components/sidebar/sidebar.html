@@ -6,21 +6,21 @@
   [class.-translate-x-full]="!isSidebarOpen"
 >
 
-  <!-- ✅ HEADER -->
+  <!--  HEADER -->
   <div class="p-5 border-b border-blue-400">
     <h2 class="text-xl font-bold tracking-wide">
       Healthcare
     </h2>
   </div>
 
-  <!-- ✅ MENU -->
+  <!--  MENU -->
   <ul class="flex-1 p-4 space-y-2 overflow-y-auto">
 
     @for(item of menuItems; track item.label){
 
       <li>
 
-        <!-- ✅ LINK (Button Style ✅) -->
+        <!--  LINK (Button Style ) -->
         @if(item.link){
           <a
             [routerLink]="item.link" 
@@ -37,7 +37,7 @@
           </a>
         }
 
-        <!-- ✅ ACTION (also consistent ✅) -->
+        <!--  ACTION (also consistent) -->
         @if(item.type === 'action'){
           <button
             (click)="item.action()"
@@ -59,14 +59,14 @@
 
   </ul>
 
-  <!-- ✅ FOOTER -->
+  <!--  FOOTER -->
   <div class="p-4 border-t border-blue-400 text-xs text-center opacity-80">
     © Healthcare App
   </div>
 
 </div>
 
-<!-- ✅ MOBILE TOGGLE BUTTON -->
+<!--  MOBILE TOGGLE BUTTON -->
 <button
   class="md:hidden fixed top-4 left-4 bg-[#0B5ED7] text-white p-2 rounded shadow z-50"
   (click)="isSidebarOpen = !isSidebarOpen"

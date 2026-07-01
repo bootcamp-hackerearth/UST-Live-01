@@ -11,42 +11,54 @@
     </p>
   </div>
 
-  <!--  STATS -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+ <!--  STATS -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
-    <!-- TOTAL -->
-    <div class="bg-white rounded-2xl shadow-sm p-4">
-      <p class="text-gray-400 text-xs">Total</p>
-      <h2 class="text-2xl font-bold text-[#1E293B]">
-        {{totalAppointments()}}
-      </h2>
-    </div>
+  <!--  TOTAL -->
+  <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-gray-500">
+    <h3 class="text-slate-500 text-sm">
+      Total Appointments
+    </h3>
 
-    <!-- UPCOMING -->
-    <div class="bg-white rounded-2xl shadow-sm p-4">
-      <p class="text-gray-400 text-xs">Upcoming</p>
-      <h2 class="text-2xl font-bold text-blue-600">
-        {{upcomingCount()}}
-      </h2>
-    </div>
-
-    <!-- COMPLETED -->
-    <div class="bg-white rounded-2xl shadow-sm p-4">
-      <p class="text-gray-400 text-xs">Completed</p>
-      <h2 class="text-2xl font-bold text-green-600">
-        {{completedCount()}}
-      </h2>
-    </div>
-
-    <!-- CANCELLED -->
-    <div class="bg-white rounded-2xl shadow-sm p-4">
-      <p class="text-gray-400 text-xs">Cancelled</p>
-      <h2 class="text-2xl font-bold text-red-500">
-        {{cancelledCount()}}
-      </h2>
-    </div>
-
+    <h2 class="text-3xl font-bold text-gray-700 mt-2">
+      {{totalAppointments()}}
+    </h2>
   </div>
+
+  <!--  UPCOMING -->
+  <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-blue-600">
+    <h3 class="text-slate-500 text-sm">
+      Upcoming
+    </h3>
+
+    <h2 class="text-3xl font-bold text-blue-600 mt-2">
+      {{upcomingCount()}}
+    </h2>
+  </div>
+
+  <!--  COMPLETED -->
+  <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-green-500">
+    <h3 class="text-slate-500 text-sm">
+      Completed
+    </h3>
+
+    <h2 class="text-3xl font-bold text-green-500 mt-2">
+      {{completedCount()}}
+    </h2>
+  </div>
+
+  <!--  CANCELLED -->
+  <div class="bg-white rounded-2xl shadow p-6 border-l-4 border-red-500">
+    <h3 class="text-slate-500 text-sm">
+      Cancelled
+    </h3>
+
+    <h2 class="text-3xl font-bold text-red-500 mt-2">
+      {{cancelledCount()}}
+    </h2>
+  </div>
+
+</div>
 
   <!--  MAIN CONTENT -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">

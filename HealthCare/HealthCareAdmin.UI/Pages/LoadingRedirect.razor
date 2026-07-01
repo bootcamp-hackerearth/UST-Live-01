@@ -15,20 +15,19 @@
 
     private bool isLoading = true;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
+        if (!string.IsNullOrEmpty(Token))
         {
-            if (!string.IsNullOrEmpty(Token))
-            {
-                // Save token to localStorage
-                await JS.InvokeVoidAsync("localStorage.setItem", "token", Token);
-                await Task.Delay(100);
+            //  Save token
+            await JS.InvokeVoidAsync("localStorage.setItem", "token", Token);
 
-                Navigation.NavigateTo("/dashboard");
-            }
+            await Task.Delay(50);
 
-            isLoading = false;
+            // Redirect to admin dashboard
+            Navigation.NavigateTo("/dashboard", true);
         }
+
+        isLoading = false;
     }
 }

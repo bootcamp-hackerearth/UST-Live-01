@@ -4,14 +4,15 @@ import { Observable } from 'rxjs';
 import { Leave } from '../models/leave.model';
 import { Doctor } from '../models/doctor.model';
 import { HealthRecord } from '../models/health-record.model';
+import { API_ENDPOINTS } from '../config/api-endpoints';
 
 @Injectable({
   providedIn:'root'
 })
 export class DoctorService {
 
-  private api =
-    'https://localhost:7225/api/doctors';
+  // private api =
+  //   'https://localhost:7225/api/doctors';
 
   constructor(private http:HttpClient){}
 
@@ -19,7 +20,7 @@ export class DoctorService {
 getAvailableDoctors(specialization: string, date: string) {
 
   return this.http.get<any[]>(
-    `${this.api}/available?specialisation=${specialization}&date=${date}`
+    `${API_ENDPOINTS.DOCTOR}/available?specialisation=${specialization}&date=${date}`
   );
 }
 
@@ -27,35 +28,35 @@ getAvailableDoctors(specialization: string, date: string) {
   getDoctorSchedule(date: string) {
 
   return this.http.get<any[]>(
-    `${this.api}/doctor/0/schedule?date=${date}`
+    `${API_ENDPOINTS.DOCTOR}/doctor/0/schedule?date=${date}`
   );
   }
 
   addLeaves(leaves: Leave[]) {
 
     return this.http.post(
-      `${this.api}/leaves`,
+      `${API_ENDPOINTS.DOCTOR}/leaves`,
       leaves
     );
   }
 
   getMyLeaves() {
      return this.http.get<any[]>(
-    `${this.api}/my-leaves`
+    `${API_ENDPOINTS.DOCTOR}/my-leaves`
   );
 }
 
   getProfile() {
 
   return this.http.get<Doctor>(
-    `${this.api}/my-profile`
+    `${API_ENDPOINTS.DOCTOR}/my-profile`
   );
 }
 
 updateProfile(id: number, doctor: Doctor) {
 
   return this.http.put(
-    `${this.api}/${id}`,
+    `${API_ENDPOINTS.DOCTOR}/${id}`,
     doctor
   );
 }
@@ -63,7 +64,7 @@ updateProfile(id: number, doctor: Doctor) {
 createHealthRecord(record: any) {
 
   return this.http.post(
-    `https://localhost:7225/api/healthrecords`, 
+    `${API_ENDPOINTS.HEALTH}`, 
     record
   );
 }
@@ -72,7 +73,7 @@ createHealthRecord(record: any) {
 getHealthRecordById(id: number) {
 
   return this.http.get<HealthRecord>(
-    `${this.api}/$healthrecords/${id}`
+    `${API_ENDPOINTS.HEALTH}/${id}`
   );
 
 }
@@ -83,7 +84,7 @@ updateHealthRecord(
 ) {
 
   return this.http.put(
-    `${this.api}/$healthrecordshealthrecords/${id}`,
+    `${API_ENDPOINTS.HEALTH}/${id}`,
     data
   );
 

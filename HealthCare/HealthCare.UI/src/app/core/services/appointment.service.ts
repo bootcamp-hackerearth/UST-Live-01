@@ -2,14 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { DoctorAppointment } from '../models/doctor.appointment.model';
+import { API_ENDPOINTS } from '../config/api-endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
 
-  private api =
-    'https://localhost:7225/api/appointments';
 
   constructor(private http: HttpClient) { }
 
@@ -17,30 +16,26 @@ export class AppointmentService {
 getAvailableSlots(doctorId: number, date: string) {
 
   return this.http.get<string[]>(
-    `${this.api}/available-slots?doctorId=${doctorId}&date=${date}`
+    `${API_ENDPOINTS.APPOINTMENT}/available-slots?doctorId=${doctorId}&date=${date}`
   );
 }
 
 
   bookAppointment(data:any):Observable<any>{
 
-    return this.http.post(
-      this.api,
-      data
-    );
+    return this.http.post(API_ENDPOINTS.APPOINTMENT,data);
   }
 
  
 getMyAppointments() {
-  return this.http.get<any[]>(
-    `${this.api}/my`   
+  return this.http.get<any[]>(`${API_ENDPOINTS.APPOINTMENT}/my`   
   );
 }
 
   getDoctorSchedule(date: string) {
 
   return this.http.get<DoctorAppointment[]>(
-    `${this.api}/doctor/schedule?date=${date}`
+    `${API_ENDPOINTS.APPOINTMENT}/doctor/schedule?date=${date}`
   );
   }
 
@@ -50,8 +45,7 @@ getMyAppointments() {
   cancellationReason?: string
 ) {
 
-  return this.http.patch(
-    `${this.api}/${id}/status`,
+  return this.http.patch(`${API_ENDPOINTS.APPOINTMENT}/${id}/status`,
     {
       status,
       cancellationReason

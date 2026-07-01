@@ -31,6 +31,10 @@
 body {
     overflow-x: hidden;
 }
+    body.modal-open * {
+        z-index: auto !important;
+    }
+
 
 
 /* =======================
@@ -152,7 +156,6 @@ body {
     }
 
         .card-custom:hover {
-            transform: translateY(-6px);
             box-shadow: var(--shadow-md);
         }
 
@@ -252,7 +255,6 @@ body {
 
         .btn-primary-custom:hover {
             background: #094CB0;
-            transform: translateY(-2px);
         }
 
     .btn-secondary-custom {
@@ -311,14 +313,13 @@ body {
 
 
 /* BACKDROP */
+
 .custom-backdrop {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 9990;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(3px);
+    z-index: 99999;
 }
 
 /* MODAL */
@@ -327,17 +328,21 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 9999;
+    z-index: 100000;
 }
 
+
 /* CONTENT */
+
 .custom-modal-content {
     background: white;
-    padding: 24px 28px;
-    border-radius: 14px;
-    min-width: 320px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 12px;
+    min-width: 300px;
 }
+
+
+
+
 
 

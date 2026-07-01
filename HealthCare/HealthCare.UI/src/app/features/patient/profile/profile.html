@@ -1,6 +1,6 @@
 <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-6 transition">
 
-  <!-- ✅ HEADER -->
+  <!-- HEADER -->
   <div class="flex justify-between items-center mb-6">
 
     <h2 class="text-2xl font-bold text-[#0B5ED7]">
@@ -8,97 +8,98 @@
     </h2>
 
     <button
+      type="button"
       (click)="toggleEdit()"
       class="px-4 py-2 rounded-lg text-white
-             bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6] flex items-center gap-2">
+             bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6]">
 
-      {{ isEditMode ? 'Cancel' : 'Edit Profile' }}
+      {{ isEditMode() ? 'Cancel' : 'Edit Profile' }}
 
     </button>
 
   </div>
 
-  <!--  FORM -->
-  <form [formGroup]="profileForm"
-        (ngSubmit)="updateProfile()"
-        class="grid grid-cols-2 gap-6">
+  <!-- FORM -->
+  <form
+    [formGroup]="profileForm"
+    (ngSubmit)="updateProfile()"
+    class="grid grid-cols-2 gap-6">
 
-    <!--  Patient ID (always read-only) -->
-    
+    <!-- ID -->
     <div>
-        <label class="text-gray-400 text-sm">Patient ID</label>
-        <p class="font-semibold text-[#1E293B]">
-    {{ profileForm.get('patientId')?.value }}
-     </p>
+      <label class="text-gray-400 text-sm">Patient ID</label>
+      <p class="font-semibold">{{ profileForm.get('patientId')?.value }}</p>
     </div>
 
-    <!-- ✅ Name -->
+    <!-- NAME -->
     <div>
       <label class="text-gray-400 text-sm">Full Name</label>
 
-      @if(!isEditMode){
-        <p class="font-semibold">{{profileForm.value.fullName}}</p>
+      @if(!isEditMode()){
+        <p class="font-semibold">
+          {{ profileForm.get('fullName')?.value }}
+        </p>
       }
-      @if(isEditMode){
+
+      @if(isEditMode()){
         <input formControlName="fullName"
-               class="w-full border rounded-lg px-3 py-2
-                      focus:ring-2 focus:ring-[#0B5ED7]"/>
+               class="w-full border rounded-lg px-3 py-2"/>
       }
     </div>
 
-    <!-- ✅ Phone -->
+    <!-- PHONE -->
     <div>
       <label class="text-gray-400 text-sm">Phone</label>
 
-      @if(!isEditMode){
-        <p class="font-semibold">{{profileForm.value.phoneNumber}}</p>
+      @if(!isEditMode()){
+        <p class="font-semibold">
+          {{ profileForm.get('phoneNumber')?.value }}
+        </p>
       }
-      @if(isEditMode){
+
+      @if(isEditMode()){
         <input formControlName="phoneNumber"
-               class="w-full border rounded-lg px-3 py-2
-                      focus:ring-2 focus:ring-[#0B5ED7]"/>
+               class="w-full border rounded-lg px-3 py-2"/>
       }
     </div>
 
-    
+    <!-- EMAIL -->
     <div>
-        <label class="text-gray-400 text-sm">Email</label>
-       <p class="font-semibold text-[#1E293B]">
-       {{profileForm.get('email')?.value}}
-       </p>
+      <label class="text-gray-400 text-sm">Email</label>
+      <p class="font-semibold">{{ profileForm.get('email')?.value }}</p>
     </div>
 
-
-    <!-- ✅ Gender -->
+    <!-- GENDER -->
     <div>
       <label class="text-gray-400 text-sm">Gender</label>
 
-      @if(!isEditMode){
-        <p class="font-semibold">{{profileForm.value.gender}}</p>
+      @if(!isEditMode()){
+        <p class="font-semibold">
+          {{ profileForm.get('gender')?.value }}
+        </p>
       }
-      @if(isEditMode){
-        <select formControlName="gender"
-                class="w-full border rounded-lg px-3 py-2
-                       focus:ring-2 focus:ring-[#0B5ED7]">
 
+      @if(isEditMode()){
+        <select formControlName="gender"
+                class="w-full border rounded-lg px-3 py-2">
           <option value="">Select Gender</option>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
-
         </select>
       }
     </div>
 
-    <!-- ✅ Insurance -->
+    <!-- INSURANCE -->
     <div>
       <label class="text-gray-400 text-sm">Insurance</label>
 
-      @if(!isEditMode){
+      @if(!isEditMode()){
         <p class="font-semibold">
-          {{profileForm.value.hasInsurance ? 'Yes' : 'No'}}
+          {{ profileForm.get('hasInsurance')?.value ? 'Yes' : 'No' }}
         </p>
       }
-      @if(isEditMode){
+
+      @if(isEditMode()){
         <div class="flex items-center gap-2 mt-2">
           <input type="checkbox" formControlName="hasInsurance"/>
           <label>Has Insurance</label>
@@ -106,38 +107,28 @@
       }
     </div>
 
+    <!-- SAVE BUTTON -->
+    @if(isEditMode()){
+      <div class="col-span-2 flex justify-end mt-6">
+
+        <button
+          type="submit"
+          [disabled]="saving() || profileForm.invalid"
+          class="px-6 py-2 rounded-lg text-white bg-[#0B5ED7] flex items-center gap-2">
+
+          @if(saving()){
+            <span class="w-4 h-4 border-2 border-white
+                         border-t-transparent rounded-full animate-spin">
+            </span>
+          }
+
+          {{ saving() ? 'Saving...' : 'Save Changes' }}
+
+        </button>
+
+      </div>
+    }
+
   </form>
 
-  <!-- ✅ SAVE BUTTON -->
-  @if(isEditMode){
-    <div class="flex justify-end mt-6">
-
-      <button
-        (click)="updateProfile()"
-        [disabled]="saving"
-        class="px-6 py-2 rounded-lg text-white
-               bg-[#0B5ED7] flex items-center gap-2">
-
-        @if(saving){
-          <span class="w-4 h-4 border-2 border-white
-                       border-t-transparent rounded-full animate-spin">
-          </span>
-        }
-
-        {{ saving ? 'Saving...' : 'Save Changes' }}
-
-      </button>
-
-    </div>
-  }
-
 </div>
-
-@if(showSuccess){
-  <div class="fixed top-5 right-5 bg-[#22C55E]
-              text-white px-6 py-3 rounded-xl shadow-lg animate-fade-in">
-
-    ✅ Profile updated successfully
-
-  </div>
-}

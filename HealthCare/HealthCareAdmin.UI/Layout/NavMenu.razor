@@ -75,7 +75,7 @@
 
         await JS.InvokeVoidAsync("localStorage.removeItem", "token");
 
-        Navigation.NavigateTo("https://localhost:4200", true);
+        await JS.InvokeVoidAsync("window.location.assign","https://localhost:4200");
     }
 
 }

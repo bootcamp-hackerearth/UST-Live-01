@@ -1,12 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators
-} from '@angular/forms';
-
+import { FormBuilder,FormGroup,ReactiveFormsModule,Validators} from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { PatientService } from '../../../core/services/patient.service';
 
 @Component({
@@ -18,15 +13,16 @@ import { PatientService } from '../../../core/services/patient.service';
 })
 export class ProfileComponent implements OnInit {
 
-  profileForm!: FormGroup;
-  isEditMode = false;
-  showSuccess = false;
-  loading = false;
-  saving = false;
+  profileForm!: FormGroup; 
+  isEditMode = signal(false);
+  loading = signal(false);
+  saving = signal(false);
+
 
   constructor(
     private fb: FormBuilder,
-    private patientService: PatientService
+    private patientService: PatientService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -54,35 +50,32 @@ export class ProfileComponent implements OnInit {
 
   loadProfile() {
 
-    this.loading = true;
+  this.loading.set(true);
 
-    this.patientService.getProfile()
-      .subscribe({
+  this.patientService.getProfile()
+    .subscribe({
 
-     
-next: (res: any) => {
+      next: (res: any) => {
 
-  this.profileForm.patchValue({
+        this.profileForm.patchValue({
+          patientId: res.patientId,
+          fullName: res.fullName,
+          phoneNumber: res.phoneNumber,
+          email: res.email,
+          gender: res.gender,
+          hasInsurance: res.hasInsurance
+        });
 
-    patientId: res.patientId,
-    fullName: res.fullName,
-    phoneNumber: res.phoneNumber,
-     email: res.email,
-    gender: res.gender,
-    hasInsurance: res.hasInsurance
-  });
-
-  this.loading = false;
-  }
-
-      });
-  }
+        this.loading.set(false); 
+      }
+    });
+}
 
  updateProfile() {
 
   if (this.profileForm.invalid) return;
 
-  this.saving = true;
+  this.saving.set(true);
 
   this.patientService.updateProfile(
     this.profileForm.getRawValue()
@@ -90,25 +83,21 @@ next: (res: any) => {
   .subscribe({
 
     next: () => {
-      this.saving = false;
-
-      this.isEditMode = false; 
-      this.showSuccess = true;
-
-      setTimeout(() => {
-        this.showSuccess = false;
-      }, 2500);
+      this.saving.set(false);
+      this.isEditMode.set(false);
+      this.toastr.success('Profile updated successfully ', 'Success');
     },
 
     error: () => {
-      this.saving = false;
-      alert('Update failed');
+      this.saving.set(false);
+      this.toastr.error('Failed to update profile','Error ');
+
     }
   });
 }
 
 toggleEdit() {
-  this.isEditMode = !this.isEditMode;
+  this.isEditMode.set(!this.isEditMode());
 }
 
 

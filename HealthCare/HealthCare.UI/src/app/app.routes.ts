@@ -60,7 +60,6 @@ export const routes: Routes = [
         path: 'health-history',
         component: HealthHistoryComponent
       },
-
       
       {
        path: '',
@@ -114,5 +113,5 @@ export const routes: Routes = [
   },
 
   //Health record
-  
+
 ];

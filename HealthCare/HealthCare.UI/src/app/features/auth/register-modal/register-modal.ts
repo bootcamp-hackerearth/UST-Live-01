@@ -1,12 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
-
+import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
@@ -26,11 +21,10 @@ export class RegisterModal {
   successMessage = '';
   isLoading = false;
 
-  showSuccessPopup = false;
-
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private toastr: ToastrService
   ) {
 
     this.registerForm = this.fb.group({
@@ -87,7 +81,7 @@ export class RegisterModal {
     this.registerForm.value.password !==
     this.registerForm.value.confirmPassword
   ) {
-    this.serverError = 'Passwords do not match';
+    this.toastr.error('Passwords do not match', 'Error ❌');
     return;
   }
 
@@ -102,14 +96,10 @@ export class RegisterModal {
       next: () => {
 
         this.isLoading = false; //  stop loading
+        this.toastr.success('Patient registered successfully','Success ');
+        this.close.emit();
 
-        this.showSuccessPopup = true;
-        this.successMessage = 'Patient Registered Successfully';
-
-        setTimeout(() => {
-          this.showSuccessPopup = false;
-          this.close.emit();
-        }, 2000);
+      
       },
 
       error: (err) => {
@@ -119,7 +109,7 @@ export class RegisterModal {
         console.log(err);
 
         if (err.status === 0) {
-          this.serverError = 'Unable to connect to server.';
+          this.toastr.error('Unable to connect to server.', 'Error ❌');
           return;
         }
 
@@ -137,11 +127,11 @@ export class RegisterModal {
             return;
           }
 
-          this.serverError = message;
+          this.toastr.error(message, 'Error ❌')
           return;
         }
 
-        this.serverError = 'Registration failed. Please try again.';
+        this.toastr.error('Registration failed. Please try again.', 'Error ❌');
       }
     });
 }
