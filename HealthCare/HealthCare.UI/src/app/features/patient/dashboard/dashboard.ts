@@ -2,6 +2,7 @@ import { Component, computed, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { PatientService } from '../../../core/services/patient.service';
+import { AppointmentService } from '../../../core/services/appointment.service';
 
 @Component({
   selector: 'app-patient-dashboard',
@@ -17,18 +18,35 @@ export class DashboardComponent implements OnInit {
 
   patientName = '';
   showBookingModal = false;
-
   stats: any[] = [];
+  loading = signal(false);
   appointments = signal<any[]>([]);
+  totalAppointments = computed(() =>this.appointments().length);
+  upcomingCount = computed(() => {
+  const today = new Date();
+  return this.appointments().filter(a => {
+    const d = new Date(a.scheduledDate);
+
+    return (
+      d >= today &&
+      a.status !== 'Cancelled'
+    );
+  }).length;
+
+});
+
+completedCount = computed(() =>this.appointments().filter(a => a.status === 'Completed').length);
+cancelledCount = computed(() =>this.appointments().filter(a => a.status === 'Cancelled').length
+);
 
   constructor(
-    private patientService: PatientService
+    private patientService: PatientService,
+    private appointmentService: AppointmentService
   ) {}
 
   ngOnInit() {
     this.loadProfile();
     this.loadAppointments();
-    this.loadStats();
   }
 
   //  Load patient profile
@@ -45,59 +63,35 @@ export class DashboardComponent implements OnInit {
   }
 
   //  Load appointments
-  loadAppointments() {
-  this.patientService.getAppointments().subscribe({
+ loadAppointments() {
 
-    next: (res: any[]) => {
-      this.appointments.set(res);
-    },
+  this.loading.set(true);
 
-    error: (err) => {
-      console.error(err);
-    }
-  });
+  this.appointmentService
+    .getMyAppointments()
+    .subscribe({
+
+      next: (res: any[]) => {
+
+        console.log('Dashboard Appointments', res);
+
+        this.appointments.set(res);
+        this.loading.set(false);
+
+      },
+
+      error: (err) => {
+
+        console.error('Error', err);
+
+        this.loading.set(false);
+      }
+
+    });
 }
 
-
-  //  Load stats (backend required)
-  loadStats() {
-    this.patientService.getDashboardStats().subscribe({
-      next: (res: any) => {
-
-        this.stats = [
-          {
-            title: 'Upcoming Appointments',
-            value: res.upcoming,
-            icon: 'bi-calendar-check',
-            color: 'bg-blue-100 text-blue-600'
-          },
-          {
-            title: 'Completed Visits',
-            value: res.completed,
-            icon: 'bi-check-circle',
-            color: 'bg-green-100 text-green-600'
-          },
-          {
-            title: 'Health Records',
-            value: res.records,
-            icon: 'bi-file-medical',
-            color: 'bg-purple-100 text-purple-600'
-          },
-          {
-            title: 'Prescriptions',
-            value: res.prescriptions,
-            icon: 'bi-prescription2',
-            color: 'bg-yellow-100 text-yellow-600'
-          }
-        ];
-      },
-      error: (err) => {
-        console.error('Error loading stats', err);
-      }
-    });
-  }
-
- upcomingAppointments = computed(() => {
+//Upcoming Appointments
+upcomingAppointments = computed(() => {
 
   const today = new Date();
 
@@ -120,6 +114,5 @@ export class DashboardComponent implements OnInit {
     .slice(0, 5);
 
 });
-
 
 }

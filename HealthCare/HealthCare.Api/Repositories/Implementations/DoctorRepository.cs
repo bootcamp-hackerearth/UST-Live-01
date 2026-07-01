@@ -49,6 +49,7 @@ namespace HealthCare.Api.Repositories.Implementations
 
             await _context.DoctorLeaves.AddRangeAsync(entities);
         }
+
         public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date)
         {
             return await _dbSet
@@ -76,6 +77,7 @@ namespace HealthCare.Api.Repositories.Implementations
                 })
                 .ToListAsync();
         }
+
     }
 
 

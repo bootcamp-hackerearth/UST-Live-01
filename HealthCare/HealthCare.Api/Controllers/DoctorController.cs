@@ -25,7 +25,7 @@ namespace HealthCare.Api.Controllers
         public async Task<IActionResult> GetMyProfile()
         {
             var doctorId = GetDoctorIdFromClaims();
-            var result = await _service.GetByIdAsync(doctorId);
+            var result = await _service.GetMyProfileAsync(doctorId);
             return Ok(result);
         }
 

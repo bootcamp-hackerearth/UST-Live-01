@@ -21,5 +21,6 @@ namespace HealthCare.Api.Services.Interfaces
         Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date);
         Task<List<string>> AvailableTimeSlotsCheck(DateOnly date, int doctorId);
         Task<List<CreateLeaveDto>> GetLeavesByDoctorIdAsync(int doctorId);
+        Task<DoctorListDto> GetMyProfileAsync(int doctorId);
     }
 }

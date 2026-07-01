@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-[#F8FAFC] p-6">
 
-  <!-- ✅ WELCOME -->
+  <!--  WELCOME -->
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-[#1E293B]">
       Welcome Back, {{patientName}} 👋
@@ -11,51 +11,53 @@
     </p>
   </div>
 
-  <!-- ✅ STATS -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <!--  STATS -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 
-    @for(stat of stats; track stat.title){
+    <!-- TOTAL -->
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <p class="text-gray-400 text-xs">Total</p>
+      <h2 class="text-2xl font-bold text-[#1E293B]">
+        {{totalAppointments()}}
+      </h2>
+    </div>
 
-      <div class="bg-white rounded-2xl shadow-sm p-4 hover:shadow-md transition">
+    <!-- UPCOMING -->
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <p class="text-gray-400 text-xs">Upcoming</p>
+      <h2 class="text-2xl font-bold text-blue-600">
+        {{upcomingCount()}}
+      </h2>
+    </div>
 
-        <div class="flex justify-between items-center">
+    <!-- COMPLETED -->
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <p class="text-gray-400 text-xs">Completed</p>
+      <h2 class="text-2xl font-bold text-green-600">
+        {{completedCount()}}
+      </h2>
+    </div>
 
-          <div>
-            <p class="text-gray-400 text-xs">
-              {{stat.title}}
-            </p>
-
-            <h2 class="text-2xl font-bold mt-2 text-[#1E293B]">
-              {{stat.value}}
-            </h2>
-          </div>
-
-          <div
-            class="w-10 h-10 rounded-full flex items-center justify-center"
-            [class]="stat.color">
-
-            <i class="bi {{stat.icon}} text-lg"></i>
-          </div>
-
-        </div>
-
-      </div>
-
-    }
+    <!-- CANCELLED -->
+    <div class="bg-white rounded-2xl shadow-sm p-4">
+      <p class="text-gray-400 text-xs">Cancelled</p>
+      <h2 class="text-2xl font-bold text-red-500">
+        {{cancelledCount()}}
+      </h2>
+    </div>
 
   </div>
 
-  <!-- ✅ MAIN CONTENT -->
+  <!--  MAIN CONTENT -->
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-    <!-- ✅ LEFT: UPCOMING APPOINTMENTS -->
+    <!--  LEFT: UPCOMING APPOINTMENTS -->
     <div class="lg:col-span-2">
 
       <div class="bg-white rounded-2xl shadow-sm p-5">
 
         <!-- HEADER -->
         <div class="flex justify-between items-center mb-4">
-
           <h3 class="text-xl font-semibold text-[#1E293B]">
             Upcoming Appointments
           </h3>
@@ -65,65 +67,74 @@
             class="text-[#0B5ED7] text-sm font-medium">
             View All →
           </a>
-
         </div>
 
-        <!-- EMPTY STATE -->
-        @if(upcomingAppointments().length === 0){
-
-          <div class="text-center text-gray-400 text-sm py-6">
-            No upcoming appointments
+        <!-- LOADING -->
+        @if(loading()){
+          <div class="text-center py-10 text-gray-500 text-sm">
+            Loading appointments...
           </div>
-
         }
 
         @else {
 
-          <div class="space-y-3">
+          <!-- EMPTY -->
+          @if(upcomingAppointments().length === 0){
 
-            @for(app of upcomingAppointments(); track $index; let i = $index){
+            <div class="text-center text-gray-400 text-sm py-6">
+              No upcoming appointments
+            </div>
 
-              <div
-                class="flex items-center justify-between p-3 rounded-xl border hover:bg-gray-50 transition"
-                [class.bg-blue-50]="i === 0">
+          }
 
-                <!-- LEFT -->
-                <div>
-                  <p class="font-semibold text-sm text-[#1E293B]">
-                    {{app.doctorName}}
-                  </p>
+          <!-- DATA -->
+          @else {
 
-                  <p class="text-xs text-gray-500">
-                    {{app.specialisation}}
-                  </p>
+            <div class="space-y-3">
+
+              @for(app of upcomingAppointments(); track $index; let i = $index){
+
+                <div
+                  class="flex items-center justify-between p-3 rounded-xl border hover:bg-gray-50 transition"
+                  [class.bg-blue-50]="i === 0">
+
+                  <!-- LEFT -->
+                  <div>
+                    <p class="font-semibold text-sm text-[#1E293B]">
+                      {{app.doctorName}}
+                    </p>
+
+                    <p class="text-xs text-gray-500">
+                      {{app.specialisation}}
+                    </p>
+                  </div>
+
+                  <!-- CENTER -->
+                  <div class="text-xs text-gray-600 text-right min-w-[90px]">
+                    <p>{{app.scheduledDate | date:'dd MMM yyyy'}}</p>
+                    <p>{{app.timeSlot}}</p>
+                  </div>
+
+                  <!-- RIGHT STATUS -->
+                  <span
+                    class="px-2 py-1 text-xs rounded-full font-medium"
+                    [ngClass]="{
+                      'bg-blue-100 text-blue-600': app.status === 'Confirmed',
+                      'bg-yellow-100 text-yellow-600': app.status === 'Pending',
+                      'bg-red-100 text-red-500': app.status === 'Cancelled'
+                    }">
+
+                    {{app.status}}
+
+                  </span>
+
                 </div>
 
-                <!-- CENTER -->
-                <div class="text-xs text-gray-600 text-center">
-                  <p>{{app.scheduledDate}}</p>
-                  <p>{{app.timeSlot}}</p>
-                </div>
+              }
 
-                <!-- RIGHT STATUS -->
-                <span
-                  class="px-2 py-1 text-xs rounded-full font-medium"
-                  [ngClass]="{
-                    'bg-blue-100 text-blue-600':
-                      app.status === 'Confirmed',
+            </div>
 
-                    'bg-yellow-100 text-yellow-600':
-                      app.status === 'Pending'
-                  }">
-
-                  {{app.status}}
-
-                </span>
-
-              </div>
-
-            }
-
-          </div>
+          }
 
         }
 
@@ -131,7 +142,7 @@
 
     </div>
 
-    <!-- ✅ RIGHT: QUICK ACTIONS -->
+    <!--  RIGHT: QUICK ACTIONS -->
     <div>
 
       <div class="bg-white rounded-2xl shadow-sm p-5">
@@ -145,44 +156,35 @@
           <a
             routerLink="/patient/book-appointment"
             class="block p-4 rounded-xl bg-blue-50 hover:bg-blue-100 transition">
-
             <i class="bi bi-calendar-plus text-xl text-[#0B5ED7]"></i>
-
             <h4 class="font-medium text-sm mt-1">
               Book Appointment
             </h4>
-
           </a>
 
           <a
             routerLink="/patient/my-appointments"
             class="block p-4 rounded-xl bg-green-50 hover:bg-green-100 transition">
-
             <i class="bi bi-list-check text-xl text-green-600"></i>
-
             <h4 class="font-medium text-sm mt-1">
               My Appointments
             </h4>
-
           </a>
 
           <a
             routerLink="/patient/profile"
             class="block p-4 rounded-xl bg-purple-50 hover:bg-purple-100 transition">
-
             <i class="bi bi-person text-xl text-purple-600"></i>
-
             <h4 class="font-medium text-sm mt-1">
               My Profile
             </h4>
-
           </a>
 
         </div>
 
       </div>
 
-      <!-- ✅ HEALTH TIP -->
+      <!--  HEALTH TIP -->
       <div
         class="bg-gradient-to-r from-[#0B5ED7] to-[#14B8A6]
                rounded-2xl mt-5 p-5 text-white">

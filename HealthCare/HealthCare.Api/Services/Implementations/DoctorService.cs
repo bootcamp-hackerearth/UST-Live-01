@@ -191,6 +191,33 @@ namespace HealthCare.Api.Services.Implementations
                  })
                 .ToList();
         }
+        public async Task<DoctorListDto> GetMyProfileAsync(int doctorId)
+        {
+            var doctor = await (
+                from d in _context.Doctors
+                join u in _context.Users
+                    on d.UserId equals u.Id
+
+                where d.DoctorId == doctorId
+
+                select new DoctorListDto
+                {
+                    DoctorId = d.DoctorId,
+                    FullName = d.FullName,
+                    Specialisation = d.Specialisation,
+                    YearsOfExperience = d.YearsOfExperience,
+                    ConsultationFee = d.ConsultationFee,
+                    IsActive = d.IsActive,
+                    Email = u.Email
+                }
+
+            ).FirstOrDefaultAsync();
+
+            if (doctor == null)
+                throw new Exception("Doctor not found");
+
+            return doctor;
+        }
 
         public async Task<List<DoctorListDto>> AvailableDoctors(string specialisation, DateOnly date) =>
             await _repository.AvailableDoctors(specialisation, date);
