@@ -1,0 +1,84 @@
+<div class="patient-wrapper">
+  
+  <div class="patient-sidebar-backdrop" 
+       *ngIf="isSidebarOpen()" 
+       (click)="closeSidebar()">
+  </div>
+
+  <aside class="patient-sidebar" [class.sidebar-open]="isSidebarOpen()">
+    <div class="patient-sidebar-brand">
+      <div class="patient-sidebar-brand-icon">
+        <i class="bi bi-heart-pulse-fill"></i>
+      </div>
+      <div class="patient-sidebar-brand-text">
+        <div class="patient-sidebar-brand-title">Health<span>App</span></div>
+        <div class="patient-sidebar-brand-subtitle">Patient Portal</div>
+      </div>
+    </div>
+
+    <nav class="patient-sidebar-menu">
+      <a routerLink="/patient/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+        <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+      </a>
+      <a routerLink="/patient/book-appointment" routerLinkActive="active" (click)="closeSidebar()">
+        <i class="bi bi-calendar-plus"></i> <span>Book Appointments</span>
+      </a>
+      <a routerLink="/patient/appointments" routerLinkActive="active" (click)="closeSidebar()">
+        <i class="bi bi-calendar-check"></i> <span>My Appointments</span>
+      </a>
+      <a routerLink="/patient/health-records" routerLinkActive="active" (click)="closeSidebar()">
+        <i class="bi bi-clipboard-pulse"></i> <span>My Health Records</span>
+      </a>
+      <a routerLink="/patient/profile" routerLinkActive="active" (click)="closeSidebar()">
+        <i class="bi bi-person-circle"></i> <span>Profile</span>
+      </a>
+
+      <div class="patient-sidebar-logout">
+        <button type="button" class="patient-sidebar-logout-button" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> <span>Logout</span>
+        </button>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="patient-content-area">
+    
+    <header class="patient-top-nav">
+      <div class="patient-top-nav-left">
+        <button type="button" class="mobile-menu-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <div class="patient-top-nav-brand-icon">
+          <i class="bi bi-person-heart"></i>
+        </div>
+
+        <div>
+          <div class="patient-top-nav-title">Patient Portal</div>
+          <div class="patient-top-nav-subtitle">Manage appointments, records and profile</div>
+        </div>
+      </div>
+
+      <div class="patient-top-nav-right">
+        <span class="patient-role-badge">
+          <i class="bi bi-shield-check"></i> Patient
+        </span>
+
+        <a routerLink="/patient/profile" class="patient-top-profile-link">
+          <div class="patient-top-profile-avatar">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="d-none d-sm-block">
+            <div class="patient-top-profile-name">Patient</div>
+            <div class="patient-top-profile-label">My Profile</div>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <main class="patient-main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+</div>

@@ -1,0 +1,449 @@
+<div class="book-appointment-page">
+
+  <!-- Header -->
+  <section class="book-header-card mb-4">
+    <div class="row align-items-center g-4">
+
+      <div class="col-lg-8">
+        <div class="header-badge mb-3">
+          <i class="bi bi-calendar-plus"></i>
+          Book Doctor Appointment
+        </div>
+
+        <h1 class="page-title mb-2">
+          Find a doctor and choose an available slot
+        </h1>
+
+        <p class="page-subtitle mb-0">
+          Search doctors, filter by specialisation, select a date, and book from available slots.
+        </p>
+      </div>
+
+      <div class="col-lg-4 text-lg-end">
+        <div class="header-help-card">
+          <i class="bi bi-shield-check"></i>
+
+          <div>
+            <strong>Secure Booking</strong>
+            <span>Your booking is linked to your patient profile.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="filter-card mb-4">
+    <div class="row g-3 align-items-end">
+
+      <div class="col-xl-3 col-lg-6">
+        <label class="form-label fw-bold">
+          Search Doctor
+        </label>
+
+        <div class="input-icon-wrapper">
+          <i class="bi bi-search"></i>
+
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Doctor name"
+            [(ngModel)]="searchText"
+            (keyup.enter)="searchDoctors()"
+            [disabled]="isLoadingDoctors"
+          />
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-6">
+        <label class="form-label fw-bold">
+          Specialisation
+        </label>
+
+        <select
+          class="form-select"
+          [(ngModel)]="selectedSpecialisation"
+          (change)="searchDoctors()"
+          [disabled]="isLoadingDoctors"
+        >
+          <option
+            *ngFor="let specialisation of specialisations"
+            [value]="specialisation.value"
+          >
+            {{ specialisation.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-xl-2 col-lg-6">
+        <label class="form-label fw-bold">
+          Sort By
+        </label>
+
+        <select
+          class="form-select"
+          [(ngModel)]="sortBy"
+          [disabled]="isLoadingDoctors"
+        >
+          <option
+            *ngFor="let option of sortOptions"
+            [value]="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-xl-2 col-lg-6">
+        <label class="form-label fw-bold">
+          Appointment Date
+        </label>
+
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="selectedDate"
+          [min]="minDate"
+          (change)="onDateChanged()"
+          [disabled]="isLoadingDoctors"
+        />
+      </div>
+
+      <div class="col-xl-2 col-lg-12 d-flex gap-2">
+        <button
+          type="button"
+          class="btn btn-health flex-fill"
+          (click)="searchDoctors()"
+          [disabled]="isLoadingDoctors"
+        >
+          <i class="bi bi-search me-2"></i>
+          Search
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-secondary clear-icon-btn"
+          (click)="clearFilters()"
+          [disabled]="isLoadingDoctors"
+          title="Clear filters"
+        >
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="empty-state-card" *ngIf="isLoadingDoctors">
+    <div class="empty-state-icon">
+      <i class="bi bi-hourglass-split"></i>
+    </div>
+
+    <h5>Loading doctors...</h5>
+
+    <p>
+      Please wait while we fetch available doctors.
+    </p>
+  </section>
+
+  <!-- Doctor Cards -->
+  <section
+    class="row g-4"
+    *ngIf="!isLoadingDoctors && sortedDoctors.length > 0"
+  >
+
+    <div
+      class="col-xl-4 col-lg-6"
+      *ngFor="let doctor of sortedDoctors"
+    >
+
+      <div class="doctor-card">
+
+        <!-- Card Top -->
+        <div class="doctor-card-top">
+          <div class="doctor-avatar">
+            <i class="bi bi-person-badge"></i>
+          </div>
+
+          <div
+            class="doctor-status"
+            [ngClass]="{
+              'status-available': doctor.isActive,
+              'status-busy': !doctor.isActive
+            }"
+          >
+            <i class="bi bi-circle-fill"></i>
+            {{ doctor.isActive ? 'Available' : 'Unavailable' }}
+          </div>
+        </div>
+
+        <!-- Doctor Info -->
+        <div class="doctor-info">
+          <h5 class="doctor-name">
+            {{ doctor.fullName }}
+          </h5>
+
+          <div class="doctor-specialisation">
+            {{ doctor.specialisation }}
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="doctor-summary-grid">
+
+          <div class="doctor-summary-box">
+            <i class="bi bi-briefcase"></i>
+
+            <div>
+              <span>Experience</span>
+              <strong>{{ doctor.yearsOfExperience }} Years</strong>
+            </div>
+          </div>
+
+          <div class="doctor-summary-box">
+            <i class="bi bi-currency-rupee"></i>
+
+            <div>
+              <span>Fee</span>
+              <strong>₹{{ doctor.consultationFee }}</strong>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="doctor-card-actions">
+
+          <button
+            type="button"
+            class="btn btn-outline-health"
+            (click)="toggleDetails(doctor.doctorId)"
+          >
+            <i class="bi bi-info-circle me-1"></i>
+            {{ expandedDetailsDoctorId === doctor.doctorId ? 'Hide Details' : 'View Details' }}
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-health"
+            [disabled]="bookingDoctorId === doctor.doctorId || loadingSlotsDoctorId === doctor.doctorId"
+            (click)="toggleSlots(doctor)"
+          >
+            <i class="bi bi-calendar2-week me-1"></i>
+
+            @if (loadingSlotsDoctorId === doctor.doctorId) {
+              Loading...
+            } @else {
+              {{ expandedSlotsDoctorId === doctor.doctorId ? 'Hide Slots' : 'View Slots' }}
+            }
+          </button>
+
+        </div>
+
+        <!-- Details Panel -->
+        <div
+          class="doctor-details-panel"
+          *ngIf="expandedDetailsDoctorId === doctor.doctorId"
+        >
+
+          <div class="details-row">
+            <span>
+              <i class="bi bi-envelope"></i>
+              Email
+            </span>
+
+            <strong>{{ doctor.doctorEmail }}</strong>
+          </div>
+
+          <div class="details-row">
+            <span>
+              <i class="bi bi-telephone"></i>
+              Phone
+            </span>
+
+            <strong>{{ doctor.doctorPhoneNo }}</strong>
+          </div>
+
+          <div class="details-row">
+            <span>
+              <i class="bi bi-award"></i>
+              Specialisation
+            </span>
+
+            <strong>{{ doctor.specialisation }}</strong>
+          </div>
+
+        </div>
+
+        <!-- Slots Panel -->
+        <div
+          class="slots-panel"
+          *ngIf="expandedSlotsDoctorId === doctor.doctorId"
+        >
+
+          <div class="slots-panel-header">
+
+            <div>
+              <h6 class="mb-1">
+                Available Slots
+              </h6>
+
+              <p class="mb-0" *ngIf="selectedDate">
+                For {{ selectedDate }}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary"
+              (click)="loadAvailability(doctor.doctorId)"
+              [disabled]="loadingSlotsDoctorId === doctor.doctorId"
+            >
+              <i class="bi bi-arrow-clockwise me-1"></i>
+              Refresh
+            </button>
+
+          </div>
+
+          <div
+            class="slots-loading"
+            *ngIf="loadingSlotsDoctorId === doctor.doctorId"
+          >
+            <i class="bi bi-hourglass-split"></i>
+            Loading available slots...
+          </div>
+
+          <div
+            class="slots-empty"
+            *ngIf="
+              selectedDate &&
+              loadingSlotsDoctorId !== doctor.doctorId &&
+              areSlotsLoaded(doctor.doctorId) &&
+              getSlotCount(doctor.doctorId) === 0
+            "
+          >
+            <i class="bi bi-calendar-x"></i>
+            No slots available for this date.
+          </div>
+
+          <div
+            class="slot-list-compact"
+            *ngIf="
+              selectedDate &&
+              loadingSlotsDoctorId !== doctor.doctorId &&
+              getSlotCount(doctor.doctorId) > 0
+            "
+          >
+
+            <button
+              type="button"
+              class="slot-chip"
+              *ngFor="let slot of getPagedSlots(doctor.doctorId)"
+              [class.active]="selectedSlots[doctor.doctorId] === slot"
+              (click)="selectSlot(doctor.doctorId, slot)"
+              [disabled]="bookingDoctorId === doctor.doctorId"
+            >
+              <i class="bi bi-clock"></i>
+              <span>{{ slot }}</span>
+            </button>
+
+          </div>
+
+          <div
+            class="slot-pagination"
+            *ngIf="
+              selectedDate &&
+              loadingSlotsDoctorId !== doctor.doctorId &&
+              getSlotCount(doctor.doctorId) > 0
+            "
+          >
+
+            <button
+              type="button"
+              class="slot-page-btn"
+              (click)="goToPreviousSlotPage(doctor.doctorId)"
+              [disabled]="getCurrentSlotPage(doctor.doctorId) === 0 || bookingDoctorId === doctor.doctorId"
+            >
+              <i class="bi bi-chevron-left"></i>
+              Prev
+            </button>
+
+            <span class="slot-page-info">
+              Page {{ getCurrentSlotPage(doctor.doctorId) + 1 }}
+              of {{ getTotalSlotPages(doctor.doctorId) }}
+            </span>
+
+            <button
+              type="button"
+              class="slot-page-btn"
+              (click)="goToNextSlotPage(doctor.doctorId)"
+              [disabled]="getCurrentSlotPage(doctor.doctorId) >= getTotalSlotPages(doctor.doctorId) - 1 || bookingDoctorId === doctor.doctorId"
+            >
+              Next
+              <i class="bi bi-chevron-right"></i>
+            </button>
+
+          </div>
+
+          <div
+            class="booking-mini-summary"
+            *ngIf="selectedSlots[doctor.doctorId]"
+          >
+
+            <div>
+              <span>Selected Slot</span>
+              <strong>{{ selectedSlots[doctor.doctorId] }}</strong>
+            </div>
+
+            <button
+              type="button"
+              class="btn btn-health"
+              (click)="bookAppointment(doctor)"
+              [disabled]="bookingDoctorId === doctor.doctorId"
+            >
+              @if (bookingDoctorId === doctor.doctorId) {
+                <i class="bi bi-hourglass-split me-2"></i>
+                Booking...
+              } @else {
+                <i class="bi bi-send-check me-2"></i>
+                Confirm Booking
+              }
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Empty State -->
+  <section
+    class="empty-state-card"
+    *ngIf="!isLoadingDoctors && sortedDoctors.length === 0"
+  >
+    <div class="empty-state-icon">
+      <i class="bi bi-search"></i>
+    </div>
+
+    <h5>No doctors found</h5>
+
+    <p>
+      Try changing your search text or specialisation filter. Also make sure at least one doctor is available.
+    </p>
+
+    <button
+      type="button"
+      class="btn btn-health"
+      (click)="clearFilters()"
+    >
+      Clear Filters
+    </button>
+  </section>
+
+</div>

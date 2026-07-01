@@ -1,0 +1,364 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #f5f8fb;
+  color: #0f172a;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.patient-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f8fb;
+}
+
+/* =========================
+   Sidebar
+========================= */
+
+.patient-sidebar {
+  width: 270px;
+  height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0d9488 0%, #0f766e 38%, #10233f 100%);
+  color: #ffffff;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 0 32px 32px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 12px 0 34px rgba(15, 23, 42, 0.14);
+  z-index: 1000;
+}
+
+.patient-sidebar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(204, 251, 241, 0.95),
+    rgba(45, 212, 191, 0.6),
+    rgba(15, 23, 42, 0.25)
+  );
+}
+
+.patient-sidebar-brand {
+  min-height: 112px;
+  padding: 1.45rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.patient-sidebar-brand-icon {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.7rem;
+  flex-shrink: 0;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.22);
+}
+
+.patient-sidebar-brand-title {
+  font-size: 1.42rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.patient-sidebar-brand-title span {
+  color: #ccfbf1;
+}
+
+.patient-sidebar-brand-subtitle {
+  font-size: 0.86rem;
+  color: #ecfeff;
+  margin-top: 0.35rem;
+  font-weight: 700;
+}
+
+.patient-sidebar-menu {
+  padding: 1.15rem 1rem;
+}
+
+.patient-sidebar-menu a,
+.patient-sidebar-logout-button {
+  min-height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: #f8fafc;
+  padding: 0.82rem 1.15rem;
+  border-radius: 17px;
+  margin-bottom: 0.45rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.patient-sidebar-menu a i,
+.patient-sidebar-logout-button i {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.12rem;
+  line-height: 1;
+  color: #ccfbf1;
+  flex-shrink: 0;
+}
+
+.patient-sidebar-menu a:hover,
+.patient-sidebar-logout-button:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.patient-sidebar-menu a:hover i,
+.patient-sidebar-logout-button:hover i {
+  color: #ffffff;
+}
+
+.patient-sidebar-menu a.active {
+  background: #ffffff;
+  color: #0f766e;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+}
+
+.patient-sidebar-menu a.active i {
+  color: #0f766e;
+}
+
+.patient-sidebar-logout {
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.patient-sidebar-logout-button {
+  color: #fecaca;
+}
+
+.patient-sidebar-logout-button i {
+  color: #fecaca;
+}
+
+.patient-sidebar-logout-button:hover {
+  background: rgba(239, 68, 68, 0.22);
+}
+
+/* =========================
+   Content Area
+========================= */
+
+.patient-content-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: calc(270px + 0.75rem);
+}
+
+.patient-main-content {
+  padding: 1.5rem;
+}
+
+/* =========================
+   Top Navigation
+========================= */
+
+.patient-top-nav {
+  min-height: 78px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+.patient-top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.patient-top-nav-brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.22);
+}
+
+.patient-top-nav-title {
+  margin-bottom: 0.15rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.patient-top-nav-subtitle {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.patient-top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.patient-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.patient-top-profile-link {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.patient-top-profile-link:hover {
+  border-color: #99f6e4;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.12);
+  color: #0f172a;
+}
+
+.patient-top-profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  flex-shrink: 0;
+}
+
+.patient-top-profile-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.patient-top-profile-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.mobile-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: #0f766e;
+  font-size: 1.4rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+.patient-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 950;
+  backdrop-filter: blur(4px);
+}
+
+@media (max-width: 991px) {
+  .patient-sidebar {
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+  }
+
+  .patient-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .patient-content-area {
+    margin-left: 0;
+  }
+
+  .patient-main-content {
+    padding: 1rem;
+  }
+
+  .patient-top-nav {
+    padding: 0 1rem;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 767px) {
+  .patient-top-nav-subtitle {
+    display: none;
+  }
+
+  .patient-role-badge {
+    display: none;
+  }
+
+  .patient-top-nav-brand-icon {
+    width: 44px;
+    height: 44px;
+  }
+}

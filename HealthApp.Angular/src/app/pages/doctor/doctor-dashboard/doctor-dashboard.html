@@ -1,0 +1,254 @@
+<div class="doctor-dashboard-page">
+
+  <!-- Loading State -->
+  <section class="empty-state-card" *ngIf="isLoading">
+    <div class="empty-state-icon">
+      <i class="bi bi-hourglass-split"></i>
+    </div>
+
+    <h5>Loading dashboard...</h5>
+
+    <p>
+      Please wait while we load your appointments and profile.
+    </p>
+  </section>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Welcome -->
+    <section class="doctor-welcome-card mb-4">
+      <div class="row align-items-center g-4">
+
+        <div class="col-lg-8">
+          <div class="welcome-badge mb-3">
+            <i class="bi bi-person-badge"></i>
+            Doctor Dashboard
+          </div>
+
+          <h1 class="welcome-title">
+            Welcome back, {{ doctorName }}
+          </h1>
+
+          <p class="welcome-subtitle mb-0">
+            Manage your appointments, review patients, and create health records from one place.
+          </p>
+        </div>
+
+        <div class="col-lg-4 text-lg-end">
+          <div class="d-flex flex-column flex-sm-row justify-content-lg-end gap-2">
+            <button
+              type="button"
+              class="btn btn-outline-health btn-lg welcome-action-btn"
+              (click)="refreshDashboard()"
+            >
+              <i class="bi bi-arrow-clockwise me-2"></i>
+              Refresh
+            </button>
+
+            <a routerLink="/doctor/appointments" class="btn btn-health btn-lg welcome-action-btn">
+              <i class="bi bi-calendar-check me-2"></i>
+              View Appointments
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Availability Card -->
+    <section class="doctor-dashboard-availability-card mb-4" *ngIf="doctorProfile">
+      <div class="availability-left">
+        <div
+          class="availability-icon"
+          [class.available]="isDoctorAvailable"
+          [class.unavailable]="!isDoctorAvailable"
+        >
+          <i
+            class="bi"
+            [class.bi-check-circle-fill]="isDoctorAvailable"
+            [class.bi-pause-circle-fill]="!isDoctorAvailable"
+          ></i>
+        </div>
+
+        <div>
+          <h5 class="mb-1">Availability Status</h5>
+          <p class="mb-0">
+            {{ isDoctorAvailable ? 'Patients can currently book appointments with you.' : 'Patients cannot currently book new appointments with you.' }}
+          </p>
+        </div>
+      </div>
+
+      <span
+        class="availability-pill"
+        [class.available]="isDoctorAvailable"
+        [class.unavailable]="!isDoctorAvailable"
+      >
+        {{ availabilityText }}
+      </span>
+    </section>
+
+    <!-- Stats -->
+    <section class="row g-4 mb-4">
+      <div class="col-xl-3 col-md-6" *ngFor="let stat of stats">
+        <div class="doctor-metric-card" [ngClass]="stat.cardClass">
+          <div class="metric-icon">
+            <i [class]="stat.icon"></i>
+          </div>
+
+          <div>
+            <div class="metric-value">
+              {{ stat.value }}
+            </div>
+
+            <div class="metric-label">
+              {{ stat.label }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Sections -->
+    <section class="row g-4">
+
+      <!-- Today's Appointments -->
+      <div class="col-xl-7">
+        <div class="doctor-section-card h-100">
+
+          <div class="section-header">
+            <div>
+              <h5 class="section-title mb-1">Today's Appointments</h5>
+              <p class="section-subtitle mb-0">Appointments scheduled for today</p>
+            </div>
+
+            <a routerLink="/doctor/appointments" class="section-link">
+              View All
+            </a>
+          </div>
+
+          <div class="appointment-list" *ngIf="todayAppointments.length > 0">
+
+            <div class="appointment-row" *ngFor="let appointment of todayAppointments">
+
+              <div class="patient-avatar">
+                <i class="bi bi-person"></i>
+              </div>
+
+              <div class="appointment-info">
+                <div class="appointment-id">
+                  Appointment #APT-{{ appointment.appointmentId }}
+                </div>
+
+                <div class="patient-name">
+                  {{ appointment.patientName }}
+                </div>
+
+                <div class="appointment-time">
+                  <i class="bi bi-clock me-1"></i>
+                  {{ appointment.timeSlot }}
+                </div>
+              </div>
+
+              <span
+                class="appointment-status"
+                [ngClass]="getStatusClass(appointment.status)"
+              >
+                {{ appointment.status }}
+              </span>
+
+            </div>
+
+          </div>
+
+          <div class="dashboard-empty-mini" *ngIf="todayAppointments.length === 0">
+            <i class="bi bi-calendar-x"></i>
+            <p>No appointments scheduled for today.</p>
+            <a routerLink="/doctor/appointments" class="section-link">View appointments</a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Quick Actions / Recent Patients -->
+      <div class="col-xl-5">
+        <div class="doctor-section-card h-100">
+
+          <div class="section-header">
+            <div>
+              <h5 class="section-title mb-1">Quick Actions</h5>
+              <p class="section-subtitle mb-0">Common doctor tasks</p>
+            </div>
+          </div>
+
+          <div class="quick-action-list mb-4">
+
+            <a routerLink="/doctor/appointments" class="quick-action-card">
+              <div class="quick-action-icon action-blue">
+                <i class="bi bi-calendar-check"></i>
+              </div>
+
+              <div>
+                <div class="quick-action-title">Manage Appointments</div>
+                <div class="quick-action-subtitle">View and update appointment status</div>
+              </div>
+            </a>
+
+            <a routerLink="/doctor/health-records" class="quick-action-card">
+              <div class="quick-action-icon action-teal">
+                <i class="bi bi-clipboard-pulse"></i>
+              </div>
+
+              <div>
+                <div class="quick-action-title">Patient Records</div>
+                <div class="quick-action-subtitle">Open records from appointment patients</div>
+              </div>
+            </a>
+
+            <a routerLink="/doctor/profile" class="quick-action-card">
+              <div class="quick-action-icon action-amber">
+                <i class="bi bi-person-circle"></i>
+              </div>
+
+              <div>
+                <div class="quick-action-title">Availability/Profile</div>
+                <div class="quick-action-subtitle">Update availability and account security</div>
+              </div>
+            </a>
+
+          </div>
+
+          <div class="recent-patients-title">
+            Recent Patients
+          </div>
+
+          <div class="recent-patient-list" *ngIf="recentPatients.length > 0">
+            <div class="recent-patient-row" *ngFor="let patient of recentPatients">
+              <div class="recent-patient-avatar">
+                <i class="bi bi-person"></i>
+              </div>
+
+              <div>
+                <div class="recent-patient-name">
+                  {{ patient.patientName }}
+                </div>
+
+                <div class="recent-patient-meta">
+                  Last visit: {{ patient.lastVisit | date: 'mediumDate' }} · {{ patient.status }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-empty-mini compact" *ngIf="recentPatients.length === 0">
+            <i class="bi bi-people"></i>
+            <p>No recent patients found.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+  </ng-container>
+
+</div>

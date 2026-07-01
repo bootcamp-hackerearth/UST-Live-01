@@ -1,0 +1,142 @@
+
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+:root {
+  --health-primary: #0d9488;
+  --health-primary-dark: #0f766e;
+  --health-primary-light: #ccfbf1;
+  --health-cyan: #06b6d4;
+
+  --page-bg: #f5f8fb;
+  --card-bg: #ffffff;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+
+  --card-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  --card-shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.16);
+}
+
+
+/* =========================
+   Global Reset & Base
+========================= */
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--page-bg);
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+
+button,
+input {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin-top: 0;
+}
+
+/* =========================
+   Global Utility Classes
+========================= */
+.card-custom {
+  background: var(--card-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-soft);
+}
+
+/* Buttons */
+.btn-health {
+  border: none;
+  background: linear-gradient(135deg, var(--health-primary), var(--health-primary-dark));
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-health:hover {
+  color: #ffffff;
+  opacity: 0.94;
+  transform: translateY(-1px);
+}
+
+.btn-primary-custom {
+  border: none;
+  background: linear-gradient(135deg, var(--health-primary), var(--health-primary-dark));
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 14px 28px rgba(13, 148, 136, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-primary-custom:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 34px rgba(13, 148, 136, 0.28);
+}
+
+.btn-outline-custom {
+  border: 1px solid #99f6e4;
+  background: #ffffff;
+  color: var(--health-primary-dark);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-custom:hover {
+  background: #f0fdfa;
+  border-color: var(--health-primary);
+}
+
+/* Forms */
+.form-control-custom {
+  width: 100%;
+  min-height: 56px;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: var(--text-dark);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-control-custom:focus {
+  border-color: var(--health-primary);
+  box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.15);
+}
+
+
+.bi {
+  line-height: 1;
+}

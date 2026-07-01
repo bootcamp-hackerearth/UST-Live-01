@@ -1,0 +1,127 @@
+<div class="register-page">
+  <div class="register-card">
+    <div class="register-left-panel">
+      <div class="register-brand">
+        <div class="register-brand-icon">
+          <i class="bi bi-heart-pulse-fill"></i>
+        </div>
+        <h1>Health<span>App</span></h1>
+        <p>Create your patient account and access healthcare services securely.</p>
+        <div class="brand-feature-list">
+          <div class="brand-feature-item">
+            <i class="bi bi-person-heart"></i>
+            <div>
+              <strong>Patient Portal</strong>
+              <span>Book appointments and manage your profile.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="register-form-panel">
+      <button class="back-button" type="button" (click)="goBackHome()" [disabled]="isSubmitting()">
+        <i class="bi bi-arrow-left"></i> Back to Home
+      </button>
+
+      <div class="register-form-wrapper">
+        <div class="register-header">
+          <div class="register-header-icon">
+            <i class="bi bi-person-heart"></i>
+          </div>
+          <h2>Create Patient Account</h2>
+          <p>Enter your details to register as a patient.</p>
+        </div>
+
+        <form #registerForm="ngForm" (ngSubmit)="registerPatient(registerForm)">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="fullName" class="form-label field-label">
+                <i class="bi bi-person-circle"></i> <span>Full Name</span>
+              </label>
+              <input id="fullName" name="fullName" type="text" class="form-control custom-control"
+                     required minlength="3" [(ngModel)]="form.fullName" #fullName="ngModel"
+                     placeholder="Enter full name" [disabled]="isSubmitting()"
+                     [class.is-invalid]="fullName.invalid && (fullName.touched || registerForm.submitted)" />
+              @if (fullName.invalid && (fullName.touched || registerForm.submitted)) {
+                <div class="field-error">
+                  @if (fullName.errors?.['required']) { <span>Full name is required.</span> }
+                  @if (fullName.errors?.['minlength']) { <span>Must be at least 3 characters.</span> }
+                </div>
+              }
+            </div>
+
+            <div class="form-group half-width">
+              <label for="dateOfBirth" class="form-label field-label"><i class="bi bi-calendar-check"></i> <span>Date of Birth</span></label>
+              <input id="dateOfBirth" name="dateOfBirth" type="date" class="form-control custom-control" required
+                     [(ngModel)]="form.dateOfBirth" #dateOfBirth="ngModel" [disabled]="isSubmitting()"
+                     [class.is-invalid]="dateOfBirth.invalid && (dateOfBirth.touched || registerForm.submitted)" />
+            </div>
+
+            <div class="form-group half-width">
+              <label for="gender" class="form-label field-label"><i class="bi bi-person-badge"></i> <span>Gender</span></label>
+              <select id="gender" name="gender" class="form-select custom-control" required [(ngModel)]="form.gender" #gender="ngModel" [disabled]="isSubmitting()" [class.is-invalid]="gender.invalid && (gender.touched || registerForm.submitted)">
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group half-width">
+              <label for="email" class="form-label field-label"><i class="bi bi-envelope"></i> <span>Email</span></label>
+              <input id="email" name="email" type="email" class="form-control custom-control" required email
+                     [(ngModel)]="form.email" #email="ngModel" placeholder="Enter email" [disabled]="isSubmitting()"
+                     [class.is-invalid]="email.invalid && (email.touched || registerForm.submitted)" />
+            </div>
+
+            <div class="form-group half-width">
+              <label for="phoneNumber" class="form-label field-label"><i class="bi bi-telephone"></i> <span>Phone Number</span></label>
+              <input id="phoneNumber" name="phoneNumber" type="text" class="form-control custom-control" required pattern="^[0-9]{10}$" maxlength="10"
+                     [(ngModel)]="form.phoneNumber" #phoneNumber="ngModel" placeholder="10 digit number" [disabled]="isSubmitting()"
+                     [class.is-invalid]="phoneNumber.invalid && (phoneNumber.touched || registerForm.submitted)" />
+            </div>
+
+            <div class="form-group full-width">
+              <label for="insuranceId" class="form-label field-label">
+                <span><i class="bi bi-shield-check"></i> <span>Insurance ID</span></span>
+                <span class="optional-badge">Optional</span>
+              </label>
+              <input id="insuranceId" name="insuranceId" type="text" class="form-control custom-control" maxlength="50"
+                     [(ngModel)]="form.insuranceId" #insuranceId="ngModel" placeholder="Insurance ID" [disabled]="isSubmitting()" />
+            </div>
+
+            <div class="form-group half-width">
+              <label for="password" class="form-label field-label"><i class="bi bi-shield-lock"></i> <span>Password</span></label>
+              <input id="password" name="password" type="password" class="form-control custom-control" required minlength="8"
+                     pattern="^(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{8,}$" [(ngModel)]="form.password" #password="ngModel"
+                     placeholder="Create password" [disabled]="isSubmitting()"
+                     [class.is-invalid]="password.invalid && (password.touched || registerForm.submitted)" />
+            </div>
+
+            <div class="form-group half-width">
+              <label for="confirmPassword" class="form-label field-label"><i class="bi bi-shield-lock"></i> <span>Confirm Password</span></label>
+              <input id="confirmPassword" name="confirmPassword" type="password" class="form-control custom-control" required
+                     [(ngModel)]="form.confirmPassword" #confirmPassword="ngModel" placeholder="Confirm password" [disabled]="isSubmitting()"
+                     [class.is-invalid]="(confirmPassword.invalid || form.password !== form.confirmPassword) && (confirmPassword.touched || registerForm.submitted)" />
+            </div>
+          </div>
+
+          <div class="password-hint">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>Use 8+ characters with uppercase, number, and special character.</span>
+          </div>
+
+          <button class="register-submit-btn" type="submit" [disabled]="isSubmitting()">
+            @if (isSubmitting()) { <i class="bi bi-arrow-repeat spin-icon"></i> Registering... }
+            @else { <i class="bi bi-plus-circle"></i> Register Patient }
+          </button>
+        </form>
+
+        <div class="register-footer">
+          <span>Already have an account?</span> <a routerLink="/login">Login here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

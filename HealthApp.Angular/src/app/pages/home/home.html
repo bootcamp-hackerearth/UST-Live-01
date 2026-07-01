@@ -1,0 +1,271 @@
+<div class="portal-landing-page">
+  <nav class="landing-top-nav">
+    <a class="landing-brand" routerLink="/">
+      <div class="landing-brand-icon">
+        <i class="bi bi-heart-pulse-fill"></i>
+      </div>
+
+      <div>
+        <div class="landing-brand-title">
+          Health<span>App</span>
+        </div>
+        <div class="landing-brand-subtitle">
+          Secure Healthcare Portal
+        </div>
+      </div>
+    </a>
+
+    <div class="landing-nav-actions">
+      <a class="nav-login-btn" routerLink="/login">
+        <i class="bi bi-box-arrow-right"></i>
+        Login
+      </a>
+
+      <a class="nav-register-btn" routerLink="/register">
+        <i class="bi bi-plus-circle"></i>
+        Register
+      </a>
+    </div>
+  </nav>
+
+  <main class="landing-hero-box">
+    <section class="hero-content-box">
+      <div class="hero-badge">
+        <i class="bi bi-shield-check"></i>
+        Healthcare Portal
+      </div>
+
+      <h1>
+        Simple, secure healthcare access for
+        <span>patients and doctors.</span>
+      </h1>
+
+      <p>
+        HealthApp connects patients and doctors through a clean portal experience
+        for appointments, profiles, and healthcare management.
+      </p>
+
+      <div class="hero-actions">
+        <button class="primary-action" type="button" (click)="goToPatientLogin()">
+          <i class="bi bi-person-heart"></i>
+          Continue as Patient
+        </button>
+
+        <button class="secondary-action" type="button" (click)="goToDoctorLogin()">
+          <i class="bi bi-person-badge"></i>
+          Continue as Doctor
+        </button>
+      </div>
+    </section>
+
+    <section class="hero-dashboard-card">
+      <div class="dashboard-card-header">
+        <div>
+          <span>Today</span>
+          <h3>Healthcare Overview</h3>
+        </div>
+
+        <div class="dashboard-header-icon">
+          <i class="bi bi-speedometer2"></i>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric-card metric-teal">
+          <div class="metric-icon">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+
+          <div>
+            <div class="metric-value">24</div>
+            <div class="metric-label">Appointments</div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-blue">
+          <div class="metric-icon">
+            <i class="bi bi-person-badge"></i>
+          </div>
+
+          <div>
+            <div class="metric-value">12</div>
+            <div class="metric-label">Doctors</div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-cyan">
+          <div class="metric-icon">
+            <i class="bi bi-person-heart"></i>
+          </div>
+
+          <div>
+            <div class="metric-value">148</div>
+            <div class="metric-label">Patients</div>
+          </div>
+        </div>
+
+        <div class="metric-card metric-amber">
+          <div class="metric-icon">
+            <i class="bi bi-person-circle"></i>
+          </div>
+
+          <div>
+            <div class="metric-value">160</div>
+            <div class="metric-label">Users</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="activity-preview-list">
+        <div class="activity-preview-item">
+          <div class="activity-preview-icon success">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+
+          <div>
+            <strong>Appointment confirmed</strong>
+            <span>Patient consultation approved</span>
+          </div>
+        </div>
+
+        <div class="activity-preview-item">
+          <div class="activity-preview-icon warning">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+
+          <div>
+            <strong>Pending request</strong>
+            <span>Waiting for doctor confirmation</span>
+          </div>
+        </div>
+
+        <div class="activity-preview-item">
+          <div class="activity-preview-icon info">
+            <i class="bi bi-info-circle-fill"></i>
+          </div>
+
+          <div>
+            <strong>Health record updated</strong>
+            <span>Consultation notes added</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section class="portal-selection-box">
+    <div class="section-heading">
+      <h2>Choose Your Portal</h2>
+      <p>
+        Access healthcare features based on your role.
+      </p>
+    </div>
+
+    <div class="portal-card-grid">
+      <article class="portal-card">
+        <div class="portal-card-icon patient-icon">
+          <i class="bi bi-person-heart"></i>
+        </div>
+
+        <h3>Patient Portal</h3>
+
+        <p>
+          Search doctors, book appointments, view appointment history, and access
+          healthcare records securely.
+        </p>
+
+        <ul>
+          <li>
+            <i class="bi bi-search"></i>
+            Doctor search and filters
+          </li>
+
+          <li>
+            <i class="bi bi-calendar-plus"></i>
+            Appointment booking
+          </li>
+
+          <li>
+            <i class="bi bi-shield-lock"></i>
+            Secure health history
+          </li>
+        </ul>
+
+        <button class="card-action patient-action" type="button" (click)="goToPatientLogin()">
+          <i class="bi bi-box-arrow-right"></i>
+          Enter Patient Portal
+        </button>
+      </article>
+
+      <article class="portal-card">
+        <div class="portal-card-icon doctor-icon">
+          <i class="bi bi-person-badge"></i>
+        </div>
+
+        <h3>Doctor Portal</h3>
+
+        <p>
+          View schedules, manage appointments, check patient profiles, and support
+          consultations.
+        </p>
+
+        <ul>
+          <li>
+            <i class="bi bi-calendar-check"></i>
+            Appointment schedule
+          </li>
+
+          <li>
+            <i class="bi bi-person-circle"></i>
+            Patient profiles
+          </li>
+
+          <li>
+            <i class="bi bi-plus-circle"></i>
+            Add consultation records
+          </li>
+        </ul>
+
+        <button class="card-action doctor-action" type="button" (click)="goToDoctorLogin()">
+          <i class="bi bi-box-arrow-right"></i>
+          Enter Doctor Portal
+        </button>
+      </article>
+
+      <article class="portal-card">
+        <div class="portal-card-icon admin-icon">
+          <i class="bi bi-shield-check"></i>
+        </div>
+
+        <h3>Admin Portal</h3>
+
+        <p>
+          Manage doctors, patients, users, appointments, and administration through
+          the Blazor Admin Console.
+        </p>
+
+        <ul>
+          <li>
+            <i class="bi bi-person-badge"></i>
+            Doctor management
+          </li>
+
+          <li>
+            <i class="bi bi-person-heart"></i>
+            Patient management
+          </li>
+
+          <li>
+            <i class="bi bi-shield-lock"></i>
+            Admin security
+          </li>
+        </ul>
+
+        <button class="card-action admin-action" type="button" (click)="openAdminPortal()">
+          <i class="bi bi-shield-lock"></i>
+          Open Admin Portal
+        </button>
+      </article>
+    </div>
+  </section>
+</div>

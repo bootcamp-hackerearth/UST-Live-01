@@ -1,0 +1,676 @@
+/* =========================
+   Global & Wrapper
+========================= */
+:host {
+  display: block;
+}
+
+body {
+  background: #f5f8fb;
+  color: #0f172a;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+}
+
+.doctor-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f8fb;
+}
+
+/* =========================
+   Sidebar
+========================= */
+.doctor-sidebar {
+  width: 270px;
+  height: 100vh;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0891b2 0%, #0d9488 38%, #10233f 100%);
+  color: #ffffff;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 0 32px 32px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 12px 0 34px rgba(15, 23, 42, 0.14);
+  z-index: 1000;
+}
+
+.doctor-sidebar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(204, 251, 241, 0.95),
+    rgba(45, 212, 191, 0.6),
+    rgba(15, 23, 42, 0.25)
+  );
+}
+
+.doctor-sidebar-brand {
+  min-height: 112px;
+  padding: 1.45rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.doctor-sidebar-brand-icon {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1.7rem;
+  flex-shrink: 0;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.22);
+}
+
+.doctor-sidebar-brand-title {
+  font-size: 1.42rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #ffffff;
+}
+
+.doctor-sidebar-brand-title span {
+  color: #ccfbf1;
+}
+
+.doctor-sidebar-brand-subtitle {
+  font-size: 0.86rem;
+  color: #ecfeff;
+  margin-top: 0.35rem;
+  font-weight: 700;
+}
+
+.doctor-sidebar-menu {
+  padding: 1.15rem 1rem;
+}
+
+.doctor-sidebar-menu a,
+.doctor-sidebar-logout-button {
+  min-height: 50px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  color: #f8fafc;
+  padding: 0.82rem 1.15rem;
+  border-radius: 17px;
+  margin-bottom: 0.45rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.doctor-sidebar-menu a i,
+.doctor-sidebar-logout-button i {
+  width: 24px;
+  min-width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.12rem;
+  color: #ccfbf1;
+  flex-shrink: 0;
+}
+
+.doctor-sidebar-menu a:hover,
+.doctor-sidebar-logout-button:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.doctor-sidebar-menu a.active {
+  background: #ffffff;
+  color: #0f766e;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+}
+
+.doctor-sidebar-menu a.active i {
+  color: #0f766e;
+}
+
+/* =========================
+   Logout
+========================= */
+.doctor-sidebar-logout {
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.doctor-sidebar-logout-button {
+  color: #fecaca;
+}
+
+.doctor-sidebar-logout-button i {
+  color: #fecaca;
+}
+
+.doctor-sidebar-logout-button:hover {
+  background: rgba(239, 68, 68, 0.22);
+  color: #ffffff;
+}
+
+/* =========================
+   Main Content & Top Nav
+========================= */
+.doctor-content-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin-left: 270px; /* Simplified from calc */
+}
+
+.doctor-main-content {
+  padding: 1.5rem;
+}
+
+.doctor-top-nav {
+  min-height: 78px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 991px) {
+  .doctor-sidebar {
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+  }
+
+  .doctor-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .doctor-content-area {
+    margin-left: 0;
+  }
+}
+
+/* =========================
+   Fix Host & Global
+========================= */
+:host {
+  display: block;
+  flex-shrink: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #f5f8fb;
+  color: #0f172a;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  margin: 0;
+}
+
+/* =========================
+   Top Navigation
+========================= */
+.doctor-top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.doctor-top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.doctor-top-nav-brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0891b2, #0d9488);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+}
+
+.doctor-top-nav-title {
+  margin-bottom: 0.15rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.doctor-top-nav-subtitle {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.doctor-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.doctor-top-profile-link {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.doctor-top-profile-link:hover {
+  border-color: #99f6e4;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.12);
+  color: #0f172a;
+}
+
+.doctor-top-profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0891b2, #0d9488);
+  flex-shrink: 0;
+}
+
+.doctor-top-profile-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.doctor-top-profile-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+/* =========================
+   Mobile Menu & Sidebar
+========================= */
+.mobile-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: #0f766e;
+  font-size: 1.4rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.mobile-menu-btn:hover {
+  background: #ecfeff;
+  border-color: #99f6e4;
+}
+
+.doctor-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  z-index: 950;
+  backdrop-filter: blur(4px);
+}
+
+.doctor-content-area {
+  margin-left: calc(270px + 0.75rem);
+}
+
+/* =========================
+   Top Navigation
+========================= */
+
+.doctor-top-nav {
+  min-height: 78px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+.doctor-top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.doctor-top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.doctor-top-nav-brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0891b2, #0d9488);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.22);
+  flex-shrink: 0;
+}
+
+.doctor-top-nav-title {
+  margin-bottom: 0.15rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.doctor-top-nav-subtitle {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.doctor-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.doctor-top-profile-link {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.doctor-top-profile-link:hover {
+  border-color: #99f6e4;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.12);
+  color: #0f172a;
+}
+
+.doctor-top-profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0891b2, #0d9488);
+  flex-shrink: 0;
+}
+
+.doctor-top-profile-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.doctor-top-profile-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.mobile-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: #0f766e;
+  font-size: 1.4rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.mobile-menu-btn:hover {
+  background: #ecfeff;
+  border-color: #99f6e4;
+}
+
+/* =========================
+   Responsive Fixes
+========================= */
+@media (max-width: 991px) {
+  .doctor-sidebar {
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+  }
+
+  .doctor-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .doctor-content-area {
+    margin-left: 0;
+  }
+
+  .doctor-main-content {
+    padding: 1rem;
+  }
+
+  .doctor-top-nav {
+    padding: 0 1rem;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 767px) {
+  .doctor-top-nav-subtitle,
+  .doctor-role-badge {
+    display: none;
+  }
+
+  .doctor-top-nav-brand-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .doctor-top-nav-title {
+    font-size: 0.95rem;
+  }
+}
+
+/* =========================
+   Top Navigation
+========================= */
+
+.doctor-top-nav {
+  min-height: 78px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+.doctor-top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.doctor-top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.doctor-top-nav-brand-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0891b2, #0d9488);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.35rem;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.22);
+  flex-shrink: 0;
+}
+
+.doctor-top-nav-title {
+  margin-bottom: 0.15rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.doctor-top-nav-subtitle {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.doctor-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.doctor-top-profile-link {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.doctor-top-profile-link:hover {
+  border-color: #99f6e4;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.12);
+  color: #0f172a;
+}
+
+.doctor-top-profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0891b2, #0d9488);
+  flex-shrink: 0;
+}
+
+.doctor-top-profile-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.doctor-top-profile-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-top: 0.15rem;
+}
+
+.mobile-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: 1px solid #dbe3ef;
+  background: #ffffff;
+  color: #0f766e;
+  font-size: 1.4rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.mobile-menu-btn:hover {
+  background: #ecfeff;
+  border-color: #99f6e4;
+}

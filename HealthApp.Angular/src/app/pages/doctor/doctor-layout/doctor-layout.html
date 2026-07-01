@@ -1,0 +1,77 @@
+<div class="doctor-wrapper">
+  
+  <div class="doctor-sidebar-backdrop" 
+       *ngIf="isSidebarOpen()" 
+       (click)="closeSidebar()">
+  </div>
+
+  <aside class="doctor-sidebar" [class.sidebar-open]="isSidebarOpen()">
+    <div class="doctor-sidebar-brand">
+      <div class="doctor-sidebar-brand-icon">
+        <i class="bi bi-heart-pulse-fill"></i>
+      </div>
+      <div>
+        <div class="doctor-sidebar-brand-title">Health<span>App</span></div>
+        <div class="doctor-sidebar-brand-subtitle">Doctor Portal</div>
+      </div>
+    </div>
+
+    <nav class="doctor-sidebar-menu">
+      <a routerLink="/doctor/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeSidebar()">
+        <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+      </a>
+      <a routerLink="/doctor/appointments" routerLinkActive="active" (click)="closeSidebar()">
+        <i class="bi bi-calendar-check"></i> <span>My Appointments</span>
+      </a>
+      <a routerLink="/doctor/profile" routerLinkActive="active" (click)="closeSidebar()">
+        <i class="bi bi-person-circle"></i> <span>Profile</span>
+      </a>
+
+      <div class="doctor-sidebar-logout">
+        <button type="button" class="doctor-sidebar-logout-button" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i> <span>Logout</span>
+        </button>
+      </div>
+    </nav>
+  </aside>
+
+  <div class="doctor-content-area">
+    
+    <header class="doctor-top-nav">
+      <div class="doctor-top-nav-left">
+        <button type="button" class="mobile-menu-btn" (click)="toggleSidebar()">
+          <i class="bi bi-list"></i>
+        </button>
+
+        <div class="doctor-top-nav-brand-icon">
+          <i class="bi bi-person-badge"></i>
+        </div>
+
+        <div>
+          <div class="doctor-top-nav-title">Doctor Portal</div>
+          <div class="doctor-top-nav-subtitle">Manage appointments and patient health records</div>
+        </div>
+      </div>
+
+      <div class="doctor-top-nav-right">
+        <span class="doctor-role-badge">
+          <i class="bi bi-shield-check"></i> Doctor
+        </span>
+
+        <a routerLink="/doctor/profile" class="doctor-top-profile-link">
+          <div class="doctor-top-profile-avatar">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="d-none d-sm-block">
+            <div class="doctor-top-profile-name">Doctor</div>
+            <div class="doctor-top-profile-label">My Profile</div>
+          </div>
+        </a>
+      </div>
+    </header>
+
+    <main class="doctor-main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

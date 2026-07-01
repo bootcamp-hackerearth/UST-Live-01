@@ -1,0 +1,775 @@
+/* ==========================================================
+   PATIENT REGISTER PAGE 
+========================================================== */
+
+:root {
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+
+  --health-primary: #0d9488;
+  --health-primary-dark: #0f766e;
+  --health-primary-light: #ccfbf1;
+
+  --card-shadow-lg: 0 30px 60px rgba(15, 23, 42, 0.14);
+
+  --border-color: #e2e8f0;
+}
+
+/* ==========================================================
+   PAGE
+========================================================== */
+
+.register-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+
+  background:
+    radial-gradient(circle at top left, #ecfeff 0%, #f5f8fb 42%, #eef2f7 100%);
+}
+
+.register-card {
+  width: 100%;
+  max-width: 1320px;
+
+  display: grid;
+  grid-template-columns: 420px 1fr;
+
+  background: #ffffff;
+  border-radius: 30px;
+  overflow: hidden;
+
+  box-shadow: var(--card-shadow-lg);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+
+  animation: fadeUp 0.45s ease;
+}
+
+/* ==========================================================
+   LEFT PANEL
+========================================================== */
+
+.register-left-panel {
+  position: relative;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      135deg,
+      #0d9488 0%,
+      #0f766e 55%,
+      #115e59 100%
+    );
+
+  color: #ffffff;
+
+  display: flex;
+  align-items: center;
+
+  padding: 56px 44px;
+}
+
+.register-left-panel::before {
+  content: "";
+  position: absolute;
+
+  width: 280px;
+  height: 280px;
+
+  top: -100px;
+  left: -80px;
+
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.register-left-panel::after {
+  content: "";
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  right: -70px;
+  bottom: -70px;
+
+  border-radius: 50%;
+  background: rgba(204, 251, 241, 0.12);
+}
+
+.register-brand {
+  position: relative;
+  z-index: 2;
+}
+
+.register-brand-icon {
+  width: 78px;
+  height: 78px;
+
+  border-radius: 22px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 34px;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  margin-bottom: 24px;
+
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+
+  transition: 0.3s;
+}
+
+.register-brand-icon:hover {
+  transform: rotate(-5deg) scale(1.05);
+}
+
+.register-brand h1 {
+  margin: 0;
+
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -1px;
+}
+
+.register-brand h1 span {
+  color: #ccfbf1;
+}
+
+.register-brand p {
+  margin-top: 18px;
+
+  line-height: 1.8;
+  font-size: 15px;
+
+  color: #ecfeff;
+}
+
+/* ==========================================================
+   FEATURE CARD
+========================================================== */
+
+.brand-feature-list {
+  margin-top: 40px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.brand-feature-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+
+  padding: 18px;
+
+  border-radius: 18px;
+
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  backdrop-filter: blur(8px);
+
+  transition: 0.25s;
+}
+
+.brand-feature-item:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.brand-feature-item i {
+  min-width: 48px;
+  width: 48px;
+  height: 48px;
+
+  border-radius: 16px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 20px;
+
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.brand-feature-item strong {
+  display: block;
+
+  margin-bottom: 4px;
+
+  font-size: 15px;
+}
+
+.brand-feature-item span {
+  display: block;
+
+  font-size: 13px;
+  line-height: 1.6;
+
+  color: #ecfeff;
+}
+
+/* ==========================================================
+   RIGHT PANEL
+========================================================== */
+
+.register-form-panel {
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 72px 50px 42px;
+}
+
+.register-form-wrapper {
+  width: 100%;
+  max-width: 760px;
+
+  animation: fadeContent 0.6s ease;
+}
+
+.back-button {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+
+  border: 1px solid #ccfbf1;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 12px 20px;
+
+  border-radius: 999px;
+
+  font-weight: 700;
+
+  color: var(--health-primary-dark);
+  background: #ffffff;
+
+  transition: 0.25s ease;
+}
+
+.back-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 30px rgba(13, 148, 136, 0.12);
+}
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.register-header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.register-header-icon {
+  width: 68px;
+  height: 68px;
+
+  margin: 0 auto 18px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 30px;
+
+  border-radius: 20px;
+
+  background: #ccfbf1;
+  color: #0f766e;
+
+  transition: 0.3s;
+}
+
+.register-header-icon:hover {
+  transform: rotate(8deg);
+}
+
+.register-header h2 {
+  margin: 0;
+
+  font-size: 34px;
+  font-weight: 800;
+
+  color: var(--text-dark);
+}
+
+.register-header p {
+  margin-top: 12px;
+
+  color: var(--text-muted);
+
+  font-size: 15px;
+}
+
+/* ==========================================================
+   FORM GRID
+========================================================== */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 22px 24px;
+
+  margin-bottom: 28px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  transition: 0.25s ease;
+}
+
+.form-group:hover {
+  transform: translateY(-1px);
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group.half-width {
+  grid-column: span 1;
+}
+
+/* ==========================================================
+   CLEAN LABEL ALIGNMENT
+========================================================== */
+
+.field-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  gap: 8px;
+
+  margin-bottom: 0;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  color: #334155;
+}
+
+.field-label i {
+  color: var(--health-primary);
+
+  font-size: 16px;
+  line-height: 1;
+}
+
+.label-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.optional-badge {
+  margin-left: auto;
+
+  padding: 3px 9px;
+
+  border-radius: 999px;
+
+  background: #f1f5f9;
+  color: #64748b;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   BOOTSTRAP FORM CONTROL CUSTOM STYLE
+========================================================== */
+
+.custom-control {
+  width: 100%;
+  height: 56px;
+
+  border: 1px solid #dbe3ef;
+  border-radius: 16px;
+
+  padding: 0 16px;
+
+  font-size: 15px;
+
+  color: var(--text-dark);
+  background-color: #ffffff;
+
+  box-shadow: none;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.custom-control::placeholder {
+  color: #94a3b8;
+}
+
+.custom-control:hover {
+  border-color: #b8c5d6;
+}
+
+.custom-control:focus {
+  border-color: var(--health-primary);
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+
+  transform: translateY(-1px);
+}
+
+.form-select.custom-control {
+  cursor: pointer;
+}
+
+/* Remove Bootstrap invalid background icon */
+.custom-control.is-invalid {
+  border-color: #dc2626;
+
+  background-color: #fff9f9;
+  background-image: none;
+
+  padding-right: 16px;
+}
+
+.custom-control.is-invalid:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+}
+
+/* ==========================================================
+   ERRORS
+========================================================== */
+
+.field-error {
+  margin-top: 2px;
+
+  color: #dc2626;
+
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.field-error span {
+  display: block;
+}
+
+/* ==========================================================
+   PASSWORD HINT
+========================================================== */
+
+.password-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  margin-top: 4px;
+
+  padding: 14px 16px;
+
+  border-radius: 16px;
+
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+
+  color: #0f766e;
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.password-hint i {
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+/* ==========================================================
+   SUBMIT BUTTON
+========================================================== */
+
+.register-submit-btn {
+  width: 100%;
+  height: 58px;
+
+  border: none;
+  border-radius: 18px;
+
+  cursor: pointer;
+
+  margin-top: 14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--health-primary),
+      #06b6d4
+    );
+
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  transition: 0.25s ease;
+
+  box-shadow: 0 18px 35px rgba(13, 148, 136, 0.22);
+}
+
+.register-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 45px rgba(13, 148, 136, 0.28);
+}
+
+.register-submit-btn:active {
+  transform: translateY(0);
+}
+
+.register-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.register-footer {
+  margin-top: 22px;
+  padding-top: 18px;
+
+  border-top: 1px solid #edf2f7;
+
+  text-align: center;
+
+  color: var(--text-muted);
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.register-footer a {
+  color: var(--health-primary-dark);
+
+  font-weight: 800;
+
+  margin-left: 6px;
+
+  text-decoration: none;
+
+  transition: 0.2s ease;
+}
+
+.register-footer a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   ICON FIXES
+========================================================== */
+
+.register-brand-icon i,
+.register-header-icon i,
+.back-button i,
+.register-submit-btn i,
+.password-hint i,
+.field-label i {
+  line-height: 1;
+}
+
+/* ==========================================================
+   ANIMATION
+========================================================== */
+
+.spin-icon {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeContent {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE DESIGN
+========================================================== */
+
+@media (max-width: 1200px) {
+  .register-card {
+    grid-template-columns: 360px 1fr;
+  }
+
+  .register-form-panel {
+    padding: 64px 36px;
+  }
+}
+
+@media (max-width: 991px) {
+  .register-card {
+    grid-template-columns: 1fr;
+    max-width: 760px;
+  }
+
+  .register-left-panel {
+    display: none;
+  }
+
+  .register-form-panel {
+    padding: 72px 32px 36px;
+  }
+
+  .back-button {
+    top: 20px;
+    left: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-page {
+    padding: 20px;
+  }
+
+  .register-card {
+    border-radius: 24px;
+  }
+
+  .register-header h2 {
+    font-size: 28px;
+  }
+
+  .register-header p {
+    font-size: 14px;
+  }
+
+  .form-grid {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .register-page {
+    padding: 14px;
+  }
+
+  .register-form-panel {
+    padding: 70px 22px 28px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-group.full-width,
+  .form-group.half-width {
+    grid-column: 1;
+  }
+
+  .register-header {
+    margin-bottom: 28px;
+  }
+
+  .register-header-icon {
+    width: 60px;
+    height: 60px;
+
+    font-size: 26px;
+  }
+
+  .register-header h2 {
+    font-size: 24px;
+  }
+
+  .register-submit-btn {
+    height: 54px;
+
+    font-size: 15px;
+  }
+
+  .optional-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+}
+
+/* ==========================================================
+   GLOBAL SMOOTH TRANSITIONS
+========================================================== */
+
+button,
+input,
+select,
+a {
+  transition: 0.25s ease;
+}
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b6d8d5;
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--health-primary);
+}
+
+/* ==========================================================
+   REMOVE NUMBER INPUT ARROWS
+========================================================== */
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

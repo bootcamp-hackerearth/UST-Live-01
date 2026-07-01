@@ -1,0 +1,667 @@
+<div class="doctor-appointments-page">
+
+  <section class="appointments-header-card mb-4">
+    <div class="row align-items-center g-4">
+
+      <div class="col-lg-8">
+        <div class="header-badge mb-3">
+          <i class="bi bi-calendar-check"></i>
+          Doctor Appointments
+        </div>
+
+        <h1 class="page-title mb-2">
+          Manage your appointments
+        </h1>
+
+        <p class="page-subtitle mb-0">
+          Review patient appointments, confirm bookings, cancel with reason, and complete visits with health records.
+        </p>
+      </div>
+
+      <div class="col-lg-4 text-lg-end">
+        <div class="doctor-help-card">
+          <i class="bi bi-clipboard2-pulse"></i>
+
+          <div>
+            <strong>Clinical Workflow</strong>
+            <span>Complete appointments with health records.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="row g-4 mb-4">
+
+    <div class="col-xl-3 col-md-6">
+      <div class="appointment-summary-card summary-total">
+        <div class="summary-icon">
+          <i class="bi bi-calendar2-week"></i>
+        </div>
+
+        <div>
+          <div class="summary-value">{{ totalAppointments }}</div>
+          <div class="summary-label">Total</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="appointment-summary-card summary-warning">
+        <div class="summary-icon">
+          <i class="bi bi-hourglass-split"></i>
+        </div>
+
+        <div>
+          <div class="summary-value">{{ pendingCount }}</div>
+          <div class="summary-label">Pending</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="appointment-summary-card summary-info">
+        <div class="summary-icon">
+          <i class="bi bi-check-circle"></i>
+        </div>
+
+        <div>
+          <div class="summary-value">{{ confirmedCount }}</div>
+          <div class="summary-label">Confirmed</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+      <div class="appointment-summary-card summary-success">
+        <div class="summary-icon">
+          <i class="bi bi-calendar-check"></i>
+        </div>
+
+        <div>
+          <div class="summary-value">{{ completedCount }}</div>
+          <div class="summary-label">Completed</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="filter-card mb-4">
+    <div class="row g-3 align-items-end">
+
+      <div class="col-lg-5">
+        <label class="form-label fw-bold">
+          Search
+        </label>
+
+        <div class="input-icon-wrapper">
+          <i class="bi bi-search"></i>
+
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search patient, doctor, or appointment ID"
+            [(ngModel)]="searchText"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="col-lg-3">
+        <label class="form-label fw-bold">
+          Status
+        </label>
+
+        <select
+          class="form-select"
+          [(ngModel)]="selectedStatus"
+          [disabled]="isLoading"
+        >
+          <option value="All">
+            All Statuses
+          </option>
+
+          <option *ngFor="let status of statusOptions" [value]="status">
+            {{ status }}
+          </option>
+        </select>
+      </div>
+
+      <div class="col-lg-2">
+        <label class="form-label fw-bold">
+          Date
+        </label>
+
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="selectedDate"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <div class="col-lg-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary w-100"
+          (click)="clearFilters()"
+          [disabled]="isLoading"
+        >
+          <i class="bi bi-x-circle me-2"></i>
+          Clear
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="empty-state-card" *ngIf="isLoading">
+    <div class="empty-state-icon">
+      <i class="bi bi-hourglass-split"></i>
+    </div>
+
+    <h5>Loading appointments...</h5>
+
+    <p>
+      Please wait while we fetch your appointments.
+    </p>
+  </section>
+
+  <section class="table-card" *ngIf="!isLoading && filteredAppointments.length > 0">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
+      <div>
+        <h5 class="fw-bold mb-1">
+          Appointment List
+        </h5>
+
+        <p class="text-muted small fw-semibold mb-0">
+          Showing {{ filteredAppointments.length }} appointment(s)
+        </p>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table align-middle custom-table doctor-appointments-table">
+
+        <thead class="table-light">
+          <tr>
+            <th>Appointment</th>
+            <th>Patient</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Status</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let appointment of filteredAppointments">
+
+            <td>
+              <div class="fw-bold text-dark">
+                #APT-{{ appointment.appointmentId }}
+              </div>
+
+              <small class="text-muted fw-semibold">
+                Appointment ID
+              </small>
+            </td>
+
+            <td>
+              <div class="appointment-person-cell">
+                <div class="appointment-avatar patient-avatar">
+                  <i class="bi bi-person"></i>
+                </div>
+
+                <div>
+                  <div class="fw-bold">
+                    {{ appointment.patientName }}
+                  </div>
+
+                  <small class="text-muted fw-semibold">
+                    Patient
+                  </small>
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <div class="fw-bold">
+                {{ appointment.scheduledDate | date: 'mediumDate' }}
+              </div>
+
+              <small class="text-muted fw-semibold">
+                Scheduled Date
+              </small>
+            </td>
+
+            <td>
+              <div class="fw-semibold">
+                <i class="bi bi-clock me-1 text-health"></i>
+                {{ appointment.timeSlot }}
+              </div>
+            </td>
+
+            <td>
+              <span
+                class="appointment-status-badge"
+                [ngClass]="getStatusClass(appointment.status)"
+              >
+                <i [class]="getStatusIcon(appointment.status)"></i>
+                {{ appointment.status }}
+              </span>
+            </td>
+
+            <td class="text-center">
+              <div class="table-action-group">
+
+                <button
+                  type="button"
+                  class="btn btn-outline-primary btn-sm table-action-btn"
+                  *ngIf="canConfirm(appointment.status)"
+                  (click)="confirmAppointment(appointment)"
+                  [disabled]="isConfirming || isCancelling || isCompleting"
+                  title="Confirm appointment"
+                >
+                  <i class="bi bi-check-circle"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-danger btn-sm table-action-btn"
+                  *ngIf="canCancel(appointment.status)"
+                  (click)="openCancelModal(appointment)"
+                  [disabled]="isConfirming || isCancelling || isCompleting"
+                  title="Cancel appointment"
+                >
+                  <i class="bi bi-x-circle"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-success btn-sm table-action-btn"
+                  *ngIf="canComplete(appointment.status)"
+                  (click)="openHealthRecordModal(appointment)"
+                  [disabled]="isConfirming || isCancelling || isCompleting"
+                  title="Complete appointment and create health record"
+                >
+                  <i class="bi bi-calendar-check"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-health btn-sm table-action-btn"
+                  *ngIf="canViewHealthRecord(appointment)"
+                  (click)="openViewHealthRecordModal(appointment)"
+                  [disabled]="isLoadingHealthRecord"
+                  title="View health record"
+                >
+                  <i class="bi bi-journal-medical"></i>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-outline-health btn-sm table-action-btn"
+                  *ngIf="canViewPatientRecords(appointment)"
+                  (click)="viewPatientRecords(appointment)"
+                  title="View patient health records"
+                >
+                  <i class="bi bi-folder2-open"></i>
+                </button>
+
+                <span
+                  class="no-action-pill"
+                  *ngIf="hasNoActions(appointment)"
+                >
+                  No action
+                </span>
+
+              </div>
+            </td>
+
+          </tr>
+        </tbody>
+
+      </table>
+    </div>
+
+  </section>
+
+  <section class="empty-state-card" *ngIf="!isLoading && filteredAppointments.length === 0">
+    <div class="empty-state-icon">
+      <i class="bi bi-calendar-x"></i>
+    </div>
+
+    <h5>No appointments found</h5>
+
+    <p>
+      No appointments match the selected filters.
+    </p>
+
+    <button
+      type="button"
+      class="btn btn-health"
+      (click)="clearFilters()"
+    >
+      Clear Filters
+    </button>
+  </section>
+
+  <div class="health-record-modal-backdrop" *ngIf="selectedAppointmentForRecord">
+    <div class="health-record-modal">
+
+      <div class="health-record-modal-header">
+        <div class="modal-icon">
+          <i class="bi bi-journal-plus"></i>
+        </div>
+
+        <div>
+          <h4 class="mb-1">
+            Create Health Record
+          </h4>
+
+          <p class="mb-0">
+            Complete appointment and add consultation details.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close ms-auto"
+          aria-label="Close"
+          (click)="closeHealthRecordModal()"
+          [disabled]="isCompleting"
+        >
+        </button>
+      </div>
+
+      <div class="selected-appointment-box mt-4">
+        <div class="selected-appointment-item">
+          <span>Appointment</span>
+          <strong>#APT-{{ selectedAppointmentForRecord.appointmentId }}</strong>
+        </div>
+
+        <div class="selected-appointment-item">
+          <span>Patient</span>
+          <strong>{{ selectedAppointmentForRecord.patientName }}</strong>
+        </div>
+
+        <div class="selected-appointment-item">
+          <span>Date</span>
+          <strong>{{ selectedAppointmentForRecord.scheduledDate | date: 'mediumDate' }}</strong>
+        </div>
+
+        <div class="selected-appointment-item">
+          <span>Time Slot</span>
+          <strong>{{ selectedAppointmentForRecord.timeSlot }}</strong>
+        </div>
+      </div>
+
+      <div class="row g-3 mt-2">
+
+        <div class="col-md-6">
+          <label class="form-label fw-bold">
+            Visit Date
+          </label>
+
+          <input
+            type="date"
+            class="form-control"
+            [(ngModel)]="healthRecordForm.visitDate"
+            [disabled]="isCompleting"
+          />
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold">
+            Diagnosis
+          </label>
+
+          <textarea
+            rows="3"
+            class="form-control"
+            placeholder="Enter diagnosis"
+            [(ngModel)]="healthRecordForm.diagnosis"
+            [disabled]="isCompleting"
+          ></textarea>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold">
+            Prescription
+          </label>
+
+          <textarea
+            rows="3"
+            class="form-control"
+            placeholder="Enter prescription"
+            [(ngModel)]="healthRecordForm.prescription"
+            [disabled]="isCompleting"
+          ></textarea>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-bold">
+            Doctor Notes
+          </label>
+
+          <textarea
+            rows="3"
+            class="form-control"
+            maxlength="500"
+            placeholder="Optional notes, max 500 characters"
+            [(ngModel)]="healthRecordForm.notes"
+            [disabled]="isCompleting"
+          ></textarea>
+
+          <div class="notes-counter">
+            {{ healthRecordForm.notes?.length || 0 }}/500
+          </div>
+        </div>
+
+      </div>
+
+      <div class="health-record-modal-actions">
+        <button
+          type="button"
+          class="btn btn-outline-secondary px-4"
+          (click)="closeHealthRecordModal()"
+          [disabled]="isCompleting"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-health px-4"
+          (click)="saveHealthRecord()"
+          [disabled]="isCompleting"
+        >
+          @if (isCompleting) {
+            <i class="bi bi-hourglass-split me-2"></i>
+            Saving...
+          } @else {
+            <i class="bi bi-check-circle me-2"></i>
+            Save & Complete
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="health-record-modal-backdrop" *ngIf="selectedAppointmentForViewRecord">
+    <div class="health-record-modal">
+
+      <div class="health-record-modal-header">
+        <div class="modal-icon">
+          <i class="bi bi-journal-medical"></i>
+        </div>
+
+        <div>
+          <h4 class="mb-1">
+            Health Record
+          </h4>
+
+          <p class="mb-0">
+            View diagnosis, prescription, and doctor notes.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-close ms-auto"
+          aria-label="Close"
+          (click)="closeViewHealthRecordModal()"
+        >
+        </button>
+      </div>
+
+      <ng-container *ngIf="selectedAppointmentForViewRecord.healthRecord as record">
+
+        <div class="selected-appointment-box mt-4">
+          <div class="selected-appointment-item">
+            <span>Record</span>
+            <strong>#REC-{{ record.recordId }}</strong>
+          </div>
+
+          <div class="selected-appointment-item">
+            <span>Patient</span>
+            <strong>{{ record.patientName }}</strong>
+          </div>
+
+          <div class="selected-appointment-item">
+            <span>Doctor</span>
+            <strong>{{ record.doctorName }}</strong>
+          </div>
+
+          <div class="selected-appointment-item">
+            <span>Visit Date</span>
+            <strong>{{ record.visitDate | date: 'mediumDate' }}</strong>
+          </div>
+        </div>
+
+        <div class="health-record-view-grid mt-4">
+
+          <div class="health-record-view-box">
+            <div class="view-box-icon diagnosis-icon">
+              <i class="bi bi-activity"></i>
+            </div>
+
+            <div>
+              <div class="view-box-label">Diagnosis</div>
+              <div class="view-box-value">{{ record.diagnosis }}</div>
+            </div>
+          </div>
+
+          <div class="health-record-view-box">
+            <div class="view-box-icon prescription-icon">
+              <i class="bi bi-capsule"></i>
+            </div>
+
+            <div>
+              <div class="view-box-label">Prescription</div>
+              <div class="view-box-value">{{ record.prescription }}</div>
+            </div>
+          </div>
+
+          <div class="health-record-view-box full-width">
+            <div class="view-box-icon notes-icon">
+              <i class="bi bi-journal-medical"></i>
+            </div>
+
+            <div>
+              <div class="view-box-label">Doctor Notes</div>
+              <div class="view-box-value">
+                {{ record.notes || 'No additional notes added.' }}
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </ng-container>
+
+      <div class="health-record-modal-actions">
+        <button
+          type="button"
+          class="btn btn-health px-4"
+          (click)="closeViewHealthRecordModal()"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="health-record-modal-backdrop" *ngIf="selectedAppointmentForCancel">
+    <div class="cancel-modal">
+
+      <div class="cancel-modal-icon">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+
+      <h4 class="cancel-modal-title">
+        Cancel Appointment?
+      </h4>
+
+      <p class="cancel-modal-text">
+        Are you sure you want to cancel appointment
+        <strong>#APT-{{ selectedAppointmentForCancel.appointmentId }}</strong>
+        for
+        <strong>{{ selectedAppointmentForCancel.patientName }}</strong>?
+      </p>
+
+      <div class="text-start mt-4">
+        <label class="form-label fw-bold">
+          Cancellation Reason
+        </label>
+
+        <textarea
+          rows="4"
+          maxlength="250"
+          class="form-control"
+          placeholder="Enter cancellation reason"
+          [(ngModel)]="cancellationReason"
+          [disabled]="isCancelling"
+        ></textarea>
+
+        <div class="notes-counter">
+          {{ cancellationReason.length || 0 }}/250
+        </div>
+      </div>
+
+      <div class="cancel-modal-actions">
+        <button
+          type="button"
+          class="btn btn-outline-secondary px-4"
+          (click)="closeCancelModal()"
+          [disabled]="isCancelling"
+        >
+          No, Keep Appointment
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger px-4"
+          (click)="confirmCancellation()"
+          [disabled]="isCancelling"
+        >
+          @if (isCancelling) {
+            <i class="bi bi-hourglass-split me-2"></i>
+            Cancelling...
+          } @else {
+            <i class="bi bi-x-circle me-2"></i>
+            Yes, Cancel
+          }
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

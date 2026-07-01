@@ -1,0 +1,425 @@
+:host {
+  display: block;
+}
+
+.doctor-health-records-page {
+  width: 100%;
+}
+
+/* Header */
+
+.records-header-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.6rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  border: 1px solid #eef2f7;
+  position: relative;
+  overflow: hidden;
+}
+
+.records-header-card::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -70px;
+  top: -90px;
+  border-radius: 999px;
+  background: rgba(13, 148, 136, 0.08);
+}
+
+.header-badge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: #ccfbf1;
+  color: #0f766e;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.page-subtitle {
+  max-width: 760px;
+  color: #64748b;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Buttons */
+
+.btn-health {
+  background: linear-gradient(135deg, #0f766e, #06b6d4);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  border-radius: 14px;
+}
+
+.btn-health:hover,
+.btn-health:focus {
+  color: #ffffff;
+  opacity: 0.92;
+}
+
+.btn-outline-health {
+  border: 1px solid #99f6e4;
+  color: #0f766e;
+  background: #ffffff;
+  font-weight: 700;
+  border-radius: 14px;
+}
+
+.btn-outline-health:hover,
+.btn-outline-health:focus {
+  background: #ecfeff;
+  color: #0f766e;
+  border-color: #0d9488;
+}
+
+.header-action-btn {
+  position: relative;
+  z-index: 1;
+}
+
+/* Filters */
+
+.filter-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  border: 1px solid #eef2f7;
+}
+
+.form-control,
+.form-select {
+  min-height: 46px;
+  border-radius: 12px;
+  border-color: #dbe3ef;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #0d9488;
+  box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, 0.15);
+}
+
+.input-icon-wrapper {
+  position: relative;
+}
+
+.input-icon-wrapper i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+.input-icon-wrapper .form-control {
+  padding-left: 42px;
+}
+
+.clear-btn {
+  min-height: 46px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+/* Records */
+
+.records-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.record-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  border: 1px solid #eef2f7;
+  display: grid;
+  grid-template-columns: 1.3fr 1fr auto;
+  gap: 1.25rem;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.record-card:hover {
+  transform: translateY(-3px);
+  border-color: #99f6e4;
+  box-shadow: 0 16px 34px rgba(13, 148, 136, 0.12);
+}
+
+.record-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.record-icon {
+  width: 62px;
+  height: 62px;
+  min-width: 62px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #0d9488, #0f766e);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.65rem;
+  box-shadow: 0 12px 24px rgba(13, 148, 136, 0.22);
+}
+
+.record-info {
+  min-width: 0;
+}
+
+.record-id {
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.record-title {
+  color: #0f172a;
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+
+.record-doctor {
+  color: #0f766e;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+/* Meta */
+
+.record-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+.record-meta-grid.single-meta {
+  grid-template-columns: 1fr;
+}
+
+.record-meta-box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  min-width: 0;
+}
+
+.record-meta-box i {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+.record-meta-box span {
+  display: block;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.record-meta-box strong {
+  display: block;
+  color: #0f172a;
+  font-size: 0.86rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* Actions */
+
+.record-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.view-record-btn {
+  min-height: 42px;
+  white-space: nowrap;
+}
+
+/* Details */
+
+.record-details-panel {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
+  padding: 1rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f0fdfa, #ecfeff);
+  border: 1px solid #ccfbf1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  animation: expandFade 0.18s ease-out;
+}
+
+.record-detail-box {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 18px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.record-detail-box.full-width {
+  grid-column: 1 / -1;
+}
+
+.detail-icon {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  border-radius: 16px;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+}
+
+.diagnosis-icon {
+  background: #2563eb;
+}
+
+.prescription-icon {
+  background: #10b981;
+}
+
+.notes-icon {
+  background: #0d9488;
+}
+
+.detail-label {
+  color: #64748b;
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  color: #0f172a;
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Empty */
+
+.empty-state-card {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  border: 1px solid #eef2f7;
+}
+
+.empty-state-icon {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 1rem;
+  border-radius: 24px;
+  background: #f1f5f9;
+  color: #64748b;
+  display: grid;
+  place-items: center;
+  font-size: 2rem;
+}
+
+.empty-state-card h5 {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.empty-state-card p {
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* Animation */
+
+@keyframes expandFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 1199px) {
+  .record-card {
+    grid-template-columns: 1fr;
+  }
+
+  .record-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 767px) {
+  .page-title {
+    font-size: 1.55rem;
+  }
+
+  .records-header-card {
+    padding: 1.25rem;
+  }
+
+  .header-action-btn {
+    width: 100%;
+  }
+
+  .record-meta-grid,
+  .record-details-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .record-actions {
+    align-items: stretch;
+  }
+
+  .view-record-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .record-detail-box {
+    flex-direction: column;
+  }
+}
