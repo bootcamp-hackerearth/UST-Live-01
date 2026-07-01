@@ -32,5 +32,6 @@ namespace HealthCareApp.Services
         Task<HealthRecordDto> AddHealthRecordForDoctorAsync(AddHealthRecordDto dto,string identityUserId);
 
         Task<HealthRecordDto> UpdateHealthRecordForDoctorAsync(int healthRecordId, UpdateHealthRecordDto dto,string identityUserId);
+        Task<IEnumerable<HealthRecordDto>>GetPatientHistoryForAppointmentAsync(int appointmentId,string identityUserId);
     }
 }

@@ -215,5 +215,22 @@ namespace HealthCareApp.Repository.Impl
                                && a.Status != AppointmentStatus.Completed,
                           ct);
         }
+
+        public async Task<List<string>> GetBookedTimeSlotsAsync(
+    int doctorId,
+    DateTime date,
+    CancellationToken ct = default)
+        {
+            var selectedDate = date.Date;
+
+            return await _context.Appointments
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate.Date == selectedDate &&
+                    a.Status != AppointmentStatus.Cancelled &&
+                    a.Status != AppointmentStatus.Completed)
+                .Select(a => a.TimeSlot)
+                .ToListAsync(ct);
+        }
     }
 }

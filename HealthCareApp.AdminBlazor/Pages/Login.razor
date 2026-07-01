@@ -5,6 +5,7 @@
 @using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Admin Login | HealthAxis</PageTitle>
 
@@ -77,10 +78,10 @@
                 </div>
 
                 <div class="hc-login-actions">
-                    <label>
+                    @* <label>
                         <InputCheckbox @bind-Value="rememberMe" disabled="@isSigningIn" />
                         Remember me
-                    </label>
+                    </label> *@
 
                     <span>Admin access only</span>
                 </div>
@@ -103,6 +104,24 @@
     private bool isSigningIn;
 
     private string? errorMessage;
+
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Token { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(Token))
+        {
+            await JS.InvokeVoidAsync(
+                "localStorage.setItem",
+                "token",
+                Token);
+
+            Navigation.NavigateTo("/admin/dashboard", true);
+        }
+    }
 
     private async Task HandleLogin()
     {

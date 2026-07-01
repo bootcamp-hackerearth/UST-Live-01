@@ -1,0 +1,157 @@
+<div class="dashboard">
+
+    <!-- Navbar -->
+
+    <nav class="navbar navbar-expand-lg dashboard-navbar">
+
+        <div class="container-fluid">
+
+            <span class="navbar-brand">
+
+                🏥 HealthAxis
+
+            </span>
+
+            <button class="btn btn-outline-light" (click)="logout()">
+
+                Logout
+
+            </button>
+
+        </div>
+
+    </nav>
+
+    <!-- Hero -->
+
+    <section class="hero">
+
+        <h1 class="display-5 fw-bold">
+
+            Welcome {{ patient?.fullName || 'Patient' }}
+
+        </h1>
+
+        <p class="text-muted">
+
+            Manage your appointments, doctors and health records from one place.
+
+        </p>
+
+    </section>
+
+    <!-- My Profile -->
+
+<div class="feature-card">
+
+    <h3>
+
+        👤 My Profile
+
+    </h3>
+
+    <p>
+
+        View and update your personal information.
+
+    </p>
+
+    <button
+        class="btn btn-primary"
+        routerLink="/patient/profile">
+
+        View Profile
+
+    </button>
+
+</div>
+
+    <!-- Appointment Card -->
+
+    <div class="feature-card">
+
+        <h3>
+
+            📅 Appointment Management
+
+        </h3>
+
+        <div class="buttons">
+
+            <button class="btn btn-primary" routerLink="/book-appointment">
+
+                Book Appointment
+
+            </button>
+
+            <button class="btn btn-success" routerLink="/appointments">
+
+                View Appointments
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Health Record -->
+
+    <div class="feature-card">
+
+        <h3>
+
+            🩺 Health Records
+
+        </h3>
+
+        <button class="btn btn-primary" routerLink="health-records">
+
+            View Health Records
+
+        </button>
+
+    </div>
+
+    <!-- Doctors -->
+
+    <div class="feature-card">
+
+        <h3>
+
+            👨‍⚕️ Doctors
+
+        </h3>
+
+        <button class="btn btn-primary" routerLink="/doctors">
+
+            View Doctors
+
+        </button>
+
+    </div>
+
+    <!-- About -->
+
+    <div class="feature-card">
+
+        <h3>
+
+            About HealthAxis
+
+        </h3>
+
+        <p>
+
+            HealthAxis is an online healthcare management
+            application that allows patients to
+            book appointments,
+            consult doctors,
+            access health records,
+            and manage healthcare
+            anytime from anywhere.
+
+        </p>
+
+    </div>
+
+</div>

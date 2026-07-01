@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HealthCareApp.Shared.Dtos.Patients;
-using HealthCareApp.Shared.Dtos.Auth;
+
 
 
 namespace HealthCareApp.Controllers
@@ -39,7 +39,7 @@ namespace HealthCareApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto request)
         {
-            var (success, message, token, expiresIn) = await service.Login(request);
+            var (success, message, token, expiresIn, role, mustChangePassword) = await service.Login(request);
 
             if (!success)
             {
@@ -53,7 +53,9 @@ namespace HealthCareApp.Controllers
             {
                 AccessToken = token,
                 Message = message,
-                ExpiresIn = expiresIn
+                ExpiresIn = expiresIn,
+                Role = role,
+                MustChangePassword = mustChangePassword
             };
 
             return Ok(response);

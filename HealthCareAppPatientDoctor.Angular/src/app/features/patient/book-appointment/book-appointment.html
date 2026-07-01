@@ -1,0 +1,238 @@
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card booking-card shadow-lg">
+
+                <div class="card-header booking-header text-center">
+
+                    <h2>
+
+                        📅 Book Appointment
+
+                    </h2>
+
+                    <p class="mb-0">
+
+                        Schedule your consultation
+
+                    </p>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form [formGroup]="appointmentForm" (ngSubmit)="bookAppointment()">
+
+                        <!-- Appointment Date -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Appointment Date
+
+                            </label>
+
+                            <input type="date" class="form-control" formControlName="appointmentDate" [min]="today">
+
+                            @if(
+                            appointmentForm.controls.appointmentDate.touched &&
+                            appointmentForm.controls.appointmentDate.invalid
+                            ){
+
+                            <small class="text-danger">
+
+                                Please select an appointment date.
+
+                            </small>
+
+                            }
+
+                        </div>
+
+                        <!-- Specialisation -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Specialisation
+
+                            </label>
+
+                            <select class="form-select" formControlName="specialisation"
+                                (change)="onSpecialisationChange()">
+
+                                <option value="">
+
+                                    Select Specialisation
+
+                                </option>
+
+                                @for(item of specialisations; track item){
+
+                                <option [value]="item">
+
+                                    {{getSpecialisationName(item)}}
+
+                                </option>
+
+                                }
+
+                            </select>
+
+                            @if(
+                            appointmentForm.controls.specialisation.touched &&
+                            appointmentForm.controls.specialisation.invalid
+                            ){
+
+                            <small class="text-danger">
+
+                                Please select a specialisation.
+
+                            </small>
+
+                            }
+
+                        </div>
+
+                        <!-- Doctor -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Doctor
+
+                            </label>
+
+                            <select class="form-select" formControlName="doctorId" (change)="loadAvailableSlots()">
+
+                                <option value="">
+
+                                    Select Doctor
+
+                                </option>
+
+                                @for(doctor of filteredDoctors; track doctor.doctorId){
+
+                                <option [value]="doctor.doctorId">
+
+                                    {{doctor.fullName}}
+
+                                </option>
+
+                                }
+
+                            </select>
+
+                            @if(
+                            appointmentForm.controls.doctorId.touched &&
+                            appointmentForm.controls.doctorId.invalid
+                            ){
+
+                            <small class="text-danger">
+
+                                Please select a doctor.
+
+                            </small>
+
+                            }
+
+                        </div>
+
+                        <!-- Time Slot -->
+
+                        <div class="mb-4">
+
+                            <label class="form-label">
+
+                                Available Time Slot
+
+                            </label>
+
+                            <select class="form-select" formControlName="timeSlot">
+
+                                <option value="">
+
+                                    Select Time Slot
+
+                                </option>
+
+                                @for(slot of availableSlots; track slot){
+
+                                <option [value]="slot">
+
+                                    {{slot}}
+
+                                </option>
+
+                                }
+
+                            </select>
+
+                            @if(
+                            appointmentForm.controls.timeSlot.touched &&
+                            appointmentForm.controls.timeSlot.invalid
+                            ){
+
+                            <small class="text-danger">
+
+                                Please select a time slot.
+
+                            </small>
+
+                            }
+
+                        </div>
+
+                        <!-- No Slots Available -->
+
+                        @if(
+                        slotsLoaded &&
+                        !isLoading &&
+                        availableSlots.length === 0 &&
+                        appointmentForm.value.doctorId &&
+                        appointmentForm.value.appointmentDate
+                        ){
+
+                        <div class="alert alert-warning">
+
+                            No time slots are available for the selected doctor on this date.
+
+                        </div>
+
+                        }
+
+                        <!-- Buttons -->
+
+                        <div class="d-flex justify-content-between">
+
+                            <button class="btn btn-success btn-lg" type="submit" [disabled]="isLoading">
+
+                                {{ isLoading ? 'Booking...' : 'Book Appointment' }}
+
+                            </button>
+
+                            <button class="btn btn-outline-secondary btn-lg" type="button" (click)="cancel()">
+
+                                Cancel
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

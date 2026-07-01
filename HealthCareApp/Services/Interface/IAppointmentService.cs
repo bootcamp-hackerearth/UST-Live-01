@@ -70,5 +70,6 @@ namespace HealthCareApp.Services
         Task<AppointmentDto> CancelAppointmentForDoctorAsync(CancelAppointmentDto dto,string identityUserId);
 
         Task<PagedResponse<AppointmentDto>> GetAllAppointmentsPagedAsync(AppointmentPaginationQueryDto query);
+        Task<List<string>> GetAvailableTimeSlotsAsync(int doctorId,DateTime date);
     }
 }

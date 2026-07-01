@@ -125,6 +125,9 @@ namespace HealthCareApp.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Specialisation")
                         .HasColumnType("int");
 
@@ -144,6 +147,7 @@ namespace HealthCareApp.Migrations
                             DoctorName = "Arun Menon",
                             Email = "arun.menon@example.com",
                             IsActive = true,
+                            MustChangePassword = true,
                             Specialisation = 9,
                             YearsOfExperience = 10
                         },
@@ -155,6 +159,7 @@ namespace HealthCareApp.Migrations
                             DoctorName = "Meera Nair",
                             Email = "meera.nair@example.com",
                             IsActive = true,
+                            MustChangePassword = true,
                             Specialisation = 8,
                             YearsOfExperience = 15
                         },
@@ -166,6 +171,7 @@ namespace HealthCareApp.Migrations
                             DoctorName = "Vikram Das",
                             Email = "vikram.das@example.com",
                             IsActive = true,
+                            MustChangePassword = true,
                             Specialisation = 7,
                             YearsOfExperience = 8
                         });

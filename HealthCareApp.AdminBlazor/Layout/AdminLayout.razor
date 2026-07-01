@@ -1,13 +1,25 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="hc-admin-shell">
-    <AdminSidebar />
+<div class="hc-admin-shell @(isCollapsed ? "collapsed" : "")">
+
+    <AdminSidebar IsCollapsed="isCollapsed" 
+                  OnToggleSidebar="ToggleSidebar" />
 
     <main class="hc-admin-main">
-        <AdminTopbar />
+        <AdminTopbar  />
 
         <section class="hc-admin-content">
             @Body
         </section>
     </main>
+
 </div>
+
+@code {
+    private bool isCollapsed = false;
+
+    private void ToggleSidebar()
+    {
+        isCollapsed = !isCollapsed;
+    }
+}

@@ -1,0 +1,206 @@
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <h2 class="fw-bold text-primary">
+
+            📅 My Appointments
+
+        </h2>
+
+        <p>Loading: {{ isLoading }}</p>
+
+        <p>Appointments: {{ appointments.length }}</p>
+
+        <p class="text-muted">
+
+            View all your booked appointments.
+
+        </p>
+
+    </div>
+
+    @if(isLoading){
+
+    <div class="text-center">
+
+        <div class="spinner-border text-primary"></div>
+
+    </div>
+
+    }
+
+    @if(!isLoading && appointments.length===0){
+
+    <div class="text-center mt-5">
+
+        <h4>
+
+            You haven't booked any appointments yet.
+
+        </h4>
+
+        <a routerLink="/book-appointment" class="btn btn-primary mt-3">
+
+            Book Appointment
+
+        </a>
+
+    </div>
+
+    }
+
+    <div class="row g-4">
+
+        @for(appointment of appointments; track appointment.appointmentId){
+
+        <div class="col-lg-6">
+
+            <div class="appointment-card shadow">
+
+                <h4>
+
+                    👨‍⚕️ {{appointment.doctorName}}
+
+                </h4>
+
+                <hr>
+
+                <div class="appointment-info">
+
+                    <p>
+
+                        <strong>Date</strong>
+
+                        {{ appointment.scheduledDate | date:'dd-MM-yyyy' }}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Time</strong>
+
+                        {{appointment.timeSlot}}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Status</strong>
+
+                        <span class="badge bg-primary">
+                            {{ getStatus(appointment.status) }}
+                        </span>
+                    </p>
+
+                    @if(appointment.cancellationReason){
+
+                    <p class="text-danger">
+
+                        <strong>Cancellation Reason</strong>
+
+                        {{appointment.cancellationReason}}
+
+                    </p>
+
+                    }
+
+                </div>
+
+                @if(canCancel(appointment.status)){
+
+                <button class="btn btn-danger mt-3" (click)="openCancelModal(appointment)" data-bs-toggle="modal"
+                    data-bs-target="#cancelModal">
+
+                    Cancel Appointment
+
+                </button>
+                }
+
+            </div>
+
+        </div>
+
+        }
+
+    </div>
+
+    <div class=" text-center mt-5">
+
+                    <a routerLink="/patient" class="btn btn-outline-secondary">
+
+                        ← Back to Dashboard
+
+                    </a>
+
+            </div>
+
+        </div>
+
+        <div
+class="modal fade"
+id="cancelModal"
+tabindex="-1">
+
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title">
+
+          Cancel Appointment
+
+        </h5>
+
+        <button
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">
+
+          Reason
+
+        </label>
+
+        <textarea
+          rows="4"
+          class="form-control"
+          [(ngModel)]="cancelReason">
+
+        </textarea>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+
+          Close
+
+        </button>
+
+        <button
+          class="btn btn-danger"
+          (click)="confirmCancellation()"
+          data-bs-dismiss="modal">
+
+          Confirm Cancellation
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

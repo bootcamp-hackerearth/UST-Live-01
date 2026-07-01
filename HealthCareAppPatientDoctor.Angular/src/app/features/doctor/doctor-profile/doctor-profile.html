@@ -1,0 +1,169 @@
+@if(isLoading){
+
+<div class="text-center mt-5">
+
+    <div class="spinner-border text-primary"></div>
+
+</div>
+
+}
+
+@if(!isLoading && doctor){
+
+<div class="container py-5">
+
+    <div class="card shadow profile-card">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>
+
+                👨‍⚕️ Doctor Profile
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Full Name
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{doctor.fullName}}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Email
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{doctor.email}}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Specialisation
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{getSpecialisationName(doctor.specialisation)}}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Experience
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{doctor.yearsOfExperience}} Years
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Consultation Fee
+
+                </div>
+
+                <div class="col-md-8">
+
+                    ₹{{doctor.consultationFee}}
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row">
+
+                <div class="col-md-4 fw-bold">
+
+                    Status
+
+                </div>
+
+                <div class="col-md-8">
+
+                    @if(doctor.isActive){
+
+                    <span class="badge bg-success">
+
+                        Active
+
+                    </span>
+
+                    }
+
+                    @else{
+
+                    <span class="badge bg-danger">
+
+                        Inactive
+
+                    </span>
+
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card-footer text-end">
+
+            <button class="btn btn-secondary" (click)="back()">
+
+                ← Back
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

@@ -325,6 +325,21 @@ namespace HealthCareApp.Controllers
             return Ok(appointments);
         }
 
+        [HttpGet("available-slots")]
+        [Authorize(
+    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+    Roles = "Patient")]
+        public async Task<IActionResult> GetAvailableTimeSlots(
+    [FromQuery] int doctorId,
+    [FromQuery] DateTime date)
+        {
+            var slots = await service.GetAvailableTimeSlotsAsync(
+                doctorId,
+                date);
+
+            return Ok(slots);
+        }
+
         // Patient only: Book appointment
         // PatientId from body is ignored and replaced with logged-in PatientId in service.
         [HttpPost]

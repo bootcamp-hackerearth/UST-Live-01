@@ -147,7 +147,7 @@ else
             </select>
 
             <button type="button"
-                    class="hc-secondary-btn"
+                    class="hc-page-primary-btn"
                     @onclick="ClearFilters">
                 Clear Filters
             </button>
@@ -187,7 +187,7 @@ else
                         @foreach (var doctor in doctors)
                         {
                             <tr>
-                                <td>
+                                <td class="hc-text-truncate">
                                     <div class="hc-doctor-cell">
                                         <div class="hc-doctor-avatar">
                                             @GetInitials(doctor.FullName)
@@ -201,21 +201,21 @@ else
                                     </div>
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     <span class="hc-specialisation-pill">
                                         @doctor.Specialisation
                                     </span>
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     @doctor.YearsOfExperience years
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     ₹@doctor.ConsultationFee
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     @if (doctor.IsActive)
                                     {
                                         <span class="hc-status-badge active">
@@ -230,7 +230,7 @@ else
                                     }
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     <div class="hc-table-actions">
                                         <button class="hc-action-btn edit"
                                                 @onclick="() => GoToEditDoctor(doctor.DoctorId)">
@@ -251,7 +251,7 @@ else
 
             <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
                 <button type="button"
-                        class="hc-secondary-btn"
+                        class="hc-page-primary-btn"
                         disabled="@(currentPage <= 1)"
                         @onclick="PreviousPage">
                     Previous
@@ -262,7 +262,7 @@ else
                 </div>
 
                 <button type="button"
-                        class="hc-secondary-btn"
+                        class="hc-page-primary-btn"
                         disabled="@(currentPage >= totalPages)"
                         @onclick="NextPage">
                     Next

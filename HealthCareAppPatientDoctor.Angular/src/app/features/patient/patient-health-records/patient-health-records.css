@@ -1,0 +1,133 @@
+body{
+
+    background:#f5f7fb;
+
+}
+
+.page-title{
+
+    font-weight:700;
+
+    color:#2563eb;
+
+}
+
+.record-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:25px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+    transition:.3s;
+
+    height:100%;
+
+}
+
+.record-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.record-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+}
+
+.record-header h4{
+
+    margin:0;
+
+    color:#1f2937;
+
+    font-weight:700;
+
+}
+
+.record-section{
+
+    margin-bottom:20px;
+
+}
+
+.record-section label{
+
+    font-weight:700;
+
+    color:#2563eb;
+
+    display:block;
+
+    margin-bottom:6px;
+
+}
+
+.record-section p{
+
+    margin:0;
+
+    color:#4b5563;
+
+    line-height:1.7;
+
+}
+
+.loading-container{
+
+    text-align:center;
+
+    padding:80px;
+
+}
+
+.spinner-border{
+
+    width:3rem;
+
+    height:3rem;
+
+}
+
+.empty-card{
+
+    text-align:center;
+
+    background:white;
+
+    padding:50px;
+
+    border-radius:20px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.empty-card h4{
+
+    color:#2563eb;
+
+    margin-bottom:15px;
+
+}
+
+.btn{
+
+    border-radius:12px;
+
+    font-weight:600;
+
+}

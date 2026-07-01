@@ -1,0 +1,54 @@
+.booking-card{
+
+    border:none;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+}
+
+.booking-header{
+
+    background:linear-gradient(135deg,#0d6efd,#4f8cff);
+
+    color:white;
+
+    text-align:center;
+
+    padding:25px;
+
+}
+
+.booking-header h2{
+
+    margin-bottom:5px;
+
+    font-weight:bold;
+
+}
+
+.booking-header p{
+
+    margin:0;
+
+    opacity:.9;
+
+}
+
+.form-control,
+.form-select{
+
+    height:50px;
+
+    border-radius:12px;
+
+}
+
+.btn{
+
+    min-width:180px;
+
+    border-radius:12px;
+
+}

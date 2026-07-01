@@ -1,0 +1,125 @@
+<div class="container py-5">
+
+    <div class="text-center mb-5">
+
+        <h2 class="fw-bold text-primary">
+
+            📋 Patient Medical History
+
+        </h2>
+
+        <p class="text-muted">
+
+            Previous health records of this patient.
+
+        </p>
+
+    </div>
+
+    @if(isLoading){
+
+    <div class="text-center">
+
+        <div class="spinner-border text-primary">
+
+        </div>
+
+    </div>
+
+    }
+
+    @if(!isLoading && records.length===0){
+
+    <div class="alert alert-info text-center">
+
+        No previous health records found.
+
+    </div>
+
+    }
+
+    <div class="row g-4">
+
+        @for(record of records; track record.healthRecordId){
+
+        <div class="col-lg-6">
+
+            <div class="card shadow h-100">
+
+                <div class="card-body">
+
+                    <h5 class="text-primary">
+
+                        {{record.doctorName}}
+
+                    </h5>
+
+                    <hr>
+
+                    <p>
+
+                        <strong>Visit Date :</strong>
+
+                        {{record.visitDate | date:'dd-MM-yyyy'}}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Diagnosis</strong>
+
+                    </p>
+
+                    <p>
+
+                        {{record.diagnosis}}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Prescription</strong>
+
+                    </p>
+
+                    <p>
+
+                        {{record.prescription}}
+
+                    </p>
+
+                    <p>
+
+                        <strong>Notes</strong>
+
+                    </p>
+
+                    <p>
+
+                        {{record.notes}}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        }
+
+    </div>
+
+    <div class="text-center mt-5">
+
+        <button
+            class="btn btn-outline-secondary"
+            (click)="back()">
+
+            ← Back to Appointments
+
+        </button>
+
+    </div>
+
+</div>

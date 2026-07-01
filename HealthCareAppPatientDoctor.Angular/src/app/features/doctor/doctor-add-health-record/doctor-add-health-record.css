@@ -1,0 +1,17 @@
+.card{
+
+    border-radius:16px;
+
+}
+
+textarea{
+
+    resize:none;
+
+}
+
+.card-header{
+
+    border-radius:16px 16px 0 0;
+
+}

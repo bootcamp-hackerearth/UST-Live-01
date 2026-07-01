@@ -818,5 +818,20 @@ namespace HealthCareApp.Services.Impl
                 throw new AppointmentRuleException("Cancellation reason cannot exceed 200 characters.");
             }
         }
+
+        public async Task<List<string>> GetAvailableTimeSlotsAsync(
+    int doctorId,
+    DateTime date)
+        {
+            var bookedSlots = await appointmentRepository
+                .GetBookedTimeSlotsAsync(doctorId, date);
+
+            var availableSlots = TimeSlots.Slots
+                .Except(bookedSlots)
+                .ToList();
+
+            return availableSlots;
+        }
+
     }
 }

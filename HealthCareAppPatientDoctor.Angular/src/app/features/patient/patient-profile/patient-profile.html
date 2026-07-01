@@ -1,0 +1,170 @@
+@if(isLoading){
+
+<div class="text-center mt-5">
+
+    <div class="spinner-border text-primary"></div>
+
+    <p class="mt-3">
+
+        Loading profile...
+
+    </p>
+
+</div>
+
+}
+
+@if(!isLoading && patient){
+
+<div class="container py-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>
+
+                👤 My Profile
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Full Name
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{patient.fullName}}
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Email
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{patient.email}}
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Phone Number
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{patient.phoneNumber}}
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Date of Birth
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{patient.dateOfBirth | date:'dd-MM-yyyy'}}
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Gender
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{getGenderName(patient.gender)}}
+
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+
+                <div class="col-md-4 fw-bold">
+
+                    Insurance ID
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{patient.insuranceId}}
+
+                </div>
+
+            </div>
+
+            <div class="row mb-4">
+
+                <div class="col-md-4 fw-bold">
+
+                    Registered On
+
+                </div>
+
+                <div class="col-md-8">
+
+                    {{patient.createdDate | date:'dd-MM-yyyy'}}
+
+                </div>
+
+            </div>
+
+            <div class="d-flex gap-2">
+
+
+                <button class="btn btn-primary" (click)="editProfile()">
+
+                    Edit Profile
+
+                </button>
+
+                <a routerLink="/patient" class="btn btn-secondary">
+
+                    Back
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

@@ -1,0 +1,89 @@
+<div class="login-page">
+
+  <div class="container">
+
+    <div class="row align-items-center min-vh-100">
+
+      <!-- Left Side -->
+
+      <div class="col-lg-6 d-none d-lg-block">
+
+        <div class="hero-content">
+
+          <h1>HealthAxis</h1>
+
+          <p class="lead">
+            Smart Healthcare Appointment System
+          </p>
+
+          <ul>
+
+            <li>✔ Book appointments instantly</li>
+
+            <li>✔ View medical records securely</li>
+
+            <li>✔ Consult experienced doctors</li>
+
+            <li>✔ Track appointments easily</li>
+
+          </ul>
+
+        </div>
+
+      </div>
+
+      <!-- Login Card -->
+
+      <div class="col-lg-6">
+
+        <div class="login-card shadow-lg">
+
+          <h2>Welcome Back</h2>
+
+          <p>Please login to continue</p>
+
+          <form
+          [formGroup]="loginForm"
+          (ngSubmit)="login()">
+
+            <div class="mb-3">
+
+              <label>Email</label>
+
+              <input
+              class="form-control"
+              type="email"
+              formControlName="email">
+
+            </div>
+
+            <div class="mb-4">
+
+              <label>Password</label>
+
+              <input
+              class="form-control"
+              type="password"
+              formControlName="password">
+
+            </div>
+
+            <button
+            class="btn btn-primary w-100"
+            type="submit">
+
+              Login
+
+            </button>
+
+          </form>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

@@ -24,7 +24,22 @@ body {
     font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    margin:0;
+    overflow:hidden;
 }
+
+.hc-admin-main {
+    height: 100vh;
+    overflow-y: auto;
+    /* Hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+
+    .hc-admin-main::-webkit-scrollbar {
+        display: none; /* Chrome/Safari */
+    }
+
 
 /* Login Page */
 .hc-login-page {
@@ -305,22 +320,81 @@ body {
 }
 /* Admin Shell Layout */
 .hc-admin-shell {
-    min-height: 100vh;
     display: grid;
     grid-template-columns: 300px 1fr;
-    background: var(--hc-bg);
+    transition: grid-template-columns 0.3s ease;
+    overflow: hidden;
 }
 
+    .hc-admin-shell.collapsed {
+        grid-template-columns: 80px 1fr;
+    }
+
+
 .hc-sidebar {
-    background: linear-gradient(180deg, rgba(3,8,18,0.95), rgba(5,12,25,0.9));
-    color: var(--hc-text);
-    padding: 28px 20px;
+    width: 100%;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    top: 10px;
+    left: 5px;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    border-right: 1px solid rgba(255,255,255,0.04);
-    box-shadow: 0 30px 60px rgba(3,6,12,0.6) inset;
 }
+
+.hc-sidebar-toggle {
+    border: none;
+    background: transparent;
+    color: var(--hc-text);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+    .hc-sidebar-toggle:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+.hc-admin-shell.collapsed .hc-sidebar-toggle {
+    transform: rotate(180deg);
+}
+
+
+
+
+.hc-sidebar .hc-sidebar-title,
+.hc-sidebar .hc-sidebar-subtitle,
+.hc-sidebar .hc-nav-link span {
+    transition: opacity 0.2s ease;
+}
+
+.collapsed-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    display: inline-block;
+}
+
+``
+
+.hc-admin-shell.collapsed .hc-nav-link {
+    justify-content: center;
+}
+
+.hc-collapse-btn {
+    border: none;
+    background: transparent;
+    color: var(--hc-text);
+    font-size: 22px;
+    cursor: pointer;
+}
+
+
 
 .hc-sidebar-brand {
     display: flex;
@@ -412,7 +486,8 @@ body {
 }
 
 .hc-admin-main {
-    min-width: 0;
+    overflow-y: auto;
+    height: 100vh;
 }
 
 .hc-topbar {
@@ -722,6 +797,40 @@ body {
         box-shadow: 0 22px 48px rgba(0, 240, 255, 0.14);
     }
 
+/* Smaller primary variant used in toolbars/pagination so primary buttons don't compete with main CTAs */
+.hc-form-actions .hc-page-primary-btn {
+    padding: 9px 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    min-width: 110px;
+    box-shadow: none;
+}
+
+/* Pagination container layout - align previous, page info, next cleanly */
+.hc-list-panel .hc-form-actions:last-of-type {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.hc-list-panel .hc-form-actions:last-of-type .hc-page-primary-btn {
+    min-width: 120px;
+}
+
+/* Ensure Clear Filters and toolbar primary button align and don't grow too wide */
+.hc-list-toolbar + .hc-form-actions .hc-page-primary-btn,
+.ha-list-toolbar + .hc-form-actions .hc-page-primary-btn {
+    min-width: 130px;
+}
+
+/* Make sure disabled primary buttons show reduced opacity */
+.hc-page-primary-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+
 .hc-doctor-stat-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(180px, 1fr));
@@ -867,21 +976,70 @@ body {
 
 /* If you need perfectly themed dropdowns across all browsers, consider a custom listbox component — ask and I can implement it. */
 
-.hc-table-wrapper {
+ .hc-table-wrapper {
+    /* Keep table within available container and prevent horizontal scroll */
     overflow-x: auto;
 }
 
 .hc-admin-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 12px;
+    border-collapse: collapse;
+    border-spacing: 0 8px;
+    table-layout: auto;
+    width: 100%;
+    font-size: 13px;
 }
 
-    .hc-admin-table thead th { color: var(--hc-muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.6px; padding: 0 16px 8px; }
+    .hc-admin-table thead th { color: var(--hc-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; padding: 10px 12px; text-align: left; font-weight: 800; }
+    .hc-admin-table thead th.text-end { text-align: right; }
     .hc-admin-table tbody tr { background: rgba(255,255,255,0.02); box-shadow: inset 0 0 0 1px var(--hc-border); }
-    .hc-admin-table tbody td { padding: 18px 16px; vertical-align: middle; color: var(--hc-text); font-weight: 700; }
-    .hc-admin-table tbody tr td:first-child { border-radius: 12px 0 0 12px; }
-    .hc-admin-table tbody tr td:last-child { border-radius: 0 12px 12px 0; }
+    .hc-admin-table tbody td { padding: 12px 12px; vertical-align: middle; color: var(--hc-text); font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hc-admin-table tbody tr td:first-child { border-radius: 8px 0 0 8px; }
+    .hc-admin-table tbody tr td:last-child { border-radius: 0 8px 8px 0; text-align: right; }
+
+    .hc-admin-table th,
+    .hc-admin-table td {
+        white-space: nowrap;
+        text-align: left;
+        word-break: normal;
+    }
+
+
+    .hc-text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    
+
+    /* Specialisation pill: keep content on single line and ellipsis if too long */
+    .hc-specialisation-pill { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; display: inline-block; }
+
+    /* Status badge: prevent wrapping */
+    .hc-status-badge { white-space: nowrap; }
+
+    /* Action buttons alignment and prevent wrapping */
+    .hc-table-actions { display: flex; justify-content: flex-end; gap: 10px; align-items: center; flex-wrap: nowrap; }
+    .hc-action-btn { padding: 8px 12px; font-size: 13px; white-space: nowrap; display: inline-flex; align-items: center; }
+
+    /* Responsive adjustments */
+    @media (max-width: 1100px) {
+        .hc-admin-table thead th { font-size: 11px; padding: 8px 10px; }
+        .hc-admin-table tbody td { font-size: 13px; padding: 10px 8px; }
+        .hc-list-toolbar { grid-template-columns: 1fr 180px 140px; }
+    }
+    /* Action buttons alignment and prevent wrapping */
+    .hc-table-actions { display: flex; justify-content: flex-end; gap: 10px; align-items: center; flex-wrap: nowrap; }
+    .hc-action-btn { padding: 8px 12px; font-size: 13px; white-space: nowrap; display: inline-flex; align-items: center; }
+
+    /* Responsive adjustments */
+    @media (max-width: 1100px) {
+        .hc-admin-table thead th { font-size: 11px; padding: 8px 10px; }
+        .hc-admin-table tbody td { font-size: 13px; padding: 10px 8px; }
+        .hc-list-toolbar { grid-template-columns: 1fr 180px 140px; }
+    }
+
 
 .hc-doctor-cell {
     display: flex;
@@ -1044,19 +1202,27 @@ body {
 }
 
 .hc-secondary-btn {
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    color: #334155;
+    border: 1px solid var(--hc-border);
+    background: var(--hc-card);
+    color: var(--hc-text);
     border-radius: 16px;
     padding: 12px 18px;
     font-weight: 900;
-    transition: 0.2s ease;
+    transition: transform 0.14s ease, box-shadow 0.14s ease;
+    box-shadow: none;
 }
 
-    .hc-secondary-btn:hover {
-        background: #f1f5f9;
-        transform: translateY(-1px);
-    }
+.hc-secondary-btn:hover {
+    background: rgba(255,255,255,0.03);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(0,240,255,0.04);
+}
+
+.hc-secondary-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: rgba(255,255,255,0.02);
+}
 
 .hc-switch-row {
     display: flex;

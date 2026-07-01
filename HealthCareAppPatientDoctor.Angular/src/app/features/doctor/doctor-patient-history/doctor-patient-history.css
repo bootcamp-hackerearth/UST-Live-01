@@ -1,0 +1,25 @@
+.card {
+
+    border-radius: 18px;
+
+    border: none;
+
+}
+
+.card-body {
+
+    padding: 25px;
+
+}
+
+h5 {
+
+    font-weight: 700;
+
+}
+
+p {
+
+    margin-bottom: 10px;
+
+}

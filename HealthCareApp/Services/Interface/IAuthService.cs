@@ -8,7 +8,7 @@ namespace HealthCareApp.Services.Interface
     {
         Task<(bool Success, string Message, int PatientId)> RegisterPatientAsync(PatientRegisterDto request);
         
-        Task<(bool Success, string Message, string Token, int ExpiresIn)> Login(LoginDto request);
+        Task<(bool Success, string Message, string Token, int ExpiresIn,string Role,bool MustChangePassword)> Login(LoginDto request);
 
         Task<(bool Success, string Message)> ChangePasswordAsync(string userId, ChangePasswordDto request);
     }

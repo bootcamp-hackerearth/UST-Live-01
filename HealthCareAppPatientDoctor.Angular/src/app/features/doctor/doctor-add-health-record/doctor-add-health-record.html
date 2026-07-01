@@ -1,0 +1,132 @@
+@if(isLoading){
+
+<div class="text-center mt-5">
+    <div class="spinner-border text-primary"></div>
+</div>
+
+}
+
+@else if(appointment){
+<div class="container py-5">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h3>
+
+                Add Health Record
+
+            </h3>
+
+        </div>
+
+        <div class="card-body">
+
+            <p>
+
+                <strong>Patient :</strong>
+
+                {{appointment.patientName}}
+
+            </p>
+
+            <p>
+
+                <strong>Date :</strong>
+
+                {{appointment.scheduledDate | date:'dd-MM-yyyy'}}
+
+            </p>
+
+            <p>
+
+                <strong>Time :</strong>
+
+                {{appointment.timeSlot}}
+
+            </p>
+
+            <hr>
+
+            <form
+                [formGroup]="healthRecordForm"
+                (ngSubmit)="save()">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Diagnosis
+
+                    </label>
+
+                    <textarea
+                        rows="4"
+                        class="form-control"
+                        formControlName="diagnosis">
+
+                    </textarea>
+
+                </div>
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Prescription
+
+                    </label>
+
+                    <textarea
+                        rows="4"
+                        class="form-control"
+                        formControlName="prescription">
+
+                    </textarea>
+
+                </div>
+
+                <div class="mb-4">
+
+                    <label class="form-label">
+
+                        Notes
+
+                    </label>
+
+                    <textarea
+                        rows="4"
+                        class="form-control"
+                        formControlName="notes">
+
+                    </textarea>
+
+                </div>
+
+                <button
+                    class="btn btn-success"
+                    [disabled]="isLoading">
+
+                    Save Health Record
+
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary ms-2"
+                    (click)="cancel()">
+
+                    Cancel
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+}

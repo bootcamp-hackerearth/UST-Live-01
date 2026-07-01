@@ -261,6 +261,37 @@ namespace HealthCareApp.Services
             return mapper.Map<List<HealthRecordDto>>(healthRecords);
         }
 
+        public async Task<IEnumerable<HealthRecordDto>>
+GetPatientHistoryForAppointmentAsync(
+    int appointmentId,
+    string identityUserId)
+        {
+            ValidateAppointmentId(appointmentId);
+
+            var doctor =
+                await GetLoggedInDoctorAsync(identityUserId);
+
+            var appointment =
+                await appointmentRepository.GetByIdAsync(
+                    appointmentId);
+
+            if (appointment is null)
+            {
+                throw new EntityNotFoundException(
+                    AppointmentEntityName,
+                    appointmentId);
+            }
+
+            if (appointment.DoctorId != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException(
+                    "You can only view history for your own appointments.");
+            }
+
+            return await GetHealthRecordsByPatientIdAsync(
+                appointment.PatientId);
+        }
+
         public async Task<HealthRecordDto> AddHealthRecordForDoctorAsync(
             AddHealthRecordDto dto,
             string identityUserId)

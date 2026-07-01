@@ -137,7 +137,7 @@ else
             </select>
 
             <button type="button"
-                    class="hc-secondary-btn"
+                    class="hc-page-primary-btn"
                     @onclick="ClearFilters">
                 Clear Filters
             </button>
@@ -245,7 +245,7 @@ else
 
             <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
                 <button type="button"
-                        class="hc-secondary-btn"
+                        class="hc-page-primary-btn"
                         disabled="@(currentPage <= 1)"
                         @onclick="PreviousPage">
                     Previous
@@ -256,7 +256,7 @@ else
                 </div>
 
                 <button type="button"
-                        class="hc-secondary-btn"
+                        class="hc-page-primary-btn"
                         disabled="@(currentPage >= totalPages)"
                         @onclick="NextPage">
                     Next

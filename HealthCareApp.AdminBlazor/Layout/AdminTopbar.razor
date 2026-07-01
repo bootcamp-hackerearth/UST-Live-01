@@ -1,13 +1,22 @@
 ﻿@using HealthCareApp.AdminBlazor.Services.Interfaces
 @inject IAuthService AuthService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <header class="hc-topbar">
-    <div>
-        <div class="hc-topbar-kicker">Admin Console</div>
-        <h2 class="hc-topbar-title">HealthAxis Dashboard</h2>
+
+    <!-- LEFT SIDE -->
+    <div style="display:flex; align-items:center; gap:12px;">
+
+       
+
+        <div>
+            <div class="hc-topbar-kicker">Admin Console</div>
+            <h2 class="hc-topbar-title">HealthAxis Dashboard</h2>
+        </div>
     </div>
 
+    <!-- RIGHT SIDE -->
     <div class="hc-topbar-actions">
         <div class="hc-admin-chip">
             <div class="hc-admin-avatar">A</div>
@@ -21,6 +30,7 @@
             Logout
         </button>
     </div>
+
 </header>
 
 @if (showLogoutConfirmation)
@@ -50,6 +60,8 @@
 }
 
 @code {
+
+    [Parameter] public EventCallback OnToggleSidebar { get; set; }
     private string adminEmail = "Admin";
 
     private bool showLogoutConfirmation;
@@ -80,6 +92,6 @@
 
         showLogoutConfirmation = false;
 
-        Navigation.NavigateTo("/login", replace: true);
+        await JS.InvokeVoidAsync("logoutToAngular");
     }
 }

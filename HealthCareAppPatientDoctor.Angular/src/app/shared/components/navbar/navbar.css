@@ -1,0 +1,19 @@
+.navbar{
+
+    height:75px;
+
+}
+
+.nav-link{
+
+    font-weight:500;
+
+    margin-left:15px;
+
+}
+
+.nav-link:hover{
+
+    color:#0d6efd;
+
+}

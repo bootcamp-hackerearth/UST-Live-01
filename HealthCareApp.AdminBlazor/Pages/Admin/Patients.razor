@@ -136,7 +136,7 @@ else
             </select>
 
             <button type="button"
-                    class="hc-secondary-btn"
+                    class="hc-page-primary-btn"
                     @onclick="ClearFilters">
                 Clear Filters
             </button>
@@ -178,7 +178,7 @@ else
                             var dateOfBirth = ParseDate(patient.DateOfBirth);
 
                             <tr>
-                                <td>
+                                <td class="hc-text-truncate">
                                     <div class="hc-doctor-cell">
                                         <div class="hc-patient-avatar ha-patient-avatar">
                                             @GetInitials(patient.FullName)
@@ -192,25 +192,25 @@ else
                                     </div>
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     <span class="hc-specialisation-pill ha-gender-pill">
                                         @patient.Gender
                                     </span>
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     <span class="ha-table-strong-text">
                                         @FormatDate(dateOfBirth)
                                     </span>
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     <span class="ha-phone-pill">
                                         @patient.PhoneNumber
                                     </span>
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     @if (!string.IsNullOrWhiteSpace(patient.InsuranceId))
                                     {
                                         <span class="hc-status-badge active ha-insurance-pill">
@@ -225,7 +225,7 @@ else
                                     }
                                 </td>
 
-                                <td>
+                                <td class="hc-text-truncate">
                                     <div class="hc-table-actions">
                                         <button class="hc-action-btn view"
                                                 @onclick="() => GoToPatientDetails(patient.PatientId)">
@@ -241,7 +241,7 @@ else
 
             <div class="hc-form-actions" style="justify-content: space-between; margin-top: 22px;">
                 <button type="button"
-                        class="hc-secondary-btn"
+                        class="hc-page-primary-btn"
                         disabled="@(currentPage <= 1)"
                         @onclick="PreviousPage">
                     Previous
@@ -252,7 +252,7 @@ else
                 </div>
 
                 <button type="button"
-                        class="hc-secondary-btn"
+                        class="hc-page-primary-btn"
                         disabled="@(currentPage >= totalPages)"
                         @onclick="NextPage">
                     Next

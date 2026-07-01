@@ -1,0 +1,35 @@
+.dashboard-card {
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+    transition: 0.3s;
+
+}
+
+.dashboard-card:hover {
+
+    transform: translateY(-5px);
+
+}
+
+.card-body {
+
+    text-align: center;
+
+}
+
+.card-body h4 {
+
+    margin-bottom: 20px;
+
+}
+
+.card-body p {
+
+    color: gray;
+
+}

@@ -178,6 +178,7 @@ namespace HealthCareApp.Services
             doctor.Email = normalizedEmail;
             doctor.YearsOfExperience = CalculateYearsOfExperience(dto.PracticeStartDate);
             doctor.IsActive = true;
+            doctor.MustChangePassword = true;
             doctor.IdentityUserId = identityUser.Id;
             doctor.CreatedDate = DateTime.Now;
 

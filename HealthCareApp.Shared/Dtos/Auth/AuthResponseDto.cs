@@ -8,5 +8,7 @@ namespace HealthCareApp.Shared.Dtos.Auth
         public string Message { get; set; } = string.Empty;
 
         public int ExpiresIn { get; set; }
+        public string Role { get; set; } = string.Empty;
+        public bool MustChangePassword { get; set; }
     }
 }

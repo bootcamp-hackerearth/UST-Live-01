@@ -166,6 +166,35 @@ namespace HealthCareApp.Controllers
             return Ok(doctorRecords);
         }
 
+
+        // Doctor only: View patient's previous health records
+        // Doctor ownership is validated inside the service.
+        [HttpGet("appointment/{appointmentId:int}/history")]
+        [Authorize(
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Doctor")]
+        public async Task<IActionResult> GetPatientHistoryForAppointment(
+            [FromRoute] int appointmentId)
+        {
+            var identityUserId =
+                User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+            {
+                return Unauthorized(new
+                {
+                    Message = InvalidUserTokenMessage
+                });
+            }
+
+            var records =
+                await service.GetPatientHistoryForAppointmentAsync(
+                    appointmentId,
+                    identityUserId);
+
+            return Ok(records);
+        }
+
         // Doctor only: add health record
         // Doctor ownership is checked inside service.
         [HttpPost]

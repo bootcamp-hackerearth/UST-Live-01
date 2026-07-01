@@ -128,15 +128,18 @@ builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-const string BlazorCorsPolicy = "BlazorCorsPolicy";
+const string FrontendCorsPolicy = "FrontendCorsPolicy";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(BlazorCorsPolicy, policy =>
+    options.AddPolicy(FrontendCorsPolicy, policy =>
     {
-        policy.WithOrigins("https://localhost:7075")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy.WithOrigins(
+            "http://localhost:4200",      // Angular
+            "https://localhost:7075"      // Blazor (optional)
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
@@ -167,7 +170,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.UseCors(BlazorCorsPolicy);
+app.UseCors(FrontendCorsPolicy);
 
 
 app.UseAuthentication();

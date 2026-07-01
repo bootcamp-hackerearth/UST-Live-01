@@ -36,6 +36,8 @@ namespace HealthCareApp.Models
         [Required]
         public bool IsActive { get; set; } = true;
 
+        public bool MustChangePassword { get; set; } = true;
+
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         public ICollection<Appointment>? Appointments { get; set; }

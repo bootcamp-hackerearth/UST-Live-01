@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using HealthCareApp.Shared.Dtos.Auth;
 using HealthCareApp.Models;
+using HealthCareApp.Repository.Impl;
 using HealthCareApp.Repository.Interface;
-using HealthCareApp.Shared.Dtos.Patients;
 using HealthCareApp.Services.Interface;
+using HealthCareApp.Shared.Dtos.Auth;
+using HealthCareApp.Shared.Dtos.Patients;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,6 +16,7 @@ namespace HealthCareApp.Services.Impl
     public class AuthService(
         UserManager<IdentityUser> userManager,
         IPatientRepository patientRepository,
+        IDoctorRepository doctorRepository,
         IConfiguration config) : IAuthService
     {
         public async Task<(bool Success, string Message, int PatientId)> RegisterPatientAsync(PatientRegisterDto request)
@@ -78,27 +80,51 @@ namespace HealthCareApp.Services.Impl
             return (true, "Patient registered successfully.", savedPatient.PatientId);
         }
 
-        public async Task<(bool Success, string Message, string Token, int ExpiresIn)> Login(LoginDto request)
+        public async Task<(bool Success, string Message, string Token, int ExpiresIn, string Role, bool MustChangePassword)> Login(LoginDto request)
         {
             var user = await userManager.FindByEmailAsync(request.Email);
 
             if (user == null)
             {
-                return (false, "Invalid Credentials", string.Empty, 0);
+                return (false, "Invalid Credentials", string.Empty, 0, string.Empty, false);
             }
 
             var isPasswordValid = await userManager.CheckPasswordAsync(user, request.Password);
 
             if (!isPasswordValid)
             {
-                return (false, "Invalid Credentials", string.Empty, 0);
+                return (false, "Invalid Credentials", string.Empty, 0, string.Empty, false);
+            }
+
+            var roles = await userManager.GetRolesAsync(user);
+
+            var role = roles.FirstOrDefault() ?? "";
+
+            bool mustChangePassword = false;
+
+            if (role == "Doctor")
+            {
+                var doctor = await doctorRepository.GetByIdentityUserIdAsync(user.Id);
+
+                if (doctor != null)
+                {
+                    mustChangePassword = doctor.MustChangePassword;
+                }
             }
 
             var token = await GenerateToken(user);
 
-            var expiry = int.Parse(config.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
+            var expiry = int.Parse(
+                config.GetSection("Jwt")["AccessTokenExpirationMinutes"]!);
 
-            return (true, "Login Successful", token, expiry);
+            return (
+                true,
+                "Login Successful",
+                token,
+                expiry,
+                role,
+                mustChangePassword
+            );
         }
 
         public async Task<(bool Success, string Message)> ChangePasswordAsync(string userId, ChangePasswordDto request)
@@ -129,6 +155,17 @@ namespace HealthCareApp.Services.Impl
             {
                 var errors = string.Join(",", result.Errors.Select(e => e.Description));
                 return (false, errors);
+            }
+
+            var doctor = await doctorRepository.GetByIdentityUserIdAsync(userId);
+
+            if (doctor != null)
+            {
+                doctor.MustChangePassword = false;
+
+                await doctorRepository.UpdateAsync(
+                    doctor.DoctorId,
+                    doctor);
             }
 
             return (true, "Password changed successfully.");
