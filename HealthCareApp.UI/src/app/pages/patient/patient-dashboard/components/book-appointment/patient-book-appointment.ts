@@ -13,7 +13,12 @@ import { BookAppointmentDto } from '../../../../../shared/models/appointment.mod
 import { DoctorDto } from '../../../../../shared/models/doctor.models';
 
 import { PatientApiService } from '../../../../../core/services/patient-api.service';
-import { DoctorApiService } from '../../../../../core/services/doctor-api.service';
+
+import {
+  DoctorApiService,
+  SlotAvailabilityDto
+} from '../../../../../core/services/doctor-api.service';
+
 import { AppointmentApiService } from '../../../../../core/services/appointment-api.service';
 
 @Component({
@@ -29,7 +34,7 @@ export class PatientBookAppointment implements OnInit {
   specialisations: string[] = [];
   doctors: DoctorDto[] = [];
   filteredDoctors: DoctorDto[] = [];
-  timeSlots: string[] = [];
+  timeSlots: SlotAvailabilityDto[] = [];
 
   selectedSpecialisation = '';
   specialisationSearchTerm = '';
@@ -82,8 +87,8 @@ export class PatientBookAppointment implements OnInit {
   }
 
   get visibleSpecialisations(): string[] {
-  return this.filteredSpecialisations;
-}
+    return this.filteredSpecialisations;
+  }
 
   get selectedDoctor(): DoctorDto | undefined {
     return this.doctors.find(
@@ -219,20 +224,19 @@ export class PatientBookAppointment implements OnInit {
     this.timeSlots = [];
     this.message = '';
 
-    this.loadDoctorAvailability(doctorId);
     this.scrollToSection('date-section');
     this.cdr.detectChanges();
   }
 
-  loadDoctorAvailability(doctorId: number): void {
+  loadDoctorAvailability(doctorId: number, date: string): void {
     this.isLoadingSlots = true;
     this.message = '';
     this.cdr.detectChanges();
 
-    this.doctorApiService.getDoctorAvailability(doctorId).pipe(
+    this.doctorApiService.getDoctorAvailability(doctorId, date).pipe(
       timeout(15000)
     ).subscribe({
-      next: (slots: string[]) => {
+      next: (slots: SlotAvailabilityDto[]) => {
         this.timeSlots = slots ?? [];
 
         if (this.timeSlots.length === 0) {
@@ -256,47 +260,64 @@ export class PatientBookAppointment implements OnInit {
 
   onDateChange(): void {
     this.form.timeSlot = '';
+    this.timeSlots = [];
     this.message = '';
 
-    if (this.form.scheduledDate) {
+    if (this.form.doctorId && this.form.scheduledDate) {
+      this.loadDoctorAvailability(this.form.doctorId, this.form.scheduledDate);
       this.scrollToSection('slot-section');
     }
 
     this.cdr.detectChanges();
   }
 
-  selectTimeSlot(slot: string): void {
+  selectTimeSlot(slot: SlotAvailabilityDto): void {
     if (this.isTimeSlotDisabled(slot)) {
       return;
     }
 
-    this.form.timeSlot = slot;
+    this.form.timeSlot = slot.timeSlot;
     this.message = '';
 
     this.scrollToSection('submit-section');
     this.cdr.detectChanges();
   }
 
-  isTimeSlotBooked(slot: string): boolean {
-    return false;
+  isTimeSlotBooked(slot: SlotAvailabilityDto): boolean {
+    return slot.isBooked;
   }
 
-  isTimeSlotDisabled(slot: string): boolean {
+  isPastTimeSlot(slot: SlotAvailabilityDto): boolean {
+    if (!this.form.scheduledDate || this.form.scheduledDate !== this.todayDate) {
+      return false;
+    }
+
+    const slotStartTime = this.getSlotStartDateTime(slot.timeSlot);
+
+    if (!slotStartTime) {
+      return false;
+    }
+
+    return slotStartTime.getTime() <= new Date().getTime();
+  }
+
+  isTimeSlotDisabled(slot: SlotAvailabilityDto): boolean {
     return (
       !this.form.doctorId ||
       !this.form.scheduledDate ||
       this.isSubmitting ||
       this.isLoadingSlots ||
-      this.isTimeSlotBooked(slot)
+      this.isTimeSlotBooked(slot) ||
+      this.isPastTimeSlot(slot)
     );
   }
 
-  getSlotClass(slot: string): string {
-    if (this.isTimeSlotBooked(slot)) {
+  getSlotClass(slot: SlotAvailabilityDto): string {
+    if (this.isTimeSlotBooked(slot) || this.isPastTimeSlot(slot)) {
       return 'ba-slot booked';
     }
 
-    if (this.form.timeSlot === slot) {
+    if (this.form.timeSlot === slot.timeSlot) {
       return 'ba-slot selected';
     }
 
@@ -311,12 +332,16 @@ export class PatientBookAppointment implements OnInit {
     return 'ba-slot available';
   }
 
-  getSlotStatus(slot: string): string {
+  getSlotStatus(slot: SlotAvailabilityDto): string {
     if (this.isTimeSlotBooked(slot)) {
       return 'Booked';
     }
 
-    if (this.form.timeSlot === slot) {
+    if (this.isPastTimeSlot(slot)) {
+      return 'Time Passed';
+    }
+
+    if (this.form.timeSlot === slot.timeSlot) {
       return 'Selected';
     }
 
@@ -371,6 +396,10 @@ export class PatientBookAppointment implements OnInit {
         this.isSubmitting = false;
         this.isBookingConfirmOpen = false;
         this.message = this.getErrorMessage(error);
+
+        if (this.form.doctorId && this.form.scheduledDate) {
+          this.loadDoctorAvailability(this.form.doctorId, this.form.scheduledDate);
+        }
 
         this.cdr.detectChanges();
       }
@@ -428,6 +457,25 @@ export class PatientBookAppointment implements OnInit {
       return false;
     }
 
+    const selectedSlot = this.timeSlots.find(
+      (slot: SlotAvailabilityDto) => slot.timeSlot === this.form.timeSlot
+    );
+
+    if (!selectedSlot) {
+      this.message = 'Please select a valid time slot.';
+      return false;
+    }
+
+    if (this.isTimeSlotBooked(selectedSlot)) {
+      this.message = 'This slot is already booked. Please choose another slot.';
+      return false;
+    }
+
+    if (this.isPastTimeSlot(selectedSlot)) {
+      this.message = 'This time slot has already passed. Please choose another slot.';
+      return false;
+    }
+
     return true;
   }
 
@@ -468,6 +516,38 @@ export class PatientBookAppointment implements OnInit {
         block: 'start'
       });
     }, 250);
+  }
+
+  private getSlotStartDateTime(timeSlot: string): Date | null {
+    const startTime = timeSlot.split('-')[0]?.trim();
+
+    if (!startTime || !this.form.scheduledDate) {
+      return null;
+    }
+
+    const match = startTime.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+
+    if (!match) {
+      return null;
+    }
+
+    let hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    const meridiem = match[3].toUpperCase();
+
+    if (meridiem === 'PM' && hours !== 12) {
+      hours += 12;
+    }
+
+    if (meridiem === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    const slotDateTime = new Date(this.form.scheduledDate);
+
+    slotDateTime.setHours(hours, minutes, 0, 0);
+
+    return slotDateTime;
   }
 
   private getErrorMessage(error: unknown): string {

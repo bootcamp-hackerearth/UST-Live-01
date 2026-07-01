@@ -12,6 +12,7 @@ namespace HealthCareApp.Services
 {
     public class DoctorService(
         IDoctorRepository repository,
+        IAppointmentRepository appointmentRepository,
         IMapper mapper,
         UserManager<IdentityUser> userManager,
         RoleManager<IdentityRole> roleManager) : IDoctorService
@@ -254,7 +255,7 @@ namespace HealthCareApp.Services
             return mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<List<string>> GetDoctorAvailabilityAsync(int doctorId)
+        public async Task<List<SlotAvailabilityDto>> GetDoctorAvailabilityAsync(int doctorId, DateTime? date)
         {
             ValidateDoctorId(doctorId);
 
@@ -270,7 +271,24 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException("Doctor is inactive and not available for appointments.");
             }
 
-            return TimeSlots.Slots.ToList();
+            var bookedSlots = new List<string>();
+
+            if (date is not null)
+            {
+                bookedSlots = await appointmentRepository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                    doctorId,
+                    date.Value);
+            }
+
+            var bookedSlotSet = bookedSlots.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            return TimeSlots.Slots
+                .Select(slot => new SlotAvailabilityDto
+                {
+                    TimeSlot = slot,
+                    IsBooked = bookedSlotSet.Contains(slot)
+                })
+                .ToList();
         }
 
         private static void ValidateDoctorId(int doctorId)

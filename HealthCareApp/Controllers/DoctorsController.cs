@@ -11,7 +11,6 @@ namespace HealthCareApp.Controllers
     [ApiController]
     public class DoctorsController(IDoctorService service) : ControllerBase
     {
-        // Doctor only: View logged-in doctor's own profile.
         [HttpGet("me")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -33,8 +32,6 @@ namespace HealthCareApp.Controllers
             return Ok(result);
         }
 
-        // Patients need this to view active doctors before booking.
-        // Admin can also view.
         [HttpGet]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -46,8 +43,6 @@ namespace HealthCareApp.Controllers
             return Ok(result);
         }
 
-        // Patients need this to view a selected doctor before booking.
-        // Admin can also view.
         [HttpGet("{doctorId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -59,8 +54,6 @@ namespace HealthCareApp.Controllers
             return Ok(result);
         }
 
-        // Optional search endpoint.
-        // This is not directly in company requirement, but useful for filtering doctors.
         [HttpGet("specialisation/{specialisation}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -73,15 +66,15 @@ namespace HealthCareApp.Controllers
             return Ok(result);
         }
 
-        // Company requirement:
-        // GET /api/doctors/{id}/availability
         [HttpGet("{doctorId:int}/availability")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
             Roles = "Patient,Admin")]
-        public async Task<IActionResult> GetDoctorAvailability([FromRoute] int doctorId)
+        public async Task<IActionResult> GetDoctorAvailability(
+            [FromRoute] int doctorId,
+            [FromQuery] DateTime? date)
         {
-            var result = await service.GetDoctorAvailabilityAsync(doctorId);
+            var result = await service.GetDoctorAvailabilityAsync(doctorId, date);
 
             return Ok(result);
         }

@@ -1001,3 +1001,7 @@
     width: 100%;
   }
 }
+
+.ba-slot.booked strong {
+  color: #991b1b;
+}

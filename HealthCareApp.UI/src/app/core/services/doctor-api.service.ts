@@ -4,6 +4,11 @@ import { Observable, map } from 'rxjs';
 
 import { DoctorDto } from '../../shared/models/doctor.models';
 
+export interface SlotAvailabilityDto {
+  timeSlot: string;
+  isBooked: boolean;
+}
+
 interface ApiDoctorDto {
   doctorId: number;
   fullName?: string;
@@ -13,6 +18,13 @@ interface ApiDoctorDto {
   yearsOfExperience: number;
   consultationFee: number;
   isActive: boolean;
+}
+
+interface ApiSlotAvailabilityDto {
+  timeSlot?: string;
+  TimeSlot?: string;
+  isBooked?: boolean;
+  IsBooked?: boolean;
 }
 
 @Injectable({
@@ -37,7 +49,7 @@ export class DoctorApiService {
       .get<ApiDoctorDto[]>(this.apiUrl)
       .pipe(
         map((doctors: ApiDoctorDto[]) =>
-          doctors.map((doctor: ApiDoctorDto) => this.mapDoctor(doctor))
+          (doctors ?? []).map((doctor: ApiDoctorDto) => this.mapDoctor(doctor))
         )
       );
   }
@@ -50,10 +62,24 @@ export class DoctorApiService {
       );
   }
 
-  getDoctorAvailability(doctorId: number): Observable<string[]> {
-    return this.http.get<string[]>(
-      `${this.apiUrl}/${doctorId}/availability`
-    );
+  getDoctorAvailability(
+    doctorId: number,
+    date?: string
+  ): Observable<SlotAvailabilityDto[]> {
+    const url = date
+      ? `${this.apiUrl}/${doctorId}/availability?date=${date}`
+      : `${this.apiUrl}/${doctorId}/availability`;
+
+    return this.http
+      .get<ApiSlotAvailabilityDto[]>(url)
+      .pipe(
+        map((slots: ApiSlotAvailabilityDto[]) =>
+          (slots ?? []).map((slot: ApiSlotAvailabilityDto) => ({
+            timeSlot: slot.timeSlot ?? slot.TimeSlot ?? '',
+            isBooked: slot.isBooked ?? slot.IsBooked ?? false
+          }))
+        )
+      );
   }
 
   private mapDoctor(doctor: ApiDoctorDto): DoctorDto {

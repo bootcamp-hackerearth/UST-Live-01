@@ -94,7 +94,23 @@ namespace HealthCareApp.Repository.Impl
                 .OrderBy(a => a.ScheduledDate)
                 .ToListAsync(ct);
         }
+        public async Task<List<string>> GetBookedTimeSlotsByDoctorAndDateAsync(
+    int doctorId,
+    DateTime date,
+    CancellationToken ct = default)
+        {
+            var selectedDate = date.Date;
 
+            return await _context.Appointments
+                .AsNoTracking()
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate.Date == selectedDate &&
+                    a.Status != AppointmentStatus.Cancelled)
+                .Select(a => a.TimeSlot)
+                .Distinct()
+                .ToListAsync(ct);
+        }
         public async Task<List<Appointment>> GetUpcomingAppointmentsByPatientIdAsync(int patientId, CancellationToken ct = default)
         {
             return await _context.Appointments

@@ -38,5 +38,6 @@ namespace HealthCareApp.Repository.Interface
 
         Task<bool> PatientHasActiveAppointmentOnDateAndSlotAsync(int patientId, DateTime date, string timeSlot, CancellationToken ct = default);
 
+        Task<List<string>> GetBookedTimeSlotsByDoctorAndDateAsync( int doctorId, DateTime date,CancellationToken ct = default);
     }
 }
