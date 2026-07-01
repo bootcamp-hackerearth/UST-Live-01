@@ -1,8 +1,9 @@
-﻿using HealthApp.Shared.Dto;
-using HealthApp.Api.Service.Interface;
+﻿using HealthApp.Api.Service.Interface;
+using HealthApp.Shared.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthApp.Api.Controllers
 {
@@ -18,7 +19,6 @@ namespace HealthApp.Api.Controllers
             _service = service;
         }
 
-        // GET ALL
         [HttpGet]
         [Route("")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Doctor")]
@@ -28,7 +28,6 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
-        // FILTER
         [HttpGet]
         [Route("filter")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
@@ -38,15 +37,20 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
-        // CREATE
         [HttpPost]
         [Route("")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Create(HealthRecordDto dto)
         {
                 await _service.AddRecordAsync(dto);
-                return Ok("Created Successfully");
-            
+
+            return Ok(new
+            {
+                success = true,
+                message = "Health record created successfully."
+            });
+
+
         }
 
         [HttpGet]
@@ -55,6 +59,38 @@ namespace HealthApp.Api.Controllers
         public async Task<IActionResult> GetById(int id)
         {
             var data = await _service.GetRecordByIdAsync(id);
+            return Ok(data);
+        }
+
+
+
+
+        [HttpGet("me")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
+        public async Task<IActionResult> GetMyRecords()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+                return Unauthorized(new { message = "Invalid token." });
+
+            var data = await _service.GetRecordsByUserAsync(identityUserId);
+
+            return Ok(data);
+        }
+
+
+        [HttpGet("doctor/me")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetDoctorRecords()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+                return Unauthorized(new { message = "Invalid token." });
+
+            var data = await _service.GetRecordsByDoctorAsync(identityUserId);
+
             return Ok(data);
         }
 

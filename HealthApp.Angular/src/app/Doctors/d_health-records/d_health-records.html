@@ -1,0 +1,111 @@
+<div class="records-dashboard">
+
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <div class="content">
+
+    <!-- ✅ HEADER -->
+    <header>
+      <div>
+        <p class="eyebrow">Health Records</p>
+        <h1>Patient Records</h1>
+        <p class="subtext">Manage medical history and treatments.</p>
+      </div>
+
+      <button class="add-btn" (click)="showForm = true">
+        + Add Record
+      </button>
+    </header>
+
+    <!-- ✅ RECORD LIST -->
+    <div class="records-list">
+
+      <div *ngFor="let r of paginatedRecords" class="record-card">
+
+        <!-- LEFT -->
+        <div>
+          <strong>{{ r.patientName }}</strong>
+          <p>{{ r.diagnosis }}</p>
+          <p class="date">{{ r.visitDate | date:'mediumDate' }}</p>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="meta">
+          <button (click)="view(r)">View</button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ✅ VIEW MODAL -->
+<div class="modal" *ngIf="selected">
+
+  <div class="modal-box">
+
+    <h2>Health Record Details</h2>
+
+    <p><strong>Patient:</strong> {{ selected.patientName }}</p>
+    <p><strong>Doctor:</strong> {{ selected.doctorName }}</p>
+    <p><strong>Date:</strong> {{ selected.visitDate | date:'fullDate' }}</p>
+    <p><strong>Diagnosis:</strong> {{ selected.diagnosis }}</p>
+    <p><strong>Prescription:</strong> {{ selected.prescription }}</p>
+
+    <p *ngIf="selected.notes">
+      <strong>Notes:</strong> {{ selected.notes }}
+    </p>
+
+    <div class="actions">
+      <button (click)="closeView()">Close</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ✅ ADD RECORD MODAL -->
+<div class="modal" *ngIf="showForm">
+
+  <div class="modal-box">
+
+    <h2>Add Health Record</h2>
+
+   <input [(ngModel)]="form.patientId" placeholder="Patient ID">
+
+<input [(ngModel)]="form.patientName" placeholder="Patient Name">
+
+<input type="date" [(ngModel)]="form.visitDate">
+
+<input [(ngModel)]="form.diagnosis" placeholder="Diagnosis">
+
+<input [(ngModel)]="form.prescription" placeholder="Prescription">
+
+    <textarea [(ngModel)]="form.notes" placeholder="Notes"></textarea>
+
+    <div class="actions">
+      <button (click)="create()">Save</button>
+      <button class="cancel" (click)="showForm = false">Cancel</button>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="pagination">
+
+  <button (click)="prevPage()" [disabled]="pageNumber === 1">
+    Prev
+  </button>
+
+  <span>
+    Page {{ pageNumber }} of {{ totalPages }}
+  </span>
+
+  <button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+    Next
+  </button>
+
+</div>

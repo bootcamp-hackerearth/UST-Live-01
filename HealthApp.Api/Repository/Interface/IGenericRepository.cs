@@ -11,7 +11,13 @@
         Task<T?> updateAsync(int id,T entity, CancellationToken cd = default);
 
         Task<T?> getbynameAsync(string name, CancellationToken cd = default);
-          
+
+
+
+
+
+        Task<(List<T> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize,
+            CancellationToken cd = default);
 
     }
 }

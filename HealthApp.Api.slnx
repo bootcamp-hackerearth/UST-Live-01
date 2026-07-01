@@ -2,4 +2,5 @@
   <Project Path="HealthApp.Api/HealthApp.Api.csproj" />
   <Project Path="HealthApp.Blazor/HealthApp.Blazor.csproj" Id="2c9e3351-f235-4bd1-8e68-1038cac4b6cd" />
   <Project Path="HealthApp.Shared/HealthApp.Shared.csproj" Id="605919da-0705-4de3-ad9a-366256b5b47e" />
+  <Project Path="HealthApp.Test/HealthApp.Test.csproj" Id="891919d2-7593-44f3-a3c8-362084ae7bff" />
 </Solution>

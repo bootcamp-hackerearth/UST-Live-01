@@ -37,7 +37,8 @@
     private async Task Logout()
     {
         await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/login");
+        Navigation.NavigateTo("http://localhost:4200/", true);
+
     }
 }
 

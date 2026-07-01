@@ -1,5 +1,6 @@
 ﻿using HealthApp.Shared.Dto;
 using HealthApp.Api.Service.Interface;
+using HealthApp.Api.Exceptions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,56 +19,119 @@ namespace HealthApp.Api.Controllers
             _service = service;
         }
 
-        // GET all patients
-        [HttpGet]
-        [Route("")]
+
+        [HttpGet("paged")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetPaged(int pageNumber = 1, int pageSize = 10, string? search = null)
         {
-            var data = await _service.GetAllPatientsAsync();
-            return Ok(data);
+            try
+            {
+                var (data, total) =
+                    await _service.GetPagedPatientsAsync(pageNumber, pageSize, search);
+
+                return Ok(new
+                {
+                    data,
+                    totalRecords = total,
+                    pageNumber,
+                    pageSize
+                });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        // GET patient by ID
-        [HttpGet]
-        [Route("{id:int}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpGet("{id:int}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
         public async Task<IActionResult> GetById(int id)
         {
-            var patient = await _service.GetPatientByIdAsync(id);
-            return Ok(patient);
+            try
+            {
+                var patient = await _service.GetPatientByIdAsync(id);
+                return Ok(patient);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        // GET logged-in user's patient profile
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] PatientDto dto)
+        {
+            try
+            {
+                var result = await _service.AddPatientAsync(dto);
+                return Ok(result);
+            }
+            catch (ConflictException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "Internal server error" });
+            }
+        }
+
+
         [HttpGet("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
         public async Task<IActionResult> GetMyProfile()
         {
-            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrWhiteSpace(identityUserId))
+            try
             {
-                return Unauthorized("Invalid token.");
-            }
+                var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var patient = await _service.GetMyProfileAsync(identityUserId);
-            return Ok(patient);
+                if (string.IsNullOrWhiteSpace(identityUserId))
+                    return Unauthorized(new { message = "Invalid token." });
+
+                var patient = await _service.GetMyProfileAsync(identityUserId);
+                return Ok(patient);
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
-        // UPDATE logged-in user's patient profile
         [HttpPut("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
         public async Task<IActionResult> UpdateMyProfile([FromBody] PatientDto dto)
         {
-            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrWhiteSpace(identityUserId))
+            try
             {
-                return Unauthorized("Invalid token.");
-            }
+                var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            await _service.UpdateMyProfileAsync(identityUserId, dto);
-            return Ok("Patient updated successfully");
+                if (string.IsNullOrWhiteSpace(identityUserId))
+                    return Unauthorized(new { message = "Invalid token." });
+
+                var updated = await _service.UpdateMyProfileAsync(identityUserId, dto);
+
+                return Ok(updated);
+            }
+            catch (ConflictException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "Internal server error" });
+            }
         }
     }
 }

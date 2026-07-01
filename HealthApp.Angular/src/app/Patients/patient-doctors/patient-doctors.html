@@ -1,0 +1,54 @@
+<div class="dashboard">
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <div class="main">
+    <section class="doctors-page">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Clinician network</p>
+          <h1>Available doctors</h1>
+          <p class="subtext">Select a specialist and connect with the right care team.</p>
+        </div>
+      </div>
+
+      <div class="top-bar">
+        <select [(ngModel)]="specialisationSearch" (change)="filterDoctors()">
+          <option value="">All specialisations</option>
+          <option value="Endocrinologist">Endocrinologist</option>
+          <option value="Oncologist">Oncologist</option>
+          <option value="Gynecologist">Gynecologist</option>
+          <option value="OrthopedicSurgeon">OrthopedicSurgeon</option>
+          <option value="Psychiatrist">Psychiatrist</option>
+          <option value="Pediatrician">Pediatrician</option>
+          <option value="Neurologist">Neurologist</option>
+          <option value="Dermatologist">Dermatologist</option>
+          <option value="Cardiologist">Cardiologist</option>
+          <option value="GeneralPractitioner">GeneralPractitioner</option>
+          <option value="ENT">ENT</option>
+        </select>
+
+        <input type="text" placeholder="Search doctor name" [(ngModel)]="nameSearch" (input)="filterDoctors()" />
+      </div>
+
+      <div class="doctor-grid">
+        <div class="doctor-card" *ngFor="let d of paginatedDoctors">
+          <div class="doctor-badge">Specialist</div>
+          <h3>{{ d.fullName }}</h3>
+          <p><strong>Specialization:</strong> {{ d.specialisation }}</p>
+          <p><strong>Experience:</strong> {{ getExperience(d.practiceStartDate) }} years</p>
+          <p><strong>Email:</strong> {{ d.email }}</p>
+
+
+          <button class="book-btn" (click)="book(d)">
+            Book appointment</button>
+        </div>
+      </div>
+
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
+        <span>Page {{ pageNumber }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+      </div>
+    </section>
+  </div>
+</div>

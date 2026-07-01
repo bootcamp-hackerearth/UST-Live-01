@@ -1,8 +1,9 @@
-﻿using HealthApp.Shared.Dto;
-using HealthApp.Api.Service.Interface;
+﻿using HealthApp.Api.Service.Interface;
+using HealthApp.Shared.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthApp.Api.Controllers
 {
@@ -17,16 +18,6 @@ namespace HealthApp.Api.Controllers
             _service = service;
         }
 
-        // ✅ ADMIN: GET ALL
-        [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-        public async Task<IActionResult> GetAll()
-        {
-            var data = await _service.GetAllAppointments();
-            return Ok(data);
-        }
-
-        // ✅ ADMIN: GET BY ID
         [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
@@ -35,16 +26,21 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
-        // ✅ USER: CREATE APPOINTMENT
         [HttpPost]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
         public async Task<IActionResult> Add([FromBody] AppointmentDto dto)
         {
-            var result = await _service.Add(dto);
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+                return Unauthorized(new { message = "Invalid token." });
+
+            var result = await _service.Add(dto, identityUserId);
+
             return Ok(result);
         }
 
-        // ✅ USER / DOCTOR: CANCEL
+
         [HttpPut("{id}/cancel")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Doctor")]
         public async Task<IActionResult> Cancel(int id, [FromQuery] string reason)
@@ -53,7 +49,6 @@ namespace HealthApp.Api.Controllers
             return Ok(result);
         }
 
-        // ✅ DOCTOR: CONFIRM
         [HttpPut("{id}/confirm")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Confirm(int id)
@@ -62,7 +57,6 @@ namespace HealthApp.Api.Controllers
             return Ok(result);
         }
 
-        // ✅ DOCTOR: COMPLETE
         [HttpPut("{id}/complete")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> Complete(int id)
@@ -71,7 +65,6 @@ namespace HealthApp.Api.Controllers
             return Ok(result);
         }
 
-        // ✅ USER / ADMIN: CHECK AVAILABILITY
         [HttpGet("doctor/{doctorId}/availability")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Admin")]
         public async Task<IActionResult> CheckDoctorAvailability(int doctorId, [FromQuery] DateTime date)
@@ -80,16 +73,17 @@ namespace HealthApp.Api.Controllers
             return Ok(data);
         }
 
-        // ✅ USER: SLOT CHECK
         [HttpGet("slot-booked")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
-        public async Task<IActionResult> IsSlotBooked(int doctorId, DateTime date, string timeSlot)
+        public async Task<IActionResult> IsSlotBooked(
+            int doctorId,
+            DateTime date,
+            string timeSlot)
         {
             var data = await _service.IsSlotBooked(doctorId, date, timeSlot);
             return Ok(data);
         }
 
-        // ✅ DOCTOR / ADMIN: UPCOMING
         [HttpGet("doctor/{doctorId}/upcoming")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
         public async Task<IActionResult> GetUpcomingAppointmentsByDoctor(
@@ -97,19 +91,84 @@ namespace HealthApp.Api.Controllers
             [FromQuery] DateTime fromDate,
             [FromQuery] DateTime toDate)
         {
-            var data = await _service.GetUpcomingAppointmentsByDoctor(doctorId, fromDate, toDate);
+            var data = await _service.GetUpcomingAppointmentsByDoctor(
+                doctorId, fromDate, toDate);
+
             return Ok(data);
         }
 
-        // ✅ ALL LOGIN USERS: FILTER
-        [HttpGet("by-patient-doctor")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Doctor,Admin")]
-        public async Task<IActionResult> GetAppointmentsByPatientAndDoctor(
-            [FromQuery] int? patientId,
-            [FromQuery] int? doctorId)
+        [HttpGet("paged")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetPaged(
+            int pageNumber = 1,
+            int pageSize = 10)
         {
-            var data = await _service.GetAppointmentsByPatientAndDoctor(patientId, doctorId);
+            var (data, total) =
+                await _service.GetPagedAppointments(pageNumber, pageSize);
+
+            return Ok(new
+            {
+                data,
+                totalRecords = total,
+                pageNumber,
+                pageSize
+            });
+        }
+
+        [HttpGet("filter-paged")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User,Doctor,Admin")]
+        public async Task<IActionResult> GetFilteredPaged(
+            [FromQuery] int? patientId,
+            [FromQuery] int? doctorId,
+            int pageNumber = 1,
+            int pageSize = 10)
+        {
+            var (data, total) =
+                await _service.GetAppointmentsByPatientAndDoctorPaged(
+                    patientId,
+                    doctorId,
+                    pageNumber,
+                    pageSize);
+
+            return Ok(new
+            {
+                data,
+                totalRecords = total,
+                pageNumber,
+                pageSize
+            });
+        }
+
+
+        [HttpGet("me")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "User")]
+        public async Task<IActionResult> GetMyAppointments()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+                return Unauthorized(new { message = "Invalid token." });
+
+            var data = await _service.GetAppointmentsByUserAsync(identityUserId);
+
             return Ok(data);
         }
+
+
+
+        [HttpGet("doctor/me")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
+        public async Task<IActionResult> GetMyDoctorAppointments()
+        {
+            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrWhiteSpace(identityUserId))
+                return Unauthorized(new { message = "Invalid token." });
+
+            var data = await _service.GetAppointmentsByDoctorAsync(identityUserId);
+
+            return Ok(data);
+        }
+
     }
 }

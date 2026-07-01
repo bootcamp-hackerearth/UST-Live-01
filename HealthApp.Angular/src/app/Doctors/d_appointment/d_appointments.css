@@ -1,0 +1,238 @@
+/* ✅ BASE */
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f8;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.sidebar {
+  width: 240px;
+}
+
+/* ✅ CONTENT */
+.content {
+  flex: 1;
+  padding: 24px 28px;
+}
+
+/* ✅ HEADER */
+header {
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+  margin: 6px 0;
+}
+
+.subtext {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ✅ STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 14px;
+  text-align: center;
+}
+
+.card h3 {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 4px;
+}
+
+.card p {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ✅ LIST */
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ ITEM */
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+/* ✅ LEFT */
+.item strong {
+  font-size: 14px;
+  color: #111827;
+}
+
+/* ✅ STATUS */
+.status {
+  font-size: 11px;
+  background: #f3f4f6;
+  color: #374151;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* ✅ RIGHT */
+.meta {
+  text-align: right;
+}
+
+.meta p {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 2px 0;
+}
+
+/* ✅ BUTTON */
+.meta button {
+  margin-top: 6px;
+  margin-left: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
+  border-radius: 5px;
+  border: 1px solid #111827;
+  background: transparent;
+  color: #111827;
+  cursor: pointer;
+}
+
+.meta button:hover {
+  background: #111827;
+  color: white;
+}
+
+/* ✅ RESPONSIVE */
+@media (max-width: 900px) {
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .meta {
+    text-align: left;
+    margin-top: 8px;
+  }
+}
+/* ✅ STATUS (BASED ON DTO VALUES) */
+.status {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  background: #f3f4f6;
+  color: #374151;
+  display: inline-block;
+}
+
+/* ✅ BUTTONS */
+.meta button {
+  margin-left: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid #111827;
+  background: white;
+  color: #111827;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.meta button:hover {
+  background: #111827;
+  color: white;
+}
+
+/* ✅ MODAL */
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  width: 380px;
+  background: white;
+  border-radius: 8px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+}
+
+.modal-box p {
+  font-size: 13px;
+  margin: 6px 0;
+}
+
+/* ✅ ACTIONS */
+.actions {
+  margin-top: 10px;
+}
+
+.actions button {
+  padding: 6px 12px;
+  border: none;
+  background: #111827;
+  color: white;
+  border-radius: 6px;
+}
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #111827;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 13px;
+  color: #374151;
+}

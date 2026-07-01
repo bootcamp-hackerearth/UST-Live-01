@@ -1,9 +1,10 @@
-﻿using System.Security.Claims;
-using HealthApp.Shared.Dto;
+﻿using HealthApp.Api.Exceptions;
 using HealthApp.Api.Service.Interface;
+using HealthApp.Shared.Dto;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HealthApp.Api.Controllers
 {
@@ -18,67 +19,149 @@ namespace HealthApp.Api.Controllers
             _service = service;
         }
 
-        // GET all active doctors
-        [HttpGet("activedoctors")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAllActive()
-        {
-            var data = await _service.GetAllActiveDoctorAsync();
-            return Ok(data);
-        }
-
-        // GET all doctors
-        [HttpGet("all")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
-       
-        public async Task<IActionResult> GetAll()
-        {
-            var data = await _service.GetAllDoctorsAsync();
-            return Ok(data);
-        }
-
-        // GET logged-in doctor profile
         [HttpGet("me")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor")]
         public async Task<IActionResult> GetMyProfile()
         {
-            var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrWhiteSpace(identityUserId))
+            try
             {
-                return Unauthorized("Invalid token.");
-            }
+                var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            var doctor = await _service.GetMyProfileAsync(identityUserId);
-            return Ok(doctor);
+                if (string.IsNullOrWhiteSpace(identityUserId))
+                    return Unauthorized(new { message = "Invalid token." });
+
+                var doctor = await _service.GetMyProfileAsync(identityUserId);
+                return Ok(doctor);
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "Internal server error" });
+            }
         }
 
-        // GET doctor by ID
         [HttpGet("{id:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
-            var doctor = await _service.GetDoctorByIdAsync(id);
-            return Ok(doctor);
+            try
+            {
+                var doctor = await _service.GetDoctorByIdAsync(id);
+                return Ok(doctor);
+            }
+            catch (EntityNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "Internal server error" });
+            }
         }
 
-        // SEARCH by specialisation
-        [HttpGet("specialisation/{type}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> SearchBySpecialisation(string type)
-        {
-            var result = await _service.SearchBySpecialisationAsync(type);
-            return Ok(result);
-        }
-
-        // UPDATE doctor by ID (Admin only)
         [HttpPut("{id:int}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         public async Task<IActionResult> UpdateDoctor(int id, [FromBody] DoctorDto dto)
         {
-            var result = await _service.UpdateDoctorByIdAsync(id, dto);
-            return Ok(result);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState); 
+
+            try
+            {
+                var result = await _service.UpdateDoctorByIdAsync(id, dto);
+                return Ok(result);
+            }
+            catch (ConflictException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (EntityNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new { message = "Internal server error" });
+            }
         }
 
+        [HttpGet("activedoctors")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetActiveDoctors(int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var (data, total) = await _service.GetPagedActiveDoctorsAsync(pageNumber, pageSize);
+
+                return Ok(new
+                {
+                    data,
+                    totalRecords = total,
+                    pageNumber,
+                    pageSize
+                });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("all")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        public async Task<IActionResult> GetAllDoctors(int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var (data, total) = await _service.GetPagedDoctorsAsync(pageNumber, pageSize);
+
+                return Ok(new
+                {
+                    data,
+                    totalRecords = total,
+                    pageNumber,
+                    pageSize
+                });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("specialisation/{type}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> SearchBySpecialisation(
+            string type, int pageNumber = 1, int pageSize = 10)
+        {
+            try
+            {
+                var (data, total) =
+                    await _service.SearchBySpecialisationPagedAsync(type, pageNumber, pageSize);
+
+                return Ok(new
+                {
+                    data,
+                    totalRecords = total,
+                    pageNumber,
+                    pageSize
+                });
+            }
+            catch (BusinessRuleException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

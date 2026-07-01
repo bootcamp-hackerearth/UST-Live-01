@@ -1,0 +1,277 @@
+/* ✅ BASE */
+.records-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f8;
+  font-family: "Segoe UI", Arial;
+}
+
+.sidebar {
+  width: 240px;
+}
+
+/* ✅ CONTENT */
+.content {
+  flex: 1;
+  padding: 24px 28px;
+}
+
+/* ✅ HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+header h1 {
+  font-size: 22px;
+  color: #111827;
+  margin: 6px 0;
+}
+
+.subtext {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ✅ BUTTON */
+.add-btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #1f2937;
+  color: white;
+  font-size: 13px;
+}
+
+.add-btn:hover {
+  background: #374151;
+}
+
+/* ✅ RECORD LIST */
+.records-list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ RECORD CARD */
+.record-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+}
+
+.record-card strong {
+  font-size: 14px;
+  color: #111827;
+}
+
+.record-card p {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 2px 0;
+}
+
+/* ✅ META */
+.meta {
+  text-align: right;
+}
+
+/* ✅ MODAL */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  background: white;
+  padding: 18px;
+  border-radius: 6px;
+  width: 340px;
+}
+
+.modal-box h2 {
+  margin-bottom: 10px;
+}
+
+/* ✅ INPUT */
+.modal-box input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+/* ✅ ACTIONS */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 6px;
+  border-radius: 4px;
+  border: none;
+  background: #1f2937;
+  color: white;
+}
+
+.actions .cancel {
+  background: #e5e7eb;
+  color: #111827;
+}
+.records-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f8;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+}
+
+/* ✅ HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+header h1 {
+  font-size: 22px;
+  color: #111827;
+}
+
+.subtext {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ✅ BUTTON */
+.add-btn {
+  background: #111827;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+/* ✅ LIST */
+.record-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.record-card strong {
+  font-size: 14px;
+}
+
+.record-card p {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ✅ BUTTON */
+.meta button {
+  border: 1px solid #111827;
+  background: white;
+  padding: 5px 10px;
+}
+
+.meta button:hover {
+  background: #111827;
+  color: white;
+}
+
+/* ✅ MODAL */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  width: 380px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.modal-box input,
+.modal-box textarea {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  flex: 1;
+  background: #111827;
+  color: white;
+  padding: 8px;
+}
+
+.actions .cancel {
+  background: #e5e7eb;
+  color: #111827;
+}
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #111827;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 13px;
+  color: #374151;
+}

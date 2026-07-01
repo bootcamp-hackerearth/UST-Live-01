@@ -1,15 +1,12 @@
-﻿
-using HealthApp.Blazor.Components.service.Interface;
+﻿using HealthApp.Blazor.Components.service.Interface;
 using HealthApp.Shared.Dto;
 using System.Net.Http.Headers;
-using System.Text.Json;
-
+using System.Net.Http.Json;
 
 namespace HealthApp.Blazor.Components.service.Impl
 {
     public class DoctorService : IDoctorService
     {
-
         private readonly HttpClient _httpClient;
         private readonly IAuthService _authService;
 
@@ -30,69 +27,69 @@ namespace HealthApp.Blazor.Components.service.Impl
             }
         }
 
-        public async Task<List<DoctorDto>> GetAllDoctorsAsync()
+        private class ErrorResponse
         {
-            try
-            {
-                AddAuthHeader();
-
-                var response = await _httpClient.GetAsync("api/doctors/all");
-
-                Console.WriteLine($"STATUS: {response.StatusCode}");
-
-                var raw = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"RAW DATA: {raw}");
-
-                if (!response.IsSuccessStatusCode)
-                    return new List<DoctorDto>();
-
-                return JsonSerializer.Deserialize<List<DoctorDto>>(raw,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    }) ?? new List<DoctorDto>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ERROR: {ex.Message}");
-                return new List<DoctorDto>();
-            }
+            public string Message { get; set; } = "";
         }
 
+        public async Task<PagedResponse<DoctorDto>> GetAllDoctorsAsync(int pageNumber, int pageSize)
+        {
+            AddAuthHeader();
+
+            var response = await _httpClient.GetAsync(
+                $"api/doctors/all?pageNumber={pageNumber}&pageSize={pageSize}");
+
+            if (!response.IsSuccessStatusCode)
+                return new PagedResponse<DoctorDto>();
+
+            return await response.Content.ReadFromJsonAsync<PagedResponse<DoctorDto>>()
+                   ?? new PagedResponse<DoctorDto>();
+        }
+
+        public async Task<PagedResponse<DoctorDto>> GetActiveDoctorsAsync(int pageNumber, int pageSize)
+        {
+            var response = await _httpClient.GetAsync(
+                $"api/doctors/activedoctors?pageNumber={pageNumber}&pageSize={pageSize}");
+
+            if (!response.IsSuccessStatusCode)
+                return new PagedResponse<DoctorDto>();
+
+            return await response.Content.ReadFromJsonAsync<PagedResponse<DoctorDto>>()
+                   ?? new PagedResponse<DoctorDto>();
+        }
+
+        public async Task<PagedResponse<DoctorDto>> SearchBySpecialisationAsync(
+            string type, int pageNumber, int pageSize)
+        {
+            var response = await _httpClient.GetAsync(
+                $"api/doctors/specialisation/{type}?pageNumber={pageNumber}&pageSize={pageSize}");
+
+            if (!response.IsSuccessStatusCode)
+                return new PagedResponse<DoctorDto>();
+
+            return await response.Content.ReadFromJsonAsync<PagedResponse<DoctorDto>>()
+                   ?? new PagedResponse<DoctorDto>();
+        }
 
         public async Task<DoctorDto?> GetDoctorByIdAsync(int id)
         {
-            try
-            {
-                AddAuthHeader();
+            AddAuthHeader();
 
-                var response = await _httpClient.GetAsync($"api/doctors/{id}");
+            var response = await _httpClient.GetAsync($"api/doctors/{id}");
 
-                if (!response.IsSuccessStatusCode)
-                    return null;
-
-                return await response.Content.ReadFromJsonAsync<DoctorDto>();
-            }
-            catch
-            {
+            if (!response.IsSuccessStatusCode)
                 return null;
-            }
+
+            return await response.Content.ReadFromJsonAsync<DoctorDto>();
         }
 
         public async Task<int> GetDoctorCountAsync()
         {
-            try
-            {
-                var doctors = await GetAllDoctorsAsync();
-                return doctors.Count;
-            }
-            catch
-            {
-                return 0;
-            }
+            var result = await GetAllDoctorsAsync(1, 1);
+            return result.TotalRecords;
         }
 
-        public async Task<bool> UpdateDoctorAsync(int id, DoctorDto dto)
+        public async Task<(bool Success, string Message)> UpdateDoctorAsync(int id, DoctorDto dto)
         {
             try
             {
@@ -100,41 +97,26 @@ namespace HealthApp.Blazor.Components.service.Impl
 
                 var response = await _httpClient.PutAsJsonAsync($"api/doctors/{id}", dto);
 
-                return response.IsSuccessStatusCode;
+                if (response.IsSuccessStatusCode)
+                    return (true, "Doctor updated successfully");
+
+                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+
+                return (false, error?.Message ?? "Update failed");
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return (false, ex.Message);
             }
         }
 
-
-        public async Task<List<DoctorDto>> SearchBySpecialisationAsync(string type)
-        {
-            try
-            {
-                var response = await _httpClient.GetAsync($"api/doctors/specialisation/{type}");
-
-                if (!response.IsSuccessStatusCode)
-                    return new List<DoctorDto>();
-
-                return await response.Content.ReadFromJsonAsync<List<DoctorDto>>()
-                       ?? new List<DoctorDto>();
-            }
-            catch
-            {
-                return new List<DoctorDto>();
-            }
-        }
-
-        public async Task<bool> CreateDoctorAsync(DoctorDto dto)
+        public async Task<(bool Success, string Message)> CreateDoctorAsync(DoctorDto dto)
         {
             try
             {
                 AddAuthHeader();
 
                 var request = new DoctorRegisterDto
-
                 {
                     FullName = dto.FullName,
                     Email = dto.Email,
@@ -145,15 +127,20 @@ namespace HealthApp.Blazor.Components.service.Impl
                     IsActive = dto.IsActive
                 };
 
-                var response = await _httpClient.PostAsJsonAsync("api/auth/doctorregister",request);
+                var response = await _httpClient
+                    .PostAsJsonAsync("api/auth/doctorregister", request);
 
-                return response.IsSuccessStatusCode;
+                if (response.IsSuccessStatusCode)
+                    return (true, "Doctor created successfully");
+
+                var error = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+
+                return (false, error?.Message ?? "Something went wrong");
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return (false, ex.Message);
             }
         }
-
     }
 }

@@ -1,0 +1,101 @@
+<div class="dashboard">
+
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <div class="content">
+
+    <!-- ✅ HEADER -->
+    <header>
+      <div>
+        <p class="eyebrow">Doctor Panel</p>
+        <h1>Appointments</h1>
+        <p class="subtext">Manage patient appointments efficiently.</p>
+      </div>
+    </header>
+
+    <!-- ✅ STATS -->
+    <div class="stats">
+      <div class="card">
+        <h3>Total</h3>
+        <p>{{ totalCount }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Pending</h3>
+        <p>{{ pendingCount }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Confirmed</h3>
+        <p>{{ confirmedCount }}</p>
+      </div>
+
+      <div class="card">
+        <h3>Completed</h3>
+        <p>{{ completedCount }}</p>
+      </div>
+    </div>
+
+    <!-- ✅ LIST -->
+    <div class="list">
+
+      <div *ngFor="let a of paginatedAppointments" class="item">
+
+        <div>
+          <strong>{{ a.patientName }}</strong>
+          <p class="status">{{ a.status }}</p>
+        </div>
+
+        <div class="meta">
+          <p>{{ a.scheduledDate | date:'mediumDate' }}</p>
+          <p>{{ a.timeSlot }}</p>
+
+          <button (click)="view(a)">View</button>
+
+          <button *ngIf="a.status === 'Pending'"
+                  (click)="confirm(a.appointmentId)">
+            Confirm
+          </button>
+
+          <button *ngIf="a.status === 'Confirmed'"
+                  (click)="complete(a.appointmentId)">
+            Complete
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ✅ PAGINATION -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
+      <span>Page {{ pageNumber }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ✅ VIEW MODAL -->
+<div class="profile-modal" *ngIf="selected">
+  <div class="modal-box">
+
+    <h2>Appointment Details</h2>
+
+    <p><strong>Patient:</strong> {{ selected.patientName }}</p>
+    <p><strong>Doctor:</strong> {{ selected.doctorName }}</p>
+    <p><strong>Date:</strong> {{ selected.scheduledDate | date:'fullDate' }}</p>
+    <p><strong>Time:</strong> {{ selected.timeSlot }}</p>
+    <p><strong>Status:</strong> {{ selected.status }}</p>
+
+    <p *ngIf="selected.cancellationReason">
+      <strong>Reason:</strong> {{ selected.cancellationReason }}
+    </p>
+
+    <div class="actions">
+      <button (click)="closeView()">Close</button>
+    </div>
+
+  </div>
+</div>

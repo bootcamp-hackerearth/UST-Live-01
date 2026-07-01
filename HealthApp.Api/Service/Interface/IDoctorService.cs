@@ -6,17 +6,22 @@ namespace HealthApp.Api.Service.Interface
     {
         Task<DoctorDto> AddDoctorAsync(DoctorDto dto);
 
-        Task<List<DoctorDto>> GetAllActiveDoctorAsync();
-
-        Task<List<DoctorDto>> GetAllDoctorsAsync();
 
         Task<DoctorDto> GetDoctorByIdAsync(int id);
-
-        Task<List<DoctorDto>> SearchBySpecialisationAsync(string specialisation);
 
         Task<DoctorDto> UpdateDoctorByIdAsync(int id, DoctorDto doctorDto);
 
         Task<DoctorDto> GetMyProfileAsync(string identityUserId);
+
+
+
+
+        Task<(List<DoctorDto> Items, int TotalCount)> GetPagedDoctorsAsync(int pageNumber,int pageSize);
+
+        Task<(List<DoctorDto> Items, int TotalCount)> GetPagedActiveDoctorsAsync(int pageNumber, int pageSize);
+
+        Task<(List<DoctorDto> Items, int TotalCount)> SearchBySpecialisationPagedAsync
+            (string specialisation,int pageNumber, int pageSize);
 
 
     }

@@ -13,5 +13,7 @@ namespace HealthApp.Api.Service.Interface
             Register(RegisterDto register);
 
         Task<(bool success, string message, string accessToken, int expiresIn, string role)> Login(LoginDto login);
+
+        Task<(bool success, string message)> ChangePasswordAsync(string identityUserId, ChangePasswordDto dto);
     }
 }

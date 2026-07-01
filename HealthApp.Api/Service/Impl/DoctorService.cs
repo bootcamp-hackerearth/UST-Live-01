@@ -46,17 +46,6 @@ namespace HealthApp.Api.Service.Impl
             return _mapper.Map<DoctorDto>(savedDoctor);
         }
 
-        public async Task<List<DoctorDto>> GetAllDoctorsAsync()
-        {
-            var doctors = await _repo.getallAsync();
-            return _mapper.Map<List<DoctorDto>>(doctors ?? new List<Doctor>());
-        }
-
-        public async Task<List<DoctorDto>> GetAllActiveDoctorAsync()
-        {
-            var doctors = await _repo.getAllActiveAsync();
-            return _mapper.Map<List<DoctorDto>>(doctors ?? new List<Doctor>());
-        }
 
         public async Task<DoctorDto> GetDoctorByIdAsync(int id)
         {
@@ -72,17 +61,6 @@ namespace HealthApp.Api.Service.Impl
             return _mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<List<DoctorDto>> SearchBySpecialisationAsync(string specialisation)
-        {
-            if (string.IsNullOrWhiteSpace(specialisation))
-            {
-                throw new BusinessRuleException("Specialisation is required.");
-            }
-
-            var doctors = await _repo.searchbyspecialisationAsync(specialisation);
-
-            return _mapper.Map<List<DoctorDto>>(doctors ?? new List<Doctor>());
-        }
 
         public async Task<DoctorDto> UpdateDoctorByIdAsync(int id, DoctorDto doctorDto)
         {
@@ -188,6 +166,60 @@ namespace HealthApp.Api.Service.Impl
             }
 
             return _mapper.Map<DoctorDto>(doctor);
+        }
+
+
+
+
+        
+        public async Task<(List<DoctorDto> Items, int TotalCount)> GetPagedDoctorsAsync(int pageNumber,int pageSize)
+        {
+            if (pageNumber <= 0)
+                throw new BusinessRuleException("Page number must be greater than 0.");
+
+            if (pageSize <= 0)
+                throw new BusinessRuleException("Page size must be greater than 0.");
+
+            var (doctors, totalCount) = await _repo.GetPagedAsync(pageNumber, pageSize);
+
+            var result = _mapper.Map<List<DoctorDto>>(doctors);
+
+            return (result, totalCount);
+        }
+
+        public async Task<(List<DoctorDto> Items, int TotalCount)> GetPagedActiveDoctorsAsync(int pageNumber,int pageSize)
+        {
+            if (pageNumber <= 0)
+                throw new BusinessRuleException("Page number must be greater than 0.");
+
+            if (pageSize <= 0)
+                throw new BusinessRuleException("Page size must be greater than 0.");
+
+            var (doctors, totalCount) = await _repo.GetActivePagedAsync(pageNumber, pageSize);
+
+            var result = _mapper.Map<List<DoctorDto>>(doctors);
+
+            return (result, totalCount);
+        }
+
+        public async Task<(List<DoctorDto> Items, int TotalCount)> SearchBySpecialisationPagedAsync
+            (string specialisation,int pageNumber,int pageSize)
+        {
+            if (string.IsNullOrWhiteSpace(specialisation))
+                throw new BusinessRuleException("Specialisation is required.");
+
+            if (pageNumber <= 0)
+                throw new BusinessRuleException("Page number must be greater than 0.");
+
+            if (pageSize <= 0)
+                throw new BusinessRuleException("Page size must be greater than 0.");
+
+            var (doctors, totalCount) =
+                await _repo.SearchBySpecialisationPagedAsync(specialisation, pageNumber, pageSize);
+
+            var result = _mapper.Map<List<DoctorDto>>(doctors);
+
+            return (result, totalCount);
         }
 
     }

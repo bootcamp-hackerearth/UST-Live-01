@@ -18,6 +18,8 @@ namespace HealthApp.Blazor.Components.Services
 
         private void AddAuthHeader()
         {
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+
             if (!string.IsNullOrEmpty(_authService.Token))
             {
                 _httpClient.DefaultRequestHeaders.Authorization =
@@ -25,47 +27,85 @@ namespace HealthApp.Blazor.Components.Services
             }
         }
 
-        public async Task<List<PatientDto>> GetAllPatientsAsync()
+        private class ErrorResponse
         {
-            AddAuthHeader();
+            public string Message { get; set; } = "";
+        }
 
-            var response = await _httpClient.GetAsync("api/patientapi");
-
-            if (!response.IsSuccessStatusCode)
+        private async Task<string> ReadError(HttpResponseMessage response)
+        {
+            try
             {
-                return new List<PatientDto>();
+                var err = await response.Content.ReadFromJsonAsync<ErrorResponse>();
+                return err?.Message ?? "Something went wrong";
             }
+            catch
+            {
+                return await response.Content.ReadAsStringAsync() ?? "Unknown error";
+            }
+        }
 
-            return await response.Content.ReadFromJsonAsync<List<PatientDto>>()
-                   ?? new List<PatientDto>();
+        public async Task<PagedResponse<PatientDto>> GetPagedPatientsAsync(
+            int pageNumber,
+            int pageSize,
+            string? search = null)
+        {
+            try
+            {
+                AddAuthHeader();
+
+                var url = $"api/patientapi/paged?pageNumber={pageNumber}&pageSize={pageSize}";
+
+                if (!string.IsNullOrWhiteSpace(search))
+                {
+                    url += $"&search={search}";
+                }
+
+                var response = await _httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine(await ReadError(response));
+                    return new PagedResponse<PatientDto>();
+                }
+
+                return await response.Content
+                    .ReadFromJsonAsync<PagedResponse<PatientDto>>()
+                       ?? new PagedResponse<PatientDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new PagedResponse<PatientDto>();
+            }
         }
 
         public async Task<PatientDto?> GetPatientByIdAsync(int id)
         {
-            AddAuthHeader();
+            try
+            {
+                AddAuthHeader();
 
-            var response = await _httpClient.GetAsync($"api/patientapi/{id}");
+                var response = await _httpClient.GetAsync($"api/patientapi/{id}");
 
-            if (!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine(await ReadError(response));
+                    return null;
+                }
+
+                return await response.Content.ReadFromJsonAsync<PatientDto>();
+            }
+            catch
             {
                 return null;
             }
-
-            return await response.Content.ReadFromJsonAsync<PatientDto>();
         }
 
         public async Task<int> GetPatientCountAsync()
         {
-            try
-            {
-                var doctors = await GetAllPatientsAsync();
-                return doctors.Count;
-            }
-            catch
-            {
-                return 0;
-            }
+            var result = await GetPagedPatientsAsync(1, 1);
+            return result.TotalRecords;
         }
-
     }
 }

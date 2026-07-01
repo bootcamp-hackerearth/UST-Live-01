@@ -9,7 +9,6 @@
 
 <div class="login-wrapper">
 
-    <!-- ✅ LEFT SIDE -->
     <div class="left-panel">
         <div class="left-content">
 
@@ -25,12 +24,10 @@
         </div>
     </div>
 
-    <!-- ✅ RIGHT SIDE -->
     <div class="right-panel">
 
         <div class="login-card">
 
-            <!-- LOGO -->
             <div class="logo-box">H</div>
 
             <h2>Hello! Welcome back</h2>
@@ -40,19 +37,17 @@
                 <div class="error">@errorMessage</div>
             }
 
-            <!-- EMAIL -->
             <input type="email"
                    class="input"
                    placeholder="Enter your email"
                    @bind="loginModel.Email" />
 
-            <!-- PASSWORD -->
             <input type="password"
                    class="input"
                    placeholder="Enter your password"
                    @bind="loginModel.Password" />
 
-            <!-- LOGIN -->
+         
             <button class="login-btn" @onclick="HandleLogin">
                 Login
             </button>
@@ -100,19 +95,16 @@
 
 <style>
 
-    /* ✅ RESET */
     body {
         margin: 0;
         font-family: 'Segoe UI', sans-serif;
     }
 
-    /* ✅ MAIN WRAPPER */
     .login-wrapper {
         display: flex;
         height: 100vh;
     }
 
-    /* ✅ LEFT PANEL (GRADIENT) */
     .left-panel {
         flex: 1;
         background: linear-gradient(135deg, #5b7cfa, #6c63ff);
@@ -137,7 +129,6 @@
             line-height: 1.6;
         }
 
-    /* ✅ RIGHT PANEL */
     .right-panel {
         flex: 1;
         background: #eef2ff;
@@ -146,7 +137,6 @@
         justify-content: center;
     }
 
-    /* ✅ LOGIN CARD */
     .login-card {
         background: white;
         padding: 35px;
@@ -157,7 +147,6 @@
         text-align: center;
     }
 
-    /* ✅ LOGO */
     .logo-box {
         width: 55px;
         height: 55px;
@@ -172,12 +161,10 @@
         margin: 0 auto 15px;
     }
 
-    /* ✅ TITLE */
     .login-card h2 {
         margin-bottom: 20px;
     }
 
-    /* ✅ INPUT */
     .input {
         width: 100%;
         padding: 12px;
@@ -187,7 +174,6 @@
         outline: none;
     }
 
-    /* ✅ BUTTON */
     .login-btn {
         width: 100%;
         padding: 12px;
@@ -203,7 +189,6 @@
             background: #4f46e5;
         }
 
-    /* ✅ ERROR */
     .error {
         background: #fee2e2;
         color: #b91c1c;
@@ -212,14 +197,12 @@
         margin-bottom: 10px;
     }
 
-    /* ✅ NOTE */
     .note {
         margin-top: 10px;
         font-size: 13px;
         color: #6b7280;
     }
 
-    /* ✅ RESPONSIVE */
     @@media (max-width: 900px) {
         .login-wrapper {
             flex-direction: column;

@@ -1,5 +1,4 @@
 ﻿using HealthApp.Shared.Dto;
-using HealthApp.Api.Model;
 
 namespace HealthApp.Api.Service.Interface
 {
@@ -7,16 +6,13 @@ namespace HealthApp.Api.Service.Interface
     {
         Task<PatientDto> AddPatientAsync(PatientDto patientDto);
 
+        Task<(List<PatientDto> Items, int TotalCount)> GetPagedPatientsAsync
+            (int pageNumber, int pageSize, string? search = null);
+
         Task<PatientDto> GetPatientByIdAsync(int id);
 
-        Task<List<PatientDto>> GetAllPatientsAsync();
-
-        Task<PatientDto> UpdatePatientByIdAsync(int id, PatientDto patientDto);
-
-
         Task<PatientDto> GetMyProfileAsync(string identityUserId);
+
         Task<PatientDto> UpdateMyProfileAsync(string identityUserId, PatientDto patientDto);
-
-
     }
 }

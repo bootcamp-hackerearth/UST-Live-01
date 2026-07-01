@@ -1,0 +1,134 @@
+<div class="dashboard-shell">
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <main class="main-panel">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Patient Operations</p>
+        <h1 *ngIf="patient as p">Welcome back, {{ p.fullName }}</h1>
+        <p class="subtext">A centralized view of your care schedule and medical records.</p>
+      </div>
+      <button class="profile-btn" (click)="openProfile()">Manage Profile</button>
+    </header>
+
+    <section class="hero-banner">
+      <div>
+        <h2>Care is moving faster</h2>
+        <p>Your appointments, follow-ups, and records are all available in one secure workspace.</p>
+      </div>
+      <div class="banner-pill">Live portal · 24/7 access</div>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card accent-teal">
+        <h3>Total Appointments</h3>
+        <p class="number">{{ upcomingCount }}</p>
+      </article>
+      <article class="stat-card accent-gold">
+        <h3>Pending</h3>
+        <p class="number">{{ pendingCount }}</p>
+      </article>
+      <article class="stat-card accent-emerald">
+        <h3>Health Records</h3>
+        <p class="number">{{ records.length }}</p>
+      </article>
+    </section>
+
+    <section class="content-card">
+      <div class="section-heading">
+        <h2>Upcoming care</h2>
+        <span>Today’s priorities</span>
+      </div>
+
+      <div *ngIf="appointments.length; else emptyState" class="appointment-list">
+        <div *ngFor="let a of paginatedAppointments" class="appointment-item">
+          <div>
+            <strong>{{ a.doctorName }}</strong>
+            <p>{{ a.status }}</p>
+          </div>
+          <div class="appointment-meta">
+            <p *ngIf="a.scheduledDate">{{ a.scheduledDate | date:'mediumDate' }}</p>
+            <p class="time">{{ a.timeSlot }}</p>
+            <button *ngIf="a.status === 'Pending'" (click)="cancel(a.appointmentId)">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #emptyState>
+        <div class="empty-state">No appointments to display right now. Your schedule will appear here shortly.</div>
+      </ng-template>
+    </section>
+  </main>
+</div>
+
+
+
+
+
+
+<div class="profile-modal" *ngIf="showProfile && patient as p">
+  <div class="modal-content">
+    <h2>My Profile</h2>
+
+    <div *ngIf="!editMode">
+      <p><strong>Name:</strong> {{ p.fullName }}</p>
+      <p><strong>Email:</strong> {{ p.email }}</p>
+      <p><strong>Phone:</strong> {{ p.phoneNumber }}</p>
+      <p><strong>DOB:</strong> {{ p.dateOfBirth | date }}</p>
+      <p><strong>Insurance:</strong> {{ p.insuranceId }}</p>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="toggleEdit()">Edit</button>
+        <button class="btn-primary" (click)="closeProfile()">Close</button>
+      </div>
+    </div>
+
+    <div *ngIf="editMode">
+      <input [(ngModel)]="patient!.fullName" placeholder="Name">
+      <input [(ngModel)]="patient!.phoneNumber" placeholder="Phone">
+      <input type="date" [(ngModel)]="patient!.dateOfBirth">
+      <input [(ngModel)]="patient!.insuranceId" placeholder="Insurance">
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="toggleEdit()">Cancel</button>
+        <button class="btn-primary" (click)="update()">Save</button>
+      </div>
+
+      
+      <hr>
+
+<h3>Change Password</h3>
+
+<input type="password" [(ngModel)]="passwordForm.currentPassword" placeholder="Current Password">
+
+<input type="password" [(ngModel)]="passwordForm.newPassword" placeholder="New Password">
+
+<input type="password" [(ngModel)]="passwordForm.confirmPassword" placeholder="Confirm Password">
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="toggleEdit()">Cancel</button>
+        <button class="btn-primary" (click)="changePassword()">Update Password</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="pagination" *ngIf="totalPages > 1">
+
+  <button (click)="prevPage()" [disabled]="pageNumber === 1">
+    Prev
+  </button>
+
+  <span>
+    Page {{ pageNumber }} of {{ totalPages }}
+  </span>
+
+  <button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+    Next
+  </button>
+
+</div>

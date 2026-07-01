@@ -89,5 +89,23 @@ namespace HealthApp.Api.Controllers
         }
 
 
+        [HttpPost("change-password")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var result = await authService.ChangePasswordAsync(userId, dto);
+
+            if (!result.success)
+                return BadRequest(result.message);
+
+            return Ok(new { message = result.message });
+        }
+
+
     }
 }

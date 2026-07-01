@@ -1,0 +1,45 @@
+<div class="register-shell">
+  <div class="register-card">
+    <div class="register-hero">
+      <div class="brand">Health<span>Sphere</span></div>
+      <h1>Create your account</h1>
+      <p>Join a secure healthcare platform built for better patient and clinician experiences.</p>
+      <ul>
+        <li>Fast onboarding</li>
+        <li>Secure medical access</li>
+        <li>Connected care journeys</li>
+      </ul>
+    </div>
+
+    <div class="register-form-panel">
+      <div class="badge">New patient registration</div>
+      <h2>Tell us about you</h2>
+      <p class="subtitle">Complete the form below to get started.</p>
+
+      <form (ngSubmit)="submit()">
+        <div class="field-grid">
+          <input type="email" placeholder="Email" [(ngModel)]="form.email" name="email" required />
+          <input type="password" placeholder="Password" [(ngModel)]="form.password" name="password" required />
+          <input type="password" placeholder="Confirm password" [(ngModel)]="form.confirmPassword" name="confirmPassword" required />
+          <input type="text" placeholder="Full name" [(ngModel)]="form.fullName" name="fullName" required />
+          <input type="date" [(ngModel)]="form.dateOfBirth" name="dob" required />
+          <select [(ngModel)]="form.gender" name="gender" required>
+            <option value="">Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Other</option>
+          </select>
+          <input type="text" placeholder="Phone number" [(ngModel)]="form.phoneNumber" name="phone" required />
+          <input type="text" placeholder="Insurance ID (optional)" [(ngModel)]="form.insuranceId" name="insurance" />
+        </div>
+
+        <button type="submit" class="primary-btn">Register</button>
+      </form>
+
+      <p class="footer-text">
+        Already have an account?
+        <a routerLink="/login">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

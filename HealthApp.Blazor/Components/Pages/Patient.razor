@@ -9,7 +9,6 @@
 
 <div class="page">
 
-    <!-- HEADER -->
     <div class="header">
         <div>
             <h2>Patients</h2>
@@ -17,11 +16,10 @@
         </div>
     </div>
 
-    <!-- TOOLBAR -->
     <div class="toolbar">
         <div class="toolbar-left">
             <input class="input search"
-                   placeholder="Search by ID or Name..."
+                   placeholder="Search by Name or Email..."
                    @bind="searchText"
                    @onkeypress="HandleKeyPress" />
 
@@ -33,7 +31,6 @@
         </div>
     </div>
 
-    <!-- TABLE -->
     @if (isLoading)
     {
         <div class="empty">Loading patients...</div>
@@ -82,8 +79,22 @@
             </table>
         </div>
     }
+    <div class="pagination">
+        <button class="btn light"
+                disabled="@(pageNumber == 1)"
+                @onclick="PrevPage">
+            Prev
+        </button>
 
-    <!-- MODAL -->
+        <span>Page @pageNumber of @TotalPages</span>
+
+        <button class="btn light"
+                disabled="@(pageNumber >= TotalPages)"
+                @onclick="NextPage">
+            Next
+        </button>
+    </div>
+
     @if (viewPatient is not null)
     {
         <div class="modal">
@@ -116,37 +127,105 @@
 
 @code {
     private List<PatientDto> patients = new();
-    private List<PatientDto> allPatients = new();
+    private List<PatientDto> allPatients = new(); 
 
     private bool isLoading = true;
     private string searchText = "";
 
     private PatientDto? viewPatient;
 
+    private int pageNumber = 1;
+    private int pageSize = 10;
+    private int totalRecords = 0;
+
+    private int TotalPages => (int)Math.Ceiling((double)totalRecords / pageSize);
+
     protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
     {
         isLoading = true;
 
-        allPatients = await PatientService.GetAllPatientsAsync();
-        patients = allPatients.ToList();
+        try
+        {
+            List<PatientDto> tempList = new();
+            int currentPage = 1;
+            int totalPagesLocal = 1;
+
+            do
+            {
+                var result = await PatientService
+                    .GetPagedPatientsAsync(currentPage, pageSize, null);
+
+                tempList.AddRange(result.Data);
+
+                totalPagesLocal = (int)Math.Ceiling((double)result.TotalRecords / pageSize);
+
+                currentPage++;
+
+            } while (currentPage <= totalPagesLocal);
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                tempList = tempList.Where(p =>
+                    (!string.IsNullOrWhiteSpace(p.FullName) &&
+                     p.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                    ||
+                    (!string.IsNullOrWhiteSpace(p.Email) &&
+                     p.Email.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                ).ToList();
+            }
+
+            totalRecords = tempList.Count;
+
+            patients = tempList
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+        catch
+        {
+            patients = new List<PatientDto>();
+            totalRecords = 0;
+        }
 
         isLoading = false;
     }
 
-    private void Search()
+
+
+    private async Task Search()
     {
-        patients = allPatients.Where(p =>
-            (!string.IsNullOrWhiteSpace(p.FullName) &&
-             p.FullName.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-            ||
-            p.PatientId.ToString().Contains(searchText)
-        ).ToList();
+        pageNumber = 1;
+        await LoadPatients();
     }
 
-    private void Reset()
+    private async Task Reset()
     {
         searchText = "";
-        patients = allPatients.ToList();
+        pageNumber = 1;
+        await LoadPatients();
+    }
+
+    private async Task NextPage()
+    {
+        if (pageNumber < TotalPages)
+        {
+            pageNumber++;
+            await LoadPatients();
+        }
+    }
+
+    private async Task PrevPage()
+    {
+        if (pageNumber > 1)
+        {
+            pageNumber--;
+            await LoadPatients();
+        }
     }
 
     private void ViewPatient(PatientDto p)
@@ -159,11 +238,12 @@
         viewPatient = null;
     }
 
-    private void HandleKeyPress(KeyboardEventArgs e)
+    private async Task HandleKeyPress(KeyboardEventArgs e)
     {
         if (e.Key == "Enter")
         {
-            Search();
+            pageNumber = 1;
+            await LoadPatients();
         }
     }
 
@@ -178,10 +258,8 @@
     }
 }
 
-
 <style>
 
-    /* PAGE */
     .page {
         padding: 20px;
         display: flex;
@@ -189,7 +267,6 @@
         gap: 18px;
     }
 
-    /* HEADER */
     .header h2 {
         font-size: 34px;
         margin: 0;
@@ -200,7 +277,6 @@
         color: #64748b;
     }
 
-    /* TOOLBAR */
     .toolbar {
         display: flex;
         justify-content: space-between;
@@ -217,7 +293,6 @@
         gap: 10px;
     }
 
-    /* INPUT */
     .input {
         padding: 10px 14px;
         border-radius: 12px;
@@ -229,7 +304,6 @@
         width: 280px;
     }
 
-    /* BUTTONS */
     .btn {
         padding: 10px 16px;
         border-radius: 12px;
@@ -247,7 +321,6 @@
         background: #f1f5f9;
     }
 
-    /* CARD */
     .card {
         background: white;
         padding: 20px;
@@ -255,7 +328,6 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.04);
     }
 
-    /* TABLE */
     .table {
         width: 100%;
         border-collapse: collapse;
@@ -274,7 +346,6 @@
             border-bottom: 1px solid #eef2f7;
         }
 
-    /* BUTTON */
     .mini {
         padding: 7px 12px;
         border-radius: 10px;
@@ -287,7 +358,6 @@
         color: #1d4ed8;
     }
 
-    /* EMPTY */
     .empty {
         padding: 30px;
         text-align: center;
@@ -295,7 +365,6 @@
         border-radius: 14px;
     }
 
-    /* MODAL */
     .modal {
         position: fixed;
         inset: 0;
@@ -312,7 +381,6 @@
         width: 420px;
     }
 
-    /* RESPONSIVE */
     @@media(max-width: 768px) {
         .toolbar {
             flex-direction: column;

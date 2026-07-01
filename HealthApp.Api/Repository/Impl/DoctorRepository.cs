@@ -14,28 +14,62 @@ namespace HealthApp.Api.Repository.Impl
             _context = context;
         }
 
-        public async Task<List<Doctor>> getAllActiveAsync()
-        {
-            var exiting = await _context.Set<Doctor>()
-                .Where(a => a.IsActive == true)
-                .ToListAsync();
-
-            return exiting;
-        }
-
-        public async Task<List<Doctor>?> searchbyspecialisationAsync(string specialisation)
-        {
-            var exiting = await _context.Set<Doctor>()
-                .Where(d => d.Specialisation == specialisation)
-                .ToListAsync();
-
-            return exiting;
-        }
-
         public async Task<Doctor?> GetByIdentityUserIdAsync(string identityUserId)
         {
             return await _context.Set<Doctor>()
                 .FirstOrDefaultAsync(d => d.IdentityUserId == identityUserId);
+        }
+
+
+
+
+
+        public async Task<(List<Doctor> Items, int TotalCount)> GetPagedAsync( int pageNumber,int pageSize)
+        {
+            var query = _context.Set<Doctor>().AsQueryable();
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(d => d.DoctorId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
+        public async Task<(List<Doctor> Items, int TotalCount)> GetActivePagedAsync( int pageNumber,int pageSize)
+        {
+            var query = _context.Doctors
+                .Where(d => d.IsActive == true);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(d => d.DoctorId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
+
+        public async Task<(List<Doctor> Items, int TotalCount)> SearchBySpecialisationPagedAsync
+            ( string specialisation,int pageNumber, int pageSize)
+        {
+            var query = _context.Doctors
+                .Where(d => d.Specialisation == specialisation);
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(d => d.DoctorId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
         }
     }
 }

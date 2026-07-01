@@ -50,5 +50,23 @@ namespace HealthApp.Api.Repository.Impl
         }
 
 
+        public async Task<List<HealthRecord>> GetByPatientIdAsync(int patientId)
+        {
+            return await _context.HealthRecords
+                .Where(r => r.PatientId == patientId)
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
+                .ToListAsync();
+        }
+
+        public async Task<List<HealthRecord>> GetByDoctorIdAsync(int doctorId)
+        {
+            return await _context.HealthRecords
+                .Where(r => r.DoctorId == doctorId)
+                .Include(r => r.Patient)
+                .Include(r => r.Doctor)
+                .ToListAsync();
+        }
+
     }
 }

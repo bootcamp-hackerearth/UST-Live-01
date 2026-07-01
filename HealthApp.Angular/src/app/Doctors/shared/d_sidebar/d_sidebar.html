@@ -1,0 +1,21 @@
+<aside class="sidebar">
+  <div class="brand">
+    <h2>Health<span>Sphere</span></h2>
+    <p>Doctor Portal</p>
+  </div>
+
+  <ul>
+    <li routerLink="/doctor-dashboard" routerLinkActive="active">
+      🏠 Dashboard
+    </li>
+        <li routerLink="/doctor_appointments" routerLinkActive="active">
+      <span>📅</span> Appointments
+    </li>
+    <li routerLink="/doctor_health-records" routerLinkActive="active">
+      <span>📄</span> Records
+    </li>
+    <li (click)="logout()" class="logout">
+      🚪 Logout
+    </li>
+  </ul>
+</aside>

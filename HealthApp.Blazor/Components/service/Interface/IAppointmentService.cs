@@ -1,13 +1,17 @@
-﻿
-using HealthApp.Shared.Dto;
+﻿using HealthApp.Shared.Dto;
 
 public interface IAppointmentService
 {
-    Task<List<AppointmentDto>> GetAllAppointmentsAsync();
+    Task<PagedResponse<AppointmentDto>> GetPagedAppointmentsAsync(int pageNumber, int pageSize);
+
+    Task<PagedResponse<AppointmentDto>> GetFilteredAppointmentsAsync(int? patientId, int? doctorId,
+        int pageNumber, int pageSize);
+
     Task<AppointmentDto?> GetAppointmentByIdAsync(int id);
+
     Task<List<string>> CheckDoctorAvailabilityAsync(int doctorId, DateTime date);
+
     Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync(int doctorId, DateTime fromDate, DateTime toDate);
-    Task<List<AppointmentDto>> GetByPatientDoctorAsync(int patientId, int doctorId);
 
     Task<int> GetAppointmentCountAsync();
 }

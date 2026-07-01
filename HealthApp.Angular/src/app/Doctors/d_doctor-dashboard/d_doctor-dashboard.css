@@ -1,0 +1,233 @@
+/* ✅ LAYOUT */
+.dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f6f8;
+}
+
+.content {
+  flex: 1;
+  padding: 24px 28px;
+}
+
+/* ✅ HEADER */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: #6b7280;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+  margin: 4px 0 6px;
+}
+
+.subtext {
+  color: #6b7280;
+  margin: 0;
+  font-size: 13px;
+}
+
+/* ✅ BUTTON */
+.profile-btn {
+  padding: 8px 14px;
+  border: 1px solid #1f2937;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #1f2937;
+  color: white;
+  font-weight: 600;
+}
+
+.profile-btn:hover {
+  background: #374151;
+}
+
+/* ✅ STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.card {
+  padding: 14px 16px;
+  border-radius: 6px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ✅ LIST */
+.list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.item strong {
+  font-size: 14px;
+  color: #111827;
+}
+
+/* ✅ STATUS */
+.status {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* ✅ ACTION BUTTON */
+.item button {
+  margin-top: 6px;
+  padding: 6px 10px;
+  border: 1px solid #dc2626;
+  border-radius: 5px;
+  font-weight: 600;
+  color: #dc2626;
+  background: transparent;
+}
+
+.item button:hover {
+  background: #dc2626;
+  color: white;
+}
+
+/* ✅ ✅ ✅ PROFILE MODAL (BIG + PROFESSIONAL) */
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* ✅ BIG MODAL */
+.modal-box {
+  width: 650px;
+  max-width: 95%;
+  background: white;
+  padding: 24px 28px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+/* ✅ TITLE */
+.modal-box h2 {
+  margin-bottom: 18px;
+  font-size: 20px;
+  color: #111827;
+}
+
+/* ✅ PROFILE GRID (2 COLUMN) */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 24px;
+}
+
+/* ✅ FIELD */
+.profile-item {
+  font-size: 13px;
+  color: #374151;
+}
+
+.profile-item strong {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 3px;
+}
+
+/* ✅ ACTIONS */
+.actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actions button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: #111827;
+  color: white;
+}
+
+/* ✅ RESPONSIVE */
+@media (max-width: 900px) {
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .item,
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .modal-box {
+    width: 100%;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  border: 1px solid #111827;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 13px;
+  color: #374151;
+}

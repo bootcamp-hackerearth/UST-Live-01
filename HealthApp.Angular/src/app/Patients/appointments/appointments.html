@@ -1,0 +1,88 @@
+<div class="dashboard">
+  <app-sidebar></app-sidebar>
+
+  <div class="main">
+    <section class="page-shell">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Care scheduling</p>
+          <h1>Appointments</h1>
+          <p class="subtext">Manage your upcoming consultations with clarity and confidence.</p>
+        </div>
+        <button class="primary-btn" (click)="openBooking()">+ Book appointment</button>
+      </div>
+
+      <div class="filters">
+        <input
+          type="text"
+          placeholder="Search by doctor name"
+          [(ngModel)]="nameSearch"
+          (input)="filterAppointments()"
+        />
+
+        <select [(ngModel)]="statusFilter" (change)="filterAppointments()">
+          <option value="">All status</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Completed">Completed</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+
+        <input type="date" [(ngModel)]="dateSearch" (change)="filterAppointments()" />
+      </div>
+
+      <div class="card-list">
+        <div class="card" *ngFor="let a of paginatedAppointments">
+          <div class="left">
+            <h3>{{ a.doctorName }}</h3>
+            <span class="status" [ngClass]="{
+              'pending': a.status === 'Pending',
+              'confirmed': a.status === 'Confirmed',
+              'completed': a.status === 'Completed',
+              'cancelled': a.status === 'Cancelled'
+            }">
+              {{ a.status }}
+            </span>
+          </div>
+
+          <div class="right">
+            <p><strong>Date:</strong> {{ a.scheduledDate | date:'MMM d, y' }}</p>
+            <p><strong>Time:</strong> {{ a.timeSlot }}</p>
+            <button *ngIf="a.status === 'Pending'" (click)="cancel(a.appointmentId)">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="paginatedAppointments.length === 0" class="empty">
+        No appointments found for the selected filters.
+      </div>
+
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
+        <span>Page {{ pageNumber }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal" *ngIf="showBookingModal">
+  <div class="modal-box">
+    <h2>Book appointment</h2>
+    <input type="number" placeholder="Enter doctor ID" [(ngModel)]="selectedDoctorId" />
+    <input type="date" [(ngModel)]="selectedDate" (change)="checkSlots()" />
+
+    <div class="slots">
+      <button *ngFor="let s of availableSlots" (click)="selectedSlot = s" [class.active]="selectedSlot === s">
+        {{ s }}
+      </button>
+    </div>
+
+    <p *ngIf="availableSlots.length === 0" class="no-slots">No slots available for this date.</p>
+
+    <div class="actions">
+      <button class="secondary-btn" (click)="closeBooking()">Cancel</button>
+      <button class="primary-btn" (click)="bookAppointment()">Confirm</button>
+    </div>
+  </div>
+</div>

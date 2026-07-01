@@ -1,0 +1,126 @@
+.register-shell {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #f4f9ff 0%, #eef8ff 100%);
+}
+
+.register-card {
+  width: min(1040px, 100%);
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  border-radius: 28px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+}
+
+.register-hero {
+  padding: 38px;
+  background: linear-gradient(135deg, #0f172a 0%, #134e4a 45%, #0f766e 100%);
+  color: white;
+}
+
+.brand {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+}
+
+.brand span {
+  color: #2dd4bf;
+}
+
+.register-hero h1 {
+  margin: 0 0 10px;
+  font-size: 2rem;
+}
+
+.register-hero p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.register-hero ul {
+  padding-left: 18px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.register-form-panel {
+  padding: 38px;
+}
+
+.badge {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  background: #ecfeff;
+  color: #0f766e;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.register-form-panel h2 {
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+.subtitle {
+  margin: 0 0 18px;
+  color: #64748b;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field-grid input,
+.field-grid select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  outline: none;
+}
+
+.field-grid input:focus,
+.field-grid select:focus {
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+
+.primary-btn {
+  width: 100%;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #0f766e, #14b8a6);
+  color: white;
+  font-weight: 700;
+}
+
+.footer-text {
+  margin-top: 16px;
+  text-align: center;
+  color: #475569;
+}
+
+.footer-text a {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .register-card {
+    grid-template-columns: 1fr;
+  }
+
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+}

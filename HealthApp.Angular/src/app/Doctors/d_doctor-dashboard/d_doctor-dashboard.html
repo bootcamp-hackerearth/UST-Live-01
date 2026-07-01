@@ -1,0 +1,129 @@
+<div class="dashboard">
+  <app-sidebar></app-sidebar>
+
+  <div class="content">
+
+    <!-- ✅ HEADER -->
+    <header>
+      <div>
+        <p class="eyebrow">Clinical operations</p>
+        <h1>Doctor dashboard</h1>
+        <p class="subtext">Track appointments and manage your practice.</p>
+      </div>
+
+      <button class="profile-btn" (click)="openProfile()">My Profile</button>
+    </header>
+
+    <!-- ✅ STATS -->
+    <div class="stats">
+      <div class="card">Total {{ upcomingCount }}</div>
+      <div class="card">Pending {{ pendingCount }}</div>
+      <div class="card">Confirmed {{ confirmedCount }}</div>
+      <div class="card">Completed {{ completedCount }}</div>
+    </div>
+
+    <!-- ✅ APPOINTMENTS -->
+    <div class="list">
+      <div class="item" *ngFor="let a of paginatedAppointments">
+
+        <div>
+          <strong>{{ a.patientName }}</strong>
+          <span class="status">{{ a.status }}</span>
+        </div>
+
+        <div>
+          <p>{{ a.scheduledDate | date:'mediumDate' }}</p>
+          <p>{{ a.timeSlot }}</p>
+
+          <button *ngIf="a.status === 'Pending'"
+                  (click)="confirm(a.appointmentId)">Confirm</button>
+
+          <button *ngIf="a.status === 'Confirmed'"
+                  (click)="complete(a.appointmentId)">Complete</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ✅ PROFILE MODAL -->
+<div class="profile-modal" *ngIf="showProfile && doctor">
+  <div class="modal-box">
+
+    <h2>Doctor Profile</h2>
+
+    <div *ngIf="!editMode">
+
+      <div class="profile-grid">
+
+<div class="profile-item">
+  <span class="label">
+    <strong>Name:</strong>
+  </span>
+  <p>{{ doctor.fullName }}</p>
+</div>
+
+  <div class="profile-item">
+      <span class="label">
+        <strong>Email:</strong>
+      </span>
+      <p>{{ doctor.email }}</p>
+  </div>
+
+  <div class="profile-item">
+      <span class="label">
+        <strong>Phone:</strong>
+      </span>
+      <p>{{ doctor.doctorPhoneNumber }}</p>
+  </div>
+
+  <div class="profile-item">
+      <span class="label">
+        <strong>Specialisation:</strong>
+      </span>
+      <p>{{ doctor.specialisation }}</p>
+  </div>
+
+  <div class="profile-item">
+      <span class="label">
+        <strong>Consultation Fee:</strong>
+      </span>
+      <p>₹ {{ doctor.consultationFee }}</p>
+  </div>
+
+  <div class="profile-item">
+      <span class="label">
+        <strong>Practice Start:</strong>
+      </span>
+      <p>{{ doctor.practiceStartDate | date }}</p>
+  </div>
+
+</div>
+
+
+      <div class="actions">
+        <button (click)="closeProfile()">Close</button>
+      </div>
+      
+    </div>
+
+    </div>
+
+</div>
+<div class="pagination">
+
+  <button (click)="prevPage()" [disabled]="pageNumber === 1">
+    Prev
+  </button>
+
+  <span>
+    Page {{ pageNumber }} of {{ totalPages }}
+  </span>
+
+  <button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+    Next
+  </button>
+
+</div>

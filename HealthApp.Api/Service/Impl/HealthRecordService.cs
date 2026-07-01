@@ -29,7 +29,7 @@ namespace HealthApp.Api.Service.Impl
 
         public async Task<HealthRecordDto> AddRecordAsync(HealthRecordDto dto)
         {
-            // Validation
+
             if (string.IsNullOrWhiteSpace(dto.Diagnosis))
                 throw new HealthRecordRuleException("Diagnosis is required.");
 
@@ -80,7 +80,6 @@ namespace HealthApp.Api.Service.Impl
             return _mapper.Map<List<HealthRecordDto>>(savedh);
         }
 
-
         private async Task LoadNavigation(HealthRecord record)
         {
             if (record.Patient == null)
@@ -93,5 +92,32 @@ namespace HealthApp.Api.Service.Impl
                 record.Doctor = await _doctorRepo.getbyidAsync(record.DoctorId);
             }
         }
+
+
+
+        public async Task<List<HealthRecordDto>> GetRecordsByUserAsync(string identityUserId)
+        {
+            var patient = await _patientRepo.GetByIdentityUserIdAsync(identityUserId);
+
+            if (patient == null)
+                throw new EntityNotFoundException("Patient", 0);
+
+            var records = await _repo.GetByPatientIdAsync(patient.PatientId);
+
+            return _mapper.Map<List<HealthRecordDto>>(records ?? new List<HealthRecord>());
+        }
+
+        public async Task<List<HealthRecordDto>> GetRecordsByDoctorAsync(string identityUserId)
+        {
+            var doctor = await _doctorRepo.GetByIdentityUserIdAsync(identityUserId);
+
+            if (doctor == null)
+                throw new EntityNotFoundException("Doctor", 0);
+
+            var records = await _repo.GetByDoctorIdAsync(doctor.DoctorId);
+
+            return _mapper.Map<List<HealthRecordDto>>(records ?? new List<HealthRecord>());
+        }
+
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
 
 namespace HealthApp.Shared.Dto
 {
@@ -7,31 +6,32 @@ namespace HealthApp.Shared.Dto
     {
         public int AppointmentId { get; set; }
 
-        [Required]
+       // [Required(ErrorMessage = "Patient is required")]
         public int? PatientId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Doctor is required")]
         public int DoctorId { get; set; }
 
-        [Required]
+       // [Required(ErrorMessage = "Patient name is required")]
         public string PatientName { get; set; } = string.Empty;
-        [Required]
+
+       // [Required(ErrorMessage = "Doctor name is required")]
         public string DoctorName { get; set; } = string.Empty;
 
-
-        [Required]
+        [Required(ErrorMessage = "Appointment date is required")]
+        [DataType(DataType.Date)]
         public DateTime ScheduledDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Time slot is required")]
         public string TimeSlot { get; set; } = string.Empty;
 
+        [Required]
         [MaxLength(50)]
+        [RegularExpression("Pending|Confirmed|Completed|Cancelled",
+            ErrorMessage = "Status must be Pending, Confirmed, Completed, or Cancelled")]
         public string Status { get; set; } = "Pending";
 
-        [MaxLength(500)]
+        [MaxLength(500, ErrorMessage = "Cancellation reason cannot exceed 500 characters")]
         public string? CancellationReason { get; set; }
-
-
-
     }
 }

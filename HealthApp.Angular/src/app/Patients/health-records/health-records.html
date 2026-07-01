@@ -1,0 +1,40 @@
+<div class="dashboard">
+  <app-sidebar class="sidebar"></app-sidebar>
+
+  <div class="main">
+    <section class="records-shell">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Clinical records</p>
+          <h1>Health records</h1>
+          <p class="subtext">A secure summary of consultations, diagnoses, and follow-up care.</p>
+        </div>
+      </div>
+
+      <div class="top-bar">
+        <input type="text" placeholder="Search by doctor name" [(ngModel)]="nameSearch" (input)="filterRecords()" />
+        <input type="date" [(ngModel)]="dateSearch" (change)="filterRecords()" />
+      </div>
+
+      <div class="records-grid">
+        <div class="record-card" *ngFor="let r of paginatedRecords">
+          <div class="record-badge">Visit record</div>
+          <p><strong>Doctor:</strong> {{ r.doctorName }}</p>
+          <p><strong>Diagnosis:</strong> {{ r.diagnosis }}</p>
+          <p><strong>Prescription:</strong> {{ r.prescription }}</p>
+          <p><strong>Notes:</strong> {{ r.notes }}</p>
+          <p><strong>Visit date:</strong> {{ r.visitDate | date:'MMM d, y' }}</p>
+          <p><strong>Visit time:</strong> {{ r.visitDate | date:'shortTime' }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="allRecords.length === 0" class="empty">No records available yet.</div>
+
+      <div class="pagination">
+        <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
+        <span>Page {{ pageNumber }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+      </div>
+    </section>
+  </div>
+</div>

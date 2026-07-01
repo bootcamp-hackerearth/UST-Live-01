@@ -15,10 +15,49 @@ namespace HealthApp.Api.Repository.Impl
             _context = context;
         }
 
-        public async Task<Patient?> GetByIdentityUserIdAsync(string identityUserId, CancellationToken cd = default)
+        public async Task<Patient?> GetByIdentityUserIdAsync(string identityUserId, 
+            CancellationToken cd = default)
         {
             return await _context.Set<Patient>()
                 .FirstOrDefaultAsync(p => p.IdentityUserId == identityUserId, cd);
+        }
+
+
+        public async Task<(List<Patient> Items, int TotalCount)> GetPagedPatientsAsync(int pageNumber, 
+            int pageSize, string? search = null, CancellationToken cd = default)
+        {
+            var query = _context.Patients.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(p => p.FullName.Contains(search) ||
+                    p.Email.Contains(search) ||  p.PatientId.ToString().Contains(search));
+            }
+
+            var totalCount = await query.CountAsync(cd);
+
+            var items = await query
+                .OrderBy(p => p.PatientId)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cd);
+
+            return (items, totalCount);
+        }
+
+
+        public async Task<bool> EmailExistsAsync(string email, int? excludeId = null, CancellationToken cd = default)
+        {
+            var query = _context.Patients.AsQueryable();
+
+            if (excludeId.HasValue)
+            {
+                query = query.Where(p => p.PatientId != excludeId.Value);
+            }
+
+            return await query.AnyAsync(p =>
+                p.Email != null &&
+                p.Email.ToLower() == email.ToLower(), cd);
         }
     }
 

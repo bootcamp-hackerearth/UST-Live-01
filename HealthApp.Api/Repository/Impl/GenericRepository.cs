@@ -50,5 +50,29 @@ namespace HealthApp.Api.Repository.Impl
             await _context.SaveChangesAsync(cd);
             return exiting;
         }
+
+
+
+
+        public async Task<(List<T> Items, int TotalCount)> GetPagedAsync(
+            int pageNumber,
+            int pageSize,
+            CancellationToken cd = default)
+        {
+            var query = _context.Set<T>().AsQueryable();
+
+            var totalCount = await query.CountAsync(cd);
+
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cd);
+
+            return (items, totalCount);
+        }
+
+
+
+
     }
 }

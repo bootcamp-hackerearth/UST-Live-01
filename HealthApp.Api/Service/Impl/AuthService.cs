@@ -263,5 +263,29 @@ namespace HealthApp.Api.Service.Impl
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+
+        public async Task<(bool success, string message)> ChangePasswordAsync( string identityUserId,ChangePasswordDto dto)
+        {
+            if (dto.NewPassword != dto.ConfirmPassword)
+                return (false, "Passwords do not match");
+
+            var user = await userManager.FindByIdAsync(identityUserId);
+
+            if (user == null)
+                return (false, "User not found");
+
+            var result = await userManager.ChangePasswordAsync(user,dto.CurrentPassword,dto.NewPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return (false, errors);
+            }
+
+            return (true, "Password updated successfully");
+        }
+
     }
 }
