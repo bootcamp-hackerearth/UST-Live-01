@@ -1,4 +1,3 @@
-
 using HealthApp.Shared.DTOs;
 using HealthApp.Shared.Enums;
 
@@ -6,6 +5,10 @@ namespace HealthApp.API.Service.Interface;
 
 public interface IAppointmentService
 {
+    Task<List<AppointmentDto>> GetAppointmentsAsync(
+        int? patientId = null,
+        int? doctorId = null);
+
     Task<List<AppointmentDto>> GetAllAppointmentsAsync();
 
     Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId);

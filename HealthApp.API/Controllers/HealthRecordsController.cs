@@ -10,28 +10,17 @@ namespace HealthApp.API.Controllers;
 [Route("api/health-records")]
 [Authorize]
 public class HealthRecordsController(
-    IHealthRecordService service,
-    IPatientService patientService) : ControllerBase
+    IHealthRecordService service) : ControllerBase
 {
     [HttpGet("{patientId:int}")]
     [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]
     public async Task<ActionResult<List<HealthRecordDto>>> ByPatient(int patientId)
-    {
-        await patientService.EnsurePatientAccessAsync(patientId);
-
-        return Ok(await service.GetHealthRecordsByPatientIdAsync(patientId));
-    }
+        => Ok(await service.GetHealthRecordsByPatientIdAsync(patientId));
 
     [HttpGet("record/{id:int}")]
     [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]
     public async Task<ActionResult<HealthRecordDto>> ById(int id)
-    {
-        var healthRecord = await service.GetHealthRecordByIdAsync(id);
-
-        await patientService.EnsurePatientAccessAsync(healthRecord.PatientId);
-
-        return Ok(healthRecord);
-    }
+        => Ok(await service.GetHealthRecordByIdAsync(id));
 
     [HttpPost]
     [Authorize(Roles = Roles.Doctor)]

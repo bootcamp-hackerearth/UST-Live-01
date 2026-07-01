@@ -1,0 +1,151 @@
+<div class="health-register-page">
+  <a class="back-home-link" routerLink="/">
+    ← Back to Home
+  </a>
+
+  <section class="register-card">
+    <div class="register-logo">H</div>
+
+    <div class="register-heading">
+      <span>Patient Registration</span>
+      <h1>Create patient account</h1>
+      <p>
+        Register as a patient to access appointments and healthcare services.
+      </p>
+    </div>
+
+    @if (message) {
+      <div class="register-message" [class.error]="isError" [class.success]="!isError">
+        <strong>{{ isError ? 'Action Failed' : 'Success' }}</strong>
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    <form class="register-form" (ngSubmit)="registerPatient()">
+      <div class="register-grid">
+        <div class="register-field">
+          <label for="fullName">Full Name <span>*</span></label>
+          <input
+            id="fullName"
+            name="fullName"
+            type="text"
+            class="register-control"
+            placeholder="Enter full name"
+            [(ngModel)]="fullName"
+          />
+        </div>
+
+        <div class="register-field">
+          <label for="email">Email <span>*</span></label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            class="register-control"
+            placeholder="Enter email"
+            [(ngModel)]="email"
+          />
+        </div>
+
+        <div class="register-field">
+          <label for="phoneNumber">Phone Number <span>*</span></label>
+          <input
+            id="phoneNumber"
+            name="phoneNumber"
+            type="text"
+            class="register-control"
+            placeholder="Enter phone number"
+            [(ngModel)]="phoneNumber"
+          />
+        </div>
+
+        <div class="register-field">
+          <label for="gender">Gender <span>*</span></label>
+          <select
+            id="gender"
+            name="gender"
+            class="register-control"
+            [(ngModel)]="gender"
+          >
+            <option value="">Select gender</option>
+
+            @for (genderOption of genders; track genderOption) {
+              <option [value]="genderOption">{{ genderOption }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="register-field">
+          <label for="dateOfBirth">Date of Birth <span>*</span></label>
+          <input
+            id="dateOfBirth"
+            name="dateOfBirth"
+            type="date"
+            class="register-control"
+            [(ngModel)]="dateOfBirth"
+          />
+        </div>
+
+        <div class="register-field">
+          <label for="insuranceId">Insurance ID</label>
+          <input
+            id="insuranceId"
+            name="insuranceId"
+            type="text"
+            class="register-control"
+            placeholder="Optional"
+            [(ngModel)]="insuranceId"
+          />
+        </div>
+
+        <div class="register-field">
+          <label for="password">Password <span>*</span></label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            class="register-control"
+            placeholder="Create password"
+            [(ngModel)]="password"
+          />
+        </div>
+
+        <div class="register-field">
+          <label for="confirmPassword">Confirm Password <span>*</span></label>
+          <input
+            id="confirmPassword"
+            name="confirmPassword"
+            type="password"
+            class="register-control"
+            placeholder="Confirm password"
+            [(ngModel)]="confirmPassword"
+          />
+        </div>
+      </div>
+
+      <button class="register-submit-button" type="submit" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Creating account...' : 'Register Patient' }}
+      </button>
+    </form>
+
+    <div class="register-footer">
+      <span>Already have an account?</span>
+      <a routerLink="/login">Login</a>
+    </div>
+  </section>
+
+  @if (isSubmitting) {
+    <div class="register-loading-backdrop">
+      <div class="register-loading-box">
+        <div class="loading-logo">H</div>
+
+        <h3>Creating account</h3>
+        <p>Please wait while HealthApp prepares your patient account.</p>
+
+        <div class="register-popup-progress">
+          <div class="register-popup-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

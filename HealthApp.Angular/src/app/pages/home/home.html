@@ -1,0 +1,204 @@
+<div class="health-home-page">
+  <header class="home-navbar">
+    <a class="home-brand" routerLink="/">
+      <div class="home-brand-logo">H</div>
+
+      <div>
+        <strong>HealthApp</strong>
+        <span>Digital Healthcare Platform</span>
+      </div>
+    </a>
+
+    <nav class="home-nav-links">
+      <a href="#features">Features</a>
+      <a href="#services">Services</a>
+      <a href="#access">Access</a>
+    </nav>
+
+    <div class="home-navbar-actions">
+      <a class="home-register-button" routerLink="/register">
+        Register
+      </a>
+
+      <a class="home-login-button" routerLink="/login">
+        Login
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="home-hero-section">
+      <div class="hero-content">
+        <span class="home-kicker">Smart Healthcare Management</span>
+
+        <h1>
+          Healthcare made simple, secure, and connected.
+        </h1>
+
+        <p>
+          HealthApp helps patients book appointments, doctors manage consultation activity,
+          and healthcare teams keep appointments and records organized in one clean platform.
+        </p>
+
+        <div class="hero-actions">
+          <a class="hero-primary-button" routerLink="/login">
+            Login
+          </a>
+
+          <a class="hero-secondary-button" routerLink="/register">
+            Register as Patient
+          </a>
+        </div>
+
+        <div class="hero-trust-row">
+          <div>
+            <strong>24/7</strong>
+            <span>Access</span>
+          </div>
+
+          <div>
+            <strong>Secure</strong>
+            <span>Platform</span>
+          </div>
+
+          <div>
+            <strong>Easy</strong>
+            <span>Booking</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-preview-card">
+        <div class="preview-card-header">
+          <div class="preview-logo">H</div>
+
+          <div>
+            <strong>HealthApp Console</strong>
+            <span>Care overview</span>
+          </div>
+        </div>
+
+        <div class="preview-stat-grid">
+          <div class="preview-stat-card blue">
+            <span>Doctors</span>
+            <strong>Active</strong>
+          </div>
+
+          <div class="preview-stat-card green">
+            <span>Patients</span>
+            <strong>Managed</strong>
+          </div>
+
+          <div class="preview-stat-card purple">
+            <span>Reports</span>
+            <strong>Tracked</strong>
+          </div>
+        </div>
+
+        <div class="preview-timeline">
+          <div>
+            <span class="timeline-dot blue"></span>
+            <p>Patient books an appointment</p>
+          </div>
+
+          <div>
+            <span class="timeline-dot green"></span>
+            <p>Doctor reviews the schedule</p>
+          </div>
+
+          <div>
+            <span class="timeline-dot purple"></span>
+            <p>Appointment status is updated</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="home-section">
+      <div class="section-heading">
+        <span>Why HealthApp</span>
+        <h2>A modern healthcare workflow for patients and doctors</h2>
+      </div>
+
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="feature-icon">+</div>
+          <h3>Doctor Management</h3>
+          <p>
+            Doctors can manage appointment activity, review schedules, and keep consultation
+            workflows organized through a clean digital experience.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"></path>
+              <path d="M4 21a8 8 0 0 1 16 0H4z"></path>
+            </svg>
+          </div>
+
+          <h3>Patient Access</h3>
+          <p>
+            Patients can access appointments and healthcare information from a simple,
+            friendly, and secure portal.
+          </p>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z"></path>
+              <path d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v9h14v-9H5zm2 2h3v3H7v-3zm5 0h3v3h-3v-3z"></path>
+            </svg>
+          </div>
+
+          <h3>Appointment Tracking</h3>
+          <p>
+            Appointment statuses such as pending, confirmed, completed, and cancelled can
+            be tracked clearly.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section id="services" class="service-banner">
+      <div>
+        <span>Connected Care</span>
+        <h2>Built for patients, doctors, and healthcare administrators.</h2>
+        <p>
+          HealthApp keeps the healthcare flow organized from booking to reporting with a
+          smooth, professional user experience.
+        </p>
+      </div>
+
+      <a class="service-banner-button" routerLink="/login">
+        Login to Continue
+      </a>
+    </section>
+
+    <section id="access" class="access-grid">
+      <article class="access-card doctor-access">
+        <span>Doctor Portal</span>
+        <h3>For Doctors</h3>
+        <p>
+          View assigned appointments, manage consultation activity, and keep patient care
+          workflows clear.
+        </p>
+
+        <a routerLink="/login">Doctor Login</a>
+      </article>
+
+      <article class="access-card patient-access">
+        <span>Patient Portal</span>
+        <h3>For Patients</h3>
+        <p>
+          Register as a patient, book appointments, and access healthcare services from a
+          simple patient-focused interface.
+        </p>
+
+        <a routerLink="/register">Patient Register</a>
+      </article>
+    </section>
+  </main>
+</div>

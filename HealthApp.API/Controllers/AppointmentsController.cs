@@ -13,21 +13,9 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
 {
     [HttpGet]
     public async Task<ActionResult<List<AppointmentDto>>> Get(
-        [FromQuery] int? patientId,
-        [FromQuery] int? doctorId)
-    {
-        if (patientId.HasValue)
-        {
-            return Ok(await appointmentService.GetAppointmentsByPatientIdAsync(patientId.Value));
-        }
-
-        if (doctorId.HasValue)
-        {
-            return Ok(await appointmentService.GetAppointmentsByDoctorIdAsync(doctorId.Value));
-        }
-
-        return Ok(await appointmentService.GetAllAppointmentsAsync());
-    }
+    [FromQuery] int? patientId,
+    [FromQuery] int? doctorId)
+    => Ok(await appointmentService.GetAppointmentsAsync(patientId, doctorId));
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<AppointmentDto>> GetById(int id)
@@ -39,14 +27,14 @@ public class AppointmentsController(IAppointmentService appointmentService) : Co
         => Ok(await appointmentService.BookAppointmentAsync(dto));
 
     [HttpPut("{id:int}/status")]
-    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]
     public async Task<ActionResult<AppointmentDto>> Status(
         int id,
         UpdateAppointmentStatusDto dto)
         => Ok(await appointmentService.ChangeAppointmentStatusAsync(id, dto));
 
     [HttpDelete("{id:int}")]
-    [Authorize(Roles = Roles.Patient + "," + Roles.Admin)]
+    [Authorize(Roles = Roles.Patient + "," + Roles.Doctor)]
     public async Task<ActionResult<AppointmentDto>> Delete(
         int id,
         [FromQuery] string? reason)

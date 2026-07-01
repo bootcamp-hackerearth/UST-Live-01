@@ -1,0 +1,322 @@
+.patient-dashboard-page {
+  display: grid;
+  gap: 28px;
+}
+
+.patient-hero-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  padding: 30px;
+  border-radius: 30px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(248, 250, 252, 0.94)),
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.16), transparent 30%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+}
+
+.patient-kicker {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.patient-hero-card h1 {
+  margin: 6px 0 0;
+  color: #0f172a;
+  font-size: 38px;
+  font-weight: 950;
+  letter-spacing: -0.045em;
+}
+
+.patient-hero-card p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-weight: 650;
+}
+
+.patient-date-card {
+  min-width: 165px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #ffffff;
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.2);
+}
+
+.patient-date-card span {
+  display: block;
+  color: #93c5fd;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.patient-date-card strong {
+  display: block;
+  margin-top: 7px;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.patient-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.patient-metric-card {
+  min-height: 150px;
+  padding: 24px;
+  border-radius: 28px;
+  background: #ffffff;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+}
+
+.patient-metric-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 8px;
+}
+
+.patient-metric-card::after {
+  content: "";
+  position: absolute;
+  width: 145px;
+  height: 145px;
+  border-radius: 999px;
+  right: -54px;
+  top: -54px;
+  opacity: 0.15;
+}
+
+.patient-metric-card.pending::before,
+.patient-metric-card.pending::after {
+  background: #f59e0b;
+}
+
+.patient-metric-card.confirmed::before,
+.patient-metric-card.confirmed::after {
+  background: #2563eb;
+}
+
+.patient-metric-card.completed::before,
+.patient-metric-card.completed::after {
+  background: #16a34a;
+}
+
+.patient-metric-card.cancelled::before,
+.patient-metric-card.cancelled::after {
+  background: #dc2626;
+}
+
+.patient-metric-card span {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.patient-metric-card strong {
+  display: block;
+  margin-top: 12px;
+  color: #0f172a;
+  font-size: 44px;
+  line-height: 1;
+  font-weight: 950;
+}
+
+.patient-metric-card p {
+  margin: 12px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.patient-dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 24px;
+}
+
+.patient-panel {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 30px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  padding: 28px;
+  box-shadow: 0 18px 46px rgba(15, 23, 42, 0.08);
+}
+
+.panel-title-block span {
+  color: #14b8a6;
+  font-size: 12px;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.panel-title-block h2 {
+  margin: 6px 0 0;
+  color: #0f172a;
+  font-size: 28px;
+  font-weight: 950;
+  letter-spacing: -0.035em;
+}
+
+.panel-title-block p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-weight: 650;
+}
+
+.appointment-preview-list,
+.patient-quick-action-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.patient-appointment-row,
+.patient-quick-action-card {
+  display: grid;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border-radius: 22px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.patient-appointment-row {
+  grid-template-columns: 1fr 1fr auto;
+}
+
+.patient-appointment-row strong,
+.patient-quick-action-card strong {
+  display: block;
+  color: #0f172a;
+  font-weight: 950;
+  font-size: 16px;
+}
+
+.patient-appointment-row span,
+.patient-quick-action-card span {
+  display: block;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.patient-status-pill {
+  display: inline-flex;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  margin-top: 0 !important;
+}
+
+.patient-status-pill.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.patient-status-pill.confirmed {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.patient-status-pill.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.patient-status-pill.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.patient-quick-action-card {
+  grid-template-columns: auto 1fr;
+  text-decoration: none;
+  transition: 0.18s ease;
+}
+
+.patient-quick-action-card:hover {
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+.quick-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0ea5e9, #14b8a6);
+  font-size: 20px;
+  font-weight: 950;
+  flex-shrink: 0;
+  box-shadow: 0 14px 28px rgba(14, 165, 233, 0.22);
+}
+
+.quick-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+.appointment-book-icon {
+  background: linear-gradient(135deg, #06b6d4, #14b8a6);
+}
+
+.quick-icon svg {
+  width: 23px;
+  height: 23px;
+  fill: currentColor;
+}
+
+.empty-patient-row {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 18px;
+  padding: 18px;
+  color: #64748b;
+  font-weight: 800;
+}
+
+@media (max-width: 1150px) {
+  .patient-metric-grid,
+  .patient-dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .patient-hero-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .patient-metric-grid,
+  .patient-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-appointment-row {
+    grid-template-columns: 1fr;
+  }
+}

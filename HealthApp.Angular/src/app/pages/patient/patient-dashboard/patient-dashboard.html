@@ -1,0 +1,128 @@
+<div class="patient-dashboard-page">
+  <section class="patient-hero-card">
+    <div>
+      <span class="patient-kicker">Patient Portal</span>
+      <h1>Welcome back, {{ patient?.fullName }}</h1>
+      <p>Your care dashboard is ready.</p>
+    </div>
+
+    <div class="patient-date-card">
+      <span>Today</span>
+      <strong>
+        {{ today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) }}
+      </strong>
+    </div>
+  </section>
+
+  <section class="patient-metric-grid">
+    <div class="patient-metric-card pending">
+      <span>Pending</span>
+      <strong>{{ pendingCount }}</strong>
+      <p>Waiting for confirmation</p>
+    </div>
+
+    <div class="patient-metric-card confirmed">
+      <span>Confirmed</span>
+      <strong>{{ confirmedCount }}</strong>
+      <p>Approved appointments</p>
+    </div>
+
+    <div class="patient-metric-card completed">
+      <span>Completed</span>
+      <strong>{{ completedCount }}</strong>
+      <p>Finished consultations</p>
+    </div>
+
+    <div class="patient-metric-card cancelled">
+      <span>Cancelled</span>
+      <strong>{{ cancelledCount }}</strong>
+      <p>Cancelled appointments</p>
+    </div>
+  </section>
+
+  <section class="patient-dashboard-grid">
+    <div class="patient-panel">
+      <div class="panel-title-block">
+        <span>Upcoming Care</span>
+        <h2>Upcoming Appointments</h2>
+        <p>Appointments scheduled within the next 30 days.</p>
+      </div>
+
+      <div class="appointment-preview-list">
+        @if (upcomingAppointments.length === 0) {
+          <div class="empty-patient-row">
+            No upcoming appointments found.
+          </div>
+        } @else {
+          @for (appointment of upcomingAppointments; track appointment.appointmentId) {
+            <div class="patient-appointment-row">
+              <div>
+                <strong>{{ appointment.doctorName }}</strong>
+                <span>{{ getDoctorSpecialisation(appointment.doctorId) }}</span>              </div>
+
+              <div>
+                <strong>{{ formatDate(appointment.scheduledDate) }}</strong>
+                <span>{{ appointment.timeSlot }}</span>
+              </div>
+
+              <span class="patient-status-pill {{ appointment.status.toLowerCase() }}">
+                {{ appointment.status }}
+              </span>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="patient-panel">
+      <div class="panel-title-block">
+        <span>Shortcuts</span>
+        <h2>Quick Actions</h2>
+        <p>Access your care activities quickly.</p>
+      </div>
+
+      <div class="patient-quick-action-list">
+        <a class="patient-quick-action-card" routerLink="/patient/appointments/book">
+        <div class="quick-icon appointment-book-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"></path>
+            </svg>
+        </div>
+
+        <div>
+            <strong>Book Appointment</strong>
+            <span>Find a doctor and select an available slot.</span>
+        </div>
+        </a>
+
+        <a class="patient-quick-action-card" routerLink="/patient/appointments">
+          <div class="quick-icon calendar-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z"></path>
+              <path d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v9h14v-9H5z"></path>
+            </svg>
+          </div>
+
+          <div>
+            <strong>View Appointments</strong>
+            <span>Review pending, confirmed, and completed appointments.</span>
+          </div>
+        </a>
+
+        <a class="patient-quick-action-card" routerLink="/patient/health-records">
+        <div class="quick-icon record-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.8V8h4.2L14 3.8z"></path>
+            <path d="M10.8 11h2.4v2.2h2.2v2.4h-2.2v2.2h-2.4v-2.2H8.6v-2.4h2.2V11z"></path>
+            </svg>
+        </div>
+
+        <div>
+            <strong>View Health Records</strong>
+            <span>Check diagnosis history and prescribed medication.</span>
+        </div>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

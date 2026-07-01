@@ -1,0 +1,173 @@
+<div class="doctor-dashboard-page">
+  <section class="doctor-hero-card">
+    <div>
+      <span class="doctor-kicker">Doctor Portal</span>
+      <h1>Welcome back, {{ currentUser?.fullName }}</h1>
+      <p>Your consultation dashboard is ready.</p>
+    </div>
+
+    <div class="doctor-date-card">
+      <span>Today</span>
+      <strong>
+        {{ today.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) }}
+      </strong>
+    </div>
+  </section>
+
+  <section class="doctor-metric-grid">
+    <div class="doctor-metric-card today">
+      <span>Today's Appointments</span>
+      <strong>{{ todayCount }}</strong>
+      <p>Scheduled for today</p>
+    </div>
+
+    <div class="doctor-metric-card pending">
+      <span>Pending</span>
+      <strong>{{ pendingCount }}</strong>
+      <p>Waiting for confirmation</p>
+    </div>
+
+    <div class="doctor-metric-card confirmed">
+      <span>Confirmed</span>
+      <strong>{{ confirmedCount }}</strong>
+      <p>Upcoming consultations</p>
+    </div>
+
+    <div class="doctor-metric-card completed">
+      <span>Completed</span>
+      <strong>{{ completedCount }}</strong>
+      <p>Finished consultations</p>
+    </div>
+  </section>
+
+  <section class="doctor-dashboard-grid">
+    <div class="doctor-panel schedule-panel">
+      <div class="panel-title-block">
+        <span>Clinical Schedule</span>
+        <h2>Today's Schedule</h2>
+        <p>Appointments assigned to you for today.</p>
+      </div>
+
+      <div class="doctor-table-wrapper">
+        <table class="doctor-schedule-table">
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Time Slot</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (todayAppointments.length === 0) {
+              <tr>
+                <td colspan="4">
+                  <div class="doctor-empty-state">
+                    <strong>No appointments today.</strong>
+                    <span>Your schedule is clear for today.</span>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              @for (appointment of todayAppointments; track appointment.appointmentId) {
+                <tr>
+                  <td>
+                    <div class="patient-name-cell">
+                      <div class="patient-avatar-cell">
+                        {{ appointment.patientName?.charAt(0) }}
+                      </div>
+
+                      <div>
+                        <strong>{{ appointment.patientName }}</strong>
+                        <span>Appointment ID: #{{ appointment.appointmentId }}</span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <strong>{{ appointment.timeSlot }}</strong>
+                  </td>
+
+                  <td>
+                    <span class="doctor-status-pill {{ appointment.status.toLowerCase() }}">
+                      {{ appointment.status }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <button
+                      class="view-patient-button"
+                      type="button"
+                      (click)="viewPatient(appointment)"
+                    >
+                      View Patient
+                    </button>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="doctor-panel actions-panel">
+      <div class="panel-title-block">
+        <span>Shortcuts</span>
+        <h2>Quick Actions</h2>
+        <p>Access your clinical activities quickly.</p>
+      </div>
+
+    <div class="doctor-quick-action-list">
+    <a class="doctor-quick-action-card" routerLink="/doctor/appointments">
+        <div class="quick-icon appointments-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z"></path>
+            <path d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v9h14v-9H5z"></path>
+        </svg>
+        </div>
+
+        <div>
+        <strong>View Appointments</strong>
+        <span>Review all assigned consultations in one place.</span>
+        </div>
+    </a>
+
+        <a
+        class="doctor-quick-action-card"
+        routerLink="/doctor/appointments"
+        [queryParams]="{ status: 'Pending' }"
+        >        
+        <div class="quick-icon pending-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2a10 10 0 1 0 10 10A10.01 10.01 0 0 0 12 2zm1 11h5v-2h-4V6h-2v7z"></path>
+        </svg>
+        </div>
+
+        <div>
+        <strong>Pending Requests</strong>
+        <span>Check appointments waiting for confirmation.</span>
+        </div>
+    </a>
+
+        <a
+        class="doctor-quick-action-card"
+        routerLink="/doctor/appointments"
+        [queryParams]="{ status: 'Confirmed' }"
+        > 
+        <div class="quick-icon confirmed-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path>
+        </svg>
+        </div>
+
+        <div>
+        <strong>Confirmed Consultations</strong>
+        <span>View consultations ready for patient visit and records.</span>
+        </div>
+    </a>
+    </div>
+    </div>
+  </section>
+</div>

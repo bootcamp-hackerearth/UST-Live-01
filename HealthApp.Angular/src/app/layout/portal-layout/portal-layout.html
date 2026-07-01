@@ -1,0 +1,354 @@
+<div [class]="shellClass">
+  <aside [class]="sidebarClass">
+    <div class="portal-brand-row">
+      <div class="portal-brand-logo">H</div>
+
+      <div class="portal-brand-text">
+        <h2>HealthApp</h2>
+        <span>{{ portalTitle }}</span>
+      </div>
+
+      <button
+        class="sidebar-toggle-button"
+        type="button"
+        (click)="toggleSidebar()"
+        [title]="isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
+      >
+        {{ isSidebarCollapsed ? '›' : '‹' }}
+      </button>
+    </div>
+
+    <nav class="portal-nav-list">
+      <a
+        [routerLink]="dashboardLink"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        title="Dashboard"
+      >
+        <span class="portal-nav-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 11.5L12 4l9 7.5v8.5a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.5z"></path>
+          </svg>
+        </span>
+        <span class="portal-nav-text">Dashboard</span>
+      </a>
+
+      <a [routerLink]="appointmentsLink" routerLinkActive="active" title="Appointments">        <span class="portal-nav-icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 2h2v3H7V2zm8 0h2v3h-2V2z"></path>
+            <path d="M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 6v9h14v-9H5zm2 2h3v3H7v-3zm5 0h3v3h-3v-3z"></path>
+          </svg>
+        </span>
+        <span class="portal-nav-text">Appointments</span>
+      </a>
+
+      @if (isPatientPortal) {
+        <a [routerLink]="healthRecordsLink" routerLinkActive="active" title="Health Records">
+        <span class="portal-nav-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.8V8h4.2L14 3.8z"></path>
+            <path d="M10.8 11h2.4v2.2h2.2v2.4h-2.2v2.2h-2.4v-2.2H8.6v-2.4h2.2V11z"></path>
+            </svg>
+        </span>
+        <span class="portal-nav-text">Health Records</span>
+        </a>
+      }
+    </nav>
+  </aside>
+
+  @if (showSidebarClickAway) {
+    <div class="sidebar-click-away" (click)="collapseSidebarFromOutside()"></div>
+  }
+
+  <section class="portal-main-area">
+    <header class="portal-topbar">
+      <div class="portal-topbar-title">
+        <span>{{ portalTitle }}</span>
+        <strong>{{ portalSubtitle }}</strong>
+      </div>
+
+      <div class="portal-topbar-actions">
+        <div class="profile-menu-wrapper">
+            <button
+              class="patient-profile-card profile-click-card"
+              type="button"
+              (click)="toggleProfileMenu()"
+            >
+            <div class="patient-avatar">
+              {{ getInitials(currentUser?.fullName) }}
+            </div>
+
+            <div class="patient-profile-text">
+              <strong>{{ currentUser?.email }}</strong>
+              <span>{{ userRoleLabel }}</span>
+            </div>
+
+            <span class="profile-caret" [class.open]="profileMenuOpen">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M7 10l5 5 5-5H7z"></path>
+              </svg>
+            </span>
+          </button>
+
+          @if (profileMenuOpen) {
+                <div
+                  class="profile-dropdown"
+                  [class.patient-dropdown]="isPatientPortal"
+                  [class.doctor-dropdown]="isDoctorPortal"
+                >              @if (isPatientPortal) {
+                <button type="button" class="profile-dropdown-item" (click)="openProfileModal()">
+                  <span class="dropdown-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"></path>
+                      <path d="M4 21a8 8 0 0 1 16 0H4z"></path>
+                    </svg>
+                  </span>
+
+                  <span>
+                    <strong>Profile</strong>
+                    <small>View and edit details</small>
+                  </span>
+                </button>
+
+                <button type="button" class="profile-dropdown-item" (click)="openPasswordModal()">
+                  <span class="dropdown-icon lock">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h1zm2 0h6V8a3 3 0 0 0-6 0v2z"></path>
+                    </svg>
+                  </span>
+
+                  <span>
+                    <strong>Change Password</strong>
+                    <small>Update your password</small>
+                  </span>
+                </button>
+              }
+
+              @if (isDoctorPortal) {
+                <button type="button" class="profile-dropdown-item" (click)="openDoctorProfileModal()">
+                  <span class="dropdown-icon doctor-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z"></path>
+                      <path d="M4 21a8 8 0 0 1 16 0H4z"></path>
+                    </svg>
+                  </span>
+
+                  <span>
+                    <strong>View Profile</strong>
+                    <small>View doctor details</small>
+                  </span>
+                </button>
+              }
+            </div>
+          }
+        </div>
+
+        <button class="portal-logout-button" type="button" (click)="openLogoutConfirmation()">
+        Logout
+        </button>
+      </div>
+    </header>
+
+    <main class="portal-main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </section>
+</div>
+@if (showLogoutConfirmModal) {
+  <div class="logout-modal-backdrop">
+    <div class="logout-confirm-modal">
+      <div class="logout-modal-header">
+        <div>
+          <span>Logout Confirmation</span>
+          <h2>Are you sure?</h2>
+        </div>
+
+        <button class="logout-modal-x" type="button" (click)="closeLogoutConfirmation()">
+          ×
+        </button>
+      </div>
+
+      <p class="logout-confirm-text">
+        Are you sure you want to logout from <strong>HealthApp Patient Portal</strong>?
+      </p>
+
+      <div class="logout-modal-actions">
+        <button class="logout-close-outline" type="button" (click)="closeLogoutConfirmation()">
+          Close
+        </button>
+
+        <button class="logout-confirm-button" type="button" (click)="confirmLogout()">
+          Confirm Logout
+        </button>
+      </div>
+    </div>
+  </div>
+}
+@if (showPasswordModal) {
+  <div class="profile-modal-backdrop">
+    <div class="profile-modal password-modal">
+      <div class="profile-modal-header">
+        <div>
+          <span>Security</span>
+          <h2>Change Password</h2>
+        </div>
+
+        <button class="profile-modal-x" type="button" (click)="closePasswordModal()">×</button>
+      </div>
+
+      @if (passwordMessage) {
+        <div class="profile-message-card" [class.error]="passwordIsError" [class.success]="!passwordIsError">
+          <strong>{{ passwordIsError ? 'Action Failed' : 'Success' }}</strong>
+          <span>{{ passwordMessage }}</span>
+        </div>
+      }
+
+      <div class="profile-form-grid single">
+        <div class="profile-field">
+          <label>Current Password</label>
+          <input class="profile-control" type="password" [(ngModel)]="passwordForm.currentPassword" />
+        </div>
+
+        <div class="profile-field">
+          <label>New Password</label>
+          <input class="profile-control" type="password" [(ngModel)]="passwordForm.newPassword" />
+        </div>
+
+        <div class="profile-field">
+          <label>Confirm New Password</label>
+          <input class="profile-control" type="password" [(ngModel)]="passwordForm.confirmPassword" />
+        </div>
+      </div>
+
+      <div class="profile-modal-actions">
+        <button class="profile-close-outline" type="button" (click)="closePasswordModal()">Close</button>
+        <button class="profile-save-button" type="button" (click)="changePassword()">Update Password</button>
+      </div>
+    </div>
+  </div>
+}
+@if (showProfileModal) {
+  <div class="profile-modal-backdrop">
+    <div class="profile-modal">
+      <div class="profile-modal-header">
+        <div>
+          <span>Patient Profile</span>
+          <h2>Edit Profile</h2>
+        </div>
+
+        <button class="profile-modal-x" type="button" (click)="closeProfileModal()">×</button>
+      </div>
+
+      @if (profileMessage) {
+        <div class="profile-message-card" [class.error]="profileIsError" [class.success]="!profileIsError">
+          <strong>{{ profileIsError ? 'Action Failed' : 'Success' }}</strong>
+          <span>{{ profileMessage }}</span>
+        </div>
+      }
+
+      <div class="profile-form-grid">
+        <div class="profile-field">
+          <label>Full Name</label>
+          <input class="profile-control" type="text" [(ngModel)]="editProfile.fullName" />
+        </div>
+
+        <div class="profile-field">
+          <label>Email</label>
+          <input class="profile-control" type="email" [(ngModel)]="editProfile.email" />
+        </div>
+
+        <div class="profile-field">
+          <label>Phone Number</label>
+          <input class="profile-control" type="text" [(ngModel)]="editProfile.phoneNumber" />
+        </div>
+
+        <div class="profile-field">
+          <label>Gender</label>
+          <select class="profile-control" [(ngModel)]="editProfile.gender">
+            @for (gender of genders; track gender) {
+              <option [value]="gender">{{ gender }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="profile-field">
+          <label>Date of Birth</label>
+          <input class="profile-control" type="date" [(ngModel)]="editProfile.dateOfBirth" />
+        </div>
+
+        <div class="profile-field">
+          <label>Insurance ID</label>
+          <input class="profile-control" type="text" [(ngModel)]="editProfile.insuranceId" />
+        </div>
+      </div>
+
+      <div class="profile-modal-actions">
+        <button class="profile-close-outline" type="button" (click)="closeProfileModal()">Close</button>
+        <button class="profile-save-button" type="button" (click)="saveProfile()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+}
+@if (showDoctorProfileModal && doctorProfile) {
+  <div class="profile-modal-backdrop">
+    <div class="profile-modal doctor-profile-modal">
+      <div class="profile-modal-header">
+        <div>
+          <span>Doctor Profile</span>
+          <h2>{{ doctorProfile.fullName }}</h2>
+        </div>
+
+        <button class="profile-modal-x" type="button" (click)="closeDoctorProfileModal()">×</button>
+      </div>
+
+      <div class="doctor-profile-hero">
+        <div class="doctor-profile-avatar">
+          {{ getInitials(doctorProfile.fullName) }}
+        </div>
+
+        <div>
+          <strong>{{ doctorProfile.fullName }}</strong>
+          <span>{{ doctorProfile.specialisation }}</span>
+        </div>
+      </div>
+
+      <div class="profile-form-grid">
+        <div class="profile-readonly-card">
+          <span>Doctor ID</span>
+          <strong>#{{ doctorProfile.doctorId }}</strong>
+        </div>
+
+        <div class="profile-readonly-card">
+          <span>Specialisation</span>
+          <strong>{{ doctorProfile.specialisation }}</strong>
+        </div>
+
+        <div class="profile-readonly-card">
+          <span>Experience</span>
+          <strong>{{ doctorProfile.yearsOfExperience }} years</strong>
+        </div>
+
+        <div class="profile-readonly-card">
+          <span>Consultation Fee</span>
+          <strong>₹{{ doctorProfile.consultationFee }}</strong>
+        </div>
+
+        <div class="profile-readonly-card">
+          <span>Status</span>
+          <strong>{{ doctorProfile.isActive ? 'Active' : 'Inactive' }}</strong>
+        </div>
+
+        <div class="profile-readonly-card">
+          <span>Account</span>
+          <strong>{{ currentUser?.email }}</strong>
+        </div>
+      </div>
+
+      <div class="profile-modal-actions">
+        <button class="profile-close-outline" type="button" (click)="closeDoctorProfileModal()">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}

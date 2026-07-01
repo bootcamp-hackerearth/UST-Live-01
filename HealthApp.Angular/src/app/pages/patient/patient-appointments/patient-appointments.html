@@ -1,0 +1,149 @@
+<div class="appointments-page">
+  <section class="appointments-hero-card">
+    <div>
+      <span class="appointments-kicker">Patient Portal</span>
+      <h1>My Appointments</h1>
+      <p>View your appointment history and manage upcoming visits.</p>
+    </div>
+
+    <a class="book-new-button" routerLink="/patient/appointments/book">
+    <span class="book-new-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"></path>
+        </svg>
+    </span>
+    <span>Book New Appointment</span>
+    </a>
+  </section>
+
+  @if (message) {
+    <div class="appointment-message-card" [class.error]="isError" [class.success]="!isError">
+      <div>
+        <strong>{{ isError ? 'Action Failed' : 'Success' }}</strong>
+        <span>{{ message }}</span>
+      </div>
+    </div>
+  }
+
+  <section class="appointments-list-card">
+    <div class="appointments-list-header">
+      <div>
+        <h2>Appointment List</h2>
+        <p>{{ appointments.length }} appointment(s) found</p>
+      </div>
+    </div>
+
+    @if (appointments.length === 0) {
+      <div class="appointments-empty-state">
+        <strong>No appointments found</strong>
+        <span>Book your first appointment to get started.</span>
+      </div>
+    } @else {
+      <div class="appointments-grid">
+        @for (appointment of appointments; track appointment.appointmentId) {
+          <article class="appointment-card">
+            <div class="appointment-card-header">
+              <div>
+                <span class="appointment-id">#{{ appointment.appointmentId }}</span>
+                <h3>{{ appointment.doctorName }}</h3>
+                <p>{{ getDoctorSpecialisation(appointment.doctorId) }}</p>
+              </div>
+
+              <span class="appointment-status-pill {{ appointment.status.toLowerCase() }}">
+                {{ appointment.status }}
+              </span>
+            </div>
+
+            <div class="appointment-info-grid">
+              <div>
+                <span>Date</span>
+                <strong>{{ formatDate(appointment.scheduledDate) }}</strong>
+              </div>
+
+              <div>
+                <span>Time Slot</span>
+                <strong>{{ appointment.timeSlot }}</strong>
+              </div>
+
+              <div>
+                <span>Patient</span>
+                <strong>{{ appointment.patientName }}</strong>
+              </div>
+
+              <div>
+                <span>Doctor ID</span>
+                <strong>{{ appointment.doctorId }}</strong>
+              </div>
+            </div>
+
+            @if (appointment.cancellationReason) {
+              <div class="cancellation-reason-box">
+                <span>Cancellation Reason</span>
+                <strong>{{ appointment.cancellationReason }}</strong>
+              </div>
+            }
+
+            <div class="appointment-card-actions">
+              @if (canCancel(appointment)) {
+                <button
+                  class="cancel-appointment-button"
+                  type="button"
+                  (click)="openCancelModal(appointment)"
+                >
+                  Cancel Appointment
+                </button>
+              } @else {
+                <button class="disabled-action-button" type="button" disabled>
+                  No Action Available
+                </button>
+              }
+            </div>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>
+
+@if (selectedAppointment) {
+  <div class="cancel-modal-backdrop">
+    <div class="cancel-modal">
+      <div class="cancel-modal-header">
+        <div>
+          <span>Cancel Appointment</span>
+          <h2>Are you sure?</h2>
+        </div>
+
+        <button class="cancel-modal-x" type="button" (click)="closeCancelModal()">×</button>
+      </div>
+
+      <p class="cancel-confirm-text">
+        You are cancelling appointment
+        <strong>#{{ selectedAppointment.appointmentId }}</strong>
+        with <strong>{{ selectedAppointment.doctorName }}</strong>.
+      </p>
+
+      <div class="cancel-reason-field">
+        <label for="cancellationReason">Cancellation Reason <span>*</span></label>
+
+        <textarea
+          id="cancellationReason"
+          name="cancellationReason"
+          rows="4"
+          placeholder="Enter reason for cancellation"
+          [(ngModel)]="cancellationReason"
+        ></textarea>
+      </div>
+
+      <div class="cancel-modal-actions">
+        <button class="cancel-close-outline" type="button" (click)="closeCancelModal()">
+          Close
+        </button>
+
+        <button class="cancel-confirm-button" type="button" (click)="confirmCancelAppointment()">
+          Confirm Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+}

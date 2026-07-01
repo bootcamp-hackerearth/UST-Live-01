@@ -1,0 +1,91 @@
+<div class="health-records-page">
+  <section class="records-hero-card">
+    <div>
+      <span class="records-kicker">Patient Portal</span>
+      <h1>Health Records</h1>
+      <p>Review your completed visit history, diagnosis, and prescriptions.</p>
+    </div>
+
+    <a class="records-action-button" routerLink="/patient/appointments">
+      View Appointments
+    </a>
+  </section>
+
+  <section class="records-summary-grid">
+    <div class="records-summary-card">
+      <span>Total Records</span>
+      <strong>{{ healthRecords.length }}</strong>
+      <p>Completed visit records</p>
+    </div>
+
+    <div class="records-summary-card teal">
+      <span>Patient</span>
+      <strong>{{ patient?.fullName }}</strong>
+      <p>{{ patient?.email }}</p>
+    </div>
+  </section>
+
+  <section class="records-table-card">
+    <div class="records-table-header">
+      <div>
+        <h2>Visit History</h2>
+        <p>{{ healthRecords.length }} health record(s) found</p>
+      </div>
+    </div>
+
+    @if (healthRecords.length === 0) {
+      <div class="records-empty-state">
+        <strong>No health records found</strong>
+        <span>Health records will appear here after completed consultations.</span>
+      </div>
+    } @else {
+      <div class="records-grid">
+        @for (record of healthRecords; track record.healthRecordId) {
+          <article class="record-card">
+            <div class="record-card-header">
+              <div>
+                <span class="record-id">Record #{{ record.healthRecordId }}</span>
+                <h3>{{ record.doctorName }}</h3>
+                <p>{{ getDoctorSpecialisation(record.doctorId) }}</p>
+              </div>
+
+              <div class="visit-date-pill">
+                <span>Visit Date</span>
+                <strong>{{ formatDate(record.visitDate) }}</strong>
+              </div>
+            </div>
+
+            <div class="record-info-grid">
+              <div>
+                <span>Appointment ID</span>
+                <strong>#{{ record.appointmentId }}</strong>
+              </div>
+
+              <div>
+                <span>Patient</span>
+                <strong>{{ record.patientName }}</strong>
+              </div>
+            </div>
+
+            <div class="record-detail-block diagnosis">
+              <span>Diagnosis</span>
+              <strong>{{ record.diagnosis }}</strong>
+            </div>
+
+            <div class="record-detail-block prescription">
+              <span>Prescription</span>
+              <strong>{{ record.prescription }}</strong>
+            </div>
+
+            @if (record.notes) {
+              <div class="record-detail-block notes">
+                <span>Notes</span>
+                <strong>{{ record.notes }}</strong>
+              </div>
+            }
+          </article>
+        }
+      </div>
+    }
+  </section>
+</div>

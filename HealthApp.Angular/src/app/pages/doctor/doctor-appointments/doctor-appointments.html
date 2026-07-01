@@ -1,0 +1,415 @@
+<div class="doctor-appointments-page">
+  <section class="doctor-appointments-hero">
+    <div>
+      <span class="doctor-kicker">Doctor Portal</span>
+      <h1>Appointments</h1>
+      <p>Review consultations, confirm appointments, cancel when unavailable, and add health records.</p>
+    </div>
+  </section>
+
+  @if (message) {
+    <div class="doctor-message-card" [class.error]="isError" [class.success]="!isError">
+      <strong>{{ isError ? 'Action Failed' : 'Success' }}</strong>
+      <span>{{ message }}</span>
+    </div>
+  }
+    <section class="doctor-filter-card">
+    <div class="doctor-search-box">
+        <span>⌕</span>
+        <input
+        type="text"
+        placeholder="Search by patient, appointment ID, patient ID, or time slot..."
+        [(ngModel)]="searchText"
+        />
+    </div>
+
+    <select class="doctor-filter-select" [(ngModel)]="statusFilter">
+        <option value="All">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Confirmed">Confirmed</option>
+        <option value="Completed">Completed</option>
+        <option value="Cancelled">Cancelled</option>
+    </select>
+
+    <select class="doctor-filter-select" [(ngModel)]="dateFilter">
+        <option value="All">All Dates</option>
+        <option value="Today">Today</option>
+        <option value="Upcoming">Upcoming</option>
+        <option value="Past">Past</option>
+    </select>
+    </section>
+  <section class="doctor-table-card">
+    <div class="doctor-table-header">
+      <div>
+        <h2>Appointment List</h2>
+        <p>{{ filteredAppointments.length }} appointment(s) shown from {{ appointments.length }} assigned</p>
+      </div>
+    </div>
+
+    <div class="doctor-table-wrapper">
+      <table class="doctor-appointments-table">
+        <thead>
+          <tr>
+            <th>Appointment ID</th>
+            <th>Patient</th>
+            <th>Date</th>
+            <th>Time Slot</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @if (filteredAppointments.length === 0) {
+            <tr>
+              <td colspan="6">
+                <div class="doctor-empty-state">
+                  <strong>No appointments found.</strong>
+                  <span>Your assigned appointments will appear here.</span>
+                </div>
+              </td>
+            </tr>
+          } @else {
+            @for (appointment of filteredAppointments; track appointment.appointmentId) {
+              <tr>
+                <td><strong>#{{ appointment.appointmentId }}</strong></td>
+
+                <td>
+                  <div class="patient-name-cell">
+                    <div class="patient-avatar-cell">
+                      {{ appointment.patientName?.charAt(0) }}
+                    </div>
+
+                    <div>
+                      <strong>{{ appointment.patientName }}</strong>
+                      <span>Patient ID: {{ appointment.patientId }}</span>
+                    </div>
+                  </div>
+                </td>
+
+                <td>{{ formatDate(appointment.scheduledDate) }}</td>
+
+                <td><strong>{{ appointment.timeSlot }}</strong></td>
+
+                <td>
+                  <span class="doctor-status-pill {{ appointment.status.toLowerCase() }}">
+                    {{ appointment.status }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="doctor-action-buttons">
+                    @if (appointment.status === 'Pending') {
+                      <button class="action-btn view" type="button" (click)="openPatientModal(appointment)">
+                        View Patient
+                      </button>
+
+                      <button class="action-btn confirm" type="button" (click)="confirmAppointment(appointment)">
+                        Confirm
+                      </button>
+
+                      <button class="action-btn cancel" type="button" (click)="openCancelModal(appointment)">
+                        Cancel
+                      </button>
+                    }
+
+                    @if (appointment.status === 'Confirmed') {
+                      <button class="action-btn view" type="button" (click)="openPatientModal(appointment)">
+                        View Patient
+                      </button>
+
+                      <button class="action-btn record" type="button" (click)="openAddRecordPanel(appointment)">
+                        Add Record
+                      </button>
+
+                      <button class="action-btn cancel" type="button" (click)="openCancelModal(appointment)">
+                        Cancel
+                      </button>
+                    }
+
+                    @if (appointment.status === 'Completed') {
+                      <button class="action-btn record" type="button" (click)="openRecordModal(appointment)">
+                        View Record
+                      </button>
+                    }
+
+                    @if (appointment.status === 'Cancelled') {
+                    <button
+                        class="action-btn view"
+                        type="button"
+                        (click)="openCancelledDetailsModal(appointment)"
+                    >
+                        View Details
+                    </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+@if (selectedPatient) {
+  <div class="doctor-modal-backdrop">
+    <div class="doctor-modal">
+      <div class="doctor-modal-header">
+        <div>
+          <span>Patient Profile</span>
+          <h2>{{ selectedPatient.fullName }}</h2>
+        </div>
+
+        <button class="doctor-modal-x" type="button" (click)="closePatientModal()">×</button>
+      </div>
+
+      <div class="patient-detail-grid">
+        <div>
+          <span>Email</span>
+          <strong>{{ selectedPatient.email || 'Not provided' }}</strong>
+        </div>
+
+        <div>
+          <span>Phone</span>
+          <strong>{{ selectedPatient.phoneNumber }}</strong>
+        </div>
+
+        <div>
+          <span>Gender</span>
+          <strong>{{ selectedPatient.gender }}</strong>
+        </div>
+
+        <div>
+          <span>Date of Birth</span>
+          <strong>{{ formatDate(selectedPatient.dateOfBirth) }}</strong>
+        </div>
+
+        <div>
+          <span>Insurance ID</span>
+          <strong>{{ selectedPatient.insuranceId || 'Not available' }}</strong>
+        </div>
+      </div>
+
+      <div class="history-section">
+        <h3>Health History</h3>
+
+        @if (selectedPatientHistory.length === 0) {
+          <div class="history-empty">No health records found for this patient.</div>
+        } @else {
+          <div class="history-list">
+            @for (record of selectedPatientHistory; track record.healthRecordId) {
+              <div class="history-item">
+                <strong>{{ formatDate(record.visitDate) }} · {{ record.doctorName }}</strong>
+                <span>Diagnosis: {{ record.diagnosis }}</span>
+                <span>Prescription: {{ record.prescription }}</span>
+                @if (record.notes) {
+                  <span>Notes: {{ record.notes }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
+
+@if (selectedCancelAppointment) {
+  <div class="doctor-modal-backdrop">
+    <div class="doctor-modal small">
+      <div class="doctor-modal-header">
+        <div>
+          <span>Cancel Appointment</span>
+          <h2>Reason Required</h2>
+        </div>
+
+        <button class="doctor-modal-x" type="button" (click)="closeCancelModal()">×</button>
+      </div>
+
+      <p class="modal-info-text">
+        Cancelling appointment <strong>#{{ selectedCancelAppointment.appointmentId }}</strong>
+        for <strong>{{ selectedCancelAppointment.patientName }}</strong>.
+      </p>
+
+      <div class="doctor-field">
+        <label>Cancellation Reason</label>
+        <textarea
+          rows="4"
+          class="doctor-textarea"
+          placeholder="Enter cancellation reason"
+          [(ngModel)]="cancellationReason"
+        ></textarea>
+      </div>
+
+      <div class="doctor-modal-actions">
+        <button class="outline-btn" type="button" (click)="closeCancelModal()">Close</button>
+        <button class="danger-btn" type="button" (click)="cancelAppointment()">Confirm Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (selectedCancelledAppointment) {
+  <div class="doctor-modal-backdrop">
+    <div class="doctor-modal small">
+      <div class="doctor-modal-header">
+        <div>
+          <span>Cancelled Appointment</span>
+          <h2>Cancellation Details</h2>
+        </div>
+
+        <button
+          class="doctor-modal-x"
+          type="button"
+          (click)="closeCancelledDetailsModal()"
+        >
+          ×
+        </button>
+      </div>
+
+      <div class="cancelled-detail-grid">
+        <div>
+          <span>Appointment ID</span>
+          <strong>#{{ selectedCancelledAppointment.appointmentId }}</strong>
+        </div>
+
+        <div>
+          <span>Patient</span>
+          <strong>{{ selectedCancelledAppointment.patientName }}</strong>
+        </div>
+
+        <div>
+          <span>Date</span>
+          <strong>{{ formatDate(selectedCancelledAppointment.scheduledDate) }}</strong>
+        </div>
+
+        <div>
+          <span>Time Slot</span>
+          <strong>{{ selectedCancelledAppointment.timeSlot }}</strong>
+        </div>
+
+        <div>
+          <span>Status</span>
+          <strong>{{ selectedCancelledAppointment.status }}</strong>
+        </div>
+      </div>
+
+      <div class="cancelled-reason-box">
+        <span>Cancellation Reason</span>
+        <strong>
+          {{
+            selectedCancelledAppointment.cancellationReason ||
+            'No cancellation reason was provided.'
+          }}
+        </strong>
+      </div>
+
+      <div class="doctor-modal-actions">
+        <button
+          class="outline-btn"
+          type="button"
+          (click)="closeCancelledDetailsModal()"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (selectedRecordAppointment) {
+  <div class="record-drawer-backdrop">
+    <aside class="record-drawer">
+      <div class="record-drawer-header">
+        <div>
+          <span>Add Health Record</span>
+          <h2>{{ selectedRecordAppointment.patientName }}</h2>
+          <p>Appointment #{{ selectedRecordAppointment.appointmentId }}</p>
+        </div>
+
+        <button class="doctor-modal-x" type="button" (click)="closeAddRecordPanel()">×</button>
+      </div>
+
+      <div class="doctor-field">
+        <label>Diagnosis</label>
+        <textarea
+          rows="4"
+          class="doctor-textarea"
+          placeholder="Enter diagnosis"
+          [(ngModel)]="diagnosis"
+        ></textarea>
+      </div>
+
+      <div class="doctor-field">
+        <label>Prescription</label>
+        <textarea
+          rows="4"
+          class="doctor-textarea"
+          placeholder="Enter prescription"
+          [(ngModel)]="prescription"
+        ></textarea>
+      </div>
+
+      <div class="doctor-field">
+        <label>Notes</label>
+        <textarea
+          rows="4"
+          class="doctor-textarea"
+          placeholder="Optional notes"
+          [(ngModel)]="notes"
+        ></textarea>
+      </div>
+
+      <div class="doctor-modal-actions">
+        <button class="outline-btn" type="button" (click)="closeAddRecordPanel()">Close</button>
+        <button class="save-btn" type="button" (click)="addHealthRecord()">Save Record</button>
+      </div>
+    </aside>
+  </div>
+}
+
+@if (selectedViewRecord) {
+  <div class="doctor-modal-backdrop">
+    <div class="doctor-modal">
+      <div class="doctor-modal-header">
+        <div>
+          <span>Health Record</span>
+          <h2>{{ selectedViewRecordPatient?.fullName }}</h2>
+        </div>
+
+        <button class="doctor-modal-x" type="button" (click)="closeRecordModal()">×</button>
+      </div>
+
+      <div class="record-detail-section">
+        <div>
+          <span>Visit Date</span>
+          <strong>{{ formatDate(selectedViewRecord.visitDate) }}</strong>
+        </div>
+
+        <div>
+          <span>Doctor</span>
+          <strong>{{ selectedViewRecord.doctorName }}</strong>
+        </div>
+
+        <div>
+          <span>Diagnosis</span>
+          <strong>{{ selectedViewRecord.diagnosis }}</strong>
+        </div>
+
+        <div>
+          <span>Prescription</span>
+          <strong>{{ selectedViewRecord.prescription }}</strong>
+        </div>
+
+        @if (selectedViewRecord.notes) {
+          <div>
+            <span>Notes</span>
+            <strong>{{ selectedViewRecord.notes }}</strong>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

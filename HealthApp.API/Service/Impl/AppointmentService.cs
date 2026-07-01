@@ -18,6 +18,70 @@ public class AppointmentService(
     IHttpContextAccessor httpContextAccessor,
     IMapper mapper) : IAppointmentService
 {
+    public async Task<List<AppointmentDto>> GetAppointmentsAsync(
+    int? patientId = null,
+    int? doctorId = null)
+    {
+        if (IsPatient())
+        {
+            var patient = await GetLoggedInPatientAsync();
+
+            if (patientId.HasValue && patientId.Value != patient.PatientId)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access another patient's appointments.");
+            }
+
+            return mapper.Map<List<AppointmentDto>>(
+                await appointmentRepository.GetByPatientIdAsync(patient.PatientId));
+        }
+
+        if (IsDoctor())
+        {
+            var doctor = await GetLoggedInDoctorAsync();
+
+            if (doctorId.HasValue && doctorId.Value != doctor.DoctorId)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access another doctor's appointments.");
+            }
+
+            var appointments = await appointmentRepository.GetByDoctorIdAsync(doctor.DoctorId);
+
+            if (patientId.HasValue)
+            {
+                appointments = appointments
+                    .Where(a => a.PatientId == patientId.Value)
+                    .ToList();
+            }
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        if (IsAdmin())
+        {
+            if (patientId.HasValue)
+            {
+                await ValidatePatientExistsAsync(patientId.Value);
+
+                return mapper.Map<List<AppointmentDto>>(
+                    await appointmentRepository.GetByPatientIdAsync(patientId.Value));
+            }
+
+            if (doctorId.HasValue)
+            {
+                await ValidateDoctorExistsAsync(doctorId.Value);
+
+                return mapper.Map<List<AppointmentDto>>(
+                    await appointmentRepository.GetByDoctorIdAsync(doctorId.Value));
+            }
+
+            return mapper.Map<List<AppointmentDto>>(
+                await appointmentRepository.GetAllWithDetailsAsync());
+        }
+
+        throw new ForbiddenAccessException("You are not allowed to access appointments.");
+    }
     public async Task<List<AppointmentDto>> GetAllAppointmentsAsync()
     {
         if (IsPatient())
@@ -28,8 +92,21 @@ public class AppointmentService(
                 await appointmentRepository.GetByPatientIdAsync(patient.PatientId));
         }
 
-        return mapper.Map<List<AppointmentDto>>(
-            await appointmentRepository.GetAllWithDetailsAsync());
+        if (IsDoctor())
+        {
+            var doctor = await GetLoggedInDoctorAsync();
+
+            return mapper.Map<List<AppointmentDto>>(
+                await appointmentRepository.GetByDoctorIdAsync(doctor.DoctorId));
+        }
+
+        if (IsAdmin())
+        {
+            return mapper.Map<List<AppointmentDto>>(
+                await appointmentRepository.GetAllWithDetailsAsync());
+        }
+
+        throw new ForbiddenAccessException("You are not allowed to access appointments.");
     }
     public async Task<AppointmentDto> GetAppointmentByIdAsync(int appointmentId)
     {
@@ -47,21 +124,63 @@ public class AppointmentService(
     {
         await ValidatePatientExistsAsync(patientId);
 
-        await EnsurePatientAppointmentQueryAccessAsync(patientId);
+        if (IsPatient())
+        {
+            var loggedInPatient = await GetLoggedInPatientAsync();
 
-        return mapper.Map<List<AppointmentDto>>(
-            await appointmentRepository.GetByPatientIdAsync(patientId));
+            if (loggedInPatient.PatientId != patientId)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access another patient's appointments.");
+            }
+
+            return mapper.Map<List<AppointmentDto>>(
+                await appointmentRepository.GetByPatientIdAsync(patientId));
+        }
+
+        if (IsDoctor())
+        {
+            var loggedInDoctor = await GetLoggedInDoctorAsync();
+
+            var doctorAppointments = await appointmentRepository
+                .GetByDoctorIdAsync(loggedInDoctor.DoctorId);
+
+            var patientAppointments = doctorAppointments
+                .Where(a => a.PatientId == patientId)
+                .ToList();
+
+            return mapper.Map<List<AppointmentDto>>(patientAppointments);
+        }
+
+        if (IsAdmin())
+        {
+            return mapper.Map<List<AppointmentDto>>(
+                await appointmentRepository.GetByPatientIdAsync(patientId));
+        }
+
+        throw new ForbiddenAccessException("You are not allowed to access appointments.");
     }
 
     public async Task<List<AppointmentDto>> GetAppointmentsByDoctorIdAsync(int doctorId)
     {
+        await ValidateDoctorExistsAsync(doctorId);
+
         if (IsPatient())
         {
             throw new ForbiddenAccessException(
                 "Patients are not allowed to search appointments by doctor.");
         }
 
-        await ValidateDoctorExistsAsync(doctorId);
+        if (IsDoctor())
+        {
+            var loggedInDoctor = await GetLoggedInDoctorAsync();
+
+            if (loggedInDoctor.DoctorId != doctorId)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access another doctor's appointments.");
+            }
+        }
 
         return mapper.Map<List<AppointmentDto>>(
             await appointmentRepository.GetByDoctorIdAsync(doctorId));
@@ -82,8 +201,26 @@ public class AppointmentService(
             return mapper.Map<List<AppointmentDto>>(appointments);
         }
 
-        return mapper.Map<List<AppointmentDto>>(
-            await appointmentRepository.GetByStatusAsync(status));
+        if (IsDoctor())
+        {
+            var doctor = await GetLoggedInDoctorAsync();
+
+            var appointments = await appointmentRepository.GetByDoctorIdAsync(doctor.DoctorId);
+
+            appointments = appointments
+                .Where(a => a.Status == status.ToString())
+                .ToList();
+
+            return mapper.Map<List<AppointmentDto>>(appointments);
+        }
+
+        if (IsAdmin())
+        {
+            return mapper.Map<List<AppointmentDto>>(
+                await appointmentRepository.GetByStatusAsync(status));
+        }
+
+        throw new ForbiddenAccessException("You are not allowed to access appointments.");
     }
     public async Task<AppointmentDto> BookAppointmentAsync(BookAppointmentDto dto)
     {
@@ -172,6 +309,24 @@ public class AppointmentService(
 
         return patient;
     }
+    private async Task<Doctor> GetLoggedInDoctorAsync()
+    {
+        var userId = CurrentUser?.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new ForbiddenAccessException("Unable to identify logged-in user.");
+        }
+
+        var doctor = await doctorRepository.GetByUserIdAsync(userId);
+
+        if (doctor is null)
+        {
+            throw new EntityNotFoundException("Doctor", userId);
+        }
+
+        return doctor;
+    }
 
     public async Task<AppointmentDto> ChangeAppointmentStatusAsync(
     int appointmentId,
@@ -189,17 +344,7 @@ public class AppointmentService(
 
         await EnsureAppointmentAccessAsync(appointment);
 
-        if (IsPatient() && dto.Status != AppointmentStatus.Cancelled)
-        {
-            throw new ForbiddenAccessException(
-                "Patients are allowed only to cancel their own appointments.");
-        }
-
-        if (dto.Status == AppointmentStatus.Cancelled &&
-            string.IsNullOrWhiteSpace(dto.CancellationReason))
-        {
-            throw new AppointmentRuleException("Cancellation reason is required.");
-        }
+        ValidateStatusChange(appointment, dto);
 
         appointment.Status = dto.Status.ToString();
 
@@ -216,17 +361,91 @@ public class AppointmentService(
         return mapper.Map<AppointmentDto>(updatedWithDetails ?? updated);
     }
 
-
-    public async Task<AppointmentDto> CancelAppointmentAsync(
-        int appointmentId,
-        string? reason)
+    private void ValidateStatusChange(
+    Appointment appointment,
+    UpdateAppointmentStatusDto dto)
     {
+        var currentStatus = Enum.Parse<AppointmentStatus>(appointment.Status);
+
+        if (IsAdmin())
+        {
+            throw new ForbiddenAccessException(
+                "Admins are not allowed to update appointment status.");
+        }
+
+        if (currentStatus == AppointmentStatus.Completed ||
+            currentStatus == AppointmentStatus.Cancelled)
+        {
+            throw new AppointmentRuleException(
+                "Completed or cancelled appointments cannot be updated.");
+        }
+
+        if (dto.Status == AppointmentStatus.Cancelled &&
+            string.IsNullOrWhiteSpace(dto.CancellationReason))
+        {
+            throw new AppointmentRuleException("Cancellation reason is required.");
+        }
+
+        if (IsPatient())
+        {
+            if (dto.Status != AppointmentStatus.Cancelled)
+            {
+                throw new ForbiddenAccessException(
+                    "Patients are allowed only to cancel their own appointments.");
+            }
+
+            if (currentStatus != AppointmentStatus.Pending &&
+                currentStatus != AppointmentStatus.Confirmed)
+            {
+                throw new AppointmentRuleException(
+                    "Only pending or confirmed appointments can be cancelled.");
+            }
+
+            return;
+        }
+
+        if (IsDoctor())
+        {
+            if (dto.Status == AppointmentStatus.Confirmed &&
+                currentStatus == AppointmentStatus.Pending)
+            {
+                return;
+            }
+
+            if (dto.Status == AppointmentStatus.Completed &&
+                currentStatus == AppointmentStatus.Confirmed)
+            {
+                return;
+            }
+
+            if (dto.Status == AppointmentStatus.Cancelled &&
+                (currentStatus == AppointmentStatus.Pending ||
+                 currentStatus == AppointmentStatus.Confirmed))
+            {
+                return;
+            }
+
+            throw new AppointmentRuleException(
+                "Invalid appointment status transition.");
+        }
+
+        throw new ForbiddenAccessException("You are not allowed to update appointment status.");
+    }
+    public async Task<AppointmentDto> CancelAppointmentAsync(
+    int appointmentId,
+    string? reason)
+    {
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            throw new AppointmentRuleException("Cancellation reason is required.");
+        }
+
         return await ChangeAppointmentStatusAsync(
             appointmentId,
             new UpdateAppointmentStatusDto
             {
                 Status = AppointmentStatus.Cancelled,
-                CancellationReason = reason ?? "Cancelled by user"
+                CancellationReason = reason.Trim()
             });
     }
 
@@ -238,30 +457,14 @@ public class AppointmentService(
         return CurrentUser?.IsInRole(Roles.Patient) == true;
     }
 
+    private bool IsDoctor()
+    {
+        return CurrentUser?.IsInRole(Roles.Doctor) == true;
+    }
+
     private bool IsAdmin()
     {
         return CurrentUser?.IsInRole(Roles.Admin) == true;
-    }
-
-    private async Task EnsurePatientAppointmentQueryAccessAsync(int requestedPatientId)
-    {
-        if (IsAdmin())
-        {
-            return;
-        }
-
-        if (IsPatient())
-        {
-            var loggedInPatient = await GetLoggedInPatientAsync();
-
-            if (loggedInPatient.PatientId != requestedPatientId)
-            {
-                throw new ForbiddenAccessException(
-                    "You are not allowed to access another patient's appointments.");
-            }
-
-            return;
-        }
     }
 
     private async Task EnsureAppointmentAccessAsync(Appointment appointment)
@@ -283,6 +486,21 @@ public class AppointmentService(
 
             return;
         }
+
+        if (IsDoctor())
+        {
+            var loggedInDoctor = await GetLoggedInDoctorAsync();
+
+            if (appointment.DoctorId != loggedInDoctor.DoctorId)
+            {
+                throw new ForbiddenAccessException(
+                    "You are not allowed to access another doctor's appointment.");
+            }
+
+            return;
+        }
+
+        throw new ForbiddenAccessException("You are not allowed to access this appointment.");
     }
 
     private static void ValidateAppointmentId(int id)

@@ -10,6 +10,8 @@ public interface IDoctorService
 
     Task<DoctorDto> GetDoctorByIdAsync(int doctorId);
 
+    Task<DoctorDto> GetLoggedInDoctorProfileAsync();
+
     Task<List<DoctorDto>> GetDoctorsBySpecialisationAsync(
         SpecialisationType specialisation);
 

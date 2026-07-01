@@ -1,0 +1,170 @@
+<div class="book-page">
+  <section class="book-hero-card">
+    <div>
+      <span class="book-kicker">Patient Portal</span>
+      <h1>Book Appointment</h1>
+      <p>Choose a doctor, select a date, and book an available slot.</p>
+    </div>
+
+    <button class="book-back-button" type="button" (click)="goBack()">
+      Back to Appointments
+    </button>
+  </section>
+
+  @if (message) {
+    <div class="book-message-card" [class.error]="isError" [class.success]="!isError">
+      <div>
+        <strong>{{ isError ? 'Action Failed' : 'Success' }}</strong>
+        <span>{{ message }}</span>
+      </div>
+    </div>
+  }
+
+  <section class="book-form-card">
+    <div class="book-section-title">
+      <span>Appointment Details</span>
+      <h2>Find your doctor</h2>
+    </div>
+
+    <div class="book-form-grid">
+      <div class="book-field">
+        <label>Patient Name</label>
+        <input
+          class="book-control readonly"
+          type="text"
+          [value]="patient?.fullName"
+          readonly
+        />
+      </div>
+
+      <div class="book-field">
+        <label>Specialisation <span>*</span></label>
+        <select
+          class="book-control"
+          name="specialisation"
+          [(ngModel)]="selectedSpecialisation"
+          (ngModelChange)="onSpecialisationChanged()"
+        >
+          <option value="">Select specialisation</option>
+
+          @for (specialisation of specialisations; track specialisation) {
+            <option [value]="specialisation">{{ specialisation }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="book-field">
+        <label>Doctor <span>*</span></label>
+        <select
+          class="book-control"
+          name="doctor"
+          [(ngModel)]="selectedDoctorId"
+          (ngModelChange)="onDoctorChanged()"
+          [disabled]="!selectedSpecialisation"
+        >
+          <option [ngValue]="0">
+            {{ selectedSpecialisation ? 'Select doctor' : 'Select specialisation first' }}
+          </option>
+
+          @for (doctor of filteredDoctors; track doctor.doctorId) {
+            <option [ngValue]="doctor.doctorId">{{ doctor.fullName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="book-field">
+        <label>Experience</label>
+        <input
+          class="book-control readonly"
+          type="text"
+          [value]="selectedDoctor ? selectedDoctor.yearsOfExperience + ' years' : 'Select doctor'"
+          readonly
+        />
+      </div>
+
+      <div class="book-field">
+        <label>Consultation Fee</label>
+        <input
+          class="book-control readonly"
+          type="text"
+          [value]="selectedDoctor ? '₹' + selectedDoctor.consultationFee : 'Select doctor'"
+          readonly
+        />
+      </div>
+
+      <div class="book-field">
+        <label>Appointment Date <span>*</span></label>
+        <input
+          class="book-control"
+          type="date"
+          name="appointmentDate"
+          [min]="today"
+          [(ngModel)]="selectedDate"
+          (ngModelChange)="onDateChanged()"
+          [disabled]="!selectedDoctorId"
+        />
+      </div>
+    </div>
+
+    <div class="slot-section">
+      <div class="slot-section-header">
+        <div>
+          <span>Available Slots</span>
+          <h3>Select a time slot</h3>
+        </div>
+
+        @if (selectedDate && selectedDoctor) {
+          <p>{{ selectedDoctor.fullName }} · {{ selectedDate }}</p>
+        }
+      </div>
+
+      @if (!selectedDoctorId || !selectedDate) {
+        <div class="slot-empty-state">
+          Select a doctor and date to view available slots.
+        </div>
+      } @else if (availableSlots.length === 0) {
+        <div class="slot-empty-state">
+          No slots available for the selected doctor and date.
+        </div>
+      } @else {
+        <div class="slot-grid">
+          @for (slot of availableSlots; track slot) {
+            <button
+              type="button"
+              class="slot-button"
+              [class.active]="selectedSlot === slot"
+              (click)="selectSlot(slot)"
+            >
+              {{ slot }}
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="book-actions">
+      <button class="book-outline-button" type="button" (click)="goBack()">
+        Back
+      </button>
+
+      <button class="book-submit-button" type="button" [disabled]="isBooking" (click)="bookAppointment()">
+        {{ isBooking ? 'Booking...' : 'Book Appointment' }}
+      </button>
+    </div>
+  </section>
+
+  @if (isBooking) {
+    <div class="book-loading-backdrop">
+      <div class="book-loading-box">
+        <div class="loading-logo">H</div>
+
+        <h3>Booking appointment</h3>
+        <p>Please wait while HealthApp reserves your slot.</p>
+
+        <div class="book-popup-progress">
+          <div class="book-popup-progress-bar"></div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
