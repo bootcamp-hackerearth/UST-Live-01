@@ -143,10 +143,11 @@
     {
         showLogoutConfirm = false;
 
+        await AuthService.Logout();
         await TokenService.RemoveToken();
 
         NavigationManager.NavigateTo(
-            "https://localhost:4200/login",
+            GetAngularLoginUrl(),
             forceLoad: true);
     }
 
