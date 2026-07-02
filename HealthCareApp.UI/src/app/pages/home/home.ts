@@ -73,10 +73,6 @@ export class Home implements OnInit {
 
   todayDate = '';
 
-  selectedLoginRole: UserRole = 'Patient';
-
-  loginRoleOptions: UserRole[] = ['Patient', 'Doctor', 'Admin'];
-
   namePattern = '^[A-Za-z][A-Za-z\\s]{1,99}$';
   phonePattern = '^[0-9]{10}$';
   passwordPattern = '^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$';
@@ -160,8 +156,7 @@ export class Home implements OnInit {
     return confirmPassword.length > 0 && password !== confirmPassword;
   }
 
-  openLoginModal(role: UserRole = 'Patient'): void {
-    this.selectedLoginRole = role;
+  openLoginModal(): void {
     this.loginMessage = '';
     this.isSignupModalOpen = false;
     this.isLoginModalOpen = true;
@@ -179,11 +174,6 @@ export class Home implements OnInit {
 
     this.resetLoginForm();
     this.resetSignupForm();
-  }
-
-  selectLoginRole(role: UserRole): void {
-    this.selectedLoginRole = role;
-    this.loginMessage = '';
   }
 
   submitLogin(form: NgForm): void {
@@ -209,14 +199,14 @@ export class Home implements OnInit {
       next: () => {
         const loggedInRole = this.authService.getRole();
 
-        if (loggedInRole !== this.selectedLoginRole) {
+        if (!loggedInRole) {
           this.authService.logout();
           this.isSubmittingLogin = false;
-          this.loginMessage = `This login is only for ${this.selectedLoginRole}s.`;
+          this.loginMessage = 'Unable to identify user role. Please contact support.';
           return;
         }
 
-        this.redirectAfterLogin(this.selectedLoginRole);
+        this.redirectAfterLogin(loggedInRole);
       },
       error: (error: unknown) => {
         this.isSubmittingLogin = false;
@@ -280,7 +270,7 @@ export class Home implements OnInit {
 
         setTimeout(() => {
           this.isSignupModalOpen = false;
-          this.openLoginModal('Patient');
+          this.openLoginModal();
           this.loginMessage = 'Patient account created successfully. Please login.';
         }, 1200);
       },
@@ -339,6 +329,9 @@ export class Home implements OnInit {
 
       return;
     }
+
+    this.authService.logout();
+    this.loginMessage = 'Unsupported user role. Please contact support.';
   }
 
   private resetLoginForm(): void {
@@ -349,7 +342,6 @@ export class Home implements OnInit {
 
     this.loginMessage = '';
     this.isSubmittingLogin = false;
-    this.selectedLoginRole = 'Patient';
   }
 
   private resetSignupForm(): void {
