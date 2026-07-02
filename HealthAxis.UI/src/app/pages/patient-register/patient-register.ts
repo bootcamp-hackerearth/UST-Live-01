@@ -68,7 +68,7 @@ export class PatientRegister {
         '',
         [
           Validators.required,
-          Validators.pattern(/^[6-9][0-9]{9}$/)
+          Validators.pattern(/^[1-9][0-9]{9}$/)
         ]
       ],
       email: ['', [Validators.required, Validators.email]],
@@ -116,6 +116,7 @@ export class PatientRegister {
   }
 
   registerPatient(): void {
+
     this.errorMessage.set('');
     this.successMessage.set('');
 

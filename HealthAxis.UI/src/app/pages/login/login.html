@@ -1,45 +1,65 @@
 <section class="login-page">
   <div class="login-shell">
+
     <aside class="login-showcase">
-      <div class="showcase-badge">
-        <span>🔐</span>
-        Secure Hospital Access
+
+      <div class="brand-card">
+        <div class="brand-logo">H</div>
+
+        <div>
+          <h1>HealthAxis</h1>
+          <p>Healthcare Management Portal</p>
+        </div>
       </div>
 
-      <h1>Welcome to HealthAxis Hospital</h1>
+      <div class="showcase-content">
+        <span class="showcase-label">Secure Access</span>
 
-     
+        <h2>Welcome to HealthAxis</h2>
+
+        <p>
+          Login with your registered account to continue to your role-based
+          healthcare workspace.
+        </p>
+      </div>
 
       <div class="role-preview">
+
         <article>
-          <span>👤</span>
+          <span class="role-icon patient-icon">P</span>
+
           <div>
             <strong>Patient Portal</strong>
-            <small>Book visits and track appointments</small>
+            <small>Book appointments and view health records</small>
           </div>
         </article>
 
         <article>
-          <span>🩺</span>
+          <span class="role-icon doctor-icon">D</span>
+
           <div>
             <strong>Doctor Portal</strong>
-            <small>Manage consultations and records</small>
+            <small>Manage appointments and visit records</small>
           </div>
         </article>
 
         <article>
-          <span>🛡️</span>
+          <span class="role-icon admin-icon">A</span>
+
           <div>
             <strong>Admin Console</strong>
-            <small>Redirects to Blazor admin dashboard</small>
+            <small>Manage users, doctors, and reports</small>
           </div>
         </article>
+
       </div>
 
     </aside>
 
     <main class="login-form-panel">
+
       <div class="form-card">
+
         <div class="form-header">
           <span>Login</span>
           <h2>Access your healthcare portal</h2>
@@ -47,56 +67,73 @@
         </div>
 
         @if (errorMessage()) {
-          <div class="alert error">{{ errorMessage() }}</div>
+          <div class="alert error">
+            {{ errorMessage() }}
+          </div>
         }
 
         <form [formGroup]="loginForm" (ngSubmit)="login()">
+
           <div class="form-group">
             <label for="email">Email Address</label>
 
-            <div class="input-wrapper">
-              <!-- <span>✉️</span> -->
+            <div class="input-wrapper" [class.input-error]="email.invalid && email.touched">
+              <span class="input-icon">&#64;</span>
+
               <input
                 id="email"
                 type="email"
                 formControlName="email"
                 placeholder="Enter your registered email"
+                autocomplete="email"
+                (input)="clearError()"
               />
             </div>
 
-            @if (email.invalid && email.touched) {
-              <small>Valid email is required.</small>
-            }
+            <small class="field-error">
+              @if (email.invalid && email.touched) {
+                {{ getEmailErrorMessage() }}
+              }
+            </small>
           </div>
 
           <div class="form-group">
             <label for="password">Password</label>
 
-            <div class="input-wrapper">
-              <span>🔑</span>
+            <div class="input-wrapper" [class.input-error]="password.invalid && password.touched">
+              <span class="input-icon">●</span>
+
               <input
                 id="password"
                 type="password"
                 formControlName="password"
                 placeholder="Enter password"
+                autocomplete="current-password"
+                (input)="clearError()"
               />
             </div>
 
-            @if (password.invalid && password.touched) {
-              <small>Password is required.</small>
-            }
+            <small class="field-error">
+              @if (password.invalid && password.touched) {
+                Password is required.
+              }
+            </small>
           </div>
 
           <button type="submit" [disabled]="loading()">
             {{ loading() ? 'Checking credentials...' : 'Login' }}
           </button>
+
         </form>
 
         <p class="bottom-text">
           New patient?
           <a routerLink="/register">Create patient account</a>
         </p>
+
       </div>
+
     </main>
+
   </div>
 </section>

@@ -1,7 +1,7 @@
 import { computed, Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import {
@@ -93,31 +93,31 @@ export class AuthService {
     return this.http.post<object>(`${this.authUrl}/register`, data);
   }
 
-  refreshToken(): Observable<RefreshTokenResponse> {
-    const accessToken = localStorage.getItem(this.accessTokenKey);
-    const refreshToken = localStorage.getItem(this.refreshTokenKey);
+refreshToken(): Observable<RefreshTokenResponse> {
+  const accessToken = localStorage.getItem(this.accessTokenKey);
+  const refreshToken = localStorage.getItem(this.refreshTokenKey);
 
-    if (!accessToken || !refreshToken) {
-      throw new Error('Refresh token details not available.');
-    }
-
-    const request: RefreshTokenRequest = {
-      accessToken,
-      refreshToken
-    };
-
-    return this.http
-      .post<RefreshTokenResponse>(`${this.authUrl}/refresh-token`, request)
-      .pipe(
-        tap((response) => {
-          this.storeAuthData(
-            response.accessToken,
-            response.refreshToken,
-            response.expiresIn
-          );
-        })
-      );
+  if (!accessToken || !refreshToken) {
+    return throwError(() => new Error('Refresh token details not available.'));
   }
+
+  const request: RefreshTokenRequest = {
+    accessToken,
+    refreshToken
+  };
+
+  return this.http
+    .post<RefreshTokenResponse>(`${this.authUrl}/refresh-token`, request)
+    .pipe(
+      tap((response) => {
+        this.storeAuthData(
+          response.accessToken,
+          response.refreshToken,
+          response.expiresIn
+        );
+      })
+    );
+}
 
   changePassword(data: ChangePasswordRequest): Observable<object> {
     return this.http.post<object>(`${this.authUrl}/change-password`, data);

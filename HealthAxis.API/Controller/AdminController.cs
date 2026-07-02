@@ -57,6 +57,18 @@ namespace HealthAxis.API.Controller
             return Ok(doctor);
         }
 
+        [HttpPut("appointments/{id}/status")]
+        public async Task<IActionResult> UpdateAppointmentStatus(
+    int id,
+    [FromBody] AdminUpdateAppointmentStatusDto statusDto)
+        {
+            var appointment = await _adminService.UpdateAppointmentStatusByAdminAsync(
+                id,
+                statusDto);
+
+            return Ok(appointment);
+        }
+
         [HttpGet("reports/appointments")]
         public async Task<IActionResult> GetAppointmentReports()
         {

@@ -44,5 +44,8 @@ namespace HealthAxis.API.Services.Interfaces
 
         Task<List<AdminPatientAppointmentDto>> GetPatientAppointmentsAsync(
             int patientId);
+        Task<AdminAppointmentDetailDto> UpdateAppointmentStatusByAdminAsync(
+    int appointmentId,
+    AdminUpdateAppointmentStatusDto statusDto);
     }
 }

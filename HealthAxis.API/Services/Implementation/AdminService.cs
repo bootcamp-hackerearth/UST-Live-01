@@ -462,6 +462,96 @@ namespace HealthAxis.API.Services.Implementation
             };
        
         }
+
+        public async Task<AdminAppointmentDetailDto> UpdateAppointmentStatusByAdminAsync(
+    int appointmentId,
+    AdminUpdateAppointmentStatusDto statusDto)
+        {
+            ArgumentNullException.ThrowIfNull(statusDto);
+
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(appointmentRecord =>
+                    appointmentRecord.AppointmentId == appointmentId);
+
+            if (appointment == null)
+            {
+                throw new ValidationException("Appointment not found.");
+            }
+
+            if (!Enum.TryParse<AppointmentStatus>(
+                    statusDto.Status,
+                    true,
+                    out var newStatus))
+            {
+                throw new ValidationException("Invalid appointment status.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Completed ||
+                appointment.Status == AppointmentStatus.Cancelled)
+            {
+                throw new ValidationException(
+                    "Completed or cancelled appointment status cannot be changed.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Pending &&
+                newStatus != AppointmentStatus.Confirmed &&
+                newStatus != AppointmentStatus.Cancelled)
+            {
+                throw new ValidationException(
+                    "Pending appointment can only be confirmed or cancelled.");
+            }
+
+            if (appointment.Status == AppointmentStatus.Confirmed &&
+                newStatus != AppointmentStatus.Completed &&
+                newStatus != AppointmentStatus.Cancelled)
+            {
+                throw new ValidationException(
+                    "Confirmed appointment can only be completed or cancelled.");
+            }
+
+            appointment.Status = newStatus;
+
+            await _context.SaveChangesAsync();
+
+            return await GetAppointmentDetailByIdAsync(appointmentId);
+        }
+
+        private async Task<AdminAppointmentDetailDto> GetAppointmentDetailByIdAsync(
+            int appointmentId)
+        {
+            var appointmentDetail = await _context.Appointments
+                .AsNoTracking()
+                .Where(appointment => appointment.AppointmentId == appointmentId)
+                .Join(
+                    _context.Patients.AsNoTracking(),
+                    appointment => appointment.PatientId,
+                    patient => patient.PatientId,
+                    (appointment, patient) => new
+                    {
+                        appointment,
+                        patient
+                    })
+                .Join(
+                    _context.Doctors.AsNoTracking(),
+                    data => data.appointment.DoctorId,
+                    doctor => doctor.DoctorId,
+                    (data, doctor) => new AdminAppointmentDetailDto
+                    {
+                        AppointmentId = data.appointment.AppointmentId,
+                        PatientId = data.patient.PatientId,
+                        PatientName = data.patient.FullName,
+                        DoctorId = doctor.DoctorId,
+                        DoctorName = doctor.FullName,
+                        Specialisation = doctor.Specialisation.ToString(),
+                        ScheduledDate = data.appointment.ScheduledDate,
+                        TimeSlot = data.appointment.TimeSlot,
+                        Status = data.appointment.Status.ToString()
+                    })
+                .FirstOrDefaultAsync();
+
+            return appointmentDetail ??
+                throw new ValidationException("Appointment details not found.");
+        }
         public async Task<PagedResponseDto<AdminUserDto>> GetUsersPagedAsync(
     PaginationQueryDto paginationQuery)
         {
