@@ -1,1 +1,0 @@
-mRVC:\Users\310476\Desktop\HealthCareApp\HealthCareApp\HealthCareApp\HealthCareApp.csproj¢net10.0òCSharp14

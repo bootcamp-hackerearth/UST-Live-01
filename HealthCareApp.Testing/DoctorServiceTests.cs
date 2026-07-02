@@ -25,9 +25,13 @@ namespace HealthCareApp.Testing.Services
 
         private readonly DoctorService doctorService;
 
+        private readonly Mock<IAppointmentRepository> appointmentRepositoryMock;
+
         public DoctorServiceTests()
         {
             repositoryMock = new Mock<IDoctorRepository>();
+
+            appointmentRepositoryMock = new Mock<IAppointmentRepository>();
 
             mapperMock = new Mock<IMapper>();
 
@@ -39,6 +43,7 @@ namespace HealthCareApp.Testing.Services
 
             doctorService = new DoctorService(
                 repositoryMock.Object,
+                appointmentRepositoryMock.Object,
                 mapperMock.Object,
                 userManagerMock.Object,
                 roleManagerMock.Object);
@@ -807,7 +812,7 @@ namespace HealthCareApp.Testing.Services
         public async Task GetDoctorAvailabilityAsync_WhenDoctorIdIsInvalid_ShouldThrowBusinessRuleException()
         {
             Func<Task> action = async () =>
-                await doctorService.GetDoctorAvailabilityAsync(0);
+                await doctorService.GetDoctorAvailabilityAsync(0, DateTime.Today);
 
             await action.Should()
                 .ThrowAsync<BusinessRuleException>()
@@ -822,7 +827,7 @@ namespace HealthCareApp.Testing.Services
                 .ReturnsAsync((Doctor?)null);
 
             Func<Task> action = async () =>
-                await doctorService.GetDoctorAvailabilityAsync(99);
+                await doctorService.GetDoctorAvailabilityAsync(99, DateTime.Today);
 
             await action.Should()
                 .ThrowAsync<EntityNotFoundException>();
@@ -839,7 +844,7 @@ namespace HealthCareApp.Testing.Services
                 .ReturnsAsync(doctor);
 
             Func<Task> action = async () =>
-                await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId);
+                await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, DateTime.Today);
 
             await action.Should()
                 .ThrowAsync<BusinessRuleException>()
@@ -847,7 +852,7 @@ namespace HealthCareApp.Testing.Services
         }
 
         [Fact]
-        public async Task GetDoctorAvailabilityAsync_WhenDoctorIsActive_ShouldReturnTimeSlots()
+        public async Task GetDoctorAvailabilityAsync_WhenDoctorIsActiveAndDateIsNull_ShouldReturnAllSlotsAsNotBooked()
         {
             var doctor = GetDoctors()
                 .First(existingDoctor => existingDoctor.IsActive);
@@ -856,9 +861,67 @@ namespace HealthCareApp.Testing.Services
                 .Setup(repository => repository.GetByIdAsync(doctor.DoctorId))
                 .ReturnsAsync(doctor);
 
-            var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId);
+            var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, null);
 
-            result.Should().BeEquivalentTo(TimeSlots.Slots);
+            result.Should().HaveCount(TimeSlots.Slots.Count);
+
+            result.Select(slot => slot.TimeSlot)
+                .Should()
+                .BeEquivalentTo(TimeSlots.Slots);
+
+            result.Should().OnlyContain(slot => slot.IsBooked == false);
+
+            appointmentRepositoryMock.Verify(
+                repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()),
+                Times.Never);
+        }
+
+        [Fact]
+        public async Task GetDoctorAvailabilityAsync_WhenDoctorIsActiveAndDateProvided_ShouldReturnBookedSlotStatus()
+        {
+            var doctor = GetDoctors()
+                .First(existingDoctor => existingDoctor.IsActive);
+
+            var selectedDate = DateTime.Today.AddDays(1);
+
+            var bookedSlots = new List<string>
+    {
+        "09:00 AM - 09:30 AM",
+        "10:00 AM - 10:30 AM"
+    };
+
+            repositoryMock
+                .Setup(repository => repository.GetByIdAsync(doctor.DoctorId))
+                .ReturnsAsync(doctor);
+
+            appointmentRepositoryMock
+                .Setup(repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                    doctor.DoctorId,
+                    selectedDate,
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(bookedSlots);
+
+            var result = await doctorService.GetDoctorAvailabilityAsync(doctor.DoctorId, selectedDate);
+
+            result.Should().HaveCount(TimeSlots.Slots.Count);
+
+            result.Where(slot => bookedSlots.Contains(slot.TimeSlot))
+                .Should()
+                .OnlyContain(slot => slot.IsBooked);
+
+            result.Where(slot => !bookedSlots.Contains(slot.TimeSlot))
+                .Should()
+                .OnlyContain(slot => !slot.IsBooked);
+
+            appointmentRepositoryMock.Verify(
+                repository => repository.GetBookedTimeSlotsByDoctorAndDateAsync(
+                    doctor.DoctorId,
+                    selectedDate,
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
         }
 
         private void SetupSuccessfulDoctorCreation(CreateDoctorDto dto)

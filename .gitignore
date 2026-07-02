@@ -1,26 +1,40 @@
-﻿# Ignore Visual Studio workspace files and build artifacts
+﻿# Visual Studio workspace files
 .vs/
-**/bin/
-**/obj/
- 
-# Optional project-specific ignores
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
- 
-*.lscache
- 
+
+# Build artifacts
+**/bin/
+**/obj/
+packages/
+
+# Logs
 Logs/
- 
+*.log
+
+# Test results and coverage
 TestResults/
 .TestResults/
-# SonarQube
+coverage.xml
+*.coverage
+*.coveragexml
+coverage.cobertura.xml
+
+# SonarQube / SonarScanner
 .sonar/
 .sonarqube/
 sonar-project.properties.user
-coverage.xml
+.scannerwork/
+
+# Local caches
+*.lscache
+
+# .NET local tool manifest if you do not want to share local tools
 dotnet-tools.json
- 
-/packages/
- 
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
