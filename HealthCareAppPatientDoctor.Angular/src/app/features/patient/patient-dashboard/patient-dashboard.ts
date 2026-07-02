@@ -26,6 +26,7 @@ export class PatientDashboard implements OnInit {
   ngOnInit(): void {
 
     this.loadProfile();
+    this.setGreeting();
 
   }
 
@@ -58,5 +59,22 @@ export class PatientDashboard implements OnInit {
     this.router.navigate(['/login']);
 
   }
+
+  greeting = '';
+
+setGreeting(): void {
+
+  const hour = new Date().getHours();
+
+  if (hour < 12)
+    this.greeting = 'Good Morning';
+
+  else if (hour < 17)
+    this.greeting = 'Good Afternoon';
+
+  else
+    this.greeting = 'Good Evening';
+
+}
 
 }

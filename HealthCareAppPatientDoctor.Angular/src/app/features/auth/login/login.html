@@ -1,84 +1,201 @@
-<div class="login-page">
+<div class="auth-page">
 
-  <div class="container">
+  <!-- Loading Overlay -->
 
-    <div class="row align-items-center min-vh-100">
+  <div
+    class="login-overlay"
+    *ngIf="isLoading">
 
-      <!-- Left Side -->
+    <div class="login-loader-card">
 
-      <div class="col-lg-6 d-none d-lg-block">
+      <div class="loader-logo">
+        HA
+      </div>
 
-        <div class="hero-content">
+      <h3>Signing In</h3>
 
-          <h1>HealthAxis</h1>
+      <p>
+        Verifying your account...
+      </p>
 
-          <p class="lead">
-            Smart Healthcare Appointment System
-          </p>
+      <div class="progress-line">
+        <span></span>
+      </div>
 
-          <ul>
+    </div>
 
-            <li>✔ Book appointments instantly</li>
+  </div>
 
-            <li>✔ View medical records securely</li>
+  <!-- Left -->
 
-            <li>✔ Consult experienced doctors</li>
+  <div class="auth-left">
 
-            <li>✔ Track appointments easily</li>
+    <div class="auth-glow one"></div>
 
-          </ul>
+    <div class="auth-glow two"></div>
+
+    <div class="auth-brand">
+
+      <div class="auth-logo">
+
+        HA
+
+      </div>
+
+      <div>
+
+        <h2>HealthAxis</h2>
+
+        <p>Smart Healthcare Platform</p>
+
+      </div>
+
+    </div>
+
+    <div class="hero-content">
+
+      <span class="hero-badge">
+
+        SMART HEALTHCARE
+
+      </span>
+
+      <h1>
+
+        Welcome Back to
+
+        <span>HealthAxis</span>
+
+      </h1>
+
+      <p>
+
+        One secure platform for Patients,
+        Doctors and Administrators.
+
+      </p>
+
+      <div class="hero-features">
+
+        <div>
+
+          <i class="bi bi-check-circle-fill"></i>
+
+          Secure Authentication
+
+        </div>
+
+        <div>
+
+          <i class="bi bi-check-circle-fill"></i>
+
+          Digital Medical Records
+
+        </div>
+
+        <div>
+
+          <i class="bi bi-check-circle-fill"></i>
+
+          Online Appointments
 
         </div>
 
       </div>
 
-      <!-- Login Card -->
+    </div>
 
-      <div class="col-lg-6">
+  </div>
 
-        <div class="login-card shadow-lg">
+  <!-- Right -->
 
-          <h2>Welcome Back</h2>
+  <div class="auth-right">
 
-          <p>Please login to continue</p>
+    <div class="auth-card">
 
-          <form
-          [formGroup]="loginForm"
-          (ngSubmit)="login()">
+      <h2 class="auth-title">
 
-            <div class="mb-3">
+        Welcome Back
 
-              <label>Email</label>
+      </h2>
 
-              <input
-              class="form-control"
-              type="email"
-              formControlName="email">
+      <p class="auth-subtitle">
 
-            </div>
+        Sign in to continue
 
-            <div class="mb-4">
+      </p>
 
-              <label>Password</label>
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="login()">
 
-              <input
-              class="form-control"
-              type="password"
-              formControlName="password">
+        <div class="mb-4">
 
-            </div>
+          <label class="auth-label">
+
+            Email Address
+
+          </label>
+
+          <input
+            class="form-control auth-input"
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email">
+
+        </div>
+
+        <div class="mb-4">
+
+          <label class="auth-label">
+
+            Password
+
+          </label>
+
+          <div class="password-wrapper">
+
+            <input
+              class="form-control auth-input pe-5"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Enter password">
 
             <button
-            class="btn btn-primary w-100"
-            type="submit">
+              type="button"
+              class="password-toggle"
+              (click)="togglePassword()">
 
-              Login
+              <i
+                class="bi"
+                [ngClass]="showPassword ? 'bi-eye-slash':'bi-eye'">
+              </i>
 
             </button>
 
-          </form>
+          </div>
 
         </div>
+
+        <button
+          class="auth-btn"
+          [disabled]="isLoading">
+
+          Login
+
+        </button>
+
+      </form>
+
+      <div class="text-center mt-4">
+
+        Don't have an account?
+
+        <a routerLink="/register">
+
+          Register
+
+        </a>
 
       </div>
 

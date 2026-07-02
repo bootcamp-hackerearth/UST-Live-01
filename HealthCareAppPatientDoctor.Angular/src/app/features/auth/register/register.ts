@@ -7,7 +7,7 @@ import {
   AbstractControl,
   ValidationErrors
 } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router,RouterLink } from '@angular/router';
 
 import { ToastrService } from 'ngx-toastr';
 
@@ -19,7 +19,8 @@ import { PatientRegister } from '../../../core/models/patient-register';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './register.html',
   styleUrl: './register.css'

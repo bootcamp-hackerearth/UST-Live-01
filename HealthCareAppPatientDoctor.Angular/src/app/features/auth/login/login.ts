@@ -5,7 +5,7 @@ import {
   Validators
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router,RouterLink } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
 import { AuthService } from '../../../core/services/auth-service';
@@ -16,7 +16,8 @@ import { Login as LoginRequest } from '../../../core/models/login';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './login.html',
   styleUrl: './login.css'
@@ -103,5 +104,13 @@ export class Login {
     });
 
   }
+
+  showPassword = false;
+
+togglePassword(): void {
+
+  this.showPassword = !this.showPassword;
+
+}
 
 }

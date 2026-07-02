@@ -1,18 +1,60 @@
-<div class="dashboard">
+<div class="patient-dashboard">
 
-    <!-- Navbar -->
+    <!-- Background Glow -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
 
-    <nav class="navbar navbar-expand-lg dashboard-navbar">
+    <!-- Top Navigation -->
 
-        <div class="container-fluid">
+    <header class="dashboard-header">
 
-            <span class="navbar-brand">
+        <div class="brand">
 
-                🏥 HealthAxis
+            <div class="brand-logo">
+                HA
+            </div>
 
-            </span>
+            <div>
 
-            <button class="btn btn-outline-light" (click)="logout()">
+                <small>PATIENT PORTAL</small>
+
+                <h2>HealthAxis</h2>
+
+            </div>
+
+        </div>
+
+        <div class="user-section">
+
+            <div class="user-card">
+
+                <div class="avatar">
+
+                    {{ patient?.fullName?.charAt(0) || 'P' }}
+
+                </div>
+
+                <div>
+
+                    <h5>
+
+                        {{ patient?.fullName || 'Patient' }}
+
+                    </h5>
+
+                    <span>
+
+                        Patient
+
+                    </span>
+
+                </div>
+
+            </div>
+
+            <button
+                class="logout-btn"
+                (click)="logout()">
 
                 Logout
 
@@ -20,138 +62,254 @@
 
         </div>
 
-    </nav>
+    </header>
 
-    <!-- Hero -->
+    <!-- Welcome -->
 
-    <section class="hero">
+    <section class="dashboard-title">
 
-        <h1 class="display-5 fw-bold">
+        <small>
 
-            Welcome {{ patient?.fullName || 'Patient' }}
+            PATIENT DASHBOARD
+
+        </small>
+
+        <h1>
+
+            {{ greeting }},
+
+            {{ patient?.fullName || 'Patient' }}
+
+            👋
 
         </h1>
 
-        <p class="text-muted">
+        <p>
 
-            Manage your appointments, doctors and health records from one place.
+            Manage appointments, doctors and medical records from one place.
 
         </p>
 
     </section>
 
-    <!-- My Profile -->
+    <!-- Statistics -->
 
-<div class="feature-card">
+    <section class="stats-grid">
 
-    <h3>
+        <div class="stat-card profile">
 
-        👤 My Profile
+            <h4>My Profile</h4>
 
-    </h3>
+            <h2>
 
-    <p>
+                {{ patient?.fullName }}
 
-        View and update your personal information.
+            </h2>
 
-    </p>
+            <p>
 
-    <button
-        class="btn btn-primary"
-        routerLink="/patient/profile">
+                View and update your information
 
-        View Profile
+            </p>
 
-    </button>
+            <button routerLink="/patient/profile">
 
-</div>
-
-    <!-- Appointment Card -->
-
-    <div class="feature-card">
-
-        <h3>
-
-            📅 Appointment Management
-
-        </h3>
-
-        <div class="buttons">
-
-            <button class="btn btn-primary" routerLink="/book-appointment">
-
-                Book Appointment
-
-            </button>
-
-            <button class="btn btn-success" routerLink="/appointments">
-
-                View Appointments
+                Open →
 
             </button>
 
         </div>
 
-    </div>
+        <div class="stat-card appointment">
 
-    <!-- Health Record -->
+            <h4>
 
-    <div class="feature-card">
+                Appointments
 
-        <h3>
+            </h4>
 
-            🩺 Health Records
+            <h2>
 
-        </h3>
+                📅
 
-        <button class="btn btn-primary" routerLink="health-records">
+            </h2>
 
-            View Health Records
+            <p>
 
-        </button>
+                Book and manage appointments
 
-    </div>
+            </p>
 
-    <!-- Doctors -->
+            <button routerLink="/book-appointment">
 
-    <div class="feature-card">
+                Book →
 
-        <h3>
+            </button>
 
-            👨‍⚕️ Doctors
+        </div>
 
-        </h3>
+        <div class="stat-card doctor">
 
-        <button class="btn btn-primary" routerLink="/doctors">
+            <h4>
 
-            View Doctors
+                Doctors
 
-        </button>
+            </h4>
 
-    </div>
+            <h2>
 
-    <!-- About -->
+                👨‍⚕️
 
-    <div class="feature-card">
+            </h2>
 
-        <h3>
+            <p>
 
-            About HealthAxis
+                Browse specialists
 
-        </h3>
+            </p>
 
-        <p>
+            <button routerLink="/doctors">
 
-            HealthAxis is an online healthcare management
-            application that allows patients to
-            book appointments,
-            consult doctors,
-            access health records,
-            and manage healthcare
-            anytime from anywhere.
+                View →
 
-        </p>
+            </button>
 
-    </div>
+        </div>
+
+        <div class="stat-card record">
+
+            <h4>
+
+                Health Records
+
+            </h4>
+
+            <h2>
+
+                🩺
+
+            </h2>
+
+            <p>
+
+                Secure medical history
+
+            </p>
+
+            <button routerLink="health-records">
+
+                Open →
+
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- Bottom -->
+
+    <section class="dashboard-content">
+
+        <div class="overview-card">
+
+            <h2>
+
+                Quick Actions
+
+            </h2>
+
+            <p>
+
+                Frequently used features
+
+            </p>
+
+            <div class="quick-grid">
+
+                <button routerLink="/book-appointment">
+
+                    Book Appointment
+
+                </button>
+
+                <button routerLink="/appointments">
+
+                    My Appointments
+
+                </button>
+
+                <button routerLink="/doctors">
+
+                    Doctors
+
+                </button>
+
+                <button routerLink="health-records">
+
+                    Records
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="overview-card">
+
+            <h2>
+
+                Patient Overview
+
+            </h2>
+
+            <p>
+
+                Your healthcare information
+
+            </p>
+
+            <div class="info-list">
+
+                <div>
+
+                    <span>Email</span>
+
+                    <strong>
+
+                        {{ patient?.email }}
+
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>Phone</span>
+
+                    <strong>
+
+                        {{ patient?.phoneNumber }}
+
+                    </strong>
+
+                </div>
+
+                <div>
+
+                    <span>Insurance</span>
+
+                    <strong>
+
+                        {{ patient?.insuranceId }}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>

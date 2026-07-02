@@ -1,235 +1,175 @@
-<div class="container py-5">
+<div class="register-page">
 
-    <div class="row justify-content-center">
+    <!-- Left Panel -->
 
-        <div class="col-lg-7">
+    <div class="register-left">
 
-            <div class="card shadow-lg border-0">
+        <div class="auth-glow one"></div>
+        <div class="auth-glow two"></div>
 
-                <div class="card-header bg-primary text-white text-center">
+        <div class="brand">
 
-                    <h2>Create Patient Account</h2>
+            <div class="brand-logo">
+                HA
+            </div>
 
-                    <p class="mb-0">
-                        Join HealthAxis
-                    </p>
+            <div>
 
-                </div>
+                <h2>HealthAxis</h2>
 
-                <div class="card-body p-4">
+                <p>Smart Healthcare Platform</p>
 
-                    <form
-                    [formGroup]="registerForm"
-                    (ngSubmit)="register()">
+            </div>
 
-                        <!-- Full Name -->
+        </div>
 
-                        <div class="mb-3">
+        <span class="hero-badge">
+            PATIENT REGISTRATION
+        </span>
 
-                            <label>
+        <h1>
+            Join
+            <span>HealthAxis</span>
+        </h1>
 
-                                Full Name
+        <p>
 
-                            </label>
+            Create your patient account and begin your healthcare journey with
+            secure appointments, medical records and experienced doctors.
 
-                            <input
+        </p>
+
+    </div>
+
+    <!-- Right Panel -->
+
+    <div class="register-right">
+
+        <div class="register-card">
+
+            <h2>Create Account</h2>
+
+            <p>Register as a Patient</p>
+
+            <form
+                [formGroup]="registerForm"
+                (ngSubmit)="register()">
+
+                <div class="form-grid">
+
+                    <div>
+
+                        <label>Full Name</label>
+
+                        <input
                             type="text"
-                            class="form-control"
+                            class="form-control auth-input"
                             formControlName="fullName">
 
-                            @if(registerForm.controls.fullName.touched &&
-                                registerForm.controls.fullName.invalid){
+                    </div>
 
-                                <small class="text-danger">
+                    <div>
 
-                                    Full Name is required.
+                        <label>Date of Birth</label>
 
-                                </small>
-
-                            }
-
-                        </div>
-
-                        <!-- DOB -->
-
-                        <div class="mb-3">
-
-                            <label>
-
-                                Date of Birth
-
-                            </label>
-
-                            <input
+                        <input
                             type="date"
-                            class="form-control"
+                            class="form-control auth-input date-input"
                             formControlName="dateOfBirth">
 
-                        </div>
+                    </div>
 
-                        <!-- Gender -->
+                    <div>
 
-                        <div class="mb-3">
+                        <label>Gender</label>
 
-                            <label>
-
-                                Gender
-
-                            </label>
-
-                            <select
-                            class="form-select"
+                        <select
+                            class="form-select auth-input"
                             formControlName="gender">
 
-                                <option value="">
+                            <option value="">Select</option>
+                            <option value="0">Male</option>
+                            <option value="1">Female</option>
+                            <option value="2">Other</option>
 
-                                    Select Gender
+                        </select>
 
-                                </option>
+                    </div>
 
-                                <option value="0">
+                    <div>
 
-                                    Male
+                        <label>Phone Number</label>
 
-                                </option>
-
-                                <option value="1">
-
-                                    Female
-
-                                </option>
-
-                                <option value="2">
-
-                                    Other
-
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        <!-- Phone -->
-
-                        <div class="mb-3">
-
-                            <label>
-
-                                Phone Number
-
-                            </label>
-
-                            <input
-                            type="text"
-                            class="form-control"
+                        <input
+                            class="form-control auth-input"
                             formControlName="phoneNumber">
 
-                        </div>
+                    </div>
 
-                        <!-- Email -->
+                    <div>
 
-                        <div class="mb-3">
+                        <label>Email</label>
 
-                            <label>
-
-                                Email
-
-                            </label>
-
-                            <input
+                        <input
                             type="email"
-                            class="form-control"
+                            class="form-control auth-input"
                             formControlName="email">
 
-                        </div>
+                    </div>
 
-                        <!-- Insurance -->
+                    <div>
 
-                        <div class="mb-3">
+                        <label>Insurance ID</label>
 
-                            <label>
-
-                                Insurance ID
-
-                            </label>
-
-                            <input
-                            class="form-control"
+                        <input
+                            class="form-control auth-input"
                             formControlName="insuranceId">
 
-                        </div>
+                    </div>
 
-                        <!-- Password -->
+                    <div>
 
-                        <div class="mb-3">
+                        <label>Password</label>
 
-                            <label>
-
-                                Password
-
-                            </label>
-
-                            <input
+                        <input
                             type="password"
-                            class="form-control"
+                            class="form-control auth-input"
                             formControlName="password">
 
-                        </div>
+                    </div>
 
-                        <!-- Confirm -->
+                    <div>
 
-                        <div class="mb-4">
+                        <label>Confirm Password</label>
 
-                            <label>
-
-                                Confirm Password
-
-                            </label>
-
-                            <input
+                        <input
                             type="password"
-                            class="form-control"
+                            class="form-control auth-input"
                             formControlName="confirmPassword">
 
-                            @if(registerForm.errors?.['passwordMismatch']){
-
-                                <small class="text-danger">
-
-                                    Passwords do not match.
-
-                                </small>
-
-                            }
-
-                        </div>
-
-                        <div class="d-grid">
-
-                            <button
-                            class="btn btn-primary btn-lg"
-                            [disabled]="isLoading">
-
-                                Register
-
-                            </button>
-
-                        </div>
-
-                        <div class="text-center mt-3">
-
-                            Already have an account?
-
-                            <a routerLink="/login">
-
-                                Login
-
-                            </a>
-
-                        </div>
-
-                    </form>
+                    </div>
 
                 </div>
+
+                <button
+                    class="register-btn"
+                    [disabled]="isLoading">
+
+                    Create Account
+
+                </button>
+
+            </form>
+
+            <div class="login-link">
+
+                Already have an account?
+
+                <a routerLink="/login">
+
+                    Login
+
+                </a>
 
             </div>
 
