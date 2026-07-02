@@ -8,8 +8,8 @@
       <h1>My Health Records</h1>
 
       <p>
-        View diagnosis, prescriptions, notes, and visit history from your completed
-        appointments.
+        View your diagnosis, prescriptions, doctor notes, and visit history from
+        completed appointments.
       </p>
     </div>
 
@@ -19,12 +19,15 @@
   </section>
 
   @if (errorMessage()) {
-    <div class="alert error">{{ errorMessage() }}</div>
+    <div class="alert error">
+      {{ errorMessage() }}
+    </div>
   }
 
   <section class="records-summary">
     <article>
       <span>📋</span>
+
       <div>
         <strong>{{ healthRecords().length }}</strong>
         <p>Total Records</p>
@@ -33,14 +36,18 @@
 
     <article>
       <span>🩺</span>
+
       <div>
-        <strong>{{ latestRecord()?.doctorName || 'N/A' }}</strong>
+        <strong>
+          {{ getDoctorDisplayName(latestRecord()?.doctorName) }}
+        </strong>
         <p>Latest Doctor</p>
       </div>
     </article>
 
     <article>
       <span>📅</span>
+
       <div>
         <strong>
           @if (latestRecord()) {
@@ -60,7 +67,8 @@
 
       <input
         type="search"
-        placeholder="Search diagnosis, prescription, doctor, notes..."
+        placeholder="Search by doctor, diagnosis, prescription..."
+        [value]="searchText()"
         (input)="onSearchInput($event)"
       />
     </div>
@@ -76,107 +84,210 @@
   @if (!loading() && healthRecords().length === 0) {
     <section class="empty-card">
       <div class="empty-icon">📋</div>
+
       <h2>No health records yet</h2>
+
       <p>
-        Health records will appear here after your completed appointment is updated
-        by the doctor.
+        Health records will appear here after your completed appointment is
+        updated by the doctor.
       </p>
-      <a routerLink="/patient/book-appointment">Book Appointment</a>
+
+      <a routerLink="/patient/book-appointment">
+        Book Appointment
+      </a>
     </section>
   }
 
   @if (!loading() && healthRecords().length > 0) {
-    <section class="records-layout">
-      <div class="records-list">
-        @if (filteredRecords().length === 0) {
-          <div class="empty-filter">
-            <span>🔎</span>
-            <h3>No matching records</h3>
-            <p>Try searching with another doctor name, diagnosis, or prescription.</p>
-          </div>
-        }
-
-        @for (record of filteredRecords(); track getRecordId(record)) {
-          <article class="record-card">
-            <div class="record-top">
-              <div class="record-icon">📋</div>
-
-              <div>
-  <div class="record-heading-line">
-    <h3>{{ record.diagnosis || 'Diagnosis not provided' }}</h3>
-
-    @if (hasUpdated(record)) {
-      <span class="updated-badge">Updated by doctor</span>
-    }
-  </div>
-
-  <p>
-    Dr. {{ record.doctorName || 'Doctor' }}
-                  @if (record.specialisation) {
-                    • {{ record.specialisation }}
-                  }
-                </p>
-              </div>
-            </div>
-
-            <div class="record-grid">
-              <div>
-                <span>Visit Date</span>
-                <strong>{{ record.visitDate | date: 'mediumDate' }}</strong>
-              </div>
-
-              <div>
-                <span>Appointment ID</span>
-                <strong>#{{ record.appointmentId }}</strong>
-              </div>
-
-              <div>
-                <span>Record ID</span>
-                <strong>#{{ getRecordId(record) }}</strong>
-              </div>
-            </div>
-                @if (hasUpdated(record)) {
-  <div class="update-note">
-    <span>🔄</span>
-    Last updated by doctor:
-    <strong>{{ record.updatedDate | date: 'medium' }}</strong>
-  </div>
-}
-            <div class="medical-section prescription">
-              <span>💊 Prescription</span>
-              <p>{{ record.prescription || 'No prescription added.' }}</p>
-            </div>
-
-            <div class="medical-section notes">
-              <span>📝 Doctor Notes</span>
-              <p>{{ record.notes || 'No notes added.' }}</p>
-            </div>
-          </article>
-        }
-      </div>
-
-      <aside class="records-side">
-        <div class="side-card">
-          <span>💙</span>
-          <h3>Patient Reminder</h3>
+    <section class="records-card">
+      <div class="records-card-heading">
+        <div>
+          <h2>Health Record History</h2>
           <p>
-            Always consult your doctor before changing or stopping any prescribed
-            medicine.
+            Full medical details are opened only when you click View Health
+            Record.
           </p>
         </div>
 
-        <div class="side-card light">
-          <span>📎</span>
-          <h3>Carry During Visit</h3>
+        <span>
+          Showing {{ filteredRecords().length }} records
+        </span>
+      </div>
 
-          <ul>
-            <li>Previous prescriptions</li>
-            <li>Test reports</li>
-            <li>Current medicines</li>
-            <li>Appointment ID</li>
-          </ul>
+      @if (filteredRecords().length === 0) {
+        <div class="empty-filter">
+          <span>🔎</span>
+          <h3>No matching records</h3>
+          <p>Try another doctor name, diagnosis, or prescription.</p>
         </div>
-      </aside>
+      } @else {
+        <div class="records-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Visit Date</th>
+                <th>Doctor</th>
+                <th>Specialisation</th>
+                <th>Diagnosis</th>
+                <th>Status</th>
+                <th class="action-column">Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (record of filteredRecords(); track getRecordId(record)) {
+                <tr>
+                  <td>
+                    <strong>
+                      {{ record.visitDate | date: 'mediumDate' }}
+                    </strong>
+                    <span>#{{ getRecordId(record) }}</span>
+                  </td>
+
+                  <td>
+                    {{ getDoctorDisplayName(record.doctorName) }}
+                  </td>
+
+                  <td>
+                    {{ getSafeText(record.specialisation, 'Not assigned') }}
+                  </td>
+
+                  <td>
+                    {{ getSafeText(record.diagnosis, 'Diagnosis not added') }}
+                  </td>
+
+                  <td>
+                    @if (hasUpdated(record)) {
+                      <span class="status-badge updated">
+                        Updated
+                      </span>
+                    } @else {
+                      <span class="status-badge normal">
+                        Final
+                      </span>
+                    }
+                  </td>
+
+                  <td class="action-column">
+                    <button
+                      type="button"
+                      class="view-button"
+                      (click)="openRecordDetails(record)"
+                    >
+                      View Health Record
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </section>
   }
 </section>
+
+@if (selectedRecord(); as record) {
+  <div class="record-dialog-backdrop" (click)="closeRecordDetails()">
+    <section class="record-dialog" (click)="$event.stopPropagation()">
+<div class="document-header">
+  <div>
+    <span class="document-label">
+      HealthAxis Medical Document
+    </span>
+
+    <h2>Patient Health Record</h2>
+
+    <p>
+      Record ID #{{ getRecordId(record) }} • Appointment ID
+      #{{ record.appointmentId }}
+    </p>
+  </div>
+
+  <div class="document-top-actions">
+    <button
+      type="button"
+      class="top-download-button"
+      (click)="printHealthRecord(record)"
+    >
+  Download PDF
+</button>
+
+    <button
+      type="button"
+      class="close-button"
+      (click)="closeRecordDetails()"
+    >
+      ×
+    </button>
+  </div>
+</div>
+
+      <div class="document-grid">
+        <div>
+          <span>Patient Name</span>
+          <strong>{{ getSafeText(record.patientName, 'Patient') }}</strong>
+        </div>
+
+        <div>
+          <span>Doctor Name</span>
+          <strong>{{ getDoctorDisplayName(record.doctorName) }}</strong>
+        </div>
+
+        <div>
+          <span>Specialisation</span>
+          <strong>
+            {{ getSafeText(record.specialisation, 'Not assigned') }}
+          </strong>
+        </div>
+
+        <div>
+          <span>Visit Date</span>
+          <strong>{{ record.visitDate | date: 'fullDate' }}</strong>
+        </div>
+      </div>
+
+      @if (hasUpdated(record)) {
+        <div class="updated-note">
+          🔄 Last updated by doctor:
+          <strong>{{ record.updatedDate | date: 'medium' }}</strong>
+        </div>
+      }
+
+      <div class="medical-document-section diagnosis-section">
+        <h3>Diagnosis</h3>
+
+        <p>
+          {{ getSafeText(record.diagnosis, 'Diagnosis not provided.') }}
+        </p>
+      </div>
+
+      <div class="medical-document-section prescription-section">
+        <h3>Prescription</h3>
+
+        <p>
+          {{ getSafeText(record.prescription, 'No prescription added.') }}
+        </p>
+      </div>
+
+      <div class="medical-document-section notes-section">
+        <h3>Doctor Notes</h3>
+
+        <p>
+          {{ getSafeText(record.notes, 'No doctor notes added.') }}
+        </p>
+      </div>
+
+      <div class="document-footer">
+        <p>
+          This record is generated from a completed appointment. Please consult
+          your doctor before changing any medication.
+        </p>
+
+        <button type="button" (click)="closeRecordDetails()">
+          Close Record
+        </button>
+      </div>
+    </section>
+  </div>
+}

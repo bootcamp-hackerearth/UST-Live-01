@@ -9,11 +9,11 @@
       <h1>Complete Appointments</h1>
 
       <span>
-        Add health records for confirmed appointments and complete the patient visit.
+        Add health records for confirmed appointments and view completed patient visits.
       </span>
     </div>
 
-    <button type="button" class="refresh-button" (click)="loadAppointments()">
+    <button type="button" class="refresh-button" (click)="refreshPage()">
       Refresh
     </button>
   </section>
@@ -24,6 +24,10 @@
 
   @if (successMessage()) {
     <div class="alert success">{{ successMessage() }}</div>
+  }
+
+  @if (loadingRecord()) {
+    <div class="alert info">Loading health record...</div>
   }
 
   <section class="stats-grid">
@@ -53,17 +57,27 @@
       <input
         type="search"
         maxlength="80"
-        placeholder="Search patient, date, time..."
+        placeholder="Search patient, doctor, date, time..."
         [value]="searchText()"
         (input)="onSearchInput($event)"
       />
     </div>
+
+    <button type="button" class="clear-button" (click)="clearSearch()">
+      Clear
+    </button>
   </section>
 
   <section class="list-card">
-    <div class="section-title">
-      <p>Confirmed Visits</p>
-      <h2>Add Health Record</h2>
+    <div class="list-heading-row">
+      <div class="section-title">
+        <p>Confirmed Visits</p>
+        <h2>Add Health Record</h2>
+      </div>
+
+      <span class="result-count">
+        {{ confirmedAppointments().length }} confirmed
+      </span>
     </div>
 
     @if (loading()) {
@@ -92,7 +106,7 @@
           </thead>
 
           <tbody>
-            @for (appointment of confirmedAppointments(); track appointment.appointmentId) {
+            @for (appointment of pagedConfirmedAppointments(); track appointment.appointmentId) {
               <tr>
                 <td>
                   <div class="patient-cell">
@@ -120,7 +134,7 @@
                     class="record-button"
                     (click)="openHealthRecordDialog(appointment)"
                   >
-                    Add Health Record
+                    Add Record
                   </button>
                 </td>
               </tr>
@@ -128,13 +142,41 @@
           </tbody>
         </table>
       </div>
+
+      <div class="pagination-row">
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="confirmedPage() === 1"
+          (click)="goToPreviousConfirmedPage()"
+        >
+          Previous
+        </button>
+
+        <span>Page {{ confirmedPage() }} of {{ confirmedTotalPages() }}</span>
+
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="confirmedPage() === confirmedTotalPages()"
+          (click)="goToNextConfirmedPage()"
+        >
+          Next
+        </button>
+      </div>
     }
   </section>
 
   <section class="list-card">
-    <div class="section-title">
-      <p>Completed Visits</p>
-      <h2>Completed Appointments</h2>
+    <div class="list-heading-row">
+      <div class="section-title">
+        <p>Completed Visits</p>
+        <h2>Completed Appointments</h2>
+      </div>
+
+      <span class="result-count">
+        {{ completedAppointments().length }} completed
+      </span>
     </div>
 
     @if (!loading() && completedAppointments().length === 0) {
@@ -152,27 +194,159 @@
               <th>Date</th>
               <th>Time Slot</th>
               <th>Status</th>
+              <th>Health Record</th>
             </tr>
           </thead>
 
           <tbody>
-            @for (appointment of completedAppointments(); track appointment.appointmentId) {
+            @for (appointment of pagedCompletedAppointments(); track appointment.appointmentId) {
               <tr>
-                <td>{{ appointment.patientName || 'Patient' }}</td>
+                <td>
+                  <div class="patient-cell">
+                    <span>👤</span>
+
+                    <div>
+                      <strong>{{ appointment.patientName || 'Patient' }}</strong>
+                      <small>Appointment #{{ appointment.appointmentId }}</small>
+                    </div>
+                  </div>
+                </td>
+
                 <td>{{ appointment.scheduledDate | date: 'mediumDate' }}</td>
                 <td>{{ appointment.timeSlot }}</td>
+
                 <td>
                   <span class="status-badge completed-badge">
                     {{ getStatusLabel(appointment.status) }}
                   </span>
+                </td>
+
+                <td>
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="view-button"
+                      (click)="openCompletedHealthRecord(appointment)"
+                    >
+                      View
+                    </button>
+
+                    <button
+                      type="button"
+                      class="pdf-button"
+                      (click)="printHealthRecordForAppointment(appointment)"
+                    >
+                      HR PDF
+                    </button>
+                  </div>
                 </td>
               </tr>
             }
           </tbody>
         </table>
       </div>
+
+      <div class="pagination-row">
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="completedPage() === 1"
+          (click)="goToPreviousCompletedPage()"
+        >
+          Previous
+        </button>
+
+        <span>Page {{ completedPage() }} of {{ completedTotalPages() }}</span>
+
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="completedPage() === completedTotalPages()"
+          (click)="goToNextCompletedPage()"
+        >
+          Next
+        </button>
+      </div>
     }
   </section>
+
+  @if (selectedHealthRecord(); as record) {
+    <div class="modal-backdrop" (click)="closeCompletedHealthRecord()">
+      <section class="record-view-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <p>Completed Visit</p>
+            <h2>Health Record #{{ getRecordId(record) }}</h2>
+          </div>
+
+          <div class="modal-top-actions">
+            <button
+              type="button"
+              class="pdf-button"
+              (click)="printHealthRecordPdf(record)"
+            >
+              HR PDF
+            </button>
+
+            <button
+              type="button"
+              class="close-button"
+              (click)="closeCompletedHealthRecord()"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div class="appointment-summary">
+          <div>
+            <span>Patient</span>
+            <strong>{{ getSafeText(record.patientName, 'Patient') }}</strong>
+          </div>
+
+          <div>
+            <span>Doctor</span>
+            <strong>{{ getSafeText(record.doctorName, 'Doctor') }}</strong>
+          </div>
+
+          <div>
+            <span>Specialisation</span>
+            <strong>{{ getSafeText(record.specialisation, 'Not assigned') }}</strong>
+          </div>
+
+          <div>
+            <span>Visit Date</span>
+            <strong>{{ record.visitDate | date: 'mediumDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Appointment ID</span>
+            <strong>#{{ record.appointmentId }}</strong>
+          </div>
+
+          <div>
+            <span>Record ID</span>
+            <strong>#{{ getRecordId(record) }}</strong>
+          </div>
+        </div>
+
+        <section class="health-section diagnosis">
+          <h3>Diagnosis</h3>
+          <p>{{ getSafeText(record.diagnosis, 'Diagnosis not provided.') }}</p>
+        </section>
+
+        <section class="health-section prescription">
+          <h3>Prescription</h3>
+          <p>{{ getSafeText(record.prescription, 'Prescription not provided.') }}</p>
+        </section>
+
+        <section class="health-section notes">
+          <h3>Doctor Notes</h3>
+          <p>{{ getSafeText(record.notes, 'No additional notes.') }}</p>
+        </section>
+      </section>
+    </div>
+  }
 
   @if (selectedAppointment()) {
     <div class="modal-backdrop">

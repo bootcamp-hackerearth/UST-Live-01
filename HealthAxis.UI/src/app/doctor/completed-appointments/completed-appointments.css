@@ -1,6 +1,9 @@
 .completed-page {
   display: grid;
   gap: 18px;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8fafc, #ecfeff);
+  min-height: 100vh;
 }
 
 .page-header {
@@ -67,6 +70,11 @@
   color: #166534;
 }
 
+.info {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -122,6 +130,13 @@
   box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
 }
 
+.toolbar-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
 .search-box {
   height: 50px;
   border: 1px solid #cbd5e1;
@@ -139,6 +154,34 @@
   outline: none;
   background: transparent;
   font-size: 15px;
+}
+
+.clear-button {
+  height: 50px;
+  border: none;
+  border-radius: 16px;
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 0 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.list-heading-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.result-count {
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #0369a1;
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
 }
 
 .section-title {
@@ -187,24 +230,36 @@
 
 .appointment-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 10px;
 }
 
 .appointment-table th {
   text-align: left;
-  padding: 14px 12px;
-  background: #f8fafc;
-  color: #334155;
-  font-size: 14px;
-  border-bottom: 1px solid #e2e8f0;
+  padding: 0 12px 6px;
+  color: #64748b;
+  font-size: 13px;
   white-space: nowrap;
 }
 
 .appointment-table td {
   padding: 14px 12px;
-  border-bottom: 1px solid #e2e8f0;
+  border-top: 1px solid #dbeafe;
+  border-bottom: 1px solid #dbeafe;
   color: #0f172a;
   vertical-align: middle;
+  background: #f8fafc;
+  font-weight: 800;
+}
+
+.appointment-table td:first-child {
+  border-left: 1px solid #dbeafe;
+  border-radius: 16px 0 0 16px;
+}
+
+.appointment-table td:last-child {
+  border-right: 1px solid #dbeafe;
+  border-radius: 0 16px 16px 0;
 }
 
 .patient-cell {
@@ -251,14 +306,71 @@
   color: #1d4ed8;
 }
 
-.record-button {
+.record-button,
+.view-button,
+.pdf-button {
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #0f172a, #0284c7);
-  color: white;
-  padding: 9px 14px;
+  padding: 8px 13px;
+  font-size: 12px;
   font-weight: 900;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.record-button {
+  color: white;
+  background: linear-gradient(135deg, #0f172a, #0284c7);
+}
+
+.view-button {
+  background: #eff6ff;
+  color: #0369a1;
+}
+
+.pdf-button {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.pagination-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.page-button {
+  min-width: 110px;
+  height: 44px;
+  border: none;
+  border-radius: 14px;
+  background: #64748b;
+  color: white;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.page-button:hover:not(:disabled) {
+  background: #475569;
+}
+
+.page-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.pagination-row span {
+  color: #0f172a;
+  font-weight: 900;
 }
 
 .modal-backdrop {
@@ -271,8 +383,9 @@
   padding: 18px;
 }
 
-.record-modal {
-  width: min(760px, 100%);
+.record-modal,
+.record-view-modal {
+  width: min(800px, 100%);
   max-height: 92vh;
   overflow-y: auto;
   background: white;
@@ -300,6 +413,12 @@
   color: #0f172a;
 }
 
+.modal-top-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .close-button {
   width: 38px;
   height: 38px;
@@ -319,11 +438,13 @@
 
 .appointment-summary div {
   background: #f8fafc;
+  border: 1px solid #dbeafe;
   border-radius: 16px;
   padding: 12px;
 }
 
 .appointment-summary span {
+  display: block;
   color: #64748b;
   font-weight: 900;
   font-size: 12px;
@@ -333,6 +454,40 @@
   display: block;
   color: #0f172a;
   margin-top: 5px;
+}
+
+.health-section {
+  margin-top: 16px;
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.health-section h3 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.health-section p {
+  margin: 0;
+  color: #334155;
+  line-height: 1.7;
+  font-weight: 700;
+  white-space: pre-wrap;
+}
+
+.health-section.diagnosis {
+  background: #fefce8;
+}
+
+.health-section.prescription {
+  background: #eff6ff;
+}
+
+.health-section.notes {
+  background: #f0fdf4;
 }
 
 .form-grid {
@@ -415,18 +570,33 @@ small {
 }
 
 @media (max-width: 800px) {
+  .completed-page {
+    padding: 16px;
+  }
+
   .page-header,
-  .modal-actions {
+  .modal-actions,
+  .list-heading-row {
     flex-direction: column;
     align-items: flex-start;
   }
 
+  .toolbar-card,
   .stats-grid,
   .appointment-summary {
     grid-template-columns: 1fr;
   }
 
-  .cancel-button {
+  .cancel-button,
+  .record-button,
+  .view-button,
+  .pdf-button,
+  .clear-button {
     width: 100%;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
   }
 }

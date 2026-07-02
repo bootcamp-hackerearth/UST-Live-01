@@ -4,7 +4,8 @@
       <p>Patient Services</p>
       <h1>My Appointments</h1>
       <span>
-        View your appointments and cancel pending or confirmed appointments if needed.
+        View your appointments, download appointment details, and cancel pending
+        or confirmed appointments if needed.
       </span>
     </div>
 
@@ -24,7 +25,6 @@
   <section class="stats-grid">
     <div class="stat-card pending">
       <span>⏳</span>
-
       <div>
         <strong>{{ pendingCount() }}</strong>
         <p>Pending</p>
@@ -33,7 +33,6 @@
 
     <div class="stat-card confirmed">
       <span>📅</span>
-
       <div>
         <strong>{{ confirmedCount() }}</strong>
         <p>Confirmed</p>
@@ -42,7 +41,6 @@
 
     <div class="stat-card completed">
       <span>✅</span>
-
       <div>
         <strong>{{ completedCount() }}</strong>
         <p>Completed</p>
@@ -51,7 +49,6 @@
 
     <div class="stat-card cancelled">
       <span>❌</span>
-
       <div>
         <strong>{{ cancelledCount() }}</strong>
         <p>Cancelled</p>
@@ -72,17 +69,23 @@
       />
     </div>
 
-    <div class="filter-pills">
-      @for (status of statusFilters; track status) {
-        <button
-          type="button"
-          [class.active]="selectedStatus() === status"
-          (click)="selectStatus(status)"
-        >
-          {{ status }}
-        </button>
-      }
+    <div class="status-dropdown">
+      <label for="statusFilter">Status</label>
+
+      <select
+        id="statusFilter"
+        [value]="selectedStatus()"
+        (change)="onStatusChange($event)"
+      >
+        @for (status of statusFilters; track status) {
+          <option [value]="status">{{ status }}</option>
+        }
+      </select>
     </div>
+
+    <button type="button" class="clear-filter-button" (click)="clearFilters()">
+      Clear
+    </button>
   </section>
 
   <section class="simple-summary-card">
@@ -95,12 +98,12 @@
       <div class="next-grid">
         <div class="summary-item">
           <span>Doctor</span>
-          <strong>{{ nextAppointment()!.doctorName || 'Not assigned' }}</strong>
+          <strong>{{ getDoctorDisplayName(nextAppointment()!.doctorName) }}</strong>
         </div>
 
         <div class="summary-item">
           <span>Specialization</span>
-          <strong>{{ nextAppointment()!.specialisation || 'N/A' }}</strong>
+          <strong>{{ getSafeText(nextAppointment()!.specialisation, 'N/A') }}</strong>
         </div>
 
         <div class="summary-item">
@@ -126,9 +129,15 @@
   </section>
 
   <section class="list-card">
-    <div class="section-title">
-      <p>Appointment History</p>
-      <h2>All Appointments</h2>
+    <div class="list-heading-row">
+      <div class="section-title">
+        <p>Appointment History</p>
+        <h2>All Appointments</h2>
+      </div>
+
+      <span class="result-count">
+        Showing {{ filteredAppointments().length }} appointments
+      </span>
     </div>
 
     @if (loading()) {
@@ -158,46 +167,269 @@
               <th>Time Slot</th>
               <th>Status</th>
               <th>Cancellation Reason</th>
-              <th>Action</th>
+              <th class="action-column">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            @for (appointment of filteredAppointments(); track appointment.appointmentId) {
+            @for (appointment of pagedAppointments(); track appointment.appointmentId) {
               <tr>
-                <td>{{ appointment.doctorName || 'Not assigned' }}</td>
-                <td>{{ appointment.specialisation || 'N/A' }}</td>
-                <td>{{ appointment.scheduledDate | date: 'mediumDate' }}</td>
-                <td>{{ appointment.timeSlot }}</td>
+                <td>{{ getDoctorDisplayName(appointment.doctorName) }}</td>
+
                 <td>
-                  <span
-                    class="status-badge"
-                    [class]="getStatusClass(appointment.status)"
-                  >
+                  {{ getSafeText(appointment.specialisation, 'N/A') }}
+                </td>
+
+                <td>
+                  {{ appointment.scheduledDate | date: 'mediumDate' }}
+                </td>
+
+                <td>{{ appointment.timeSlot }}</td>
+
+                <td>
+                  <span [class]="'status-badge ' + getStatusClass(appointment.status)">
                     {{ appointment.status }}
                   </span>
                 </td>
-                <td>{{ appointment.cancellationReason || '-' }}</td>
+
                 <td>
-                  @if (canCancel(appointment)) {
+                  {{ appointment.cancellationReason || '-' }}
+                </td>
+
+                <td class="action-column">
+                  <div class="appointment-actions">
                     <button
                       type="button"
-                      class="cancel-action"
-                      (click)="openCancelDialog(appointment)"
+                      class="view-action"
+                      (click)="openAppointmentDetails(appointment)"
                     >
-                      Cancel
+                      View
                     </button>
-                  } @else {
-                    <span class="no-action">No action</span>
-                  }
+
+                    @if (canCancel(appointment)) {
+                      <button
+                        type="button"
+                        class="pdf-action"
+                        (click)="printAppointmentPdf(appointment)"
+                      >
+                        PDF
+                      </button>
+
+                      <button
+                        type="button"
+                        class="cancel-action"
+                        (click)="openCancelDialog(appointment)"
+                      >
+                        Cancel
+                      </button>
+                    }
+
+                    @if (canViewHealthRecord(appointment)) {
+                      <button
+                        type="button"
+                        class="health-pdf-action"
+                        [disabled]="!hasHealthRecord(appointment)"
+                        (click)="printHealthRecordForAppointment(appointment)"
+                      >
+                        HR PDF
+                      </button>
+                    }
+                  </div>
                 </td>
               </tr>
             }
           </tbody>
         </table>
       </div>
+
+      <div class="pagination-row">
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="currentPage() === 1"
+          (click)="goToPreviousPage()"
+        >
+          Previous
+        </button>
+
+        <span>Page {{ currentPage() }} of {{ totalPages() }}</span>
+
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="currentPage() === totalPages()"
+          (click)="goToNextPage()"
+        >
+          Next
+        </button>
+      </div>
     }
   </section>
+
+  @if (selectedAppointment(); as appointment) {
+    <div class="modal-backdrop" (click)="closeAppointmentDetails()">
+      <section class="details-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <p>Appointment Details</p>
+            <h2>Appointment #{{ appointment.appointmentId }}</h2>
+          </div>
+
+          <div class="modal-top-actions">
+            @if (canDownloadAppointmentPdf(appointment)) {
+              <button
+                type="button"
+                class="modal-pdf-button"
+                (click)="printAppointmentPdf(appointment)"
+              >
+                PDF
+              </button>
+            }
+
+            @if (canViewHealthRecord(appointment)) {
+              <button
+                type="button"
+                class="modal-health-record-button"
+                [disabled]="!hasHealthRecord(appointment)"
+                (click)="openHealthRecordDetails(appointment)"
+              >
+                Record
+              </button>
+
+              <button
+                type="button"
+                class="modal-health-pdf-button"
+                [disabled]="!hasHealthRecord(appointment)"
+                (click)="printHealthRecordForAppointment(appointment)"
+              >
+                HR PDF
+              </button>
+            }
+
+            <button
+              type="button"
+              class="close-button"
+              (click)="closeAppointmentDetails()"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div class="details-grid">
+          <div>
+            <span>Doctor</span>
+            <strong>{{ getDoctorDisplayName(appointment.doctorName) }}</strong>
+          </div>
+
+          <div>
+            <span>Specialization</span>
+            <strong>{{ getSafeText(appointment.specialisation, 'N/A') }}</strong>
+          </div>
+
+          <div>
+            <span>Date</span>
+            <strong>{{ appointment.scheduledDate | date: 'fullDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Time Slot</span>
+            <strong>{{ appointment.timeSlot }}</strong>
+          </div>
+
+          <div>
+            <span>Status</span>
+            <strong>{{ appointment.status }}</strong>
+          </div>
+
+          <div>
+            <span>Cancellation Reason</span>
+            <strong>{{ appointment.cancellationReason || '-' }}</strong>
+          </div>
+        </div>
+
+        
+      </section>
+    </div>
+  }
+
+  @if (selectedHealthRecord(); as record) {
+    <div class="modal-backdrop" (click)="closeHealthRecordDetails()">
+      <section class="health-record-modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div>
+            <p>Health Record</p>
+            <h2>Medical Record #{{ getRecordId(record) }}</h2>
+          </div>
+
+          <div class="modal-top-actions">
+            <button
+              type="button"
+              class="modal-health-pdf-button"
+              (click)="printHealthRecordPdf(record)"
+            >
+              HR PDF
+            </button>
+
+            <button
+              type="button"
+              class="close-button"
+              (click)="closeHealthRecordDetails()"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+
+        <div class="details-grid">
+          <div>
+            <span>Patient</span>
+            <strong>{{ getSafeText(record.patientName, 'Patient') }}</strong>
+          </div>
+
+          <div>
+            <span>Doctor</span>
+            <strong>{{ getDoctorDisplayName(record.doctorName) }}</strong>
+          </div>
+
+          <div>
+            <span>Specialisation</span>
+            <strong>{{ getSafeText(record.specialisation, 'Not assigned') }}</strong>
+          </div>
+
+          <div>
+            <span>Visit Date</span>
+            <strong>{{ record.visitDate | date: 'fullDate' }}</strong>
+          </div>
+
+          <div>
+            <span>Appointment ID</span>
+            <strong>#{{ record.appointmentId }}</strong>
+          </div>
+
+          <div>
+            <span>Record ID</span>
+            <strong>#{{ getRecordId(record) }}</strong>
+          </div>
+        </div>
+
+        <section class="health-section diagnosis">
+          <h3>Diagnosis</h3>
+          <p>{{ getSafeText(record.diagnosis, 'Diagnosis not provided.') }}</p>
+        </section>
+
+        <section class="health-section prescription">
+          <h3>Prescription</h3>
+          <p>{{ getSafeText(record.prescription, 'No prescription added.') }}</p>
+        </section>
+
+        <section class="health-section notes">
+          <h3>Doctor Notes</h3>
+          <p>{{ getSafeText(record.notes, 'No doctor notes added.') }}</p>
+        </section>
+      </section>
+    </div>
+  }
 
   @if (cancelTarget()) {
     <div class="modal-backdrop">
@@ -220,7 +452,7 @@
         <div class="cancel-details">
           <div>
             <span>Doctor</span>
-            <strong>{{ cancelTarget()!.doctorName || 'Not assigned' }}</strong>
+            <strong>{{ getDoctorDisplayName(cancelTarget()!.doctorName) }}</strong>
           </div>
 
           <div>
@@ -242,7 +474,7 @@
           id="cancelReason"
           rows="4"
           maxlength="200"
-          placeholder="Reason is Optional."
+          placeholder="Reason is optional."
           [value]="cancellationReason()"
           (input)="onCancellationReasonInput($event)"
         ></textarea>

@@ -5,6 +5,7 @@ using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Interfaces;
 using HealthAxis.Shared.DTO.AppointmentDtos;
 using HealthAxis.Shared.Enums;
+using System.Globalization;
 
 namespace HealthAxis.API.Services.Implementation
 {
@@ -17,18 +18,18 @@ namespace HealthAxis.API.Services.Implementation
         private static readonly HashSet<string> AllowedTimeSlots =
             new(StringComparer.OrdinalIgnoreCase)
             {
-                "09:00 AM - 09:30 AM",
-                "09:30 AM - 10:00 AM",
-                "10:00 AM - 10:30 AM",
-                "10:30 AM - 11:00 AM",
-                "11:00 AM - 11:30 AM",
-                "11:30 AM - 12:00 PM",
-                "02:00 PM - 02:30 PM",
-                "02:30 PM - 03:00 PM",
-                "03:00 PM - 03:30 PM",
-                "03:30 PM - 04:00 PM",
-                "04:00 PM - 04:30 PM",
-                "04:30 PM - 05:00 PM"
+                "09:00 AM - 10:00 AM",
+                "10:00 AM - 11:00 AM",
+                "11:00 AM - 12:00 PM",
+                "12:00 PM - 01:00 PM",
+                "02:00 PM - 03:00 PM",
+                "03:00 PM - 04:00 PM",
+                "04:00 PM - 05:00 PM",
+                "05:00 PM - 06:00 PM",
+                "06:00 PM - 07:00 PM",
+                "07:00 PM - 08:00 PM",
+                "08:00 PM - 09:00 PM",
+                "09:00 PM - 10:00 PM"
             };
 
         public async Task<List<AppointmentDto>> GetAllAsync()
@@ -89,7 +90,9 @@ namespace HealthAxis.API.Services.Implementation
 
             return await MapAppointmentListAsync(doctorAppointments);
         }
-        public async Task<AppointmentDto> AddAsync(CreateAppointmentDto appointmentDto)
+
+        public async Task<AppointmentDto> AddAsync(
+            CreateAppointmentDto appointmentDto)
         {
             ArgumentNullException.ThrowIfNull(appointmentDto);
 
@@ -129,7 +132,8 @@ namespace HealthAxis.API.Services.Implementation
                 CancellationReason = null
             };
 
-            var savedAppointment = await appointmentRepository.AddAsync(appointment);
+            var savedAppointment = await appointmentRepository.AddAsync(
+                appointment);
 
             return await MapAppointmentAsync(savedAppointment);
         }
@@ -168,8 +172,8 @@ namespace HealthAxis.API.Services.Implementation
             }
 
             var updatedAppointment = await appointmentRepository.UpdateAsync(
-      id,
-      appointment);
+                id,
+                appointment);
 
             if (updatedAppointment == null)
             {
@@ -178,6 +182,7 @@ namespace HealthAxis.API.Services.Implementation
 
             return await MapAppointmentAsync(updatedAppointment);
         }
+
         public async Task<AppointmentDto?> DeleteAsync(int id)
         {
             var appointment = await appointmentRepository.GetByIdAsync(id);
@@ -239,9 +244,9 @@ namespace HealthAxis.API.Services.Implementation
         }
 
         private AppointmentDto MapAppointment(
-    Appointment appointment,
-    IReadOnlyDictionary<int, Patient> patients,
-    IReadOnlyDictionary<int, Doctor> doctors)
+            Appointment appointment,
+            IReadOnlyDictionary<int, Patient> patients,
+            IReadOnlyDictionary<int, Doctor> doctors)
         {
             var appointmentDto = mapper.Map<AppointmentDto>(appointment);
 
@@ -280,9 +285,9 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationException("Please select a valid doctor.");
             }
 
-            DateTime appointmentDate = appointmentDto.ScheduledDate.Date;
-            DateTime today = DateTime.Today;
-            DateTime maxAllowedDate = today.AddMonths(6);
+            var appointmentDate = appointmentDto.ScheduledDate.Date;
+            var today = DateTime.Today;
+            var maxAllowedDate = today.AddMonths(6);
 
             if (appointmentDate < today)
             {
@@ -301,12 +306,18 @@ namespace HealthAxis.API.Services.Implementation
                 throw new ValidationException("Time slot is required.");
             }
 
-            string timeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
+            var timeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
 
             if (!AllowedTimeSlots.Contains(timeSlot))
             {
                 throw new ValidationException(
                     "Invalid time slot selected. Please choose a valid hospital time slot.");
+            }
+
+            if (appointmentDate == today && IsPastTimeSlot(timeSlot))
+            {
+                throw new ValidationException(
+                    "Past time slot cannot be booked.");
             }
         }
 
@@ -315,10 +326,10 @@ namespace HealthAxis.API.Services.Implementation
         {
             var appointments = await appointmentRepository.GetAllAsync();
 
-            DateTime appointmentDate = appointmentDto.ScheduledDate.Date;
-            string requestedTimeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
+            var appointmentDate = appointmentDto.ScheduledDate.Date;
+            var requestedTimeSlot = NormalizeTimeSlot(appointmentDto.TimeSlot);
 
-            bool doctorAlreadyBooked = appointments.Any(appointment =>
+            var doctorAlreadyBooked = appointments.Any(appointment =>
                 appointment.DoctorId == appointmentDto.DoctorId &&
                 appointment.ScheduledDate.Date == appointmentDate &&
                 IsSameTimeSlot(appointment.TimeSlot, requestedTimeSlot) &&
@@ -330,7 +341,7 @@ namespace HealthAxis.API.Services.Implementation
                     "This doctor already has an appointment for the selected date and time slot. Please choose another slot.");
             }
 
-            bool patientAlreadyBooked = appointments.Any(appointment =>
+            var patientAlreadyBooked = appointments.Any(appointment =>
                 appointment.PatientId == appointmentDto.PatientId &&
                 appointment.ScheduledDate.Date == appointmentDate &&
                 IsSameTimeSlot(appointment.TimeSlot, requestedTimeSlot) &&
@@ -341,6 +352,27 @@ namespace HealthAxis.API.Services.Implementation
                 throw new BusinessRuleException(
                     "You already have an appointment at this date and time slot.");
             }
+        }
+
+        private static bool IsPastTimeSlot(string timeSlot)
+        {
+            var startTimeText = timeSlot.Split('-')[0].Trim();
+
+            var parsed = DateTime.TryParseExact(
+                startTimeText,
+                "hh:mm tt",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var startTime);
+
+            if (!parsed)
+            {
+                return true;
+            }
+
+            var slotStartTime = DateTime.Today.Add(startTime.TimeOfDay);
+
+            return slotStartTime <= DateTime.Now;
         }
 
         private static void ValidateAppointmentStatus(

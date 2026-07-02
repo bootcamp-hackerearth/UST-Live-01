@@ -2,6 +2,7 @@
 {
     public class HealthRecordDto
     {
+        public int HealthRecordId { get; set; }
         public int RecordId { get; set; }
 
         public int AppointmentId { get; set; }

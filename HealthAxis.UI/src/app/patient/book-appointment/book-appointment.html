@@ -1,61 +1,34 @@
-<section class="booking-page">
+<div class="booking-page">
   <section class="booking-hero">
     <div>
-      <a routerLink="/patient/dashboard" class="back-link">
-        ← Back to Dashboard
-      </a>
-
       <h1>Book Appointment</h1>
-
       <p>
-        Select specialization, choose doctor, date, and time slot.
-        
+        Search doctors, choose an available doctor, select a valid date and pick
+        an available time slot.
       </p>
     </div>
 
-    <div class="hero-count">
-      <span>Active Doctors</span>
-      <strong>{{ activeDoctors().length }}</strong>
+    <div class="hero-badge">
+      {{ activeDoctorCount() }} Active Doctors
     </div>
   </section>
-
-  @if (errorMessage()) {
-  <div class="modal-backdrop">
-    <section class="error-modal">
-      <div class="error-icon">⚠️</div>
-
-      <h2>Booking Failed</h2>
-
-      <p>
-        {{ errorMessage() }}
-      </p>
-
-      <button type="button" (click)="errorMessage.set('')">
-        Okay
-      </button>
-    </section>
-  </div>
-}
-
-  @if (successMessage()) {
-    <div class="alert success">{{ successMessage() }}</div>
-  }
 
   <section class="booking-card">
     <div class="section-heading">
       <h2>Search Doctor</h2>
+      <p>Filter doctors by specialisation or search by name.</p>
     </div>
 
-    <div class="filter-row">
+    <div class="filter-grid">
       <div class="form-group">
-        <label for="specialisationFilter">Specialization</label>
+        <label for="specialisation">Specialisation</label>
 
         <select
-          id="specialisationFilter"
+          id="specialisation"
           [value]="selectedSpecialisation()"
           (change)="onSpecialisationChange($event)"
         >
-          <option value="">All Specializations</option>
+          <option value="">All Specialisations</option>
 
           @for (specialisation of specialisations(); track specialisation) {
             <option [value]="specialisation">
@@ -65,14 +38,13 @@
         </select>
       </div>
 
-      <div class="form-group">
+      <div class="form-group search-field">
         <label for="doctorSearch">Doctor Search</label>
 
         <input
           id="doctorSearch"
-          type="search"
-          maxlength="80"
-          placeholder="Search doctor name..."
+          type="text"
+          placeholder="Search doctor name, specialisation"
           [value]="doctorSearch()"
           (input)="onSearchInput($event)"
         />
@@ -83,86 +55,118 @@
       </button>
     </div>
 
-    <div class="result-line">
-      Showing <strong>{{ filteredDoctors().length }}</strong> doctors
-      @if (selectedSpecialisation()) {
-        in <strong>{{ selectedSpecialisation() }}</strong>
-      }
-    </div>
+    <p class="showing-text">
+      Showing {{ filteredDoctors().length }} doctors
+    </p>
   </section>
 
   <section class="booking-card">
-    <div class="section-heading row-heading">
+    <div class="section-heading doctor-heading-row">
       <div>
         <h2>Select Doctor</h2>
+        <p>Inactive doctors are visible but cannot be selected.</p>
       </div>
 
-      @if (selectedDoctor()) {
-        <div class="selected-pill">
-          Selected: Dr. {{ selectedDoctor()?.fullName }}
-        </div>
-      }
+      <span class="doctor-count-chip">
+        Page {{ currentDoctorPage() }} of {{ totalDoctorPages() }}
+      </span>
     </div>
 
     @if (loading()) {
-      <div class="state-box">Loading doctors...</div>
-    }
-
-    @if (!loading() && filteredDoctors().length === 0) {
       <div class="empty-box">
-        No doctors found. Try another search or clear filters.
+        Loading doctors...
       </div>
-    }
-
-    @if (!loading() && filteredDoctors().length > 0) {
-      <div class="doctor-list">
-        @for (doctor of filteredDoctors(); track doctor.doctorId) {
-          <button
-            type="button"
-            class="doctor-row"
+    } @else if (pagedDoctors().length === 0) {
+      <div class="empty-box">
+        No doctors found. Please clear filters or try another search.
+      </div>
+    } @else {
+      <div class="doctor-grid">
+        @for (doctor of pagedDoctors(); track doctor.doctorId) {
+          <div
+            class="doctor-card"
             [class.selected]="selectedDoctorId() === doctor.doctorId"
-            (click)="selectDoctor(doctor.doctorId)"
+            [class.inactive]="!doctor.isActive"
           >
-            <div class="doctor-avatar">
-              DR
-            </div>
-
             <div class="doctor-main">
-              <h3>Dr. {{ doctor.fullName }}</h3>
-              <p>{{ doctor.specialisation }}</p>
+              <div class="doctor-avatar">
+                {{ doctor.fullName.charAt(0) }}
+              </div>
+
+              <div>
+                <h3>{{ getDoctorDisplayName(doctor.fullName) }}</h3>
+                <p>{{ doctor.specialisation }}</p>
+              </div>
             </div>
 
             <div class="doctor-info">
-              <span>{{ doctor.yearsOfExperience }} yrs exp</span>
+              <span>{{ doctor.yearsOfExperience }} Years Exp</span>
               <span>₹{{ doctor.consultationFee }}</span>
-              <span>Available</span>
             </div>
 
-            <div class="doctor-action">
-              @if (selectedDoctorId() === doctor.doctorId) {
-                Selected
-              } @else {
-                Select
-              }
+            <div class="doctor-card-footer">
+              <span
+                class="doctor-status"
+                [class.available]="doctor.isActive"
+                [class.unavailable]="!doctor.isActive"
+              >
+                {{ getDoctorStatusText(doctor) }}
+              </span>
+
+              <button
+                type="button"
+                class="select-doctor-button"
+                [class.selected-button]="selectedDoctorId() === doctor.doctorId"
+                [disabled]="!doctor.isActive"
+                (click)="selectDoctor(doctor)"
+              >
+                @if (selectedDoctorId() === doctor.doctorId) {
+                  Selected
+                } @else {
+                  Select
+                }
+              </button>
             </div>
-          </button>
+          </div>
         }
       </div>
-    }
 
-    @if (doctorId.invalid && doctorId.touched) {
-      <small>Please select a doctor.</small>
+      <div class="pagination-row">
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="currentDoctorPage() === 1"
+          (click)="goToPreviousDoctorPage()"
+        >
+          Previous
+        </button>
+
+        <span>
+          Page {{ currentDoctorPage() }} of {{ totalDoctorPages() }}
+        </span>
+
+        <button
+          type="button"
+          class="page-button"
+          [disabled]="currentDoctorPage() === totalDoctorPages()"
+          (click)="goToNextDoctorPage()"
+        >
+          Next
+        </button>
+      </div>
     }
   </section>
 
   <section class="booking-card">
     <div class="section-heading">
       <h2>Choose Date and Time</h2>
+      <p>Past dates and past time slots are disabled automatically.</p>
     </div>
 
     <form [formGroup]="bookingForm" (ngSubmit)="bookAppointment()">
       <input type="hidden" formControlName="specialisation" />
       <input type="hidden" formControlName="doctorId" />
+      <input type="hidden" formControlName="timeSlot" />
 
       <div class="appointment-grid">
         <div class="form-group">
@@ -174,39 +178,32 @@
             formControlName="scheduledDate"
             [min]="minDate"
             [max]="maxDate"
+            (change)="onDateChange()"
           />
 
-          @if (scheduledDate.invalid && scheduledDate.touched) {
-            <small>
-              @if (scheduledDate.errors?.['required']) {
-                Appointment date is required.
-              }
-
-              @if (scheduledDate.errors?.['pastDate']) {
-                Past date is not allowed.
-              }
-
-              @if (scheduledDate.errors?.['beyondSixMonths']) {
-                Booking is allowed only within next 6 months.
-              }
-            </small>
-          }
+          <small>
+            @if (scheduledDate.invalid && scheduledDate.touched) {
+              {{ getDateErrorMessage() }}
+            }
+          </small>
         </div>
 
         <div class="form-group">
-          <label for="timeSlot">Time Slot</label>
+          <label>Selected Time Slot</label>
 
-          <select id="timeSlot" formControlName="timeSlot">
-            <option value="">Select Time Slot</option>
-
-            @for (slot of timeSlots; track slot) {
-              <option [value]="slot">{{ slot }}</option>
+          <div class="selected-time-box">
+            @if (timeSlot.value) {
+              {{ timeSlot.value }}
+            } @else {
+              No time slot selected
             }
-          </select>
+          </div>
 
-          @if (timeSlot.invalid && timeSlot.touched) {
-            <small>Please select a time slot.</small>
-          }
+          <small>
+            @if (timeSlot.invalid && timeSlot.touched) {
+              Please select a time slot.
+            }
+          </small>
         </div>
       </div>
 
@@ -220,7 +217,7 @@
           <span>Doctor</span>
           <strong>
             @if (selectedDoctor()) {
-              Dr. {{ selectedDoctor()?.fullName }}
+              {{ getDoctorDisplayName(selectedDoctor()!.fullName) }}
             } @else {
               Not selected
             }
@@ -239,56 +236,115 @@
         </div>
       </div>
 
-      
+      <div class="time-slot-section">
+        <h3>Available Time Slots</h3>
 
-      <button type="submit" class="confirm-button" [disabled]="loading() || submitting()">
+        <div class="time-slot-grid">
+          @for (slot of timeSlotViews(); track slot.value) {
+            <button
+              type="button"
+              class="time-slot-card"
+              [class.selected]="timeSlot.value === slot.value"
+              [class.disabled]="slot.disabled"
+              [disabled]="slot.disabled"
+              (click)="selectTimeSlot(slot)"
+            >
+              <strong>{{ slot.value }}</strong>
+              <span>{{ slot.reason }}</span>
+            </button>
+          }
+        </div>
+
+        @if (noAvailableTimeSlots()) {
+          <div class="empty-box no-slot-box">
+            No valid time slots are available for this date. Please choose
+            another date.
+          </div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="confirm-button"
+        [disabled]="loading() || submitting()"
+      >
         {{ submitting() ? 'Booking Appointment...' : 'Confirm Appointment' }}
       </button>
     </form>
   </section>
-</section>
+</div>
 
-@if (successDialog()) {
-  <div class="modal-backdrop">
-    <section class="success-modal">
-      <div class="success-icon">✅</div>
+@if (errorMessage()) {
+  <div class="dialog-backdrop">
+    <div class="alert-dialog">
+      <div class="alert-icon">!</div>
 
-      <h2>Appointment Booked</h2>
+      <h2>Booking Alert</h2>
+
+      <p>{{ errorMessage() }}</p>
+
+      <button type="button" (click)="closeErrorDialog()">
+        Okay
+      </button>
+    </div>
+  </div>
+}
+
+@if (successDialog(); as dialog) {
+  <div class="dialog-backdrop">
+    <div class="success-dialog">
+      <div class="success-icon">✓</div>
+
+      <h2>Appointment Requested</h2>
 
       <p>
-        Your appointment has been created successfully and is currently pending confirmation.
+        Your appointment request has been submitted successfully.
       </p>
 
       <div class="success-details">
         <div>
           <span>Doctor</span>
-          <strong>{{ successDialog()!.doctorName }}</strong>
+          <strong>{{ dialog.doctorName }}</strong>
         </div>
 
         <div>
-          <span>Specialization</span>
-          <strong>{{ successDialog()!.specialisation }}</strong>
+          <span>Specialisation</span>
+          <strong>{{ dialog.specialisation }}</strong>
         </div>
 
         <div>
           <span>Date</span>
-          <strong>{{ successDialog()!.scheduledDate }}</strong>
+          <strong>{{ dialog.scheduledDate }}</strong>
         </div>
 
         <div>
-          <span>Time</span>
-          <strong>{{ successDialog()!.timeSlot }}</strong>
+          <span>Time Slot</span>
+          <strong>{{ dialog.timeSlot }}</strong>
         </div>
 
         <div>
           <span>Status</span>
-          <strong>{{ successDialog()!.status }}</strong>
+          <strong>{{ dialog.status }}</strong>
         </div>
       </div>
 
-      <button type="button" (click)="closeSuccessDialog()">
-        Done
-      </button>
-    </section>
+      <div class="dialog-actions appointment-dialog-actions">
+  <button
+    type="button"
+    class="download-appointment-button"
+    (click)="printBookedAppointment(dialog)"
+  >
+    Download PDF
+  </button>
+
+  <button type="button" (click)="closeSuccessDialog()">
+    Stay Here
+  </button>
+
+  <a routerLink="/patient/my-appointments">
+    View My Appointments
+  </a>
+</div>
+    </div>
   </div>
 }

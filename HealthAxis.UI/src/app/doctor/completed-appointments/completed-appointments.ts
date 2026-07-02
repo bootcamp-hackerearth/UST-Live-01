@@ -5,13 +5,22 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
 import { Appointment } from '../../core/models/appointment.model';
+import {
+  CreateHealthRecordRequest,
+  HealthRecord
+} from '../../core/models/health-record.model';
 import { AppointmentService } from '../../core/services/appointment.service';
-import { CreateHealthRecordRequest } from '../../core/models/health-record.model';
 import { HealthRecordService } from '../../core/services/health-record.service';
 import { getFriendlyErrorMessage } from '../../core/utils/api-error.util';
 
@@ -27,12 +36,21 @@ export class CompletedAppointments {
   private readonly appointmentService = inject(AppointmentService);
   private readonly healthRecordService = inject(HealthRecordService);
 
+  private readonly pageSize = 6;
+
   readonly appointments = signal<Appointment[]>([]);
+  readonly healthRecords = signal<HealthRecord[]>([]);
+
   readonly loading = signal(false);
   readonly saving = signal(false);
+  readonly loadingRecord = signal(false);
 
   readonly selectedAppointment = signal<Appointment | null>(null);
+  readonly selectedHealthRecord = signal<HealthRecord | null>(null);
+
   readonly searchText = signal('');
+  readonly confirmedPage = signal(1);
+  readonly completedPage = signal(1);
 
   readonly errorMessage = signal('');
   readonly successMessage = signal('');
@@ -91,11 +109,37 @@ export class CompletedAppointments {
       )
   );
 
+  readonly confirmedTotalPages = computed(() =>
+    this.getTotalPages(this.confirmedAppointments().length)
+  );
+
+  readonly completedTotalPages = computed(() =>
+    this.getTotalPages(this.completedAppointments().length)
+  );
+
+  readonly pagedConfirmedAppointments = computed(() => {
+    const startIndex = (this.confirmedPage() - 1) * this.pageSize;
+
+    return this.confirmedAppointments().slice(
+      startIndex,
+      startIndex + this.pageSize
+    );
+  });
+
+  readonly pagedCompletedAppointments = computed(() => {
+    const startIndex = (this.completedPage() - 1) * this.pageSize;
+
+    return this.completedAppointments().slice(
+      startIndex,
+      startIndex + this.pageSize
+    );
+  });
+
   readonly readyCount = computed(() => this.confirmedAppointments().length);
   readonly completedCount = computed(() => this.completedAppointments().length);
 
   constructor() {
-    this.loadAppointments();
+    this.refreshPage();
   }
 
   get visitDate() {
@@ -114,6 +158,11 @@ export class CompletedAppointments {
     return this.healthRecordForm.controls.notes;
   }
 
+  refreshPage(): void {
+    this.loadAppointments();
+    this.loadHealthRecords();
+  }
+
   loadAppointments(): void {
     this.loading.set(true);
     this.errorMessage.set('');
@@ -122,6 +171,8 @@ export class CompletedAppointments {
     this.appointmentService.getMyDoctorAppointments().subscribe({
       next: (appointments) => {
         this.appointments.set(appointments);
+        this.confirmedPage.set(1);
+        this.completedPage.set(1);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -133,9 +184,67 @@ export class CompletedAppointments {
     });
   }
 
+  loadHealthRecords(): void {
+    const service = this.healthRecordService as any;
+
+    const listMethod =
+      service.getMyDoctorHealthRecords ||
+      service.getDoctorHealthRecords ||
+      service.getAllHealthRecords ||
+      service.getMyHealthRecords ||
+      service.getHealthRecords ||
+      service.getAll;
+
+    if (!listMethod) {
+      this.healthRecords.set([]);
+      return;
+    }
+
+    listMethod.call(this.healthRecordService).subscribe({
+      next: (records: HealthRecord[]) => {
+        this.healthRecords.set(records ?? []);
+      },
+      error: () => {
+        this.healthRecords.set([]);
+      }
+    });
+  }
+
   onSearchInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.searchText.set(input.value);
+    this.confirmedPage.set(1);
+    this.completedPage.set(1);
+  }
+
+  clearSearch(): void {
+    this.searchText.set('');
+    this.confirmedPage.set(1);
+    this.completedPage.set(1);
+  }
+
+  goToPreviousConfirmedPage(): void {
+    if (this.confirmedPage() > 1) {
+      this.confirmedPage.update((page) => page - 1);
+    }
+  }
+
+  goToNextConfirmedPage(): void {
+    if (this.confirmedPage() < this.confirmedTotalPages()) {
+      this.confirmedPage.update((page) => page + 1);
+    }
+  }
+
+  goToPreviousCompletedPage(): void {
+    if (this.completedPage() > 1) {
+      this.completedPage.update((page) => page - 1);
+    }
+  }
+
+  goToNextCompletedPage(): void {
+    if (this.completedPage() < this.completedTotalPages()) {
+      this.completedPage.update((page) => page + 1);
+    }
   }
 
   openHealthRecordDialog(appointment: Appointment): void {
@@ -211,13 +320,27 @@ export class CompletedAppointments {
     this.saving.set(true);
 
     this.healthRecordService.createHealthRecord(request).subscribe({
-      next: () => {
+      next: (createdRecord: HealthRecord | unknown) => {
+        const fallbackRecord = this.buildLocalHealthRecord(
+          appointment,
+          request,
+          createdRecord as HealthRecord | null
+        );
+
+        this.healthRecords.update((records) => [
+          fallbackRecord,
+          ...records.filter(
+            (record) => record.appointmentId !== appointment.appointmentId
+          )
+        ]);
+
         this.saving.set(false);
         this.selectedAppointment.set(null);
         this.successMessage.set(
           'Health record added successfully. Appointment marked as completed.'
         );
-        this.loadAppointments();
+
+        this.refreshPage();
       },
       error: (error: unknown) => {
         this.saving.set(false);
@@ -226,6 +349,331 @@ export class CompletedAppointments {
         );
       }
     });
+  }
+
+  openCompletedHealthRecord(appointment: Appointment): void {
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const existingRecord = this.getHealthRecordForAppointment(appointment);
+
+    if (existingRecord) {
+      this.selectedHealthRecord.set(existingRecord);
+      return;
+    }
+
+    this.fetchHealthRecordByAppointment(appointment, 'view');
+  }
+
+  printHealthRecordForAppointment(appointment: Appointment): void {
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const existingRecord = this.getHealthRecordForAppointment(appointment);
+
+    if (existingRecord) {
+      this.printHealthRecordPdf(existingRecord);
+      return;
+    }
+
+    this.fetchHealthRecordByAppointment(appointment, 'pdf');
+  }
+
+  private fetchHealthRecordByAppointment(
+    appointment: Appointment,
+    action: 'view' | 'pdf'
+  ): void {
+    const service = this.healthRecordService as any;
+
+    const byAppointmentMethod =
+      service.getHealthRecordByAppointmentId ||
+      service.getByAppointmentId ||
+      service.getRecordByAppointmentId ||
+      service.getHealthRecordForAppointment;
+
+    if (!byAppointmentMethod) {
+      this.errorMessage.set(
+        'Health record data is not loaded. Please open Doctor Health Records page once or check HealthRecordService list API.'
+      );
+      return;
+    }
+
+    this.loadingRecord.set(true);
+
+    byAppointmentMethod.call(
+      this.healthRecordService,
+      appointment.appointmentId
+    ).subscribe({
+      next: (record: HealthRecord) => {
+        this.loadingRecord.set(false);
+
+        if (!record) {
+          this.errorMessage.set(
+            'Health record is not available yet for this completed appointment.'
+          );
+          return;
+        }
+
+        this.healthRecords.update((records) => [
+          record,
+          ...records.filter(
+            (item) => item.appointmentId !== appointment.appointmentId
+          )
+        ]);
+
+        if (action === 'view') {
+          this.selectedHealthRecord.set(record);
+        } else {
+          this.printHealthRecordPdf(record);
+        }
+      },
+      error: () => {
+        this.loadingRecord.set(false);
+        this.errorMessage.set(
+          'Health record is not available yet for this completed appointment.'
+        );
+      }
+    });
+  }
+
+  closeCompletedHealthRecord(): void {
+    this.selectedHealthRecord.set(null);
+  }
+
+  printHealthRecordPdf(record: HealthRecord): void {
+    const printWindow = window.open('', '_blank', 'width=900,height=700');
+
+    if (!printWindow) {
+      this.errorMessage.set(
+        'Please allow popups to download or print the health record.'
+      );
+      return;
+    }
+
+    const recordId = this.getRecordId(record);
+    const patientName = this.escapeHtml(
+      this.getSafeText(record.patientName, 'Patient')
+    );
+    const doctorName = this.escapeHtml(
+      this.getSafeText(record.doctorName, 'Doctor')
+    );
+    const specialisation = this.escapeHtml(
+      this.getSafeText(record.specialisation, 'Not assigned')
+    );
+    const visitDate = this.escapeHtml(
+      new Date(record.visitDate).toLocaleDateString()
+    );
+    const diagnosis = this.escapeHtml(
+      this.getSafeText(record.diagnosis, 'Diagnosis not provided.')
+    );
+    const prescription = this.escapeHtml(
+      this.getSafeText(record.prescription, 'Prescription not provided.')
+    );
+    const notes = this.escapeHtml(
+      this.getSafeText(record.notes, 'No additional notes.')
+    );
+
+    printWindow.document.open();
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Health Record #${recordId}</title>
+
+          <style>
+            body {
+              margin: 0;
+              background: #f8fafc;
+              color: #0f172a;
+              font-family: Arial, sans-serif;
+            }
+
+            .document {
+              width: 800px;
+              margin: 24px auto;
+              background: #ffffff;
+              border: 1px solid #e2e8f0;
+              border-radius: 18px;
+              padding: 32px;
+            }
+
+            .header {
+              background: linear-gradient(135deg, #0f172a, #047857);
+              color: #ffffff;
+              padding: 24px;
+              border-radius: 16px;
+              margin-bottom: 24px;
+            }
+
+            .header h1 {
+              margin: 0;
+              font-size: 28px;
+            }
+
+            .header p {
+              margin: 8px 0 0;
+              color: #d1fae5;
+            }
+
+            .grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 14px;
+            }
+
+            .box {
+              border: 1px solid #dbeafe;
+              background: #f8fafc;
+              border-radius: 14px;
+              padding: 16px;
+            }
+
+            .box span {
+              display: block;
+              color: #64748b;
+              font-size: 12px;
+              font-weight: bold;
+              margin-bottom: 7px;
+            }
+
+            .box strong {
+              color: #0f172a;
+              font-size: 16px;
+            }
+
+            .section {
+              border: 1px solid #dbeafe;
+              border-radius: 14px;
+              padding: 16px;
+              margin-top: 16px;
+            }
+
+            .section h2 {
+              margin: 0 0 10px;
+              font-size: 18px;
+            }
+
+            .section p {
+              margin: 0;
+              line-height: 1.7;
+              white-space: pre-wrap;
+            }
+
+            .footer {
+              margin-top: 24px;
+              padding-top: 14px;
+              border-top: 1px solid #e2e8f0;
+              font-size: 12px;
+              color: #64748b;
+            }
+
+            @media print {
+              body {
+                background: #ffffff;
+              }
+
+              .document {
+                width: auto;
+                margin: 0;
+                border: none;
+                border-radius: 0;
+              }
+            }
+          </style>
+        </head>
+
+        <body>
+          <main class="document">
+            <section class="header">
+              <h1>HealthAxis Medical Record</h1>
+              <p>Doctor completed visit health record</p>
+            </section>
+
+            <section class="grid">
+              <div class="box">
+                <span>Record ID</span>
+                <strong>#${recordId}</strong>
+              </div>
+
+              <div class="box">
+                <span>Appointment ID</span>
+                <strong>#${record.appointmentId}</strong>
+              </div>
+
+              <div class="box">
+                <span>Patient Name</span>
+                <strong>${patientName}</strong>
+              </div>
+
+              <div class="box">
+                <span>Doctor Name</span>
+                <strong>${doctorName}</strong>
+              </div>
+
+              <div class="box">
+                <span>Specialisation</span>
+                <strong>${specialisation}</strong>
+              </div>
+
+              <div class="box">
+                <span>Visit Date</span>
+                <strong>${visitDate}</strong>
+              </div>
+            </section>
+
+            <section class="section">
+              <h2>Diagnosis</h2>
+              <p>${diagnosis}</p>
+            </section>
+
+            <section class="section">
+              <h2>Prescription</h2>
+              <p>${prescription}</p>
+            </section>
+
+            <section class="section">
+              <h2>Doctor Notes</h2>
+              <p>${notes}</p>
+            </section>
+
+            <section class="footer">
+              This record is generated by HealthAxis Doctor Portal.
+            </section>
+          </main>
+
+          <script>
+            window.onload = function () {
+              setTimeout(function () {
+                window.print();
+              }, 300);
+            };
+
+            window.onafterprint = function () {
+              window.close();
+            };
+          </script>
+        </body>
+      </html>
+    `);
+
+    printWindow.document.close();
+  }
+
+  hasHealthRecord(appointment: Appointment): boolean {
+    return Boolean(this.getHealthRecordForAppointment(appointment));
+  }
+
+  getHealthRecordForAppointment(
+    appointment: Appointment
+  ): HealthRecord | undefined {
+    return this.healthRecords().find(
+      (record) => record.appointmentId === appointment.appointmentId
+    );
+  }
+
+  getRecordId(record: HealthRecord): number {
+    return record.healthRecordId ?? record.recordId ?? record.appointmentId;
   }
 
   getStatusLabel(status: string | number): string {
@@ -250,6 +698,43 @@ export class CompletedAppointments {
     return String(status);
   }
 
+  getSafeText(value: string | null | undefined, fallback: string): string {
+    const cleanValue = (value ?? '').trim();
+
+    return cleanValue || fallback;
+  }
+
+  private buildLocalHealthRecord(
+    appointment: Appointment,
+    request: CreateHealthRecordRequest,
+    createdRecord: HealthRecord | null
+  ): HealthRecord {
+    if (createdRecord && createdRecord.appointmentId) {
+      return createdRecord;
+    }
+
+    return {
+      healthRecordId: appointment.appointmentId,
+      recordId: appointment.appointmentId,
+      appointmentId: appointment.appointmentId,
+      patientId: appointment.patientId,
+      patientName: appointment.patientName,
+      doctorId: appointment.doctorId,
+      doctorName: appointment.doctorName,
+      specialisation: appointment.specialisation,
+      visitDate: request.visitDate,
+      diagnosis: request.diagnosis,
+      prescription: request.prescription,
+      notes: request.notes
+    } as HealthRecord;
+  }
+
+  private getTotalPages(totalItems: number): number {
+    const pages = Math.ceil(totalItems / this.pageSize);
+
+    return pages > 0 ? pages : 1;
+  }
+
   private matchesSearch(appointment: Appointment): boolean {
     const searchValue = this.searchText().trim().toLowerCase();
 
@@ -259,6 +744,8 @@ export class CompletedAppointments {
 
     const searchableText = [
       appointment.patientName,
+      appointment.doctorName,
+      appointment.specialisation,
       appointment.scheduledDate,
       appointment.timeSlot,
       appointment.status,
@@ -298,6 +785,15 @@ export class CompletedAppointments {
     const day = `${date.getDate()}`.padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
   }
 
   private static noFutureDateValidator(
