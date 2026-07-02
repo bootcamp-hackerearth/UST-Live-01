@@ -689,7 +689,7 @@ namespace HealthCareApp.Services.Impl
 
             var patient = await GetLoggedInPatientAsync(identityUserId);
 
-            // Important ownership fix:
+            
             // Ignore any patientId sent from body and force logged-in patient's PatientId.
             dto.PatientId = patient.PatientId;
 

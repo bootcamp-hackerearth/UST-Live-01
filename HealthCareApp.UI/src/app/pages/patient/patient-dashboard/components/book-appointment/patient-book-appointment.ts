@@ -288,7 +288,15 @@ export class PatientBookAppointment implements OnInit {
   }
 
   isPastTimeSlot(slot: SlotAvailabilityDto): boolean {
-    if (!this.form.scheduledDate || this.form.scheduledDate !== this.todayDate) {
+    if (!this.form.scheduledDate) {
+      return false;
+    }
+
+    if (this.form.scheduledDate < this.todayDate) {
+      return true;
+    }
+
+    if (this.form.scheduledDate > this.todayDate) {
       return false;
     }
 
@@ -301,6 +309,10 @@ export class PatientBookAppointment implements OnInit {
     return slotStartTime.getTime() <= new Date().getTime();
   }
 
+  isFutureBeyondBookingWindow(): boolean {
+    return !!this.form.scheduledDate && this.form.scheduledDate > this.maxBookingDate;
+  }
+
   isTimeSlotDisabled(slot: SlotAvailabilityDto): boolean {
     return (
       !this.form.doctorId ||
@@ -308,12 +320,17 @@ export class PatientBookAppointment implements OnInit {
       this.isSubmitting ||
       this.isLoadingSlots ||
       this.isTimeSlotBooked(slot) ||
-      this.isPastTimeSlot(slot)
+      this.isPastTimeSlot(slot) ||
+      this.isFutureBeyondBookingWindow()
     );
   }
 
   getSlotClass(slot: SlotAvailabilityDto): string {
-    if (this.isTimeSlotBooked(slot) || this.isPastTimeSlot(slot)) {
+    if (
+      this.isTimeSlotBooked(slot) ||
+      this.isPastTimeSlot(slot) ||
+      this.isFutureBeyondBookingWindow()
+    ) {
       return 'ba-slot booked';
     }
 
@@ -339,6 +356,10 @@ export class PatientBookAppointment implements OnInit {
 
     if (this.isPastTimeSlot(slot)) {
       return 'Time Passed';
+    }
+
+    if (this.isFutureBeyondBookingWindow()) {
+      return 'Not Open Yet';
     }
 
     if (this.form.timeSlot === slot.timeSlot) {
@@ -473,6 +494,11 @@ export class PatientBookAppointment implements OnInit {
 
     if (this.isPastTimeSlot(selectedSlot)) {
       this.message = 'This time slot has already passed. Please choose another slot.';
+      return false;
+    }
+
+    if (this.isFutureBeyondBookingWindow()) {
+      this.message = 'Booking is not open for this date. Please select a date within the next 30 days.';
       return false;
     }
 
