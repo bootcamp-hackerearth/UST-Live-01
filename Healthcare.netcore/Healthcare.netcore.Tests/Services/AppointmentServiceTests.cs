@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using HealthAxis.Shared.DTOs.Appointment;
-using HealthAxis.Shared.Enums;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementations;
+using HealthAxis.Shared.DTOs.Appointment;
+using HealthAxis.Shared.Enums;
 using Moq;
+using Xunit;
 using ValidationException = HealthAxis.API.Exceptions.ValidationException;
 
 namespace Healthcare.netcore.Tests.Services
@@ -42,6 +43,85 @@ namespace Healthcare.netcore.Tests.Services
                 ScheduledDate = DateTime.Today.AddDays(2),
                 TimeSlot = "10:00 AM"
             };
+        }
+
+        [Fact]
+        public async Task GetAllAsync_WhenAppointmentsExist_ReturnsAppointmentDtos()
+        {
+            var appointments = new List<Appointment>
+            {
+                new Appointment
+                {
+                    AppointmentId = 1,
+                    PatientId = 3,
+                    DoctorId = 6,
+                    ScheduledDate = DateTime.Today.AddDays(1),
+                    TimeSlot = "10:00 AM",
+                    Status = AppointmentStatus.Pending
+                }
+            };
+
+            var appointmentDtos = new List<AppointmentDto>
+            {
+                new AppointmentDto
+                {
+                    AppointmentId = 1,
+                    PatientId = 3,
+                    DoctorId = 6,
+                    ScheduledDate = DateTime.Today.AddDays(1),
+                    TimeSlot = "10:00 AM",
+                    Status = AppointmentStatus.Pending
+                }
+            };
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(appointments);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<AppointmentDto>>(appointments))
+                .Returns(appointmentDtos);
+
+            var result = await _service.GetAllAsync();
+
+            result.Should().NotBeNull();
+            result.Should().HaveCount(1);
+            result.First().AppointmentId.Should().Be(1);
+            result.First().Status.Should().Be(AppointmentStatus.Pending);
+        }
+
+        [Fact]
+        public async Task GetAllAsync_WhenNoAppointments_ReturnsEmptyCollection()
+        {
+            var appointments = new List<Appointment>();
+            var appointmentDtos = new List<AppointmentDto>();
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(appointments);
+
+            _mapperMock
+                .Setup(x => x.Map<IEnumerable<AppointmentDto>>(appointments))
+                .Returns(appointmentDtos);
+
+            var result = await _service.GetAllAsync();
+
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetAllAsync_WhenRepositoryFails_ThrowsException()
+        {
+            _appointmentRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.GetAllAsync();
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
         }
 
         [Fact]

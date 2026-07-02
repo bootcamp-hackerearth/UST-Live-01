@@ -7,12 +7,12 @@ export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
   const platformId = inject(PLATFORM_ID);
 
-  // ✅ If NOT browser (SSR) → allow
+  //  If NOT browser (SSR) → allow
   if (!isPlatformBrowser(platformId)) {
     return true;
   }
 
-  // ✅ browser check
+  //  browser check
   const token = localStorage.getItem('token');
 
   if (token) {

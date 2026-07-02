@@ -186,16 +186,16 @@ get displayAppointmentDate(): string {
     next: (res: any) => {
       console.log('Appointment booked ✅:', res);
 
-      // ✅ stop loading first
+      //  stop loading first
       this.isBooking = false;
       this.submitted = false;
       this.selectedDoctor = null;
       this.selectedSlot = '';
 
-      // ✅ show success
+      //  show success
       alert('Appointment booked successfully ✅');
 
-      // ✅ go to appointments page so it reloads data
+      //  go to appointments page so it reloads data
       this.router.navigate(['/patient/appointments']);
     },
     error: (err: any) => {

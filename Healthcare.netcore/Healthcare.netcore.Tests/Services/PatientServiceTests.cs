@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using FluentAssertions;
-using HealthAxis.Shared.DTOs.Patient;
-using HealthAxis.Shared.Enums;
 using HealthAxis.API.Exceptions;
 using HealthAxis.API.Models;
 using HealthAxis.API.Repositories.Interfaces;
 using HealthAxis.API.Services.Implementations;
+using HealthAxis.Shared.DTOs.Common;
+using HealthAxis.Shared.DTOs.HealthRecord;
+using HealthAxis.Shared.DTOs.Patient;
+using HealthAxis.Shared.Enums;
 using Moq;
 
 namespace Healthcare.netcore.Tests.Services
@@ -58,6 +60,19 @@ namespace Healthcare.netcore.Tests.Services
                 FullName = "Kiran",
                 Email = "kiran@gmail.com",
                 PhoneNumber = "9876543210"
+            };
+        }
+
+        private UpdatePatientDto GetValidUpdatePatientDto()
+        {
+            return new UpdatePatientDto
+            {
+                FullName = "Kiran Updated",
+                Email = "kiran.updated@gmail.com",
+                PhoneNumber = "9876543211",
+                Gender = Gender.Male,
+                DateOfBirth = new DateTime(2003, 8, 21),
+                InsuranceId = "INS1003"
             };
         }
 
@@ -365,12 +380,7 @@ namespace Healthcare.netcore.Tests.Services
         {
             var patient = GetPatient();
 
-            var updateDto = new UpdatePatientDto
-            {
-                FullName = "Kiran Updated",
-                Email = "kiran.updated@gmail.com",
-                PhoneNumber = "9876543211"
-            };
+            var updateDto = GetValidUpdatePatientDto();
 
             var updatedDto = new PatientDto
             {
@@ -384,8 +394,9 @@ namespace Healthcare.netcore.Tests.Services
                 .Setup(x => x.GetByIdAsync(3))
                 .ReturnsAsync(patient);
 
-            _mapperMock
-                .Setup(x => x.Map(updateDto, patient));
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient> { patient });
 
             _patientRepositoryMock
                 .Setup(x => x.UpdateAsync(3, patient, It.IsAny<CancellationToken>()))
@@ -402,10 +413,6 @@ namespace Healthcare.netcore.Tests.Services
             result.FullName.Should().Be("Kiran Updated");
             result.Email.Should().Be("kiran.updated@gmail.com");
 
-            _mapperMock.Verify(
-                x => x.Map(updateDto, patient),
-                Times.Once);
-
             _patientRepositoryMock.Verify(
                 x => x.UpdateAsync(3, patient, It.IsAny<CancellationToken>()),
                 Times.Once);
@@ -414,10 +421,7 @@ namespace Healthcare.netcore.Tests.Services
         [Fact]
         public async Task UpdateAsync_WhenPatientDoesNotExist_ThrowsNotFoundException()
         {
-            var updateDto = new UpdatePatientDto
-            {
-                FullName = "Updated"
-            };
+            var updateDto = GetValidUpdatePatientDto();
 
             _patientRepositoryMock
                 .Setup(x => x.GetByIdAsync(99))
@@ -435,17 +439,15 @@ namespace Healthcare.netcore.Tests.Services
         {
             var patient = GetPatient();
 
-            var updateDto = new UpdatePatientDto
-            {
-                FullName = "Updated"
-            };
+            var updateDto = GetValidUpdatePatientDto();
 
             _patientRepositoryMock
                 .Setup(x => x.GetByIdAsync(3))
                 .ReturnsAsync(patient);
 
-            _mapperMock
-                .Setup(x => x.Map(updateDto, patient));
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient> { patient });
 
             _patientRepositoryMock
                 .Setup(x => x.UpdateAsync(3, patient, It.IsAny<CancellationToken>()))
@@ -574,5 +576,228 @@ namespace Healthcare.netcore.Tests.Services
                 .ThrowAsync<Exception>()
                 .WithMessage("Database Error");
         }
+        [Fact]
+        public async Task AddAsync_WhenValidPatient_ReturnsPatientDto()
+        {
+            var createDto = new CreatePatientDto
+            {
+                FullName = "Anu",
+                Email = "anu@gmail.com",
+                PhoneNumber = "9876543222",
+                Gender = Gender.Female,
+                DateOfBirth = new DateTime(2002, 5, 10)
+            };
+
+            var savedPatient = new Patient
+            {
+                PatientId = 10,
+                FullName = "Anu",
+                Email = "anu@gmail.com",
+                PhoneNumber = "9876543222",
+                Gender = Gender.Female,
+                DateOfBirth = new DateTime(2002, 5, 10)
+            };
+
+            var patientDto = new PatientDto
+            {
+                PatientId = 10,
+                FullName = "Anu",
+                Email = "anu@gmail.com",
+                PhoneNumber = "9876543222"
+            };
+
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient>());
+
+            _patientRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Patient>()))
+                .ReturnsAsync(savedPatient);
+
+            _mapperMock
+                .Setup(x => x.Map<PatientDto>(savedPatient))
+                .Returns(patientDto);
+
+            var result = await _service.AddAsync(createDto);
+
+            result.Should().NotBeNull();
+            result.PatientId.Should().Be(10);
+            result.FullName.Should().Be("Anu");
+            result.Email.Should().Be("anu@gmail.com");
+        }
+        [Fact]
+        public async Task AddAsync_WhenDateOfBirthIsFuture_ThrowsValidationException()
+        {
+            var createDto = new CreatePatientDto
+            {
+                FullName = "Future Patient",
+                Email = "future@gmail.com",
+                PhoneNumber = "9876543333",
+                Gender = Gender.Male,
+                DateOfBirth = DateTime.Today.AddDays(1)
+            };
+
+            Func<Task> action = async () => await _service.AddAsync(createDto);
+
+            await action.Should()
+                .ThrowAsync<ValidationException>()
+                .WithMessage("Date of birth cannot be in the future.");
+        }
+        [Fact]
+        public async Task AddAsync_WhenDateOfBirthBefore1900_ThrowsValidationException()
+        {
+            var createDto = new CreatePatientDto
+            {
+                FullName = "Old Patient",
+                Email = "old@gmail.com",
+                PhoneNumber = "9876543444",
+                Gender = Gender.Male,
+                DateOfBirth = new DateTime(1800, 1, 1)
+            };
+
+            Func<Task> action = async () => await _service.AddAsync(createDto);
+
+            await action.Should()
+                .ThrowAsync<ValidationException>()
+                .WithMessage("Date of birth must be after 01 Jan 1900.");
+        }
+        [Fact]
+        public async Task AddAsync_WhenEmailAlreadyExists_ThrowsValidationException()
+        {
+            var existingPatient = GetPatient();
+
+            var createDto = new CreatePatientDto
+            {
+                FullName = "Another Patient",
+                Email = "kiran@gmail.com",
+                PhoneNumber = "9876543999",
+                Gender = Gender.Male,
+                DateOfBirth = new DateTime(2001, 1, 1)
+            };
+
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient> { existingPatient });
+
+            Func<Task> action = async () => await _service.AddAsync(createDto);
+
+            await action.Should()
+                .ThrowAsync<ValidationException>()
+                .WithMessage("Patient email already exists.");
+        }
+        [Fact]
+        public async Task AddAsync_WhenPhoneNumberAlreadyExists_ThrowsValidationException()
+        {
+            var existingPatient = GetPatient();
+
+            var createDto = new CreatePatientDto
+            {
+                FullName = "Another Patient",
+                Email = "another@gmail.com",
+                PhoneNumber = "9876543210",
+                Gender = Gender.Male,
+                DateOfBirth = new DateTime(2001, 1, 1)
+            };
+
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient> { existingPatient });
+
+            Func<Task> action = async () => await _service.AddAsync(createDto);
+
+            await action.Should()
+                .ThrowAsync<ValidationException>()
+                .WithMessage("Patient phone number already exists.");
+        }
+        [Fact]
+        public async Task AddAsync_WhenRepositoryFails_ThrowsException()
+        {
+            var createDto = new CreatePatientDto
+            {
+                FullName = "Anu",
+                Email = "anu@gmail.com",
+                PhoneNumber = "9876543222",
+                Gender = Gender.Female,
+                DateOfBirth = new DateTime(2002, 5, 10)
+            };
+
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient>());
+
+            _patientRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<Patient>()))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.AddAsync(createDto);
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task GetByUserIdAsync_WhenPatientExists_ReturnsPatientDto()
+        {
+            var patient = GetPatient();
+            var patientDto = GetPatientDto();
+
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient> { patient });
+
+            _mapperMock
+                .Setup(x => x.Map<PatientDto>(patient))
+                .Returns(patientDto);
+
+            var result = await _service.GetByUserIdAsync("patient-user-1");
+
+            result.Should().NotBeNull();
+            result!.PatientId.Should().Be(3);
+            result.FullName.Should().Be("Kiran");
+        }
+        [Fact]
+        public async Task GetByUserIdAsync_WhenPatientDoesNotExist_ThrowsNotFoundException()
+        {
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ReturnsAsync(new List<Patient>());
+
+            Func<Task> action = async () => await _service.GetByUserIdAsync("missing-user");
+
+            await action.Should()
+                .ThrowAsync<NotFoundException>()
+                .WithMessage("Patient profile not found.");
+        }
+        [Fact]
+        public async Task GetByUserIdAsync_WhenRepositoryFails_ThrowsException()
+        {
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.GetByUserIdAsync("patient-user-1");
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task GetPagedAsync_WhenRepositoryFails_ThrowsException()
+        {
+            _patientRepositoryMock
+                .Setup(x => x.GetAllAsync())
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.GetPagedAsync(new PaginationParams
+            {
+                PageNumber = 1,
+                PageSize = 10
+            });
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
     }
+
 }

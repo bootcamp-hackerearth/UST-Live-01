@@ -360,5 +360,204 @@ namespace Healthcare.netcore.Tests.Services
             result.Should().NotBeNull();
             result.Should().BeEmpty();
         }
+        [Fact]
+        public async Task GetByIdAsync_WhenRepositoryFails_ThrowsException()
+        {
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByIdAsync(1))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.GetByIdAsync(1);
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task GetByPatientIdAsync_WhenPatientRepositoryFails_ThrowsException()
+        {
+            _patientRepositoryMock
+                .Setup(x => x.GetByIdAsync(3))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.GetByPatientIdAsync(3);
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task GetByPatientIdAsync_WhenHealthRecordRepositoryFails_ThrowsException()
+        {
+            var patient = new Patient
+            {
+                PatientId = 3,
+                FullName = "Kiran"
+            };
+
+            _patientRepositoryMock
+                .Setup(x => x.GetByIdAsync(3))
+                .ReturnsAsync(patient);
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByPatientIdAsync(3))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.GetByPatientIdAsync(3);
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task AddAsync_WhenAppointmentRepositoryFails_ThrowsException()
+        {
+            var dto = GetCreateDto();
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(dto.AppointmentId))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.AddAsync(dto);
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task AddAsync_WhenExistingRecordCheckFails_ThrowsException()
+        {
+            var dto = GetCreateDto();
+            var appointment = GetCompletedAppointment();
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(dto.AppointmentId))
+                .ReturnsAsync(appointment);
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByAppointmentIdAsync(dto.AppointmentId))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.AddAsync(dto);
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task AddAsync_WhenAddRepositoryFails_ThrowsException()
+        {
+            var dto = GetCreateDto();
+            var appointment = GetCompletedAppointment();
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(dto.AppointmentId))
+                .ReturnsAsync(appointment);
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByAppointmentIdAsync(dto.AppointmentId))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<HealthRecord>()))
+                .ThrowsAsync(new Exception("Database Error"));
+
+            Func<Task> action = async () => await _service.AddAsync(dto);
+
+            await action.Should()
+                .ThrowAsync<Exception>()
+                .WithMessage("Database Error");
+        }
+        [Fact]
+        public async Task AddAsync_WhenValidRequest_VerifiesAppointmentLookup()
+        {
+            var dto = GetCreateDto();
+            var appointment = GetCompletedAppointment();
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(dto.AppointmentId))
+                .ReturnsAsync(appointment);
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByAppointmentIdAsync(dto.AppointmentId))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<HealthRecord>()))
+                .ReturnsAsync(GetHealthRecord());
+
+            _mapperMock
+                .Setup(x => x.Map<HealthRecordDto>(It.IsAny<HealthRecord>()))
+                .Returns(GetHealthRecordDto());
+
+            await _service.AddAsync(dto);
+
+            _appointmentRepositoryMock.Verify(
+                x => x.GetByIdAsync(dto.AppointmentId),
+                Times.Once);
+        }
+        [Fact]
+        public async Task AddAsync_WhenValidRequest_VerifiesDuplicateRecordCheck()
+        {
+            var dto = GetCreateDto();
+            var appointment = GetCompletedAppointment();
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(dto.AppointmentId))
+                .ReturnsAsync(appointment);
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByAppointmentIdAsync(dto.AppointmentId))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<HealthRecord>()))
+                .ReturnsAsync(GetHealthRecord());
+
+            _mapperMock
+                .Setup(x => x.Map<HealthRecordDto>(It.IsAny<HealthRecord>()))
+                .Returns(GetHealthRecordDto());
+
+            await _service.AddAsync(dto);
+
+            _healthRecordRepositoryMock.Verify(
+                x => x.GetByAppointmentIdAsync(dto.AppointmentId),
+                Times.Once);
+        }
+        [Fact]
+        public async Task AddAsync_WhenNotesAreEmpty_CreatesRecordWithEmptyNotes()
+        {
+            var dto = GetCreateDto();
+            dto.Notes = string.Empty;
+
+            var appointment = GetCompletedAppointment();
+
+            HealthRecord? capturedRecord = null;
+
+            _appointmentRepositoryMock
+                .Setup(x => x.GetByIdAsync(dto.AppointmentId))
+                .ReturnsAsync(appointment);
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.GetByAppointmentIdAsync(dto.AppointmentId))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            _healthRecordRepositoryMock
+                .Setup(x => x.AddAsync(It.IsAny<HealthRecord>()))
+                .Callback<HealthRecord>(record =>
+                {
+                    capturedRecord = record;
+                })
+                .ReturnsAsync(GetHealthRecord());
+
+            _mapperMock
+                .Setup(x => x.Map<HealthRecordDto>(It.IsAny<HealthRecord>()))
+                .Returns(GetHealthRecordDto());
+
+            await _service.AddAsync(dto);
+
+            capturedRecord.Should().NotBeNull();
+            capturedRecord!.Notes.Should().BeEmpty();
+        }
     }
 }
