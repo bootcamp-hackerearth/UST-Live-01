@@ -38,11 +38,11 @@
     <skipped_module name="system.collections.immutable.dll" path="system.collections.immutable.dll" reason="no_symbols" />
     <skipped_module name="system.private.uri.dll" path="system.private.uri.dll" reason="no_symbols" />
     <skipped_module name="system.security.cryptography.dll" path="system.security.cryptography.dll" reason="no_symbols" />
-    <skipped_module name="system.memory.dll" path="system.memory.dll" reason="no_symbols" />
     <skipped_module name="system.diagnostics.diagnosticsource.dll" path="system.diagnostics.diagnosticsource.dll" reason="no_symbols" />
+    <skipped_module name="system.memory.dll" path="system.memory.dll" reason="no_symbols" />
     <skipped_module name="system.net.http.dll" path="system.net.http.dll" reason="no_symbols" />
-    <skipped_module name="system.collections.concurrent.dll" path="system.collections.concurrent.dll" reason="no_symbols" />
     <skipped_module name="system.io.memorymappedfiles.dll" path="system.io.memorymappedfiles.dll" reason="no_symbols" />
+    <skipped_module name="system.collections.concurrent.dll" path="system.collections.concurrent.dll" reason="no_symbols" />
     <skipped_module name="system.net.primitives.dll" path="system.net.primitives.dll" reason="no_symbols" />
     <skipped_module name="system.net.security.dll" path="system.net.security.dll" reason="no_symbols" />
     <skipped_module name="system.xml.xdocument.dll" path="system.xml.xdocument.dll" reason="no_symbols" />
@@ -59,16 +59,16 @@
     <skipped_module name="system.text.regularexpressions.dll" path="system.text.regularexpressions.dll" reason="no_symbols" />
     <skipped_module name="microsoft.win32.registry.dll" path="microsoft.win32.registry.dll" reason="no_symbols" />
     <skipped_module name="system.runtime.loader.dll" path="system.runtime.loader.dll" reason="no_symbols" />
-    <skipped_module name="system.diagnostics.fileversioninfo.dll" path="system.diagnostics.fileversioninfo.dll" reason="no_symbols" />
     <skipped_module name="system.net.nameresolution.dll" path="system.net.nameresolution.dll" reason="no_symbols" />
+    <skipped_module name="system.diagnostics.fileversioninfo.dll" path="system.diagnostics.fileversioninfo.dll" reason="no_symbols" />
     <skipped_module name="system.runtime.intrinsics.dll" path="system.runtime.intrinsics.dll" reason="no_symbols" />
-    <skipped_module name="microsoft.net.stringtools.dll" path="microsoft.net.stringtools.dll" reason="no_symbols" />
     <skipped_module name="system.io.compression.dll" path="system.io.compression.dll" reason="no_symbols" />
+    <skipped_module name="microsoft.net.stringtools.dll" path="microsoft.net.stringtools.dll" reason="no_symbols" />
     <skipped_module name="system.threading.tasks.dataflow.dll" path="system.threading.tasks.dataflow.dll" reason="no_symbols" />
     <skipped_module name="nuget.protocol.dll" path="nuget.protocol.dll" reason="no_symbols" />
     <skipped_module name="nuget.configuration.dll" path="nuget.configuration.dll" reason="no_symbols" />
-    <skipped_module name="microsoft.visualstudio.solutionpersistence.dll" path="microsoft.visualstudio.solutionpersistence.dll" reason="no_symbols" />
     <skipped_module name="nuget.credentials.dll" path="nuget.credentials.dll" reason="no_symbols" />
+    <skipped_module name="microsoft.visualstudio.solutionpersistence.dll" path="microsoft.visualstudio.solutionpersistence.dll" reason="no_symbols" />
     <skipped_module name="system.serviceprocess.servicecontroller.dll" path="system.serviceprocess.servicecontroller.dll" reason="no_symbols" />
     <skipped_module name="system.security.principal.windows.dll" path="system.security.principal.windows.dll" reason="no_symbols" />
     <skipped_module name="system.security.claims.dll" path="system.security.claims.dll" reason="no_symbols" />
@@ -81,13 +81,13 @@
     <skipped_module name="nuget.commands.dll" path="nuget.commands.dll" reason="no_symbols" />
     <skipped_module name="nuget.projectmodel.dll" path="nuget.projectmodel.dll" reason="no_symbols" />
     <skipped_module name="system.threading.threadpool.dll" path="system.threading.threadpool.dll" reason="no_symbols" />
+    <skipped_module name="system.net.sockets.dll" path="system.net.sockets.dll" reason="no_symbols" />
     <skipped_module name="system.io.pipes.dll" path="system.io.pipes.dll" reason="no_symbols" />
-    <skipped_module name="microsoft.build.nugetsdkresolver.dll" path="microsoft.build.nugetsdkresolver.dll" reason="no_symbols" />
     <skipped_module name="system.threading.overlapped.dll" path="system.threading.overlapped.dll" reason="no_symbols" />
+    <skipped_module name="microsoft.build.nugetsdkresolver.dll" path="microsoft.build.nugetsdkresolver.dll" reason="no_symbols" />
     <skipped_module name="system.security.accesscontrol.dll" path="system.security.accesscontrol.dll" reason="no_symbols" />
     <skipped_module name="microsoft.net.sdk.workloadmsbuildsdkresolver.dll" path="microsoft.net.sdk.workloadmsbuildsdkresolver.dll" reason="no_symbols" />
     <skipped_module name="microsoft.net.sdk.workloadmanifestreader.dll" path="microsoft.net.sdk.workloadmanifestreader.dll" reason="no_symbols" />
-    <skipped_module name="system.net.sockets.dll" path="system.net.sockets.dll" reason="no_symbols" />
     <skipped_module name="system.collections.nongeneric.dll" path="system.collections.nongeneric.dll" reason="no_symbols" />
     <skipped_module name="nuget.frameworks.dll" path="nuget.frameworks.dll" reason="no_symbols" />
     <skipped_module name="microsoft.net.build.tasks.dll" path="microsoft.net.build.tasks.dll" reason="no_symbols" />

@@ -12,12 +12,8 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h3 class="mb-1 fw-bold text-dark">Patient Registry</h3>
-        <p class="text-muted mb-0">View, add, and update patient records.</p>
+        <p class="text-muted mb-0">View and update patient records.</p>
     </div>
-
-    <button class="btn btn-primary" @onclick="OpenAddModal">
-        <i class="bi bi-plus-lg me-1"></i> Add Patient
-    </button>
 </div>
 
 @if (!string.IsNullOrEmpty(_pageError))
@@ -295,10 +291,26 @@
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <label class="form-label fw-medium">Email Address</label>
-                                <InputText class="form-control"
-                                           @bind-Value="_formData.Email"
-                                           placeholder="patient@example.com" />
-                                <ValidationMessage For="@(() => _formData.Email)" class="text-danger small mt-1" />
+
+                                @if (_isEditing)
+                                {
+                                    <InputText class="form-control bg-light text-muted"
+                                               @bind-Value="_formData.Email"
+                                               readonly
+                                               placeholder="patient@example.com" />
+
+                                    <small class="text-muted mt-1 d-block">
+                                        Email cannot be changed.
+                                    </small>
+                                }
+                                else
+                                {
+                                    <InputText class="form-control"
+                                               @bind-Value="_formData.Email"
+                                               placeholder="patient@example.com" />
+
+                                    <ValidationMessage For="@(() => _formData.Email)" class="text-danger small mt-1" />
+                                }
                             </div>
 
                             <div class="col-md-6 mb-4">

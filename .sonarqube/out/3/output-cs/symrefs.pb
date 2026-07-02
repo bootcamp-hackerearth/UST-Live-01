@@ -1,17 +1,23 @@
-f
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\Enums\InsuranceStatus.cs
+b
+TC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\Enums\UserRole.cs
 
- ]
-OC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\Enums\Gender.cs
+ b
+TC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\Enums\TimeSlot.cs
 
- k
-]C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\Enums\DoctorSpecialization.cs
+ #i
+[C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\Enums\InsuranceStatus.cs
 
- $h
-ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\Enums\AppointmentStatus.cs
+ `
+RC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\Enums\Gender.cs
 
- !∂
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\UpdatePatientDto.cs
+ n
+`C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\Enums\DoctorSpecialization.cs
+
+ $k
+]C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\Enums\AppointmentStatus.cs
+
+ !π
+cC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Patient\UpdatePatientDto.cs
 
  !
 
@@ -25,27 +31,15 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\Enums\Appointme
 
  
 
- &∆
-dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\HealthRecordDto.cs
+ &ä
+dC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Patient\PatientSummaryDto.cs
 
-  
+ "
 
- !
+ 
 
-  
-
- 
-
- 
-
-		  
-
-
-
- #
-
- ò
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\PatientSearchResultDto.cs
+ õ
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Patient\PatientSearchResultDto.cs
 
  '
 
@@ -53,14 +47,8 @@ fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\Pa
 
  
 
- _
-QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\Enums\UserRole.cs
-
- _
-QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\Enums\TimeSlot.cs
-
- #»
-ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\PatientDto.cs
+ À
+]C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Patient\PatientDto.cs
 
  
 
@@ -80,74 +68,13 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\Pa
 
  "
 
- ~
-dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\DeactivatePatientDto.cs
+ Å
+gC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Patient\DeactivatePatientDto.cs
 
  '
 
- ∫
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\DoctorDto.cs
-
- 
-
- 
-
- 
-
-		 
-
- !
-
- $
-
- &
-
- ú
-jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\UpdateHealthRecordDto.cs
-
- &
-
-  
-
- #
-
- á
-aC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\PatientSummaryDto.cs
-
- "
-
- 
-
- ¿
-jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
-
- &
-
-  
-
- 
-
- 
-
-  
-
-		 #
-
-
-
- ú
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\UpdateDoctorDto.cs
-
-  
-
- 
-
- !
-
- $
-
- &∂
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Patient\CreatePatientDto.cs
+ π
+cC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Patient\CreatePatientDto.cs
 
  !
 
@@ -163,8 +90,108 @@ jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\HealthReco
 
  
 
- &§
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\DoctorCreationResultDto.cs
+ &ü
+mC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\HealthRecord\UpdateHealthRecordDto.cs
+
+ &
+
+  
+
+ #
+
+ Ì
+gC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\HealthRecord\HealthRecordDto.cs
+
+  
+
+ !
+
+  
+
+		 
+
+ 
+
+  
+
+ '
+
+ !
+
+  
+
+ #
+
+ √
+mC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\HealthRecord\CreateHealthRecordDto.cs
+
+ &
+
+  
+
+ 
+
+ 
+
+  
+
+		 #
+
+
+
+ ü
+aC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Doctor\UpdateDoctorDto.cs
+
+  
+
+ 
+
+ !
+
+ $
+
+ &Ë
+bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Doctor\DoctorPatientDto.cs
+
+ !
+
+ 
+
+		 
+
+ #
+
+ 
+
+ !
+
+ 
+
+ "
+
+ 
+
+ $
+
+ &Ω
+[C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Doctor\DoctorDto.cs
+
+ 
+
+ 
+
+ 
+
+		 
+
+ !
+
+ $
+
+ &
+
+ ß
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Doctor\DoctorCreationResultDto.cs
 
  (
 
@@ -174,15 +201,21 @@ fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\Doc
 
 		 
 
- '{
-UC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\LoginDto.cs
+ '´
+aC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Doctor\CreateDoctorDto.cs
 
- 
+  
 
- 
+ 
 
- ™
-TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\UserDto.cs
+ 
+
+		 !
+
+ $
+
+ &≠
+WC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\UserDto.cs
 
  
 
@@ -198,8 +231,8 @@ TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\UserD
 
 
 
- Õ
-_C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\RegisterPatientDto.cs
+ –
+bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\RegisterPatientDto.cs
 
  #
 
@@ -219,8 +252,8 @@ _C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\Regis
 
  %
 
-   &¢
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\RegisterDto.cs
+   &•
+[C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\RegisterDto.cs
 
  
 
@@ -234,26 +267,20 @@ XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\Regis
 
  
 
- v
-\C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\RefreshTokenDto.cs
+ y
+_C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\RefreshTokenDto.cs
 
   
 
- "®
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Doctor\CreateDoctorDto.cs
+ "~
+XC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\LoginDto.cs
 
-  
+ 
 
- 
+ 
 
- 
-
-		 !
-
- $
-
- &§
-ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\CreateUserDto.cs
+ ß
+]C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\CreateUserDto.cs
 
  
 
@@ -265,26 +292,29 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\Creat
 
  
 
-		 ö
-\C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Auth\AuthResponseDto.cs
+		 ì
+aC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\ChangePasswordDto.cs
 
-  
+ "
 
- !
+ %
 
- "
+ !
 
-		 
+		 (Ö
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.cs
 
- î
-nC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\UpdateAppointmentStatusDto.cs
+ %
+
+ (ó
+qC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\UpdateAppointmentStatusDto.cs
 
  +
 
  
 
- )ö
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\UpdateAppointmentDto.cs
+ )ù
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\UpdateAppointmentDto.cs
 
  %
 
@@ -292,8 +322,8 @@ hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 
  %
 
- ∆
-pC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\PatientAppointmentHistoryDto.cs
+ …
+sC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\PatientAppointmentHistoryDto.cs
 
  -
 
@@ -309,41 +339,53 @@ pC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 
 
 
- ø
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\DoctorScheduleItemDto.cs
+ †
+bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Admin\UserManagementDto.cs
+
+ "
+
+ 
+
+ 
+
+		 
+
+ ⁄
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\DoctorScheduleItemDto.cs
 
  &
 
   
 
- %
-
- 
-
- 
-
-		 !
-
-
-
- ¶
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.cs
-
- %
-
- 
-
- 
-
  %
 
- Ç
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\CancelAppointmentDto.cs
+		 
 
- %
+ 
 
- (ƒ
-bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDto.cs
+ !
+
+ 
+
+ )
+
+ #µ
+_C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Auth\AuthResponseDto.cs
+
+  
+
+ !
+
+ "
+
+		 
+
+ 
+
+ &
+
+ «
+eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDto.cs
 
  
 
@@ -361,8 +403,8 @@ bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 
  
 
- )„
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDetailsDto.cs
+ )Ê
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\AppointmentDetailsDto.cs
 
  &
 
@@ -384,19 +426,19 @@ iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Appointmen
 
  
 
- )ù
-_C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\UserManagementDto.cs
+ )©
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Appointment\CreateAppointmentDto.cs
 
- "
+ %
 
- 
+ 
 
- 
+ 
 
-		 
+ %
 
- û
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\AdminStatisticsDto.cs
+ °
+cC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Admin\AdminStatisticsDto.cs
 
  #
 
@@ -406,8 +448,8 @@ _C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\User
 
 		 
 
-  ¡
-_C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Shared\DTOs\Admin\AdminDashboardDto.cs
+  ƒ
+bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Shared\DTOs\Admin\AdminDashboardDto.cs
 
  "
 

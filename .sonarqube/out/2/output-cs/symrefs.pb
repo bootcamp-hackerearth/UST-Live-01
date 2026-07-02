@@ -1,9 +1,9 @@
-¥
-TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Layout\NavMenu.razor
-11 #55 66 <
-33 % % % %!! %(( %P
-NC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\_Imports.razorÃ
-ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Shared\ConfirmDialog.razor
+∑
+WC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Layout\NavMenu.razor
+11 #55 77 <
+33 % % % %!! %(( %S
+QC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\_Imports.razorœ
+]C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Shared\ConfirmDialog.razor
  " 
  # 
  %
@@ -15,9 +15,9 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Shared\ConfirmD
 $$% .)) ** 
 %%% -// 00 
 '' '" 2
--- &F UÀ
+-- &F UŒ
 
-ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\UserManagement.razort
+]C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\UserManagement.razort
 
 °°% +bb bb$ *
 ∑∑	 
@@ -123,15 +123,15 @@ ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\UserManag
 ÔÔ3 7
 ÒÒ 
  "
-€€ '¬
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Statistics.razorF
+€€ '≈
+YC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\Statistics.razorF
  !
 
       
 
 " 4
- " “"
-SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Patient.razorh
+ " ’"
+VC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\Patient.razorh
 
 ”” 'ii ii' 0
 §§& /
@@ -536,22 +536,80 @@ SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Patient.r
 ÿÿ $
 ÊÊ $
 ˝˝ $
-ˇˇ $V
-TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\NotFound.razor≠
-UC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\LoginPage.razor2
-gg %55! '<<0 6EE0 6qq3 92
-hh --0 611 %oo {{ <
-ii RR' 1TT 'YY  *nn ss @
-jj BB+ 8KK, 9LL$ 1
-ÅÅ 
-ÅÅ &
-ll 558 =
-qq uu 
- II* 8
- $ww 
-  qq 'R
-PC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Home.razorä"
-RC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Doctor.razor\
+ˇˇ $Y
+WC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\NotFound.razorÜ
+XC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\LoginPage.razor:
+jj 
+çç& 1
+ññ& 1
+üüF Q
+ßß= H.
+nn 
+éé& 2
+óó& 2
+††I U
+rr 
+°°F K.
+vv 
+èè& *
+òò 
+¢¢E I
+zz 
+££L W
+
+~~ %6
+
+ÄÄ $55! '<<0 6EE0 6
+≤≤3 9D
+
+ÅÅ --0 611 %
+öö 
+∞∞ 
+ºº B
+
+ÇÇ RR' 1TT 'YY  *
+ØØ 
+¥¥ B
+
+ÉÉ BB+ 8KK, 9LL$ 1
+¬¬ 
+¬¬ &$
+
+ÑÑ %
+àà 0
+îî 
+
+ÜÜ" 4
+
+ÜÜ: E
+àà 
+
+••C Z
+ßß #
+
+≠≠ 558 =
+
+≤≤ 
+∂∂ 
+
+¿¿ II* 8
+$ ?
+•• 'F
+ 
+üü 
+†† 
+°° 
+¢¢ 
+££ "
+
+
+ $
+™™ 
+∏∏ 
+		  
+≤≤ 'U
+SC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\Home.razorç"
+UC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\Doctor.razor\
 
 ìì %rr rr& .
 ””  (
@@ -956,8 +1014,11 @@ RC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Doctor.ra
 ¥¥ #
 ¡¡) 6
 ﬁﬁ #
-‡‡ #¨
-UC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Dashboard.razor⁄
+‡‡ #é
+VC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\Counter.razor
+ ! - 
+ 		* 8Ø
+XC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\Dashboard.razor⁄
 
 ˝˝ $##	 55, 6AA, 6MM, 6YY, 6ee, 6qq, 6
 éé' 1
@@ -1019,11 +1080,8 @@ UC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Dashboard
 
 ââ" 4
  "
-çç +ã
-SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Counter.razor
- ! - 
- 		* 8Ú/
-WC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Appointment.razorF
+çç +ı/
+ZC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Pages\Appointment.razorF
 
 ∫∫) 6## 
 îî	 
@@ -1591,84 +1649,92 @@ WC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Pages\Appointme
 ∑∑> P
 ÎÎ $
 ±± (
-ºº (Z
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Layout\EmptyLayout.razorπ
-WC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Layout\MainLayout.razord
-YY "##, =11G X44 *
+ºº (¥
+ZC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Layout\MainLayout.razord
+TT """, =00G X33 *
+íí 
+íí .
 óó 
-óó .
-úú 
-¨¨ 
-±± Z
-ZZ FF LL# 1
+ßß 
+¨¨ Z
+UU CC HH# 1
+úú 
+úú (
 °° 
-°° (
 ¶¶ 
-´´ 
-≤≤ 6
-\\ &&) 5**8 D
-ÅÅ 
-êê 6
-]] ++< A--< A
-ââ 
-ëë 
-__  2
-cc ee* 6hh hh 'jj- 9
+≠≠ 4
+WW %%) 5))8 D|| 
+ãã 6
+XX **< A,,< A
+ÑÑ 
+åå 
+ZZ  2
+^^ ``* 6cc cc 'ee- 9
 
-nn" 4 
-tt 3qqB ^
-««B ^
+ii" 4 
+oo 3llB ^
+√√B ^
 
-ttN R
-zz (pp vv 
-|| }} h
-}}  
-ÇÇ 
-ÉÉ 
-ÑÑ 
-ÖÖ 
-ÜÜ 
-ää 
-ãã 
+ooN R
+uu (kk qq 
+ww xx b
+xx zz }} ~~  
+ÄÄ 
+ÅÅ 
+ÖÖ 
+ÜÜ 
 
-ïï ""& 4
+êê !!& 4
 
-öö QQ+ 8
+ïï LL+ 8
 
-üü  +
+öö  +
 
-§§ HH7 C
+üü EE7 C
 
-©© MM! /
+§§ II! /
 
-ØØ 77V \
+™™ 66V \
 
-∏∏ %&& ($
+¥¥ %%% ($
 
-∏∏- 1
-∫∫& *
-ΩΩ <
+¥¥- 1
+∂∂& *
+ππ <
 
-ΩΩ 
-øø 
-¿¿ 
-¬¬ $
-¬¬: ?
+ππ 
+ªª 
+ºº 
+ææ $
+ææ: ?
 
-≈≈ *
+¡¡ *
 
 
-$ ?qq #|| 9
-«« #*
-		 $cc )cc= G
-µµ 
+$ ?ll #ww 9
+√√ #*
+		 $^^ )^^= G
+±± 
   
-¥¥ á
-YC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Components\StatCard.razor
+ØØ ä
+\C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Components\StatCard.razor
  	 
- 	 K
-IC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\App.razor€
-UC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\JwtParser.cs
+ 	 ]
+[C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Layout\EmptyLayout.razorN
+LC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\App.razorê
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\TokenAuthenticationHandler.cs
+
+ +
+$ .  (
+
+
+5 > "
+
+; D
+X _ ( /
+	s Ñ1 B
+ + 0X ]ﬁ
+XC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\JwtParser.cs
 
  !
 
@@ -1682,20 +1748,8 @@ UC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\JwtPar
     -
 5 8F IO R
  7 52
-? E   , 2ç
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\TokenAuthenticationHandler.cs
-
- +
-$ .  (
-
-
-5 > "
-
-; D
-X _ ( /
-	s Ñ1 B
- + 0X ]õ
-eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IPatientService.cs
+? E   , 2û
+hC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IPatientService.cs
 
  $
 
@@ -1729,8 +1783,8 @@ eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 
  "
 
-' )ö
-dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IDoctorService.cs
+' )ù
+gC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IDoctorService.cs
 
  #
 
@@ -1766,8 +1820,8 @@ dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 
  "
 
-' )î
-bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IAuthService.cs
+' )ó
+eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IAuthService.cs
 
  !
 
@@ -1775,8 +1829,8 @@ bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 
 ' .
 
- «
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IAppointmentService.cs
+  
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IAppointmentService.cs
 
  (
 
@@ -1838,8 +1892,8 @@ iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 
 # %
 
-< ?ï
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IAdminService.cs
+< ?ò
+fC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IAdminService.cs
 
  "
 
@@ -1849,8 +1903,8 @@ cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 
  /
 
-' 4Õ
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\PatientService.cs
+' 4–
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\PatientService.cs
 
  Z
 $ /  $ $ $  ! ,++! ,55! ,;;! ,
@@ -1881,8 +1935,62 @@ iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implem
 
 99  /
 994 6;;F H
-;; << ﬂ
-mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\AppointmentService.cs
+;; << £
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\DoctorService.cs
+
+ P
+$ /  $"" $''! ,11! ,77! ,==! ,
+
+
+( 2 $
+
+, 7
+@ F+ 1$ *
+T b , :
+  G J2
+    . 3
+
+  & 2
+  7 9""P R
+
+%%4 ?
+%%P S''L O
+'' (( ** %
+
+//  +
+//0 211K M
+//D G11Q T
+11 22 
+
+55  -
+552 477E G
+77 88 
+
+;;  /
+;;4 6==E G
+== >> ˛
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\AuthService.cs
+
+ 
+
+
+$ /  !Ç
+$ . @@ EE JJ OO VV  ]]  ee ii mm qq uu (
+5 G 00& 8::& 8
+ ! $
+   "
+( 9! 2
+
+  *
+4 ; 
+  %% 2
+$$ (( ))* 6..$ 011* 6
+
+66 %
+>> ,.. #F
+>>= ICC HH MM RR TT YY  
+cc -88 $‚
+pC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\AppointmentService.cs
 
  #å
 $ /       ##! ,,,! ,33! ,::! ,AA! ,HH! ,
@@ -1936,59 +2044,8 @@ mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implem
 FF  +
 FF0 2HHP R
 FFI LHH] `
-HH II JJ& .¨
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\AuthService.cs
-
- 
-
-
-$ / ! ,(
-$ . && 00 (
-5 G ((& 811& 8
-& 0 $
-= F "
-d u! 2
-
-  *
-4 ;O V
-  % -2
-      = I&&R ^((S _
-
--- %†
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\DoctorService.cs
-
- P
-$ /  $"" $''! ,11! ,77! ,==! ,
-
-
-( 2 $
-
-, 7
-@ F+ 1$ *
-T b , :
-  G J2
-    . 3
-
-  & 2
-  7 9""P R
-
-%%4 ?
-%%P S''L O
-'' (( ** %
-
-//  +
-//0 211K M
-//D G11Q T
-11 22 
-
-55  -
-552 477E G
-77 88 
-
-;;  /
-;;4 6==E G
-== >> „
-gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\AdminService.cs
+HH II JJ& .Ê
+jC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\AdminService.cs
 
  2
 		$ /  $ $ $
@@ -1998,8 +2055,8 @@ gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implem
 
 * <
 
-4 A±
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\CustomAuthStateProvider.cs
+4 A¥
+fC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\CustomAuthStateProvider.cs
 
  (
 		$ . " ,
@@ -2019,8 +2076,8 @@ cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Custom
 
 00 $
 22 33D Q
-33 44- 6Ï
-JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Program.cst
+33 44- 6Ô
+MC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Program.cst
  		 
 
         $$ ,, 44 ;; 
@@ -2039,19 +2096,15 @@ JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Program.cst
 // 00 $
 440 266 
 66 77 "
-77 88" (è
-QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\UserDto.cs
+77 88" (
+YC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\LoginRequest.cs
 
- 
+ 
 
- 
+ 
 
- 
-
-		 
-
- #ï
-WC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\StatisticsDto.cs
+ ò
+ZC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\StatisticsDto.cs
 
  
 
@@ -2061,8 +2114,8 @@ WC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\Statisti
 
 		 (
 
- (∂
-TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\PatientDto.cs
+ (π
+WC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\PatientDto.cs
 
  
 
@@ -2078,8 +2131,19 @@ TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\PatientD
 
  
 
- µ
-SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DoctorDto.cs
+ í
+TC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\UserDto.cs
+
+ 
+
+ 
+
+ 
+
+		 
+
+ #∏
+VC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\DoctorDto.cs
 
  
 
@@ -2095,15 +2159,8 @@ SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DoctorDt
 
  &
 
- |
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\LoginRequest.cs
-
- 
-
- 
-
- ê
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DoctorCreationResult.cs
+ ì
+aC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\DoctorCreationResult.cs
 
  %
 
@@ -2111,21 +2168,8 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\LoginReq
 
  
 
-		 'ß
-]C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\CreateDoctorRequest.cs
-
- $
-
- 
-
- 
-
-		 !
-
- $
-
- &∏
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DashboardDto.cs
+		 'ª
+YC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\DashboardDto.cs
 
  
 
@@ -2141,8 +2185,21 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\Dashboar
 
  &
 
- (î
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\AuthResponse.cs
+ (™
+`C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\CreateDoctorRequest.cs
+
+ $
+
+ 
+
+ 
+
+		 !
+
+ $
+
+ &ó
+YC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\AuthResponse.cs
 
  
 
@@ -2152,8 +2209,8 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\AuthResp
 
 		 
 
- ∫
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\AppointmentDto.cs
+ Ω
+[C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\AppointmentDto.cs
 
  
 

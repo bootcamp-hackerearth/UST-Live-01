@@ -1,5 +1,5 @@
-ˆ	
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IUserService.cs
+˘	
+aC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Interface\IUserService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -65,8 +65,8 @@
 ) 
 ;  
 } 
-} Œ
-aC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IPatientService.cs
+} —
+dC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Interface\IPatientService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -153,8 +153,8 @@ PatientDto 
 )! "
 ;" #
 } 
-} å	
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IHealthRecordService.cs
+} â
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Interface\IHealthRecordService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -191,28 +191,41 @@ fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\
 )		H I
 ;		I J
 Task 
-< 
-HealthRecordDto 
-> 
-CreateAsync )
-() *!
-CreateHealthRecordDto* ?
-dto@ C
-)C D
-;D E
-Task 
-UpdateAsync 
-( 
-int 
-id 
-,  !
-UpdateHealthRecordDto! 6
-dto7 :
-): ;
-;; <
-} 
-} œ
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IDoctorService.cs
+< 
+IEnumerable 
+< 
+HealthRecordDto (
+>( )
+>) *
+GetByPatientIdAsync+ >
+(> ?
+int? B
+	patientIdC L
+)L M
+;M N
+Task 
+< 
+HealthRecordDto 
+> 
+CreateAsync )
+() *!
+CreateHealthRecordDto* ?
+dto@ C
+)C D
+;D E
+Task 
+UpdateAsync 
+( 
+int 
+id 
+,  !
+UpdateHealthRecordDto! 6
+dto7 :
+): ;
+;; <
+} 
+} “
+cC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Interface\IDoctorService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -329,8 +342,8 @@ fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\
 )# $
 ;$ %
 } 
-} ´
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IAuthService.cs
+} ì
+aC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Interface\IAuthService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -364,260 +377,274 @@ fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\
 request^ e
 )e f
 ;f g
+Task		 
+<		 
+(		 
+bool		 
+Success		 
+,		 
+string		 "
+Message		# *
+,		* +
+AuthResponseDto		, ;
+?		; <
+Data		= A
+)		A B
+>		B C 
+RegisterPatientAsync		D X
+(		X Y
+RegisterPatientDto		Y k
+request		l s
+)		s t
+;		t u
+Task 
+< 
+( 
+bool 
+Success 
+, 
+string "
+Message# *
+,* +
+AuthResponseDto, ;
+?; <
+Data= A
+)A B
+>B C
+
+LoginAsyncD N
+(N O
+LoginDtoO W
+requestX _
+)_ `
+;` a
+Task 
+< 
+( 
+bool 
+Success 
+, 
+string "
+Message# *
+,* +
+AuthResponseDto, ;
+?; <
+Data= A
+)A B
+>B C
+RefreshTokenAsyncD U
+(U V
+RefreshTokenDtoV e
+requestf m
+)m n
+;n o
+Task 
+< 
+( 
+bool 
+Success 
+, 
+string "
+Message# *
+)* +
+>+ ,
+ChangePasswordAsync- @
+(@ A
+stringA G
+emailH M
+,M N
+ChangePasswordDtoO `
+requesta h
+)h i
+;i j
+} 
+} ë
+hC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Interface\IAppointmentService.cs
+	namespace 	
+S3_HealthAxisApi
+ 
+. 
+Services #
+.# $
+	Interface$ -
+{ 
+public 
+
+	interface 
+IAppointmentService (
+{ 
 Task 
-< 
-( 
-bool 
-Success 
-, 
-string "
-Message# *
-,* +
-AuthResponseDto, ;
-?; <
-Data= A
-)A B
->B C 
-RegisterPatientAsyncD X
-(X Y
-RegisterPatientDtoY k
-requestl s
-)s t
-;t u
+< 
+IEnumerable 
+< !
+AppointmentDetailsDto .
+>. /
+>/ 0
+GetAllAsync1 <
+(< =
+)= >
+;> ?
 Task
 
  
 <
 
- 
-(
+ !
+AppointmentDetailsDto
 
- 
-bool
-
- 
-Success
-
- 
-,
-
- 
-string
-
- "
-Message
-
-# *
-,
-
-* +
-AuthResponseDto
-
-, ;
+ "
 ?
 
-; <
-Data
-
-= A
-)
-
-A B
+" #
 >
 
-B C
-
-LoginAsync
+# $
+GetByIdAsync
 
-D N
+% 1
 (
 
-N O
-LoginDto
+1 2
+int
 
-O W
-request
+2 5
+id
 
-X _
+6 8
 )
 
-_ `
+8 9
 ;
 
-` a
+9 :
 Task 
-< 
-( 
-bool 
-Success 
-, 
-string "
-Message# *
-,* +
-AuthResponseDto, ;
-?; <
-Data= A
-)A B
->B C
-RefreshTokenAsyncD U
-(U V
-RefreshTokenDtoV e
-requestf m
-)m n
-;n o
-} 
-} ë
-eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IAppointmentService.cs
-	namespace 	
-S3_HealthAxisApi
- 
-. 
-Services #
-.# $
-	Interface$ -
-{ 
-public 
-
-	interface 
-IAppointmentService (
-{ 
-Task 
-< 
-IEnumerable 
-< !
-AppointmentDetailsDto .
->. /
->/ 0
-GetAllAsync1 <
-(< =
-)= >
-;> ?
-Task		 
-<		 !
-AppointmentDetailsDto		 "
-?		" #
->		# $
-GetByIdAsync		% 1
-(		1 2
-int		2 5
-id		6 8
-)		8 9
-;		9 :
-Task 
-< 
-IEnumerable 
-< (
-PatientAppointmentHistoryDto 5
->5 6
->6 7"
-GetPatientHistoryAsync8 N
-(N O
-intO R
-	patientIdS \
-)\ ]
-;] ^
-Task 
-< 
-IEnumerable 
-< !
-DoctorScheduleItemDto .
->. /
->/ 0'
-GetDoctorTodayScheduleAsync1 L
-(L M
-intM P
-doctorIdQ Y
-)Y Z
-;Z [
-Task 
-< 
-IEnumerable 
-< !
-DoctorScheduleItemDto .
->. /
->/ 0&
-GetDoctorWeekScheduleAsync1 K
-(K L
-int 
-doctorId 
-, 
-DateOnly 
-	startDate 
-, 
-DateOnly 
-endDate 
-) 
-; 
-Task 
-< 
-AppointmentDto 
-> 
-CreateAsync (
-(( ) 
-CreateAppointmentDto) =
-dto> A
-)A B
-;B C
-Task 
-< 
-IEnumerable 
-< !
-DoctorScheduleItemDto .
->. /
->/ 0*
-GetDoctorUpcomingScheduleAsync1 O
-(O P
-intP S
-doctorIdT \
-)\ ]
-;] ^
-Task 
-UpdateAsync 
-( 
-int 
-id 
-,   
-UpdateAppointmentDto! 5
-dto6 9
-)9 :
-;: ;
-Task 
-UpdateStatusAsync 
-( 
-int "
-id# %
-,% &&
-UpdateAppointmentStatusDto' A
-dtoB E
-)E F
-;F G
-Task 
-ConfirmAsync 
-( 
-int 
-id  
-)  !
-;! "
-Task 
-CompleteAsync 
-( 
-int 
-id !
-)! "
-;" #
-Task 
-CancelAsync 
-( 
-int 
-id 
-,   
-CancelAppointmentDto! 5
-dto6 9
-)9 :
-;: ;
-}   
-}!! ≠
-_C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\IAdminService.cs
+< 
+IEnumerable 
+< (
+PatientAppointmentHistoryDto 5
+>5 6
+>6 7"
+GetPatientHistoryAsync8 N
+(N O
+intO R
+	patientIdS \
+)\ ]
+;] ^
+Task 
+< 
+IEnumerable 
+< !
+DoctorScheduleItemDto .
+>. /
+>/ 0'
+GetDoctorTodayScheduleAsync1 L
+(L M
+intM P
+doctorIdQ Y
+)Y Z
+;Z [
+Task 
+< 
+IEnumerable 
+< !
+DoctorScheduleItemDto .
+>. /
+>/ 0&
+GetDoctorWeekScheduleAsync1 K
+(K L
+int 
+doctorId 
+, 
+DateOnly 
+	startDate 
+, 
+DateOnly 
+endDate 
+) 
+; 
+Task 
+< 
+AppointmentDto 
+> 
+CreateAsync (
+(( ) 
+CreateAppointmentDto) =
+dto> A
+)A B
+;B C
+Task 
+< 
+IEnumerable 
+< !
+DoctorScheduleItemDto .
+>. /
+>/ 0*
+GetDoctorUpcomingScheduleAsync1 O
+(O P
+intP S
+doctorIdT \
+)\ ]
+;] ^
+Task 
+< 
+IEnumerable 
+< 
+DoctorPatientDto )
+>) *
+>* +"
+GetDoctorPatientsAsync, B
+(B C
+intC F
+doctorIdG O
+)O P
+;P Q
+Task 
+UpdateAsync 
+( 
+int 
+id 
+,   
+UpdateAppointmentDto! 5
+dto6 9
+)9 :
+;: ;
+Task 
+UpdateStatusAsync 
+( 
+int "
+id# %
+,% &&
+UpdateAppointmentStatusDto' A
+dtoB E
+)E F
+;F G
+Task 
+ConfirmAsync 
+( 
+int 
+id  
+)  !
+;! "
+Task 
+CompleteAsync 
+( 
+int 
+id !
+)! "
+;" #
+Task!! 
+CancelAsync!! 
+(!! 
+int!! 
+id!! 
+,!!   
+CancelAppointmentDto!!! 5
+dto!!6 9
+)!!9 :
+;!!: ;
+}"" 
+}## ∞
+bC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Interface\IAdminService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -670,8 +697,8 @@ _C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Interface\
 )8 9
 ;9 :
 } 
-} ®
-bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\UserService.cs
+} ´
+eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Implementation\UserService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -824,8 +851,8 @@ bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementa
 ;77# $
 }88 	
 }99 
-}:: Ær
-eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\PatientService.cs
+}:: ±r
+hC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Implementation\PatientService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -1770,8 +1797,8 @@ PatientDto
 õõ 	
 }
 úú 
-}ùù ém
-jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\HealthRecordService.cs
+}ùù ”É
+mC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Implementation\HealthRecordService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -1919,671 +1946,640 @@ jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementa
 public// 
 async// 
 Task// 
-<// 
-HealthRecordDto// )
->//) *
-CreateAsync//+ 6
-(//6 7!
-CreateHealthRecordDto//7 L
-dto//M P
-)//P Q
-{00 	
-ValidateCreateDto11 
-(11 
-dto11 !
-)11! "
-;11" #
-var33 
-appointment33 
-=33 
-await44 "
-_appointmentRepository44 ,
-.44, -
-GetByIdAsync44- 9
-(449 :
-dto44: =
-.44= >
-AppointmentId44> K
-)44K L
-;44L M
-if66 
-(66 
-appointment66 
-==66 
-null66 #
-)66# $
-throw77 
-new77  
-KeyNotFoundException77 .
-(77. /
-$str77/ G
-)77G H
-;77H I
-if99 
-(99 
-appointment99 
-.99 
-Status99 "
-!=99# %
-AppointmentStatus99& 7
-.997 8
-	Completed998 A
-)99A B
-{:: 
-throw;; 
-new;; %
-InvalidOperationException;; 3
-(;;3 4
-$str<< S
-)<<S T
-;<<T U
-}== 
-var?? 
-existingRecord?? 
-=??  
-await@@ #
-_healthRecordRepository@@ -
-.@@- .#
-GetByAppointmentIdAsync@@. E
-(@@E F
-dtoAA 
-.AA 
-AppointmentIdAA %
-)AA% &
-;AA& '
-ifCC 
-(CC 
-existingRecordCC 
-!=CC !
-nullCC" &
-)CC& '
-{DD 
-throwEE 
-newEE %
-InvalidOperationExceptionEE 3
-(EE3 4
-$strFF J
-)FFJ K
-;FFK L
-}GG 
-varII 
-patientII 
-=II 
-awaitJJ 
-_patientRepositoryJJ (
-.JJ( )
-GetByIdAsyncJJ) 5
-(JJ5 6
-dtoJJ6 9
-.JJ9 :
-	PatientIdJJ: C
-)JJC D
-;JJD E
-ifLL 
-(LL 
-patientLL 
-==LL 
-nullLL 
-)LL  
+<// 
+IEnumerable// %
+<//% &
+HealthRecordDto//& 5
+>//5 6
+>//6 7
+GetByPatientIdAsync//8 K
+(//K L
+int//L O
+	patientId//P Y
+)//Y Z
+{00 	
+var11 
+patient11 
+=11 
+await11 
+_patientRepository11  2
+.112 3
+GetByIdAsync113 ?
+(11? @
+	patientId11@ I
+)11I J
+;11J K
+if33 
+(33 
+patient33 
+==33 
+null33 
+)33  
+{44 
+throw55 
+new55  
+KeyNotFoundException55 .
+(55. /
+$"66 
+$str66 &
+{66& '
+	patientId66' 0
+}660 1
+$str661 <
+"66< =
+)66= >
+;66> ?
+}77 
+var99 
+records99 
+=99 
+await:: #
+_healthRecordRepository:: -
+.::- .
+GetByPatientIdAsync::. A
+(::A B
+	patientId::B K
+)::K L
+;::L M
+return<< 
+records<< 
+.<< 
+Select<< !
+(<<! "
+MapToDto<<" *
+)<<* +
+;<<+ ,
+}== 	
+public?? 
+async?? 
+Task?? 
+<?? 
+HealthRecordDto?? )
+>??) *
+CreateAsync??+ 6
+(??6 7!
+CreateHealthRecordDto??7 L
+dto??M P
+)??P Q
+{@@ 	
+ValidateCreateDtoAA 
+(AA 
+dtoAA !
+)AA! "
+;AA" #
+varCC 
+appointmentCC 
+=CC 
+awaitDD "
+_appointmentRepositoryDD ,
+.DD, -
+GetByIdAsyncDD- 9
+(DD9 :
+dtoDD: =
+.DD= >
+AppointmentIdDD> K
+)DDK L
+;DDL M
+ifFF 
+(FF 
+appointmentFF 
+==FF 
+nullFF #
+)FF# $
+{GG 
+throwHH 
+newHH  
+KeyNotFoundExceptionHH .
+(HH. /
+$strHH/ G
+)HHG H
+;HHH I
+}II 
+ifKK 
+(KK 
+appointmentKK 
+.KK 
+StatusKK "
+!=KK# %
+AppointmentStatusKK& 7
+.KK7 8
+	CompletedKK8 A
+)KKA B
+{LL 
 throwMM 
-newMM  
-KeyNotFoundExceptionMM .
-(MM. /
-$strMM/ C
-)MMC D
-;MMD E
-varOO 
-doctorOO 
-=OO 
-awaitPP 
-_doctorRepositoryPP '
-.PP' (
-GetByIdAsyncPP( 4
-(PP4 5
-dtoPP5 8
-.PP8 9
-DoctorIdPP9 A
-)PPA B
-;PPB C
-ifRR 
-(RR 
-doctorRR 
-==RR 
-nullRR 
-)RR 
-throwSS 
-newSS  
-KeyNotFoundExceptionSS .
-(SS. /
-$strSS/ B
-)SSB C
-;SSC D
+newMM %
+InvalidOperationExceptionMM 3
+(MM3 4
+$strNN S
+)NNS T
+;NNT U
+}OO 
+varQQ 
+existingRecordQQ 
+=QQ  
+awaitRR #
+_healthRecordRepositoryRR -
+.RR- .#
+GetByAppointmentIdAsyncRR. E
+(RRE F
+dtoSS 
+.SS 
+AppointmentIdSS %
+)SS% &
+;SS& '
 ifUU 
-(UU 
-appointmentUU 
-.UU 
-	PatientIdUU %
-!=UU& (
-dtoUU) ,
-.UU, -
-	PatientIdUU- 6
-)UU6 7
+(UU 
+existingRecordUU 
+!=UU !
+nullUU" &
+)UU& '
 {VV 
 throwWW 
 newWW %
 InvalidOperationExceptionWW 3
 (WW3 4
-$strXX 9
-)XX9 :
-;XX: ;
-}YY 
-if[[ 
-([[ 
-appointment[[ 
-.[[ 
-DoctorId[[ $
-!=[[% '
-dto[[( +
-.[[+ ,
-DoctorId[[, 4
-)[[4 5
-{\\ 
-throw]] 
-new]] %
-InvalidOperationException]] 3
-(]]3 4
-$str^^ 8
-)^^8 9
-;^^9 :
-}__ 
-varaa 
-recordaa 
-=aa 
-newaa 
-HealthRecordaa )
-{bb 
-AppointmentIdcc 
-=cc 
-dtocc  #
-.cc# $
-AppointmentIdcc$ 1
-,cc1 2
-	PatientIddd 
-=dd 
-dtodd 
-.dd  
-	PatientIddd  )
-,dd) *
-DoctorIdee 
-=ee 
-dtoee 
-.ee 
-DoctorIdee '
-,ee' (
-	Diagnosisff 
-=ff 
-dtoff 
-.ff  
-	Diagnosisff  )
-!ff) *
-.ff* +
-Trimff+ /
-(ff/ 0
-)ff0 1
-,ff1 2
-Prescriptiongg 
-=gg 
-dtogg "
-.gg" #
-Prescriptiongg# /
-!gg/ 0
-.gg0 1
-Trimgg1 5
-(gg5 6
-)gg6 7
-,gg7 8
-Noteshh 
-=hh 
-dtohh 
-.hh 
-Noteshh !
-?hh! "
-.hh" #
-Trimhh# '
-(hh' (
-)hh( )
-,hh) *
-	CreatedOnii 
-=ii 
-DateTimeii $
-.ii$ %
-UtcNowii% +
-}jj 
-;jj 
-awaitll #
-_healthRecordRepositoryll )
-.ll) *
-AddAsyncll* 2
-(ll2 3
-recordll3 9
-)ll9 :
-;ll: ;
-awaitmm #
-_healthRecordRepositorymm )
-.mm) *
-SaveChangesAsyncmm* :
-(mm: ;
-)mm; <
-;mm< =
-returnoo 
-MapToDtooo 
-(oo 
-recordoo "
-)oo" #
-;oo# $
-}pp 	
-publicrr 
-asyncrr 
-Taskrr 
-UpdateAsyncrr %
-(rr% &
-intss 
-idss 
-,ss !
-UpdateHealthRecordDtott !
-dtott" %
-)tt% &
-{uu 	
-ValidateUpdateDtovv 
-(vv 
-dtovv !
-)vv! "
-;vv" #
-varxx 
-recordxx 
-=xx 
-awaityy #
-_healthRecordRepositoryyy -
-.yy- .
-GetByIdAsyncyy. :
-(yy: ;
-idyy; =
-)yy= >
-;yy> ?
-if{{ 
-({{ 
-record{{ 
-=={{ 
-null{{ 
-){{ 
-throw|| 
-new||  
-KeyNotFoundException|| .
-(||. /
-$"}} 
-$str}} $
-{}}$ %
-id}}% '
-}}}' (
-$str}}( 3
-"}}3 4
-)}}4 5
-;}}5 6
-record 
-. 
-	Diagnosis 
-= 
-dto "
-." #
-	Diagnosis# ,
-!, -
-.- .
-Trim. 2
-(2 3
-)3 4
-;4 5
-record
-ÄÄ 
-.
-ÄÄ 
-Prescription
-ÄÄ 
-=
-ÄÄ  !
-dto
-ÄÄ" %
-.
-ÄÄ% &
-Prescription
-ÄÄ& 2
-!
-ÄÄ2 3
-.
-ÄÄ3 4
-Trim
-ÄÄ4 8
-(
-ÄÄ8 9
-)
-ÄÄ9 :
+$strXX J
+)XXJ K
+;XXK L
+}YY 
+var[[ 
+patient[[ 
+=[[ 
+await\\ 
+_patientRepository\\ (
+.\\( )
+GetByIdAsync\\) 5
+(\\5 6
+dto\\6 9
+.\\9 :
+	PatientId\\: C
+)\\C D
+;\\D E
+if^^ 
+(^^ 
+patient^^ 
+==^^ 
+null^^ 
+)^^  
+{__ 
+throw`` 
+new``  
+KeyNotFoundException`` .
+(``. /
+$str``/ C
+)``C D
+;``D E
+}aa 
+varcc 
+doctorcc 
+=cc 
+awaitdd 
+_doctorRepositorydd '
+.dd' (
+GetByIdAsyncdd( 4
+(dd4 5
+dtodd5 8
+.dd8 9
+DoctorIddd9 A
+)ddA B
+;ddB C
+ifff 
+(ff 
+doctorff 
+==ff 
+nullff 
+)ff 
+{gg 
+throwhh 
+newhh  
+KeyNotFoundExceptionhh .
+(hh. /
+$strhh/ B
+)hhB C
+;hhC D
+}ii 
+ifkk 
+(kk 
+appointmentkk 
+.kk 
+	PatientIdkk %
+!=kk& (
+dtokk) ,
+.kk, -
+	PatientIdkk- 6
+)kk6 7
+{ll 
+throwmm 
+newmm %
+InvalidOperationExceptionmm 3
+(mm3 4
+$strnn 9
+)nn9 :
+;nn: ;
+}oo 
+ifqq 
+(qq 
+appointmentqq 
+.qq 
+DoctorIdqq $
+!=qq% '
+dtoqq( +
+.qq+ ,
+DoctorIdqq, 4
+)qq4 5
+{rr 
+throwss 
+newss %
+InvalidOperationExceptionss 3
+(ss3 4
+$strtt 8
+)tt8 9
+;tt9 :
+}uu 
+varww 
+recordww 
+=ww 
+newww 
+HealthRecordww )
+{xx 
+AppointmentIdyy 
+=yy 
+dtoyy  #
+.yy# $
+AppointmentIdyy$ 1
+,yy1 2
+	PatientIdzz 
+=zz 
+dtozz 
+.zz  
+	PatientIdzz  )
+,zz) *
+DoctorId{{ 
+={{ 
+dto{{ 
+.{{ 
+DoctorId{{ '
+,{{' (
+	Diagnosis|| 
+=|| 
+dto|| 
+.||  
+	Diagnosis||  )
+!||) *
+.||* +
+Trim||+ /
+(||/ 0
+)||0 1
+,||1 2
+Prescription}} 
+=}} 
+dto}} "
+.}}" #
+Prescription}}# /
+!}}/ 0
+.}}0 1
+Trim}}1 5
+(}}5 6
+)}}6 7
+,}}7 8
+Notes~~ 
+=~~ 
+dto~~ 
+.~~ 
+Notes~~ !
+?~~! "
+.~~" #
+Trim~~# '
+(~~' (
+)~~( )
+,~~) *
+	CreatedOn 
+= 
+DateTime $
+.$ %
+UtcNow% +
+}
+ÄÄ 
 ;
-ÄÄ: ;
-record
-ÅÅ 
+ÄÄ 
+await
+ÇÇ %
+_healthRecordRepository
+ÇÇ )
 .
-ÅÅ 
-Notes
-ÅÅ 
-=
-ÅÅ 
-dto
-ÅÅ 
-.
-ÅÅ 
-Notes
-ÅÅ $
-?
-ÅÅ$ %
-.
-ÅÅ% &
-Trim
-ÅÅ& *
+ÇÇ) *
+AddAsync
+ÇÇ* 2
 (
-ÅÅ* +
+ÇÇ2 3
+record
+ÇÇ3 9
 )
-ÅÅ+ ,
+ÇÇ9 :
 ;
-ÅÅ, -
+ÇÇ: ;
 await
 ÉÉ %
 _healthRecordRepository
 ÉÉ )
 .
-ÉÉ) *
-UpdateAsync
-ÉÉ* 5
-(
-ÉÉ5 6
-record
-ÉÉ6 <
-)
-ÉÉ< =
-;
-ÉÉ= >
-await
-ÑÑ %
-_healthRecordRepository
-ÑÑ )
-.
-ÑÑ) *
+ÉÉ) *
 SaveChangesAsync
-ÑÑ* :
+ÉÉ* :
 (
-ÑÑ: ;
+ÉÉ: ;
 )
-ÑÑ; <
+ÉÉ; <
 ;
-ÑÑ< =
+ÉÉ< =
+var
+ÖÖ 
+createdRecord
+ÖÖ 
+=
+ÖÖ 
+await
+ÜÜ %
+_healthRecordRepository
+ÜÜ -
+.
+ÜÜ- .
+GetByIdAsync
+ÜÜ. :
+(
+ÜÜ: ;
+record
+ÜÜ; A
+.
+ÜÜA B
+HealthRecordId
+ÜÜB P
+)
+ÜÜP Q
+;
+ÜÜQ R
+return
+àà 
+MapToDto
+àà 
+(
+àà 
+createdRecord
+àà )
+??
+àà* ,
+record
+àà- 3
+)
+àà3 4
+;
+àà4 5
 }
-ÖÖ 	
-private
-áá 
-static
-áá 
-void
-áá 
-ValidateCreateDto
-áá -
+ââ 	
+public
+ãã 
+async
+ãã 
+Task
+ãã 
+UpdateAsync
+ãã %
 (
-áá- .#
-CreateHealthRecordDto
-àà !
-dto
-àà" %
-)
-àà% &
-{
-ââ 	
-if
-ää 
-(
-ää 
-dto
-ää 
-.
-ää 
-AppointmentId
-ää !
-<=
-ää" $
-$num
-ää% &
-)
-ää& '
-throw
-ãã 
-new
-ãã 
-ArgumentException
-ãã +
-(
-ãã+ ,
-$str
-åå 0
-)
-åå0 1
-;
-åå1 2
-if
-éé 
-(
-éé 
-dto
-éé 
-.
-éé 
-	PatientId
-éé 
-<=
-éé  
-$num
-éé! "
-)
-éé" #
-throw
-èè 
-new
-èè 
-ArgumentException
-èè +
-(
-èè+ ,
-$str
-êê ,
-)
-êê, -
-;
-êê- .
-if
-íí 
-(
-íí 
-dto
-íí 
-.
-íí 
-DoctorId
-íí 
-<=
-íí 
-$num
-íí  !
-)
-íí! "
-throw
-ìì 
-new
-ìì 
-ArgumentException
-ìì +
-(
-ìì+ ,
-$str
-îî +
-)
-îî+ ,
-;
-îî, -
-if
-ññ 
-(
-ññ 
-string
-ññ 
-.
-ññ  
-IsNullOrWhiteSpace
-ññ )
-(
-ññ) *
-dto
-ññ* -
-.
-ññ- .
-	Diagnosis
-ññ. 7
-)
-ññ7 8
-)
-ññ8 9
-throw
-óó 
-new
-óó 
-ArgumentException
-óó +
-(
-óó+ ,
-$str
-òò ,
-)
-òò, -
-;
-òò- .
-if
-öö 
-(
-öö 
-string
-öö 
-.
-öö  
-IsNullOrWhiteSpace
-öö )
-(
-öö) *
-dto
-öö* -
-.
-öö- .
-Prescription
-öö. :
-)
-öö: ;
-)
-öö; <
-throw
-õõ 
-new
-õõ 
-ArgumentException
-õõ +
-(
-õõ+ ,
-$str
-úú /
-)
-úú/ 0
-;
-úú0 1
-}
-ùù 	
-private
-üü 
-static
-üü 
-void
-üü 
-ValidateUpdateDto
-üü -
-(
-üü- .#
+ãã% &
+int
+åå 
+id
+åå 
+,
+åå #
 UpdateHealthRecordDto
-†† !
+çç !
 dto
-††" %
+çç" %
 )
-††% &
+çç% &
 {
-°° 	
-if
-¢¢ 
+éé 	
+ValidateUpdateDto
+èè 
 (
-¢¢ 
-string
-¢¢ 
-.
-¢¢  
-IsNullOrWhiteSpace
-¢¢ )
-(
-¢¢) *
+èè 
 dto
-¢¢* -
-.
-¢¢- .
-	Diagnosis
-¢¢. 7
+èè !
 )
-¢¢7 8
-)
-¢¢8 9
-throw
-££ 
-new
-££ 
-ArgumentException
-££ +
-(
-££+ ,
-$str
-§§ ,
-)
-§§, -
+èè! "
 ;
-§§- .
+èè" #
+var
+ëë 
+record
+ëë 
+=
+ëë 
+await
+íí %
+_healthRecordRepository
+íí -
+.
+íí- .
+GetByIdAsync
+íí. :
+(
+íí: ;
+id
+íí; =
+)
+íí= >
+;
+íí> ?
 if
-¶¶ 
+îî 
 (
-¶¶ 
-string
-¶¶ 
+îî 
+record
+îî 
+==
+îî 
+null
+îî 
+)
+îî 
+{
+ïï 
+throw
+ññ 
+new
+ññ "
+KeyNotFoundException
+ññ .
+(
+ññ. /
+$"
+óó 
+$str
+óó $
+{
+óó$ %
+id
+óó% '
+}
+óó' (
+$str
+óó( 3
+"
+óó3 4
+)
+óó4 5
+;
+óó5 6
+}
+òò 
+record
+öö 
 .
-¶¶  
-IsNullOrWhiteSpace
-¶¶ )
-(
-¶¶) *
+öö 
+	Diagnosis
+öö 
+=
+öö 
 dto
-¶¶* -
+öö "
 .
-¶¶- .
+öö" #
+	Diagnosis
+öö# ,
+!
+öö, -
+.
+öö- .
+Trim
+öö. 2
+(
+öö2 3
+)
+öö3 4
+;
+öö4 5
+record
+õõ 
+.
+õõ 
 Prescription
-¶¶. :
+õõ 
+=
+õõ  !
+dto
+õõ" %
+.
+õõ% &
+Prescription
+õõ& 2
+!
+õõ2 3
+.
+õõ3 4
+Trim
+õõ4 8
+(
+õõ8 9
 )
-¶¶: ;
+õõ9 :
+;
+õõ: ;
+record
+úú 
+.
+úú 
+Notes
+úú 
+=
+úú 
+dto
+úú 
+.
+úú 
+Notes
+úú $
+?
+úú$ %
+.
+úú% &
+Trim
+úú& *
+(
+úú* +
 )
-¶¶; <
+úú+ ,
+;
+úú, -
+await
+ûû %
+_healthRecordRepository
+ûû )
+.
+ûû) *
+UpdateAsync
+ûû* 5
+(
+ûû5 6
+record
+ûû6 <
+)
+ûû< =
+;
+ûû= >
+await
+üü %
+_healthRecordRepository
+üü )
+.
+üü) *
+SaveChangesAsync
+üü* :
+(
+üü: ;
+)
+üü; <
+;
+üü< =
+}
+†† 	
+private
+¢¢ 
+static
+¢¢ 
+void
+¢¢ 
+ValidateCreateDto
+¢¢ -
+(
+¢¢- .#
+CreateHealthRecordDto
+££ !
+dto
+££" %
+)
+££% &
+{
+§§ 	
+if
+•• 
+(
+•• 
+dto
+•• 
+.
+•• 
+AppointmentId
+•• !
+<=
+••" $
+$num
+••% &
+)
+••& '
+{
+¶¶ 
 throw
 ßß 
 new
@@ -2593,131 +2589,458 @@ jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementa
 (
 ßß+ ,
 $str
-®® /
+®® 0
 )
-®®/ 0
-;
 ®®0 1
-}
-©© 	
-private
-´´ 
-static
-´´ 
-HealthRecordDto
-´´ &
-MapToDto
-´´' /
-(
-´´/ 0
-HealthRecord
-¨¨ 
-record
-¨¨ 
-)
-¨¨  
-{
-≠≠ 	
-return
-ÆÆ 
-new
-ÆÆ 
-HealthRecordDto
-ÆÆ &
-{
-ØØ 
-HealthRecordId
-∞∞ 
-=
-∞∞  
-record
-∞∞! '
-.
-∞∞' (
-HealthRecordId
-∞∞( 6
-,
-∞∞6 7
-AppointmentId
-±± 
-=
-±± 
-record
-±±  &
-.
-±±& '
-AppointmentId
-±±' 4
-,
-±±4 5
-	PatientId
-≤≤ 
-=
-≤≤ 
-record
-≤≤ "
-.
-≤≤" #
-	PatientId
-≤≤# ,
-,
-≤≤, -
-DoctorId
-≥≥ 
-=
-≥≥ 
-record
-≥≥ !
-.
-≥≥! "
-DoctorId
-≥≥" *
-,
-≥≥* +
-	Diagnosis
-¥¥ 
-=
-¥¥ 
-record
-¥¥ "
-.
-¥¥" #
-	Diagnosis
-¥¥# ,
-,
-¥¥, -
-Prescription
-µµ 
-=
-µµ 
-record
-µµ %
-.
-µµ% &
-Prescription
-µµ& 2
-,
-µµ2 3
-Notes
-∂∂ 
-=
-∂∂ 
-record
-∂∂ 
-.
-∂∂ 
-Notes
-∂∂ $
-}
-∑∑ 
 ;
-∑∑ 
+®®1 2
 }
-∏∏ 	
+©© 
+if
+´´ 
+(
+´´ 
+dto
+´´ 
+.
+´´ 
+	PatientId
+´´ 
+<=
+´´  
+$num
+´´! "
+)
+´´" #
+{
+¨¨ 
+throw
+≠≠ 
+new
+≠≠ 
+ArgumentException
+≠≠ +
+(
+≠≠+ ,
+$str
+ÆÆ ,
+)
+ÆÆ, -
+;
+ÆÆ- .
 }
-ππ 
-}∫∫ €´
-dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\DoctorService.cs
+ØØ 
+if
+±± 
+(
+±± 
+dto
+±± 
+.
+±± 
+DoctorId
+±± 
+<=
+±± 
+$num
+±±  !
+)
+±±! "
+{
+≤≤ 
+throw
+≥≥ 
+new
+≥≥ 
+ArgumentException
+≥≥ +
+(
+≥≥+ ,
+$str
+¥¥ +
+)
+¥¥+ ,
+;
+¥¥, -
+}
+µµ 
+if
+∑∑ 
+(
+∑∑ 
+string
+∑∑ 
+.
+∑∑  
+IsNullOrWhiteSpace
+∑∑ )
+(
+∑∑) *
+dto
+∑∑* -
+.
+∑∑- .
+	Diagnosis
+∑∑. 7
+)
+∑∑7 8
+)
+∑∑8 9
+{
+∏∏ 
+throw
+ππ 
+new
+ππ 
+ArgumentException
+ππ +
+(
+ππ+ ,
+$str
+∫∫ ,
+)
+∫∫, -
+;
+∫∫- .
+}
+ªª 
+if
+ΩΩ 
+(
+ΩΩ 
+string
+ΩΩ 
+.
+ΩΩ  
+IsNullOrWhiteSpace
+ΩΩ )
+(
+ΩΩ) *
+dto
+ΩΩ* -
+.
+ΩΩ- .
+Prescription
+ΩΩ. :
+)
+ΩΩ: ;
+)
+ΩΩ; <
+{
+ææ 
+throw
+øø 
+new
+øø 
+ArgumentException
+øø +
+(
+øø+ ,
+$str
+¿¿ /
+)
+¿¿/ 0
+;
+¿¿0 1
+}
+¡¡ 
+}
+¬¬ 	
+private
+ƒƒ 
+static
+ƒƒ 
+void
+ƒƒ 
+ValidateUpdateDto
+ƒƒ -
+(
+ƒƒ- .#
+UpdateHealthRecordDto
+≈≈ !
+dto
+≈≈" %
+)
+≈≈% &
+{
+∆∆ 	
+if
+«« 
+(
+«« 
+string
+«« 
+.
+««  
+IsNullOrWhiteSpace
+«« )
+(
+««) *
+dto
+««* -
+.
+««- .
+	Diagnosis
+««. 7
+)
+««7 8
+)
+««8 9
+{
+»» 
+throw
+…… 
+new
+…… 
+ArgumentException
+…… +
+(
+……+ ,
+$str
+   ,
+)
+  , -
+;
+  - .
+}
+ÀÀ 
+if
+ÕÕ 
+(
+ÕÕ 
+string
+ÕÕ 
+.
+ÕÕ  
+IsNullOrWhiteSpace
+ÕÕ )
+(
+ÕÕ) *
+dto
+ÕÕ* -
+.
+ÕÕ- .
+Prescription
+ÕÕ. :
+)
+ÕÕ: ;
+)
+ÕÕ; <
+{
+ŒŒ 
+throw
+œœ 
+new
+œœ 
+ArgumentException
+œœ +
+(
+œœ+ ,
+$str
+–– /
+)
+––/ 0
+;
+––0 1
+}
+—— 
+}
+““ 	
+private
+‘‘ 
+static
+‘‘ 
+HealthRecordDto
+‘‘ &
+MapToDto
+‘‘' /
+(
+‘‘/ 0
+HealthRecord
+’’ 
+record
+’’ 
+)
+’’  
+{
+÷÷ 	
+return
+◊◊ 
+new
+◊◊ 
+HealthRecordDto
+◊◊ &
+{
+ÿÿ 
+HealthRecordId
+ŸŸ 
+=
+ŸŸ  
+record
+ŸŸ! '
+.
+ŸŸ' (
+HealthRecordId
+ŸŸ( 6
+,
+ŸŸ6 7
+AppointmentId
+⁄⁄ 
+=
+⁄⁄ 
+record
+⁄⁄  &
+.
+⁄⁄& '
+AppointmentId
+⁄⁄' 4
+,
+⁄⁄4 5
+	PatientId
+€€ 
+=
+€€ 
+record
+€€ "
+.
+€€" #
+	PatientId
+€€# ,
+,
+€€, -
+DoctorId
+‹‹ 
+=
+‹‹ 
+record
+‹‹ !
+.
+‹‹! "
+DoctorId
+‹‹" *
+,
+‹‹* +
+
+DoctorName
+›› 
+=
+›› 
+record
+›› #
+.
+››# $
+Doctor
+››$ *
+?
+››* +
+.
+››+ ,
+FullName
+››, 4
+??
+››5 7
+string
+››8 >
+.
+››> ?
+Empty
+››? D
+,
+››D E"
+DoctorSpecialisation
+ﬁﬁ $
+=
+ﬁﬁ% &
+record
+ﬁﬁ' -
+.
+ﬁﬁ- .
+Doctor
+ﬁﬁ. 4
+==
+ﬁﬁ5 7
+null
+ﬁﬁ8 <
+?
+ﬂﬂ 
+$num
+ﬂﬂ 
+:
+‡‡ 
+(
+‡‡ 
+int
+‡‡ 
+)
+‡‡ 
+record
+‡‡ !
+.
+‡‡! "
+Doctor
+‡‡" (
+.
+‡‡( )
+Specialisation
+‡‡) 7
+,
+‡‡7 8
+	CreatedOn
+·· 
+=
+·· 
+record
+·· "
+.
+··" #
+	CreatedOn
+··# ,
+,
+··, -
+	Diagnosis
+‚‚ 
+=
+‚‚ 
+record
+‚‚ "
+.
+‚‚" #
+	Diagnosis
+‚‚# ,
+,
+‚‚, -
+Prescription
+„„ 
+=
+„„ 
+record
+„„ %
+.
+„„% &
+Prescription
+„„& 2
+,
+„„2 3
+Notes
+‰‰ 
+=
+‰‰ 
+record
+‰‰ 
+.
+‰‰ 
+Notes
+‰‰ $
+}
+ÂÂ 
+;
+ÂÂ 
+}
+ÊÊ 	
+}
+ÁÁ 
+}ËË Ê±
+gC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Implementation\DoctorService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -2775,1625 +3098,1792 @@ dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementa
 >0 1
 GetAllAsync2 =
 (= >
-string> D
-?D E
-sortByF L
-,L M
-intN Q
-?Q R
-specialisationS a
-)a b
-{ 	
-var 
-doctors 
-= 
-await 
-_doctorRepository  1
-.1 2
-GetAllAsync2 =
-(= >
-sortBy> D
-,D E
-specialisationF T
-)T U
-;U V
-return 
-doctors 
-. 
-Select !
-(! "
-MapToDoctorDto" 0
-)0 1
-;1 2
-} 	
-public 
-async 
-Task 
-< 
-IEnumerable %
-<% &
-	DoctorDto& /
->/ 0
->0 1*
-GetActiveBySpecialisationAsync2 P
-(P Q
-intQ T
-specialisationU c
-)c d
-{ 	
-if 
-( 
-! 
-Enum 
-. 
-	IsDefined 
-(  
-typeof  &
-(& ' 
-DoctorSpecialisation' ;
-); <
-,< =
-specialisation> L
-)L M
-)M N
-throw   
-new   
-ArgumentException   +
-(  + ,
-$str  , L
-)  L M
-;  M N
-var"" 
-doctors"" 
-="" 
-await"" 
-_doctorRepository""  1
-.""1 2*
+string 
+? 
+sortBy 
+, 
+int 
+? 
+specialisation 
+)  
+{ 	
+var 
+doctors 
+= 
+await 
+_doctorRepository '
+.' (
+GetAllAsync( 3
+(3 4
+sortBy 
+, 
+specialisation "
+)" #
+;# $
+return 
+doctors 
+. 
+Select !
+(! "
+MapToDoctorDto" 0
+)0 1
+;1 2
+}   	
+public"" 
+async"" 
+Task"" 
+<"" 
+IEnumerable"" %
+<""% &
+	DoctorDto""& /
+>""/ 0
+>""0 1*
 GetActiveBySpecialisationAsync""2 P
-(""P Q
-specialisation""Q _
-)""_ `
-;""` a
-return$$ 
-doctors$$ 
-.$$ 
-Select$$ !
-($$! "
-MapToDoctorDto$$" 0
-)$$0 1
-;$$1 2
-}%% 	
-public'' 
-async'' 
-Task'' 
-<'' 
-	DoctorDto'' #
-?''# $
->''$ %
-GetByIdAsync''& 2
-(''2 3
-int''3 6
-id''7 9
-)''9 :
-{(( 	
-var)) 
-doctor)) 
-=)) 
-await)) 
-_doctorRepository)) 0
-.))0 1
-GetByIdAsync))1 =
-())= >
-id))> @
-)))@ A
-;))A B
-return++ 
-doctor++ 
-==++ 
-null++ !
-?,, 
-null,, 
-:-- 
-MapToDoctorDto--  
-(--  !
-doctor--! '
-)--' (
-;--( )
-}.. 	
-public00 
-async00 
-Task00 
-<00 
-	DoctorDto00 #
->00# $
-CreateAsync00% 0
-(000 1
-CreateDoctorDto001 @
-dto00A D
-)00D E
-{11 	
-ValidateDoctor22 
-(22 
-dto22 
-)22 
-;22  
+(""P Q
+int## 
+specialisation## 
+)## 
+{$$ 	
+if%% 
+(%% 
+!%% 
+Enum%% 
+.%% 
+	IsDefined%% 
+(%%  
+typeof%%  &
+(%%& ' 
+DoctorSpecialisation%%' ;
+)%%; <
+,%%< =
+specialisation%%> L
+)%%L M
+)%%M N
+{&& 
+throw'' 
+new'' 
+ArgumentException'' +
+(''+ ,
+$str'', L
+)''L M
+;''M N
+}(( 
+var** 
+doctors** 
+=** 
+await++ 
+_doctorRepository++ '
+.,, *
+GetActiveBySpecialisationAsync,, 3
+(,,3 4
+specialisation-- &
+)--& '
+;--' (
+return// 
+doctors// 
+.// 
+Select// !
+(//! "
+MapToDoctorDto//" 0
+)//0 1
+;//1 2
+}00 	
+public22 
+async22 
+Task22 
+<22 
+	DoctorDto22 #
+?22# $
+>22$ %
+GetByIdAsync22& 2
+(222 3
+int223 6
+id227 9
+)229 :
+{33 	
 var44 
 doctor44 
-=44 
-new44 
-Doctor44 #
-{55 
-FullName66 
-=66 
-dto66 
-.66 
-FullName66 '
-.66' (
-Trim66( ,
-(66, -
-)66- .
-,66. /
-Email77 
-=77 
-dto77 
-.77 
-Email77 !
-.77! "
-Trim77" &
-(77& '
-)77' (
-.77( )
-ToLower77) 0
-(770 1
-)771 2
-,772 3
-Specialisation88 
-=88  
-(88! " 
-DoctorSpecialisation88" 6
-)886 7
-dto887 :
-.88: ;
-Specialisation88; I
-,88I J
-YearsOfExperience99 !
-=99" #
-dto99$ '
-.99' (
-YearsOfExperience99( 9
-,999 :
-ConsultationFee:: 
-=::  !
-dto::" %
-.::% &
-ConsultationFee::& 5
-,::5 6
-IsActive;; 
-=;; 
-true;; 
-}<< 
-;<< 
-await>> 
-_doctorRepository>> #
-.>># $
-AddAsync>>$ ,
-(>>, -
-doctor>>- 3
-)>>3 4
-;>>4 5
-await?? 
-_doctorRepository?? #
-.??# $
-SaveChangesAsync??$ 4
-(??4 5
-)??5 6
-;??6 7
-returnAA 
-MapToDoctorDtoAA !
-(AA! "
-doctorAA" (
-)AA( )
-;AA) *
-}BB 	
-publicDD 
-asyncDD 
-TaskDD 
-UpdateAsyncDD %
-(DD% &
-intDD& )
-idDD* ,
-,DD, -
-UpdateDoctorDtoDD. =
-dtoDD> A
-)DDA B
-{EE 	
-ValidateDoctorFF 
-(FF 
-dtoFF 
-)FF 
-;FF  
-varHH 
-doctorHH 
-=HH 
-awaitHH 
-_doctorRepositoryHH 0
-.HH0 1
-GetByIdAsyncHH1 =
-(HH= >
-idHH> @
-)HH@ A
-;HHA B
-ifJJ 
-(JJ 
-doctorJJ 
-==JJ 
-nullJJ 
-)JJ 
-throwKK 
-newKK  
-KeyNotFoundExceptionKK .
-(KK. /
-$"KK/ 1
-$strKK1 @
-{KK@ A
-idKKA C
-}KKC D
-$strKKD O
-"KKO P
-)KKP Q
-;KKQ R
-doctorMM 
-.MM 
-FullNameMM 
-=MM 
-dtoMM !
-.MM! "
-FullNameMM" *
-.MM* +
-TrimMM+ /
-(MM/ 0
-)MM0 1
-;MM1 2
-doctorNN 
-.NN 
-SpecialisationNN !
-=NN" #
-(NN$ % 
-DoctorSpecialisationNN% 9
-)NN9 :
-dtoNN: =
-.NN= >
-SpecialisationNN> L
-;NNL M
-doctorOO 
-.OO 
-YearsOfExperienceOO $
-=OO% &
-dtoOO' *
-.OO* +
-YearsOfExperienceOO+ <
-;OO< =
-doctorPP 
-.PP 
-ConsultationFeePP "
-=PP# $
-dtoPP% (
-.PP( )
-ConsultationFeePP) 8
-;PP8 9
-awaitRR 
-_doctorRepositoryRR #
-.RR# $
-UpdateAsyncRR$ /
-(RR/ 0
-doctorRR0 6
-)RR6 7
-;RR7 8
-awaitSS 
-_doctorRepositorySS #
-.SS# $
-SaveChangesAsyncSS$ 4
-(SS4 5
-)SS5 6
-;SS6 7
-}TT 	
-publicVV 
-asyncVV 
-TaskVV 
-<VV 
-IEnumerableVV %
-<VV% &
-intVV& )
->VV) *
->VV* + 
-GetAvailabilityAsyncVV, @
-(VV@ A
-intVVA D
-doctorIdVVE M
-,VVM N
-DateOnlyVVO W
-dateVVX \
-)VV\ ]
-{WW 	
-varXX 
-doctorXX 
-=XX 
-awaitYY 
-_doctorRepositoryYY '
-.YY' (
-GetByIdAsyncYY( 4
-(YY4 5
-doctorIdYY5 =
-)YY= >
-;YY> ?
-if[[ 
-([[ 
-doctor[[ 
-==[[ 
-null[[ 
-)[[ 
-throw\\ 
-new\\  
-KeyNotFoundException\\ .
-(\\. /
-$str]] '
-)]]' (
-;]]( )
-var__ 
-bookedSlots__ 
-=__ 
-await`` 
-_doctorRepository`` '
-.``' (
-GetBookedSlotsAsync``( ;
-(``; <
-doctorIdaa 
-,aa 
-datebb 
-)bb 
-;bb 
-vardd 
-allSlotsdd 
-=dd 
-Enumee 
-.ee 
-	GetValuesee 
-<ee 
-AppointmentTimeSlotee 2
->ee2 3
-(ee3 4
-)ee4 5
-.ff 
-Selectff 
-(ff 
-xff 
-=>ff  
-(ff! "
-intff" %
-)ff% &
-xff& '
-)ff' (
-;ff( )
-returnhh 
-allSlotshh 
-.hh 
-Excepthh "
-(hh" #
-bookedSlotshh# .
-)hh. /
-;hh/ 0
-}ii 	
-publickk 
-asynckk 
-Taskkk 
-<kk #
-DoctorCreationResultDtokk 1
->kk1 2(
-CreateDoctorWithAccountAsynckk3 O
-(kkO P
-CreateDoctorDtokkP _
-dtokk` c
-)kkc d
-{ll 	
-ValidateDoctormm 
-(mm 
-dtomm 
-)mm 
-;mm  
+=44 
+await55 
+_doctorRepository55 '
+.55' (
+GetByIdAsync55( 4
+(554 5
+id555 7
+)557 8
+;558 9
+return77 
+doctor77 
+==77 
+null77 !
+?88 
+null88 
+:99 
+MapToDoctorDto99  
+(99  !
+doctor99! '
+)99' (
+;99( )
+}:: 	
+public<< 
+async<< 
+Task<< 
+<<< 
+	DoctorDto<< #
+><<# $
+CreateAsync<<% 0
+(<<0 1
+CreateDoctorDto<<1 @
+dto<<A D
+)<<D E
+{== 	
+ValidateDoctor>> 
+(>> 
+dto>> 
+)>> 
+;>>  
+var@@ 
+doctor@@ 
+=@@ 
+new@@ 
+Doctor@@ #
+{AA 
+FullNameBB 
+=BB 
+dtoBB 
+.BB 
+FullNameBB '
+.BB' (
+TrimBB( ,
+(BB, -
+)BB- .
+,BB. /
+EmailCC 
+=CC 
+dtoCC 
+.CC 
+EmailCC !
+.CC! "
+TrimCC" &
+(CC& '
+)CC' (
+.CC( )
+ToLowerCC) 0
+(CC0 1
+)CC1 2
+,CC2 3
+SpecialisationDD 
+=DD  
+(DD! " 
+DoctorSpecialisationDD" 6
+)DD6 7
+dtoDD7 :
+.DD: ;
+SpecialisationDD; I
+,DDI J
+YearsOfExperienceEE !
+=EE" #
+dtoEE$ '
+.EE' (
+YearsOfExperienceEE( 9
+,EE9 :
+ConsultationFeeFF 
+=FF  !
+dtoFF" %
+.FF% &
+ConsultationFeeFF& 5
+,FF5 6
+IsActiveGG 
+=GG 
+trueGG 
+}HH 
+;HH 
+awaitJJ 
+_doctorRepositoryJJ #
+.JJ# $
+AddAsyncJJ$ ,
+(JJ, -
+doctorJJ- 3
+)JJ3 4
+;JJ4 5
+awaitKK 
+_doctorRepositoryKK #
+.KK# $
+SaveChangesAsyncKK$ 4
+(KK4 5
+)KK5 6
+;KK6 7
+returnMM 
+MapToDoctorDtoMM !
+(MM! "
+doctorMM" (
+)MM( )
+;MM) *
+}NN 	
+publicPP 
+asyncPP 
+TaskPP 
+UpdateAsyncPP %
+(PP% &
+intQQ 
+idQQ 
+,QQ 
+UpdateDoctorDtoRR 
+dtoRR 
+)RR  
+{SS 	
+ValidateDoctorTT 
+(TT 
+dtoTT 
+)TT 
+;TT  
+varVV 
+doctorVV 
+=VV 
+awaitWW 
+_doctorRepositoryWW '
+.WW' (
+GetByIdAsyncWW( 4
+(WW4 5
+idWW5 7
+)WW7 8
+;WW8 9
+ifYY 
+(YY 
+doctorYY 
+==YY 
+nullYY 
+)YY 
+{ZZ 
+throw[[ 
+new[[  
+KeyNotFoundException[[ .
+([[. /
+$"\\ 
+$str\\ %
+{\\% &
+id\\& (
+}\\( )
+$str\\) 4
+"\\4 5
+)\\5 6
+;\\6 7
+}]] 
+doctor__ 
+.__ 
+FullName__ 
+=__ 
+dto__ !
+.__! "
+FullName__" *
+.__* +
+Trim__+ /
+(__/ 0
+)__0 1
+;__1 2
+doctor`` 
+.`` 
+Specialisation`` !
+=``" #
+(``$ % 
+DoctorSpecialisation``% 9
+)``9 :
+dto``: =
+.``= >
+Specialisation``> L
+;``L M
+doctoraa 
+.aa 
+YearsOfExperienceaa $
+=aa% &
+dtoaa' *
+.aa* +
+YearsOfExperienceaa+ <
+;aa< =
+doctorbb 
+.bb 
+ConsultationFeebb "
+=bb# $
+dtobb% (
+.bb( )
+ConsultationFeebb) 8
+;bb8 9
+awaitdd 
+_doctorRepositorydd #
+.dd# $
+UpdateAsyncdd$ /
+(dd/ 0
+doctordd0 6
+)dd6 7
+;dd7 8
+awaitee 
+_doctorRepositoryee #
+.ee# $
+SaveChangesAsyncee$ 4
+(ee4 5
+)ee5 6
+;ee6 7
+}ff 	
+publichh 
+asynchh 
+Taskhh 
+<hh 
+IEnumerablehh %
+<hh% &
+inthh& )
+>hh) *
+>hh* + 
+GetAvailabilityAsynchh, @
+(hh@ A
+intii 
+doctorIdii 
+,ii 
+DateOnlyjj 
+datejj 
+)jj 
+{kk 	
+varll 
+doctorll 
+=ll 
+awaitmm 
+_doctorRepositorymm '
+.mm' (
+GetByIdAsyncmm( 4
+(mm4 5
+doctorIdmm5 =
+)mm= >
+;mm> ?
 ifoo 
-(oo 
-awaitoo 
-_userServiceoo "
-.oo" #
-EmailExistsAsyncoo# 3
-(oo3 4
-dtooo4 7
-.oo7 8
-Emailoo8 =
-)oo= >
-)oo> ?
+(oo 
+doctoroo 
+==oo 
+nulloo 
+)oo 
 {pp 
 throwqq 
-newqq 
-ArgumentExceptionqq +
-(qq+ ,
-$strqq, C
-)qqC D
-;qqD E
+newqq  
+KeyNotFoundExceptionqq .
+(qq. /
+$strqq/ B
+)qqB C
+;qqC D
 }rr 
-vartt 
-doctortt 
-=tt 
-newtt 
-Doctortt #
-{uu 
-FullNamevv 
-=vv 
-dtovv 
-.vv 
-FullNamevv '
-.vv' (
-Trimvv( ,
-(vv, -
-)vv- .
-,vv. /
-Emailww 
-=ww 
-dtoww 
-.ww 
-Emailww !
-.ww! "
-Trimww" &
-(ww& '
-)ww' (
-.ww( )
-ToLowerww) 0
-(ww0 1
-)ww1 2
-,ww2 3
-Specialisationxx 
-=xx  
-(xx! " 
-DoctorSpecialisationxx" 6
-)xx6 7
-dtoxx7 :
-.xx: ;
-Specialisationxx; I
-,xxI J
-YearsOfExperienceyy !
-=yy" #
-dtoyy$ '
-.yy' (
-YearsOfExperienceyy( 9
-,yy9 :
-ConsultationFeezz 
-=zz  !
-dtozz" %
-.zz% &
-ConsultationFeezz& 5
-,zz5 6
-IsActive{{ 
-={{ 
-true{{ 
-}|| 
-;|| 
-await~~ 
-_doctorRepository~~ #
-.~~# $
-AddAsync~~$ ,
-(~~, -
-doctor~~- 3
-)~~3 4
-;~~4 5
-await 
-_doctorRepository #
-.# $
-SaveChangesAsync$ 4
-(4 5
-)5 6
-;6 7
-var
-ÅÅ 
-temporaryPassword
-ÅÅ !
-=
-ÅÅ" #'
-GenerateTemporaryPassword
-ÅÅ$ =
-(
-ÅÅ= >
-)
-ÅÅ> ?
-;
-ÅÅ? @
-var
-ÉÉ 
-user
-ÉÉ 
-=
-ÉÉ 
-new
-ÉÉ 
-User
-ÉÉ 
-{
-ÑÑ 
-Email
-ÖÖ 
-=
-ÖÖ 
-doctor
-ÖÖ 
-.
-ÖÖ 
-Email
-ÖÖ $
-,
-ÖÖ$ %
-PasswordHash
-ÜÜ 
-=
-ÜÜ 
-HashPassword
-ÜÜ +
-(
-ÜÜ+ ,
-temporaryPassword
-ÜÜ, =
-)
-ÜÜ= >
-,
-ÜÜ> ?
-Role
-áá 
-=
-áá 
-UserRole
-áá 
-.
-áá  
-Doctor
-áá  &
-,
-áá& '
-ReferenceId
-àà 
-=
-àà 
-doctor
-àà $
-.
-àà$ %
-DoctorId
-àà% -
-,
-àà- .
-CreatedDate
-ââ 
-=
-ââ 
-DateTime
-ââ &
-.
-ââ& '
-UtcNow
-ââ' -
-}
-ää 
-;
-ää 
-await
-åå 
-_userService
-åå 
-.
-åå 
-CreateAsync
-åå *
-(
-åå* +
-user
-åå+ /
-)
-åå/ 0
-;
-åå0 1
-await
-çç 
-_userService
-çç 
-.
-çç 
-SaveChangesAsync
-çç /
-(
-çç/ 0
-)
-çç0 1
-;
-çç1 2
-return
-èè 
-new
-èè %
+vartt 
+bookedSlotstt 
+=tt 
+awaituu 
+_doctorRepositoryuu '
+.uu' (
+GetBookedSlotsAsyncuu( ;
+(uu; <
+doctorIdvv 
+,vv 
+dateww 
+)ww 
+;ww 
+varyy 
+allSlotsyy 
+=yy 
+Enumzz 
+.zz 
+	GetValueszz 
+<zz 
+AppointmentTimeSlotzz 2
+>zz2 3
+(zz3 4
+)zz4 5
+.{{ 
+Select{{ 
+({{ 
+slot{{  
+=>{{! #
+({{$ %
+int{{% (
+){{( )
+slot{{) -
+){{- .
+;{{. /
+return}} 
+allSlots}} 
+.}} 
+Except}} "
+(}}" #
+bookedSlots}}# .
+)}}. /
+;}}/ 0
+}~~ 	
+public
+ÄÄ 
+async
+ÄÄ 
+Task
+ÄÄ 
+<
+ÄÄ %
 DoctorCreationResultDto
-èè .
+ÄÄ 1
+>
+ÄÄ1 2*
+CreateDoctorWithAccountAsync
+ÄÄ3 O
+(
+ÄÄO P
+CreateDoctorDto
+ÅÅ 
+dto
+ÅÅ 
+)
+ÅÅ  
 {
-êê 
-DoctorId
+ÇÇ 	
+ValidateDoctor
+ÉÉ 
+(
+ÉÉ 
+dto
+ÉÉ 
+)
+ÉÉ 
+;
+ÉÉ  
+if
+ÖÖ 
+(
+ÖÖ 
+await
+ÖÖ 
+_userService
+ÖÖ "
+.
+ÖÖ" #
+EmailExistsAsync
+ÖÖ# 3
+(
+ÖÖ3 4
+dto
+ÖÖ4 7
+.
+ÖÖ7 8
+Email
+ÖÖ8 =
+)
+ÖÖ= >
+)
+ÖÖ> ?
+{
+ÜÜ 
+throw
+áá 
+new
+áá 
+ArgumentException
+áá +
+(
+áá+ ,
+$str
+áá, C
+)
+ááC D
+;
+ááD E
+}
+àà 
+var
+ää 
+doctor
+ää 
+=
+ää 
+new
+ää 
+Doctor
+ää #
+{
+ãã 
+FullName
+åå 
+=
+åå 
+dto
+åå 
+.
+åå 
+FullName
+åå '
+.
+åå' (
+Trim
+åå( ,
+(
+åå, -
+)
+åå- .
+,
+åå. /
+Email
+çç 
+=
+çç 
+dto
+çç 
+.
+çç 
+Email
+çç !
+.
+çç! "
+Trim
+çç" &
+(
+çç& '
+)
+çç' (
+.
+çç( )
+ToLower
+çç) 0
+(
+çç0 1
+)
+çç1 2
+,
+çç2 3
+Specialisation
+éé 
+=
+éé  
+(
+éé! ""
+DoctorSpecialisation
+éé" 6
+)
+éé6 7
+dto
+éé7 :
+.
+éé: ;
+Specialisation
+éé; I
+,
+ééI J
+YearsOfExperience
+èè !
+=
+èè" #
+dto
+èè$ '
+.
+èè' (
+YearsOfExperience
+èè( 9
+,
+èè9 :
+ConsultationFee
+êê 
+=
+êê  !
+dto
+êê" %
+.
+êê% &
+ConsultationFee
+êê& 5
+,
+êê5 6
+IsActive
 ëë 
 =
-ëë 
-doctor
-ëë !
-.
-ëë! "
-DoctorId
-ëë" *
-,
-ëë* +
-FullName
-íí 
-=
-íí 
-doctor
-íí !
-.
-íí! "
-FullName
-íí" *
-,
-íí* +
-Email
-ìì 
-=
-ìì 
-doctor
-ìì 
-.
-ìì 
-Email
-ìì $
-,
-ìì$ %
-TemporaryPassword
-îî !
-=
-îî" #
-temporaryPassword
-îî$ 5
-}
-ïï 
-;
-ïï 
-}
-ññ 	
-public
-òò 
-async
-òò 
-Task
-òò 
-ActivateAsync
-òò '
-(
-òò' (
-int
-òò( +
-id
-òò, .
-)
-òò. /
-{
-ôô 	
-var
-öö 
-doctor
-öö 
-=
-öö 
-await
-öö 
-_doctorRepository
-öö 0
-.
-öö0 1
-GetByIdAsync
-öö1 =
-(
-öö= >
-id
-öö> @
-)
-öö@ A
-;
-ööA B
-if
-úú 
-(
-úú 
-doctor
-úú 
-==
-úú 
-null
-úú 
-)
-úú 
-throw
-ùù 
-new
-ùù "
-KeyNotFoundException
-ùù .
-(
-ùù. /
-$"
-ùù/ 1
-$str
-ùù1 @
-{
-ùù@ A
-id
-ùùA C
-}
-ùùC D
-$str
-ùùD O
-"
-ùùO P
-)
-ùùP Q
-;
-ùùQ R
-doctor
-üü 
-.
-üü 
-IsActive
-üü 
-=
-üü 
+ëë 
 true
-üü "
-;
-üü" #
-await
-°° 
-_doctorRepository
-°° #
-.
-°°# $
-UpdateAsync
-°°$ /
-(
-°°/ 0
-doctor
-°°0 6
-)
-°°6 7
-;
-°°7 8
-await
-¢¢ 
-_doctorRepository
-¢¢ #
-.
-¢¢# $
-SaveChangesAsync
-¢¢$ 4
-(
-¢¢4 5
-)
-¢¢5 6
-;
-¢¢6 7
+ëë 
 }
-££ 	
-public
-•• 
-async
-•• 
-Task
-•• 
-DeactivateAsync
-•• )
+íí 
+;
+íí 
+await
+îî 
+_doctorRepository
+îî #
+.
+îî# $
+AddAsync
+îî$ ,
 (
-••) *
-int
-••* -
-id
-••. 0
+îî, -
+doctor
+îî- 3
+)
+îî3 4
+;
+îî4 5
+await
+ïï 
+_doctorRepository
+ïï #
+.
+ïï# $
+SaveChangesAsync
+ïï$ 4
+(
+ïï4 5
+)
+ïï5 6
+;
+ïï6 7
+var
+óó 
+temporaryPassword
+óó !
+=
+óó" #'
+GenerateTemporaryPassword
+òò )
+(
+òò) *
+)
+òò* +
+;
+òò+ ,
+var
+öö 
+user
+öö 
+=
+öö 
+new
+öö 
+User
+öö 
+{
+õõ 
+Email
+úú 
+=
+úú 
+doctor
+úú 
+.
+úú 
+Email
+úú $
+,
+úú$ %
+PasswordHash
+ùù 
+=
+ùù 
+HashPassword
+ùù +
+(
+ùù+ ,
+temporaryPassword
+ùù, =
+)
+ùù= >
+,
+ùù> ?
+Role
+ûû 
+=
+ûû 
+UserRole
+ûû 
+.
+ûû  
+Doctor
+ûû  &
+,
+ûû& '
+ReferenceId
+üü 
+=
+üü 
+doctor
+üü $
+.
+üü$ %
+DoctorId
+üü% -
+,
+üü- .
+CreatedDate
+†† 
+=
+†† 
+DateTime
+†† &
+.
+††& '
+UtcNow
+††' -
+,
+††- . 
+MustChangePassword
+°° "
+=
+°°# $
+true
+°°% )
+}
+¢¢ 
+;
+¢¢ 
+await
+§§ 
+_userService
+§§ 
+.
+§§ 
+CreateAsync
+§§ *
+(
+§§* +
+user
+§§+ /
+)
+§§/ 0
+;
+§§0 1
+await
+•• 
+_userService
+•• 
+.
+•• 
+SaveChangesAsync
+•• /
+(
+••/ 0
 )
 ••0 1
-{
-¶¶ 	
-var
-ßß 
-doctor
-ßß 
-=
-ßß 
-await
-ßß 
-_doctorRepository
-ßß 0
-.
-ßß0 1
-GetByIdAsync
-ßß1 =
-(
-ßß= >
-id
-ßß> @
-)
-ßß@ A
 ;
-ßßA B
-if
-©© 
-(
-©© 
-doctor
-©© 
-==
-©© 
-null
-©© 
-)
-©© 
-throw
-™™ 
+••1 2
+return
+ßß 
 new
-™™ "
-KeyNotFoundException
-™™ .
-(
-™™. /
-$"
-™™/ 1
-$str
-™™1 @
+ßß %
+DoctorCreationResultDto
+ßß .
 {
-™™@ A
-id
-™™A C
-}
-™™C D
-$str
-™™D O
-"
-™™O P
-)
-™™P Q
-;
-™™Q R
-doctor
-¨¨ 
-.
-¨¨ 
-IsActive
-¨¨ 
+®® 
+DoctorId
+©© 
 =
-¨¨ 
-false
-¨¨ #
-;
-¨¨# $
-await
-ÆÆ 
-_doctorRepository
-ÆÆ #
-.
-ÆÆ# $
-UpdateAsync
-ÆÆ$ /
-(
-ÆÆ/ 0
+©© 
 doctor
-ÆÆ0 6
-)
-ÆÆ6 7
-;
-ÆÆ7 8
-await
-ØØ 
-_doctorRepository
-ØØ #
+©© !
 .
-ØØ# $
-SaveChangesAsync
-ØØ$ 4
-(
-ØØ4 5
-)
-ØØ5 6
-;
-ØØ6 7
-}
-∞∞ 	
-private
-≤≤ 
-static
-≤≤ 
-void
-≤≤ 
-ValidateDoctor
-≤≤ *
-(
-≤≤* +
-CreateDoctorDto
-≤≤+ :
-dto
-≤≤; >
-)
-≤≤> ?
-{
-≥≥ 	
-if
-¥¥ 
-(
-¥¥ 
-string
-¥¥ 
-.
-¥¥  
-IsNullOrWhiteSpace
-¥¥ )
-(
-¥¥) *
-dto
-¥¥* -
-.
-¥¥- .
-FullName
-¥¥. 6
-)
-¥¥6 7
-)
-¥¥7 8
-throw
-µµ 
-new
-µµ 
-ArgumentException
-µµ +
-(
-µµ+ ,
-$str
-µµ, F
-)
-µµF G
-;
-µµG H
-if
-∑∑ 
-(
-∑∑ 
-!
-∑∑ 
-Enum
-∑∑ 
-.
-∑∑ 
-	IsDefined
-∑∑ 
-(
-∑∑  
-typeof
-∑∑  &
-(
-∑∑& '"
-DoctorSpecialisation
-∑∑' ;
-)
-∑∑; <
+©©! "
+DoctorId
+©©" *
 ,
-∑∑< =
-dto
-∑∑> A
+©©* +
+FullName
+™™ 
+=
+™™ 
+doctor
+™™ !
 .
-∑∑A B
-Specialisation
-∑∑B P
-)
-∑∑P Q
-)
-∑∑Q R
-throw
-∏∏ 
-new
-∏∏ 
-ArgumentException
-∏∏ +
-(
-∏∏+ ,
-$str
-∏∏, L
-)
-∏∏L M
-;
-∏∏M N
-if
-∫∫ 
-(
-∫∫ 
-dto
-∫∫ 
-.
-∫∫ 
-YearsOfExperience
-∫∫ %
-<
-∫∫& '
-$num
-∫∫( )
-||
-∫∫* ,
-dto
-∫∫- 0
-.
-∫∫0 1
-YearsOfExperience
-∫∫1 B
->
-∫∫C D
-$num
-∫∫E G
-)
-∫∫G H
-throw
-ªª 
-new
-ªª 
-ArgumentException
-ªª +
-(
-ªª+ ,
-$str
-ªª, X
-)
-ªªX Y
-;
-ªªY Z
-if
-ΩΩ 
-(
-ΩΩ 
-dto
-ΩΩ 
-.
-ΩΩ 
-ConsultationFee
-ΩΩ #
-<=
-ΩΩ$ &
-$num
-ΩΩ' (
-)
-ΩΩ( )
-throw
-ææ 
-new
-ææ 
-ArgumentException
-ææ +
-(
-ææ+ ,
-$str
-ææ, Y
-)
-ææY Z
-;
-ææZ [
-if
-¿¿ 
-(
-¿¿ 
-string
-¿¿ 
-.
-¿¿  
-IsNullOrWhiteSpace
-¿¿ )
-(
-¿¿) *
-dto
-¿¿* -
-.
-¿¿- .
+™™! "
+FullName
+™™" *
+,
+™™* +
 Email
-¿¿. 3
-)
-¿¿3 4
-)
-¿¿4 5
-throw
-¡¡ 
-new
-¡¡ 
-ArgumentException
-¡¡ +
-(
-¡¡+ ,
-$str
-¡¡, @
-)
-¡¡@ A
-;
-¡¡A B
+´´ 
+=
+´´ 
+doctor
+´´ 
+.
+´´ 
+Email
+´´ $
+,
+´´$ %
+TemporaryPassword
+¨¨ !
+=
+¨¨" #
+temporaryPassword
+¨¨$ 5
 }
-¬¬ 	
-private
-ƒƒ 
-static
-ƒƒ 
-void
-ƒƒ 
-ValidateDoctor
-ƒƒ *
+≠≠ 
+;
+≠≠ 
+}
+ÆÆ 	
+public
+∞∞ 
+async
+∞∞ 
+Task
+∞∞ 
+ActivateAsync
+∞∞ '
 (
-ƒƒ* +
-UpdateDoctorDto
-ƒƒ+ :
-dto
-ƒƒ; >
+∞∞' (
+int
+∞∞( +
+id
+∞∞, .
 )
-ƒƒ> ?
+∞∞. /
 {
-≈≈ 	
+±± 	
+var
+≤≤ 
+doctor
+≤≤ 
+=
+≤≤ 
+await
+≥≥ 
+_doctorRepository
+≥≥ '
+.
+≥≥' (
+GetByIdAsync
+≥≥( 4
+(
+≥≥4 5
+id
+≥≥5 7
+)
+≥≥7 8
+;
+≥≥8 9
+if
+µµ 
+(
+µµ 
+doctor
+µµ 
+==
+µµ 
+null
+µµ 
+)
+µµ 
+{
+∂∂ 
+throw
+∑∑ 
+new
+∑∑ "
+KeyNotFoundException
+∑∑ .
+(
+∑∑. /
+$"
+∏∏ 
+$str
+∏∏ %
+{
+∏∏% &
+id
+∏∏& (
+}
+∏∏( )
+$str
+∏∏) 4
+"
+∏∏4 5
+)
+∏∏5 6
+;
+∏∏6 7
+}
+ππ 
+doctor
+ªª 
+.
+ªª 
+IsActive
+ªª 
+=
+ªª 
+true
+ªª "
+;
+ªª" #
+await
+ΩΩ 
+_doctorRepository
+ΩΩ #
+.
+ΩΩ# $
+UpdateAsync
+ΩΩ$ /
+(
+ΩΩ/ 0
+doctor
+ΩΩ0 6
+)
+ΩΩ6 7
+;
+ΩΩ7 8
+await
+ææ 
+_doctorRepository
+ææ #
+.
+ææ# $
+SaveChangesAsync
+ææ$ 4
+(
+ææ4 5
+)
+ææ5 6
+;
+ææ6 7
+}
+øø 	
+public
+¡¡ 
+async
+¡¡ 
+Task
+¡¡ 
+DeactivateAsync
+¡¡ )
+(
+¡¡) *
+int
+¡¡* -
+id
+¡¡. 0
+)
+¡¡0 1
+{
+¬¬ 	
+var
+√√ 
+doctor
+√√ 
+=
+√√ 
+await
+ƒƒ 
+_doctorRepository
+ƒƒ '
+.
+ƒƒ' (
+GetByIdAsync
+ƒƒ( 4
+(
+ƒƒ4 5
+id
+ƒƒ5 7
+)
+ƒƒ7 8
+;
+ƒƒ8 9
 if
 ∆∆ 
 (
 ∆∆ 
-string
-∆∆ 
-.
-∆∆  
-IsNullOrWhiteSpace
-∆∆ )
-(
-∆∆) *
-dto
-∆∆* -
-.
-∆∆- .
-FullName
-∆∆. 6
+doctor
+∆∆ 
+==
+∆∆ 
+null
+∆∆ 
 )
-∆∆6 7
-)
-∆∆7 8
-throw
-«« 
-new
-«« 
-ArgumentException
-«« +
-(
-««+ ,
-$str
-««, F
-)
-««F G
-;
-««G H
-if
-…… 
-(
-…… 
-!
-…… 
-Enum
-…… 
-.
-…… 
-	IsDefined
-…… 
-(
-……  
-typeof
-……  &
-(
-……& '"
-DoctorSpecialisation
-……' ;
-)
-……; <
-,
-……< =
-dto
-……> A
-.
-……A B
-Specialisation
-……B P
-)
-……P Q
-)
-……Q R
-throw
-   
-new
-   
-ArgumentException
-   +
-(
-  + ,
-$str
-  , L
-)
-  L M
-;
-  M N
-if
-ÃÃ 
-(
-ÃÃ 
-dto
-ÃÃ 
-.
-ÃÃ 
-YearsOfExperience
-ÃÃ %
-<
-ÃÃ& '
-$num
-ÃÃ( )
-||
-ÃÃ* ,
-dto
-ÃÃ- 0
-.
-ÃÃ0 1
-YearsOfExperience
-ÃÃ1 B
->
-ÃÃC D
-$num
-ÃÃE G
-)
-ÃÃG H
-throw
-ÕÕ 
-new
-ÕÕ 
-ArgumentException
-ÕÕ +
-(
-ÕÕ+ ,
-$str
-ÕÕ, X
-)
-ÕÕX Y
-;
-ÕÕY Z
-if
-œœ 
-(
-œœ 
-dto
-œœ 
-.
-œœ 
-ConsultationFee
-œœ #
-<=
-œœ$ &
-$num
-œœ' (
-)
-œœ( )
-throw
-–– 
-new
-–– 
-ArgumentException
-–– +
-(
-––+ ,
-$str
-––, Y
-)
-––Y Z
-;
-––Z [
-}
-—— 	
-private
-”” 
-static
-”” 
-string
-”” '
-GenerateTemporaryPassword
-”” 7
-(
-””7 8
-)
-””8 9
+∆∆ 
 {
-‘‘ 	
-return
-’’ 
+«« 
+throw
+»» 
+new
+»» "
+KeyNotFoundException
+»» .
+(
+»». /
 $"
-’’ 
+…… 
 $str
-’’ 
+…… %
 {
-’’ 
-Random
-’’  
-.
-’’  !
-Shared
-’’! '
-.
-’’' (
-Next
-’’( ,
-(
-’’, -
-$num
-’’- 3
-,
-’’3 4
-$num
-’’5 ;
-)
-’’; <
+……% &
+id
+……& (
 }
-’’< =
+……( )
+$str
+……) 4
 "
-’’= >
+……4 5
+)
+……5 6
 ;
-’’> ?
+……6 7
 }
-÷÷ 	
-private
-ÿÿ 
-static
-ÿÿ 
-string
-ÿÿ 
-HashPassword
-ÿÿ *
-(
-ÿÿ* +
-string
-ÿÿ+ 1
-password
-ÿÿ2 :
-)
-ÿÿ: ;
-{
-ŸŸ 	
-using
-⁄⁄ 
-var
-⁄⁄ 
-sha256
-⁄⁄ 
-=
-⁄⁄ 
-System
-⁄⁄ %
-.
-⁄⁄% &
-Security
-⁄⁄& .
-.
-⁄⁄. /
-Cryptography
-⁄⁄/ ;
-.
-⁄⁄; <
-SHA256
-⁄⁄< B
-.
-⁄⁄B C
-Create
-⁄⁄C I
-(
-⁄⁄I J
-)
-⁄⁄J K
-;
-⁄⁄K L
-var
-‹‹ 
-bytes
-‹‹ 
-=
-‹‹ 
-System
-‹‹ 
-.
-‹‹ 
-Text
-‹‹ #
-.
-‹‹# $
-Encoding
-‹‹$ ,
-.
-‹‹, -
-UTF8
-‹‹- 1
-.
-‹‹1 2
-GetBytes
-‹‹2 :
-(
-‹‹: ;
-password
-‹‹; C
-)
-‹‹C D
-;
-‹‹D E
-var
-›› 
-hash
-›› 
-=
-›› 
-sha256
-›› 
-.
-›› 
-ComputeHash
-›› )
-(
-››) *
-bytes
-››* /
-)
-››/ 0
-;
-››0 1
-return
-ﬂﬂ 
-Convert
-ﬂﬂ 
-.
-ﬂﬂ 
-ToBase64String
-ﬂﬂ )
-(
-ﬂﬂ) *
-hash
-ﬂﬂ* .
-)
-ﬂﬂ. /
-;
-ﬂﬂ/ 0
-}
-‡‡ 	
-private
-‚‚ 
-static
-‚‚ 
-	DoctorDto
-‚‚  
-MapToDoctorDto
-‚‚! /
-(
-‚‚/ 0
-Doctor
-‚‚0 6
+   
 doctor
-‚‚7 =
+ÃÃ 
+.
+ÃÃ 
+IsActive
+ÃÃ 
+=
+ÃÃ 
+false
+ÃÃ #
+;
+ÃÃ# $
+await
+ŒŒ 
+_doctorRepository
+ŒŒ #
+.
+ŒŒ# $
+UpdateAsync
+ŒŒ$ /
+(
+ŒŒ/ 0
+doctor
+ŒŒ0 6
 )
-‚‚= >
+ŒŒ6 7
+;
+ŒŒ7 8
+await
+œœ 
+_doctorRepository
+œœ #
+.
+œœ# $
+SaveChangesAsync
+œœ$ 4
+(
+œœ4 5
+)
+œœ5 6
+;
+œœ6 7
+}
+–– 	
+private
+““ 
+static
+““ 
+void
+““ 
+ValidateDoctor
+““ *
+(
+““* +
+CreateDoctorDto
+““+ :
+dto
+““; >
+)
+““> ?
 {
-„„ 	
-return
-‰‰ 
+”” 	
+if
+‘‘ 
+(
+‘‘ 
+string
+‘‘ 
+.
+‘‘  
+IsNullOrWhiteSpace
+‘‘ )
+(
+‘‘) *
+dto
+‘‘* -
+.
+‘‘- .
+FullName
+‘‘. 6
+)
+‘‘6 7
+)
+‘‘7 8
+{
+’’ 
+throw
+÷÷ 
 new
-‰‰ 
-	DoctorDto
-‰‰  
-{
-ÂÂ 
-DoctorId
-ÊÊ 
-=
-ÊÊ 
-doctor
-ÊÊ !
-.
-ÊÊ! "
-DoctorId
-ÊÊ" *
-,
-ÊÊ* +
-FullName
-ÁÁ 
-=
-ÁÁ 
-doctor
-ÁÁ !
-.
-ÁÁ! "
-FullName
-ÁÁ" *
-,
-ÁÁ* +
-Email
-ËË 
-=
-ËË 
-doctor
-ËË 
-.
-ËË 
-Email
-ËË $
-,
-ËË$ %
-Specialisation
-ÈÈ 
-=
-ÈÈ  
+÷÷ 
+ArgumentException
+÷÷ +
 (
-ÈÈ! "
-int
-ÈÈ" %
+÷÷+ ,
+$str
+÷÷, F
 )
-ÈÈ% &
-doctor
-ÈÈ& ,
+÷÷F G
+;
+÷÷G H
+}
+◊◊ 
+if
+ŸŸ 
+(
+ŸŸ 
+string
+ŸŸ 
 .
-ÈÈ, -
+ŸŸ  
+IsNullOrWhiteSpace
+ŸŸ )
+(
+ŸŸ) *
+dto
+ŸŸ* -
+.
+ŸŸ- .
+Email
+ŸŸ. 3
+)
+ŸŸ3 4
+)
+ŸŸ4 5
+{
+⁄⁄ 
+throw
+€€ 
+new
+€€ 
+ArgumentException
+€€ +
+(
+€€+ ,
+$str
+€€, @
+)
+€€@ A
+;
+€€A B
+}
+‹‹ 
+if
+ﬁﬁ 
+(
+ﬁﬁ 
+!
+ﬁﬁ 
+Enum
+ﬁﬁ 
+.
+ﬁﬁ 
+	IsDefined
+ﬁﬁ 
+(
+ﬁﬁ  
+typeof
+ﬁﬁ  &
+(
+ﬁﬁ& '"
+DoctorSpecialisation
+ﬁﬁ' ;
+)
+ﬁﬁ; <
+,
+ﬁﬁ< =
+dto
+ﬁﬁ> A
+.
+ﬁﬁA B
 Specialisation
-ÈÈ- ;
-,
-ÈÈ; <
+ﬁﬁB P
+)
+ﬁﬁP Q
+)
+ﬁﬁQ R
+{
+ﬂﬂ 
+throw
+‡‡ 
+new
+‡‡ 
+ArgumentException
+‡‡ +
+(
+‡‡+ ,
+$str
+‡‡, L
+)
+‡‡L M
+;
+‡‡M N
+}
+·· 
+if
+„„ 
+(
+„„ 
+dto
+„„ 
+.
+„„ 
 YearsOfExperience
-ÍÍ !
-=
-ÍÍ" #
-doctor
-ÍÍ$ *
+„„ %
+<
+„„& '
+$num
+„„( )
+||
+„„* ,
+dto
+„„- 0
 .
-ÍÍ* +
+„„0 1
 YearsOfExperience
-ÍÍ+ <
-,
-ÍÍ< =
-ConsultationFee
-ÎÎ 
-=
-ÎÎ  !
-doctor
-ÎÎ" (
+„„1 B
+>
+„„C D
+$num
+„„E G
+)
+„„G H
+{
+‰‰ 
+throw
+ÂÂ 
+new
+ÂÂ 
+ArgumentException
+ÂÂ +
+(
+ÂÂ+ ,
+$str
+ÊÊ @
+)
+ÊÊ@ A
+;
+ÊÊA B
+}
+ÁÁ 
+if
+ÈÈ 
+(
+ÈÈ 
+dto
+ÈÈ 
 .
-ÎÎ( )
+ÈÈ 
 ConsultationFee
-ÎÎ) 8
-,
-ÎÎ8 9
-IsActive
-ÏÏ 
-=
-ÏÏ 
-doctor
-ÏÏ !
-.
-ÏÏ! "
-IsActive
-ÏÏ" *
+ÈÈ #
+<=
+ÈÈ$ &
+$num
+ÈÈ' (
+)
+ÈÈ( )
+{
+ÍÍ 
+throw
+ÎÎ 
+new
+ÎÎ 
+ArgumentException
+ÎÎ +
+(
+ÎÎ+ ,
+$str
+ÏÏ A
+)
+ÏÏA B
+;
+ÏÏB C
 }
 ÌÌ 
+}
+ÓÓ 	
+private
+ 
+static
+ 
+void
+ 
+ValidateDoctor
+ *
+(
+* +
+UpdateDoctorDto
++ :
+dto
+; >
+)
+> ?
+{
+ÒÒ 	
+if
+ÚÚ 
+(
+ÚÚ 
+string
+ÚÚ 
+.
+ÚÚ  
+IsNullOrWhiteSpace
+ÚÚ )
+(
+ÚÚ) *
+dto
+ÚÚ* -
+.
+ÚÚ- .
+FullName
+ÚÚ. 6
+)
+ÚÚ6 7
+)
+ÚÚ7 8
+{
+ÛÛ 
+throw
+ÙÙ 
+new
+ÙÙ 
+ArgumentException
+ÙÙ +
+(
+ÙÙ+ ,
+$str
+ÙÙ, F
+)
+ÙÙF G
 ;
-ÌÌ 
+ÙÙG H
 }
-ÓÓ 	
+ıı 
+if
+˜˜ 
+(
+˜˜ 
+!
+˜˜ 
+Enum
+˜˜ 
+.
+˜˜ 
+	IsDefined
+˜˜ 
+(
+˜˜  
+typeof
+˜˜  &
+(
+˜˜& '"
+DoctorSpecialisation
+˜˜' ;
+)
+˜˜; <
+,
+˜˜< =
+dto
+˜˜> A
+.
+˜˜A B
+Specialisation
+˜˜B P
+)
+˜˜P Q
+)
+˜˜Q R
+{
+¯¯ 
+throw
+˘˘ 
+new
+˘˘ 
+ArgumentException
+˘˘ +
+(
+˘˘+ ,
+$str
+˘˘, L
+)
+˘˘L M
+;
+˘˘M N
 }
-ÔÔ 
-} ≠
-bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\AuthService.cs
+˙˙ 
+if
+¸¸ 
+(
+¸¸ 
+dto
+¸¸ 
+.
+¸¸ 
+YearsOfExperience
+¸¸ %
+<
+¸¸& '
+$num
+¸¸( )
+||
+¸¸* ,
+dto
+¸¸- 0
+.
+¸¸0 1
+YearsOfExperience
+¸¸1 B
+>
+¸¸C D
+$num
+¸¸E G
+)
+¸¸G H
+{
+˝˝ 
+throw
+˛˛ 
+new
+˛˛ 
+ArgumentException
+˛˛ +
+(
+˛˛+ ,
+$str
+ˇˇ @
+)
+ˇˇ@ A
+;
+ˇˇA B
+}
+ÄÄ 
+if
+ÇÇ 
+(
+ÇÇ 
+dto
+ÇÇ 
+.
+ÇÇ 
+ConsultationFee
+ÇÇ #
+<=
+ÇÇ$ &
+$num
+ÇÇ' (
+)
+ÇÇ( )
+{
+ÉÉ 
+throw
+ÑÑ 
+new
+ÑÑ 
+ArgumentException
+ÑÑ +
+(
+ÑÑ+ ,
+$str
+ÖÖ A
+)
+ÖÖA B
+;
+ÖÖB C
+}
+ÜÜ 
+}
+áá 	
+private
+ââ 
+static
+ââ 
+string
+ââ '
+GenerateTemporaryPassword
+ââ 7
+(
+ââ7 8
+)
+ââ8 9
+{
+ää 	
+return
+ãã 
+$"
+ãã 
+$str
+ãã 
+{
+ãã 
+Random
+ãã  
+.
+ãã  !
+Shared
+ãã! '
+.
+ãã' (
+Next
+ãã( ,
+(
+ãã, -
+$num
+ãã- 3
+,
+ãã3 4
+$num
+ãã5 ;
+)
+ãã; <
+}
+ãã< =
+"
+ãã= >
+;
+ãã> ?
+}
+åå 	
+private
+éé 
+static
+éé 
+string
+éé 
+HashPassword
+éé *
+(
+éé* +
+string
+éé+ 1
+password
+éé2 :
+)
+éé: ;
+{
+èè 	
+using
+êê 
+var
+êê 
+sha256
+êê 
+=
+êê 
+System
+ëë 
+.
+ëë 
+Security
+ëë 
+.
+ëë  
+Cryptography
+ëë  ,
+.
+ëë, -
+SHA256
+ëë- 3
+.
+ëë3 4
+Create
+ëë4 :
+(
+ëë: ;
+)
+ëë; <
+;
+ëë< =
+var
+ìì 
+bytes
+ìì 
+=
+ìì 
+System
+îî 
+.
+îî 
+Text
+îî 
+.
+îî 
+Encoding
+îî $
+.
+îî$ %
+UTF8
+îî% )
+.
+îî) *
+GetBytes
+îî* 2
+(
+îî2 3
+password
+îî3 ;
+)
+îî; <
+;
+îî< =
+var
+ññ 
+hash
+ññ 
+=
+ññ 
+sha256
+óó 
+.
+óó 
+ComputeHash
+óó "
+(
+óó" #
+bytes
+óó# (
+)
+óó( )
+;
+óó) *
+return
+ôô 
+Convert
+ôô 
+.
+ôô 
+ToBase64String
+ôô )
+(
+ôô) *
+hash
+ôô* .
+)
+ôô. /
+;
+ôô/ 0
+}
+öö 	
+private
+úú 
+static
+úú 
+	DoctorDto
+úú  
+MapToDoctorDto
+úú! /
+(
+úú/ 0
+Doctor
+úú0 6
+doctor
+úú7 =
+)
+úú= >
+{
+ùù 	
+return
+ûû 
+new
+ûû 
+	DoctorDto
+ûû  
+{
+üü 
+DoctorId
+†† 
+=
+†† 
+doctor
+†† !
+.
+††! "
+DoctorId
+††" *
+,
+††* +
+FullName
+°° 
+=
+°° 
+doctor
+°° !
+.
+°°! "
+FullName
+°°" *
+,
+°°* +
+Email
+¢¢ 
+=
+¢¢ 
+doctor
+¢¢ 
+.
+¢¢ 
+Email
+¢¢ $
+,
+¢¢$ %
+Specialisation
+££ 
+=
+££  
+(
+££! "
+int
+££" %
+)
+££% &
+doctor
+££& ,
+.
+££, -
+Specialisation
+££- ;
+,
+££; <
+YearsOfExperience
+§§ !
+=
+§§" #
+doctor
+§§$ *
+.
+§§* +
+YearsOfExperience
+§§+ <
+,
+§§< =
+ConsultationFee
+•• 
+=
+••  !
+doctor
+••" (
+.
+••( )
+ConsultationFee
+••) 8
+,
+••8 9
+IsActive
+¶¶ 
+=
+¶¶ 
+doctor
+¶¶ !
+.
+¶¶! "
+IsActive
+¶¶" *
+}
+ßß 
+;
+ßß 
+}
+®® 	
+}
+©© 
+}™™ çÙ
+eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Implementation\AuthService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -4468,4358 +4958,5215 @@ bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementa
 >O P
 RegisterAsyncQ ^
 (^ _
-RegisterDto_ j
-requestk r
-)r s
-{ 	
-if   
-(   
-request   
-.   
-Password    
-!=  ! #
-request  $ +
-.  + ,
-ConfirmPassword  , ;
-)  ; <
-{!! 
-return"" 
-("" 
-false"" 
-,"" 
-$str"" 8
-,""8 9
-null"": >
-)""> ?
-;""? @
-}## 
-if%% 
-(%% 
-await%% 
-_userRepository%% %
-.%%% &
-EmailExistsAsync%%& 6
-(%%6 7
-request%%7 >
-.%%> ?
-Email%%? D
-)%%D E
-)%%E F
-{&& 
-return'' 
-('' 
-false'' 
-,'' 
-$str'' 6
-,''6 7
-null''8 <
-)''< =
-;''= >
-}(( 
-var** 
-user** 
-=** 
-new** 
-User** 
-{++ 
-Email,, 
-=,, 
-request,, 
-.,,  
-Email,,  %
-.,,% &
-Trim,,& *
-(,,* +
-),,+ ,
-.,,, -
-ToLower,,- 4
-(,,4 5
-),,5 6
-,,,6 7
-PasswordHash-- 
-=-- 
-HashPassword-- +
-(--+ ,
-request--, 3
-.--3 4
-Password--4 <
-)--< =
-,--= >
-Role.. 
-=.. 
-request.. 
-... 
-Role.. #
-,..# $
-CreatedDate// 
-=// 
-DateTime// &
-.//& '
-UtcNow//' -
-}00 
-;00 
-var22 
-refreshToken22 
-=22  
-GenerateRefreshToken22 3
-(223 4
-)224 5
-;225 6
-user44 
-.44 
-RefreshToken44 
-=44 
-refreshToken44  ,
-;44, -
-user55 
-.55 "
-RefreshTokenExpiryTime55 '
-=55( )
-DateTime55* 2
-.552 3
-UtcNow553 9
-.559 :
-AddDays55: A
-(55A B
-$num55B C
-)55C D
-;55D E
-await77 
-_userRepository77 !
-.77! "
-AddAsync77" *
-(77* +
-user77+ /
-)77/ 0
-;770 1
-await88 
-_userRepository88 !
-.88! "
-SaveChangesAsync88" 2
-(882 3
-)883 4
-;884 5
-var:: 
-accessToken:: 
-=:: 
-GenerateToken:: +
-(::+ ,
-user::, 0
-)::0 1
-;::1 2
-return<< 
-(<< 
-true== 
-,== 
-$str>> /
-,>>/ 0
-new?? 
-AuthResponseDto?? #
-{@@ 
-AccessTokenAA 
-=AA  !
-accessTokenAA" -
-,AA- .
-RefreshTokenBB  
-=BB! "
-refreshTokenBB# /
-,BB/ 0
-EmailCC 
-=CC 
-userCC  
-.CC  !
-EmailCC! &
-,CC& '
-RoleDD 
-=DD 
-userDD 
-.DD  
-RoleDD  $
-.DD$ %
-ToStringDD% -
-(DD- .
-)DD. /
-}EE 
-)EE 
-;EE 
-}FF 	
-publicHH 
-asyncHH 
-TaskHH 
-<HH 
-(HH 
-boolHH 
-SuccessHH  '
-,HH' (
-stringHH( .
-MessageHH/ 6
-,HH6 7
-AuthResponseDtoHH8 G
-?HHG H
-DataHHI M
-)HHM N
->HHN O 
-RegisterPatientAsyncHHO c
-(HHc d
-RegisterPatientDtoHHd v
-requestHHw ~
-)HH~ 
-{II 	
-ifJJ 
-(JJ 
-requestJJ 
-.JJ 
-PasswordJJ  
-!=JJ! #
-requestJJ$ +
-.JJ+ ,
-ConfirmPasswordJJ, ;
-)JJ; <
-{KK 
-returnLL 
-(LL 
-falseLL 
-,LL 
-$strLL 8
-,LL8 9
-nullLL: >
-)LL> ?
-;LL? @
-}MM 
-ifOO 
-(OO 
-awaitOO 
-_userRepositoryOO %
-.OO% &
-EmailExistsAsyncOO& 6
-(OO6 7
-requestPP 
-.PP 
-EmailPP 
-)PP 
-)PP 
-{QQ 
-returnRR 
-(RR 
-falseRR 
-,RR 
-$strRR 6
-,RR6 7
-nullRR8 <
-)RR< =
-;RR= >
-}SS 
-varUU 
-patientUU 
-=UU 
-newUU 
-PatientUU %
-{VV 
-FullNameWW 
-=WW 
-requestWW "
-.WW" #
-FullNameWW# +
-.WW+ ,
-TrimWW, 0
-(WW0 1
-)WW1 2
-,WW2 3
-DateOfBirthXX 
-=XX 
-requestXX %
-.XX% &
-DateOfBirthXX& 1
-,XX1 2
-GenderYY 
-=YY 
-requestYY  
-.YY  !
-GenderYY! '
-,YY' (
-PhoneNumberZZ 
-=ZZ 
-requestZZ %
-.ZZ% &
-PhoneNumberZZ& 1
-.ZZ1 2
-TrimZZ2 6
-(ZZ6 7
-)ZZ7 8
-,ZZ8 9
-Email[[ 
-=[[ 
-request[[ 
-.[[  
-Email[[  %
-.[[% &
-Trim[[& *
-([[* +
-)[[+ ,
-.[[, -
-ToLower[[- 4
-([[4 5
-)[[5 6
-,[[6 7
-InsuranceNumber\\ 
-=\\  !
-request\\" )
-.\\) *
-InsuranceNumber\\* 9
-,\\9 :
-IsActive]] 
-=]] 
-true]] 
-}^^ 
-;^^ 
-await`` 
-_patientRepository`` $
-.``$ %
-AddAsync``% -
-(``- .
-patient``. 5
-)``5 6
-;``6 7
-awaitaa 
-_patientRepositoryaa $
-.aa$ %
-SaveChangesAsyncaa% 5
-(aa5 6
-)aa6 7
-;aa7 8
-varcc 
-usercc 
-=cc 
-newcc 
-Usercc 
-{dd 
-Emailee 
-=ee 
-requestee 
-.ee  
-Emailee  %
-.ee% &
-Trimee& *
-(ee* +
-)ee+ ,
-.ee, -
-ToLoweree- 4
-(ee4 5
-)ee5 6
-,ee6 7
-PasswordHashff 
-=ff 
-HashPasswordff +
-(ff+ ,
-requestff, 3
-.ff3 4
-Passwordff4 <
-)ff< =
-,ff= >
-Rolegg 
-=gg 
-UserRolegg 
-.gg  
-Patientgg  '
-,gg' (
-ReferenceIdhh 
-=hh 
-patienthh %
-.hh% &
-	PatientIdhh& /
-}ii 
-;ii 
-awaitkk 
-_userRepositorykk !
-.kk! "
-AddAsynckk" *
-(kk* +
-userkk+ /
-)kk/ 0
-;kk0 1
-awaitll 
-_userRepositoryll !
-.ll! "
-SaveChangesAsyncll" 2
-(ll2 3
-)ll3 4
-;ll4 5
-varnn 
-accessTokennn 
-=nn 
-GenerateTokenoo 
-(oo 
-useroo "
-)oo" #
-;oo# $
-varqq 
-refreshTokenqq 
-=qq  
-GenerateRefreshTokenrr $
-(rr$ %
-)rr% &
-;rr& '
-usertt 
-.tt 
-RefreshTokentt 
-=tt 
-refreshTokentt  ,
-;tt, -
-useruu 
-.uu "
-RefreshTokenExpiryTimeuu '
-=uu( )
-DateTimevv 
-.vv 
-UtcNowvv 
-.vv  
-AddDaysvv  '
-(vv' (
-$numvv( )
-)vv) *
-;vv* +
-awaitxx 
-_userRepositoryxx !
-.xx! "
-SaveChangesAsyncxx" 2
-(xx2 3
-)xx3 4
-;xx4 5
-returnzz 
-(zz 
-true{{ 
-,{{ 
-$str|| 2
-,||2 3
-new}} 
-AuthResponseDto}} #
-{~~ 
-AccessToken 
-=  !
-accessToken" -
-,- .
-RefreshToken
-ÄÄ  
-=
-ÄÄ! "
-refreshToken
-ÄÄ# /
+RegisterDto 
+request 
+)  
+{   	
+if!! 
+(!! 
+request!! 
+.!! 
+Password!!  
+!=!!! #
+request!!$ +
+.!!+ ,
+ConfirmPassword!!, ;
+)!!; <
+{"" 
+return## 
+(## 
+false## 
+,## 
+$str## 8
+,##8 9
+null##: >
+)##> ?
+;##? @
+}$$ 
+var&& 
+email&& 
+=&& 
+request&& 
+.&&  
+Email&&  %
+.&&% &
+Trim&&& *
+(&&* +
+)&&+ ,
+.&&, -
+ToLower&&- 4
+(&&4 5
+)&&5 6
+;&&6 7
+if(( 
+((( 
+await(( 
+_userRepository(( %
+.((% &
+EmailExistsAsync((& 6
+(((6 7
+email((7 <
+)((< =
+)((= >
+{)) 
+return** 
+(** 
+false** 
+,** 
+$str** 6
+,**6 7
+null**8 <
+)**< =
+;**= >
+}++ 
+var-- 
+user-- 
+=-- 
+new-- 
+User-- 
+{.. 
+Email// 
+=// 
+email// 
+,// 
+PasswordHash00 
+=00 
+HashPassword00 +
+(00+ ,
+request00, 3
+.003 4
+Password004 <
+)00< =
+,00= >
+Role11 
+=11 
+request11 
+.11 
+Role11 #
+,11# $
+CreatedDate22 
+=22 
+DateTime22 &
+.22& '
+UtcNow22' -
+,22- .
+MustChangePassword33 "
+=33# $
+false33% *
+}44 
+;44 
+var66 
+refreshToken66 
+=66  
+GenerateRefreshToken66 3
+(663 4
+)664 5
+;665 6
+user88 
+.88 
+RefreshToken88 
+=88 
+refreshToken88  ,
+;88, -
+user99 
+.99 "
+RefreshTokenExpiryTime99 '
+=99( )
+DateTime99* 2
+.992 3
+UtcNow993 9
+.999 :
+AddDays99: A
+(99A B
+$num99B C
+)99C D
+;99D E
+await;; 
+_userRepository;; !
+.;;! "
+AddAsync;;" *
+(;;* +
+user;;+ /
+);;/ 0
+;;;0 1
+await<< 
+_userRepository<< !
+.<<! "
+SaveChangesAsync<<" 2
+(<<2 3
+)<<3 4
+;<<4 5
+var>> 
+accessToken>> 
+=>> 
+GenerateToken>> +
+(>>+ ,
+user>>, 0
+)>>0 1
+;>>1 2
+return@@ 
+(@@ 
+trueAA 
+,AA 
+$strBB /
+,BB/ 0
+newCC 
+AuthResponseDtoCC #
+{DD 
+AccessTokenEE 
+=EE  !
+accessTokenEE" -
+,EE- .
+RefreshTokenFF  
+=FF! "
+refreshTokenFF# /
+,FF/ 0
+EmailGG 
+=GG 
+userGG  
+.GG  !
+EmailGG! &
+,GG& '
+RoleHH 
+=HH 
+userHH 
+.HH  
+RoleHH  $
+.HH$ %
+ToStringHH% -
+(HH- .
+)HH. /
+,HH/ 0
+ReferenceIdII 
+=II  !
+userII" &
+.II& '
+ReferenceIdII' 2
+,II2 3
+MustChangePasswordJJ &
+=JJ' (
+userJJ) -
+.JJ- .
+MustChangePasswordJJ. @
+}KK 
+)KK 
+;KK 
+}LL 	
+publicNN 
+asyncNN 
+TaskNN 
+<NN 
+(NN 
+boolNN 
+SuccessNN  '
+,NN' (
+stringNN) /
+MessageNN0 7
+,NN7 8
+AuthResponseDtoNN9 H
+?NNH I
+DataNNJ N
+)NNN O
+>NNO P 
+RegisterPatientAsyncNNQ e
+(NNe f
+RegisterPatientDtoOO 
+requestOO &
+)OO& '
+{PP 	
+ifQQ 
+(QQ 
+requestQQ 
+.QQ 
+PasswordQQ  
+!=QQ! #
+requestQQ$ +
+.QQ+ ,
+ConfirmPasswordQQ, ;
+)QQ; <
+{RR 
+returnSS 
+(SS 
+falseSS 
+,SS 
+$strSS 8
+,SS8 9
+nullSS: >
+)SS> ?
+;SS? @
+}TT 
+varVV 
+emailVV 
+=VV 
+requestVV 
+.VV  
+EmailVV  %
+.VV% &
+TrimVV& *
+(VV* +
+)VV+ ,
+.VV, -
+ToLowerVV- 4
+(VV4 5
+)VV5 6
+;VV6 7
+ifXX 
+(XX 
+awaitXX 
+_userRepositoryXX %
+.XX% &
+EmailExistsAsyncXX& 6
+(XX6 7
+emailXX7 <
+)XX< =
+)XX= >
+{YY 
+returnZZ 
+(ZZ 
+falseZZ 
+,ZZ 
+$strZZ 6
+,ZZ6 7
+nullZZ8 <
+)ZZ< =
+;ZZ= >
+}[[ 
+var]] 
+patient]] 
+=]] 
+new]] 
+Patient]] %
+{^^ 
+FullName__ 
+=__ 
+request__ "
+.__" #
+FullName__# +
+.__+ ,
+Trim__, 0
+(__0 1
+)__1 2
+,__2 3
+DateOfBirth`` 
+=`` 
+request`` %
+.``% &
+DateOfBirth``& 1
+,``1 2
+Genderaa 
+=aa 
+requestaa  
+.aa  !
+Genderaa! '
+,aa' (
+PhoneNumberbb 
+=bb 
+requestbb %
+.bb% &
+PhoneNumberbb& 1
+.bb1 2
+Trimbb2 6
+(bb6 7
+)bb7 8
+,bb8 9
+Emailcc 
+=cc 
+emailcc 
+,cc 
+InsuranceNumberdd 
+=dd  !
+requestdd" )
+.dd) *
+InsuranceNumberdd* 9
+,dd9 :
+IsActiveee 
+=ee 
+trueee 
+}ff 
+;ff 
+awaithh 
+_patientRepositoryhh $
+.hh$ %
+AddAsynchh% -
+(hh- .
+patienthh. 5
+)hh5 6
+;hh6 7
+awaitii 
+_patientRepositoryii $
+.ii$ %
+SaveChangesAsyncii% 5
+(ii5 6
+)ii6 7
+;ii7 8
+varkk 
+userkk 
+=kk 
+newkk 
+Userkk 
+{ll 
+Emailmm 
+=mm 
+emailmm 
+,mm 
+PasswordHashnn 
+=nn 
+HashPasswordnn +
+(nn+ ,
+requestnn, 3
+.nn3 4
+Passwordnn4 <
+)nn< =
+,nn= >
+Roleoo 
+=oo 
+UserRoleoo 
+.oo  
+Patientoo  '
+,oo' (
+ReferenceIdpp 
+=pp 
+patientpp %
+.pp% &
+	PatientIdpp& /
+,pp/ 0
+CreatedDateqq 
+=qq 
+DateTimeqq &
+.qq& '
+UtcNowqq' -
+,qq- .
+MustChangePasswordrr "
+=rr# $
+falserr% *
+}ss 
+;ss 
+varuu 
+refreshTokenuu 
+=uu  
+GenerateRefreshTokenuu 3
+(uu3 4
+)uu4 5
+;uu5 6
+userww 
+.ww 
+RefreshTokenww 
+=ww 
+refreshTokenww  ,
+;ww, -
+userxx 
+.xx "
+RefreshTokenExpiryTimexx '
+=xx( )
+DateTimexx* 2
+.xx2 3
+UtcNowxx3 9
+.xx9 :
+AddDaysxx: A
+(xxA B
+$numxxB C
+)xxC D
+;xxD E
+awaitzz 
+_userRepositoryzz !
+.zz! "
+AddAsynczz" *
+(zz* +
+userzz+ /
+)zz/ 0
+;zz0 1
+await{{ 
+_userRepository{{ !
+.{{! "
+SaveChangesAsync{{" 2
+({{2 3
+){{3 4
+;{{4 5
+var}} 
+accessToken}} 
+=}} 
+GenerateToken}} +
+(}}+ ,
+user}}, 0
+)}}0 1
+;}}1 2
+return 
+( 
+true
+ÄÄ 
 ,
-ÄÄ/ 0
-Email
-ÅÅ 
-=
-ÅÅ 
-user
-ÅÅ  
-.
-ÅÅ  !
-Email
-ÅÅ! &
+ÄÄ 
+$str
+ÅÅ 2
 ,
-ÅÅ& '
-Role
-ÇÇ 
-=
-ÇÇ 
-user
-ÇÇ 
-.
-ÇÇ  
-Role
-ÇÇ  $
-.
-ÇÇ$ %
-ToString
-ÇÇ% -
-(
-ÇÇ- .
-)
-ÇÇ. /
-}
-ÉÉ 
-)
-ÉÉ 
-;
-ÉÉ 
-}
-ÑÑ 	
-public
-ÜÜ 
-async
-ÜÜ 
-Task
-ÜÜ 
-<
-ÜÜ 
-(
-ÜÜ 
-bool
-ÜÜ 
-Success
-ÜÜ  '
-,
-ÜÜ' (
-string
-ÜÜ) /
-Message
-ÜÜ0 7
-,
-ÜÜ7 8
+ÅÅ2 3
+new
+ÇÇ 
 AuthResponseDto
-ÜÜ9 H
-?
-ÜÜH I
-Data
-ÜÜJ N
+ÇÇ #
+{
+ÉÉ 
+AccessToken
+ÑÑ 
+=
+ÑÑ  !
+accessToken
+ÑÑ" -
+,
+ÑÑ- .
+RefreshToken
+ÖÖ  
+=
+ÖÖ! "
+refreshToken
+ÖÖ# /
+,
+ÖÖ/ 0
+Email
+ÜÜ 
+=
+ÜÜ 
+user
+ÜÜ  
+.
+ÜÜ  !
+Email
+ÜÜ! &
+,
+ÜÜ& '
+Role
+áá 
+=
+áá 
+user
+áá 
+.
+áá  
+Role
+áá  $
+.
+áá$ %
+ToString
+áá% -
+(
+áá- .
 )
-ÜÜN O
+áá. /
+,
+áá/ 0
+ReferenceId
+àà 
+=
+àà  !
+user
+àà" &
+.
+àà& '
+ReferenceId
+àà' 2
+,
+àà2 3 
+MustChangePassword
+ââ &
+=
+ââ' (
+user
+ââ) -
+.
+ââ- . 
+MustChangePassword
+ââ. @
+}
+ää 
+)
+ää 
+;
+ää 
+}
+ãã 	
+public
+çç 
+async
+çç 
+Task
+çç 
+<
+çç 
+(
+çç 
+bool
+çç 
+Success
+çç  '
+,
+çç' (
+string
+çç) /
+Message
+çç0 7
+,
+çç7 8
+AuthResponseDto
+çç9 H
+?
+ççH I
+Data
+ççJ N
+)
+ççN O
 >
-ÜÜO P
+ççO P
 
 LoginAsync
-áá 
+ççQ [
 (
-áá 
+çç[ \
 LoginDto
-áá 
+éé 
 request
-áá  '
+éé 
 )
-áá' (
+éé 
 {
-àà 	
+èè 	
 var
-ââ 
-user
-ââ 
+êê 
+email
+êê 
 =
-ââ 
-await
-ââ 
-_userRepository
-ââ ,
-.
-ââ, -
-GetByEmailAsync
-ââ- <
-(
-ââ< =
+êê 
 request
-ää 
+êê 
 .
-ää 
+êê  
 Email
-ää 
+êê  %
 .
-ää 
+êê% &
 Trim
-ää "
+êê& *
 (
-ää" #
+êê* +
 )
-ää# $
+êê+ ,
 .
-ää$ %
+êê, -
 ToLower
-ää% ,
+êê- 4
 (
-ää, -
+êê4 5
 )
-ää- .
-)
-ää. /
+êê5 6
 ;
-ää/ 0
-if
-åå 
-(
-åå 
-user
-åå 
-==
-åå 
-null
-åå 
-)
-åå 
-{
-çç 
-return
-éé 
-(
-éé 
-false
-éé 
-,
-éé 
-$str
-éé ;
-,
-éé; <
-null
-éé= A
-)
-ééA B
-;
-ééB C
-}
-èè 
+êê6 7
 var
-ëë 
-hashedPassword
-ëë 
+íí 
+user
+íí 
 =
-ëë  
+íí 
+await
+íí 
+_userRepository
+íí ,
+.
+íí, -
+GetByEmailAsync
+íí- <
+(
+íí< =
+email
+íí= B
+)
+ííB C
+;
+ííC D
+if
+îî 
+(
+îî 
+user
+îî 
+==
+îî 
+null
+îî 
+)
+îî 
+{
+ïï 
+return
+ññ 
+(
+ññ 
+false
+ññ 
+,
+ññ 
+$str
+ññ ;
+,
+ññ; <
+null
+ññ= A
+)
+ññA B
+;
+ññB C
+}
+óó 
+var
+ôô 
+hashedPassword
+ôô 
+=
+ôô  
 HashPassword
-ëë! -
+ôô! -
 (
-ëë- .
+ôô- .
 request
-ëë. 5
+ôô. 5
 .
-ëë5 6
+ôô5 6
 Password
-ëë6 >
+ôô6 >
 )
-ëë> ?
+ôô> ?
 ;
-ëë? @
+ôô? @
 if
-ìì 
+õõ 
 (
-ìì 
+õõ 
 user
-ìì 
+õõ 
 .
-ìì 
+õõ 
 PasswordHash
-ìì !
+õõ !
 !=
-ìì" $
+õõ" $
 hashedPassword
-ìì% 3
+õõ% 3
 )
-ìì3 4
+õõ3 4
 {
-îî 
+úú 
 return
-ïï 
+ùù 
 (
-ïï 
+ùù 
 false
-ïï 
+ùù 
 ,
-ïï 
+ùù 
 $str
-ïï ;
+ùù ;
 ,
-ïï; <
+ùù; <
 null
-ïï= A
+ùù= A
 )
-ïïA B
+ùùA B
 ;
-ïïB C
-}
-ññ 
-var
-òò 
-accessToken
-òò 
-=
-òò 
-GenerateToken
-òò +
-(
-òò+ ,
-user
-òò, 0
-)
-òò0 1
-;
-òò1 2
-var
-öö 
-refreshToken
-öö 
-=
-öö "
-GenerateRefreshToken
-öö 3
-(
-öö3 4
-)
-öö4 5
-;
-öö5 6
-user
-úú 
-.
-úú 
-RefreshToken
-úú 
-=
-úú 
-refreshToken
-úú  ,
-;
-úú, -
-user
-ùù 
-.
-ùù $
-RefreshTokenExpiryTime
-ùù '
-=
-ùù( )
-DateTime
-ùù* 2
-.
-ùù2 3
-UtcNow
-ùù3 9
-.
-ùù9 :
-AddDays
-ùù: A
-(
-ùùA B
-$num
 ùùB C
-)
-ùùC D
-;
-ùùD E
-await
-üü 
-_userRepository
-üü !
-.
-üü! "
-UpdateAsync
-üü" -
-(
-üü- .
-user
-üü. 2
-)
-üü2 3
-;
-üü3 4
-await
-†† 
-_userRepository
-†† !
-.
-††! "
-SaveChangesAsync
-††" 2
-(
-††2 3
-)
-††3 4
-;
-††4 5
-return
-¢¢ 
-(
-¢¢ 
-true
-££ 
-,
-££ 
-$str
-§§ #
-,
-§§# $
-new
-•• 
-AuthResponseDto
-•• #
-{
-¶¶ 
-AccessToken
-ßß 
-=
-ßß  !
-accessToken
-ßß" -
-,
-ßß- .
-RefreshToken
-®®  
-=
-®®! "
-refreshToken
-®®# /
-,
-®®/ 0
-Email
-©© 
-=
-©© 
-user
-©©  
-.
-©©  !
-Email
-©©! &
-,
-©©& '
-Role
-™™ 
-=
-™™ 
-user
-™™ 
-.
-™™  
-Role
-™™  $
-.
-™™$ %
-ToString
-™™% -
-(
-™™- .
-)
-™™. /
 }
-´´ 
-)
-´´ 
-;
-´´ 
-}
-¨¨ 	
-public
-ÆÆ 
-async
-ÆÆ 
-Task
-ÆÆ 
-<
-ÆÆ 
-(
-ÆÆ 
-bool
-ÆÆ 
-Success
-ÆÆ  '
-,
-ÆÆ' (
-string
-ÆÆ) /
-Message
-ÆÆ0 7
-,
-ÆÆ7 8
-AuthResponseDto
-ÆÆ9 H
-?
-ÆÆH I
-Data
-ÆÆJ N
-)
-ÆÆN O
->
-ÆÆO P
-RefreshTokenAsync
-ØØ 
-(
-ØØ 
-RefreshTokenDto
-ØØ -
-request
-ØØ. 5
-)
-ØØ5 6
-{
-∞∞ 	
+ûû 
 var
-±± 
-user
-±± 
+†† 
+accessToken
+†† 
 =
-±± 
-await
-±± 
-_userRepository
-±± ,
-.
-≤≤ $
-GetByRefreshTokenAsync
-≤≤ '
+†† 
+GenerateToken
+†† +
 (
-≤≤' (
-request
-≤≤( /
+††+ ,
+user
+††, 0
+)
+††0 1
+;
+††1 2
+var
+°° 
+refreshToken
+°° 
+=
+°° "
+GenerateRefreshToken
+°° 3
+(
+°°3 4
+)
+°°4 5
+;
+°°5 6
+user
+££ 
 .
-≤≤/ 0
+££ 
 RefreshToken
-≤≤0 <
-)
-≤≤< =
+££ 
+=
+££ 
+refreshToken
+££  ,
 ;
-≤≤= >
-if
-¥¥ 
-(
-¥¥ 
+££, -
 user
-¥¥ 
-==
-¥¥ 
-null
-¥¥ 
-)
-¥¥ 
-{
-µµ 
-return
-∂∂ 
-(
-∂∂ 
-false
-∂∂ 
-,
-∂∂ 
-$str
-∂∂ 7
-,
-∂∂7 8
-null
-∂∂9 =
-)
-∂∂= >
-;
-∂∂> ?
-}
-∑∑ 
-if
-ππ 
-(
-ππ 
-!
-ππ 
-user
-ππ 
+§§ 
 .
-ππ $
+§§ $
 RefreshTokenExpiryTime
-ππ ,
+§§ '
+=
+§§( )
+DateTime
+§§* 2
 .
-ππ, -
-HasValue
-ππ- 5
-||
-ππ6 8
+§§2 3
+UtcNow
+§§3 9
+.
+§§9 :
+AddDays
+§§: A
+(
+§§A B
+$num
+§§B C
+)
+§§C D
+;
+§§D E
+await
+¶¶ 
+_userRepository
+¶¶ !
+.
+¶¶! "
+UpdateAsync
+¶¶" -
+(
+¶¶- .
+user
+¶¶. 2
+)
+¶¶2 3
+;
+¶¶3 4
+await
+ßß 
+_userRepository
+ßß !
+.
+ßß! "
+SaveChangesAsync
+ßß" 2
+(
+ßß2 3
+)
+ßß3 4
+;
+ßß4 5
+return
+©© 
+(
+©© 
+true
+™™ 
+,
+™™ 
+$str
+´´ #
+,
+´´# $
+new
+¨¨ 
+AuthResponseDto
+¨¨ #
+{
+≠≠ 
+AccessToken
+ÆÆ 
+=
+ÆÆ  !
+accessToken
+ÆÆ" -
+,
+ÆÆ- .
+RefreshToken
+ØØ  
+=
+ØØ! "
+refreshToken
+ØØ# /
+,
+ØØ/ 0
+Email
+∞∞ 
+=
+∞∞ 
+user
+∞∞  
+.
+∞∞  !
+Email
+∞∞! &
+,
+∞∞& '
+Role
+±± 
+=
+±± 
+user
+±± 
+.
+±±  
+Role
+±±  $
+.
+±±$ %
+ToString
+±±% -
+(
+±±- .
+)
+±±. /
+,
+±±/ 0
+ReferenceId
+≤≤ 
+=
+≤≤  !
+user
+≤≤" &
+.
+≤≤& '
+ReferenceId
+≤≤' 2
+,
+≤≤2 3 
+MustChangePassword
+≥≥ &
+=
+≥≥' (
+user
+≥≥) -
+.
+≥≥- . 
+MustChangePassword
+≥≥. @
+}
+¥¥ 
+)
+¥¥ 
+;
+¥¥ 
+}
+µµ 	
+public
+∑∑ 
+async
+∑∑ 
+Task
+∑∑ 
+<
+∑∑ 
+(
+∑∑ 
+bool
+∑∑ 
+Success
+∑∑  '
+,
+∑∑' (
+string
+∑∑) /
+Message
+∑∑0 7
+,
+∑∑7 8
+AuthResponseDto
+∑∑9 H
+?
+∑∑H I
+Data
+∑∑J N
+)
+∑∑N O
+>
+∑∑O P
+RefreshTokenAsync
+∑∑Q b
+(
+∑∑b c
+RefreshTokenDto
+∏∏ 
+request
+∏∏ #
+)
+∏∏# $
+{
+ππ 	
+var
+∫∫ 
 user
 ∫∫ 
+=
+∫∫ 
+await
+ªª 
+_userRepository
+ªª %
 .
-∫∫ $
-RefreshTokenExpiryTime
-∫∫ +
-.
-∫∫+ ,
-Value
-∫∫, 1
-<=
-∫∫2 4
-DateTime
-∫∫5 =
-.
-∫∫= >
-UtcNow
-∫∫> D
-)
-∫∫D E
-{
-ªª 
-return
-ºº 
+ªª% &$
+GetByRefreshTokenAsync
+ªª& <
 (
-ºº 
-false
-ºº 
-,
-ºº 
-$str
-ºº ;
-,
-ºº; <
+ªª< =
+request
+ºº 
+.
+ºº 
+RefreshToken
+ºº (
+)
+ºº( )
+;
+ºº) *
+if
+ææ 
+(
+ææ 
+user
+ææ 
+==
+ææ 
 null
-ºº= A
+ææ 
 )
-ººA B
-;
-ººB C
-}
-ΩΩ 
-var
-øø 
-newAccessToken
-øø 
-=
-øø  
-GenerateToken
-øø! .
-(
-øø. /
-user
-øø/ 3
-)
-øø3 4
-;
-øø4 5
-var
-¡¡ 
-newRefreshToken
-¡¡ 
-=
-¡¡  !"
-GenerateRefreshToken
-¡¡" 6
-(
-¡¡6 7
-)
-¡¡7 8
-;
-¡¡8 9
-user
-√√ 
-.
-√√ 
-RefreshToken
-√√ 
-=
-√√ 
-newRefreshToken
-√√  /
-;
-√√/ 0
-user
-ƒƒ 
-.
-ƒƒ $
-RefreshTokenExpiryTime
-ƒƒ '
-=
-ƒƒ( )
-DateTime
-ƒƒ* 2
-.
-ƒƒ2 3
-UtcNow
-ƒƒ3 9
-.
-ƒƒ9 :
-AddDays
-ƒƒ: A
-(
-ƒƒA B
-$num
-ƒƒB C
-)
-ƒƒC D
-;
-ƒƒD E
-await
-∆∆ 
-_userRepository
-∆∆ !
-.
-∆∆! "
-UpdateAsync
-∆∆" -
-(
-∆∆- .
-user
-∆∆. 2
-)
-∆∆2 3
-;
-∆∆3 4
-await
-«« 
-_userRepository
-«« !
-.
-««! "
-SaveChangesAsync
-««" 2
-(
-««2 3
-)
-««3 4
-;
-««4 5
+ææ 
+{
+øø 
 return
-…… 
+¿¿ 
 (
-…… 
-true
-   
+¿¿ 
+false
+¿¿ 
 ,
-   
+¿¿ 
 $str
-ÀÀ /
+¿¿ 7
 ,
-ÀÀ/ 0
-new
-ÃÃ 
-AuthResponseDto
-ÃÃ #
-{
-ÕÕ 
-AccessToken
-ŒŒ 
-=
-ŒŒ  !
-newAccessToken
-ŒŒ" 0
-,
-ŒŒ0 1
-RefreshToken
-œœ  
-=
-œœ! "
-newRefreshToken
-œœ# 2
-,
-œœ2 3
-Email
-–– 
-=
-–– 
-user
-––  
-.
-––  !
-Email
-––! &
-,
-––& '
-Role
-—— 
-=
-—— 
-user
-—— 
-.
-——  
-Role
-——  $
-.
-——$ %
-ToString
-——% -
-(
-——- .
+¿¿7 8
+null
+¿¿9 =
 )
-——. /
-}
-““ 
-)
-““ 
+¿¿= >
 ;
-““ 
+¿¿> ?
 }
-”” 	
-private
-’’ 
-string
-’’ 
-GenerateToken
-’’ $
+¡¡ 
+if
+√√ 
 (
-’’$ %
-User
-’’% )
+√√ 
+!
+√√ 
 user
-’’* .
-)
-’’. /
-{
-÷÷ 	
-var
-◊◊ 
-jwtSettings
-◊◊ 
-=
-◊◊ 
-_configuration
-◊◊ ,
+√√ 
 .
-◊◊, -
+√√ $
+RefreshTokenExpiryTime
+√√ ,
+.
+√√, -
+HasValue
+√√- 5
+||
+√√6 8
+user
+ƒƒ 
+.
+ƒƒ $
+RefreshTokenExpiryTime
+ƒƒ +
+.
+ƒƒ+ ,
+Value
+ƒƒ, 1
+<=
+ƒƒ2 4
+DateTime
+ƒƒ5 =
+.
+ƒƒ= >
+UtcNow
+ƒƒ> D
+)
+ƒƒD E
+{
+≈≈ 
+return
+∆∆ 
+(
+∆∆ 
+false
+∆∆ 
+,
+∆∆ 
+$str
+∆∆ ;
+,
+∆∆; <
+null
+∆∆= A
+)
+∆∆A B
+;
+∆∆B C
+}
+«« 
+var
+…… 
+newAccessToken
+…… 
+=
+……  
+GenerateToken
+……! .
+(
+……. /
+user
+……/ 3
+)
+……3 4
+;
+……4 5
+var
+   
+newRefreshToken
+   
+=
+    !"
+GenerateRefreshToken
+  " 6
+(
+  6 7
+)
+  7 8
+;
+  8 9
+user
+ÃÃ 
+.
+ÃÃ 
+RefreshToken
+ÃÃ 
+=
+ÃÃ 
+newRefreshToken
+ÃÃ  /
+;
+ÃÃ/ 0
+user
+ÕÕ 
+.
+ÕÕ $
+RefreshTokenExpiryTime
+ÕÕ '
+=
+ÕÕ( )
+DateTime
+ÕÕ* 2
+.
+ÕÕ2 3
+UtcNow
+ÕÕ3 9
+.
+ÕÕ9 :
+AddDays
+ÕÕ: A
+(
+ÕÕA B
+$num
+ÕÕB C
+)
+ÕÕC D
+;
+ÕÕD E
+await
+œœ 
+_userRepository
+œœ !
+.
+œœ! "
+UpdateAsync
+œœ" -
+(
+œœ- .
+user
+œœ. 2
+)
+œœ2 3
+;
+œœ3 4
+await
+–– 
+_userRepository
+–– !
+.
+––! "
+SaveChangesAsync
+––" 2
+(
+––2 3
+)
+––3 4
+;
+––4 5
+return
+““ 
+(
+““ 
+true
+”” 
+,
+”” 
+$str
+‘‘ /
+,
+‘‘/ 0
+new
+’’ 
+AuthResponseDto
+’’ #
+{
+÷÷ 
+AccessToken
+◊◊ 
+=
+◊◊  !
+newAccessToken
+◊◊" 0
+,
+◊◊0 1
+RefreshToken
+ÿÿ  
+=
+ÿÿ! "
+newRefreshToken
+ÿÿ# 2
+,
+ÿÿ2 3
+Email
+ŸŸ 
+=
+ŸŸ 
+user
+ŸŸ  
+.
+ŸŸ  !
+Email
+ŸŸ! &
+,
+ŸŸ& '
+Role
+⁄⁄ 
+=
+⁄⁄ 
+user
+⁄⁄ 
+.
+⁄⁄  
+Role
+⁄⁄  $
+.
+⁄⁄$ %
+ToString
+⁄⁄% -
+(
+⁄⁄- .
+)
+⁄⁄. /
+,
+⁄⁄/ 0
+ReferenceId
+€€ 
+=
+€€  !
+user
+€€" &
+.
+€€& '
+ReferenceId
+€€' 2
+,
+€€2 3 
+MustChangePassword
+‹‹ &
+=
+‹‹' (
+user
+‹‹) -
+.
+‹‹- . 
+MustChangePassword
+‹‹. @
+}
+›› 
+)
+›› 
+;
+›› 
+}
+ﬁﬁ 	
+public
+‡‡ 
+async
+‡‡ 
+Task
+‡‡ 
+<
+‡‡ 
+(
+‡‡ 
+bool
+‡‡ 
+Success
+‡‡  '
+,
+‡‡' (
+string
+‡‡) /
+Message
+‡‡0 7
+)
+‡‡7 8
+>
+‡‡8 9!
+ChangePasswordAsync
+‡‡: M
+(
+‡‡M N
+string
+·· 
+
+email
+·· 
+,
+·· 
+ChangePasswordDto
+‚‚ 
+request
+‚‚ 
+)
+‚‚ 
+{
+„„ 	
+if
+‰‰ 
+(
+‰‰ 
+string
+‰‰ 
+.
+‰‰  
+IsNullOrWhiteSpace
+‰‰ )
+(
+‰‰) *
+email
+‰‰* /
+)
+‰‰/ 0
+)
+‰‰0 1
+{
+ÂÂ 
+return
+ÊÊ 
+(
+ÊÊ 
+false
+ÊÊ 
+,
+ÊÊ 
+$str
+ÊÊ <
+)
+ÊÊ< =
+;
+ÊÊ= >
+}
+ÁÁ 
+if
+ÈÈ 
+(
+ÈÈ 
+string
+ÈÈ 
+.
+ÈÈ  
+IsNullOrWhiteSpace
+ÈÈ )
+(
+ÈÈ) *
+request
+ÈÈ* 1
+.
+ÈÈ1 2
+CurrentPassword
+ÈÈ2 A
+)
+ÈÈA B
+)
+ÈÈB C
+{
+ÍÍ 
+return
+ÎÎ 
+(
+ÎÎ 
+false
+ÎÎ 
+,
+ÎÎ 
+$str
+ÎÎ >
+)
+ÎÎ> ?
+;
+ÎÎ? @
+}
+ÏÏ 
+if
+ÓÓ 
+(
+ÓÓ 
+string
+ÓÓ 
+.
+ÓÓ  
+IsNullOrWhiteSpace
+ÓÓ )
+(
+ÓÓ) *
+request
+ÓÓ* 1
+.
+ÓÓ1 2
+NewPassword
+ÓÓ2 =
+)
+ÓÓ= >
+)
+ÓÓ> ?
+{
+ÔÔ 
+return
+ 
+(
+ 
+false
+ 
+,
+ 
+$str
+ :
+)
+: ;
+;
+; <
+}
+ÒÒ 
+if
+ÛÛ 
+(
+ÛÛ 
+string
+ÛÛ 
+.
+ÛÛ  
+IsNullOrWhiteSpace
+ÛÛ )
+(
+ÛÛ) *
+request
+ÛÛ* 1
+.
+ÛÛ1 2 
+ConfirmNewPassword
+ÛÛ2 D
+)
+ÛÛD E
+)
+ÛÛE F
+{
+ÙÙ 
+return
+ıı 
+(
+ıı 
+false
+ıı 
+,
+ıı 
+$str
+ıı >
+)
+ıı> ?
+;
+ıı? @
+}
+ˆˆ 
+if
+¯¯ 
+(
+¯¯ 
+request
+¯¯ 
+.
+¯¯ 
+NewPassword
+¯¯ #
+!=
+¯¯$ &
+request
+¯¯' .
+.
+¯¯. / 
+ConfirmNewPassword
+¯¯/ A
+)
+¯¯A B
+{
+˘˘ 
+return
+˙˙ 
+(
+˙˙ 
+false
+˙˙ 
+,
+˙˙ 
+$str
+˙˙ P
+)
+˙˙P Q
+;
+˙˙Q R
+}
+˚˚ 
+if
+˝˝ 
+(
+˝˝ 
+request
+˝˝ 
+.
+˝˝ 
+CurrentPassword
+˝˝ '
+==
+˝˝( *
+request
+˝˝+ 2
+.
+˝˝2 3
+NewPassword
+˝˝3 >
+)
+˝˝> ?
+{
+˛˛ 
+return
+ˇˇ 
+(
+ˇˇ 
+false
+ˇˇ 
+,
+ˇˇ 
+$str
+ˇˇ U
+)
+ˇˇU V
+;
+ˇˇV W
+}
+ÄÄ 
+var
+ÇÇ '
+passwordValidationMessage
+ÇÇ )
+=
+ÇÇ* +&
+ValidatePasswordStrength
+ÇÇ, D
+(
+ÇÇD E
+request
+ÇÇE L
+.
+ÇÇL M
+NewPassword
+ÇÇM X
+)
+ÇÇX Y
+;
+ÇÇY Z
+if
+ÑÑ 
+(
+ÑÑ 
+!
+ÑÑ 
+string
+ÑÑ 
+.
+ÑÑ  
+IsNullOrWhiteSpace
+ÑÑ *
+(
+ÑÑ* +'
+passwordValidationMessage
+ÑÑ+ D
+)
+ÑÑD E
+)
+ÑÑE F
+{
+ÖÖ 
+return
+ÜÜ 
+(
+ÜÜ 
+false
+ÜÜ 
+,
+ÜÜ '
+passwordValidationMessage
+ÜÜ 8
+)
+ÜÜ8 9
+;
+ÜÜ9 :
+}
+áá 
+var
+ââ 
+user
+ââ 
+=
+ââ 
+await
+ää 
+_userRepository
+ää %
+.
+ää% &
+GetByEmailAsync
+ää& 5
+(
+ää5 6
+email
+ãã 
+.
+ãã 
+Trim
+ãã 
+(
+ãã 
+)
+ãã  
+.
+ãã  !
+ToLower
+ãã! (
+(
+ãã( )
+)
+ãã) *
+)
+ãã* +
+;
+ãã+ ,
+if
+çç 
+(
+çç 
+user
+çç 
+==
+çç 
+null
+çç 
+)
+çç 
+{
+éé 
+return
+èè 
+(
+èè 
+false
+èè 
+,
+èè 
+$str
+èè 8
+)
+èè8 9
+;
+èè9 :
+}
+êê 
+var
+íí !
+currentPasswordHash
+íí #
+=
+íí$ %
+HashPassword
+íí& 2
+(
+íí2 3
+request
+íí3 :
+.
+íí: ;
+CurrentPassword
+íí; J
+)
+ííJ K
+;
+ííK L
+if
+îî 
+(
+îî 
+user
+îî 
+.
+îî 
+PasswordHash
+îî !
+!=
+îî" $!
+currentPasswordHash
+îî% 8
+)
+îî8 9
+{
+ïï 
+return
+ññ 
+(
+ññ 
+false
+ññ 
+,
+ññ 
+$str
+ññ ?
+)
+ññ? @
+;
+ññ@ A
+}
+óó 
+user
+ôô 
+.
+ôô 
+PasswordHash
+ôô 
+=
+ôô 
+HashPassword
+ôô  ,
+(
+ôô, -
+request
+ôô- 4
+.
+ôô4 5
+NewPassword
+ôô5 @
+)
+ôô@ A
+;
+ôôA B
+user
+õõ 
+.
+õõ  
+MustChangePassword
+õõ #
+=
+õõ$ %
+false
+õõ& +
+;
+õõ+ ,
+await
+ùù 
+_userRepository
+ùù !
+.
+ùù! "
+UpdateAsync
+ùù" -
+(
+ùù- .
+user
+ùù. 2
+)
+ùù2 3
+;
+ùù3 4
+await
+ûû 
+_userRepository
+ûû !
+.
+ûû! "
+SaveChangesAsync
+ûû" 2
+(
+ûû2 3
+)
+ûû3 4
+;
+ûû4 5
+return
+†† 
+(
+†† 
+true
+†† 
+,
+†† 
+$str
+†† :
+)
+††: ;
+;
+††; <
+}
+°° 	
+private
+££ 
+static
+££ 
+string
+££ 
+?
+££ &
+ValidatePasswordStrength
+££ 7
+(
+££7 8
+string
+££8 >
+password
+££? G
+)
+££G H
+{
+§§ 	
+if
+•• 
+(
+•• 
+password
+•• 
+.
+•• 
+Length
+•• 
+<
+••  !
+$num
+••" #
+)
+••# $
+{
+¶¶ 
+return
+ßß 
+$str
+ßß E
+;
+ßßE F
+}
+®® 
+if
+™™ 
+(
+™™ 
+!
+™™ 
+password
+™™ 
+.
+™™ 
+Any
+™™ 
+(
+™™ 
+char
+™™ "
+.
+™™" #
+IsUpper
+™™# *
+)
+™™* +
+)
+™™+ ,
+{
+´´ 
+return
+¨¨ 
+$str
+¨¨ M
+;
+¨¨M N
+}
+≠≠ 
+if
+ØØ 
+(
+ØØ 
+!
+ØØ 
+password
+ØØ 
+.
+ØØ 
+Any
+ØØ 
+(
+ØØ 
+char
+ØØ "
+.
+ØØ" #
+IsLower
+ØØ# *
+)
+ØØ* +
+)
+ØØ+ ,
+{
+∞∞ 
+return
+±± 
+$str
+±± M
+;
+±±M N
+}
+≤≤ 
+if
+¥¥ 
+(
+¥¥ 
+!
+¥¥ 
+password
+¥¥ 
+.
+¥¥ 
+Any
+¥¥ 
+(
+¥¥ 
+char
+¥¥ "
+.
+¥¥" #
+IsDigit
+¥¥# *
+)
+¥¥* +
+)
+¥¥+ ,
+{
+µµ 
+return
+∂∂ 
+$str
+∂∂ C
+;
+∂∂C D
+}
+∑∑ 
+if
+ππ 
+(
+ππ 
+!
+ππ 
+password
+ππ 
+.
+ππ 
+Any
+ππ 
+(
+ππ 
+ch
+ππ  
+=>
+ππ! #
+!
+ππ$ %
+char
+ππ% )
+.
+ππ) *
+IsLetterOrDigit
+ππ* 9
+(
+ππ9 :
+ch
+ππ: <
+)
+ππ< =
+)
+ππ= >
+)
+ππ> ?
+{
+∫∫ 
+return
+ªª 
+$str
+ªª N
+;
+ªªN O
+}
+ºº 
+return
+ææ 
+null
+ææ 
+;
+ææ 
+}
+øø 	
+private
+¡¡ 
+string
+¡¡ 
+GenerateToken
+¡¡ $
+(
+¡¡$ %
+User
+¡¡% )
+user
+¡¡* .
+)
+¡¡. /
+{
+¬¬ 	
+var
+√√ 
+jwtSettings
+√√ 
+=
+√√ 
+_configuration
+√√ ,
+.
+√√, -
 
 GetSection
-◊◊- 7
+√√- 7
 (
-◊◊7 8
+√√7 8
 $str
-◊◊8 =
+√√8 =
 )
-◊◊= >
+√√= >
 ;
-◊◊> ?
+√√> ?
 var
-ŸŸ 
+≈≈ 
 key
-ŸŸ 
+≈≈ 
 =
-ŸŸ 
+≈≈ 
 new
-ŸŸ "
+≈≈ "
 SymmetricSecurityKey
-ŸŸ .
+≈≈ .
 (
-ŸŸ. /
+≈≈. /
 Encoding
-⁄⁄ 
+∆∆ 
 .
-⁄⁄ 
+∆∆ 
 UTF8
-⁄⁄ 
+∆∆ 
 .
-⁄⁄ 
+∆∆ 
 GetBytes
-⁄⁄ &
+∆∆ &
 (
-⁄⁄& '
+∆∆& '
 jwtSettings
-⁄⁄' 2
+∆∆' 2
 [
-⁄⁄2 3
+∆∆2 3
 $str
-⁄⁄3 8
+∆∆3 8
 ]
-⁄⁄8 9
+∆∆8 9
 !
-⁄⁄9 :
+∆∆9 :
 )
-⁄⁄: ;
+∆∆: ;
 )
-⁄⁄; <
+∆∆; <
 ;
-⁄⁄< =
+∆∆< =
 var
-‹‹ 
+»» 
 credentials
-‹‹ 
+»» 
 =
-‹‹ 
+»» 
 new
-‹‹ ! 
+»» ! 
 SigningCredentials
-‹‹" 4
+»»" 4
 (
-‹‹4 5
+»»4 5
 key
-›› 
+…… 
 ,
-››  
+……  
 SecurityAlgorithms
-ﬁﬁ "
+   "
 .
-ﬁﬁ" #
+  " #
 
 HmacSha256
-ﬁﬁ# -
+  # -
 )
-ﬁﬁ- .
+  - .
 ;
-ﬁﬁ. /
+  . /
 var
-‡‡ 
+ÃÃ 
 claims
-‡‡ 
+ÃÃ 
 =
-‡‡ 
+ÃÃ 
 new
-‡‡ 
+ÃÃ 
 List
-‡‡ !
+ÃÃ !
 <
-‡‡! "
+ÃÃ! "
 Claim
-‡‡" '
+ÃÃ" '
 >
-‡‡' (
+ÃÃ' (
 {
-·· 
+ÕÕ 
 new
-‚‚ 
+ŒŒ 
 Claim
-‚‚ 
+ŒŒ 
 (
-‚‚ %
+ŒŒ %
 JwtRegisteredClaimNames
-„„ +
+œœ +
 .
-„„+ ,
+œœ+ ,
 Sub
-„„, /
+œœ, /
 ,
-„„/ 0
+œœ/ 0
 user
-‰‰ 
+–– 
 .
-‰‰ 
+–– 
 UserId
-‰‰ 
+–– 
 .
-‰‰  
+––  
 ToString
-‰‰  (
+––  (
 (
-‰‰( )
+––( )
 )
-‰‰) *
+––) *
 )
-‰‰* +
+––* +
 ,
-‰‰+ ,
+––+ ,
 new
-ÊÊ 
+““ 
 Claim
-ÊÊ 
+““ 
 (
-ÊÊ %
+““ %
 JwtRegisteredClaimNames
-ÁÁ +
+”” +
 .
-ÁÁ+ ,
+””+ ,
 Email
-ÁÁ, 1
+””, 1
 ,
-ÁÁ1 2
+””1 2
 user
-ËË 
+‘‘ 
 .
-ËË 
+‘‘ 
 Email
-ËË 
+‘‘ 
 )
-ËË 
+‘‘ 
 ,
-ËË  
+‘‘  
 new
-ÍÍ 
+÷÷ 
 Claim
-ÍÍ 
+÷÷ 
 (
-ÍÍ %
+÷÷ %
 JwtRegisteredClaimNames
-ÎÎ +
+◊◊ +
 .
-ÎÎ+ ,
+◊◊+ ,
 Jti
-ÎÎ, /
+◊◊, /
 ,
-ÎÎ/ 0
+◊◊/ 0
 Guid
-ÏÏ 
+ÿÿ 
 .
-ÏÏ 
+ÿÿ 
 NewGuid
-ÏÏ  
+ÿÿ  
 (
-ÏÏ  !
+ÿÿ  !
 )
-ÏÏ! "
+ÿÿ! "
 .
-ÏÏ" #
+ÿÿ" #
 ToString
-ÏÏ# +
+ÿÿ# +
 (
-ÏÏ+ ,
+ÿÿ+ ,
 )
-ÏÏ, -
+ÿÿ, -
 )
-ÏÏ- .
+ÿÿ- .
 ,
-ÏÏ. /
+ÿÿ. /
 new
-ÓÓ 
+⁄⁄ 
 Claim
-ÓÓ 
+⁄⁄ 
 (
-ÓÓ 
+⁄⁄ 
 
 ClaimTypes
-ÔÔ 
+€€ 
 .
-ÔÔ 
+€€ 
 NameIdentifier
-ÔÔ -
+€€ -
 ,
-ÔÔ- .
+€€- .
 user
- 
+‹‹ 
 .
- 
+‹‹ 
 UserId
- 
+‹‹ 
 .
-  
+‹‹  
 ToString
-  (
+‹‹  (
 (
-( )
+‹‹( )
 )
-) *
+‹‹) *
 )
-* +
+‹‹* +
 ,
-+ ,
+‹‹+ ,
 new
-ÚÚ 
+ﬁﬁ 
 Claim
-ÚÚ 
+ﬁﬁ 
 (
-ÚÚ 
+ﬁﬁ 
 
 ClaimTypes
-ÛÛ 
+ﬂﬂ 
 .
-ÛÛ 
+ﬂﬂ 
 Role
-ÛÛ #
+ﬂﬂ #
 ,
-ÛÛ# $
+ﬂﬂ# $
 user
-ÙÙ 
+‡‡ 
 .
-ÙÙ 
+‡‡ 
 Role
-ÙÙ 
+‡‡ 
 .
-ÙÙ 
+‡‡ 
 ToString
-ÙÙ &
+‡‡ &
 (
-ÙÙ& '
+‡‡& '
 )
-ÙÙ' (
+‡‡' (
 )
-ÙÙ( )
-}
-ıı 
-;
-ıı 
-var
-˜˜ 
-token
-˜˜ 
-=
-˜˜ 
+‡‡( )
+,
+‡‡) *
 new
-˜˜ 
-JwtSecurityToken
-˜˜ ,
+‚‚ 
+Claim
+‚‚ 
 (
-˜˜, -
+‚‚ 
+$str
+„„ !
+,
+„„! "
+user
+‰‰ 
+.
+‰‰ 
+ReferenceId
+‰‰ $
+.
+‰‰$ %
+ToString
+‰‰% -
+(
+‰‰- .
+)
+‰‰. /
+)
+‰‰/ 0
+,
+‰‰0 1
+new
+ÊÊ 
+Claim
+ÊÊ 
+(
+ÊÊ 
+$str
+ÁÁ (
+,
+ÁÁ( )
+user
+ËË 
+.
+ËË  
+MustChangePassword
+ËË +
+.
+ËË+ ,
+ToString
+ËË, 4
+(
+ËË4 5
+)
+ËË5 6
+)
+ËË6 7
+}
+ÈÈ 
+;
+ÈÈ 
+var
+ÎÎ 
+token
+ÎÎ 
+=
+ÎÎ 
+new
+ÎÎ 
+JwtSecurityToken
+ÎÎ ,
+(
+ÎÎ, -
 issuer
-¯¯ 
+ÏÏ 
 :
-¯¯ 
+ÏÏ 
 jwtSettings
-¯¯ #
+ÏÏ #
 [
-¯¯# $
+ÏÏ# $
 $str
-¯¯$ ,
+ÏÏ$ ,
 ]
-¯¯, -
+ÏÏ, -
 ,
-¯¯- .
+ÏÏ- .
 audience
-˘˘ 
+ÌÌ 
 :
-˘˘ 
+ÌÌ 
 jwtSettings
-˘˘ %
+ÌÌ %
 [
-˘˘% &
+ÌÌ% &
 $str
-˘˘& 0
+ÌÌ& 0
 ]
-˘˘0 1
+ÌÌ0 1
 ,
-˘˘1 2
+ÌÌ1 2
 claims
-˙˙ 
+ÓÓ 
 :
-˙˙ 
+ÓÓ 
 claims
-˙˙ 
+ÓÓ 
 ,
-˙˙ 
+ÓÓ 
 expires
-˚˚ 
+ÔÔ 
 :
-˚˚ 
+ÔÔ 
 DateTime
-˚˚ !
+ÔÔ !
 .
-˚˚! "
+ÔÔ! "
 UtcNow
-˚˚" (
+ÔÔ" (
 .
-˚˚( )
+ÔÔ( )
 
 AddMinutes
-˚˚) 3
+ÔÔ) 3
 (
-˚˚3 4
+ÔÔ3 4
 int
-¸¸ 
+ 
 .
-¸¸ 
+ 
 Parse
-¸¸ 
+ 
 (
-¸¸ 
+ 
 jwtSettings
-¸¸ )
+ )
 [
-¸¸) *
+) *
 $str
-¸¸* H
+* H
 ]
-¸¸H I
+H I
 !
-¸¸I J
+I J
 )
-¸¸J K
+J K
 )
-¸¸K L
+K L
 ,
-¸¸L M 
+L M 
 signingCredentials
-˝˝ "
+ÒÒ "
 :
-˝˝" #
+ÒÒ" #
 credentials
-˝˝$ /
+ÒÒ$ /
 )
-˝˝/ 0
+ÒÒ/ 0
 ;
-˝˝0 1
+ÒÒ0 1
 return
-ˇˇ 
+ÛÛ 
 new
-ˇˇ %
+ÛÛ %
 JwtSecurityTokenHandler
-ˇˇ .
+ÛÛ .
 (
-ˇˇ. /
+ÛÛ. /
 )
-ˇˇ/ 0
+ÛÛ/ 0
 .
-ÄÄ 
+ÙÙ 
 
 WriteToken
-ÄÄ 
+ÙÙ 
 (
-ÄÄ 
+ÙÙ 
 token
-ÄÄ !
+ÙÙ !
 )
-ÄÄ! "
+ÙÙ! "
 ;
-ÄÄ" #
+ÙÙ" #
 }
-ÅÅ 	
+ıı 	
 private
-ÉÉ 
+˜˜ 
 static
-ÉÉ 
+˜˜ 
 string
-ÉÉ "
+˜˜ "
 GenerateRefreshToken
-ÉÉ 2
+˜˜ 2
 (
-ÉÉ2 3
+˜˜2 3
 )
-ÉÉ3 4
+˜˜3 4
 {
-ÑÑ 	
+¯¯ 	
 return
-ÖÖ 
+˘˘ 
 Convert
-ÖÖ 
+˘˘ 
 .
-ÖÖ 
+˘˘ 
 ToBase64String
-ÖÖ )
+˘˘ )
 (
-ÖÖ) *#
+˘˘) *#
 RandomNumberGenerator
-ÜÜ %
+˙˙ %
 .
-ÜÜ% &
+˙˙% &
 GetBytes
-ÜÜ& .
+˙˙& .
 (
-ÜÜ. /
+˙˙. /
 $num
-ÜÜ/ 1
+˙˙/ 1
 )
-ÜÜ1 2
+˙˙1 2
 )
-ÜÜ2 3
+˙˙2 3
 ;
-ÜÜ3 4
+˙˙3 4
 }
-áá 	
+˚˚ 	
 private
-ââ 
+˝˝ 
 static
-ââ 
+˝˝ 
 string
-ââ 
+˝˝ 
 HashPassword
-ââ *
+˝˝ *
 (
-ââ* +
+˝˝* +
 string
-ââ+ 1
+˝˝+ 1
 password
-ââ2 :
+˝˝2 :
 )
-ââ: ;
+˝˝: ;
 {
-ää 	
+˛˛ 	
 using
-ãã 
+ˇˇ 
 var
-ãã 
+ˇˇ 
 sha256
-ãã 
+ˇˇ 
 =
-ãã 
+ˇˇ 
 SHA256
-ãã %
+ˇˇ %
 .
-ãã% &
+ˇˇ% &
 Create
-ãã& ,
+ˇˇ& ,
 (
-ãã, -
+ˇˇ, -
 )
-ãã- .
+ˇˇ- .
 ;
-ãã. /
-byte
-çç 
-[
-çç 
-]
-çç 
+ˇˇ. /
+var
+ÅÅ 
 bytes
-çç 
+ÅÅ 
 =
-çç 
+ÅÅ 
 Encoding
-çç #
+ÅÅ  
 .
-çç# $
+ÅÅ  !
 UTF8
-çç$ (
+ÅÅ! %
 .
-çç( )
+ÅÅ% &
 GetBytes
-çç) 1
+ÅÅ& .
 (
-çç1 2
+ÅÅ. /
 password
-çç2 :
+ÅÅ/ 7
 )
-çç: ;
+ÅÅ7 8
 ;
-çç; <
-byte
-èè 
-[
-èè 
-]
-èè 
+ÅÅ8 9
+var
+ÇÇ 
 hash
-èè 
+ÇÇ 
 =
-èè 
+ÇÇ 
 sha256
-èè  
+ÇÇ 
 .
-èè  !
+ÇÇ 
 ComputeHash
-èè! ,
+ÇÇ )
 (
-èè, -
+ÇÇ) *
 bytes
-èè- 2
+ÇÇ* /
 )
-èè2 3
+ÇÇ/ 0
 ;
-èè3 4
+ÇÇ0 1
 return
-ëë 
+ÑÑ 
 Convert
-ëë 
+ÑÑ 
 .
-ëë 
+ÑÑ 
 ToBase64String
-ëë )
+ÑÑ )
 (
-ëë) *
+ÑÑ) *
 hash
-ëë* .
+ÑÑ* .
 )
-ëë. /
+ÑÑ. /
 ;
-ëë/ 0
+ÑÑ/ 0
 }
-íí 	
+ÖÖ 	
 }
-ìì 
-}îî ∫ú
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\AppointmentService.cs
-	namespace 	
-S3_HealthAxisApi
+ÜÜ 
+}áá ®¿
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Implementation\AppointmentService.cs
+	namespace		 	
+S3_HealthAxisApi		
  
-. 
-Services #
-.# $
-Implementation$ 2
-{		 
-public
+.		 
+Services		 #
+.		# $
+Implementation		$ 2
+{
 
- 
+ 
+public 
 
-class
-
- 
-AppointmentService
-
- #
-:
-
-$ %
-IAppointmentService
-
-& 9
-{ 
-private 
-readonly "
-IAppointmentRepository /"
-_appointmentRepository0 F
-;F G
+class 
+AppointmentService #
+:$ %
+IAppointmentService& 9
+{ 
 private 
-readonly 
-IPatientRepository +
-_patientRepository, >
-;> ?
+readonly "
+IAppointmentRepository /"
+_appointmentRepository0 F
+;F G
 private 
-readonly 
-IDoctorRepository *
-_doctorRepository+ <
-;< =
-public 
-AppointmentService !
-(! ""
-IAppointmentRepository "!
-appointmentRepository# 8
-,8 9
-IPatientRepository 
-patientRepository 0
-,0 1
-IDoctorRepository 
-doctorRepository .
-). /
-{ 	"
-_appointmentRepository "
-=# $!
-appointmentRepository% :
-;: ;
-_patientRepository 
-=  
-patientRepository! 2
-;2 3
-_doctorRepository 
-= 
-doctorRepository  0
-;0 1
-} 	
-public 
-async 
-Task 
-< 
-IEnumerable %
-<% &!
-AppointmentDetailsDto& ;
->; <
->< =
-GetAllAsync> I
-(I J
-)J K
-{ 	
-var 
-appointments 
-= 
-await $"
-_appointmentRepository% ;
-.; <
-GetAllAsync< G
-(G H
-)H I
-;I J
-return 
-appointments 
-.  
-Select  &
-(& '&
-MapToAppointmentDetailsDto' A
-)A B
-;B C
-}   	
-public"" 
-async"" 
-Task"" 
-<"" !
-AppointmentDetailsDto"" /
-?""/ 0
->""0 1
-GetByIdAsync""2 >
-(""> ?
-int""? B
-id""C E
-)""E F
-{## 	
-var$$ 
-appointment$$ 
-=$$ 
-await$$ #"
-_appointmentRepository$$$ :
-.$$: ;
-GetByIdAsync$$; G
-($$G H
-id$$H J
-)$$J K
-;$$K L
-if&& 
-(&& 
-appointment&& 
-==&& 
-null&& #
-)&&# $
-return'' 
-null'' 
-;'' 
-return)) &
-MapToAppointmentDetailsDto)) -
-())- .
-appointment)). 9
-)))9 :
-;)): ;
-}** 	
-public,, 
-async,, 
-Task,, 
-<,, 
-IEnumerable,, %
-<,,% &(
-PatientAppointmentHistoryDto,,& B
->,,B C
->,,C D"
-GetPatientHistoryAsync,,E [
-(,,[ \
-int,,\ _
-	patientId,,` i
-),,i j
-{-- 	
-var.. 
-appointments.. 
-=.. 
-await.. $"
-_appointmentRepository..% ;
-...; <
-GetByPatientIdAsync..< O
-(..O P
-	patientId..P Y
-)..Y Z
-;..Z [
-return00 
-appointments00 
-.00  
-Select00  &
-(00& '
-a00' (
-=>00) +
-new00, /(
-PatientAppointmentHistoryDto000 L
-{11 
-AppointmentId22 
-=22 
-a22  !
-.22! "
-AppointmentId22" /
-,22/ 0
-ScheduledDate33 
+readonly 
+IPatientRepository +
+_patientRepository, >
+;> ?
+private 
+readonly 
+IDoctorRepository *
+_doctorRepository+ <
+;< =
+public 
+AppointmentService !
+(! ""
+IAppointmentRepository "!
+appointmentRepository# 8
+,8 9
+IPatientRepository 
+patientRepository 0
+,0 1
+IDoctorRepository 
+doctorRepository .
+). /
+{ 	"
+_appointmentRepository "
+=# $!
+appointmentRepository% :
+;: ;
+_patientRepository 
+=  
+patientRepository! 2
+;2 3
+_doctorRepository 
+= 
+doctorRepository  0
+;0 1
+} 	
+public 
+async 
+Task 
+< 
+IEnumerable %
+<% &!
+AppointmentDetailsDto& ;
+>; <
+>< =
+GetAllAsync> I
+(I J
+)J K
+{ 	
+var 
+appointments 
+= 
+await $"
+_appointmentRepository% ;
+.; <
+GetAllAsync< G
+(G H
+)H I
+;I J
+return   
+appointments   
+.    
+Select    &
+(  & '&
+MapToAppointmentDetailsDto  ' A
+)  A B
+;  B C
+}!! 	
+public## 
+async## 
+Task## 
+<## !
+AppointmentDetailsDto## /
+?##/ 0
+>##0 1
+GetByIdAsync##2 >
+(##> ?
+int##? B
+id##C E
+)##E F
+{$$ 	
+var%% 
+appointment%% 
+=%% 
+await%% #"
+_appointmentRepository%%$ :
+.%%: ;
+GetByIdAsync%%; G
+(%%G H
+id%%H J
+)%%J K
+;%%K L
+if'' 
+('' 
+appointment'' 
+=='' 
+null'' #
+)''# $
+return(( 
+null(( 
+;(( 
+return** &
+MapToAppointmentDetailsDto** -
+(**- .
+appointment**. 9
+)**9 :
+;**: ;
+}++ 	
+public-- 
+async-- 
+Task-- 
+<-- 
+IEnumerable-- %
+<--% &(
+PatientAppointmentHistoryDto--& B
+>--B C
+>--C D"
+GetPatientHistoryAsync--E [
+(--[ \
+int--\ _
+	patientId--` i
+)--i j
+{.. 	
+var// 
+appointments// 
+=// 
+await// $"
+_appointmentRepository//% ;
+.//; <
+GetByPatientIdAsync//< O
+(//O P
+	patientId//P Y
+)//Y Z
+;//Z [
+return11 
+appointments11 
+.11  
+Select11  &
+(11& '
+a11' (
+=>11) +
+new11, /(
+PatientAppointmentHistoryDto110 L
+{22 
+AppointmentId33 
 =33 
 a33  !
 .33! "
-ScheduledDate33" /
-,33/ 0
-TimeSlot44 
-=44 
-(44 
-int44 
-)44  
+AppointmentId33" /
+,33/ 0
+ScheduledDate44 
+=44 
 a44  !
-.44! "
-TimeSlot44" *
-,44* +
-DoctorId55 
+.44! "
+ScheduledDate44" /
+,44/ 0
+TimeSlot55 
 =55 
-a55 
-.55 
-DoctorId55 %
-,55% &
+(55 
+int55 
+)55  
+a55  !
+.55! "
+TimeSlot55" *
+,55* +
+DoctorId66 
+=66 
+a66 
+.66 
+DoctorId66 %
+,66% &
 
-DoctorName66 
-=66 
-a66 
-.66 
-Doctor66 %
-.66% &
-FullName66& .
-,66. /
-Status77 
-=77 
-(77 
-int77 
-)77 
-a77 
-.77  
-Status77  &
-}88 
-)88 
-;88 
-}99 	
-public;; 
-async;; 
-Task;; 
-<;; 
-IEnumerable;; %
-<;;% &!
-DoctorScheduleItemDto;;& ;
->;;; <
->;;< ='
-GetDoctorTodayScheduleAsync;;> Y
-(;;Y Z
-int;;Z ]
-doctorId;;^ f
-);;f g
-{<< 	
-var== 
-appointments== 
-=== 
-await>> "
-_appointmentRepository>> ,
-.>>, -'
-GetDoctorTodayScheduleAsync>>- H
-(>>H I
-doctorId?? 
-,?? 
-DateOnly@@ 
-.@@ 
-FromDateTime@@ )
-(@@) *
-DateTime@@* 2
-.@@2 3
-Today@@3 8
-)@@8 9
-)@@9 :
-;@@: ;
-returnBB 
-appointmentsBB 
-.BB  
-SelectBB  &
-(BB& '!
-MapDoctorScheduleItemBB' <
-)BB< =
-;BB= >
-}CC 	
-publicEE 
-asyncEE 
-TaskEE 
-<EE 
-IEnumerableEE %
-<EE% &!
-DoctorScheduleItemDtoEE& ;
->EE; <
->EE< =&
-GetDoctorWeekScheduleAsyncEE> X
-(EEX Y
-intFF 
-doctorIdFF 
-,FF 
-DateOnlyGG 
-	startDateGG 
-,GG 
-DateOnlyHH 
-endDateHH 
-)HH 
-{II 	
-varJJ 
-appointmentsJJ 
-=JJ 
-awaitKK "
-_appointmentRepositoryKK ,
-.KK, -&
-GetDoctorWeekScheduleAsyncKK- G
-(KKG H
-doctorIdLL 
-,LL 
-	startDateMM 
-,MM 
-endDateNN 
-)NN 
-;NN 
-returnPP 
-appointmentsPP 
-.PP  
-SelectPP  &
-(PP& '!
-MapDoctorScheduleItemPP' <
-)PP< =
-;PP= >
-}QQ 	
-publicSS 
-asyncSS 
-TaskSS 
-<SS 
-AppointmentDtoSS (
->SS( )
-CreateAsyncSS* 5
-(SS5 6 
-CreateAppointmentDtoSS6 J
-dtoSSK N
-)SSN O
-{TT 	
-awaitUU  
-ValidateBookingAsyncUU &
-(UU& '
-dtoVV 
-.VV 
-	PatientIdVV 
-,VV 
+DoctorName77 
+=77 
+a77 
+.77 
+Doctor77 %
+.77% &
+FullName77& .
+,77. /
+Status88 
+=88 
+(88 
+int88 
+)88 
+a88 
+.88  
+Status88  &
+}99 
+)99 
+;99 
+}:: 	
+public<< 
+async<< 
+Task<< 
+<<< 
+IEnumerable<< %
+<<<% &!
+DoctorScheduleItemDto<<& ;
+><<; <
+><<< ='
+GetDoctorTodayScheduleAsync<<> Y
+(<<Y Z
+int<<Z ]
+doctorId<<^ f
+)<<f g
+{== 	
+var>> 
+appointments>> 
+=>> 
+await?? "
+_appointmentRepository?? ,
+.??, -'
+GetDoctorTodayScheduleAsync??- H
+(??H I
+doctorId@@ 
+,@@ 
+DateOnlyAA 
+.AA 
+FromDateTimeAA )
+(AA) *
+DateTimeAA* 2
+.AA2 3
+TodayAA3 8
+)AA8 9
+)AA9 :
+;AA: ;
+returnCC 
+appointmentsCC 
+.CC  
+SelectCC  &
+(CC& '!
+MapDoctorScheduleItemCC' <
+)CC< =
+;CC= >
+}DD 	
+publicFF 
+asyncFF 
+TaskFF 
+<FF 
+IEnumerableFF %
+<FF% &!
+DoctorScheduleItemDtoFF& ;
+>FF; <
+>FF< =&
+GetDoctorWeekScheduleAsyncFF> X
+(FFX Y
+intGG 
+doctorIdGG 
+,GG 
+DateOnlyHH 
+	startDateHH 
+,HH 
+DateOnlyII 
+endDateII 
+)II 
+{JJ 	
+varKK 
+appointmentsKK 
+=KK 
+awaitLL "
+_appointmentRepositoryLL ,
+.LL, -&
+GetDoctorWeekScheduleAsyncLL- G
+(LLG H
+doctorIdMM 
+,MM 
+	startDateNN 
+,NN 
+endDateOO 
+)OO 
+;OO 
+returnQQ 
+appointmentsQQ 
+.QQ  
+SelectQQ  &
+(QQ& '!
+MapDoctorScheduleItemQQ' <
+)QQ< =
+;QQ= >
+}RR 	
+publicTT 
+asyncTT 
+TaskTT 
+<TT 
+AppointmentDtoTT (
+>TT( )
+CreateAsyncTT* 5
+(TT5 6 
+CreateAppointmentDtoTT6 J
+dtoTTK N
+)TTN O
+{UU 	
+awaitVV  
+ValidateBookingAsyncVV &
+(VV& '
 dtoWW 
-.WW 
-DoctorIdWW 
-,WW 
+.WW 
+	PatientIdWW 
+,WW 
 dtoXX 
-.XX 
-ScheduledDateXX !
-,XX! "
+.XX 
+DoctorIdXX 
+,XX 
 dtoYY 
-.YY 
-TimeSlotYY 
-)YY 
-;YY 
-var[[ 
-appointment[[ 
-=[[ 
-new[[ !
-Appointment[[" -
-{\\ 
-	PatientId]] 
-=]] 
-dto]] 
-.]]  
-	PatientId]]  )
-,]]) *
-DoctorId^^ 
-=^^ 
-dto^^ 
-.^^ 
-DoctorId^^ '
-,^^' (
-ScheduledDate__ 
-=__ 
-dto__  #
-.__# $
-ScheduledDate__$ 1
-,__1 2
-TimeSlot`` 
-=`` 
-(`` 
-AppointmentTimeSlot`` /
-)``/ 0
-dto``0 3
-.``3 4
-TimeSlot``4 <
-,``< =
-Statusaa 
-=aa 
-AppointmentStatusaa *
-.aa* +
-Pendingaa+ 2
-}bb 
-;bb 
-awaitdd "
-_appointmentRepositorydd (
-.dd( )
-AddAsyncdd) 1
-(dd1 2
-appointmentdd2 =
-)dd= >
-;dd> ?
+.YY 
+ScheduledDateYY !
+,YY! "
+dtoZZ 
+.ZZ 
+TimeSlotZZ 
+)ZZ 
+;ZZ 
+var\\ 
+appointment\\ 
+=\\ 
+new\\ !
+Appointment\\" -
+{]] 
+	PatientId^^ 
+=^^ 
+dto^^ 
+.^^  
+	PatientId^^  )
+,^^) *
+DoctorId__ 
+=__ 
+dto__ 
+.__ 
+DoctorId__ '
+,__' (
+ScheduledDate`` 
+=`` 
+dto``  #
+.``# $
+ScheduledDate``$ 1
+,``1 2
+TimeSlotaa 
+=aa 
+(aa 
+AppointmentTimeSlotaa /
+)aa/ 0
+dtoaa0 3
+.aa3 4
+TimeSlotaa4 <
+,aa< =
+Statusbb 
+=bb 
+AppointmentStatusbb *
+.bb* +
+Pendingbb+ 2
+}cc 
+;cc 
 awaitee "
 _appointmentRepositoryee (
-.ee( )
-SaveChangesAsyncee) 9
-(ee9 :
-)ee: ;
-;ee; <
-returngg 
-MapToAppointmentDtogg &
-(gg& '
-appointmentgg' 2
-)gg2 3
-;gg3 4
-}hh 	
-publicjj 
-asyncjj 
-Taskjj 
-UpdateAsyncjj %
-(jj% &
-intjj& )
-idjj* ,
-,jj, - 
-UpdateAppointmentDtojj. B
-dtojjC F
-)jjF G
-{kk 	
-varll 
-appointmentll 
-=ll 
-awaitll #"
-_appointmentRepositoryll$ :
-.ll: ;
-GetByIdAsyncll; G
-(llG H
-idllH J
-)llJ K
-;llK L
-ifnn 
-(nn 
-appointmentnn 
-==nn 
-nullnn #
-)nn# $
-throwoo 
-newoo  
-KeyNotFoundExceptionoo .
-(oo. /
-$"oo/ 1
-$stroo1 =
-{oo= >
-idoo> @
-}oo@ A
-$strooA L
-"ooL M
-)ooM N
-;ooN O
-ifqq 
-(qq 
-appointmentqq 
-.qq 
-Statusqq "
-==qq# %
-AppointmentStatusqq& 7
-.qq7 8
-	Completedqq8 A
-)qqA B
-throwrr 
-newrr %
-InvalidOperationExceptionrr 3
-(rr3 4
-$strrr4 `
-)rr` a
-;rra b
-iftt 
-(tt 
-appointmenttt 
-.tt 
-Statustt "
-==tt# %
-AppointmentStatustt& 7
-.tt7 8
-	Cancelledtt8 A
-)ttA B
-throwuu 
-newuu %
-InvalidOperationExceptionuu 3
-(uu3 4
-$struu4 `
-)uu` a
-;uua b
-awaitww &
-ValidateUpdateBookingAsyncww ,
-(ww, -
-appointmentxx 
-.xx 
-AppointmentIdxx )
-,xx) *
+.ee( )
+AddAsyncee) 1
+(ee1 2
+appointmentee2 =
+)ee= >
+;ee> ?
+awaitff "
+_appointmentRepositoryff (
+.ff( )
+SaveChangesAsyncff) 9
+(ff9 :
+)ff: ;
+;ff; <
+returnhh 
+MapToAppointmentDtohh &
+(hh& '
+appointmenthh' 2
+)hh2 3
+;hh3 4
+}ii 	
+publickk 
+asynckk 
+Taskkk 
+UpdateAsynckk %
+(kk% &
+intkk& )
+idkk* ,
+,kk, - 
+UpdateAppointmentDtokk. B
+dtokkC F
+)kkF G
+{ll 	
+varmm 
+appointmentmm 
+=mm 
+awaitmm #"
+_appointmentRepositorymm$ :
+.mm: ;
+GetByIdAsyncmm; G
+(mmG H
+idmmH J
+)mmJ K
+;mmK L
+ifoo 
+(oo 
+appointmentoo 
+==oo 
+nulloo #
+)oo# $
+throwpp 
+newpp  
+KeyNotFoundExceptionpp .
+(pp. /
+$"pp/ 1
+$strpp1 =
+{pp= >
+idpp> @
+}pp@ A
+$strppA L
+"ppL M
+)ppM N
+;ppN O
+ifrr 
+(rr 
+appointmentrr 
+.rr 
+Statusrr "
+==rr# %
+AppointmentStatusrr& 7
+.rr7 8
+	Completedrr8 A
+)rrA B
+throwss 
+newss %
+InvalidOperationExceptionss 3
+(ss3 4
+$strss4 `
+)ss` a
+;ssa b
+ifuu 
+(uu 
+appointmentuu 
+.uu 
+Statusuu "
+==uu# %
+AppointmentStatusuu& 7
+.uu7 8
+	Cancelleduu8 A
+)uuA B
+throwvv 
+newvv %
+InvalidOperationExceptionvv 3
+(vv3 4
+$strvv4 `
+)vv` a
+;vva b
+awaitxx &
+ValidateUpdateBookingAsyncxx ,
+(xx, -
 appointmentyy 
-.yy 
-	PatientIdyy %
-,yy% &
-dtozz 
-.zz 
-DoctorIdzz 
-,zz 
+.yy 
+AppointmentIdyy )
+,yy) *
+appointmentzz 
+.zz 
+	PatientIdzz %
+,zz% &
 dto{{ 
-.{{ 
-ScheduledDate{{ !
-,{{! "
+.{{ 
+DoctorId{{ 
+,{{ 
 dto|| 
-.|| 
-TimeSlot|| 
-)|| 
-;|| 
-appointment~~ 
-.~~ 
-DoctorId~~  
-=~~! "
-dto~~# &
-.~~& '
-DoctorId~~' /
-;~~/ 0
+.|| 
+ScheduledDate|| !
+,||! "
+dto}} 
+.}} 
+TimeSlot}} 
+)}} 
+;}} 
 appointment 
-. 
-ScheduledDate %
-=& '
-dto( +
-.+ ,
-ScheduledDate, 9
-;9 :
+. 
+DoctorId  
+=! "
+dto# &
+.& '
+DoctorId' /
+;/ 0
 appointment
 ÄÄ 
 .
-ÄÄ 
-TimeSlot
-ÄÄ  
+ÄÄ 
+ScheduledDate
+ÄÄ %
 =
-ÄÄ! "
-(
-ÄÄ# $!
-AppointmentTimeSlot
-ÄÄ$ 7
-)
-ÄÄ7 8
+ÄÄ& '
 dto
-ÄÄ8 ;
+ÄÄ( +
 .
-ÄÄ; <
-TimeSlot
-ÄÄ< D
+ÄÄ+ ,
+ScheduledDate
+ÄÄ, 9
 ;
-ÄÄD E
-await
-ÇÇ $
-_appointmentRepository
-ÇÇ (
-.
-ÇÇ( )
-UpdateAsync
-ÇÇ) 4
-(
-ÇÇ4 5
+ÄÄ9 :
 appointment
-ÇÇ5 @
+ÅÅ 
+.
+ÅÅ 
+TimeSlot
+ÅÅ  
+=
+ÅÅ! "
+(
+ÅÅ# $!
+AppointmentTimeSlot
+ÅÅ$ 7
 )
-ÇÇ@ A
+ÅÅ7 8
+dto
+ÅÅ8 ;
+.
+ÅÅ; <
+TimeSlot
+ÅÅ< D
 ;
-ÇÇA B
+ÅÅD E
 await
 ÉÉ $
 _appointmentRepository
 ÉÉ (
 .
-ÉÉ( )
-SaveChangesAsync
-ÉÉ) 9
+ÉÉ( )
+UpdateAsync
+ÉÉ) 4
 (
-ÉÉ9 :
-)
-ÉÉ: ;
-;
-ÉÉ; <
-}
-ÑÑ 	
-public
-ÜÜ 
-async
-ÜÜ 
-Task
-ÜÜ 
-UpdateStatusAsync
-ÜÜ +
-(
-ÜÜ+ ,
-int
-ÜÜ, /
-id
-ÜÜ0 2
-,
-ÜÜ2 3(
-UpdateAppointmentStatusDto
-ÜÜ4 N
-dto
-ÜÜO R
-)
-ÜÜR S
-{
-áá 	
-var
-àà 
+ÉÉ4 5
 appointment
-àà 
-=
-àà 
+ÉÉ5 @
+)
+ÉÉ@ A
+;
+ÉÉA B
 await
-àà #$
+ÑÑ $
 _appointmentRepository
-àà$ :
+ÑÑ (
 .
-àà: ;
-GetByIdAsync
-àà; G
+ÑÑ( )
+SaveChangesAsync
+ÑÑ) 9
 (
-ààG H
-id
-ààH J
+ÑÑ9 :
 )
-ààJ K
+ÑÑ: ;
 ;
-ààK L
-if
-ää 
-(
-ää 
-appointment
-ää 
-==
-ää 
-null
-ää #
-)
-ää# $
-throw
-ãã 
-new
-ãã "
-KeyNotFoundException
-ãã .
-(
-ãã. /
-$"
-ãã/ 1
-$str
-ãã1 =
-{
-ãã= >
-id
-ãã> @
+ÑÑ; <
 }
-ãã@ A
-$str
-ããA L
-"
-ããL M
-)
-ããM N
-;
-ããN O
-if
-çç 
+ÖÖ 	
+public
+áá 
+async
+áá 
+Task
+áá 
+UpdateStatusAsync
+áá +
 (
-çç 
-!
-çç 
-Enum
-çç 
-.
-çç 
-	IsDefined
-çç 
-(
-çç  
-typeof
-çç  &
-(
-çç& '
-AppointmentStatus
-çç' 8
-)
-çç8 9
+áá+ ,
+int
+áá, /
+id
+áá0 2
 ,
-çç9 :
+áá2 3(
+UpdateAppointmentStatusDto
+áá4 N
 dto
-çç; >
-.
-çç> ?
-Status
-çç? E
+ááO R
 )
-ççE F
-)
-ççF G
-throw
-éé 
-new
-éé 
-ArgumentException
-éé +
-(
-éé+ ,
-$str
-éé, I
-)
-ééI J
-;
-ééJ K
-var
-êê 
-	newStatus
-êê 
-=
-êê 
-(
-êê 
-AppointmentStatus
-êê .
-)
-êê. /
-dto
-êê/ 2
-.
-êê2 3
-Status
-êê3 9
-;
-êê9 :
-if
-íí 
-(
-íí 
-appointment
-íí 
-.
-íí 
-Status
-íí "
-==
-íí# %
-AppointmentStatus
-íí& 7
-.
-íí7 8
-	Completed
-íí8 A
-)
-ííA B
-throw
-ìì 
-new
-ìì '
-InvalidOperationException
-ìì 3
-(
-ìì3 4
-$str
-ìì4 `
-)
-ìì` a
-;
-ììa b
-if
-ïï 
-(
-ïï 
-appointment
-ïï 
-.
-ïï 
-Status
-ïï "
-==
-ïï# %
-AppointmentStatus
-ïï& 7
-.
-ïï7 8
-	Cancelled
-ïï8 A
-)
-ïïA B
-throw
-ññ 
-new
-ññ '
-InvalidOperationException
-ññ 3
-(
-ññ3 4
-$str
-ññ4 `
-)
-ññ` a
-;
-ñña b
-switch
-òò 
-(
-òò 
-	newStatus
-òò 
-)
-òò 
+ááR S
 {
-ôô 
-case
-öö 
-AppointmentStatus
-öö &
-.
-öö& '
-Pending
-öö' .
-:
-öö. /
-throw
-õõ 
-new
-õõ '
-InvalidOperationException
-õõ 7
-(
-õõ7 8
-$str
-õõ8 m
-)
-õõm n
-;
-õõn o
-case
-ùù 
-AppointmentStatus
-ùù &
-.
-ùù& '
-	Confirmed
-ùù' 0
-:
-ùù0 1
-if
-ûû 
-(
-ûû 
+àà 	
+var
+ââ 
 appointment
-ûû #
-.
-ûû# $
-Status
-ûû$ *
-!=
-ûû+ -
-AppointmentStatus
-ûû. ?
-.
-ûû? @
-Pending
-ûû@ G
-)
-ûûG H
-throw
-üü 
-new
-üü !'
-InvalidOperationException
-üü" ;
-(
-üü; <
-$str
-üü< i
-)
-üüi j
-;
-üüj k
-appointment
-°° 
-.
-°°  
-Status
-°°  &
+ââ 
 =
-°°' (
-AppointmentStatus
-°°) :
+ââ 
+await
+ââ #$
+_appointmentRepository
+ââ$ :
 .
-°°: ;
-	Confirmed
-°°; D
-;
-°°D E
-break
-¢¢ 
-;
-¢¢ 
-case
-§§ 
-AppointmentStatus
-§§ &
-.
-§§& '
-	Completed
-§§' 0
-:
-§§0 1
-if
-•• 
+ââ: ;
+GetByIdAsync
+ââ; G
 (
-•• 
-appointment
-•• #
-.
-••# $
-Status
-••$ *
-!=
-••+ -
-AppointmentStatus
-••. ?
-.
-••? @
-	Confirmed
-••@ I
+ââG H
+id
+ââH J
 )
-••I J
+ââJ K
+;
+ââK L
+if
+ãã 
+(
+ãã 
+appointment
+ãã 
+==
+ãã 
+null
+ãã #
+)
+ãã# $
 throw
-¶¶ 
+åå 
 new
-¶¶ !'
-InvalidOperationException
-¶¶" ;
+åå "
+KeyNotFoundException
+åå .
 (
-¶¶; <
+åå. /
+$"
+åå/ 1
 $str
-¶¶< k
+åå1 =
+{
+åå= >
+id
+åå> @
+}
+åå@ A
+$str
+ååA L
+"
+ååL M
 )
-¶¶k l
+ååM N
 ;
-¶¶l m
-appointment
-®® 
-.
-®®  
-Status
-®®  &
-=
-®®' (
-AppointmentStatus
-®®) :
-.
-®®: ;
-	Completed
-®®; D
-;
-®®D E
-break
-©© 
-;
-©© 
-case
-´´ 
-AppointmentStatus
-´´ &
-.
-´´& '
-	Cancelled
-´´' 0
-:
-´´0 1
+ååN O
 if
-¨¨ 
+éé 
 (
-¨¨ 
-string
-¨¨ 
+éé 
+!
+éé 
+Enum
+éé 
 .
-¨¨  
-IsNullOrWhiteSpace
-¨¨ 1
+éé 
+	IsDefined
+éé 
 (
-¨¨1 2
+éé  
+typeof
+éé  &
+(
+éé& '
+AppointmentStatus
+éé' 8
+)
+éé8 9
+,
+éé9 :
 dto
-¨¨2 5
+éé; >
 .
-¨¨5 6 
-CancellationReason
-¨¨6 H
-)
-¨¨H I
-)
-¨¨I J
-throw
-≠≠ 
-new
-≠≠ !
-ArgumentException
-≠≠" 3
-(
-≠≠3 4
-$str
-≠≠4 V
-)
-≠≠V W
-;
-≠≠W X
-appointment
-ØØ 
-.
-ØØ  
+éé> ?
 Status
-ØØ  &
-=
-ØØ' (
-AppointmentStatus
-ØØ) :
-.
-ØØ: ;
-	Cancelled
-ØØ; D
+éé? E
+)
+ééE F
+)
+ééF G
+throw
+èè 
+new
+èè 
+ArgumentException
+èè +
+(
+èè+ ,
+$str
+èè, I
+)
+èèI J
 ;
-ØØD E
+èèJ K
+var
+ëë 
+	newStatus
+ëë 
+=
+ëë 
+(
+ëë 
+AppointmentStatus
+ëë .
+)
+ëë. /
+dto
+ëë/ 2
+.
+ëë2 3
+Status
+ëë3 9
+;
+ëë9 :
+if
+ìì 
+(
+ìì 
+appointment
+ìì 
+.
+ìì 
+Status
+ìì "
+==
+ìì# %
+AppointmentStatus
+ìì& 7
+.
+ìì7 8
+	Completed
+ìì8 A
+)
+ììA B
+throw
+îî 
+new
+îî '
+InvalidOperationException
+îî 3
+(
+îî3 4
+$str
+îî4 `
+)
+îî` a
+;
+îîa b
+if
+ññ 
+(
+ññ 
+appointment
+ññ 
+.
+ññ 
+Status
+ññ "
+==
+ññ# %
+AppointmentStatus
+ññ& 7
+.
+ññ7 8
+	Cancelled
+ññ8 A
+)
+ññA B
+throw
+óó 
+new
+óó '
+InvalidOperationException
+óó 3
+(
+óó3 4
+$str
+óó4 `
+)
+óó` a
+;
+óóa b
+switch
+ôô 
+(
+ôô 
+	newStatus
+ôô 
+)
+ôô 
+{
+öö 
+case
+õõ 
+AppointmentStatus
+õõ &
+.
+õõ& '
+Pending
+õõ' .
+:
+õõ. /
+throw
+úú 
+new
+úú '
+InvalidOperationException
+úú 7
+(
+úú7 8
+$str
+úú8 m
+)
+úúm n
+;
+úún o
+case
+ûû 
+AppointmentStatus
+ûû &
+.
+ûû& '
+	Confirmed
+ûû' 0
+:
+ûû0 1
+if
+üü 
+(
+üü 
+appointment
+üü #
+.
+üü# $
+Status
+üü$ *
+!=
+üü+ -
+AppointmentStatus
+üü. ?
+.
+üü? @
+Pending
+üü@ G
+)
+üüG H
+throw
+†† 
+new
+†† !'
+InvalidOperationException
+††" ;
+(
+††; <
+$str
+††< i
+)
+††i j
+;
+††j k
+appointment
+¢¢ 
+.
+¢¢  
+Status
+¢¢  &
+=
+¢¢' (
+AppointmentStatus
+¢¢) :
+.
+¢¢: ;
+	Confirmed
+¢¢; D
+;
+¢¢D E
+break
+££ 
+;
+££ 
+case
+•• 
+AppointmentStatus
+•• &
+.
+••& '
+	Completed
+••' 0
+:
+••0 1
+if
+¶¶ 
+(
+¶¶ 
+appointment
+¶¶ #
+.
+¶¶# $
+Status
+¶¶$ *
+!=
+¶¶+ -
+AppointmentStatus
+¶¶. ?
+.
+¶¶? @
+	Confirmed
+¶¶@ I
+)
+¶¶I J
+throw
+ßß 
+new
+ßß !'
+InvalidOperationException
+ßß" ;
+(
+ßß; <
+$str
+ßß< k
+)
+ßßk l
+;
+ßßl m
+appointment
+©© 
+.
+©©  
+Status
+©©  &
+=
+©©' (
+AppointmentStatus
+©©) :
+.
+©©: ;
+	Completed
+©©; D
+;
+©©D E
+break
+™™ 
+;
+™™ 
+case
+¨¨ 
+AppointmentStatus
+¨¨ &
+.
+¨¨& '
+	Cancelled
+¨¨' 0
+:
+¨¨0 1
+if
+≠≠ 
+(
+≠≠ 
+string
+≠≠ 
+.
+≠≠  
+IsNullOrWhiteSpace
+≠≠ 1
+(
+≠≠1 2
+dto
+≠≠2 5
+.
+≠≠5 6 
+CancellationReason
+≠≠6 H
+)
+≠≠H I
+)
+≠≠I J
+throw
+ÆÆ 
+new
+ÆÆ !
+ArgumentException
+ÆÆ" 3
+(
+ÆÆ3 4
+$str
+ÆÆ4 V
+)
+ÆÆV W
+;
+ÆÆW X
 appointment
 ∞∞ 
 .
-∞∞   
-CancellationReason
-∞∞  2
+∞∞  
+Status
+∞∞  &
 =
-∞∞3 4
-dto
-∞∞5 8
+∞∞' (
+AppointmentStatus
+∞∞) :
 .
-∞∞8 9 
-CancellationReason
-∞∞9 K
-.
-∞∞K L
-Trim
-∞∞L P
-(
-∞∞P Q
-)
-∞∞Q R
+∞∞: ;
+	Cancelled
+∞∞; D
 ;
-∞∞R S
-break
-±± 
-;
-±± 
-default
-≥≥ 
-:
-≥≥ 
-throw
-¥¥ 
-new
-¥¥ 
-ArgumentException
-¥¥ /
-(
-¥¥/ 0
-$str
-¥¥0 M
-)
-¥¥M N
-;
-¥¥N O
-}
-µµ 
-await
-∑∑ $
-_appointmentRepository
-∑∑ (
-.
-∑∑( )
-UpdateAsync
-∑∑) 4
-(
-∑∑4 5
+∞∞D E
 appointment
-∑∑5 @
+±± 
+.
+±±   
+CancellationReason
+±±  2
+=
+±±3 4
+dto
+±±5 8
+.
+±±8 9 
+CancellationReason
+±±9 K
+.
+±±K L
+Trim
+±±L P
+(
+±±P Q
 )
-∑∑@ A
+±±Q R
 ;
-∑∑A B
+±±R S
+break
+≤≤ 
+;
+≤≤ 
+default
+¥¥ 
+:
+¥¥ 
+throw
+µµ 
+new
+µµ 
+ArgumentException
+µµ /
+(
+µµ/ 0
+$str
+µµ0 M
+)
+µµM N
+;
+µµN O
+}
+∂∂ 
 await
 ∏∏ $
 _appointmentRepository
 ∏∏ (
 .
-∏∏( )
-SaveChangesAsync
-∏∏) 9
-(
-∏∏9 :
-)
-∏∏: ;
-;
-∏∏; <
-}
-ππ 	
-public
-ªª 
-async
-ªª 
-Task
-ªª 
-ConfirmAsync
-ªª &
-(
-ªª& '
-int
-ªª' *
-id
-ªª+ -
-)
-ªª- .
-{
-ºº 	
-var
-ΩΩ 
-appointment
-ΩΩ 
-=
-ΩΩ 
-await
-ΩΩ #$
-_appointmentRepository
-ΩΩ$ :
-.
-ΩΩ: ;
-GetByIdAsync
-ΩΩ; G
-(
-ΩΩG H
-id
-ΩΩH J
-)
-ΩΩJ K
-;
-ΩΩK L
-if
-øø 
-(
-øø 
-appointment
-øø 
-==
-øø 
-null
-øø #
-)
-øø# $
-throw
-¿¿ 
-new
-¿¿ "
-KeyNotFoundException
-¿¿ .
-(
-¿¿. /
-)
-¿¿/ 0
-;
-¿¿0 1
-if
-¬¬ 
-(
-¬¬ 
-appointment
-¬¬ 
-.
-¬¬ 
-Status
-¬¬ "
-!=
-¬¬# %
-AppointmentStatus
-¬¬& 7
-.
-¬¬7 8
-Pending
-¬¬8 ?
-)
-¬¬? @
-throw
-√√ 
-new
-√√ '
-InvalidOperationException
-√√ 3
-(
-√√3 4
-$str
-√√4 a
-)
-√√a b
-;
-√√b c
-appointment
-≈≈ 
-.
-≈≈ 
-Status
-≈≈ 
-=
-≈≈  
-AppointmentStatus
-≈≈! 2
-.
-≈≈2 3
-	Confirmed
-≈≈3 <
-;
-≈≈< =
-await
-«« $
-_appointmentRepository
-«« (
-.
-««( )
+∏∏( )
 UpdateAsync
-««) 4
+∏∏) 4
 (
-««4 5
+∏∏4 5
 appointment
-««5 @
+∏∏5 @
 )
-««@ A
+∏∏@ A
 ;
-««A B
+∏∏A B
+await
+ππ $
+_appointmentRepository
+ππ (
+.
+ππ( )
+SaveChangesAsync
+ππ) 9
+(
+ππ9 :
+)
+ππ: ;
+;
+ππ; <
+}
+∫∫ 	
+public
+ºº 
+async
+ºº 
+Task
+ºº 
+ConfirmAsync
+ºº &
+(
+ºº& '
+int
+ºº' *
+id
+ºº+ -
+)
+ºº- .
+{
+ΩΩ 	
+var
+ææ 
+appointment
+ææ 
+=
+ææ 
+await
+ææ #$
+_appointmentRepository
+ææ$ :
+.
+ææ: ;
+GetByIdAsync
+ææ; G
+(
+ææG H
+id
+ææH J
+)
+ææJ K
+;
+ææK L
+if
+¿¿ 
+(
+¿¿ 
+appointment
+¿¿ 
+==
+¿¿ 
+null
+¿¿ #
+)
+¿¿# $
+throw
+¡¡ 
+new
+¡¡ "
+KeyNotFoundException
+¡¡ .
+(
+¡¡. /
+)
+¡¡/ 0
+;
+¡¡0 1
+if
+√√ 
+(
+√√ 
+appointment
+√√ 
+.
+√√ 
+Status
+√√ "
+!=
+√√# %
+AppointmentStatus
+√√& 7
+.
+√√7 8
+Pending
+√√8 ?
+)
+√√? @
+throw
+ƒƒ 
+new
+ƒƒ '
+InvalidOperationException
+ƒƒ 3
+(
+ƒƒ3 4
+$str
+ƒƒ4 a
+)
+ƒƒa b
+;
+ƒƒb c
+appointment
+∆∆ 
+.
+∆∆ 
+Status
+∆∆ 
+=
+∆∆  
+AppointmentStatus
+∆∆! 2
+.
+∆∆2 3
+	Confirmed
+∆∆3 <
+;
+∆∆< =
 await
 »» $
 _appointmentRepository
 »» (
 .
-»»( )
-SaveChangesAsync
-»») 9
-(
-»»9 :
-)
-»»: ;
-;
-»»; <
-}
-…… 	
-public
-ÀÀ 
-async
-ÀÀ 
-Task
-ÀÀ 
-CompleteAsync
-ÀÀ '
-(
-ÀÀ' (
-int
-ÀÀ( +
-id
-ÀÀ, .
-)
-ÀÀ. /
-{
-ÃÃ 	
-var
-ÕÕ 
-appointment
-ÕÕ 
-=
-ÕÕ 
-await
-ÕÕ #$
-_appointmentRepository
-ÕÕ$ :
-.
-ÕÕ: ;
-GetByIdAsync
-ÕÕ; G
-(
-ÕÕG H
-id
-ÕÕH J
-)
-ÕÕJ K
-;
-ÕÕK L
-if
-œœ 
-(
-œœ 
-appointment
-œœ 
-==
-œœ 
-null
-œœ #
-)
-œœ# $
-throw
-–– 
-new
-–– "
-KeyNotFoundException
-–– .
-(
-––. /
-)
-––/ 0
-;
-––0 1
-if
-““ 
-(
-““ 
-appointment
-““ 
-.
-““ 
-Status
-““ "
-!=
-““# %
-AppointmentStatus
-““& 7
-.
-““7 8
-	Confirmed
-““8 A
-)
-““A B
-throw
-”” 
-new
-”” '
-InvalidOperationException
-”” 3
-(
-””3 4
-$str
-””4 c
-)
-””c d
-;
-””d e
-appointment
-’’ 
-.
-’’ 
-Status
-’’ 
-=
-’’  
-AppointmentStatus
-’’! 2
-.
-’’2 3
-	Completed
-’’3 <
-;
-’’< =
-await
-◊◊ $
-_appointmentRepository
-◊◊ (
-.
-◊◊( )
+»»( )
 UpdateAsync
-◊◊) 4
+»») 4
 (
-◊◊4 5
+»»4 5
 appointment
-◊◊5 @
+»»5 @
 )
-◊◊@ A
+»»@ A
 ;
-◊◊A B
+»»A B
+await
+…… $
+_appointmentRepository
+…… (
+.
+……( )
+SaveChangesAsync
+……) 9
+(
+……9 :
+)
+……: ;
+;
+……; <
+}
+   	
+public
+ÃÃ 
+async
+ÃÃ 
+Task
+ÃÃ 
+CompleteAsync
+ÃÃ '
+(
+ÃÃ' (
+int
+ÃÃ( +
+id
+ÃÃ, .
+)
+ÃÃ. /
+{
+ÕÕ 	
+var
+ŒŒ 
+appointment
+ŒŒ 
+=
+ŒŒ 
+await
+ŒŒ #$
+_appointmentRepository
+ŒŒ$ :
+.
+ŒŒ: ;
+GetByIdAsync
+ŒŒ; G
+(
+ŒŒG H
+id
+ŒŒH J
+)
+ŒŒJ K
+;
+ŒŒK L
+if
+–– 
+(
+–– 
+appointment
+–– 
+==
+–– 
+null
+–– #
+)
+––# $
+throw
+—— 
+new
+—— "
+KeyNotFoundException
+—— .
+(
+——. /
+)
+——/ 0
+;
+——0 1
+if
+”” 
+(
+”” 
+appointment
+”” 
+.
+”” 
+Status
+”” "
+!=
+””# %
+AppointmentStatus
+””& 7
+.
+””7 8
+	Confirmed
+””8 A
+)
+””A B
+throw
+‘‘ 
+new
+‘‘ '
+InvalidOperationException
+‘‘ 3
+(
+‘‘3 4
+$str
+‘‘4 c
+)
+‘‘c d
+;
+‘‘d e
+appointment
+÷÷ 
+.
+÷÷ 
+Status
+÷÷ 
+=
+÷÷  
+AppointmentStatus
+÷÷! 2
+.
+÷÷2 3
+	Completed
+÷÷3 <
+;
+÷÷< =
 await
 ÿÿ $
 _appointmentRepository
 ÿÿ (
 .
-ÿÿ( )
-SaveChangesAsync
-ÿÿ) 9
+ÿÿ( )
+UpdateAsync
+ÿÿ) 4
 (
-ÿÿ9 :
-)
-ÿÿ: ;
-;
-ÿÿ; <
-}
-ŸŸ 	
-public
-€€ 
-async
-€€ 
-Task
-€€ 
-CancelAsync
-€€ %
-(
-€€% &
-int
-€€& )
-id
-€€* ,
-,
-€€, -"
-CancelAppointmentDto
-€€. B
-dto
-€€C F
-)
-€€F G
-{
-‹‹ 	
-var
-›› 
+ÿÿ4 5
 appointment
-›› 
-=
-›› 
+ÿÿ5 @
+)
+ÿÿ@ A
+;
+ÿÿA B
 await
-›› #$
+ŸŸ $
 _appointmentRepository
-››$ :
+ŸŸ (
 .
-››: ;
-GetByIdAsync
-››; G
+ŸŸ( )
+SaveChangesAsync
+ŸŸ) 9
 (
-››G H
+ŸŸ9 :
+)
+ŸŸ: ;
+;
+ŸŸ; <
+}
+⁄⁄ 	
+public
+‹‹ 
+async
+‹‹ 
+Task
+‹‹ 
+CancelAsync
+‹‹ %
+(
+‹‹% &
+int
+‹‹& )
 id
-››H J
-)
-››J K
-;
-››K L
-if
-ﬂﬂ 
-(
-ﬂﬂ 
-appointment
-ﬂﬂ 
-==
-ﬂﬂ 
-null
-ﬂﬂ #
-)
-ﬂﬂ# $
-throw
-‡‡ 
-new
-‡‡ "
-KeyNotFoundException
-‡‡ .
-(
-‡‡. /
-)
-‡‡/ 0
-;
-‡‡0 1
-if
-‚‚ 
-(
-‚‚ 
-appointment
-‚‚ 
-.
-‚‚ 
-Status
-‚‚ "
-==
-‚‚# %
-AppointmentStatus
-‚‚& 7
-.
-‚‚7 8
-	Completed
-‚‚8 A
-)
-‚‚A B
-throw
-„„ 
-new
-„„ '
-InvalidOperationException
-„„ 3
-(
-„„3 4
-$str
-„„4 a
-)
-„„a b
-;
-„„b c
-if
-ÂÂ 
-(
-ÂÂ 
-appointment
-ÂÂ 
-.
-ÂÂ 
-Status
-ÂÂ "
-==
-ÂÂ# %
-AppointmentStatus
-ÂÂ& 7
-.
-ÂÂ7 8
-	Cancelled
-ÂÂ8 A
-)
-ÂÂA B
-throw
-ÊÊ 
-new
-ÊÊ '
-InvalidOperationException
-ÊÊ 3
-(
-ÊÊ3 4
-$str
-ÊÊ4 T
-)
-ÊÊT U
-;
-ÊÊU V
-if
-ËË 
-(
-ËË 
-string
-ËË 
-.
-ËË  
-IsNullOrWhiteSpace
-ËË )
-(
-ËË) *
+‹‹* ,
+,
+‹‹, -"
+CancelAppointmentDto
+‹‹. B
 dto
-ËË* -
-.
-ËË- . 
-CancellationReason
-ËË. @
+‹‹C F
 )
-ËË@ A
-)
-ËËA B
-throw
-ÈÈ 
-new
-ÈÈ 
-ArgumentException
-ÈÈ +
-(
-ÈÈ+ ,
-$str
-ÈÈ, N
-)
-ÈÈN O
-;
-ÈÈO P
+‹‹F G
+{
+›› 	
+var
+ﬁﬁ 
 appointment
-ÎÎ 
-.
-ÎÎ 
-Status
-ÎÎ 
+ﬁﬁ 
 =
-ÎÎ  
-AppointmentStatus
-ÎÎ! 2
+ﬁﬁ 
+await
+ﬁﬁ #$
+_appointmentRepository
+ﬁﬁ$ :
 .
-ÎÎ2 3
-	Cancelled
-ÎÎ3 <
+ﬁﬁ: ;
+GetByIdAsync
+ﬁﬁ; G
+(
+ﬁﬁG H
+id
+ﬁﬁH J
+)
+ﬁﬁJ K
 ;
-ÎÎ< =
+ﬁﬁK L
+if
+‡‡ 
+(
+‡‡ 
+appointment
+‡‡ 
+==
+‡‡ 
+null
+‡‡ #
+)
+‡‡# $
+throw
+·· 
+new
+·· "
+KeyNotFoundException
+·· .
+(
+··. /
+)
+··/ 0
+;
+··0 1
+if
+„„ 
+(
+„„ 
+appointment
+„„ 
+.
+„„ 
+Status
+„„ "
+==
+„„# %
+AppointmentStatus
+„„& 7
+.
+„„7 8
+	Completed
+„„8 A
+)
+„„A B
+throw
+‰‰ 
+new
+‰‰ '
+InvalidOperationException
+‰‰ 3
+(
+‰‰3 4
+$str
+‰‰4 a
+)
+‰‰a b
+;
+‰‰b c
+if
+ÊÊ 
+(
+ÊÊ 
+appointment
+ÊÊ 
+.
+ÊÊ 
+Status
+ÊÊ "
+==
+ÊÊ# %
+AppointmentStatus
+ÊÊ& 7
+.
+ÊÊ7 8
+	Cancelled
+ÊÊ8 A
+)
+ÊÊA B
+throw
+ÁÁ 
+new
+ÁÁ '
+InvalidOperationException
+ÁÁ 3
+(
+ÁÁ3 4
+$str
+ÁÁ4 T
+)
+ÁÁT U
+;
+ÁÁU V
+if
+ÈÈ 
+(
+ÈÈ 
+string
+ÈÈ 
+.
+ÈÈ  
+IsNullOrWhiteSpace
+ÈÈ )
+(
+ÈÈ) *
+dto
+ÈÈ* -
+.
+ÈÈ- . 
+CancellationReason
+ÈÈ. @
+)
+ÈÈ@ A
+)
+ÈÈA B
+throw
+ÍÍ 
+new
+ÍÍ 
+ArgumentException
+ÍÍ +
+(
+ÍÍ+ ,
+$str
+ÍÍ, N
+)
+ÍÍN O
+;
+ÍÍO P
 appointment
 ÏÏ 
 .
-ÏÏ  
-CancellationReason
-ÏÏ *
+ÏÏ 
+Status
+ÏÏ 
 =
-ÏÏ+ ,
-dto
-ÏÏ- 0
+ÏÏ  
+AppointmentStatus
+ÏÏ! 2
 .
-ÏÏ0 1 
-CancellationReason
-ÏÏ1 C
-.
-ÏÏC D
-Trim
-ÏÏD H
-(
-ÏÏH I
-)
-ÏÏI J
+ÏÏ2 3
+	Cancelled
+ÏÏ3 <
 ;
-ÏÏJ K
-await
-ÓÓ $
-_appointmentRepository
-ÓÓ (
-.
-ÓÓ( )
-UpdateAsync
-ÓÓ) 4
-(
-ÓÓ4 5
+ÏÏ< =
 appointment
-ÓÓ5 @
+ÌÌ 
+.
+ÌÌ  
+CancellationReason
+ÌÌ *
+=
+ÌÌ+ ,
+dto
+ÌÌ- 0
+.
+ÌÌ0 1 
+CancellationReason
+ÌÌ1 C
+.
+ÌÌC D
+Trim
+ÌÌD H
+(
+ÌÌH I
 )
-ÓÓ@ A
+ÌÌI J
 ;
-ÓÓA B
+ÌÌJ K
 await
 ÔÔ $
 _appointmentRepository
 ÔÔ (
 .
-ÔÔ( )
+ÔÔ( )
+UpdateAsync
+ÔÔ) 4
+(
+ÔÔ4 5
+appointment
+ÔÔ5 @
+)
+ÔÔ@ A
+;
+ÔÔA B
+await
+ $
+_appointmentRepository
+ (
+.
+( )
 SaveChangesAsync
-ÔÔ) 9
+) 9
 (
-ÔÔ9 :
+9 :
 )
-ÔÔ: ;
+: ;
 ;
-ÔÔ; <
+; <
 }
- 	
+ÒÒ 	
 public
-ÚÚ 
+ÛÛ 
 async
-ÚÚ 
+ÛÛ 
 Task
-ÚÚ 
+ÛÛ 
 <
-ÚÚ 
+ÛÛ 
 IEnumerable
-ÚÚ %
+ÛÛ %
 <
-ÚÚ% &#
+ÛÛ% &#
 DoctorScheduleItemDto
-ÚÚ& ;
+ÛÛ& ;
 >
-ÚÚ; <
+ÛÛ; <
 >
-ÚÚ< =,
+ÛÛ< =,
 GetDoctorUpcomingScheduleAsync
-ÚÚ> \
+ÛÛ> \
 (
-ÚÚ\ ]
+ÛÛ\ ]
 int
-ÚÚ] `
+ÛÛ] `
 doctorId
-ÚÚa i
+ÛÛa i
 )
-ÚÚi j
+ÛÛi j
 {
-ÛÛ 	
+ÙÙ 	
 var
-ÙÙ 
+ıı 
 	startDate
-ÙÙ 
+ıı 
 =
-ÙÙ 
+ıı 
 DateOnly
-ÙÙ $
+ıı $
 .
-ÙÙ$ %
+ıı$ %
 FromDateTime
-ÙÙ% 1
+ıı% 1
 (
-ÙÙ1 2
+ıı1 2
 DateTime
-ÙÙ2 :
+ıı2 :
 .
-ÙÙ: ;
+ıı: ;
 Today
-ÙÙ; @
+ıı; @
 )
-ÙÙ@ A
+ıı@ A
 ;
-ÙÙA B
+ııA B
 var
-ıı 
+ˆˆ 
 endDate
-ıı 
+ˆˆ 
 =
-ıı 
+ˆˆ 
 	startDate
-ıı #
+ˆˆ #
 .
-ıı# $
+ˆˆ# $
 AddDays
-ıı$ +
+ˆˆ$ +
 (
-ıı+ ,
+ˆˆ+ ,
 $num
-ıı, -
+ˆˆ, -
 )
-ıı- .
+ˆˆ- .
 ;
-ıı. /
+ˆˆ. /
 var
-˜˜ 
+¯¯ 
 appointments
-˜˜ 
+¯¯ 
 =
-˜˜ 
+¯¯ 
 await
-¯¯ $
+˘˘ $
 _appointmentRepository
-¯¯ ,
+˘˘ ,
 .
-¯¯, -(
+˘˘, -(
 GetDoctorWeekScheduleAsync
-¯¯- G
+˘˘- G
 (
-¯¯G H
+˘˘G H
 doctorId
-˘˘ 
+˙˙ 
 ,
-˘˘ 
+˙˙ 
 	startDate
-˙˙ 
+˚˚ 
 ,
-˙˙ 
+˚˚ 
 endDate
-˚˚ 
+¸¸ 
 )
-˚˚ 
+¸¸ 
 ;
-˚˚ 
+¸¸ 
 return
-˝˝ 
+˛˛ 
 appointments
-˝˝ 
+˛˛ 
 .
-˝˝  
+˛˛  
 Select
-˝˝  &
+˛˛  &
 (
-˝˝& '#
+˛˛& '#
 MapDoctorScheduleItem
-˝˝' <
+˛˛' <
 )
-˝˝< =
+˛˛< =
 ;
-˝˝= >
+˛˛= >
 }
-˛˛ 	
+ˇˇ 	
 private
-ÄÄ 
+ÅÅ 
 async
-ÄÄ 
+ÅÅ 
 Task
-ÄÄ "
+ÅÅ "
 ValidateBookingAsync
-ÄÄ /
+ÅÅ /
 (
-ÄÄ/ 0
+ÅÅ/ 0
 int
-ÄÄ0 3
+ÅÅ0 3
 	patientId
-ÄÄ4 =
+ÅÅ4 =
 ,
-ÄÄ= >
+ÅÅ= >
 int
-ÄÄ? B
+ÅÅ? B
 doctorId
-ÄÄC K
+ÅÅC K
 ,
-ÄÄK L
+ÅÅK L
 DateOnly
-ÄÄM U
+ÅÅM U
 date
-ÄÄV Z
+ÅÅV Z
 ,
-ÄÄZ [
+ÅÅZ [
 int
-ÄÄ\ _
+ÅÅ\ _
 timeSlot
-ÄÄ` h
+ÅÅ` h
 )
-ÄÄh i
+ÅÅh i
 {
-ÅÅ 	
+ÇÇ 	
 var
-ÇÇ 
+ÉÉ 
 patient
-ÇÇ 
+ÉÉ 
 =
-ÇÇ 
+ÉÉ 
 await
-ÇÇ  
+ÉÉ  
 _patientRepository
-ÇÇ  2
+ÉÉ  2
 .
-ÇÇ2 3
+ÉÉ2 3
 GetByIdAsync
-ÇÇ3 ?
+ÉÉ3 ?
 (
-ÇÇ? @
+ÉÉ? @
 	patientId
-ÇÇ@ I
+ÉÉ@ I
 )
-ÇÇI J
+ÉÉI J
 ;
-ÇÇJ K
+ÉÉJ K
 if
-ÑÑ 
+ÖÖ 
 (
-ÑÑ 
+ÖÖ 
 patient
-ÑÑ 
+ÖÖ 
 ==
-ÑÑ 
+ÖÖ 
 null
-ÑÑ 
+ÖÖ 
 )
-ÑÑ  
+ÖÖ  
 throw
-ÖÖ 
+ÜÜ 
 new
-ÖÖ "
+ÜÜ "
 KeyNotFoundException
-ÖÖ .
+ÜÜ .
 (
-ÖÖ. /
+ÜÜ. /
 $str
-ÖÖ/ C
+ÜÜ/ C
 )
-ÖÖC D
+ÜÜC D
 ;
-ÖÖD E
+ÜÜD E
 if
-áá 
+àà 
 (
-áá 
+àà 
 !
-áá 
+àà 
 patient
-áá 
+àà 
 .
-áá 
+àà 
 IsActive
-áá !
+àà !
 )
-áá! "
+àà! "
 throw
-àà 
+ââ 
 new
-àà '
+ââ '
 InvalidOperationException
-àà 3
+ââ 3
 (
-àà3 4
+ââ3 4
 $str
-àà4 a
+ââ4 a
 )
-ààa b
+ââa b
 ;
-ààb c
+ââb c
 var
-ää 
+ãã 
 doctor
-ää 
+ãã 
 =
-ää 
+ãã 
 await
-ää 
+ãã 
 _doctorRepository
-ää 0
+ãã 0
 .
-ää0 1
+ãã0 1
 GetByIdAsync
-ää1 =
+ãã1 =
 (
-ää= >
+ãã= >
 doctorId
-ää> F
+ãã> F
 )
-ääF G
+ããF G
 ;
-ääG H
+ããG H
 if
-åå 
+çç 
 (
-åå 
+çç 
 doctor
-åå 
+çç 
 ==
-åå 
+çç 
 null
-åå 
+çç 
 )
-åå 
+çç 
 throw
-çç 
+éé 
 new
-çç "
+éé "
 KeyNotFoundException
-çç .
+éé .
 (
-çç. /
+éé. /
 $str
-çç/ B
+éé/ B
 )
-ççB C
+ééB C
 ;
-ççC D
+ééC D
 if
-èè 
+êê 
 (
-èè 
+êê 
 !
-èè 
+êê 
 doctor
-èè 
+êê 
 .
-èè 
+êê 
 IsActive
-èè  
+êê  
 )
-èè  !
+êê  !
 throw
-êê 
+ëë 
 new
-êê '
+ëë '
 InvalidOperationException
-êê 3
+ëë 3
 (
-êê3 4
+ëë3 4
 $str
-êê4 F
+ëë4 F
 )
-êêF G
+ëëF G
 ;
-êêG H
+ëëG H
 if
-íí 
+ìì 
 (
-íí 
+ìì 
 date
-íí 
+ìì 
 <
-íí 
+ìì 
 DateOnly
-íí 
+ìì 
 .
-íí  
+ìì  
 FromDateTime
-íí  ,
+ìì  ,
 (
-íí, -
+ìì, -
 DateTime
-íí- 5
+ìì- 5
 .
-íí5 6
+ìì5 6
 Today
-íí6 ;
+ìì6 ;
 )
-íí; <
+ìì; <
 )
-íí< =
+ìì< =
 throw
-ìì 
+îî 
 new
-ìì 
+îî 
 ArgumentException
-ìì +
+îî +
 (
-ìì+ ,
+îî+ ,
 $str
-ìì, U
+îî, U
 )
-ììU V
+îîU V
 ;
-ììV W
+îîV W
 if
-ïï 
+ññ 
 (
-ïï 
+ññ 
 !
-ïï 
+ññ 
 Enum
-ïï 
+ññ 
 .
-ïï 
+ññ 
 	IsDefined
-ïï 
+ññ 
 (
-ïï  
+ññ  
 typeof
-ïï  &
+ññ  &
 (
-ïï& '!
+ññ& '!
 AppointmentTimeSlot
-ïï' :
+ññ' :
 )
-ïï: ;
+ññ: ;
 ,
-ïï; <
+ññ; <
 timeSlot
-ïï= E
+ññ= E
 )
-ïïE F
+ññE F
 )
-ïïF G
+ññF G
 throw
-ññ 
+óó 
 new
-ññ 
+óó 
 ArgumentException
-ññ +
+óó +
 (
-ññ+ ,
+óó+ ,
 $str
-ññ, G
+óó, G
 )
-ññG H
+óóG H
 ;
-ññH I
+óóH I
 if
-òò 
+ôô 
 (
-òò 
+ôô 
 await
-òò $
+ôô $
 _appointmentRepository
-òò ,
+ôô ,
 .
-òò, -6
+ôô, -6
 (ExistsSamePatientSameDoctorSameDateAsync
-òò- U
+ôô- U
 (
-òòU V
+ôôU V
 	patientId
-òòV _
+ôôV _
 ,
-òò_ `
+ôô_ `
 doctorId
-òòa i
+ôôa i
 ,
-òòi j
+ôôi j
 date
-òòk o
+ôôk o
 )
-òòo p
+ôôo p
 )
-òòp q
+ôôp q
 throw
-ôô 
+öö 
 new
-ôô '
+öö '
 InvalidOperationException
-ôô 3
+öö 3
 (
-ôô3 4
+öö3 4
 $str
-ôô4 
-)ôô Ä
-;ôôÄ Å
+öö4 
+)öö Ä
+;ööÄ Å
 if
-õõ 
+úú 
 (
-õõ 
+úú 
 await
-õõ $
+úú $
 _appointmentRepository
-õõ ,
+úú ,
 .
-õõ, -4
+úú, -4
 &ExistsSamePatientSameSlotSameDateAsync
-õõ- S
+úú- S
 (
-õõS T
+úúS T
 	patientId
-õõT ]
+úúT ]
 ,
-õõ] ^
+úú] ^
 date
-õõ_ c
+úú_ c
 ,
-õõc d
+úúc d
 timeSlot
-õõe m
+úúe m
 )
-õõm n
+úúm n
 )
-õõn o
+úún o
 throw
-úú 
+ùù 
 new
-úú '
+ùù '
 InvalidOperationException
-úú 3
+ùù 3
 (
-úú3 4
+ùù3 4
 $str
-úú4 p
+ùù4 p
 )
-úúp q
+ùùp q
 ;
-úúq r
+ùùq r
 if
-ûû 
+üü 
 (
-ûû 
+üü 
 await
-ûû $
+üü $
 _appointmentRepository
-ûû ,
+üü ,
 .
-ûû, -3
+üü, -3
 %ExistsSameDoctorSameSlotSameDateAsync
-ûû- R
+üü- R
 (
-ûûR S
+üüR S
 doctorId
-ûûS [
+üüS [
 ,
-ûû[ \
+üü[ \
 date
-ûû] a
+üü] a
 ,
-ûûa b
+üüa b
 timeSlot
-ûûc k
+üüc k
 )
-ûûk l
+üük l
 )
-ûûl m
+üül m
 throw
-üü 
+†† 
 new
-üü '
+†† '
 InvalidOperationException
-üü 3
+†† 3
 (
-üü3 4
+††3 4
 $str
-üü4 b
+††4 b
 )
-üüb c
+††b c
 ;
-üüc d
+††c d
 }
-†† 	
+°° 	
 private
-¢¢ 
+££ 
 async
-¢¢ 
+££ 
 Task
-¢¢ (
+££ (
 ValidateUpdateBookingAsync
-¢¢ 5
+££ 5
 (
-¢¢5 6
+££5 6
 int
-¢¢6 9
+££6 9
 appointmentId
-¢¢: G
+££: G
 ,
-¢¢G H
+££G H
 int
-¢¢I L
+££I L
 	patientId
-¢¢M V
+££M V
 ,
-¢¢V W
+££V W
 int
-¢¢X [
+££X [
 doctorId
-¢¢\ d
+££\ d
 ,
-¢¢d e
+££d e
 DateOnly
-¢¢f n
+££f n
 date
-¢¢o s
+££o s
 ,
-¢¢s t
+££s t
 int
-¢¢u x
-timeSlot¢¢y Å
-)¢¢Å Ç
+££u x
+timeSlot££y Å
+)££Å Ç
 {
-££ 	
+§§ 	
 var
-§§ 
+•• 
 patient
-§§ 
+•• 
 =
-§§ 
+•• 
 await
-§§  
+••  
 _patientRepository
-§§  2
+••  2
 .
-§§2 3
+••2 3
 GetByIdAsync
-§§3 ?
+••3 ?
 (
-§§? @
+••? @
 	patientId
-§§@ I
+••@ I
 )
-§§I J
+••I J
 ;
-§§J K
+••J K
 if
-¶¶ 
+ßß 
 (
-¶¶ 
+ßß 
 patient
-¶¶ 
+ßß 
 ==
-¶¶ 
+ßß 
 null
-¶¶ 
+ßß 
 )
-¶¶  
+ßß  
 throw
-ßß 
+®® 
 new
-ßß "
+®® "
 KeyNotFoundException
-ßß .
+®® .
 (
-ßß. /
+®®. /
 $str
-ßß/ C
+®®/ C
 )
-ßßC D
+®®C D
 ;
-ßßD E
+®®D E
 if
-©© 
+™™ 
 (
-©© 
+™™ 
 !
-©© 
+™™ 
 patient
-©© 
+™™ 
 .
-©© 
+™™ 
 IsActive
-©© !
+™™ !
 )
-©©! "
+™™! "
 throw
-™™ 
+´´ 
 new
-™™ '
+´´ '
 InvalidOperationException
-™™ 3
+´´ 3
 (
-™™3 4
+´´3 4
 $str
-™™4 a
+´´4 a
 )
-™™a b
+´´a b
 ;
-™™b c
+´´b c
 var
-¨¨ 
+≠≠ 
 doctor
-¨¨ 
+≠≠ 
 =
-¨¨ 
+≠≠ 
 await
-¨¨ 
+≠≠ 
 _doctorRepository
-¨¨ 0
+≠≠ 0
 .
-¨¨0 1
+≠≠0 1
 GetByIdAsync
-¨¨1 =
+≠≠1 =
 (
-¨¨= >
+≠≠= >
 doctorId
-¨¨> F
+≠≠> F
 )
-¨¨F G
+≠≠F G
 ;
-¨¨G H
+≠≠G H
 if
-ÆÆ 
+ØØ 
 (
-ÆÆ 
+ØØ 
 doctor
-ÆÆ 
+ØØ 
 ==
-ÆÆ 
+ØØ 
 null
-ÆÆ 
+ØØ 
 )
-ÆÆ 
+ØØ 
 throw
-ØØ 
+∞∞ 
 new
-ØØ "
+∞∞ "
 KeyNotFoundException
-ØØ .
+∞∞ .
 (
-ØØ. /
+∞∞. /
 $str
-ØØ/ B
+∞∞/ B
 )
-ØØB C
+∞∞B C
 ;
-ØØC D
+∞∞C D
 if
-±± 
+≤≤ 
 (
-±± 
+≤≤ 
 !
-±± 
+≤≤ 
 doctor
-±± 
+≤≤ 
 .
-±± 
+≤≤ 
 IsActive
-±±  
+≤≤  
 )
-±±  !
+≤≤  !
 throw
-≤≤ 
+≥≥ 
 new
-≤≤ '
+≥≥ '
 InvalidOperationException
-≤≤ 3
+≥≥ 3
 (
-≤≤3 4
+≥≥3 4
 $str
-≤≤4 F
+≥≥4 F
 )
-≤≤F G
+≥≥F G
 ;
-≤≤G H
+≥≥G H
 if
-¥¥ 
+µµ 
 (
-¥¥ 
+µµ 
 date
-¥¥ 
+µµ 
 <
-¥¥ 
+µµ 
 DateOnly
-¥¥ 
+µµ 
 .
-¥¥  
+µµ  
 FromDateTime
-¥¥  ,
+µµ  ,
 (
-¥¥, -
+µµ, -
 DateTime
-¥¥- 5
+µµ- 5
 .
-¥¥5 6
+µµ5 6
 Today
-¥¥6 ;
+µµ6 ;
 )
-¥¥; <
+µµ; <
 )
-¥¥< =
+µµ< =
 throw
-µµ 
+∂∂ 
 new
-µµ 
+∂∂ 
 ArgumentException
-µµ +
+∂∂ +
 (
-µµ+ ,
+∂∂+ ,
 $str
-µµ, U
+∂∂, U
 )
-µµU V
+∂∂U V
 ;
-µµV W
+∂∂V W
 if
-∑∑ 
+∏∏ 
 (
-∑∑ 
+∏∏ 
 !
-∑∑ 
+∏∏ 
 Enum
-∑∑ 
+∏∏ 
 .
-∑∑ 
+∏∏ 
 	IsDefined
-∑∑ 
+∏∏ 
 (
-∑∑  
+∏∏  
 typeof
-∑∑  &
+∏∏  &
 (
-∑∑& '!
+∏∏& '!
 AppointmentTimeSlot
-∑∑' :
+∏∏' :
 )
-∑∑: ;
+∏∏: ;
 ,
-∑∑; <
+∏∏; <
 timeSlot
-∑∑= E
+∏∏= E
 )
-∑∑E F
+∏∏E F
 )
-∑∑F G
+∏∏F G
 throw
-∏∏ 
+ππ 
 new
-∏∏ 
+ππ 
 ArgumentException
-∏∏ +
+ππ +
 (
-∏∏+ ,
+ππ+ ,
 $str
-∏∏, G
+ππ, G
 )
-∏∏G H
+ππG H
 ;
-∏∏H I
+ππH I
 if
-∫∫ 
+ªª 
 (
-∫∫ 
+ªª 
 await
-∫∫ $
+ªª $
 _appointmentRepository
-∫∫ ,
+ªª ,
 .
-∫∫, -6
+ªª, -6
 (ExistsSamePatientSameDoctorSameDateAsync
-∫∫- U
+ªª- U
 (
-∫∫U V
+ªªU V
 	patientId
-∫∫V _
+ªªV _
 ,
-∫∫_ `
+ªª_ `
 doctorId
-∫∫a i
+ªªa i
 ,
-∫∫i j
+ªªi j
 date
-∫∫k o
+ªªk o
 ,
-∫∫o p
+ªªo p
 appointmentId
-∫∫q ~
+ªªq ~
 )
-∫∫~ 
-)∫∫ Ä
+ªª~ 
+)ªª Ä
 throw
-ªª 
+ºº 
 new
-ªª '
+ºº '
 InvalidOperationException
-ªª 3
+ºº 3
 (
-ªª3 4
+ºº3 4
 $str
-ªª4 
-)ªª Ä
-;ªªÄ Å
+ºº4 
+)ºº Ä
+;ººÄ Å
 if
-ΩΩ 
+ææ 
 (
-ΩΩ 
+ææ 
 await
-ΩΩ $
+ææ $
 _appointmentRepository
-ΩΩ ,
+ææ ,
 .
-ΩΩ, -4
+ææ, -4
 &ExistsSamePatientSameSlotSameDateAsync
-ΩΩ- S
+ææ- S
 (
-ΩΩS T
+ææS T
 	patientId
-ΩΩT ]
+ææT ]
 ,
-ΩΩ] ^
+ææ] ^
 date
-ΩΩ_ c
+ææ_ c
 ,
-ΩΩc d
+ææc d
 timeSlot
-ΩΩe m
+ææe m
 ,
-ΩΩm n
+ææm n
 appointmentId
-ΩΩo |
+ææo |
 )
-ΩΩ| }
+ææ| }
 )
-ΩΩ} ~
+ææ} ~
 throw
-ææ 
+øø 
 new
-ææ '
+øø '
 InvalidOperationException
-ææ 3
+øø 3
 (
-ææ3 4
+øø3 4
 $str
-ææ4 p
+øø4 p
 )
-ææp q
+øøp q
 ;
-ææq r
+øøq r
 if
-¿¿ 
+¡¡ 
 (
-¿¿ 
+¡¡ 
 await
-¿¿ $
+¡¡ $
 _appointmentRepository
-¿¿ ,
+¡¡ ,
 .
-¿¿, -3
+¡¡, -3
 %ExistsSameDoctorSameSlotSameDateAsync
-¿¿- R
+¡¡- R
 (
-¿¿R S
+¡¡R S
 doctorId
-¿¿S [
+¡¡S [
 ,
-¿¿[ \
+¡¡[ \
 date
-¿¿] a
+¡¡] a
 ,
-¿¿a b
+¡¡a b
 timeSlot
-¿¿c k
+¡¡c k
 ,
-¿¿k l
+¡¡k l
 appointmentId
-¿¿m z
+¡¡m z
 )
-¿¿z {
+¡¡z {
 )
-¿¿{ |
+¡¡{ |
 throw
-¡¡ 
+¬¬ 
 new
-¡¡ '
+¬¬ '
 InvalidOperationException
-¡¡ 3
+¬¬ 3
 (
-¡¡3 4
+¬¬3 4
 $str
-¡¡4 b
+¬¬4 b
 )
-¡¡b c
+¬¬b c
 ;
-¡¡c d
+¬¬c d
 }
-¬¬ 	
+√√ 	
 private
-ƒƒ 
+«« 
 static
-ƒƒ 
+«« 
 AppointmentDto
-ƒƒ %!
+«« %!
 MapToAppointmentDto
-ƒƒ& 9
+««& 9
 (
-ƒƒ9 :
+««9 :
 Appointment
-ƒƒ: E
+««: E
 appointment
-ƒƒF Q
+««F Q
 )
-ƒƒQ R
+««Q R
 {
-≈≈ 	
+»» 	
 return
-∆∆ 
+…… 
 new
-∆∆ 
+…… 
 AppointmentDto
-∆∆ %
+…… %
 {
-«« 
+   
 AppointmentId
-»» 
-=
-»» 
-appointment
-»»  +
-.
-»»+ ,
-AppointmentId
-»», 9
-,
-»»9 :
-	PatientId
-…… 
-=
-…… 
-appointment
-…… '
-.
-……' (
-	PatientId
-……( 1
-,
-……1 2
-DoctorId
-   
-=
-   
-appointment
-   &
-.
-  & '
-DoctorId
-  ' /
-,
-  / 0
-ScheduledDate
 ÀÀ 
 =
 ÀÀ 
@@ -8827,363 +10174,845 @@ DoctorName66 
 ÀÀ  +
 .
 ÀÀ+ ,
-ScheduledDate
+AppointmentId
 ÀÀ, 9
 ,
-ÀÀ9 :
-TimeSlot
-ÃÃ 
+ÀÀ9 :
+	PatientId
+ÃÃ 
 =
-ÃÃ 
-(
-ÃÃ 
-int
-ÃÃ 
-)
-ÃÃ  
+ÃÃ 
 appointment
-ÃÃ  +
+ÃÃ '
 .
-ÃÃ+ ,
-TimeSlot
-ÃÃ, 4
+ÃÃ' (
+	PatientId
+ÃÃ( 1
 ,
-ÃÃ4 5
-Status
-ÕÕ 
+ÃÃ1 2
+DoctorId
+ÕÕ 
 =
-ÕÕ 
-(
-ÕÕ 
-int
-ÕÕ 
-)
-ÕÕ 
+ÕÕ 
 appointment
-ÕÕ )
+ÕÕ &
 .
-ÕÕ) *
-Status
-ÕÕ* 0
+ÕÕ& '
+DoctorId
+ÕÕ' /
 ,
-ÕÕ0 1 
-CancellationReason
-ŒŒ "
+ÕÕ/ 0
+ScheduledDate
+ŒŒ 
 =
-ŒŒ# $
+ŒŒ 
 appointment
-ŒŒ% 0
+ŒŒ  +
 .
-ŒŒ0 1 
+ŒŒ+ ,
+ScheduledDate
+ŒŒ, 9
+,
+ŒŒ9 :
+TimeSlot
+œœ 
+=
+œœ 
+(
+œœ 
+int
+œœ 
+)
+œœ  
+appointment
+œœ  +
+.
+œœ+ ,
+TimeSlot
+œœ, 4
+,
+œœ4 5
+Status
+–– 
+=
+–– 
+(
+–– 
+int
+–– 
+)
+–– 
+appointment
+–– )
+.
+––) *
+Status
+––* 0
+,
+––0 1 
 CancellationReason
-ŒŒ1 C
+—— "
+=
+——# $
+appointment
+——% 0
+.
+——0 1 
+CancellationReason
+——1 C
 }
-œœ 
+““ 
 ;
-œœ 
+““ 
 }
-–– 	
+”” 	
 private
-”” 
+÷÷ 
 static
-”” #
+÷÷ #
 AppointmentDetailsDto
-”” ,(
+÷÷ ,(
 MapToAppointmentDetailsDto
-””- G
+÷÷- G
 (
-””G H
+÷÷G H
 Appointment
-””H S
+÷÷H S
 appointment
-””T _
+÷÷T _
 )
-””_ `
+÷÷_ `
 {
-‘‘ 	
+◊◊ 	
 return
-’’ 
+ÿÿ 
 new
-’’ #
+ÿÿ #
 AppointmentDetailsDto
-’’ ,
+ÿÿ ,
 {
-÷÷ 
+ŸŸ 
 AppointmentId
-◊◊ 
+⁄⁄ 
 =
-◊◊ 
+⁄⁄ 
 appointment
-◊◊  +
+⁄⁄  +
 .
-◊◊+ ,
+⁄⁄+ ,
 AppointmentId
-◊◊, 9
+⁄⁄, 9
 ,
-◊◊9 :
+⁄⁄9 :
 	PatientId
-ÿÿ 
+€€ 
 =
-ÿÿ 
+€€ 
 appointment
-ÿÿ '
+€€ '
 .
-ÿÿ' (
+€€' (
 	PatientId
-ÿÿ( 1
+€€( 1
 ,
-ÿÿ1 2
+€€1 2
 PatientName
-ŸŸ 
+‹‹ 
 =
-ŸŸ 
+‹‹ 
 appointment
-ŸŸ )
+‹‹ )
 .
-ŸŸ) *
+‹‹) *
 Patient
-ŸŸ* 1
+‹‹* 1
 ?
-ŸŸ1 2
+‹‹1 2
 .
-ŸŸ2 3
+‹‹2 3
 FullName
-ŸŸ3 ;
+‹‹3 ;
 ??
-ŸŸ< >
+‹‹< >
 string
-ŸŸ? E
+‹‹? E
 .
-ŸŸE F
+‹‹E F
 Empty
-ŸŸF K
+‹‹F K
 ,
-ŸŸK L
+‹‹K L
 DoctorId
-⁄⁄ 
-=
-⁄⁄ 
-appointment
-⁄⁄ &
-.
-⁄⁄& '
-DoctorId
-⁄⁄' /
-,
-⁄⁄/ 0
-
-DoctorName
-€€ 
-=
-€€ 
-appointment
-€€ (
-.
-€€( )
-Doctor
-€€) /
-?
-€€/ 0
-.
-€€0 1
-FullName
-€€1 9
-??
-€€: <
-string
-€€= C
-.
-€€C D
-Empty
-€€D I
-,
-€€I J
-ScheduledDate
-‹‹ 
-=
-‹‹ 
-appointment
-‹‹  +
-.
-‹‹+ ,
-ScheduledDate
-‹‹, 9
-,
-‹‹9 :
-TimeSlot
 ›› 
 =
-›› 
-(
-›› 
-int
-›› 
-)
-››  
+›› 
 appointment
-››  +
+›› &
 .
-››+ ,
-TimeSlot
-››, 4
+››& '
+DoctorId
+››' /
 ,
-››4 5
-Status
-ﬁﬁ 
+››/ 0
+
+DoctorName
+ﬁﬁ 
 =
-ﬁﬁ 
-(
-ﬁﬁ 
-int
-ﬁﬁ 
-)
-ﬁﬁ 
+ﬁﬁ 
 appointment
-ﬁﬁ )
+ﬁﬁ (
 .
-ﬁﬁ) *
-Status
-ﬁﬁ* 0
-,
-ﬁﬁ0 1 
-CancellationReason
-ﬂﬂ "
-=
-ﬂﬂ# $
-appointment
-ﬂﬂ% 0
+ﬁﬁ( )
+Doctor
+ﬁﬁ) /
+?
+ﬁﬁ/ 0
 .
-ﬂﬂ0 1 
-CancellationReason
-ﬂﬂ1 C
-}
-‡‡ 
-;
-‡‡ 
-}
-·· 	
-private
-„„ 
-static
-„„ #
-DoctorScheduleItemDto
-„„ ,#
-MapDoctorScheduleItem
-„„- B
-(
-„„B C
-Appointment
-„„C N
-appointment
-„„O Z
-)
-„„Z [
-{
-‰‰ 	
-return
-ÂÂ 
-new
-ÂÂ #
-DoctorScheduleItemDto
-ÂÂ ,
-{
-ÊÊ 
-AppointmentId
-ÁÁ 
-=
-ÁÁ 
-appointment
-ÁÁ  +
-.
-ÁÁ+ ,
-AppointmentId
-ÁÁ, 9
-,
-ÁÁ9 :
-ScheduledDate
-ËË 
-=
-ËË 
-appointment
-ËË  +
-.
-ËË+ ,
-ScheduledDate
-ËË, 9
-,
-ËË9 :
-TimeSlot
-ÈÈ 
-=
-ÈÈ 
-(
-ÈÈ 
-int
-ÈÈ 
-)
-ÈÈ  
-appointment
-ÈÈ  +
-.
-ÈÈ+ ,
-TimeSlot
-ÈÈ, 4
-,
-ÈÈ4 5
-	PatientId
-ÍÍ 
-=
-ÍÍ 
-appointment
-ÍÍ '
-.
-ÍÍ' (
-	PatientId
-ÍÍ( 1
-,
-ÍÍ1 2
-PatientName
-ÎÎ 
-=
-ÎÎ 
-appointment
-ÎÎ )
-.
-ÎÎ) *
-Patient
-ÎÎ* 1
-.
-ÎÎ1 2
+ﬁﬁ0 1
 FullName
-ÎÎ2 :
-,
-ÎÎ: ;
-Status
-ÏÏ 
-=
-ÏÏ 
-(
-ÏÏ 
-int
-ÏÏ 
-)
-ÏÏ 
-appointment
-ÏÏ )
+ﬁﬁ1 9
+??
+ﬁﬁ: <
+string
+ﬁﬁ= C
 .
-ÏÏ) *
+ﬁﬁC D
+Empty
+ﬁﬁD I
+,
+ﬁﬁI J
+ScheduledDate
+ﬂﬂ 
+=
+ﬂﬂ 
+appointment
+ﬂﬂ  +
+.
+ﬂﬂ+ ,
+ScheduledDate
+ﬂﬂ, 9
+,
+ﬂﬂ9 :
+TimeSlot
+‡‡ 
+=
+‡‡ 
+(
+‡‡ 
+int
+‡‡ 
+)
+‡‡  
+appointment
+‡‡  +
+.
+‡‡+ ,
+TimeSlot
+‡‡, 4
+,
+‡‡4 5
 Status
-ÏÏ* 0
+·· 
+=
+·· 
+(
+·· 
+int
+·· 
+)
+·· 
+appointment
+·· )
+.
+··) *
+Status
+··* 0
+,
+··0 1 
+CancellationReason
+‚‚ "
+=
+‚‚# $
+appointment
+‚‚% 0
+.
+‚‚0 1 
+CancellationReason
+‚‚1 C
 }
-ÌÌ 
+„„ 
 ;
-ÌÌ 
+„„ 
 }
-ÓÓ 	
+‰‰ 	
+public
+ÂÂ 
+async
+ÂÂ 
+Task
+ÂÂ 
+<
+ÂÂ 
+IEnumerable
+ÂÂ %
+<
+ÂÂ% &
+DoctorPatientDto
+ÂÂ& 6
+>
+ÂÂ6 7
+>
+ÂÂ7 8$
+GetDoctorPatientsAsync
+ÂÂ9 O
+(
+ÂÂO P
+int
+ÂÂP S
+doctorId
+ÂÂT \
+)
+ÂÂ\ ]
+{
+ÊÊ 	
+var
+ÁÁ 
+doctor
+ÁÁ 
+=
+ÁÁ 
+await
+ÁÁ 
+_doctorRepository
+ÁÁ 0
+.
+ÁÁ0 1
+GetByIdAsync
+ÁÁ1 =
+(
+ÁÁ= >
+doctorId
+ÁÁ> F
+)
+ÁÁF G
+;
+ÁÁG H
+if
+ÈÈ 
+(
+ÈÈ 
+doctor
+ÈÈ 
+==
+ÈÈ 
+null
+ÈÈ 
+)
+ÈÈ 
+{
+ÍÍ 
+throw
+ÎÎ 
+new
+ÎÎ "
+KeyNotFoundException
+ÎÎ .
+(
+ÎÎ. /
+$"
+ÎÎ/ 1
+$str
+ÎÎ1 @
+{
+ÎÎ@ A
+doctorId
+ÎÎA I
 }
-ÔÔ 
-} ç3
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Services\Implementation\AdminService.cs
+ÎÎI J
+$str
+ÎÎJ U
+"
+ÎÎU V
+)
+ÎÎV W
+;
+ÎÎW X
+}
+ÏÏ 
+var
+ÓÓ 
+appointments
+ÓÓ 
+=
+ÓÓ 
+await
+ÔÔ $
+_appointmentRepository
+ÔÔ ,
+.
+ÔÔ, -/
+!GetDoctorPatientAppointmentsAsync
+ÔÔ- N
+(
+ÔÔN O
+doctorId
+ÔÔO W
+)
+ÔÔW X
+;
+ÔÔX Y
+var
+ÒÒ 
+patients
+ÒÒ 
+=
+ÒÒ 
+appointments
+ÒÒ '
+.
+ÚÚ 
+Where
+ÚÚ 
+(
+ÚÚ 
+a
+ÚÚ 
+=>
+ÚÚ 
+a
+ÚÚ 
+.
+ÚÚ 
+Patient
+ÚÚ %
+!=
+ÚÚ& (
+null
+ÚÚ) -
+)
+ÚÚ- .
+.
+ÛÛ 
+GroupBy
+ÛÛ 
+(
+ÛÛ 
+a
+ÛÛ 
+=>
+ÛÛ 
+a
+ÛÛ 
+.
+ÛÛ  
+	PatientId
+ÛÛ  )
+)
+ÛÛ) *
+.
+ÙÙ 
+Select
+ÙÙ 
+(
+ÙÙ 
+group
+ÙÙ 
+=>
+ÙÙ  
+{
+ıı 
+var
+ˆˆ 
+latestAppointment
+ˆˆ )
+=
+ˆˆ* +
+group
+ˆˆ, 1
+.
+˜˜ 
+OrderByDescending
+˜˜ *
+(
+˜˜* +
+a
+˜˜+ ,
+=>
+˜˜- /
+a
+˜˜0 1
+.
+˜˜1 2
+ScheduledDate
+˜˜2 ?
+)
+˜˜? @
+.
+¯¯ 
+ThenByDescending
+¯¯ )
+(
+¯¯) *
+a
+¯¯* +
+=>
+¯¯, .
+a
+¯¯/ 0
+.
+¯¯0 1
+TimeSlot
+¯¯1 9
+)
+¯¯9 :
+.
+˘˘ 
+First
+˘˘ 
+(
+˘˘ 
+)
+˘˘  
+;
+˘˘  !
+var
+˚˚ 
+patient
+˚˚ 
+=
+˚˚  !
+latestAppointment
+˚˚" 3
+.
+˚˚3 4
+Patient
+˚˚4 ;
+;
+˚˚; <
+return
+˝˝ 
+new
+˝˝ 
+DoctorPatientDto
+˝˝ /
+{
+˛˛ 
+	PatientId
+ˇˇ !
+=
+ˇˇ" #
+patient
+ˇˇ$ +
+.
+ˇˇ+ ,
+	PatientId
+ˇˇ, 5
+,
+ˇˇ5 6
+FullName
+ÄÄ  
+=
+ÄÄ! "
+patient
+ÄÄ# *
+.
+ÄÄ* +
+FullName
+ÄÄ+ 3
+,
+ÄÄ3 4
+DateOfBirth
+ÅÅ #
+=
+ÅÅ$ %
+patient
+ÅÅ& -
+.
+ÅÅ- .
+DateOfBirth
+ÅÅ. 9
+,
+ÅÅ9 :
+Gender
+ÇÇ 
+=
+ÇÇ  
+patient
+ÇÇ! (
+.
+ÇÇ( )
+Gender
+ÇÇ) /
+,
+ÇÇ/ 0
+PhoneNumber
+ÉÉ #
+=
+ÉÉ$ %
+patient
+ÉÉ& -
+.
+ÉÉ- .
+PhoneNumber
+ÉÉ. 9
+,
+ÉÉ9 :
+Email
+ÑÑ 
+=
+ÑÑ 
+patient
+ÑÑ  '
+.
+ÑÑ' (
+Email
+ÑÑ( -
+,
+ÑÑ- .
+InsuranceId
+ÖÖ #
+=
+ÖÖ$ %
+patient
+ÖÖ& -
+.
+ÖÖ- .
+InsuranceNumber
+ÖÖ. =
+,
+ÖÖ= >
+IsActive
+ÜÜ  
+=
+ÜÜ! "
+patient
+ÜÜ# *
+.
+ÜÜ* +
+IsActive
+ÜÜ+ 3
+,
+ÜÜ3 4
+TotalAppointments
+áá )
+=
+áá* +
+group
+áá, 1
+.
+áá1 2
+Count
+áá2 7
+(
+áá7 8
+)
+áá8 9
+,
+áá9 :
+LastVisitDate
+àà %
+=
+àà& '
+latestAppointment
+àà( 9
+.
+àà9 :
+ScheduledDate
+àà: G
+}
+ââ 
+;
+ââ 
+}
+ää 
+)
+ää 
+.
+ãã 
+OrderBy
+ãã 
+(
+ãã 
+p
+ãã 
+=>
+ãã 
+p
+ãã 
+.
+ãã  
+FullName
+ãã  (
+)
+ãã( )
+.
+åå 
+ToList
+åå 
+(
+åå 
+)
+åå 
+;
+åå 
+return
+éé 
+patients
+éé 
+;
+éé 
+}
+èè 	
+private
+ëë 
+static
+ëë #
+DoctorScheduleItemDto
+ëë ,#
+MapDoctorScheduleItem
+ëë- B
+(
+ëëB C
+Appointment
+ëëC N
+appointment
+ëëO Z
+)
+ëëZ [
+{
+íí 	
+return
+ìì 
+new
+ìì #
+DoctorScheduleItemDto
+ìì ,
+{
+îî 
+AppointmentId
+ïï 
+=
+ïï 
+appointment
+ïï  +
+.
+ïï+ ,
+AppointmentId
+ïï, 9
+,
+ïï9 :
+ScheduledDate
+ññ 
+=
+ññ 
+appointment
+ññ  +
+.
+ññ+ ,
+ScheduledDate
+ññ, 9
+,
+ññ9 :
+TimeSlot
+óó 
+=
+óó 
+(
+óó 
+int
+óó 
+)
+óó  
+appointment
+óó  +
+.
+óó+ ,
+TimeSlot
+óó, 4
+,
+óó4 5
+	PatientId
+òò 
+=
+òò 
+appointment
+òò '
+.
+òò' (
+	PatientId
+òò( 1
+,
+òò1 2
+PatientName
+ôô 
+=
+ôô 
+appointment
+ôô )
+.
+ôô) *
+Patient
+ôô* 1
+.
+ôô1 2
+FullName
+ôô2 :
+,
+ôô: ;
+Status
+öö 
+=
+öö 
+(
+öö 
+int
+öö 
+)
+öö 
+appointment
+öö )
+.
+öö) *
+Status
+öö* 0
+,
+öö0 1 
+CancellationReason
+õõ "
+=
+õõ# $
+appointment
+õõ% 0
+.
+õõ0 1 
+CancellationReason
+õõ1 C
+,
+õõC D
+HasHealthRecord
+úú 
+=
+úú  !
+appointment
+úú" -
+.
+úú- .
+HealthRecord
+úú. :
+!=
+úú; =
+null
+úú> B
+}
+ùù 
+;
+ùù 
+}
+ûû 	
+}
+üü 
+}†† ê3
+fC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Services\Implementation\AdminService.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -9527,8 +11356,8 @@ repository $
 ;NN 
 }OO 	
 }PP 
-}QQ ¢
-eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IUserRepository.cs
+}QQ •
+hC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Interface\IUserRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -9645,8 +11474,8 @@ Repository %
 )> ?
 ;? @
 } 
-} ‡
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IPatientRepository.cs
+} „
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Interface\IPatientRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -9740,8 +11569,9 @@ Repository %
 ) 
 ;  
 } 
-} ı
-mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IHealthRecordRepository.cs
+} Ô
+
+pC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Interface\IHealthRecordRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -9767,54 +11597,53 @@ Repository %
 id- /
 )/ 0
 ;0 1
-Task 
-< 
-HealthRecord 
-? 
-> #
-GetByAppointmentIdAsync 3
-(3 4
-int4 7
-appointmentId8 E
-)E F
-;F G
-Task		 
-AddAsync		 
-(		 
-HealthRecord		 "
-record		# )
-)		) *
-;		* +
-Task
-
- 
-UpdateAsync
-
- 
-(
-
- 
-HealthRecord
-
- %
-record
-
-& ,
-)
-
-, -
-;
-
-- .
-Task 
-SaveChangesAsync 
-( 
-) 
-;  
-} 
-} Â
+Task		 
+<		 
+HealthRecord		 
+?		 
+>		 #
+GetByAppointmentIdAsync		 3
+(		3 4
+int		4 7
+appointmentId		8 E
+)		E F
+;		F G
+Task 
+< 
+IEnumerable 
+< 
+HealthRecord %
+>% &
+>& '
+GetByPatientIdAsync( ;
+(; <
+int< ?
+	patientId@ I
+)I J
+;J K
+Task 
+AddAsync 
+( 
+HealthRecord "
+record# )
+)) *
+;* +
+Task 
+UpdateAsync 
+( 
+HealthRecord %
+record& ,
+), -
+;- .
+Task 
+SaveChangesAsync 
+( 
+) 
+;  
+} 
+} Ë
 
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IGenericRepository.cs
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Interface\IGenericRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -9890,8 +11719,8 @@ Repository %
 )% &
 ;& '
 } 
-} ë
-gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IDoctorRepository.cs
+} î
+jC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Interface\IDoctorRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -10008,8 +11837,8 @@ Repository %
 ) 
 ;  
 } 
-} ∞!
-lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IAppointmentRepository.cs
+} ∂#
+oC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Interface\IAppointmentRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -10199,38 +12028,51 @@ Repository %
 appointmentIdh u
 )u v
 ;v w
-Task 
-AddAsync 
-( 
-Appointment !
-appointment" -
-)- .
-;. /
-Task 
-UpdateAsync 
-( 
-Appointment $
-appointment% 0
-)0 1
-;1 2
-Task 
-< 
-bool 
-> 
-ExistsAsync 
-( 
-int "
-id# %
-)% &
-;& '
-Task 
-SaveChangesAsync 
-( 
-) 
-;  
-} 
-} ¸
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Interface\IAdminRepository.cs
+Task 
+< 
+IEnumerable 
+< 
+Appointment $
+>$ %
+>% &-
+!GetDoctorPatientAppointmentsAsync' H
+(H I
+intI L
+doctorIdM U
+)U V
+;V W
+Task 
+AddAsync 
+( 
+Appointment !
+appointment" -
+)- .
+;. /
+Task 
+UpdateAsync 
+( 
+Appointment $
+appointment% 0
+)0 1
+;1 2
+Task 
+< 
+bool 
+> 
+ExistsAsync 
+( 
+int "
+id# %
+)% &
+;& '
+Task 
+SaveChangesAsync 
+( 
+) 
+;  
+} 
+} ˇ
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Interface\IAdminRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -10345,8 +12187,8 @@ Repository %
 )+ ,
 ;, -
 } 
-} $
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\UserRepository.cs
+} Û$
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Implementation\UserRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -10608,8 +12450,8 @@ Repository %
 ;@@I J
 }AA 	
 }BB 
-}CC ¨&
-lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\PatientRepository.cs
+}CC Ø&
+oC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Implementation\PatientRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -10888,1492 +12730,8 @@ Repository %
 ;??- .
 }@@ 	
 }AA 
-}BB ñ
-gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\HealthRecord.cs
-	namespace 	
-S3_HealthAxisApi
- 
-. 
-
-Repository %
-.% &
-Implementation& 4
-{ 
-[		 #
-ExcludeFromCodeCoverage		 
-]		 
-public
-
- 
-
-class
-
- "
-HealthRecordRepository
-
- '
-:
-
-( )#
-IHealthRecordRepository
-
-* A
-{ 
-private 
-readonly 
-HealthAxisDbContext ,
-_context- 5
-;5 6
-public "
-HealthRecordRepository %
-(% &
-HealthAxisDbContext& 9
-context: A
-)A B
-{ 	
-_context 
-= 
-context 
-; 
-} 	
-public 
-async 
-Task 
-< 
-HealthRecord &
-?& '
->' (
-GetByIdAsync) 5
-(5 6
-int6 9
-id: <
-)< =
-{ 	
-return 
-await 
-_context !
-.! "
-HealthRecords" /
-. 
-Include 
-( 
-hr 
-=> 
-hr !
-.! "
-Patient" )
-)) *
-. 
-Include 
-( 
-hr 
-=> 
-hr !
-.! "
-Doctor" (
-)( )
-. 
-Include 
-( 
-hr 
-=> 
-hr !
-.! "
-Appointment" -
-)- .
-. 
-FirstOrDefaultAsync $
-($ %
-hr% '
-=>( *
-hr+ -
-.- .
-HealthRecordId. <
-=== ?
-id@ B
-)B C
-;C D
-} 	
-public 
-async 
-Task 
-< 
-HealthRecord &
-?& '
->' (#
-GetByAppointmentIdAsync) @
-(@ A
-intA D
-appointmentIdE R
-)R S
-{ 	
-return 
-await 
-_context !
-.! "
-HealthRecords" /
-. 
-Include 
-( 
-hr 
-=> 
-hr !
-.! "
-Patient" )
-)) *
-.   
-Include   
-(   
-hr   
-=>   
-hr   !
-.  ! "
-Doctor  " (
-)  ( )
-.!! 
-Include!! 
-(!! 
-hr!! 
-=>!! 
-hr!! !
-.!!! "
-Appointment!!" -
-)!!- .
-."" 
-FirstOrDefaultAsync"" $
-(""$ %
-hr""% '
-=>""( *
-hr""+ -
-.""- .
-AppointmentId"". ;
-==""< >
-appointmentId""? L
-)""L M
-;""M N
-}## 	
-public%% 
-async%% 
-Task%% 
-AddAsync%% "
-(%%" #
-HealthRecord%%# /
-record%%0 6
-)%%6 7
-{&& 	
-await'' 
-_context'' 
-.'' 
-HealthRecords'' (
-.''( )
-AddAsync'') 1
-(''1 2
-record''2 8
-)''8 9
-;''9 :
-}(( 	
-public** 
-Task** 
-UpdateAsync** 
-(**  
-HealthRecord**  ,
-record**- 3
-)**3 4
-{++ 	
-_context,, 
-.,, 
-HealthRecords,, "
-.,," #
-Update,,# )
-(,,) *
-record,,* 0
-),,0 1
-;,,1 2
-return-- 
-Task-- 
-.-- 
-CompletedTask-- %
-;--% &
-}.. 	
-public00 
-async00 
-Task00 
-SaveChangesAsync00 *
-(00* +
-)00+ ,
-{11 	
-await22 
-_context22 
-.22 
-SaveChangesAsync22 +
-(22+ ,
-)22, -
-;22- .
-}33 	
-}44 
-}55 °!
-lC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\GenericRepository.cs
-	namespace 	
-S3_HealthAxisApi
- 
-. 
-
-Repository %
-.% &
-Implementation& 4
-{ 
-[ #
-ExcludeFromCodeCoverage 
-] 
-public		 
-
-class		 
-GenericRepository		 "
-<		" #
-T		# $
->		$ %
-:		& '
-IGenericRepository		( :
-<		: ;
-T		; <
->		< =
-where
-
- 
-T
-
- 
-:
-
- 
-class
-
- 
-{ 
-	protected 
-readonly 
-HealthAxisDbContext .
-_context/ 7
-;7 8
-	protected 
-readonly 
-DbSet  
-<  !
-T! "
->" #
-_dbSet$ *
-;* +
-public 
-GenericRepository  
-(  !
-HealthAxisDbContext! 4
-context5 <
-)< =
-{ 	
-_context 
-= 
-context 
-; 
-_dbSet 
-= 
-context 
-. 
-Set  
-<  !
-T! "
->" #
-(# $
-)$ %
-;% &
-} 	
-public 
-virtual 
-async 
-Task !
-<! "
-IEnumerable" -
-<- .
-T. /
->/ 0
->0 1
-GetAllAsync2 =
-(= >
-)> ?
-{ 	
-return 
-await 
-_dbSet 
-.  
-ToListAsync  +
-(+ ,
-), -
-;- .
-} 	
-public 
-virtual 
-async 
-Task !
-<! "
-T" #
-?# $
->$ %
-GetByIdAsync& 2
-(2 3
-int3 6
-id7 9
-)9 :
-{ 	
-return 
-await 
-_dbSet 
-.  
-	FindAsync  )
-() *
-id* ,
-), -
-;- .
-} 	
-public 
-virtual 
-async 
-Task !
-AddAsync" *
-(* +
-T+ ,
-entity- 3
-)3 4
-{   	
-await!! 
-_dbSet!! 
-.!! 
-AddAsync!! !
-(!!! "
-entity!!" (
-)!!( )
-;!!) *
-await"" 
-_context"" 
-."" 
-SaveChangesAsync"" +
-(""+ ,
-)"", -
-;""- .
-}## 	
-public%% 
-virtual%% 
-async%% 
-Task%% !
-UpdateAsync%%" -
-(%%- .
-T%%. /
-entity%%0 6
-)%%6 7
-{&& 	
-_dbSet'' 
-.'' 
-Update'' 
-('' 
-entity''  
-)''  !
-;''! "
-await(( 
-_context(( 
-.(( 
-SaveChangesAsync(( +
-(((+ ,
-)((, -
-;((- .
-})) 	
-public++ 
-virtual++ 
-async++ 
-Task++ !
-DeleteAsync++" -
-(++- .
-int++. 1
-id++2 4
-)++4 5
-{,, 	
-var-- 
-entity-- 
-=-- 
-await-- 
-_dbSet-- %
-.--% &
-	FindAsync--& /
-(--/ 0
-id--0 2
-)--2 3
-;--3 4
-if// 
-(// 
-entity// 
-!=// 
-null// 
-)// 
-{00 
-_dbSet11 
-.11 
-Remove11 
-(11 
-entity11 $
-)11$ %
-;11% &
-await22 
-_context22 
-.22 
-SaveChangesAsync22 /
-(22/ 0
-)220 1
-;221 2
-}33 
-}44 	
-public66 
-virtual66 
-async66 
-Task66 !
-<66! "
-bool66" &
->66& '
-ExistsAsync66( 3
-(663 4
-int664 7
-id668 :
-)66: ;
-{77 	
-return88 
-await88 
-_dbSet88 
-.88  
-	FindAsync88  )
-(88) *
-id88* ,
-)88, -
-!=88. 0
-null881 5
-;885 6
-}99 	
-}:: 
-};; ”
-pC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\AppointmentRepository.cs
-	namespace		 	
-S3_HealthAxisApi		
- 
-.		 
-
-Repository		 %
-.		% &
-Implementation		& 4
-{
-
- 
-[ #
-ExcludeFromCodeCoverage 
-] 
-public 
-
-class !
-AppointmentRepository &
-:' ("
-IAppointmentRepository) ?
-{ 
-private 
-readonly 
-HealthAxisDbContext ,
-_context- 5
-;5 6
-public !
-AppointmentRepository $
-($ %
-HealthAxisDbContext% 8
-context9 @
-)@ A
-{ 	
-_context 
-= 
-context 
-; 
-} 	
-public 
-async 
-Task 
-< 
-IEnumerable %
-<% &
-Appointment& 1
->1 2
->2 3
-GetAllAsync4 ?
-(? @
-)@ A
-{ 	
-return 
-await 
-_context !
-.! "
-Appointments" .
-. 
-Include 
-( 
-a 
-=> 
-a 
-.  
-Patient  '
-)' (
-. 
-Include 
-( 
-a 
-=> 
-a 
-.  
-Doctor  &
-)& '
-. 
-OrderByDescending "
-(" #
-a# $
-=>% '
-a( )
-.) *
-ScheduledDate* 7
-)7 8
-. 
-ThenBy 
-( 
-a 
-=> 
-a 
-. 
-TimeSlot '
-)' (
-. 
-ToListAsync 
-( 
-) 
-; 
-} 	
-public 
-async 
-Task 
-< 
-Appointment %
-?% &
->& '
-GetByIdAsync( 4
-(4 5
-int5 8
-id9 ;
-); <
-{   	
-return!! 
-await!! 
-_context!! !
-.!!! "
-Appointments!!" .
-."" 
-Include"" 
-("" 
-a"" 
-=>"" 
-a"" 
-.""  
-Patient""  '
-)""' (
-.## 
-Include## 
-(## 
-a## 
-=>## 
-a## 
-.##  
-Doctor##  &
-)##& '
-.$$ 
-FirstOrDefaultAsync$$ $
-($$$ %
-a$$% &
-=>$$' )
-a$$* +
-.$$+ ,
-AppointmentId$$, 9
-==$$: <
-id$$= ?
-)$$? @
-;$$@ A
-}%% 	
-public'' 
-async'' 
-Task'' 
-<'' 
-IEnumerable'' %
-<''% &
-Appointment''& 1
->''1 2
->''2 3
-GetByPatientIdAsync''4 G
-(''G H
-int''H K
-	patientId''L U
-)''U V
-{(( 	
-return)) 
-await)) 
-_context)) !
-.))! "
-Appointments))" .
-.** 
-Include** 
-(** 
-a** 
-=>** 
-a** 
-.**  
-Doctor**  &
-)**& '
-.++ 
-Where++ 
-(++ 
-a++ 
-=>++ 
-a++ 
-.++ 
-	PatientId++ '
-==++( *
-	patientId+++ 4
-)++4 5
-.,, 
-OrderByDescending,, "
-(,," #
-a,,# $
-=>,,% '
-a,,( )
-.,,) *
-ScheduledDate,,* 7
-),,7 8
-.-- 
-ThenBy-- 
-(-- 
-a-- 
-=>-- 
-a-- 
-.-- 
-TimeSlot-- '
-)--' (
-... 
-ToListAsync.. 
-(.. 
-).. 
-;.. 
-}// 	
-public11 
-async11 
-Task11 
-<11 
-IEnumerable11 %
-<11% &
-Appointment11& 1
->111 2
->112 3'
-GetDoctorTodayScheduleAsync114 O
-(11O P
-int11P S
-doctorId11T \
-,11\ ]
-DateOnly11^ f
-today11g l
-)11l m
-{22 	
-return33 
-await33 
-_context33 !
-.33! "
-Appointments33" .
-.44 
-Include44 
-(44 
-a44 
-=>44 
-a44 
-.44  
-Patient44  '
-)44' (
-.55 
-Where55 
-(55 
-a55 
-=>55 
-a55 
-.55 
-DoctorId55 &
-==55' )
-doctorId55* 2
-&&553 5
-a556 7
-.557 8
-ScheduledDate558 E
-==55F H
-today55I N
-)55N O
-.66 
-OrderBy66 
-(66 
-a66 
-=>66 
-a66 
-.66  
-TimeSlot66  (
-)66( )
-.77 
-ToListAsync77 
-(77 
-)77 
-;77 
-}88 	
-public:: 
-async:: 
-Task:: 
-<:: 
-IEnumerable:: %
-<::% &
-Appointment::& 1
->::1 2
->::2 3&
-GetDoctorWeekScheduleAsync::4 N
-(::N O
-int::O R
-doctorId::S [
-,::[ \
-DateOnly::] e
-	startDate::f o
-,::o p
-DateOnly::q y
-endDate	::z Å
-)
-::Å Ç
-{;; 	
-return<< 
-await<< 
-_context<< !
-.<<! "
-Appointments<<" .
-.== 
-Include== 
-(== 
-a== 
-=>== 
-a== 
-.==  
-Patient==  '
-)==' (
-.>> 
-Where>> 
-(>> 
-a>> 
-=>>> 
-a>> 
-.>> 
-DoctorId>> &
-==>>' )
-doctorId>>* 2
-&&>>3 5
-a?? 
-.?? 
-ScheduledDate?? +
->=??, .
-	startDate??/ 8
-&&??9 ;
-a@@ 
-.@@ 
-ScheduledDate@@ +
-<=@@, .
-endDate@@/ 6
-)@@6 7
-.AA 
-OrderByAA 
-(AA 
-aAA 
-=>AA 
-aAA 
-.AA  
-ScheduledDateAA  -
-)AA- .
-.BB 
-ThenByBB 
-(BB 
-aBB 
-=>BB 
-aBB 
-.BB 
-TimeSlotBB '
-)BB' (
-.CC 
-ToListAsyncCC 
-(CC 
-)CC 
-;CC 
-}DD 	
-publicFF 
-asyncFF 
-TaskFF 
-<FF 
-boolFF 
->FF 4
-(ExistsSamePatientSameDoctorSameDateAsyncFF  H
-(FFH I
-intFFI L
-	patientIdFFM V
-,FFV W
-intFFX [
-doctorIdFF\ d
-,FFd e
-DateOnlyFFf n
-dateFFo s
-)FFs t
-{GG 	
-returnHH 
-awaitHH 
-_contextHH !
-.HH! "
-AppointmentsHH" .
-.HH. /
-AnyAsyncHH/ 7
-(HH7 8
-aHH8 9
-=>HH: <
-aII 
-.II 
-	PatientIdII 
-==II 
-	patientIdII (
-&&II) +
-aJJ 
-.JJ 
-DoctorIdJJ 
-==JJ 
-doctorIdJJ &
-&&JJ' )
-aKK 
-.KK 
-ScheduledDateKK 
-==KK  "
-dateKK# '
-&&KK( *
-aLL 
-.LL 
-StatusLL 
-!=LL 
-AppointmentStatusLL -
-.LL- .
-	CancelledLL. 7
-)LL7 8
-;LL8 9
-}MM 	
-publicOO 
-asyncOO 
-TaskOO 
-<OO 
-boolOO 
->OO 2
-&ExistsSamePatientSameSlotSameDateAsyncOO  F
-(OOF G
-intOOG J
-	patientIdOOK T
-,OOT U
-DateOnlyOOV ^
-dateOO_ c
-,OOc d
-intOOe h
-timeSlotOOi q
-)OOq r
-{PP 	
-ifQQ 
-(QQ 
-!QQ 
-EnumQQ 
-.QQ 
-	IsDefinedQQ 
-(QQ  
-typeofQQ  &
-(QQ& '
-AppointmentTimeSlotQQ' :
-)QQ: ;
-,QQ; <
-timeSlotQQ= E
-)QQE F
-)QQF G
-throwRR 
-newRR 
-ArgumentExceptionRR +
-(RR+ ,
-$strRR, L
-)RRL M
-;RRM N
-varTT 
-slotEnumTT 
-=TT 
-(TT 
-AppointmentTimeSlotTT /
-)TT/ 0
-timeSlotTT0 8
-;TT8 9
-returnVV 
-awaitVV 
-_contextVV !
-.VV! "
-AppointmentsVV" .
-.VV. /
-AnyAsyncVV/ 7
-(VV7 8
-aVV8 9
-=>VV: <
-aWW 
-.WW 
-	PatientIdWW 
-==WW 
-	patientIdWW (
-&&WW) +
-aXX 
-.XX 
-ScheduledDateXX 
-==XX  "
-dateXX# '
-&&XX( *
-aYY 
-.YY 
-TimeSlotYY 
-==YY 
-slotEnumYY &
-&&YY' )
-aZZ 
-.ZZ 
-StatusZZ 
-!=ZZ 
-AppointmentStatusZZ -
-.ZZ- .
-	CancelledZZ. 7
-)ZZ7 8
-;ZZ8 9
-}[[ 	
-public]] 
-async]] 
-Task]] 
-<]] 
-bool]] 
->]] 1
-%ExistsSameDoctorSameSlotSameDateAsync]]  E
-(]]E F
-int]]F I
-doctorId]]J R
-,]]R S
-DateOnly]]T \
-date]]] a
-,]]a b
-int]]c f
-timeSlot]]g o
-)]]o p
-{^^ 	
-if__ 
-(__ 
-!__ 
-Enum__ 
-.__ 
-	IsDefined__ 
-(__  
-typeof__  &
-(__& '
-AppointmentTimeSlot__' :
-)__: ;
-,__; <
-timeSlot__= E
-)__E F
-)__F G
-throw`` 
-new`` 
-ArgumentException`` +
-(``+ ,
-$str``, L
-)``L M
-;``M N
-varbb 
-slotEnumbb 
-=bb 
-(bb 
-AppointmentTimeSlotbb /
-)bb/ 0
-timeSlotbb0 8
-;bb8 9
-returndd 
-awaitdd 
-_contextdd !
-.dd! "
-Appointmentsdd" .
-.dd. /
-AnyAsyncdd/ 7
-(dd7 8
-add8 9
-=>dd: <
-aee 
-.ee 
-DoctorIdee 
-==ee 
-doctorIdee &
-&&ee' )
-aff 
-.ff 
-ScheduledDateff 
-==ff  "
-dateff# '
-&&ff( *
-agg 
-.gg 
-TimeSlotgg 
-==gg 
-slotEnumgg &
-&&gg' )
-ahh 
-.hh 
-Statushh 
-!=hh 
-AppointmentStatushh -
-.hh- .
-	Cancelledhh. 7
-)hh7 8
-;hh8 9
-}ii 	
-publickk 
-asynckk 
-Taskkk 
-<kk 
-boolkk 
->kk 4
-(ExistsSamePatientSameDoctorSameDateAsynckk  H
-(kkH I
-intkkI L
-	patientIdkkM V
-,kkV W
-intkkX [
-doctorIdkk\ d
-,kkd e
-DateOnlykkf n
-datekko s
-,kks t
-intkku x
-appointmentId	kky Ü
-)
-kkÜ á
-{ll 	
-returnmm 
-awaitmm 
-_contextmm !
-.mm! "
-Appointmentsmm" .
-.mm. /
-AnyAsyncmm/ 7
-(mm7 8
-amm8 9
-=>mm: <
-ann 
-.nn 
-AppointmentIdnn 
-!=nn  "
-appointmentIdnn# 0
-&&nn1 3
-aoo 
-.oo 
-	PatientIdoo 
-==oo 
-	patientIdoo (
-&&oo) +
-app 
-.pp 
-DoctorIdpp 
-==pp 
-doctorIdpp &
-&&pp' )
-aqq 
-.qq 
-ScheduledDateqq 
-==qq  "
-dateqq# '
-&&qq( *
-arr 
-.rr 
-Statusrr 
-!=rr 
-AppointmentStatusrr -
-.rr- .
-	Cancelledrr. 7
-)rr7 8
-;rr8 9
-}ss 	
-publicuu 
-asyncuu 
-Taskuu 
-<uu 
-booluu 
->uu 2
-&ExistsSamePatientSameSlotSameDateAsyncuu  F
-(uuF G
-intuuG J
-	patientIduuK T
-,uuT U
-DateOnlyuuV ^
-dateuu_ c
-,uuc d
-intuue h
-timeSlotuui q
-,uuq r
-intuus v
-appointmentId	uuw Ñ
-)
-uuÑ Ö
-{vv 	
-returnww 
-awaitww 
-_contextww !
-.ww! "
-Appointmentsww" .
-.ww. /
-AnyAsyncww/ 7
-(ww7 8
-aww8 9
-=>ww: <
-axx 
-.xx 
-AppointmentIdxx 
-!=xx  "
-appointmentIdxx# 0
-&&xx1 3
-ayy 
-.yy 
-	PatientIdyy 
-==yy 
-	patientIdyy (
-&&yy) +
-azz 
-.zz 
-ScheduledDatezz 
-==zz  "
-datezz# '
-&&zz( *
-({{ 
-int{{ 
-){{ 
-a{{ 
-.{{ 
-TimeSlot{{ 
-=={{  "
-timeSlot{{# +
-&&{{, .
-a|| 
-.|| 
-Status|| 
-!=|| 
-AppointmentStatus|| -
-.||- .
-	Cancelled||. 7
-)||7 8
-;||8 9
-}}} 	
-public 
-async 
-Task 
-< 
-bool 
-> 1
-%ExistsSameDoctorSameSlotSameDateAsync  E
-(E F
-intF I
-doctorIdJ R
-,R S
-DateOnlyT \
-date] a
-,a b
-intc f
-timeSlotg o
-,o p
-intq t
-appointmentId	u Ç
-)
-Ç É
-{
-ÄÄ 	
-return
-ÅÅ 
-await
-ÅÅ 
-_context
-ÅÅ !
-.
-ÅÅ! "
-Appointments
-ÅÅ" .
-.
-ÅÅ. /
-AnyAsync
-ÅÅ/ 7
-(
-ÅÅ7 8
-a
-ÅÅ8 9
-=>
-ÅÅ: <
-a
-ÇÇ 
-.
-ÇÇ 
-AppointmentId
-ÇÇ 
-!=
-ÇÇ  "
-appointmentId
-ÇÇ# 0
-&&
-ÇÇ1 3
-a
-ÉÉ 
-.
-ÉÉ 
-DoctorId
-ÉÉ 
-==
-ÉÉ 
-doctorId
-ÉÉ &
-&&
-ÉÉ' )
-a
-ÑÑ 
-.
-ÑÑ 
-ScheduledDate
-ÑÑ 
-==
-ÑÑ  "
-date
-ÑÑ# '
-&&
-ÑÑ( *
-(
-ÖÖ 
-int
-ÖÖ 
-)
-ÖÖ 
-a
-ÖÖ 
-.
-ÖÖ 
-TimeSlot
-ÖÖ 
-==
-ÖÖ  "
-timeSlot
-ÖÖ# +
-&&
-ÖÖ, .
-a
-ÜÜ 
-.
-ÜÜ 
-Status
-ÜÜ 
-!=
-ÜÜ 
-AppointmentStatus
-ÜÜ -
-.
-ÜÜ- .
-	Cancelled
-ÜÜ. 7
-)
-ÜÜ7 8
-;
-ÜÜ8 9
-}
-áá 	
-public
-ââ 
-async
-ââ 
-Task
-ââ 
-AddAsync
-ââ "
-(
-ââ" #
-Appointment
-ââ# .
-appointment
-ââ/ :
-)
-ââ: ;
-{
-ää 	
-await
-ãã 
-_context
-ãã 
-.
-ãã 
-Appointments
-ãã '
-.
-ãã' (
-AddAsync
-ãã( 0
-(
-ãã0 1
-appointment
-ãã1 <
-)
-ãã< =
-;
-ãã= >
-}
-åå 	
-public
-éé 
-Task
-éé 
-UpdateAsync
-éé 
-(
-éé  
-Appointment
-éé  +
-appointment
-éé, 7
-)
-éé7 8
-{
-èè 	
-_context
-êê 
-.
-êê 
-Appointments
-êê !
-.
-êê! "
-Update
-êê" (
-(
-êê( )
-appointment
-êê) 4
-)
-êê4 5
-;
-êê5 6
-return
-ëë 
-Task
-ëë 
-.
-ëë 
-CompletedTask
-ëë %
-;
-ëë% &
-}
-íí 	
-public
-îî 
-async
-îî 
-Task
-îî 
-<
-îî 
-bool
-îî 
->
-îî 
-ExistsAsync
-îî  +
-(
-îî+ ,
-int
-îî, /
-id
-îî0 2
-)
-îî2 3
-{
-ïï 	
-return
-ññ 
-await
-ññ 
-_context
-ññ !
-.
-ññ! "
-Appointments
-ññ" .
-.
-ññ. /
-AnyAsync
-ññ/ 7
-(
-ññ7 8
-a
-ññ8 9
-=>
-ññ: <
-a
-ññ= >
-.
-ññ> ?
-AppointmentId
-ññ? L
-==
-ññM O
-id
-ññP R
-)
-ññR S
-;
-ññS T
-}
-óó 	
-public
-ôô 
-async
-ôô 
-Task
-ôô 
-SaveChangesAsync
-ôô *
-(
-ôô* +
-)
-ôô+ ,
-{
-öö 	
-await
-õõ 
-_context
-õõ 
-.
-õõ 
-SaveChangesAsync
-õõ +
-(
-õõ+ ,
-)
-õõ, -
-;
-õõ- .
-}
-úú 	
-}
-ùù 
-}ûû ˚@
-kC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\DoctorRepository.cs
+}BB ˛@
+nC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Implementation\DoctorRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -12836,8 +13194,1879 @@ IQueryable 
 ;[[- .
 }\\ 	
 }]] 
-}^^ Ÿ<
-jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Repositories\Implementation\AdminRepository.cs
+}^^ §!
+oC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Implementation\GenericRepository.cs
+	namespace 	
+S3_HealthAxisApi
+ 
+. 
+
+Repository %
+.% &
+Implementation& 4
+{ 
+[ #
+ExcludeFromCodeCoverage 
+] 
+public		 
+
+class		 
+GenericRepository		 "
+<		" #
+T		# $
+>		$ %
+:		& '
+IGenericRepository		( :
+<		: ;
+T		; <
+>		< =
+where
+
+ 
+T
+
+ 
+:
+
+ 
+class
+
+ 
+{ 
+	protected 
+readonly 
+HealthAxisDbContext .
+_context/ 7
+;7 8
+	protected 
+readonly 
+DbSet  
+<  !
+T! "
+>" #
+_dbSet$ *
+;* +
+public 
+GenericRepository  
+(  !
+HealthAxisDbContext! 4
+context5 <
+)< =
+{ 	
+_context 
+= 
+context 
+; 
+_dbSet 
+= 
+context 
+. 
+Set  
+<  !
+T! "
+>" #
+(# $
+)$ %
+;% &
+} 	
+public 
+virtual 
+async 
+Task !
+<! "
+IEnumerable" -
+<- .
+T. /
+>/ 0
+>0 1
+GetAllAsync2 =
+(= >
+)> ?
+{ 	
+return 
+await 
+_dbSet 
+.  
+ToListAsync  +
+(+ ,
+), -
+;- .
+} 	
+public 
+virtual 
+async 
+Task !
+<! "
+T" #
+?# $
+>$ %
+GetByIdAsync& 2
+(2 3
+int3 6
+id7 9
+)9 :
+{ 	
+return 
+await 
+_dbSet 
+.  
+	FindAsync  )
+() *
+id* ,
+), -
+;- .
+} 	
+public 
+virtual 
+async 
+Task !
+AddAsync" *
+(* +
+T+ ,
+entity- 3
+)3 4
+{   	
+await!! 
+_dbSet!! 
+.!! 
+AddAsync!! !
+(!!! "
+entity!!" (
+)!!( )
+;!!) *
+await"" 
+_context"" 
+."" 
+SaveChangesAsync"" +
+(""+ ,
+)"", -
+;""- .
+}## 	
+public%% 
+virtual%% 
+async%% 
+Task%% !
+UpdateAsync%%" -
+(%%- .
+T%%. /
+entity%%0 6
+)%%6 7
+{&& 	
+_dbSet'' 
+.'' 
+Update'' 
+('' 
+entity''  
+)''  !
+;''! "
+await(( 
+_context(( 
+.(( 
+SaveChangesAsync(( +
+(((+ ,
+)((, -
+;((- .
+})) 	
+public++ 
+virtual++ 
+async++ 
+Task++ !
+DeleteAsync++" -
+(++- .
+int++. 1
+id++2 4
+)++4 5
+{,, 	
+var-- 
+entity-- 
+=-- 
+await-- 
+_dbSet-- %
+.--% &
+	FindAsync--& /
+(--/ 0
+id--0 2
+)--2 3
+;--3 4
+if// 
+(// 
+entity// 
+!=// 
+null// 
+)// 
+{00 
+_dbSet11 
+.11 
+Remove11 
+(11 
+entity11 $
+)11$ %
+;11% &
+await22 
+_context22 
+.22 
+SaveChangesAsync22 /
+(22/ 0
+)220 1
+;221 2
+}33 
+}44 	
+public66 
+virtual66 
+async66 
+Task66 !
+<66! "
+bool66" &
+>66& '
+ExistsAsync66( 3
+(663 4
+int664 7
+id668 :
+)66: ;
+{77 	
+return88 
+await88 
+_dbSet88 
+.88  
+	FindAsync88  )
+(88) *
+id88* ,
+)88, -
+!=88. 0
+null881 5
+;885 6
+}99 	
+}:: 
+};; ñ)
+tC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Implementation\HealthRecordRepository.cs
+	namespace 	
+S3_HealthAxisApi
+ 
+. 
+
+Repository %
+.% &
+Implementation& 4
+{ 
+[		 #
+ExcludeFromCodeCoverage		 
+]		 
+public
+
+ 
+
+class
+
+ "
+HealthRecordRepository
+
+ '
+:
+
+( )#
+IHealthRecordRepository
+
+* A
+{ 
+private 
+readonly 
+HealthAxisDbContext ,
+_context- 5
+;5 6
+public "
+HealthRecordRepository %
+(% &
+HealthAxisDbContext& 9
+context: A
+)A B
+{ 	
+_context 
+= 
+context 
+; 
+} 	
+public 
+async 
+Task 
+< 
+HealthRecord &
+?& '
+>' (
+GetByIdAsync) 5
+(5 6
+int6 9
+id: <
+)< =
+{ 	
+return 
+await 
+_context !
+.! "
+HealthRecords" /
+. 
+Include 
+( 
+r 
+=> 
+r 
+.  
+Doctor  &
+)& '
+. 
+Include 
+( 
+r 
+=> 
+r 
+.  
+Patient  '
+)' (
+. 
+Include 
+( 
+r 
+=> 
+r 
+.  
+Appointment  +
+)+ ,
+. 
+FirstOrDefaultAsync $
+($ %
+r% &
+=>' )
+r* +
+.+ ,
+HealthRecordId, :
+==; =
+id> @
+)@ A
+;A B
+} 	
+public 
+async 
+Task 
+< 
+HealthRecord &
+?& '
+>' (#
+GetByAppointmentIdAsync) @
+(@ A
+intA D
+appointmentIdE R
+)R S
+{ 	
+return 
+await 
+_context !
+.! "
+HealthRecords" /
+. 
+Include 
+( 
+r 
+=> 
+r 
+.  
+Doctor  &
+)& '
+.   
+Include   
+(   
+r   
+=>   
+r   
+.    
+Patient    '
+)  ' (
+.!! 
+Include!! 
+(!! 
+r!! 
+=>!! 
+r!! 
+.!!  
+Appointment!!  +
+)!!+ ,
+."" 
+FirstOrDefaultAsync"" $
+(""$ %
+r""% &
+=>""' )
+r""* +
+.""+ ,
+AppointmentId"", 9
+=="": <
+appointmentId""= J
+)""J K
+;""K L
+}## 	
+public%% 
+async%% 
+Task%% 
+<%% 
+IEnumerable%% %
+<%%% &
+HealthRecord%%& 2
+>%%2 3
+>%%3 4
+GetByPatientIdAsync%%5 H
+(%%H I
+int%%I L
+	patientId%%M V
+)%%V W
+{&& 	
+return'' 
+await'' 
+_context'' !
+.''! "
+HealthRecords''" /
+.(( 
+Include(( 
+((( 
+r(( 
+=>(( 
+r(( 
+.((  
+Doctor((  &
+)((& '
+.)) 
+Include)) 
+()) 
+r)) 
+=>)) 
+r)) 
+.))  
+Patient))  '
+)))' (
+.** 
+Include** 
+(** 
+r** 
+=>** 
+r** 
+.**  
+Appointment**  +
+)**+ ,
+.++ 
+Where++ 
+(++ 
+r++ 
+=>++ 
+r++ 
+.++ 
+	PatientId++ '
+==++( *
+	patientId+++ 4
+)++4 5
+.,, 
+OrderByDescending,, "
+(,," #
+r,,# $
+=>,,% '
+r,,( )
+.,,) *
+	CreatedOn,,* 3
+),,3 4
+.-- 
+ToListAsync-- 
+(-- 
+)-- 
+;-- 
+}.. 	
+public00 
+async00 
+Task00 
+AddAsync00 "
+(00" #
+HealthRecord00# /
+record000 6
+)006 7
+{11 	
+await22 
+_context22 
+.22 
+HealthRecords22 (
+.22( )
+AddAsync22) 1
+(221 2
+record222 8
+)228 9
+;229 :
+}33 	
+public55 
+Task55 
+UpdateAsync55 
+(55  
+HealthRecord55  ,
+record55- 3
+)553 4
+{66 	
+_context77 
+.77 
+HealthRecords77 "
+.77" #
+Update77# )
+(77) *
+record77* 0
+)770 1
+;771 2
+return88 
+Task88 
+.88 
+CompletedTask88 %
+;88% &
+}99 	
+public;; 
+async;; 
+Task;; 
+SaveChangesAsync;; *
+(;;* +
+);;+ ,
+{<< 	
+await== 
+_context== 
+.== 
+SaveChangesAsync== +
+(==+ ,
+)==, -
+;==- .
+}>> 	
+}?? 
+}@@ ‚í
+sC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Implementation\AppointmentRepository.cs
+	namespace 	
+S3_HealthAxisApi
+ 
+. 
+
+Repository %
+.% &
+Implementation& 4
+{		 
+[
+
+ #
+ExcludeFromCodeCoverage
+
+ 
+]
+
+ 
+public 
+
+class !
+AppointmentRepository &
+:' ("
+IAppointmentRepository) ?
+{ 
+private 
+readonly 
+HealthAxisDbContext ,
+_context- 5
+;5 6
+public !
+AppointmentRepository $
+($ %
+HealthAxisDbContext% 8
+context9 @
+)@ A
+{ 	
+_context 
+= 
+context 
+; 
+} 	
+public 
+async 
+Task 
+< 
+IEnumerable %
+<% &
+Appointment& 1
+>1 2
+>2 3
+GetAllAsync4 ?
+(? @
+)@ A
+{ 	
+return 
+await 
+_context !
+.! "
+Appointments" .
+. 
+Include 
+( 
+a 
+=> 
+a 
+.  
+Patient  '
+)' (
+. 
+Include 
+( 
+a 
+=> 
+a 
+.  
+Doctor  &
+)& '
+. 
+Include 
+( 
+a 
+=> 
+a 
+.  
+HealthRecord  ,
+), -
+. 
+OrderByDescending "
+(" #
+a# $
+=>% '
+a( )
+.) *
+ScheduledDate* 7
+)7 8
+. 
+ThenBy 
+( 
+a 
+=> 
+a 
+. 
+TimeSlot '
+)' (
+. 
+ToListAsync 
+( 
+) 
+; 
+} 	
+public 
+async 
+Task 
+< 
+Appointment %
+?% &
+>& '
+GetByIdAsync( 4
+(4 5
+int5 8
+id9 ;
+); <
+{   	
+return!! 
+await!! 
+_context!! !
+.!!! "
+Appointments!!" .
+."" 
+Include"" 
+("" 
+a"" 
+=>"" 
+a"" 
+.""  
+Patient""  '
+)""' (
+.## 
+Include## 
+(## 
+a## 
+=>## 
+a## 
+.##  
+Doctor##  &
+)##& '
+.$$ 
+Include$$ 
+($$ 
+a$$ 
+=>$$ 
+a$$ 
+.$$  
+HealthRecord$$  ,
+)$$, -
+.%% 
+FirstOrDefaultAsync%% $
+(%%$ %
+a%%% &
+=>%%' )
+a%%* +
+.%%+ ,
+AppointmentId%%, 9
+==%%: <
+id%%= ?
+)%%? @
+;%%@ A
+}&& 	
+public(( 
+async(( 
+Task(( 
+<(( 
+IEnumerable(( %
+<((% &
+Appointment((& 1
+>((1 2
+>((2 3
+GetByPatientIdAsync((4 G
+(((G H
+int((H K
+	patientId((L U
+)((U V
+{)) 	
+return** 
+await** 
+_context** !
+.**! "
+Appointments**" .
+.++ 
+Include++ 
+(++ 
+a++ 
+=>++ 
+a++ 
+.++  
+Doctor++  &
+)++& '
+.,, 
+Include,, 
+(,, 
+a,, 
+=>,, 
+a,, 
+.,,  
+HealthRecord,,  ,
+),,, -
+.-- 
+Where-- 
+(-- 
+a-- 
+=>-- 
+a-- 
+.-- 
+	PatientId-- '
+==--( *
+	patientId--+ 4
+)--4 5
+... 
+OrderByDescending.. "
+(.." #
+a..# $
+=>..% '
+a..( )
+...) *
+ScheduledDate..* 7
+)..7 8
+.// 
+ThenBy// 
+(// 
+a// 
+=>// 
+a// 
+.// 
+TimeSlot// '
+)//' (
+.00 
+ToListAsync00 
+(00 
+)00 
+;00 
+}11 	
+public33 
+async33 
+Task33 
+<33 
+IEnumerable33 %
+<33% &
+Appointment33& 1
+>331 2
+>332 3'
+GetDoctorTodayScheduleAsync334 O
+(33O P
+int33P S
+doctorId33T \
+,33\ ]
+DateOnly33^ f
+today33g l
+)33l m
+{44 	
+return55 
+await55 
+_context55 !
+.55! "
+Appointments55" .
+.66 
+Include66 
+(66 
+a66 
+=>66 
+a66 
+.66  
+Patient66  '
+)66' (
+.77 
+Include77 
+(77 
+a77 
+=>77 
+a77 
+.77  
+HealthRecord77  ,
+)77, -
+.88 
+Where88 
+(88 
+a88 
+=>88 
+a88 
+.88 
+DoctorId88 &
+==88' )
+doctorId88* 2
+&&883 5
+a886 7
+.887 8
+ScheduledDate888 E
+==88F H
+today88I N
+)88N O
+.99 
+OrderBy99 
+(99 
+a99 
+=>99 
+a99 
+.99  
+TimeSlot99  (
+)99( )
+.:: 
+ToListAsync:: 
+(:: 
+):: 
+;:: 
+};; 	
+public== 
+async== 
+Task== 
+<== 
+IEnumerable== %
+<==% &
+Appointment==& 1
+>==1 2
+>==2 3&
+GetDoctorWeekScheduleAsync==4 N
+(==N O
+int==O R
+doctorId==S [
+,==[ \
+DateOnly==] e
+	startDate==f o
+,==o p
+DateOnly==q y
+endDate	==z Å
+)
+==Å Ç
+{>> 	
+return?? 
+await?? 
+_context?? !
+.??! "
+Appointments??" .
+.@@ 
+Include@@ 
+(@@ 
+a@@ 
+=>@@ 
+a@@ 
+.@@  
+Patient@@  '
+)@@' (
+.AA 
+IncludeAA 
+(AA 
+aAA 
+=>AA 
+aAA 
+.AA  
+HealthRecordAA  ,
+)AA, -
+.BB 
+WhereBB 
+(BB 
+aBB 
+=>BB 
+aCC 
+.CC 
+DoctorIdCC 
+==CC !
+doctorIdCC" *
+&&CC+ -
+aDD 
+.DD 
+ScheduledDateDD #
+>=DD$ &
+	startDateDD' 0
+&&DD1 3
+aEE 
+.EE 
+ScheduledDateEE #
+<=EE$ &
+endDateEE' .
+)EE. /
+.FF 
+OrderByFF 
+(FF 
+aFF 
+=>FF 
+aFF 
+.FF  
+ScheduledDateFF  -
+)FF- .
+.GG 
+ThenByGG 
+(GG 
+aGG 
+=>GG 
+aGG 
+.GG 
+TimeSlotGG '
+)GG' (
+.HH 
+ToListAsyncHH 
+(HH 
+)HH 
+;HH 
+}II 	
+publicKK 
+asyncKK 
+TaskKK 
+<KK 
+boolKK 
+>KK 4
+(ExistsSamePatientSameDoctorSameDateAsyncKK  H
+(KKH I
+intLL 
+	patientIdLL 
+,LL 
+intMM 
+doctorIdMM 
+,MM 
+DateOnlyNN 
+dateNN 
+)NN 
+{OO 	
+returnPP 
+awaitPP 
+_contextPP !
+.PP! "
+AppointmentsPP" .
+.PP. /
+AnyAsyncPP/ 7
+(PP7 8
+aPP8 9
+=>PP: <
+aQQ 
+.QQ 
+	PatientIdQQ 
+==QQ 
+	patientIdQQ (
+&&QQ) +
+aRR 
+.RR 
+DoctorIdRR 
+==RR 
+doctorIdRR &
+&&RR' )
+aSS 
+.SS 
+ScheduledDateSS 
+==SS  "
+dateSS# '
+&&SS( *
+aTT 
+.TT 
+StatusTT 
+!=TT 
+AppointmentStatusTT -
+.TT- .
+	CancelledTT. 7
+)TT7 8
+;TT8 9
+}UU 	
+publicWW 
+asyncWW 
+TaskWW 
+<WW 
+boolWW 
+>WW 2
+&ExistsSamePatientSameSlotSameDateAsyncWW  F
+(WWF G
+intXX 
+	patientIdXX 
+,XX 
+DateOnlyYY 
+dateYY 
+,YY 
+intZZ 
+timeSlotZZ 
+)ZZ 
+{[[ 	
+if\\ 
+(\\ 
+!\\ 
+Enum\\ 
+.\\ 
+	IsDefined\\ 
+(\\  
+typeof\\  &
+(\\& '
+AppointmentTimeSlot\\' :
+)\\: ;
+,\\; <
+timeSlot\\= E
+)\\E F
+)\\F G
+throw]] 
+new]] 
+ArgumentException]] +
+(]]+ ,
+$str]], L
+)]]L M
+;]]M N
+var__ 
+slotEnum__ 
+=__ 
+(__ 
+AppointmentTimeSlot__ /
+)__/ 0
+timeSlot__0 8
+;__8 9
+returnaa 
+awaitaa 
+_contextaa !
+.aa! "
+Appointmentsaa" .
+.aa. /
+AnyAsyncaa/ 7
+(aa7 8
+aaa8 9
+=>aa: <
+abb 
+.bb 
+	PatientIdbb 
+==bb 
+	patientIdbb (
+&&bb) +
+acc 
+.cc 
+ScheduledDatecc 
+==cc  "
+datecc# '
+&&cc( *
+add 
+.dd 
+TimeSlotdd 
+==dd 
+slotEnumdd &
+&&dd' )
+aee 
+.ee 
+Statusee 
+!=ee 
+AppointmentStatusee -
+.ee- .
+	Cancelledee. 7
+)ee7 8
+;ee8 9
+}ff 	
+publichh 
+asynchh 
+Taskhh 
+<hh 
+boolhh 
+>hh 1
+%ExistsSameDoctorSameSlotSameDateAsynchh  E
+(hhE F
+intii 
+doctorIdii 
+,ii 
+DateOnlyjj 
+datejj 
+,jj 
+intkk 
+timeSlotkk 
+)kk 
+{ll 	
+ifmm 
+(mm 
+!mm 
+Enummm 
+.mm 
+	IsDefinedmm 
+(mm  
+typeofmm  &
+(mm& '
+AppointmentTimeSlotmm' :
+)mm: ;
+,mm; <
+timeSlotmm= E
+)mmE F
+)mmF G
+thrownn 
+newnn 
+ArgumentExceptionnn +
+(nn+ ,
+$strnn, L
+)nnL M
+;nnM N
+varpp 
+slotEnumpp 
+=pp 
+(pp 
+AppointmentTimeSlotpp /
+)pp/ 0
+timeSlotpp0 8
+;pp8 9
+returnrr 
+awaitrr 
+_contextrr !
+.rr! "
+Appointmentsrr" .
+.rr. /
+AnyAsyncrr/ 7
+(rr7 8
+arr8 9
+=>rr: <
+ass 
+.ss 
+DoctorIdss 
+==ss 
+doctorIdss &
+&&ss' )
+att 
+.tt 
+ScheduledDatett 
+==tt  "
+datett# '
+&&tt( *
+auu 
+.uu 
+TimeSlotuu 
+==uu 
+slotEnumuu &
+&&uu' )
+avv 
+.vv 
+Statusvv 
+!=vv 
+AppointmentStatusvv -
+.vv- .
+	Cancelledvv. 7
+)vv7 8
+;vv8 9
+}ww 	
+publicyy 
+asyncyy 
+Taskyy 
+<yy 
+boolyy 
+>yy 4
+(ExistsSamePatientSameDoctorSameDateAsyncyy  H
+(yyH I
+intzz 
+	patientIdzz 
+,zz 
+int{{ 
+doctorId{{ 
+,{{ 
+DateOnly|| 
+date|| 
+,|| 
+int}} 
+appointmentId}} 
+)}} 
+{~~ 	
+return 
+await 
+_context !
+.! "
+Appointments" .
+.. /
+AnyAsync/ 7
+(7 8
+a8 9
+=>: <
+a
+ÄÄ 
+.
+ÄÄ 
+AppointmentId
+ÄÄ 
+!=
+ÄÄ  "
+appointmentId
+ÄÄ# 0
+&&
+ÄÄ1 3
+a
+ÅÅ 
+.
+ÅÅ 
+	PatientId
+ÅÅ 
+==
+ÅÅ 
+	patientId
+ÅÅ (
+&&
+ÅÅ) +
+a
+ÇÇ 
+.
+ÇÇ 
+DoctorId
+ÇÇ 
+==
+ÇÇ 
+doctorId
+ÇÇ &
+&&
+ÇÇ' )
+a
+ÉÉ 
+.
+ÉÉ 
+ScheduledDate
+ÉÉ 
+==
+ÉÉ  "
+date
+ÉÉ# '
+&&
+ÉÉ( *
+a
+ÑÑ 
+.
+ÑÑ 
+Status
+ÑÑ 
+!=
+ÑÑ 
+AppointmentStatus
+ÑÑ -
+.
+ÑÑ- .
+	Cancelled
+ÑÑ. 7
+)
+ÑÑ7 8
+;
+ÑÑ8 9
+}
+ÖÖ 	
+public
+áá 
+async
+áá 
+Task
+áá 
+<
+áá 
+bool
+áá 
+>
+áá 4
+&ExistsSamePatientSameSlotSameDateAsync
+áá  F
+(
+ááF G
+int
+àà 
+	patientId
+àà 
+,
+àà 
+DateOnly
+ââ 
+date
+ââ 
+,
+ââ 
+int
+ää 
+timeSlot
+ää 
+,
+ää 
+int
+ãã 
+appointmentId
+ãã 
+)
+ãã 
+{
+åå 	
+return
+çç 
+await
+çç 
+_context
+çç !
+.
+çç! "
+Appointments
+çç" .
+.
+çç. /
+AnyAsync
+çç/ 7
+(
+çç7 8
+a
+çç8 9
+=>
+çç: <
+a
+éé 
+.
+éé 
+AppointmentId
+éé 
+!=
+éé  "
+appointmentId
+éé# 0
+&&
+éé1 3
+a
+èè 
+.
+èè 
+	PatientId
+èè 
+==
+èè 
+	patientId
+èè (
+&&
+èè) +
+a
+êê 
+.
+êê 
+ScheduledDate
+êê 
+==
+êê  "
+date
+êê# '
+&&
+êê( *
+(
+ëë 
+int
+ëë 
+)
+ëë 
+a
+ëë 
+.
+ëë 
+TimeSlot
+ëë 
+==
+ëë  "
+timeSlot
+ëë# +
+&&
+ëë, .
+a
+íí 
+.
+íí 
+Status
+íí 
+!=
+íí 
+AppointmentStatus
+íí -
+.
+íí- .
+	Cancelled
+íí. 7
+)
+íí7 8
+;
+íí8 9
+}
+ìì 	
+public
+ïï 
+async
+ïï 
+Task
+ïï 
+<
+ïï 
+bool
+ïï 
+>
+ïï 3
+%ExistsSameDoctorSameSlotSameDateAsync
+ïï  E
+(
+ïïE F
+int
+ññ 
+doctorId
+ññ 
+,
+ññ 
+DateOnly
+óó 
+date
+óó 
+,
+óó 
+int
+òò 
+timeSlot
+òò 
+,
+òò 
+int
+ôô 
+appointmentId
+ôô 
+)
+ôô 
+{
+öö 	
+return
+õõ 
+await
+õõ 
+_context
+õõ !
+.
+õõ! "
+Appointments
+õõ" .
+.
+õõ. /
+AnyAsync
+õõ/ 7
+(
+õõ7 8
+a
+õõ8 9
+=>
+õõ: <
+a
+úú 
+.
+úú 
+AppointmentId
+úú 
+!=
+úú  "
+appointmentId
+úú# 0
+&&
+úú1 3
+a
+ùù 
+.
+ùù 
+DoctorId
+ùù 
+==
+ùù 
+doctorId
+ùù &
+&&
+ùù' )
+a
+ûû 
+.
+ûû 
+ScheduledDate
+ûû 
+==
+ûû  "
+date
+ûû# '
+&&
+ûû( *
+(
+üü 
+int
+üü 
+)
+üü 
+a
+üü 
+.
+üü 
+TimeSlot
+üü 
+==
+üü  "
+timeSlot
+üü# +
+&&
+üü, .
+a
+†† 
+.
+†† 
+Status
+†† 
+!=
+†† 
+AppointmentStatus
+†† -
+.
+††- .
+	Cancelled
+††. 7
+)
+††7 8
+;
+††8 9
+}
+°° 	
+public
+££ 
+async
+££ 
+Task
+££ 
+AddAsync
+££ "
+(
+££" #
+Appointment
+££# .
+appointment
+££/ :
+)
+££: ;
+{
+§§ 	
+await
+•• 
+_context
+•• 
+.
+•• 
+Appointments
+•• '
+.
+••' (
+AddAsync
+••( 0
+(
+••0 1
+appointment
+••1 <
+)
+••< =
+;
+••= >
+}
+¶¶ 	
+public
+®® 
+Task
+®® 
+UpdateAsync
+®® 
+(
+®®  
+Appointment
+®®  +
+appointment
+®®, 7
+)
+®®7 8
+{
+©© 	
+_context
+™™ 
+.
+™™ 
+Appointments
+™™ !
+.
+™™! "
+Update
+™™" (
+(
+™™( )
+appointment
+™™) 4
+)
+™™4 5
+;
+™™5 6
+return
+´´ 
+Task
+´´ 
+.
+´´ 
+CompletedTask
+´´ %
+;
+´´% &
+}
+¨¨ 	
+public
+ÆÆ 
+async
+ÆÆ 
+Task
+ÆÆ 
+<
+ÆÆ 
+bool
+ÆÆ 
+>
+ÆÆ 
+ExistsAsync
+ÆÆ  +
+(
+ÆÆ+ ,
+int
+ÆÆ, /
+id
+ÆÆ0 2
+)
+ÆÆ2 3
+{
+ØØ 	
+return
+∞∞ 
+await
+∞∞ 
+_context
+∞∞ !
+.
+∞∞! "
+Appointments
+∞∞" .
+.
+∞∞. /
+AnyAsync
+∞∞/ 7
+(
+∞∞7 8
+a
+∞∞8 9
+=>
+∞∞: <
+a
+±± 
+.
+±± 
+AppointmentId
+±± 
+==
+±±  "
+id
+±±# %
+)
+±±% &
+;
+±±& '
+}
+≤≤ 	
+public
+¥¥ 
+async
+¥¥ 
+Task
+¥¥ 
+<
+¥¥ 
+IEnumerable
+¥¥ %
+<
+¥¥% &
+Appointment
+¥¥& 1
+>
+¥¥1 2
+>
+¥¥2 3/
+!GetDoctorPatientAppointmentsAsync
+¥¥4 U
+(
+¥¥U V
+int
+µµ 
+doctorId
+µµ 
+)
+µµ 
+{
+∂∂ 	
+return
+∑∑ 
+await
+∑∑ 
+_context
+∑∑ !
+.
+∑∑! "
+Appointments
+∑∑" .
+.
+∏∏ 
+Include
+∏∏ 
+(
+∏∏ 
+a
+∏∏ 
+=>
+∏∏ 
+a
+∏∏ 
+.
+∏∏  
+Patient
+∏∏  '
+)
+∏∏' (
+.
+ππ 
+Include
+ππ 
+(
+ππ 
+a
+ππ 
+=>
+ππ 
+a
+ππ 
+.
+ππ  
+HealthRecord
+ππ  ,
+)
+ππ, -
+.
+∫∫ 
+Where
+∫∫ 
+(
+∫∫ 
+a
+∫∫ 
+=>
+∫∫ 
+a
+∫∫ 
+.
+∫∫ 
+DoctorId
+∫∫ &
+==
+∫∫' )
+doctorId
+∫∫* 2
+)
+∫∫2 3
+.
+ªª 
+OrderByDescending
+ªª "
+(
+ªª" #
+a
+ªª# $
+=>
+ªª% '
+a
+ªª( )
+.
+ªª) *
+ScheduledDate
+ªª* 7
+)
+ªª7 8
+.
+ºº 
+ThenBy
+ºº 
+(
+ºº 
+a
+ºº 
+=>
+ºº 
+a
+ºº 
+.
+ºº 
+TimeSlot
+ºº '
+)
+ºº' (
+.
+ΩΩ 
+ToListAsync
+ΩΩ 
+(
+ΩΩ 
+)
+ΩΩ 
+;
+ΩΩ 
+}
+ææ 	
+public
+¿¿ 
+async
+¿¿ 
+Task
+¿¿ 
+SaveChangesAsync
+¿¿ *
+(
+¿¿* +
+)
+¿¿+ ,
+{
+¡¡ 	
+await
+¬¬ 
+_context
+¬¬ 
+.
+¬¬ 
+SaveChangesAsync
+¬¬ +
+(
+¬¬+ ,
+)
+¬¬, -
+;
+¬¬- .
+}
+√√ 	
+}
+ƒƒ 
+}≈≈ ‹<
+mC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Repositories\Implementation\AdminRepository.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -13275,8 +15504,8 @@ CountAsync;;0 :
 }^^ 
 }__ 	
 }`` 
-}aa ßW
-FC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Program.cs
+}aa ôX
+IC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Program.cs
 var 
 builder 
 = 
@@ -13580,64 +15809,27 @@ GetSectionOO( 2
 .ss 
 WithOriginsss 
 (ss 
-$strss 5
-)ss5 6
-.tt 
-AllowAnyHeadertt 
-(tt  
-)tt  !
-.uu 
-AllowAnyMethoduu 
-(uu  
-)uu  !
-;uu! "
-}vv 	
-)vv	 
+$strtt ,
+,tt, -
+$struu +
+)vv 
+.ww 
+AllowAnyHeaderww 
+(ww  
+)ww  !
+.xx 
+AllowAnyMethodxx 
+(xx  
+)xx  !
+;xx! "
+}yy 	
+)yy	 
 
-;vv
+;yy
  
-}ww 
-)ww 
-;ww 
-builder}} 
-.}} 
-Services}} 
-.}} 
-	AddScoped}} 
-<}} 
-IPatientRepository}} -
-,}}- .
-PatientRepository}}/ @
->}}@ A
-(}}A B
-)}}B C
-;}}C D
-builder~~ 
-.~~ 
-Services~~ 
-.~~ 
-	AddScoped~~ 
-<~~ 
-IDoctorRepository~~ ,
-,~~, -
-DoctorRepository~~. >
->~~> ?
-(~~? @
-)~~@ A
-;~~A B
-builder 
-. 
-Services 
-. 
-	AddScoped 
-< "
-IAppointmentRepository 1
-,1 2!
-AppointmentRepository3 H
->H I
-(I J
-)J K
-;K L
+}zz 
+)zz 
+;zz 
 builderÄÄ 
 .
 ÄÄ 
@@ -13648,21 +15840,21 @@ GetSectionOO( 2
 	AddScoped
 ÄÄ 
 <
-ÄÄ %
-IHealthRecordRepository
-ÄÄ 2
+ÄÄ  
+IPatientRepository
+ÄÄ -
 ,
-ÄÄ2 3$
-HealthRecordRepository
-ÄÄ4 J
+ÄÄ- .
+PatientRepository
+ÄÄ/ @
 >
-ÄÄJ K
+ÄÄ@ A
 (
-ÄÄK L
+ÄÄA B
 )
-ÄÄL M
+ÄÄB C
 ;
-ÄÄM N
+ÄÄC D
 builderÅÅ 
 .
 ÅÅ 
@@ -13673,21 +15865,21 @@ GetSectionOO( 2
 	AddScoped
 ÅÅ 
 <
-ÅÅ 
-IUserRepository
-ÅÅ *
+ÅÅ 
+IDoctorRepository
+ÅÅ ,
 ,
-ÅÅ* +
-UserRepository
-ÅÅ, :
+ÅÅ, -
+DoctorRepository
+ÅÅ. >
 >
-ÅÅ: ;
+ÅÅ> ?
 (
-ÅÅ; <
+ÅÅ? @
 )
-ÅÅ< =
+ÅÅ@ A
 ;
-ÅÅ= >
+ÅÅA B
 builderÇÇ 
 .
 ÇÇ 
@@ -13698,96 +15890,96 @@ GetSectionOO( 2
 	AddScoped
 ÇÇ 
 <
-ÇÇ 
+ÇÇ $
+IAppointmentRepository
+ÇÇ 1
+,
+ÇÇ1 2#
+AppointmentRepository
+ÇÇ3 H
+>
+ÇÇH I
+(
+ÇÇI J
+)
+ÇÇJ K
+;
+ÇÇK L
+builderÉÉ 
+.
+ÉÉ 
+Services
+ÉÉ 
+.
+ÉÉ 
+	AddScoped
+ÉÉ 
+<
+ÉÉ %
+IHealthRecordRepository
+ÉÉ 2
+,
+ÉÉ2 3$
+HealthRecordRepository
+ÉÉ4 J
+>
+ÉÉJ K
+(
+ÉÉK L
+)
+ÉÉL M
+;
+ÉÉM N
+builderÑÑ 
+.
+ÑÑ 
+Services
+ÑÑ 
+.
+ÑÑ 
+	AddScoped
+ÑÑ 
+<
+ÑÑ 
+IUserRepository
+ÑÑ *
+,
+ÑÑ* +
+UserRepository
+ÑÑ, :
+>
+ÑÑ: ;
+(
+ÑÑ; <
+)
+ÑÑ< =
+;
+ÑÑ= >
+builderÖÖ 
+.
+ÖÖ 
+Services
+ÖÖ 
+.
+ÖÖ 
+	AddScoped
+ÖÖ 
+<
+ÖÖ 
 IAdminRepository
-ÇÇ +
+ÖÖ +
 ,
-ÇÇ+ ,
+ÖÖ+ ,
 AdminRepository
-ÇÇ- <
+ÖÖ- <
 >
-ÇÇ< =
+ÖÖ< =
 (
-ÇÇ= >
+ÖÖ= >
 )
-ÇÇ> ?
+ÖÖ> ?
 ;
-ÇÇ? @
-builderàà 
-.
-àà 
-Services
-àà 
-.
-àà 
-	AddScoped
-àà 
-<
-àà 
-IPatientService
-àà *
-,
-àà* +
-PatientService
-àà, :
->
-àà: ;
-(
-àà; <
-)
-àà< =
-;
-àà= >
-builderââ 
-.
-ââ 
-Services
-ââ 
-.
-ââ 
-	AddScoped
-ââ 
-<
-ââ 
-IDoctorService
-ââ )
-,
-ââ) *
-DoctorService
-ââ+ 8
->
-ââ8 9
-(
-ââ9 :
-)
-ââ: ;
-;
-ââ; <
-builderää 
-.
-ää 
-Services
-ää 
-.
-ää 
-	AddScoped
-ää 
-<
-ää !
-IAppointmentService
-ää .
-,
-ää. / 
-AppointmentService
-ää0 B
->
-ääB C
-(
-ääC D
-)
-ääD E
-;
-ääE F
+ÖÖ? @
 builderãã 
 .
 ãã 
@@ -13798,21 +15990,21 @@ GetSectionOO( 2
 	AddScoped
 ãã 
 <
-ãã "
-IHealthRecordService
-ãã /
+ãã 
+IPatientService
+ãã *
 ,
-ãã/ 0!
-HealthRecordService
-ãã1 D
+ãã* +
+PatientService
+ãã, :
 >
-ããD E
+ãã: ;
 (
-ããE F
+ãã; <
 )
-ããF G
+ãã< =
 ;
-ããG H
+ãã= >
 builderåå 
 .
 åå 
@@ -13823,21 +16015,21 @@ GetSectionOO( 2
 	AddScoped
 åå 
 <
-åå 
-IAuthService
-åå '
+åå 
+IDoctorService
+åå )
 ,
-åå' (
-AuthService
-åå) 4
+åå) *
+DoctorService
+åå+ 8
 >
-åå4 5
+åå8 9
 (
-åå5 6
+åå9 :
 )
-åå6 7
+åå: ;
 ;
-åå7 8
+åå; <
 builderçç 
 .
 çç 
@@ -13848,21 +16040,21 @@ GetSectionOO( 2
 	AddScoped
 çç 
 <
-çç 
-IAdminService
-çç (
+çç !
+IAppointmentService
+çç .
 ,
-çç( )
-AdminService
-çç* 6
+çç. / 
+AppointmentService
+çç0 B
 >
-çç6 7
+ççB C
 (
-çç7 8
+ççC D
 )
-çç8 9
+ççD E
 ;
-çç9 :
+ççE F
 builderéé 
 .
 éé 
@@ -13873,214 +16065,289 @@ GetSectionOO( 2
 	AddScoped
 éé 
 <
-éé 
-IUserService
-éé '
+éé "
+IHealthRecordService
+éé /
 ,
-éé' (
-UserService
-éé) 4
+éé/ 0!
+HealthRecordService
+éé1 D
 >
-éé4 5
+ééD E
 (
-éé5 6
+ééE F
 )
-éé6 7
+ééF G
 ;
-éé7 8
-varíí 
+ééG H
+builderèè 
+.
+èè 
+Services
+èè 
+.
+èè 
+	AddScoped
+èè 
+<
+èè 
+IAuthService
+èè '
+,
+èè' (
+AuthService
+èè) 4
+>
+èè4 5
+(
+èè5 6
+)
+èè6 7
+;
+èè7 8
+builderêê 
+.
+êê 
+Services
+êê 
+.
+êê 
+	AddScoped
+êê 
+<
+êê 
+IAdminService
+êê (
+,
+êê( )
+AdminService
+êê* 6
+>
+êê6 7
+(
+êê7 8
+)
+êê8 9
+;
+êê9 :
+builderëë 
+.
+ëë 
+Services
+ëë 
+.
+ëë 
+	AddScoped
+ëë 
+<
+ëë 
+IUserService
+ëë '
+,
+ëë' (
+UserService
+ëë) 4
+>
+ëë4 5
+(
+ëë5 6
+)
+ëë6 7
+;
+ëë7 8
+varïï 
 app
-íí 
+ïï 
 =
-íí 	
+ïï 	
 builder
-íí
+ïï
  
 .
-íí 
+ïï 
 Build
-íí 
+ïï 
 (
-íí 
+ïï 
 )
-íí 
+ïï 
 ;
-íí 
-ifññ 
+ïï 
+ifôô 
 (
-ññ 
+ôô 
 app
-ññ 
+ôô 
 .
-ññ 
+ôô 
 Environment
-ññ 
+ôô 
 .
-ññ 
+ôô 
 IsDevelopment
-ññ !
+ôô !
 (
-ññ! "
+ôô! "
 )
-ññ" #
+ôô" #
 )
-ññ# $
-{óó 
+ôô# $
+{öö 
 app
-òò 
+õõ 
 .
-òò 
+õõ 
 
 UseSwagger
-òò 
+õõ 
 (
-òò 
+õõ 
 )
-òò 
+õõ 
 ;
-òò 
+õõ 
 app
-öö 
+ùù 
 .
-öö 
+ùù 
 UseSwaggerUI
-öö 
+ùù 
 (
-öö 
+ùù 
 options
-öö 
+ùù 
 =>
-öö 
+ùù 
 {
-õõ 
+ûû 
 options
-úú 
+üü 
 .
-úú 
+üü 
 SwaggerEndpoint
-úú 
+üü 
 (
-úú  
+üü  
 $str
-ùù &
+†† &
 ,
-ùù& '
+††& '
 $str
-ûû 
+°° 
 )
-ûû  
+°°  
 ;
-ûû  !
+°°  !
 options
-†† 
+££ 
 .
-†† 
+££ 
 RoutePrefix
-†† 
+££ 
 =
-†† 
+££ 
 string
-†† $
+££ $
 .
-††$ %
+££$ %
 Empty
-††% *
+££% *
 ;
-††* +
+££* +
 }
-°° 
+§§ 
 )
-°° 
+§§ 
 ;
-°° 
-}¢¢ 
-app§§ 
+§§ 
+}•• 
+appßß 
 .
-§§ 
+ßß 
 UseMiddleware
-§§ 
+ßß 
 <
-§§ !
+ßß !
 ExceptionMiddleware
-§§ %
+ßß %
 >
-§§% &
+ßß% &
 (
-§§& '
+ßß& '
 )
-§§' (
+ßß' (
 ;
-§§( )
-app¶¶ 
+ßß( )
+app©© 
 .
-¶¶ !
+©© !
 UseHttpsRedirection
-¶¶ 
+©© 
 (
-¶¶ 
+©© 
 )
-¶¶ 
+©© 
 ;
-¶¶ 
-app®® 
+©© 
+app´´ 
 .
-®® 
+´´ 
 UseCors
-®® 
+´´ 
 (
-®® 
+´´ 
 $str
-®® 
+´´ 
 )
-®® 
+´´ 
 ;
-®® 
-app™™ 
+´´ 
+app≠≠ 
 .
-™™ 
+≠≠ 
 UseAuthentication
-™™ 
+≠≠ 
 (
-™™ 
+≠≠ 
 )
-™™ 
+≠≠ 
 ;
-™™ 
-app¨¨ 
+≠≠ 
+appØØ 
 .
-¨¨ 
+ØØ 
 UseAuthorization
-¨¨ 
+ØØ 
 (
-¨¨ 
+ØØ 
 )
-¨¨ 
+ØØ 
 ;
-¨¨ 
-appÆÆ 
+ØØ 
+app±± 
 .
-ÆÆ 
+±± 
 MapControllers
-ÆÆ 
+±± 
 (
-ÆÆ 
+±± 
 )
-ÆÆ 
+±± 
 ;
-ÆÆ 
-app≤≤ 
+±± 
+appµµ 
 .
-≤≤ 
+µµ 
 Run
-≤≤ 
+µµ 
 (
-≤≤ 
+µµ 
 )
-≤≤ 	
+µµ 	
 ;
-≤≤	 
-ö
-JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\User.cs
+µµ	 
+Ú
+MC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Models\User.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -14193,19 +16460,31 @@ JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\User.cs
 set+ .
 ;. /
 }0 1
-public 
-DateTime 
-? "
-RefreshTokenExpiryTime /
-{0 1
-get2 5
-;5 6
-set7 :
-;: ;
-}< =
-} 
-} ˆ!
-MC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Patient.cs
+public 
+bool 
+MustChangePassword &
+{' (
+get) ,
+;, -
+set. 1
+;1 2
+}3 4
+=5 6
+false7 <
+;< =
+public 
+DateTime 
+? "
+RefreshTokenExpiryTime /
+{0 1
+get2 5
+;5 6
+set7 :
+;: ;
+}< =
+} 
+} ˘!
+PC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Models\Patient.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -14466,8 +16745,8 @@ MC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Patient.cs
 )))^ _
 ;))_ `
 }** 
-}++  
-RC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\HealthRecord.cs
+}++ Õ
+UC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Models\HealthRecord.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -14659,8 +16938,8 @@ RC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\HealthRecord
 UtcNow$$; A
 ;$$A B
 }%% 
-}&& è
-LC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Doctor.cs
+}&& í
+OC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Models\Doctor.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -14889,8 +17168,8 @@ LC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Doctor.cs
 )))% &
 ;))& '
 }** 
-}++ …
-QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Appointment.cs
+}++ Ã
+TC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Models\Appointment.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -15047,8 +17326,88 @@ QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Models\Appointment.
 ;""4 5
 }""6 7
 }## 
-}$$ á
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260622111729_DoctorUpdates.cs
+}$$ ›
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260630180404_PasswordChang.cs
+	namespace 	
+S3_HealthAxisApi
+ 
+. 
+
+Migrations %
+{ 
+public 
+
+partial 
+class 
+PasswordChang &
+:' (
+	Migration) 2
+{		 
+	protected 
+override 
+void 
+Up  "
+(" #
+MigrationBuilder# 3
+migrationBuilder4 D
+)D E
+{ 	
+migrationBuilder 
+. 
+	AddColumn &
+<& '
+bool' +
+>+ ,
+(, -
+name 
+: 
+$str *
+,* +
+table 
+: 
+$str 
+, 
+type 
+: 
+$str 
+, 
+nullable 
+: 
+false 
+,  
+defaultValue 
+: 
+false #
+)# $
+;$ %
+} 	
+	protected 
+override 
+void 
+Down  $
+($ %
+MigrationBuilder% 5
+migrationBuilder6 F
+)F G
+{ 	
+migrationBuilder 
+. 
+
+DropColumn '
+(' (
+name 
+: 
+$str *
+,* +
+table 
+: 
+$str 
+) 
+;  
+} 	
+} 
+} ä
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260622111729_DoctorUpdates.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -15085,8 +17444,8 @@ Migrations %
 { 	
 } 	
 } 
-} Å
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260622111123_emailadded.cs
+} Ñ
+fC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260622111123_emailadded.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -15124,8 +17483,8 @@ emailadded #
 { 	
 } 	
 } 
-} ¸
-mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260619044738_AddUniqueDoctorEmail.cs
+} ˇ
+pC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260619044738_AddUniqueDoctorEmail.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -15294,8 +17653,8 @@ DropColumn11 '
 ;33! "
 }44 	
 }55 
-}66 ﬁ≈
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260617093733_testing.cs
+}66 ·≈
+cC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260617093733_testing.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -17126,8 +19485,8 @@ ForeignKey
 ﬁﬁ 	
 }
 ﬂﬂ 
-}‡‡ £
-jC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260616160604_UpdatedUsersMOdel.cs
+}‡‡ ¶
+mC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260616160604_UpdatedUsersMOdel.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -17242,8 +19601,8 @@ DropColumn"" '
 ;$$  
 }%% 	
 }&& 
-}'' Ç
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260616051459_UsersAdded.cs
+}'' Ö
+fC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260616051459_UsersAdded.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -17449,8 +19808,8 @@ PrimaryKey $
 ;$$ 
 }%% 	
 }&& 
-}'' Å∑
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Migrations\20260615042816_InitialCreate.cs
+}'' Ñ∑
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Migrations\20260615042816_InitialCreate.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -19075,8 +21434,8 @@ InsertData
 ππ 	
 }
 ∫∫ 
-}ªª Ä
-bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\RequestLoggingMiddleware.cs
+}ªª É
+eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Middleware\RequestLoggingMiddleware.cs
 	namespace 	
 
 HealthAxis
@@ -19189,8 +21548,8 @@ StatusCode! +
 ;, -
 } 	
 } 
-} ß#
-]C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Middleware\ExceptionMiddleware.cs
+} ™#
+`C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Middleware\ExceptionMiddleware.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -19451,8 +21810,8 @@ WriteAsyncKK# -
 EmptyRR 
 ;RR 
 }SS 
-}TT ò_
-PC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Data\AppDbContext.cs
+}TT õ_
+SC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Data\AppDbContext.cs
 	namespace 	
 
 HealthAxis
@@ -20204,8 +22563,8 @@ HealthAxis
 ìì 	
 }
 îî 
-}ïï ß>
-\C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\PatientController.cs
+}ïï ác
+_C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Controllers\PatientController.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -20243,774 +22602,1399 @@ HealthAxis
 readonly 
 IPatientService (
 _patientService) 8
-;8 9
-public 
-PatientsController !
-(! "
-IPatientService" 1
-patientService2 @
-)@ A
-{ 	
-_patientService 
-= 
-patientService ,
-;, -
-} 	
-[ 	
-HttpGet	 
-] 
-[ 	
-	Authorize	 
-( 
-Roles 
-= 
-$str "
-)" #
-]# $
-public 
-async 
-Task 
-< 
-IActionResult '
->' (
-GetAll) /
-(/ 0
-)0 1
-{ 	
-var 
-patients 
-= 
-await  
-_patientService! 0
-.0 1
-GetAllAsync1 <
-(< =
-)= >
-;> ?
-return 
-Ok 
-( 
-patients 
-) 
-;  
-} 	
-[ 	
-HttpGet	 
-( 
-$str 
-) 
-] 
-[ 	
-	Authorize	 
-( 
-Roles 
-= 
-$str )
-)) *
-]* +
-public 
-async 
-Task 
-< 
-IActionResult '
->' (
-GetById) 0
-(0 1
-int1 4
-id5 7
-)7 8
-{   	
-var!! 
-patient!! 
-=!! 
-await!! 
-_patientService!!  /
-.!!/ 0
-GetByIdAsync!!0 <
-(!!< =
-id!!= ?
-)!!? @
-;!!@ A
-if## 
-(## 
-patient## 
-==## 
-null## 
-)##  
-{$$ 
-return%% 
-NotFound%% 
-(%%  
-$"%%  "
-$str%%" 2
-{%%2 3
-id%%3 5
-}%%5 6
-$str%%6 A
-"%%A B
-)%%B C
-;%%C D
-}&& 
-return(( 
-Ok(( 
-((( 
-patient(( 
-)(( 
-;(( 
-})) 	
-[++ 	
-HttpGet++	 
-(++ 
-$str++ 
-)++ 
-]++ 
-[,, 	
-	Authorize,,	 
-(,, 
-Roles,, 
-=,, 
-$str,, )
-),,) *
-],,* +
-public-- 
-async-- 
-Task-- 
-<-- 
-IActionResult-- '
->--' (
-Search--) /
-(--/ 0
-[.. 
-	FromQuery.. 
-].. 
-string.. 
-name.. #
-)..# $
-{// 	
-var00 
-patients00 
-=00 
-await11 
-_patientService11 %
-.11% &
-SearchByNameAsync11& 7
-(117 8
-name118 <
-)11< =
-;11= >
-return33 
-Ok33 
-(33 
-patients33 
-)33 
-;33  
-}44 	
-[66 	
-HttpPost66	 
-]66 
-public77 
-async77 
-Task77 
-<77 
-IActionResult77 '
->77' (
-Create77) /
-(77/ 0
-CreatePatientDto88 
-dto88  
-)88  !
-{99 	
-try:: 
-{;; 
-var<< 
-patient<< 
-=<< 
-await== 
-_patientService== )
-.==) *
-CreateAsync==* 5
-(==5 6
-dto==6 9
-)==9 :
-;==: ;
-return?? 
-CreatedAtAction?? &
-(??& '
-nameof@@ 
-(@@ 
-GetById@@ "
-)@@" #
-,@@# $
-newAA 
-{AA 
-idAA 
-=AA 
-patientAA &
-.AA& '
-	PatientIdAA' 0
-}AA1 2
-,AA2 3
-patientBB 
-)BB 
-;BB 
-}CC 
-catchDD 
-(DD 
-ArgumentExceptionDD $
-exDD% '
-)DD' (
-{EE 
-returnFF 
+;8 9
+private 
+readonly  
+IHealthRecordService - 
+_healthRecordService. B
+;B C
+public 
+PatientsController !
+(! "
+IPatientService 
+patientService *
+,* + 
+IHealthRecordService  
+healthRecordService! 4
+)4 5
+{ 	
+_patientService 
+= 
+patientService ,
+;, - 
+_healthRecordService  
+=! "
+healthRecordService# 6
+;6 7
+} 	
+[ 	
+HttpGet	 
+] 
+[ 	
+	Authorize	 
+( 
+Roles 
+= 
+$str "
+)" #
+]# $
+public 
+async 
+Task 
+< 
+IActionResult '
+>' (
+GetAll) /
+(/ 0
+)0 1
+{ 	
+var 
+patients 
+= 
+await  
+_patientService! 0
+.0 1
+GetAllAsync1 <
+(< =
+)= >
+;> ?
+return 
+Ok 
+( 
+patients 
+) 
+;  
+} 	
+[!! 	
+HttpGet!!	 
+(!! 
+$str!! 
+)!! 
+]!! 
+["" 	
+	Authorize""	 
+("" 
+Roles"" 
+="" 
+$str"" 1
+)""1 2
+]""2 3
+public## 
+async## 
+Task## 
+<## 
+IActionResult## '
+>##' (
+GetById##) 0
+(##0 1
+int##1 4
+id##5 7
+)##7 8
+{$$ 	
+if%% 
+(%% 
+User%% 
+.%% 
+IsInRole%% 
+(%% 
+$str%% '
+)%%' (
+)%%( )
+{&& 
+var'' 
+patientIdFromToken'' &
+=''' (*
+GetPatientReferenceIdFromToken'') G
+(''G H
+)''H I
+;''I J
+if)) 
+()) 
+!)) 
+patientIdFromToken)) '
+.))' (
+HasValue))( 0
+||))1 3
+patientIdFromToken** &
+.**& '
+Value**' ,
+!=**- /
+id**0 2
+)**2 3
+{++ 
+return,, 
+Forbid,, !
+(,,! "
+),," #
+;,,# $
+}-- 
+}.. 
+var00 
+patient00 
+=00 
+await00 
+_patientService00  /
+.00/ 0
+GetByIdAsync000 <
+(00< =
+id00= ?
+)00? @
+;00@ A
+if22 
+(22 
+patient22 
+==22 
+null22 
+)22  
+{33 
+return44 
+NotFound44 
+(44  
+$"44  "
+$str44" 2
+{442 3
+id443 5
+}445 6
+$str446 A
+"44A B
+)44B C
+;44C D
+}55 
+return77 
+Ok77 
+(77 
+patient77 
+)77 
+;77 
+}88 	
+[:: 	
+HttpGet::	 
+(:: 
+$str:: *
+)::* +
+]::+ ,
+[;; 	
+	Authorize;;	 
+(;; 
+Roles;; 
+=;; 
+$str;; 1
+);;1 2
+];;2 3
+public<< 
+async<< 
+Task<< 
+<<< 
+IActionResult<< '
+><<' (
+GetHealthRecords<<) 9
+(<<9 :
+int<<: =
+id<<> @
+)<<@ A
+{== 	
+if>> 
+(>> 
+User>> 
+.>> 
+IsInRole>> 
+(>> 
+$str>> '
+)>>' (
+)>>( )
+{?? 
+var@@ 
+patientIdFromToken@@ &
+=@@' (*
+GetPatientReferenceIdFromToken@@) G
+(@@G H
+)@@H I
+;@@I J
+ifBB 
+(BB 
+!BB 
+patientIdFromTokenBB '
+.BB' (
+HasValueBB( 0
+||BB1 3
+patientIdFromTokenCC &
+.CC& '
+ValueCC' ,
+!=CC- /
+idCC0 2
+)CC2 3
+{DD 
+returnEE 
+ForbidEE !
+(EE! "
+)EE" #
+;EE# $
+}FF 
+}GG 
+tryII 
+{JJ 
+varKK 
+recordsKK 
+=KK 
+awaitLL  
+_healthRecordServiceLL .
+.LL. /
+GetByPatientIdAsyncLL/ B
+(LLB C
+idLLC E
+)LLE F
+;LLF G
+returnNN 
+OkNN 
+(NN 
+recordsNN !
+)NN! "
+;NN" #
+}OO 
+catchPP 
+(PP  
+KeyNotFoundExceptionPP '
+exPP( *
+)PP* +
+{QQ 
+returnRR 
+NotFoundRR 
+(RR  
+exRR  "
+.RR" #
+MessageRR# *
+)RR* +
+;RR+ ,
+}SS 
+}TT 	
+[VV 	
+HttpGetVV	 
+(VV 
+$strVV 
+)VV 
+]VV 
+[WW 	
+	AuthorizeWW	 
+(WW 
+RolesWW 
+=WW 
+$strWW )
+)WW) *
+]WW* +
+publicXX 
+asyncXX 
+TaskXX 
+<XX 
+IActionResultXX '
+>XX' (
+SearchXX) /
+(XX/ 0
+[YY 
+	FromQueryYY 
+]YY 
+stringYY 
+nameYY #
+)YY# $
+{ZZ 	
+var[[ 
+patients[[ 
+=[[ 
+await\\ 
+_patientService\\ %
+.\\% &
+SearchByNameAsync\\& 7
+(\\7 8
+name\\8 <
+)\\< =
+;\\= >
+return^^ 
+Ok^^ 
+(^^ 
+patients^^ 
+)^^ 
+;^^  
+}__ 	
+[aa 	
+HttpPostaa	 
+]aa 
+publicbb 
+asyncbb 
+Taskbb 
+<bb 
+IActionResultbb '
+>bb' (
+Createbb) /
+(bb/ 0
+CreatePatientDtocc 
+dtocc  
+)cc  !
+{dd 	
+tryee 
+{ff 
+vargg 
+patientgg 
+=gg 
+awaithh 
+_patientServicehh )
+.hh) *
+CreateAsynchh* 5
+(hh5 6
+dtohh6 9
+)hh9 :
+;hh: ;
+returnjj 
+CreatedAtActionjj &
+(jj& '
+nameofkk 
+(kk 
+GetByIdkk "
+)kk" #
+,kk# $
+newll 
+{ll 
+idll 
+=ll 
+patientll &
+.ll& '
+	PatientIdll' 0
+}ll1 2
+,ll2 3
+patientmm 
+)mm 
+;mm 
+}nn 
+catchoo 
+(oo 
+ArgumentExceptionoo $
+exoo% '
+)oo' (
+{pp 
+returnqq 
 
-BadRequestFF !
-(FF! "
-exFF" $
-.FF$ %
-MessageFF% ,
-)FF, -
-;FF- .
-}GG 
-}HH 	
-[JJ 	
-HttpPutJJ	 
-(JJ 
-$strJJ 
-)JJ 
-]JJ 
-publicKK 
-asyncKK 
-TaskKK 
-<KK 
-IActionResultKK '
->KK' (
-UpdateKK) /
-(KK/ 0
-intLL 
-idLL 
-,LL 
-UpdatePatientDtoMM 
-dtoMM  
-)MM  !
-{NN 	
-tryOO 
-{PP 
-awaitQQ 
-_patientServiceQQ %
-.QQ% &
-UpdateAsyncQQ& 1
-(QQ1 2
-idQQ2 4
-,QQ4 5
-dtoQQ6 9
-)QQ9 :
-;QQ: ;
-returnSS 
-	NoContentSS  
-(SS  !
-)SS! "
-;SS" #
-}TT 
-catchUU 
-(UU  
-KeyNotFoundExceptionUU '
-exUU( *
-)UU* +
-{VV 
-returnWW 
-NotFoundWW 
-(WW  
-exWW  "
-.WW" #
-MessageWW# *
-)WW* +
-;WW+ ,
-}XX 
-catchYY 
-(YY 
-ArgumentExceptionYY $
-exYY% '
-)YY' (
-{ZZ 
-return[[ 
+BadRequestqq !
+(qq! "
+exqq" $
+.qq$ %
+Messageqq% ,
+)qq, -
+;qq- .
+}rr 
+}ss 	
+[uu 	
+HttpPutuu	 
+(uu 
+$struu 
+)uu 
+]uu 
+publicvv 
+asyncvv 
+Taskvv 
+<vv 
+IActionResultvv '
+>vv' (
+Updatevv) /
+(vv/ 0
+intww 
+idww 
+,ww 
+UpdatePatientDtoxx 
+dtoxx  
+)xx  !
+{yy 	
+tryzz 
+{{{ 
+if|| 
+(|| 
+User|| 
+.|| 
+IsInRole|| !
+(||! "
+$str||" +
+)||+ ,
+)||, -
+{}} 
+var~~ 
+patientIdFromToken~~ *
+=~~+ ,*
+GetPatientReferenceIdFromToken~~- K
+(~~K L
+)~~L M
+;~~M N
+if
+ÄÄ 
+(
+ÄÄ 
+!
+ÄÄ  
+patientIdFromToken
+ÄÄ +
+.
+ÄÄ+ ,
+HasValue
+ÄÄ, 4
+||
+ÄÄ5 7 
+patientIdFromToken
+ÅÅ *
+.
+ÅÅ* +
+Value
+ÅÅ+ 0
+!=
+ÅÅ1 3
+id
+ÅÅ4 6
+)
+ÅÅ6 7
+{
+ÇÇ 
+return
+ÉÉ 
+Forbid
+ÉÉ %
+(
+ÉÉ% &
+)
+ÉÉ& '
+;
+ÉÉ' (
+}
+ÑÑ 
+}
+ÖÖ 
+await
+áá 
+_patientService
+áá %
+.
+áá% &
+UpdateAsync
+áá& 1
+(
+áá1 2
+id
+áá2 4
+,
+áá4 5
+dto
+áá6 9
+)
+áá9 :
+;
+áá: ;
+return
+ââ 
+	NoContent
+ââ  
+(
+ââ  !
+)
+ââ! "
+;
+ââ" #
+}
+ää 
+catch
+ãã 
+(
+ãã "
+KeyNotFoundException
+ãã '
+ex
+ãã( *
+)
+ãã* +
+{
+åå 
+return
+çç 
+NotFound
+çç 
+(
+çç  
+ex
+çç  "
+.
+çç" #
+Message
+çç# *
+)
+çç* +
+;
+çç+ ,
+}
+éé 
+catch
+èè 
+(
+èè 
+ArgumentException
+èè $
+ex
+èè% '
+)
+èè' (
+{
+êê 
+return
+ëë 
 
-BadRequest[[ !
-([[! "
-ex[[" $
-.[[$ %
-Message[[% ,
-)[[, -
-;[[- .
-}\\ 
-}]] 	
-[__ 	
-HttpPut__	 
-(__ 
-$str__ $
-)__$ %
-]__% &
-[`` 	
-	Authorize``	 
-(`` 
-Roles`` 
-=`` 
-$str`` "
-)``" #
-]``# $
-publicaa 
-asyncaa 
-Taskaa 
-<aa 
-IActionResultaa '
->aa' (
-Activateaa) 1
-(aa1 2
-intaa2 5
-idaa6 8
-)aa8 9
-{bb 	
-trycc 
-{dd 
-awaitee 
-_patientServiceee %
-.ee% &
-ActivateAsyncee& 3
-(ee3 4
-idee4 6
-)ee6 7
-;ee7 8
-returngg 
-	NoContentgg  
-(gg  !
-)gg! "
-;gg" #
-}hh 
-catchii 
-(ii  
-KeyNotFoundExceptionii '
-exii( *
-)ii* +
-{jj 
-returnkk 
-NotFoundkk 
-(kk  
-exkk  "
-.kk" #
-Messagekk# *
-)kk* +
-;kk+ ,
-}ll 
-}mm 	
-[oo 	
-HttpPutoo	 
-(oo 
-$stroo &
-)oo& '
-]oo' (
-[pp 	
-	Authorizepp	 
-(pp 
-Rolespp 
-=pp 
-$strpp "
-)pp" #
-]pp# $
-publicqq 
-asyncqq 
-Taskqq 
-<qq 
-IActionResultqq '
->qq' (
+BadRequest
+ëë !
+(
+ëë! "
+ex
+ëë" $
+.
+ëë$ %
+Message
+ëë% ,
+)
+ëë, -
+;
+ëë- .
+}
+íí 
+}
+ìì 	
+[
+ïï 	
+HttpPut
+ïï	 
+(
+ïï 
+$str
+ïï $
+)
+ïï$ %
+]
+ïï% &
+[
+ññ 	
+	Authorize
+ññ	 
+(
+ññ 
+Roles
+ññ 
+=
+ññ 
+$str
+ññ "
+)
+ññ" #
+]
+ññ# $
+public
+óó 
+async
+óó 
+Task
+óó 
+<
+óó 
+IActionResult
+óó '
+>
+óó' (
+Activate
+óó) 1
+(
+óó1 2
+int
+óó2 5
+id
+óó6 8
+)
+óó8 9
+{
+òò 	
+try
+ôô 
+{
+öö 
+await
+õõ 
+_patientService
+õõ %
+.
+õõ% &
+ActivateAsync
+õõ& 3
+(
+õõ3 4
+id
+õõ4 6
+)
+õõ6 7
+;
+õõ7 8
+return
+ùù 
+	NoContent
+ùù  
+(
+ùù  !
+)
+ùù! "
+;
+ùù" #
+}
+ûû 
+catch
+üü 
+(
+üü "
+KeyNotFoundException
+üü '
+ex
+üü( *
+)
+üü* +
+{
+†† 
+return
+°° 
+NotFound
+°° 
+(
+°°  
+ex
+°°  "
+.
+°°" #
+Message
+°°# *
+)
+°°* +
+;
+°°+ ,
+}
+¢¢ 
+}
+££ 	
+[
+•• 	
+HttpPut
+••	 
+(
+•• 
+$str
+•• &
+)
+••& '
+]
+••' (
+[
+¶¶ 	
+	Authorize
+¶¶	 
+(
+¶¶ 
+Roles
+¶¶ 
+=
+¶¶ 
+$str
+¶¶ "
+)
+¶¶" #
+]
+¶¶# $
+public
+ßß 
+async
+ßß 
+Task
+ßß 
+<
+ßß 
+IActionResult
+ßß '
+>
+ßß' (
 
-Deactivateqq) 3
-(qq3 4
-intqq4 7
-idqq8 :
-)qq: ;
-{rr 	
-tryss 
-{tt 
-awaituu 
-_patientServiceuu %
-.uu% &
-DeactivateAsyncuu& 5
-(uu5 6
-iduu6 8
-)uu8 9
-;uu9 :
-returnww 
-	NoContentww  
-(ww  !
-)ww! "
-;ww" #
-}xx 
-catchyy 
-(yy  
-KeyNotFoundExceptionyy '
-exyy( *
-)yy* +
-{zz 
-return{{ 
-NotFound{{ 
-({{  
-ex{{  "
-.{{" #
-Message{{# *
-){{* +
-;{{+ ,
-}|| 
-}}} 	
-}~~ 
-} µ0
-aC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\HealthRecordController.cs
-	namespace 	
-S3_HealthAxisApi
+Deactivate
+ßß) 3
+(
+ßß3 4
+int
+ßß4 7
+id
+ßß8 :
+)
+ßß: ;
+{
+®® 	
+try
+©© 
+{
+™™ 
+await
+´´ 
+_patientService
+´´ %
+.
+´´% &
+DeactivateAsync
+´´& 5
+(
+´´5 6
+id
+´´6 8
+)
+´´8 9
+;
+´´9 :
+return
+≠≠ 
+	NoContent
+≠≠  
+(
+≠≠  !
+)
+≠≠! "
+;
+≠≠" #
+}
+ÆÆ 
+catch
+ØØ 
+(
+ØØ "
+KeyNotFoundException
+ØØ '
+ex
+ØØ( *
+)
+ØØ* +
+{
+∞∞ 
+return
+±± 
+NotFound
+±± 
+(
+±±  
+ex
+±±  "
+.
+±±" #
+Message
+±±# *
+)
+±±* +
+;
+±±+ ,
+}
+≤≤ 
+}
+≥≥ 	
+private
+µµ 
+int
+µµ 
+?
+µµ ,
+GetPatientReferenceIdFromToken
+µµ 3
+(
+µµ3 4
+)
+µµ4 5
+{
+∂∂ 	
+var
+∑∑ 
+referenceIdValue
+∑∑  
+=
+∑∑! "
+User
+∑∑# '
+.
+∑∑' (
+	FindFirst
+∑∑( 1
+(
+∑∑1 2
+$str
+∑∑2 ?
+)
+∑∑? @
+?
+∑∑@ A
+.
+∑∑A B
+Value
+∑∑B G
+;
+∑∑G H
+if
+ππ 
+(
+ππ 
+int
+ππ 
+.
+ππ 
+TryParse
+ππ 
+(
+ππ 
+referenceIdValue
+ππ -
+,
+ππ- .
+out
+ππ/ 2
+var
+ππ3 6
+referenceId
+ππ7 B
+)
+ππB C
+)
+ππC D
+{
+∫∫ 
+return
+ªª 
+referenceId
+ªª "
+;
+ªª" #
+}
+ºº 
+return
+ææ 
+null
+ææ 
+;
+ææ 
+}
+øø 	
+}
+¿¿ 
+}¡¡ —C
+dC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Controllers\HealthRecordController.cs
+	namespace 	
+S3_HealthAxisApi
  
-. 
-Controllers &
-{ 
-[ 
-Route 
+. 
+Controllers &
+{ 
+[		 
+Route		 
 
-(
+(		
  
-$str 
-) 
-] 
-[		 
-ApiController		 
-]		 
+$str		 
+)		 
+]		 
 [
 
- 
-	Authorize
+ 
+ApiController
 
- 
+ 
 ]
 
- 
-public 
+ 
+[ 
+	Authorize 
+] 
+public 
 
-class #
-HealthRecordsController (
-:) *
-ControllerBase+ 9
-{ 
-private 
-readonly  
-IHealthRecordService - 
-_healthRecordService. B
-;B C
-public #
-HealthRecordsController &
-(& ' 
-IHealthRecordService  
-healthRecordService! 4
-)4 5
-{ 	 
-_healthRecordService  
-=! "
-healthRecordService# 6
-;6 7
-} 	
-[ 	
-HttpGet	 
-( 
-$str 
-) 
-] 
-public 
-async 
-Task 
-< 
-IActionResult '
->' (
-GetById) 0
-(0 1
-int1 4
-id5 7
-)7 8
-{ 	
-var 
-record 
-= 
-await  
-_healthRecordService *
-.* +
-GetByIdAsync+ 7
-(7 8
-id8 :
-): ;
-;; <
-if 
-( 
-record 
-== 
-null 
-) 
-{ 
-return 
-NotFound 
-(  
-$" 
-$str $
-{$ %
-id% '
-}' (
-$str( 3
-"3 4
-)4 5
-;5 6
-} 
-return!! 
-Ok!! 
-(!! 
-record!! 
-)!! 
-;!! 
-}"" 	
-[$$ 	
-HttpGet$$	 
-($$ 
-$str$$ 2
-)$$2 3
-]$$3 4
-public%% 
-async%% 
-Task%% 
-<%% 
-IActionResult%% '
->%%' (
-GetByAppointment%%) 9
-(%%9 :
-int&& 
-appointmentId&& 
-)&& 
-{'' 	
-var(( 
-record(( 
-=(( 
-await))  
-_healthRecordService)) *
-.** #
-GetByAppointmentIdAsync** ,
-(**, -
-appointmentId**- :
-)**: ;
-;**; <
-if,, 
-(,, 
-record,, 
-==,, 
-null,, 
-),, 
-{-- 
-return.. 
-NotFound.. 
-(..  
-$str// C
-)//C D
-;//D E
-}00 
-return22 
-Ok22 
-(22 
-record22 
-)22 
-;22 
-}33 	
-[55 	
-HttpPost55	 
-]55 
-[66 	
-	Authorize66	 
-(66 
-Roles66 
-=66 
-$str66 )
-)66) *
-]66* +
-public77 
-async77 
-Task77 
-<77 
-IActionResult77 '
->77' (
-Create77) /
-(77/ 0
-[88 
-FromBody88 
-]88 !
-CreateHealthRecordDto88 ,
-dto88- 0
-)880 1
-{99 	
-try:: 
-{;; 
-var<< 
-record<< 
-=<< 
-await==  
-_healthRecordService== .
-.==. /
-CreateAsync==/ :
-(==: ;
-dto==; >
-)==> ?
-;==? @
-return?? 
-CreatedAtAction?? &
-(??& '
-nameof@@ 
-(@@ 
-GetById@@ "
-)@@" #
-,@@# $
-newAA 
-{AA 
-idAA 
-=AA 
-recordAA %
-.AA% &
-HealthRecordIdAA& 4
-}AA5 6
-,AA6 7
-recordBB 
-)BB 
-;BB 
-}CC 
-catchDD 
-(DD  
-KeyNotFoundExceptionDD '
-exDD( *
-)DD* +
+class #
+HealthRecordsController (
+:) *
+ControllerBase+ 9
+{ 
+private 
+readonly  
+IHealthRecordService - 
+_healthRecordService. B
+;B C
+private 
+readonly 
+IAppointmentService ,
+_appointmentService- @
+;@ A
+public #
+HealthRecordsController &
+(& ' 
+IHealthRecordService  
+healthRecordService! 4
+,4 5
+IAppointmentService 
+appointmentService  2
+)2 3
+{ 	 
+_healthRecordService  
+=! "
+healthRecordService# 6
+;6 7
+_appointmentService 
+=  !
+appointmentService" 4
+;4 5
+} 	
+[ 	
+HttpGet	 
+( 
+$str 
+) 
+] 
+public 
+async 
+Task 
+< 
+IActionResult '
+>' (
+GetById) 0
+(0 1
+int1 4
+id5 7
+)7 8
+{ 	
+var 
+record 
+= 
+await  
+_healthRecordService *
+.* +
+GetByIdAsync+ 7
+(7 8
+id8 :
+): ;
+;; <
+if 
+( 
+record 
+== 
+null 
+) 
+{   
+return!! 
+NotFound!! 
+(!!  
+$""" 
+$str"" $
+{""$ %
+id""% '
+}""' (
+$str""( 3
+"""3 4
+)""4 5
+;""5 6
+}## 
+return%% 
+Ok%% 
+(%% 
+record%% 
+)%% 
+;%% 
+}&& 	
+[(( 	
+HttpGet((	 
+((( 
+$str(( 2
+)((2 3
+]((3 4
+public)) 
+async)) 
+Task)) 
+<)) 
+IActionResult)) '
+>))' (
+GetByAppointment))) 9
+())9 :
+int** 
+appointmentId** 
+)** 
+{++ 	
+var,, 
+appointment,, 
+=,, 
+await-- 
+_appointmentService-- )
+.--) *
+GetByIdAsync--* 6
+(--6 7
+appointmentId--7 D
+)--D E
+;--E F
+if// 
+(// 
+appointment// 
+==// 
+null// #
+)//# $
+{00 
+return11 
+NotFound11 
+(11  
+$"22 
+$str22 "
+{22" #
+appointmentId22# 0
+}220 1
+$str221 <
+"22< =
+)22= >
+;22> ?
+}33 
+if55 
+(55 
+User55 
+.55 
+IsInRole55 
+(55 
+$str55 '
+)55' (
+)55( )
+{66 
+var77 
+patientIdFromToken77 &
+=77' (*
+GetPatientReferenceIdFromToken77) G
+(77G H
+)77H I
+;77I J
+if99 
+(99 
+!99 
+patientIdFromToken99 '
+.99' (
+HasValue99( 0
+||991 3
+appointment:: 
+.::  
+	PatientId::  )
+!=::* ,
+patientIdFromToken::- ?
+.::? @
+Value::@ E
+)::E F
+{;; 
+return<< 
+Forbid<< !
+(<<! "
+)<<" #
+;<<# $
+}== 
+}>> 
+var@@ 
+record@@ 
+=@@ 
+awaitAA  
+_healthRecordServiceAA *
+.BB #
+GetByAppointmentIdAsyncBB ,
+(BB, -
+appointmentIdBB- :
+)BB: ;
+;BB; <
+ifDD 
+(DD 
+recordDD 
+==DD 
+nullDD 
+)DD 
 {EE 
 returnFF 
 NotFoundFF 
-(FF  
-exFF  "
-.FF" #
-MessageFF# *
-)FF* +
-;FF+ ,
-}GG 
-catchHH 
-(HH 
-ArgumentExceptionHH $
-exHH% '
-)HH' (
-{II 
-returnJJ 
+(FF  
+$strGG C
+)GGC D
+;GGD E
+}HH 
+returnJJ 
+OkJJ 
+(JJ 
+recordJJ 
+)JJ 
+;JJ 
+}KK 	
+[MM 	
+HttpPostMM	 
+]MM 
+[NN 	
+	AuthorizeNN	 
+(NN 
+RolesNN 
+=NN 
+$strNN )
+)NN) *
+]NN* +
+publicOO 
+asyncOO 
+TaskOO 
+<OO 
+IActionResultOO '
+>OO' (
+CreateOO) /
+(OO/ 0
+[PP 
+FromBodyPP 
+]PP !
+CreateHealthRecordDtoPP ,
+dtoPP- 0
+)PP0 1
+{QQ 	
+tryRR 
+{SS 
+varTT 
+recordTT 
+=TT 
+awaitUU  
+_healthRecordServiceUU .
+.UU. /
+CreateAsyncUU/ :
+(UU: ;
+dtoUU; >
+)UU> ?
+;UU? @
+returnWW 
+CreatedAtActionWW &
+(WW& '
+nameofXX 
+(XX 
+GetByIdXX "
+)XX" #
+,XX# $
+newYY 
+{YY 
+idYY 
+=YY 
+recordYY %
+.YY% &
+HealthRecordIdYY& 4
+}YY5 6
+,YY6 7
+recordZZ 
+)ZZ 
+;ZZ 
+}[[ 
+catch\\ 
+(\\  
+KeyNotFoundException\\ '
+ex\\( *
+)\\* +
+{]] 
+return^^ 
+NotFound^^ 
+(^^  
+ex^^  "
+.^^" #
+Message^^# *
+)^^* +
+;^^+ ,
+}__ 
+catch`` 
+(`` 
+ArgumentException`` $
+ex``% '
+)``' (
+{aa 
+returnbb 
 
-BadRequestJJ !
-(JJ! "
-exJJ" $
-.JJ$ %
-MessageJJ% ,
-)JJ, -
-;JJ- .
-}KK 
-catchLL 
-(LL %
-InvalidOperationExceptionLL ,
-exLL- /
-)LL/ 0
-{MM 
-returnNN 
+BadRequestbb !
+(bb! "
+exbb" $
+.bb$ %
+Messagebb% ,
+)bb, -
+;bb- .
+}cc 
+catchdd 
+(dd %
+InvalidOperationExceptiondd ,
+exdd- /
+)dd/ 0
+{ee 
+returnff 
 
-BadRequestNN !
-(NN! "
-exNN" $
-.NN$ %
-MessageNN% ,
-)NN, -
-;NN- .
-}OO 
-}PP 	
-[RR 	
-HttpPutRR	 
-(RR 
-$strRR 
-)RR 
-]RR 
-[SS 	
-	AuthorizeSS	 
-(SS 
-RolesSS 
-=SS 
-$strSS )
-)SS) *
-]SS* +
-publicTT 
-asyncTT 
-TaskTT 
-<TT 
-IActionResultTT '
->TT' (
-UpdateTT) /
-(TT/ 0
-intUU 
-idUU 
-,UU 
-[VV 
-FromBodyVV 
-]VV !
-UpdateHealthRecordDtoVV ,
-dtoVV- 0
-)VV0 1
-{WW 	
-tryXX 
-{YY 
-awaitZZ  
-_healthRecordServiceZZ *
-.[[ 
-UpdateAsync[[  
-([[  !
-id[[! #
-,[[# $
-dto[[% (
-)[[( )
-;[[) *
-return]] 
-	NoContent]]  
-(]]  !
-)]]! "
-;]]" #
-}^^ 
-catch__ 
-(__  
-KeyNotFoundException__ '
-ex__( *
-)__* +
-{`` 
-returnaa 
-NotFoundaa 
-(aa  
-exaa  "
-.aa" #
-Messageaa# *
-)aa* +
-;aa+ ,
-}bb 
-catchcc 
-(cc 
-ArgumentExceptioncc $
-excc% '
-)cc' (
-{dd 
-returnee 
+BadRequestff !
+(ff! "
+exff" $
+.ff$ %
+Messageff% ,
+)ff, -
+;ff- .
+}gg 
+}hh 	
+[jj 	
+HttpPutjj	 
+(jj 
+$strjj 
+)jj 
+]jj 
+[kk 	
+	Authorizekk	 
+(kk 
+Roleskk 
+=kk 
+$strkk )
+)kk) *
+]kk* +
+publicll 
+asyncll 
+Taskll 
+<ll 
+IActionResultll '
+>ll' (
+Updatell) /
+(ll/ 0
+intmm 
+idmm 
+,mm 
+[nn 
+FromBodynn 
+]nn !
+UpdateHealthRecordDtonn ,
+dtonn- 0
+)nn0 1
+{oo 	
+trypp 
+{qq 
+awaitrr  
+_healthRecordServicerr *
+.ss 
+UpdateAsyncss  
+(ss  !
+idss! #
+,ss# $
+dtoss% (
+)ss( )
+;ss) *
+returnuu 
+	NoContentuu  
+(uu  !
+)uu! "
+;uu" #
+}vv 
+catchww 
+(ww  
+KeyNotFoundExceptionww '
+exww( *
+)ww* +
+{xx 
+returnyy 
+NotFoundyy 
+(yy  
+exyy  "
+.yy" #
+Messageyy# *
+)yy* +
+;yy+ ,
+}zz 
+catch{{ 
+({{ 
+ArgumentException{{ $
+ex{{% '
+){{' (
+{|| 
+return}} 
 
-BadRequestee !
-(ee! "
-exee" $
-.ee$ %
-Messageee% ,
-)ee, -
-;ee- .
-}ff 
-}gg 	
-}hh 
-}ii ∑:
-[C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\DoctorController.cs
+BadRequest}} !
+(}}! "
+ex}}" $
+.}}$ %
+Message}}% ,
+)}}, -
+;}}- .
+}~~ 
+} 	
+private
+ÅÅ 
+int
+ÅÅ 
+?
+ÅÅ ,
+GetPatientReferenceIdFromToken
+ÅÅ 3
+(
+ÅÅ3 4
+)
+ÅÅ4 5
+{
+ÇÇ 	
+var
+ÉÉ 
+referenceIdValue
+ÉÉ  
+=
+ÉÉ! "
+User
+ÉÉ# '
+.
+ÉÉ' (
+	FindFirst
+ÉÉ( 1
+(
+ÉÉ1 2
+$str
+ÉÉ2 ?
+)
+ÉÉ? @
+?
+ÉÉ@ A
+.
+ÉÉA B
+Value
+ÉÉB G
+;
+ÉÉG H
+if
+ÖÖ 
+(
+ÖÖ 
+int
+ÖÖ 
+.
+ÖÖ 
+TryParse
+ÖÖ 
+(
+ÖÖ 
+referenceIdValue
+ÖÖ -
+,
+ÖÖ- .
+out
+ÖÖ/ 2
+var
+ÖÖ3 6
+referenceId
+ÖÖ7 B
+)
+ÖÖB C
+)
+ÖÖC D
+{
+ÜÜ 
+return
+áá 
+referenceId
+áá "
+;
+áá" #
+}
+àà 
+return
+ää 
+null
+ää 
+;
+ää 
+}
+ãã 	
+}
+åå 
+}çç ÌR
+^C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Controllers\DoctorController.cs
 	namespace 	
 S3_HealthAxisApi
  
@@ -21048,1257 +24032,1700 @@ BadRequestee !
 readonly 
 IDoctorService '
 _doctorService( 6
-;6 7
-public 
-DoctorsController  
-(  !
-IDoctorService 
-doctorService (
-)( )
-{ 	
-_doctorService 
-= 
-doctorService *
-;* +
+;6 7
+private 
+readonly 
+IAppointmentService ,
+_appointmentService- @
+;@ A
+public 
+DoctorsController  
+(  !
+IDoctorService 
+doctorService (
+,( )
+IAppointmentService 
+appointmentService  2
+)2 3
+{ 	
+_doctorService 
+= 
+doctorService *
+;* +
+_appointmentService 
+=  !
+appointmentService" 4
+;4 5
+} 	
+[ 	
+HttpGet	 
+] 
+public 
+async 
+Task 
+< 
+IActionResult '
+>' (
+GetAll) /
+(/ 0
+[ 
+	FromQuery 
+] 
+string 
+? 
+sortBy  &
+,& '
+[ 
+	FromQuery 
+] 
+int 
+? 
+specialisation +
+)+ ,
+{ 	
+var 
+doctors 
+= 
+await 
+_doctorService $
+.$ %
+GetAllAsync% 0
+(0 1
+sortBy 
+, 
+specialisation   "
+)  " #
+;  # $
+return"" 
+Ok"" 
+("" 
+doctors"" 
+)"" 
+;"" 
+}## 	
+[%% 	
+HttpGet%%	 
+(%% 
+$str%% 
+)%% 
+]%% 
+public&& 
+async&& 
+Task&& 
+<&& 
+IActionResult&& '
+>&&' (
+GetById&&) 0
+(&&0 1
+int'' 
+id'' 
+)'' 
+{(( 	
+var)) 
+doctor)) 
+=)) 
+await** 
+_doctorService** $
+.**$ %
+GetByIdAsync**% 1
+(**1 2
+id**2 4
+)**4 5
+;**5 6
+if,, 
+(,, 
+doctor,, 
+==,, 
+null,, 
+),, 
+{-- 
+return.. 
+NotFound.. 
+(..  
+$"// 
+$str// %
+{//% &
+id//& (
+}//( )
+$str//) 4
+"//4 5
+)//5 6
+;//6 7
+}00 
+return22 
+Ok22 
+(22 
+doctor22 
+)22 
+;22 
+}33 	
+[55 	
+HttpGet55	 
+(55 
+$str55 6
+)556 7
+]557 8
+public66 
+async66 
+Task66 
+<66 
+IActionResult66 '
+>66' (
+GetBySpecialisation77 
+(77  
+int88 
+specialisation88 "
+)88" #
+{99 	
+var:: 
+doctors:: 
+=:: 
+await;; 
+_doctorService;; $
+.<< *
+GetActiveBySpecialisationAsync<< 3
+(<<3 4
+specialisation== &
+)==& '
+;==' (
+return?? 
+Ok?? 
+(?? 
+doctors?? 
+)?? 
+;?? 
+}@@ 	
+[BB 	
+HttpPostBB	 
+]BB 
+[CC 	
+	AuthorizeCC	 
+(CC 
+RolesCC 
+=CC 
+$strCC "
+)CC" #
+]CC# $
+publicDD 
+asyncDD 
+TaskDD 
+<DD 
+IActionResultDD '
+>DD' (
+CreateDD) /
+(DD/ 0
+[EE 
+FromBodyEE 
+]EE 
+CreateDoctorDtoEE &
+dtoEE' *
+)EE* +
+{FF 	
+varGG 
+doctorGG 
+=GG 
+awaitHH 
+_doctorServiceHH $
+.II (
+CreateDoctorWithAccountAsyncII 1
+(II1 2
+dtoII2 5
+)II5 6
+;II6 7
+returnKK 
+CreatedAtActionKK "
+(KK" #
+nameofLL 
+(LL 
+GetByIdLL 
+)LL 
+,LL  
+newMM 
+{MM 
+idMM 
+=MM 
+doctorMM !
+.MM! "
+DoctorIdMM" *
+}MM+ ,
+,MM, -
+doctorNN 
+)NN 
+;NN 
+}OO 	
+[QQ 	
+HttpPutQQ	 
+(QQ 
+$strQQ 
+)QQ 
+]QQ 
+[RR 	
+	AuthorizeRR	 
+(RR 
+RolesRR 
+=RR 
+$strRR "
+)RR" #
+]RR# $
+publicSS 
+asyncSS 
+TaskSS 
+<SS 
+IActionResultSS '
+>SS' (
+UpdateSS) /
+(SS/ 0
+intTT 
+idTT 
+,TT 
+[UU 
+FromBodyUU 
+]UU 
+UpdateDoctorDtoUU &
+dtoUU' *
+)UU* +
+{VV 	
+awaitWW 
+_doctorServiceWW  
+.WW  !
+UpdateAsyncWW! ,
+(WW, -
+idXX 
+,XX 
+dtoYY 
+)YY 
+;YY 
+return[[ 
+	NoContent[[ 
+([[ 
+)[[ 
+;[[ 
+}\\ 	
+[^^ 	
+HttpGet^^	 
+(^^ 
+$str^^ (
+)^^( )
+]^^) *
+public__ 
+async__ 
+Task__ 
+<__ 
+IActionResult__ '
+>__' (
+GetAvailability`` 
+(`` 
+intaa 
+idaa 
+,aa 
+[bb 
+	FromQuerybb 
+]bb 
+DateOnlybb $
+datebb% )
+)bb) *
+{cc 	
+vardd 
+slotsdd 
+=dd 
+awaitee 
+_doctorServiceee $
+.ff  
+GetAvailabilityAsyncff )
+(ff) *
+idgg 
+,gg 
+datehh 
+)hh 
+;hh 
+returnjj 
+Okjj 
+(jj 
+slotsjj 
+)jj 
+;jj 
+}kk 	
+[mm 	
+HttpPutmm	 
+(mm 
+$strmm $
+)mm$ %
+]mm% &
+[nn 	
+	Authorizenn	 
+(nn 
+Rolesnn 
+=nn 
+$strnn "
+)nn" #
+]nn# $
+publicoo 
+asyncoo 
+Taskoo 
+<oo 
+IActionResultoo '
+>oo' (
+Activateoo) 1
+(oo1 2
+intpp 
+idpp 
+)pp 
+{qq 	
+awaitrr 
+_doctorServicerr  
+.rr  !
+ActivateAsyncrr! .
+(rr. /
+idrr/ 1
+)rr1 2
+;rr2 3
+returntt 
+	NoContenttt 
+(tt 
+)tt 
+;tt 
+}uu 	
+[ww 	
+HttpGetww	 
+(ww 
+$strww $
+)ww$ %
+]ww% &
+[xx 	
+	Authorizexx	 
+(xx 
+Rolesxx 
+=xx 
+$strxx )
+)xx) *
+]xx* +
+publicyy 
+asyncyy 
+Taskyy 
+<yy 
+IActionResultyy '
+>yy' (
+GetDoctorPatientsyy) :
+(yy: ;
+intyy; >
+idyy? A
+)yyA B
+{zz 	
+try{{ 
+{|| 
+if}} 
+(}} 
+User}} 
+.}} 
+IsInRole}} !
+(}}! "
+$str}}" *
+)}}* +
+)}}+ ,
+{~~ 
+var 
+doctorIdFromToken )
+=* +#
+GetReferenceIdFromToken, C
+(C D
+)D E
+;E F
+if
+ÅÅ 
+(
+ÅÅ 
+!
+ÅÅ 
+doctorIdFromToken
+ÅÅ *
+.
+ÅÅ* +
+HasValue
+ÅÅ+ 3
+||
+ÅÅ4 6
+doctorIdFromToken
+ÇÇ )
+.
+ÇÇ) *
+Value
+ÇÇ* /
+!=
+ÇÇ0 2
+id
+ÇÇ3 5
+)
+ÇÇ5 6
+{
+ÉÉ 
+return
+ÑÑ 
+Forbid
+ÑÑ %
+(
+ÑÑ% &
+)
+ÑÑ& '
+;
+ÑÑ' (
+}
+ÖÖ 
+}
+ÜÜ 
+var
+àà 
+patients
+àà 
+=
+àà 
+await
+ââ !
+_appointmentService
+ââ -
+.
+ââ- .$
+GetDoctorPatientsAsync
+ââ. D
+(
+ââD E
+id
+ââE G
+)
+ââG H
+;
+ââH I
+return
+ãã 
+Ok
+ãã 
+(
+ãã 
+patients
+ãã "
+)
+ãã" #
+;
+ãã# $
+}
+åå 
+catch
+çç 
+(
+çç "
+KeyNotFoundException
+çç '
+ex
+çç( *
+)
+çç* +
+{
+éé 
+return
+èè 
+NotFound
+èè 
+(
+èè  
+ex
+èè  "
+.
+èè" #
+Message
+èè# *
+)
+èè* +
+;
+èè+ ,
+}
+êê 
+}
+ëë 	
+[
+ìì 	
+HttpPut
+ìì	 
+(
+ìì 
+$str
+ìì &
+)
+ìì& '
+]
+ìì' (
+[
+îî 	
+	Authorize
+îî	 
+(
+îî 
+Roles
+îî 
+=
+îî 
+$str
+îî "
+)
+îî" #
+]
+îî# $
+public
+ïï 
+async
+ïï 
+Task
+ïï 
+<
+ïï 
+IActionResult
+ïï '
+>
+ïï' (
+
+Deactivate
+ïï) 3
+(
+ïï3 4
+int
+ññ 
+id
+ññ 
+)
+ññ 
+{
+óó 	
+await
+òò 
+_doctorService
+òò  
+.
+òò  !
+DeactivateAsync
+òò! 0
+(
+òò0 1
+id
+òò1 3
+)
+òò3 4
+;
+òò4 5
+return
+öö 
+	NoContent
+öö 
+(
+öö 
+)
+öö 
+;
+öö 
+}
+õõ 	
+private
+úú 
+int
+úú 
+?
+úú %
+GetReferenceIdFromToken
+úú ,
+(
+úú, -
+)
+úú- .
+{
+ùù 	
+var
+ûû 
+referenceIdValue
+ûû  
+=
+ûû! "
+User
+üü 
+.
+üü 
+	FindFirst
+üü 
+(
+üü 
+$str
+üü ,
+)
+üü, -
+?
+üü- .
+.
+üü. /
+Value
+üü/ 4
+;
+üü4 5
+if
+°° 
+(
+°° 
+int
+°° 
+.
+°° 
+TryParse
+°° 
+(
+°° 
+referenceIdValue
+°° -
+,
+°°- .
+out
+°°/ 2
+var
+°°3 6
+referenceId
+°°7 B
+)
+°°B C
+)
+°°C D
+{
+¢¢ 
+return
+££ 
+referenceId
+££ "
+;
+££" #
+}
+§§ 
+return
+¶¶ 
+null
+¶¶ 
+;
+¶¶ 
+}
+ßß 	
+}
+©© 
+}´´ ‘4
+\C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Controllers\AuthController.cs
+	namespace 	
+S3_HealthAxisApi
+ 
+. 
+Controllers &
+{		 
+[
+
+ 
+Route
+
+ 
+
+(
+
+
+ 
+$str
+
+ 
+)
+
+ 
+]
+
+ 
+[ 
+ApiController 
+] 
+public 
+
+class 
+AuthController 
+:  !
+ControllerBase" 0
+{ 
+private 
+readonly 
+IAuthService %
+_authService& 2
+;2 3
+public 
+AuthController 
+( 
+IAuthService *
+authService+ 6
+)6 7
+{ 	
+_authService 
+= 
+authService &
+;& '
 } 	
-[ 	
-HttpGet	 
-] 
+[ 	
+HttpPost	 
+( 
+$str 
+) 
+] 
 public 
 async 
 Task 
 < 
 IActionResult '
->' (
-GetAll) /
-(/ 0
-[ 
-	FromQuery 
-] 
-string 
-? 
-sortBy  &
-,& '
-[ 
-	FromQuery 
-] 
-int 
-? 
-specialisation +
-)+ ,
-{ 	
-var 
-doctors 
-= 
-await 
-_doctorService $
-.$ %
-GetAllAsync% 0
-(0 1
-sortBy 
-, 
-specialisation "
-)" #
-;# $
+>' (
+Register) 1
+(1 2
+RegisterDto2 =
+dto> A
+)A B
+{ 	
+var 
+result 
+= 
+await 
+_authService +
+.+ ,
+RegisterAsync, 9
+(9 :
+dto: =
+)= >
+;> ?
+if 
+( 
+! 
+result 
+. 
+Success 
+)  
+{ 
+return 
+
+BadRequest !
+(! "
+result" (
+.( )
+Message) 0
+)0 1
+;1 2
+} 
 return 
 Ok 
-( 
-doctors 
-) 
-; 
+( 
+result 
+. 
+Data !
+)! "
+;" #
 }   	
-["" 	
-HttpGet""	 
-("" 
-$str"" 
-)"" 
-]"" 
+["" 	
+HttpPost""	 
+("" 
+$str"" $
+)""$ %
+]""% &
 public## 
 async## 
 Task## 
 <## 
 IActionResult## '
->##' (
-GetById##) 0
-(##0 1
-int$$ 
-id$$ 
-)$$ 
-{%% 	
-var&& 
-doctor&& 
-=&& 
-await'' 
-_doctorService'' $
-.''$ %
-GetByIdAsync''% 1
-(''1 2
-id''2 4
-)''4 5
-;''5 6
-if)) 
-()) 
-doctor)) 
-==)) 
-null)) 
-))) 
-{** 
-return++ 
-NotFound++ 
-(++  
-$",, 
-$str,, %
-{,,% &
-id,,& (
-},,( )
-$str,,) 4
-",,4 5
-),,5 6
-;,,6 7
-}-- 
-return// 
-Ok// 
-(// 
-doctor// 
-)// 
-;// 
-}00 	
-[22 	
-HttpGet22	 
-(22 
-$str22 6
-)226 7
-]227 8
-public33 
-async33 
-Task33 
-<33 
-IActionResult33 '
->33' (
-GetBySpecialisation44 
-(44  
-int55 
-specialisation55 "
-)55" #
-{66 	
-var77 
-doctors77 
-=77 
-await88 
-_doctorService88 $
-.99 *
-GetActiveBySpecialisationAsync99 3
-(993 4
-specialisation:: &
-)::& '
-;::' (
-return<< 
-Ok<< 
-(<< 
-doctors<< 
-)<< 
-;<< 
-}== 	
-[?? 	
-HttpPost??	 
-]?? 
-[@@ 	
-	Authorize@@	 
-(@@ 
-Roles@@ 
-=@@ 
-$str@@ "
-)@@" #
-]@@# $
-publicAA 
-asyncAA 
-TaskAA 
-<AA 
-IActionResultAA '
->AA' (
-CreateAA) /
-(AA/ 0
-[BB 
-FromBodyBB 
-]BB 
-CreateDoctorDtoBB &
-dtoBB' *
-)BB* +
-{CC 	
-varDD 
-doctorDD 
-=DD 
-awaitEE 
-_doctorServiceEE $
-.FF (
-CreateDoctorWithAccountAsyncFF 1
-(FF1 2
-dtoFF2 5
-)FF5 6
-;FF6 7
-returnHH 
-CreatedAtActionHH "
-(HH" #
-nameofII 
-(II 
-GetByIdII 
-)II 
-,II  
-newJJ 
-{JJ 
-idJJ 
-=JJ 
-doctorJJ !
-.JJ! "
-DoctorIdJJ" *
-}JJ+ ,
-,JJ, -
-doctorKK 
-)KK 
-;KK 
-}LL 	
-[NN 	
-HttpPutNN	 
-(NN 
-$strNN 
-)NN 
-]NN 
-[OO 	
-	AuthorizeOO	 
-(OO 
-RolesOO 
-=OO 
-$strOO "
-)OO" #
-]OO# $
-publicPP 
-asyncPP 
-TaskPP 
-<PP 
-IActionResultPP '
->PP' (
-UpdatePP) /
-(PP/ 0
-intQQ 
-idQQ 
-,QQ 
-[RR 
-FromBodyRR 
-]RR 
-UpdateDoctorDtoRR &
-dtoRR' *
-)RR* +
-{SS 	
-awaitTT 
-_doctorServiceTT  
-.TT  !
-UpdateAsyncTT! ,
-(TT, -
-idUU 
-,UU 
-dtoVV 
-)VV 
-;VV 
-returnXX 
-	NoContentXX 
-(XX 
-)XX 
-;XX 
-}YY 	
-[[[ 	
-HttpGet[[	 
-([[ 
-$str[[ (
-)[[( )
-][[) *
-public\\ 
-async\\ 
-Task\\ 
-<\\ 
-IActionResult\\ '
->\\' (
-GetAvailability]] 
-(]] 
-int^^ 
-id^^ 
-,^^ 
-[__ 
-	FromQuery__ 
-]__ 
-DateOnly__ $
-date__% )
-)__) *
-{`` 	
-varaa 
-slotsaa 
-=aa 
-awaitbb 
-_doctorServicebb $
-.cc  
-GetAvailabilityAsynccc )
-(cc) *
-iddd 
-,dd 
-dateee 
-)ee 
-;ee 
-returngg 
-Okgg 
-(gg 
-slotsgg 
-)gg 
-;gg 
-}hh 	
-[jj 	
-HttpPutjj	 
-(jj 
-$strjj $
-)jj$ %
-]jj% &
-[kk 	
-	Authorizekk	 
-(kk 
-Roleskk 
-=kk 
-$strkk "
-)kk" #
-]kk# $
-publicll 
-asyncll 
-Taskll 
-<ll 
-IActionResultll '
->ll' (
-Activatell) 1
-(ll1 2
-intmm 
-idmm 
-)mm 
-{nn 	
-awaitoo 
-_doctorServiceoo  
-.oo  !
-ActivateAsyncoo! .
-(oo. /
-idoo/ 1
-)oo1 2
-;oo2 3
-returnqq 
-	NoContentqq 
-(qq 
-)qq 
-;qq 
-}rr 	
-[tt 	
-HttpPuttt	 
-(tt 
-$strtt &
-)tt& '
-]tt' (
-[uu 	
-	Authorizeuu	 
-(uu 
-Rolesuu 
-=uu 
-$struu "
-)uu" #
-]uu# $
-publicvv 
-asyncvv 
-Taskvv 
-<vv 
-IActionResultvv '
->vv' (
+>##' (
+RegisterPatient##) 8
+(##8 9
+RegisterPatientDto##9 K
+dto##L O
+)##O P
+{$$ 	
+var%% 
+result%% 
+=%% 
+await&& 
+_authService&& "
+.&&" # 
+RegisterPatientAsync&&# 7
+(&&7 8
+dto&&8 ;
+)&&; <
+;&&< =
+if(( 
+((( 
+!(( 
+result(( 
+.(( 
+Success(( 
+)((  
+{)) 
+return** 
 
-Deactivatevv) 3
-(vv3 4
-intww 
-idww 
-)ww 
-{xx 	
-awaityy 
-_doctorServiceyy  
-.yy  !
-DeactivateAsyncyy! 0
-(yy0 1
-idyy1 3
-)yy3 4
-;yy4 5
-return{{ 
-	NoContent{{ 
-({{ 
-){{ 
-;{{ 
-}|| 	
-}}} 
-} Ñ%
-YC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\AuthController.cs
-	namespace 	
-S3_HealthAxisApi
+BadRequest** !
+(**! "
+result**" (
+.**( )
+Message**) 0
+)**0 1
+;**1 2
+}++ 
+return-- 
+Ok-- 
+(-- 
+result-- 
+.-- 
+Data-- !
+)--! "
+;--" #
+}.. 	
+[00 	
+HttpPost00	 
+(00 
+$str00 
+)00 
+]00 
+public11 
+async11 
+Task11 
+<11 
+IActionResult11 '
+>11' (
+Login11) .
+(11. /
+LoginDto11/ 7
+dto118 ;
+)11; <
+{22 	
+var33 
+result33 
+=33 
+await33 
+_authService33 +
+.33+ ,
+
+LoginAsync33, 6
+(336 7
+dto337 :
+)33: ;
+;33; <
+if55 
+(55 
+!55 
+result55 
+.55 
+Success55 
+)55  
+{66 
+return77 
+Unauthorized77 #
+(77# $
+result77$ *
+.77* +
+Message77+ 2
+)772 3
+;773 4
+}88 
+return:: 
+Ok:: 
+(:: 
+result:: 
+.:: 
+Data:: !
+)::! "
+;::" #
+};; 	
+[== 	
+HttpPut==	 
+(== 
+$str== "
+)==" #
+]==# $
+[>> 	
+	Authorize>>	 
+]>> 
+public?? 
+async?? 
+Task?? 
+<?? 
+IActionResult?? '
+>??' (
+ChangePassword??) 7
+(??7 8
+[@@ 
+FromBody@@ 
+]@@ 
+ChangePasswordDto@@  
+request@@! (
+)@@( )
+{AA 	
+varBB 
+emailBB 
+=BB 
+UserCC 
+.CC 
+	FindFirstCC 
+(CC #
+JwtRegisteredClaimNamesCC 6
+.CC6 7
+EmailCC7 <
+)CC< =
+?CC= >
+.CC> ?
+ValueCC? D
+??CCE G
+UserDD 
+.DD 
+	FindFirstDD 
+(DD 
+
+ClaimTypesDD )
+.DD) *
+EmailDD* /
+)DD/ 0
+?DD0 1
+.DD1 2
+ValueDD2 7
+;DD7 8
+ifFF 
+(FF 
+stringFF 
+.FF 
+IsNullOrWhiteSpaceFF )
+(FF) *
+emailFF* /
+)FF/ 0
+)FF0 1
+{GG 
+returnHH 
+UnauthorizedHH #
+(HH# $
+$strHH$ L
+)HHL M
+;HHM N
+}II 
+varKK 
+resultKK 
+=KK 
+awaitLL 
+_authServiceLL "
+.LL" #
+ChangePasswordAsyncLL# 6
+(LL6 7
+emailLL7 <
+,LL< =
+requestLL> E
+)LLE F
+;LLF G
+ifNN 
+(NN 
+!NN 
+resultNN 
+.NN 
+SuccessNN 
+)NN  
+{OO 
+returnPP 
+
+BadRequestPP !
+(PP! "
+resultPP" (
+.PP( )
+MessagePP) 0
+)PP0 1
+;PP1 2
+}QQ 
+returnSS 
+OkSS 
+(SS 
+newSS 
+{TT 
+messageUU 
+=UU 
+resultUU  
+.UU  !
+MessageUU! (
+}VV 
+)VV 
+;VV 
+}WW 	
+[YY 	
+HttpPostYY	 
+(YY 
+$strYY !
+)YY! "
+]YY" #
+publicZZ 
+asyncZZ 
+TaskZZ 
+<ZZ 
+IActionResultZZ '
+>ZZ' (
+RefreshTokenZZ) 5
+(ZZ5 6
+RefreshTokenDtoZZ6 E
+dtoZZF I
+)ZZI J
+{[[ 	
+var\\ 
+result\\ 
+=\\ 
+await]] 
+_authService]] "
+.]]" #
+RefreshTokenAsync]]# 4
+(]]4 5
+dto]]5 8
+)]]8 9
+;]]9 :
+if__ 
+(__ 
+!__ 
+result__ 
+.__ 
+Success__ 
+)__  
+{`` 
+returnaa 
+Unauthorizedaa #
+(aa# $
+resultaa$ *
+.aa* +
+Messageaa+ 2
+)aa2 3
+;aa3 4
+}bb 
+returndd 
+Okdd 
+(dd 
+resultdd 
+.dd 
+Datadd !
+)dd! "
+;dd" #
+}ee 	
+}ii 
+}jj ¨ø
+cC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Controllers\AppointmentController.cs
+	namespace 	
+S3_HealthAxisApi
  
-. 
-Controllers &
-{ 
-[ 
-Route 
+. 
+Controllers &
+{ 
+[		 
+Route		 
 
-(
+(		
  
-$str 
-) 
-] 
-[ 
-ApiController 
-] 
-public		 
-
-class		 
-AuthController		 
-:		  !
-ControllerBase		" 0
-{
+$str		 
+)		 
+]		 
+[
 
- 
-private 
-readonly 
-IAuthService %
-_authService& 2
-;2 3
-public 
-AuthController 
-( 
-IAuthService *
-authService+ 6
-)6 7
-{ 	
-_authService 
-= 
-authService &
-;& '
-} 	
-[ 	
-HttpPost	 
-( 
-$str 
-) 
-] 
-public 
-async 
-Task 
-< 
-IActionResult '
->' (
-Register) 1
-(1 2
-RegisterDto2 =
-dto> A
-)A B
-{ 	
-var 
-result 
-= 
-await 
-_authService +
-.+ ,
-RegisterAsync, 9
-(9 :
-dto: =
-)= >
-;> ?
-if 
-( 
-! 
-result 
-. 
-Success 
-)  
-{ 
-return 
-
-BadRequest !
-(! "
-result" (
-.( )
-Message) 0
-)0 1
-;1 2
-} 
+ 
+ApiController
+
+ 
+]
+
+ 
+[ 
+	Authorize 
+] 
+public 
+
+class "
+AppointmentsController '
+:( )
+ControllerBase* 8
+{ 
+private 
+readonly 
+IAppointmentService ,
+_appointmentService- @
+;@ A
+public "
+AppointmentsController %
+(% &
+IAppointmentService 
+appointmentService  2
+)2 3
+{ 	
+_appointmentService 
+=  !
+appointmentService" 4
+;4 5
+} 	
+[ 	
+HttpGet	 
+] 
+[ 	
+	Authorize	 
+( 
+Roles 
+= 
+$str "
+)" #
+]# $
+public 
+async 
+Task 
+< 
+ActionResult &
+<& '
+IEnumerable' 2
+<2 3!
+AppointmentDetailsDto3 H
+>H I
+>I J
+>J K
+GetAllL R
+(R S
+)S T
+{ 	
+var 
+appointments 
+= 
+await $
+_appointmentService% 8
+.8 9
+GetAllAsync9 D
+(D E
+)E F
+;F G
 return 
 Ok 
-( 
-result 
-. 
-Data !
-)! "
-;" #
+( 
+appointments "
+)" #
+;# $
 } 	
-[ 	
-HttpPost	 
-( 
-$str $
-)$ %
-]% &
+[ 	
+HttpGet	 
+( 
+$str 
+) 
+] 
 public   
 async   
 Task   
 <   
 IActionResult   '
->  ' (
-RegisterPatient  ) 8
-(  8 9
-RegisterPatientDto  9 K
-dto  L O
-)  O P
+>  ' (
+GetById  ) 0
+(  0 1
+int  1 4
+id  5 7
+)  7 8
 {!! 	
-var"" 
-result"" 
-="" 
-await## 
-_authService## "
-.##" # 
-RegisterPatientAsync### 7
-(##7 8
-dto##8 ;
-)##; <
-;##< =
+var"" 
+appointment"" 
+="" 
+await## 
+_appointmentService## )
+.##) *
+GetByIdAsync##* 6
+(##6 7
+id##7 9
+)##9 :
+;##: ;
 if%% 
-(%% 
-!%% 
-result%% 
-.%% 
-Success%% 
-)%%  
+(%% 
+appointment%% 
+==%% 
+null%% #
+)%%# $
 {&& 
-return'' 
-
-BadRequest'' !
-(''! "
-result''" (
-.''( )
-Message'') 0
-)''0 1
-;''1 2
-}(( 
-return** 
-Ok** 
-(** 
-result** 
-.** 
-Data** !
-)**! "
-;**" #
-}++ 	
-[-- 	
-HttpPost--	 
-(-- 
-$str-- 
-)-- 
-]-- 
-public.. 
-async.. 
-Task.. 
-<.. 
-IActionResult.. '
->..' (
-Login..) .
-(... /
-LoginDto../ 7
-dto..8 ;
-)..; <
-{// 	
-var00 
-result00 
-=00 
-await00 
-_authService00 +
-.00+ ,
-
-LoginAsync00, 6
-(006 7
-dto007 :
-)00: ;
-;00; <
-if22 
-(22 
-!22 
-result22 
-.22 
-Success22 
-)22  
-{33 
-return44 
-Unauthorized44 #
-(44# $
-result44$ *
-.44* +
-Message44+ 2
-)442 3
-;443 4
-}55 
-return77 
-Ok77 
-(77 
-result77 
-.77 
-Data77 !
-)77! "
-;77" #
-}88 	
-[:: 	
-HttpPost::	 
-(:: 
-$str:: !
-)::! "
-]::" #
-public;; 
-async;; 
-Task;; 
-<;; 
-IActionResult;; '
->;;' (
-RefreshToken;;) 5
-(;;5 6
-RefreshTokenDto;;6 E
-dto;;F I
-);;I J
-{<< 	
-var== 
-result== 
-=== 
-await>> 
-_authService>> "
-.>>" #
-RefreshTokenAsync>># 4
-(>>4 5
-dto>>5 8
-)>>8 9
-;>>9 :
-if@@ 
-(@@ 
-!@@ 
-result@@ 
-.@@ 
-Success@@ 
-)@@  
-{AA 
-returnBB 
-UnauthorizedBB #
-(BB# $
-resultBB$ *
-.BB* +
-MessageBB+ 2
-)BB2 3
-;BB3 4
-}CC 
-returnEE 
-OkEE 
-(EE 
-resultEE 
-.EE 
-DataEE !
-)EE! "
-;EE" #
-}FF 	
-}II 
-}JJ Ãw
-`C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\AppointmentController.cs
-	namespace 	
-S3_HealthAxisApi
- 
-. 
-Controllers &
-{ 
-[ 
-Route 
-
-(
- 
-$str 
-) 
-] 
-[		 
-ApiController		 
-]		 
-[
-
- 
-	Authorize
-
- 
-]
-
- 
-public 
-
-class "
-AppointmentsController '
-:( )
-ControllerBase* 8
-{ 
-private 
-readonly 
-IAppointmentService ,
-_appointmentService- @
-;@ A
-public "
-AppointmentsController %
-(% &
-IAppointmentService 
-appointmentService  2
-)2 3
-{ 	
-_appointmentService 
-=  !
-appointmentService" 4
-;4 5
-} 	
-[ 	
-HttpGet	 
-] 
-[ 	
-	Authorize	 
-( 
-Roles 
-= 
-$str "
-)" #
-]# $
-public 
-async 
-Task 
-< 
-ActionResult &
-<& '
-IEnumerable' 2
-<2 3!
-AppointmentDetailsDto3 H
->H I
->I J
->J K
-GetAllL R
-(R S
-)S T
-{ 	
-var 
-appointments 
-= 
-await $
-_appointmentService% 8
-.8 9
-GetAllAsync9 D
-(D E
-)E F
-;F G
-return 
-Ok 
-( 
-appointments "
-)" #
-;# $
-} 	
-[ 	
-HttpGet	 
-( 
-$str 
-) 
-] 
-public 
-async 
-Task 
-< 
-IActionResult '
->' (
-GetById) 0
-(0 1
-int1 4
-id5 7
-)7 8
-{ 	
-var   
-appointment   
-=   
-await!! 
-_appointmentService!! )
-.!!) *
-GetByIdAsync!!* 6
-(!!6 7
-id!!7 9
-)!!9 :
-;!!: ;
-if## 
-(## 
-appointment## 
-==## 
-null## #
-)### $
-return$$ 
-NotFound$$ 
-($$  
-$"%% 
-$str%% "
-{%%" #
-id%%# %
-}%%% &
-$str%%& 1
-"%%1 2
-)%%2 3
-;%%3 4
-return'' 
-Ok'' 
-('' 
-appointment'' !
-)''! "
-;''" #
-}(( 	
-[** 	
-HttpGet**	 
-(** 
-$str** *
-)*** +
-]**+ ,
-public++ 
-async++ 
-Task++ 
-<++ 
-IActionResult++ '
->++' (
-GetPatientHistory++) :
-(++: ;
-int,, 
-	patientId,, 
-),, 
-{-- 	
-var.. 
-appointments.. 
-=.. 
-await// 
-_appointmentService// )
-.00 "
-GetPatientHistoryAsync00 +
-(00+ ,
-	patientId00, 5
-)005 6
-;006 7
-return22 
-Ok22 
-(22 
-appointments22 "
-)22" #
-;22# $
-}33 	
-[55 	
-HttpGet55	 
-(55 
-$str55 .
-)55. /
-]55/ 0
-[66 	
-	Authorize66	 
-(66 
-Roles66 
-=66 
-$str66 )
-)66) *
-]66* +
-public77 
-async77 
-Task77 
-<77 
-IActionResult77 '
->77' ("
-GetDoctorTodaySchedule77) ?
-(77? @
-int88 
-doctorId88 
-)88 
-{99 	
-var:: 
-schedule:: 
-=:: 
-await;; 
-_appointmentService;; )
-.<< '
-GetDoctorTodayScheduleAsync<< 0
-(<<0 1
-doctorId<<1 9
-)<<9 :
-;<<: ;
-return>> 
-Ok>> 
-(>> 
-schedule>> 
-)>> 
-;>>  
-}?? 	
-[AA 	
-HttpGetAA	 
-(AA 
-$strAA -
-)AA- .
-]AA. /
-[BB 	
-	AuthorizeBB	 
-(BB 
-RolesBB 
-=BB 
-$strBB )
-)BB) *
-]BB* +
-publicCC 
-asyncCC 
-TaskCC 
-<CC 
-IActionResultCC '
->CC' (!
-GetDoctorWeekScheduleCC) >
-(CC> ?
-intDD 
-doctorIdDD 
-,DD 
-[EE 
-	FromQueryEE 
-]EE 
-DateOnlyEE  
-	startDateEE! *
-,EE* +
-[FF 
-	FromQueryFF 
-]FF 
-DateOnlyFF  
-endDateFF! (
-)FF( )
-{GG 	
-varHH 
-scheduleHH 
-=HH 
+return'' 
+NotFound'' 
+(''  
+$"''  "
+$str''" .
+{''. /
+id''/ 1
+}''1 2
+$str''2 =
+"''= >
+)''> ?
+;''? @
+}(( 
+if** 
+(** 
+User** 
+.** 
+IsInRole** 
+(** 
+$str** '
+)**' (
+)**( )
+{++ 
+var,, 
+patientIdFromToken,, &
+=,,' (*
+GetPatientReferenceIdFromToken,,) G
+(,,G H
+),,H I
+;,,I J
+if.. 
+(.. 
+!.. 
+patientIdFromToken.. '
+...' (
+HasValue..( 0
+||..1 3
+appointment// 
+.//  
+	PatientId//  )
+!=//* ,
+patientIdFromToken//- ?
+.//? @
+Value//@ E
+)//E F
+{00 
+return11 
+Forbid11 !
+(11! "
+)11" #
+;11# $
+}22 
+}33 
+return55 
+Ok55 
+(55 
+appointment55 !
+)55! "
+;55" #
+}66 	
+[88 	
+HttpGet88	 
+(88 
+$str88 *
+)88* +
+]88+ ,
+[99 	
+	Authorize99	 
+(99 
+Roles99 
+=99 
+$str99 1
+)991 2
+]992 3
+public:: 
+async:: 
+Task:: 
+<:: 
+IActionResult:: '
+>::' (
+GetPatientHistory::) :
+(::: ;
+int;; 
+	patientId;; 
+);; 
+{<< 	
+if== 
+(== 
+User== 
+.== 
+IsInRole== 
+(== 
+$str== '
+)==' (
+)==( )
+{>> 
+var?? 
+patientIdFromToken?? &
+=??' (*
+GetPatientReferenceIdFromToken??) G
+(??G H
+)??H I
+;??I J
+ifAA 
+(AA 
+!AA 
+patientIdFromTokenAA '
+.AA' (
+HasValueAA( 0
+||AA1 3
+patientIdFromTokenBB &
+.BB& '
+ValueBB' ,
+!=BB- /
+	patientIdBB0 9
+)BB9 :
+{CC 
+returnDD 
+ForbidDD !
+(DD! "
+)DD" #
+;DD# $
+}EE 
+}FF 
+varHH 
+appointmentsHH 
+=HH 
 awaitII 
 _appointmentServiceII )
-.JJ &
-GetDoctorWeekScheduleAsyncJJ /
-(JJ/ 0
-doctorIdKK  
-,KK  !
-	startDateLL !
-,LL! "
-endDateMM 
-)MM  
-;MM  !
-returnOO 
-OkOO 
-(OO 
-scheduleOO 
-)OO 
-;OO  
-}PP 	
-[RR 	
-HttpGetRR	 
-(RR 
-$strRR -
-)RR- .
-]RR. /
-[SS 	
-	AuthorizeSS	 
-(SS 
-RolesSS 
-=SS 
-$strSS )
-)SS) *
-]SS* +
-publicTT 
-asyncTT 
-TaskTT 
-<TT 
-IActionResultTT '
->TT' (%
-GetDoctorUpcomingScheduleTT) B
-(TTB C
-intTTC F
-doctorIdTTG O
-)TTO P
-{UU 	
-varVV 
-resultVV 
-=VV 
-awaitWW 
-_appointmentServiceWW )
-.XX *
-GetDoctorUpcomingScheduleAsyncXX 3
-(XX3 4
-doctorIdYY  
-)YY  !
-;YY! "
-return[[ 
-Ok[[ 
-([[ 
-result[[ 
-)[[ 
-;[[ 
-}\\ 	
-[^^ 	
-HttpPost^^	 
-]^^ 
-[__ 	
-	Authorize__	 
-(__ 
-Roles__ 
-=__ 
-$str__ *
-)__* +
-]__+ ,
-public`` 
-async`` 
-Task`` 
-<`` 
-IActionResult`` '
->``' (
-Create``) /
-(``/ 0
-[aa 
-FromBodyaa 
-]aa  
-CreateAppointmentDtoaa +
-dtoaa, /
-)aa/ 0
-{bb 	
-trycc 
-{dd 
-varee 
-appointmentee 
-=ee  !
-awaitff 
-_appointmentServiceff -
-.ff- .
-CreateAsyncff. 9
-(ff9 :
-dtoff: =
-)ff= >
-;ff> ?
-returnhh 
-CreatedAtActionhh &
-(hh& '
-nameofii 
-(ii 
-GetByIdii "
-)ii" #
-,ii# $
-newjj 
-{jj 
-idjj 
-=jj 
-appointmentjj *
-.jj* +
-AppointmentIdjj+ 8
-}jj9 :
-,jj: ;
-appointmentkk 
-)kk  
-;kk  !
-}ll 
-catchmm 
-(mm 
-ArgumentExceptionnn !
-exnn" $
-)nn$ %
-{oo 
-returnpp 
-
-BadRequestpp !
-(pp! "
-expp" $
-.pp$ %
-Messagepp% ,
-)pp, -
-;pp- .
-}qq 
-catchrr 
-(rr %
-InvalidOperationExceptionss )
-exss* ,
-)ss, -
-{tt 
-returnuu 
-
-BadRequestuu !
-(uu! "
-exuu" $
-.uu$ %
-Messageuu% ,
-)uu, -
-;uu- .
-}vv 
-catchww 
-(ww  
-KeyNotFoundExceptionxx $
-exxx% '
-)xx' (
-{yy 
-returnzz 
-NotFoundzz 
-(zz  
-exzz  "
-.zz" #
-Messagezz# *
-)zz* +
-;zz+ ,
-}{{ 
-}|| 	
-[~~ 	
-HttpPut~~	 
-(~~ 
-$str~~ 
-)~~ 
-]~~ 
-[ 	
-	Authorize	 
-( 
-Roles 
-= 
-$str *
-)* +
-]+ ,
-public
-ÄÄ 
-async
-ÄÄ 
-Task
-ÄÄ 
-<
-ÄÄ 
-IActionResult
-ÄÄ '
->
-ÄÄ' (
-Update
-ÄÄ) /
+.JJ "
+GetPatientHistoryAsyncJJ +
+(JJ+ ,
+	patientIdJJ, 5
+)JJ5 6
+;JJ6 7
+returnLL 
+OkLL 
+(LL 
+appointmentsLL "
+)LL" #
+;LL# $
+}MM 	
+[OO 	
+HttpGetOO	 
+(OO 
+$strOO .
+)OO. /
+]OO/ 0
+[PP 	
+	AuthorizePP	 
+(PP 
+RolesPP 
+=PP 
+$strPP )
+)PP) *
+]PP* +
+publicQQ 
+asyncQQ 
+TaskQQ 
+<QQ 
+IActionResultQQ '
+>QQ' ("
+GetDoctorTodayScheduleQQ) ?
+(QQ? @
+intRR 
+doctorIdRR 
+)RR 
+{SS 	
+varTT 
+scheduleTT 
+=TT 
+awaitUU 
+_appointmentServiceUU )
+.VV '
+GetDoctorTodayScheduleAsyncVV 0
+(VV0 1
+doctorIdVV1 9
+)VV9 :
+;VV: ;
+returnXX 
+OkXX 
+(XX 
+scheduleXX 
+)XX 
+;XX  
+}YY 	
+[[[ 	
+HttpGet[[	 
+([[ 
+$str[[ -
+)[[- .
+][[. /
+[\\ 	
+	Authorize\\	 
+(\\ 
+Roles\\ 
+=\\ 
+$str\\ )
+)\\) *
+]\\* +
+public]] 
+async]] 
+Task]] 
+<]] 
+IActionResult]] '
+>]]' (!
+GetDoctorWeekSchedule]]) >
+(]]> ?
+int^^ 
+doctorId^^ 
+,^^ 
+[__ 
+	FromQuery__ 
+]__ 
+DateOnly__  
+	startDate__! *
+,__* +
+[`` 
+	FromQuery`` 
+]`` 
+DateOnly``  
+endDate``! (
+)``( )
+{aa 	
+varbb 
+schedulebb 
+=bb 
+awaitcc 
+_appointmentServicecc )
+.dd &
+GetDoctorWeekScheduleAsyncdd /
+(dd/ 0
+doctorIdee  
+,ee  !
+	startDateff !
+,ff! "
+endDategg 
+)gg  
+;gg  !
+returnii 
+Okii 
+(ii 
+scheduleii 
+)ii 
+;ii  
+}jj 	
+[ll 	
+HttpGetll	 
+(ll 
+$strll 1
+)ll1 2
+]ll2 3
+[mm 	
+	Authorizemm	 
+(mm 
+Rolesmm 
+=mm 
+$strmm )
+)mm) *
+]mm* +
+publicnn 
+asyncnn 
+Tasknn 
+<nn 
+IActionResultnn '
+>nn' (%
+GetDoctorUpcomingSchedulenn) B
+(nnB C
+intnnC F
+doctorIdnnG O
+)nnO P
+{oo 	
+varpp 
+resultpp 
+=pp 
+awaitqq 
+_appointmentServiceqq )
+.rr *
+GetDoctorUpcomingScheduleAsyncrr 3
+(rr3 4
+doctorIdss  
+)ss  !
+;ss! "
+returnuu 
+Okuu 
+(uu 
+resultuu 
+)uu 
+;uu 
+}vv 	
+[xx 	
+HttpPostxx	 
+]xx 
+[yy 	
+	Authorizeyy	 
+(yy 
+Rolesyy 
+=yy 
+$stryy *
+)yy* +
+]yy+ ,
+publiczz 
+asynczz 
+Taskzz 
+<zz 
+IActionResultzz '
+>zz' (
+Createzz) /
+(zz/ 0
+[{{ 
+FromBody{{ 
+]{{  
+CreateAppointmentDto{{ +
+dto{{, /
+){{/ 0
+{|| 	
+try}} 
+{~~ 
+if 
+( 
+User 
+. 
+IsInRole !
+(! "
+$str" +
+)+ ,
+), -
+{
+ÄÄ 
+var
+ÅÅ  
+patientIdFromToken
+ÅÅ *
+=
+ÅÅ+ ,,
+GetPatientReferenceIdFromToken
+ÅÅ- K
 (
-ÄÄ/ 0
-int
-ÅÅ 
-id
-ÅÅ 
-,
-ÅÅ 
-[
-ÇÇ 
-FromBody
-ÇÇ 
-]
-ÇÇ "
-UpdateAppointmentDto
-ÇÇ +
-dto
-ÇÇ, /
+ÅÅK L
 )
-ÇÇ/ 0
+ÅÅL M
+;
+ÅÅM N
+if
+ÉÉ 
+(
+ÉÉ 
+!
+ÉÉ  
+patientIdFromToken
+ÉÉ +
+.
+ÉÉ+ ,
+HasValue
+ÉÉ, 4
+||
+ÉÉ5 7
+dto
+ÑÑ 
+.
+ÑÑ 
+	PatientId
+ÑÑ %
+!=
+ÑÑ& ( 
+patientIdFromToken
+ÑÑ) ;
+.
+ÑÑ; <
+Value
+ÑÑ< A
+)
+ÑÑA B
 {
-ÉÉ 	
-try
-ÑÑ 
-{
-ÖÖ 
+ÖÖ 
+return
+ÜÜ 
+Forbid
+ÜÜ %
+(
+ÜÜ% &
+)
+ÜÜ& '
+;
+ÜÜ' (
+}
+áá 
+}
+àà 
+var
+ää 
+appointment
+ää 
+=
+ää  !
 await
-ÜÜ !
+ãã !
 _appointmentService
-ÜÜ )
+ãã -
 .
-áá 
-UpdateAsync
-áá  
+ãã- .
+CreateAsync
+ãã. 9
 (
-áá  !
-id
-áá! #
-,
-áá# $
+ãã9 :
 dto
-áá% (
+ãã: =
 )
-áá( )
+ãã= >
 ;
-áá) *
+ãã> ?
 return
-ââ 
-	NoContent
-ââ  
+çç 
+CreatedAtAction
+çç &
 (
-ââ  !
-)
-ââ! "
-;
-ââ" #
-}
-ää 
-catch
-ãã 
+çç& '
+nameof
+éé 
 (
-ãã "
-KeyNotFoundException
-åå $
-ex
-åå% '
+éé 
+GetById
+éé "
 )
-åå' (
+éé" #
+,
+éé# $
+new
+èè 
 {
-çç 
-return
-éé 
-NotFound
-éé 
-(
-éé  
-ex
-éé  "
+èè 
+id
+èè 
+=
+èè 
+appointment
+èè *
 .
-éé" #
-Message
-éé# *
-)
-éé* +
-;
-éé+ ,
+èè* +
+AppointmentId
+èè+ 8
 }
-èè 
-catch
-êê 
-(
-êê 
-ArgumentException
-ëë !
-ex
-ëë" $
+èè9 :
+,
+èè: ;
+appointment
+êê 
 )
-ëë$ %
+êê  
+;
+êê  !
+}
+ëë 
+catch
+íí 
+(
+íí 
+ArgumentException
+íí $
+ex
+íí% '
+)
+íí' (
 {
-íí 
+ìì 
 return
-ìì 
+îî 
 
 BadRequest
-ìì !
+îî !
 (
-ìì! "
+îî! "
 ex
-ìì" $
+îî" $
 .
-ìì$ %
+îî$ %
 Message
-ìì% ,
+îî% ,
 )
-ìì, -
+îî, -
 ;
-ìì- .
+îî- .
 }
-îî 
+ïï 
 catch
-ïï 
+ññ 
 (
-ïï '
+ññ '
 InvalidOperationException
-ññ )
+ññ ,
 ex
-ññ* ,
+ññ- /
 )
-ññ, -
+ññ/ 0
 {
 óó 
 return
@@ -22319,264 +25746,321 @@ BadRequest
 ;
 òò- .
 }
-ôô 
-}
-öö 	
-[
-úú 	
-HttpPut
-úú	 
-(
-úú 
-$str
-úú #
-)
-úú# $
-]
-úú$ %
-[
-ùù 	
-	Authorize
-ùù	 
-(
-ùù 
-Roles
-ùù 
-=
-ùù 
-$str
-ùù )
-)
-ùù) *
-]
-ùù* +
-public
-ûû 
-async
-ûû 
-Task
-ûû 
-<
-ûû 
-IActionResult
-ûû '
->
-ûû' (
-Confirm
-ûû) 0
-(
-ûû0 1
-int
-ûû1 4
-id
-ûû5 7
-)
-ûû7 8
-{
-üü 	
-try
-†† 
-{
-°° 
-await
-¢¢ !
-_appointmentService
-¢¢ )
-.
-££ 
-ConfirmAsync
-££ !
-(
-££! "
-id
-££" $
-)
-££$ %
-;
-££% &
-return
-•• 
-	NoContent
-••  
-(
-••  !
-)
-••! "
-;
-••" #
-}
-¶¶ 
+ôô 
 catch
-ßß 
+öö 
 (
-ßß "
+öö "
 KeyNotFoundException
-®® $
+öö '
+ex
+öö( *
 )
-®®$ %
+öö* +
 {
-©© 
+õõ 
 return
-™™ 
+úú 
 NotFound
-™™ 
+úú 
 (
-™™  
-)
-™™  !
-;
-™™! "
-}
-´´ 
-catch
-¨¨ 
-(
-¨¨ '
-InvalidOperationException
-≠≠ )
+úú  
 ex
-≠≠* ,
-)
-≠≠, -
-{
-ÆÆ 
-return
-ØØ 
-
-BadRequest
-ØØ !
-(
-ØØ! "
-ex
-ØØ" $
+úú  "
 .
-ØØ$ %
+úú" #
 Message
-ØØ% ,
+úú# *
 )
-ØØ, -
+úú* +
 ;
-ØØ- .
+úú+ ,
 }
-∞∞ 
+ùù 
 }
-±± 	
+ûû 	
 [
-≥≥ 	
+†† 	
 HttpPut
-≥≥	 
+††	 
 (
-≥≥ 
+†† 
 $str
-≥≥ $
+†† 
 )
-≥≥$ %
+†† 
 ]
-≥≥% &
+†† 
 [
-¥¥ 	
+°° 	
 	Authorize
-¥¥	 
+°°	 
 (
-¥¥ 
+°° 
 Roles
-¥¥ 
+°° 
 =
-¥¥ 
+°° 
 $str
-¥¥ )
+°° *
 )
-¥¥) *
+°°* +
 ]
-¥¥* +
+°°+ ,
 public
-µµ 
+¢¢ 
 async
-µµ 
+¢¢ 
 Task
-µµ 
+¢¢ 
 <
-µµ 
+¢¢ 
 IActionResult
-µµ '
+¢¢ '
 >
-µµ' (
-Complete
-µµ) 1
+¢¢' (
+Update
+¢¢) /
 (
-µµ1 2
+¢¢/ 0
 int
-µµ2 5
+££ 
 id
-µµ6 8
+££ 
+,
+££ 
+[
+§§ 
+FromBody
+§§ 
+]
+§§ "
+UpdateAppointmentDto
+§§ +
+dto
+§§, /
 )
-µµ8 9
+§§/ 0
 {
-∂∂ 	
+•• 	
 try
-∑∑ 
+¶¶ 
 {
-∏∏ 
+ßß 
+var
+®® !
+existingAppointment
+®® '
+=
+®®( )
 await
-ππ !
+©© !
 _appointmentService
-ππ )
+©© -
 .
-∫∫ 
-CompleteAsync
-∫∫ "
+©©- .
+GetByIdAsync
+©©. :
 (
-∫∫" #
+©©: ;
 id
-∫∫# %
+©©; =
 )
-∫∫% &
+©©= >
 ;
-∫∫& '
-return
-ºº 
-	NoContent
-ºº  
+©©> ?
+if
+´´ 
 (
-ºº  !
+´´ !
+existingAppointment
+´´ '
+==
+´´( *
+null
+´´+ /
 )
-ºº! "
-;
-ºº" #
-}
-ΩΩ 
-catch
-ææ 
-(
-ææ "
-KeyNotFoundException
-øø $
-)
-øø$ %
+´´/ 0
 {
-¿¿ 
+¨¨ 
 return
-¡¡ 
+≠≠ 
 NotFound
-¡¡ 
+≠≠ #
 (
-¡¡  
-)
-¡¡  !
-;
-¡¡! "
+≠≠# $
+$"
+≠≠$ &
+$str
+≠≠& 2
+{
+≠≠2 3
+id
+≠≠3 5
 }
-¬¬ 
-catch
-√√ 
-(
-√√ '
-InvalidOperationException
-ƒƒ )
-ex
-ƒƒ* ,
+≠≠5 6
+$str
+≠≠6 A
+"
+≠≠A B
 )
-ƒƒ, -
+≠≠B C
+;
+≠≠C D
+}
+ÆÆ 
+if
+∞∞ 
+(
+∞∞ 
+User
+∞∞ 
+.
+∞∞ 
+IsInRole
+∞∞ !
+(
+∞∞! "
+$str
+∞∞" +
+)
+∞∞+ ,
+)
+∞∞, -
+{
+±± 
+var
+≤≤  
+patientIdFromToken
+≤≤ *
+=
+≤≤+ ,,
+GetPatientReferenceIdFromToken
+≤≤- K
+(
+≤≤K L
+)
+≤≤L M
+;
+≤≤M N
+if
+¥¥ 
+(
+¥¥ 
+!
+¥¥  
+patientIdFromToken
+¥¥ +
+.
+¥¥+ ,
+HasValue
+¥¥, 4
+||
+¥¥5 7!
+existingAppointment
+µµ +
+.
+µµ+ ,
+	PatientId
+µµ, 5
+!=
+µµ6 8 
+patientIdFromToken
+µµ9 K
+.
+µµK L
+Value
+µµL Q
+)
+µµQ R
+{
+∂∂ 
+return
+∑∑ 
+Forbid
+∑∑ %
+(
+∑∑% &
+)
+∑∑& '
+;
+∑∑' (
+}
+∏∏ 
+}
+ππ 
+await
+ªª !
+_appointmentService
+ªª )
+.
+ºº 
+UpdateAsync
+ºº  
+(
+ºº  !
+id
+ºº! #
+,
+ºº# $
+dto
+ºº% (
+)
+ºº( )
+;
+ºº) *
+return
+ææ 
+	NoContent
+ææ  
+(
+ææ  !
+)
+ææ! "
+;
+ææ" #
+}
+øø 
+catch
+¿¿ 
+(
+¿¿ "
+KeyNotFoundException
+¿¿ '
+ex
+¿¿( *
+)
+¿¿* +
+{
+¡¡ 
+return
+¬¬ 
+NotFound
+¬¬ 
+(
+¬¬  
+ex
+¬¬  "
+.
+¬¬" #
+Message
+¬¬# *
+)
+¬¬* +
+;
+¬¬+ ,
+}
+√√ 
+catch
+ƒƒ 
+(
+ƒƒ 
+ArgumentException
+ƒƒ $
+ex
+ƒƒ% '
+)
+ƒƒ' (
 {
 ≈≈ 
 return
@@ -22597,279 +26081,1094 @@ BadRequest
 ;
 ∆∆- .
 }
-«« 
-}
-»» 	
-[
-   	
-HttpPut
-  	 
-(
-   
-$str
-   
-)
-   
-]
-    
-[
-ÀÀ 	
-	Authorize
-ÀÀ	 
-]
-ÀÀ 
-public
-ÃÃ 
-async
-ÃÃ 
-Task
-ÃÃ 
-<
-ÃÃ 
-IActionResult
-ÃÃ '
->
-ÃÃ' (
-UpdateStatus
-ÃÃ) 5
-(
-ÃÃ5 6
-int
-ÃÃ6 9
-id
-ÃÃ: <
-,
-ÃÃ< =(
-UpdateAppointmentStatusDto
-ÃÃ> X
-dto
-ÃÃY \
-)
-ÃÃ\ ]
-{
-ÕÕ 	
-await
-ŒŒ !
-_appointmentService
-ŒŒ %
-.
-œœ 
-UpdateStatusAsync
-œœ "
-(
-œœ" #
-id
-œœ# %
-,
-œœ% &
-dto
-œœ' *
-)
-œœ* +
-;
-œœ+ ,
-return
-—— 
-	NoContent
-—— 
-(
-—— 
-)
-—— 
-;
-—— 
-}
-““ 	
-[
-‘‘ 	
-HttpPut
-‘‘	 
-(
-‘‘ 
-$str
-‘‘ "
-)
-‘‘" #
-]
-‘‘# $
-[
-’’ 	
-	Authorize
-’’	 
-(
-’’ 
-Roles
-’’ 
-=
-’’ 
-$str
-’’ *
-)
-’’* +
-]
-’’+ ,
-public
-÷÷ 
-async
-÷÷ 
-Task
-÷÷ 
-<
-÷÷ 
-IActionResult
-÷÷ '
->
-÷÷' (
-Cancel
-÷÷) /
-(
-÷÷/ 0
-int
-◊◊ 
-id
-◊◊ 
-,
-◊◊ 
-[
-ÿÿ 
-FromBody
-ÿÿ 
-]
-ÿÿ "
-CancelAppointmentDto
-ÿÿ +
-dto
-ÿÿ, /
-)
-ÿÿ/ 0
-{
-ŸŸ 	
-try
-⁄⁄ 
-{
-€€ 
-await
-‹‹ !
-_appointmentService
-‹‹ )
-.
-›› 
-CancelAsync
-››  
-(
-››  !
-id
-››! #
-,
-››# $
-dto
-››% (
-)
-››( )
-;
-››) *
-return
-ﬂﬂ 
-	NoContent
-ﬂﬂ  
-(
-ﬂﬂ  !
-)
-ﬂﬂ! "
-;
-ﬂﬂ" #
-}
-‡‡ 
+«« 
 catch
-·· 
+»» 
 (
-·· "
-KeyNotFoundException
-‚‚ $
-)
-‚‚$ %
-{
-„„ 
-return
-‰‰ 
-NotFound
-‰‰ 
-(
-‰‰  
-)
-‰‰  !
-;
-‰‰! "
-}
-ÂÂ 
-catch
-ÊÊ 
-(
-ÊÊ 
-ArgumentException
-ÁÁ !
-ex
-ÁÁ" $
-)
-ÁÁ$ %
-{
-ËË 
-return
-ÈÈ 
-
-BadRequest
-ÈÈ !
-(
-ÈÈ! "
-ex
-ÈÈ" $
-.
-ÈÈ$ %
-Message
-ÈÈ% ,
-)
-ÈÈ, -
-;
-ÈÈ- .
-}
-ÍÍ 
-catch
-ÎÎ 
-(
-ÎÎ '
+»» '
 InvalidOperationException
-ÏÏ )
+»» ,
 ex
-ÏÏ* ,
+»»- /
 )
-ÏÏ, -
+»»/ 0
 {
-ÌÌ 
+…… 
 return
-ÓÓ 
+   
 
 BadRequest
-ÓÓ !
+   !
 (
-ÓÓ! "
+  ! "
 ex
-ÓÓ" $
+  " $
 .
-ÓÓ$ %
+  $ %
 Message
-ÓÓ% ,
+  % ,
 )
-ÓÓ, -
+  , -
 ;
-ÓÓ- .
+  - .
 }
-ÔÔ 
+ÀÀ 
 }
- 	
+ÃÃ 	
+[
+ŒŒ 	
+HttpPut
+ŒŒ	 
+(
+ŒŒ 
+$str
+ŒŒ #
+)
+ŒŒ# $
+]
+ŒŒ$ %
+[
+œœ 	
+	Authorize
+œœ	 
+(
+œœ 
+Roles
+œœ 
+=
+œœ 
+$str
+œœ )
+)
+œœ) *
+]
+œœ* +
+public
+–– 
+async
+–– 
+Task
+–– 
+<
+–– 
+IActionResult
+–– '
+>
+––' (
+Confirm
+––) 0
+(
+––0 1
+int
+––1 4
+id
+––5 7
+)
+––7 8
+{
+—— 	
+try
+““ 
+{
+”” 
+await
+‘‘ !
+_appointmentService
+‘‘ )
+.
+’’ 
+ConfirmAsync
+’’ !
+(
+’’! "
+id
+’’" $
+)
+’’$ %
+;
+’’% &
+return
+◊◊ 
+	NoContent
+◊◊  
+(
+◊◊  !
+)
+◊◊! "
+;
+◊◊" #
 }
-ÒÒ 
-}ÚÚ Ì
-ZC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxisApi\Controllers\AdminController.cs
+ÿÿ 
+catch
+ŸŸ 
+(
+ŸŸ "
+KeyNotFoundException
+ŸŸ '
+)
+ŸŸ' (
+{
+⁄⁄ 
+return
+€€ 
+NotFound
+€€ 
+(
+€€  
+)
+€€  !
+;
+€€! "
+}
+‹‹ 
+catch
+›› 
+(
+›› '
+InvalidOperationException
+›› ,
+ex
+››- /
+)
+››/ 0
+{
+ﬁﬁ 
+return
+ﬂﬂ 
+
+BadRequest
+ﬂﬂ !
+(
+ﬂﬂ! "
+ex
+ﬂﬂ" $
+.
+ﬂﬂ$ %
+Message
+ﬂﬂ% ,
+)
+ﬂﬂ, -
+;
+ﬂﬂ- .
+}
+‡‡ 
+}
+·· 	
+[
+„„ 	
+HttpPut
+„„	 
+(
+„„ 
+$str
+„„ $
+)
+„„$ %
+]
+„„% &
+[
+‰‰ 	
+	Authorize
+‰‰	 
+(
+‰‰ 
+Roles
+‰‰ 
+=
+‰‰ 
+$str
+‰‰ )
+)
+‰‰) *
+]
+‰‰* +
+public
+ÂÂ 
+async
+ÂÂ 
+Task
+ÂÂ 
+<
+ÂÂ 
+IActionResult
+ÂÂ '
+>
+ÂÂ' (
+Complete
+ÂÂ) 1
+(
+ÂÂ1 2
+int
+ÂÂ2 5
+id
+ÂÂ6 8
+)
+ÂÂ8 9
+{
+ÊÊ 	
+try
+ÁÁ 
+{
+ËË 
+await
+ÈÈ !
+_appointmentService
+ÈÈ )
+.
+ÍÍ 
+CompleteAsync
+ÍÍ "
+(
+ÍÍ" #
+id
+ÍÍ# %
+)
+ÍÍ% &
+;
+ÍÍ& '
+return
+ÏÏ 
+	NoContent
+ÏÏ  
+(
+ÏÏ  !
+)
+ÏÏ! "
+;
+ÏÏ" #
+}
+ÌÌ 
+catch
+ÓÓ 
+(
+ÓÓ "
+KeyNotFoundException
+ÓÓ '
+)
+ÓÓ' (
+{
+ÔÔ 
+return
+ 
+NotFound
+ 
+(
+  
+)
+  !
+;
+! "
+}
+ÒÒ 
+catch
+ÚÚ 
+(
+ÚÚ '
+InvalidOperationException
+ÚÚ ,
+ex
+ÚÚ- /
+)
+ÚÚ/ 0
+{
+ÛÛ 
+return
+ÙÙ 
+
+BadRequest
+ÙÙ !
+(
+ÙÙ! "
+ex
+ÙÙ" $
+.
+ÙÙ$ %
+Message
+ÙÙ% ,
+)
+ÙÙ, -
+;
+ÙÙ- .
+}
+ıı 
+}
+ˆˆ 	
+[
+¯¯ 	
+HttpPut
+¯¯	 
+(
+¯¯ 
+$str
+¯¯ "
+)
+¯¯" #
+]
+¯¯# $
+[
+˘˘ 	
+	Authorize
+˘˘	 
+]
+˘˘ 
+public
+˙˙ 
+async
+˙˙ 
+Task
+˙˙ 
+<
+˙˙ 
+IActionResult
+˙˙ '
+>
+˙˙' (
+UpdateStatus
+˙˙) 5
+(
+˙˙5 6
+int
+˚˚ 
+id
+˚˚ 
+,
+˚˚ 
+[
+¸¸ 
+FromBody
+¸¸ 
+]
+¸¸ (
+UpdateAppointmentStatusDto
+¸¸ 1
+dto
+¸¸2 5
+)
+¸¸5 6
+{
+˝˝ 	
+var
+˛˛ !
+existingAppointment
+˛˛ #
+=
+˛˛$ %
+await
+ˇˇ !
+_appointmentService
+ˇˇ )
+.
+ˇˇ) *
+GetByIdAsync
+ˇˇ* 6
+(
+ˇˇ6 7
+id
+ˇˇ7 9
+)
+ˇˇ9 :
+;
+ˇˇ: ;
+if
+ÅÅ 
+(
+ÅÅ !
+existingAppointment
+ÅÅ #
+==
+ÅÅ$ &
+null
+ÅÅ' +
+)
+ÅÅ+ ,
+{
+ÇÇ 
+return
+ÉÉ 
+NotFound
+ÉÉ 
+(
+ÉÉ  
+$"
+ÉÉ  "
+$str
+ÉÉ" .
+{
+ÉÉ. /
+id
+ÉÉ/ 1
+}
+ÉÉ1 2
+$str
+ÉÉ2 =
+"
+ÉÉ= >
+)
+ÉÉ> ?
+;
+ÉÉ? @
+}
+ÑÑ 
+if
+ÜÜ 
+(
+ÜÜ 
+User
+ÜÜ 
+.
+ÜÜ 
+IsInRole
+ÜÜ 
+(
+ÜÜ 
+$str
+ÜÜ '
+)
+ÜÜ' (
+)
+ÜÜ( )
+{
+áá 
+var
+àà  
+patientIdFromToken
+àà &
+=
+àà' (,
+GetPatientReferenceIdFromToken
+àà) G
+(
+ààG H
+)
+ààH I
+;
+ààI J
+if
+ää 
+(
+ää 
+!
+ää  
+patientIdFromToken
+ää '
+.
+ää' (
+HasValue
+ää( 0
+||
+ää1 3!
+existingAppointment
+ãã '
+.
+ãã' (
+	PatientId
+ãã( 1
+!=
+ãã2 4 
+patientIdFromToken
+ãã5 G
+.
+ããG H
+Value
+ããH M
+)
+ããM N
+{
+åå 
+return
+çç 
+Forbid
+çç !
+(
+çç! "
+)
+çç" #
+;
+çç# $
+}
+éé 
+}
+èè 
+await
+ëë !
+_appointmentService
+ëë %
+.
+íí 
+UpdateStatusAsync
+íí "
+(
+íí" #
+id
+íí# %
+,
+íí% &
+dto
+íí' *
+)
+íí* +
+;
+íí+ ,
+return
+îî 
+	NoContent
+îî 
+(
+îî 
+)
+îî 
+;
+îî 
+}
+ïï 	
+[
+óó 	
+HttpPut
+óó	 
+(
+óó 
+$str
+óó "
+)
+óó" #
+]
+óó# $
+[
+òò 	
+	Authorize
+òò	 
+(
+òò 
+Roles
+òò 
+=
+òò 
+$str
+òò 1
+)
+òò1 2
+]
+òò2 3
+public
+ôô 
+async
+ôô 
+Task
+ôô 
+<
+ôô 
+IActionResult
+ôô '
+>
+ôô' (
+Cancel
+ôô) /
+(
+ôô/ 0
+int
+öö 
+id
+öö 
+,
+öö 
+[
+õõ 
+FromBody
+õõ 
+]
+õõ "
+CancelAppointmentDto
+õõ +
+dto
+õõ, /
+)
+õõ/ 0
+{
+úú 	
+try
+ùù 
+{
+ûû 
+var
+üü !
+existingAppointment
+üü '
+=
+üü( )
+await
+†† !
+_appointmentService
+†† -
+.
+††- .
+GetByIdAsync
+††. :
+(
+††: ;
+id
+††; =
+)
+††= >
+;
+††> ?
+if
+¢¢ 
+(
+¢¢ !
+existingAppointment
+¢¢ '
+==
+¢¢( *
+null
+¢¢+ /
+)
+¢¢/ 0
+{
+££ 
+return
+§§ 
+NotFound
+§§ #
+(
+§§# $
+$"
+§§$ &
+$str
+§§& 2
+{
+§§2 3
+id
+§§3 5
+}
+§§5 6
+$str
+§§6 A
+"
+§§A B
+)
+§§B C
+;
+§§C D
+}
+•• 
+if
+ßß 
+(
+ßß 
+User
+ßß 
+.
+ßß 
+IsInRole
+ßß !
+(
+ßß! "
+$str
+ßß" +
+)
+ßß+ ,
+)
+ßß, -
+{
+®® 
+var
+©©  
+patientIdFromToken
+©© *
+=
+©©+ ,,
+GetPatientReferenceIdFromToken
+©©- K
+(
+©©K L
+)
+©©L M
+;
+©©M N
+if
+´´ 
+(
+´´ 
+!
+´´  
+patientIdFromToken
+´´ +
+.
+´´+ ,
+HasValue
+´´, 4
+||
+´´5 7!
+existingAppointment
+¨¨ +
+.
+¨¨+ ,
+	PatientId
+¨¨, 5
+!=
+¨¨6 8 
+patientIdFromToken
+¨¨9 K
+.
+¨¨K L
+Value
+¨¨L Q
+)
+¨¨Q R
+{
+≠≠ 
+return
+ÆÆ 
+Forbid
+ÆÆ %
+(
+ÆÆ% &
+)
+ÆÆ& '
+;
+ÆÆ' (
+}
+ØØ 
+dto
+±± 
+.
+±±  
+CancellationReason
+±± *
+=
+±±+ ,
+$"
+≤≤ 
+$str
+≤≤ 0
+{
+≤≤0 1
+dto
+≤≤1 4
+.
+≤≤4 5 
+CancellationReason
+≤≤5 G
+}
+≤≤G H
+"
+≤≤H I
+;
+≤≤I J
+}
+≥≥ 
+if
+µµ 
+(
+µµ 
+User
+µµ 
+.
+µµ 
+IsInRole
+µµ !
+(
+µµ! "
+$str
+µµ" *
+)
+µµ* +
+)
+µµ+ ,
+{
+∂∂ 
+var
+∑∑ 
+doctorIdFromToken
+∑∑ )
+=
+∑∑* +,
+GetPatientReferenceIdFromToken
+∑∑, J
+(
+∑∑J K
+)
+∑∑K L
+;
+∑∑L M
+if
+ππ 
+(
+ππ 
+!
+ππ 
+doctorIdFromToken
+ππ *
+.
+ππ* +
+HasValue
+ππ+ 3
+||
+ππ4 6!
+existingAppointment
+∫∫ +
+.
+∫∫+ ,
+DoctorId
+∫∫, 4
+!=
+∫∫5 7
+doctorIdFromToken
+∫∫8 I
+.
+∫∫I J
+Value
+∫∫J O
+)
+∫∫O P
+{
+ªª 
+return
+ºº 
+Forbid
+ºº %
+(
+ºº% &
+)
+ºº& '
+;
+ºº' (
+}
+ΩΩ 
+dto
+øø 
+.
+øø  
+CancellationReason
+øø *
+=
+øø+ ,
+$"
+¿¿ 
+$str
+¿¿ /
+{
+¿¿/ 0
+dto
+¿¿0 3
+.
+¿¿3 4 
+CancellationReason
+¿¿4 F
+}
+¿¿F G
+"
+¿¿G H
+;
+¿¿H I
+}
+¡¡ 
+await
+√√ !
+_appointmentService
+√√ )
+.
+√√) *
+CancelAsync
+√√* 5
+(
+√√5 6
+id
+√√6 8
+,
+√√8 9
+dto
+√√: =
+)
+√√= >
+;
+√√> ?
+return
+≈≈ 
+	NoContent
+≈≈  
+(
+≈≈  !
+)
+≈≈! "
+;
+≈≈" #
+}
+∆∆ 
+catch
+«« 
+(
+«« "
+KeyNotFoundException
+«« '
+)
+««' (
+{
+»» 
+return
+…… 
+NotFound
+…… 
+(
+……  
+)
+……  !
+;
+……! "
+}
+   
+catch
+ÀÀ 
+(
+ÀÀ 
+ArgumentException
+ÀÀ $
+ex
+ÀÀ% '
+)
+ÀÀ' (
+{
+ÃÃ 
+return
+ÕÕ 
+
+BadRequest
+ÕÕ !
+(
+ÕÕ! "
+ex
+ÕÕ" $
+.
+ÕÕ$ %
+Message
+ÕÕ% ,
+)
+ÕÕ, -
+;
+ÕÕ- .
+}
+ŒŒ 
+catch
+œœ 
+(
+œœ '
+InvalidOperationException
+œœ ,
+ex
+œœ- /
+)
+œœ/ 0
+{
+–– 
+return
+—— 
+
+BadRequest
+—— !
+(
+——! "
+ex
+——" $
+.
+——$ %
+Message
+——% ,
+)
+——, -
+;
+——- .
+}
+““ 
+}
+”” 	
+private
+’’ 
+int
+’’ 
+?
+’’ ,
+GetPatientReferenceIdFromToken
+’’ 3
+(
+’’3 4
+)
+’’4 5
+{
+÷÷ 	
+var
+◊◊ 
+referenceIdValue
+◊◊  
+=
+◊◊! "
+User
+◊◊# '
+.
+◊◊' (
+	FindFirst
+◊◊( 1
+(
+◊◊1 2
+$str
+◊◊2 ?
+)
+◊◊? @
+?
+◊◊@ A
+.
+◊◊A B
+Value
+◊◊B G
+;
+◊◊G H
+if
+ŸŸ 
+(
+ŸŸ 
+int
+ŸŸ 
+.
+ŸŸ 
+TryParse
+ŸŸ 
+(
+ŸŸ 
+referenceIdValue
+ŸŸ -
+,
+ŸŸ- .
+out
+ŸŸ/ 2
+var
+ŸŸ3 6
+referenceId
+ŸŸ7 B
+)
+ŸŸB C
+)
+ŸŸC D
+{
+⁄⁄ 
+return
+€€ 
+referenceId
+€€ "
+;
+€€" #
+}
+‹‹ 
+return
+ﬁﬁ 
+null
+ﬁﬁ 
+;
+ﬁﬁ 
+}
+ﬂﬂ 	
+}
+‡‡ 
+}·· 
+]C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxisApi\Controllers\AdminController.cs
 	namespace 	
 S3_HealthAxisApi
  

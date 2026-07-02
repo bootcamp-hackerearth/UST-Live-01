@@ -31,6 +31,21 @@ export class BookAppointment implements OnInit {
 
   availableSlots: number[] = [];
 
+  allSlots: number[] = [
+    AppointmentTimeSlot.TenAM,
+    AppointmentTimeSlot.TenThirtyAM,
+    AppointmentTimeSlot.ElevenAM,
+    AppointmentTimeSlot.ElevenThirtyAM,
+    AppointmentTimeSlot.TwelvePM,
+    AppointmentTimeSlot.TwelveThirtyPM,
+    AppointmentTimeSlot.OnePM,
+    AppointmentTimeSlot.OneThirtyPM,
+    AppointmentTimeSlot.TwoPM,
+    AppointmentTimeSlot.TwoThirtyPM,
+    AppointmentTimeSlot.ThreePM,
+    AppointmentTimeSlot.ThreeThirtyPM
+  ];
+
   loadingDoctor = true;
   loadingSlots = false;
   booking = false;
@@ -42,6 +57,7 @@ export class BookAppointment implements OnInit {
   showSuccessModal = false;
 
   minDate = this.getTodayDateString();
+  maxDate = this.getMaxBookingDateString();
 
   constructor(
     private route: ActivatedRoute,
@@ -116,8 +132,8 @@ export class BookAppointment implements OnInit {
       return;
     }
 
-    if (this.selectedDate < this.minDate) {
-      this.errorMessage = 'Appointment date cannot be in the past.';
+    if (!this.isDateWithinAllowedRange(this.selectedDate)) {
+      this.errorMessage = 'Appointments can be booked only from today up to the next 30 days.';
       return;
     }
 
@@ -135,8 +151,8 @@ export class BookAppointment implements OnInit {
           this.availableSlots = slots ?? [];
           this.loadingSlots = false;
 
-          if (!this.availableSlots.length) {
-            this.errorMessage = 'No slots available for the selected date.';
+          if (!this.getBookableSlots().length) {
+            this.errorMessage = 'No bookable slots available for the selected date.';
           }
         },
         error: (error) => {
@@ -158,6 +174,10 @@ export class BookAppointment implements OnInit {
   }
 
   selectSlot(slot: number): void {
+    if (!this.isSlotBookable(slot)) {
+      return;
+    }
+
     this.selectedSlot = slot;
     this.errorMessage = '';
     this.successMessage = '';
@@ -182,13 +202,19 @@ export class BookAppointment implements OnInit {
       return;
     }
 
-    if (this.selectedDate < this.minDate) {
-      this.errorMessage = 'Appointment date cannot be in the past.';
+    if (!this.isDateWithinAllowedRange(this.selectedDate)) {
+      this.errorMessage = 'Appointments can be booked only from today up to the next 30 days.';
       return;
     }
 
     if (!this.selectedSlot) {
       this.errorMessage = 'Please select an available time slot.';
+      return;
+    }
+
+    if (!this.isSlotBookable(this.selectedSlot)) {
+      this.errorMessage = 'Selected slot is no longer available. Please choose another slot.';
+      this.selectedSlot = null;
       return;
     }
 
@@ -225,14 +251,21 @@ export class BookAppointment implements OnInit {
       return;
     }
 
-    if (this.selectedDate < this.minDate) {
-      this.errorMessage = 'Appointment date cannot be in the past.';
+    if (!this.isDateWithinAllowedRange(this.selectedDate)) {
+      this.errorMessage = 'Appointments can be booked only from today up to the next 30 days.';
       this.showReviewModal = false;
       return;
     }
 
     if (!this.selectedSlot) {
       this.errorMessage = 'Please select an available time slot.';
+      this.showReviewModal = false;
+      return;
+    }
+
+    if (!this.isSlotBookable(this.selectedSlot)) {
+      this.errorMessage = 'Selected slot is no longer available. Please choose another slot.';
+      this.selectedSlot = null;
       this.showReviewModal = false;
       return;
     }
@@ -291,6 +324,67 @@ export class BookAppointment implements OnInit {
     this.selectedDate = '';
     this.selectedSlot = null;
     this.availableSlots = [];
+  }
+
+  isDateWithinAllowedRange(date: string): boolean {
+    return date >= this.minDate && date <= this.maxDate;
+  }
+
+  isAvailableSlot(slot: number): boolean {
+    return this.availableSlots.includes(slot);
+  }
+
+  isPastSlotForToday(slot: number): boolean {
+    if (!this.selectedDate || this.selectedDate !== this.minDate) {
+      return false;
+    }
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const slotStartMinutes = this.getSlotStartMinutes(slot);
+
+    return slotStartMinutes < currentMinutes;
+  }
+
+  isSlotBookable(slot: number): boolean {
+    return (
+      !!this.selectedDate &&
+      this.isDateWithinAllowedRange(this.selectedDate) &&
+      this.isAvailableSlot(slot) &&
+      !this.isPastSlotForToday(slot)
+    );
+  }
+
+  getSlotStatusText(slot: number): string {
+    if (this.selectedSlot === slot && this.isSlotBookable(slot)) {
+      return 'Selected';
+    }
+
+    if (this.isPastSlotForToday(slot)) {
+      return 'Time passed';
+    }
+
+    if (!this.isAvailableSlot(slot)) {
+      return 'Unavailable';
+    }
+
+    return 'Available';
+  }
+
+  getSlotClass(slot: number): string {
+    if (this.selectedSlot === slot && this.isSlotBookable(slot)) {
+      return 'selected';
+    }
+
+    if (this.isSlotBookable(slot)) {
+      return 'available';
+    }
+
+    return 'unavailable';
+  }
+
+  getBookableSlots(): number[] {
+    return this.allSlots.filter(slot => this.isSlotBookable(slot));
   }
 
   specialisationText(value: number): string {
@@ -373,6 +467,49 @@ export class BookAppointment implements OnInit {
     }
   }
 
+  private getSlotStartMinutes(timeSlot: number): number {
+    switch (timeSlot) {
+      case AppointmentTimeSlot.TenAM:
+        return 10 * 60;
+
+      case AppointmentTimeSlot.TenThirtyAM:
+        return 10 * 60 + 30;
+
+      case AppointmentTimeSlot.ElevenAM:
+        return 11 * 60;
+
+      case AppointmentTimeSlot.ElevenThirtyAM:
+        return 11 * 60 + 30;
+
+      case AppointmentTimeSlot.TwelvePM:
+        return 12 * 60;
+
+      case AppointmentTimeSlot.TwelveThirtyPM:
+        return 12 * 60 + 30;
+
+      case AppointmentTimeSlot.OnePM:
+        return 13 * 60;
+
+      case AppointmentTimeSlot.OneThirtyPM:
+        return 13 * 60 + 30;
+
+      case AppointmentTimeSlot.TwoPM:
+        return 14 * 60;
+
+      case AppointmentTimeSlot.TwoThirtyPM:
+        return 14 * 60 + 30;
+
+      case AppointmentTimeSlot.ThreePM:
+        return 15 * 60;
+
+      case AppointmentTimeSlot.ThreeThirtyPM:
+        return 15 * 60 + 30;
+
+      default:
+        return 0;
+    }
+  }
+
   private getTodayDateString(): string {
     const today = new Date();
 
@@ -382,6 +519,15 @@ export class BookAppointment implements OnInit {
 
     return `${year}-${month}-${day}`;
   }
-}
 
-  
+  private getMaxBookingDateString(): string {
+    const maxDate = new Date();
+    maxDate.setDate(maxDate.getDate() + 30);
+
+    const year = maxDate.getFullYear();
+    const month = `${maxDate.getMonth() + 1}`.padStart(2, '0');
+    const day = `${maxDate.getDate()}`.padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+}

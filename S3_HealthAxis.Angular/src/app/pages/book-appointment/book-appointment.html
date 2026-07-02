@@ -27,8 +27,8 @@
           <h1>Schedule your consultation.</h1>
 
           <p>
-            Pick a suitable date, choose an available time slot, review the details,
-            and confirm your appointment.
+            Pick a suitable date within the next 30 days, choose an available time slot,
+            review the details, and confirm your appointment.
           </p>
         </div>
 
@@ -73,19 +73,20 @@
               type="date"
               [(ngModel)]="selectedDate"
               [min]="minDate"
+              [max]="maxDate"
               (change)="onDateChange()"
             />
           </div>
 
           <p class="ha-help-text">
-            Past dates are disabled. Choose today's date or a future date to view available slots.
+            You can book appointments from today up to the next 30 days only.
           </p>
         </div>
 
         <div class="ha-book-panel">
           <div class="ha-panel-header">
             <span>Step 2</span>
-            <h2>Select available slot</h2>
+            <h2>Select time slot</h2>
           </div>
 
           @if (loadingSlots) {
@@ -93,24 +94,27 @@
               <div class="spinner-border spinner-border-sm text-primary"></div>
               <span>Loading slots...</span>
             </div>
-          } @else if (selectedDate && availableSlots.length > 0) {
+          } @else if (selectedDate) {
             <div class="ha-slot-grid">
-              @for (slot of availableSlots; track slot) {
+              @for (slot of allSlots; track slot) {
                 <button
                   type="button"
                   class="ha-slot-btn"
-                  [class.selected]="selectedSlot === slot"
+                  [class.available]="getSlotClass(slot) === 'available'"
+                  [class.unavailable]="getSlotClass(slot) === 'unavailable'"
+                  [class.selected]="getSlotClass(slot) === 'selected'"
+                  [disabled]="!isSlotBookable(slot)"
                   (click)="selectSlot(slot)"
                 >
-                  <i class="bi bi-clock"></i>
-                  {{ timeSlotText(slot) }}
+                  <span class="ha-slot-time">
+                    {{ timeSlotText(slot) }}
+                  </span>
+
+                  <span class="ha-slot-status">
+                    {{ getSlotStatusText(slot) }}
+                  </span>
                 </button>
               }
-            </div>
-          } @else if (selectedDate && availableSlots.length === 0 && !loadingSlots) {
-            <div class="ha-empty-state compact">
-              <i class="bi bi-calendar-x"></i>
-              <p>No slots available for selected date.</p>
             </div>
           } @else {
             <div class="ha-empty-state compact">
@@ -171,7 +175,6 @@
     }
   </div>
 
-  <!-- REVIEW MODAL -->
   @if (showReviewModal && doctor) {
     <div class="ha-modal-backdrop">
       <div class="ha-modal-card">
@@ -224,7 +227,7 @@
         <div class="ha-modal-note">
           <i class="bi bi-info-circle"></i>
           <span>
-            You can cancel this appointment later from My Appointments if needed.
+            Your appointment will be created as Pending until confirmed by the doctor.
           </span>
         </div>
 
@@ -257,7 +260,6 @@
     </div>
   }
 
-  <!-- SUCCESS MODAL -->
   @if (showSuccessModal) {
     <div class="ha-modal-backdrop">
       <div class="ha-modal-card success">
@@ -293,4 +295,3 @@
     </div>
   }
 </section>
-

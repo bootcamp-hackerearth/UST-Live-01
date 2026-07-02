@@ -1,1 +1,1 @@
-rR[C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\S3_HealthAxis.Blazor.csproj¢net10.0òCSharp14
+uR^C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\S3_HealthAxis.Blazor.csproj¢net10.0òCSharp14

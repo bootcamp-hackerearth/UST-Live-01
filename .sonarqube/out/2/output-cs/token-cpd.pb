@@ -1,5 +1,5 @@
-ù
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\TokenAuthenticationHandler.cs
+†
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\TokenAuthenticationHandler.cs
 	namespace 	
 S3_HealthAxis
  
@@ -121,8 +121,8 @@ _jsRuntime (
 ;C D
 } 	
 } 
-} Í
-UC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\JwtParser.cs
+} Ì
+XC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\JwtParser.cs
 	namespace 	
 S3_HealthAxis
  
@@ -314,8 +314,8 @@ Dictionary; E
 ;3 4
 } 	
 } 
-}   ˚
-eC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IPatientService.cs
+}   ˛
+hC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IPatientService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -436,8 +436,8 @@ PatientDto
 )) *
 ;* +
 } 
-} ¡
-dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IDoctorService.cs
+} ƒ
+gC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IDoctorService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -556,8 +556,8 @@ dC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 )) *
 ;* +
 } 
-} „
-bC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IAuthService.cs
+} Ê
+eC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IAuthService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -590,8 +590,8 @@ LoginAsync 
 }		 
 }
 
- ∂
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IAppointmentService.cs
+ π
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IAppointmentService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -789,8 +789,8 @@ iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 )? @
 ;@ A
 } 
-} ˝
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interface\IAdminService.cs
+} Ä
+fC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Interface\IAdminService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -853,8 +853,8 @@ cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Interf
 )5 6
 ;6 7
 } 
-} ı.
-iC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\PatientService.cs
+} ¯.
+lC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\PatientService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -1203,8 +1203,8 @@ PatientDto##@ J
 ;<</ 0
 }== 	
 }>> 
-}?? §1
-hC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\DoctorService.cs
+}?? ß1
+kC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\DoctorService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -1569,8 +1569,8 @@ httpClient $
 ;>>/ 0
 }?? 	
 }@@ 
-}AA ª
-fC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\AuthService.cs
+}AA Ì3
+iC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\AuthService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -1618,172 +1618,335 @@ _jsRuntime$ .
 AuthService 
 ( 
 
-HttpClient %
+HttpClient 
 
-httpClient& 0
-,0 1
+httpClient !
+,! "
 
-IJSRuntime2 <
-	jsRuntime= F
-,F G'
-AuthenticationStateProviderH c
-authStateProviderd u
-)u v
-{ 	
-_httpClient 
-= 
+IJSRuntime 
+	jsRuntime  
+,  !'
+AuthenticationStateProvider '
+authStateProvider( 9
+)9 :
+{ 	
+_httpClient 
+= 
 
-httpClient $
-;$ %
+httpClient $
+;$ %
 
-_jsRuntime 
-= 
-	jsRuntime "
-;" #
-_authStateProvider 
-=  
-authStateProvider! 2
-;2 3
-} 	
-public 
-async 
-Task 
-< 
-bool 
-> 
+_jsRuntime 
+= 
+	jsRuntime "
+;" #
+_authStateProvider 
+=  
+authStateProvider! 2
+;2 3
+} 	
+public 
+async 
+Task 
+< 
+bool 
+> 
 
-LoginAsync  *
-(* +
-LoginDto+ 3
-request4 ;
-); <
-{ 	
-var 
-response 
-= 
-await  
-_httpClient! ,
-., -
-PostAsJsonAsync- <
-(< =
-$str= M
-,M N
-requestO V
-)V W
-;W X
-if 
-( 
-! 
-response 
-. 
-IsSuccessStatusCode -
-)- .
-{ 
-return 
-false 
-; 
-} 
-var 
-authResponse 
-= 
-await $
-response% -
-.- .
-Content. 5
-.5 6
-ReadFromJsonAsync6 G
-<G H
-AuthResponseDtoH W
->W X
-(X Y
-)Y Z
-;Z [
-if   
-(   
-authResponse   
-==   
-null    $
-||  % '
-string  ( .
-.  . /
-IsNullOrEmpty  / <
-(  < =
-authResponse  = I
-.  I J
-AccessToken  J U
-)  U V
-)  V W
-{!! 
-return"" 
-false"" 
-;"" 
-}## 
-await&& 
+LoginAsync  *
+(* +
+LoginDto+ 3
+request4 ;
+); <
+{ 	
+var 
+response 
+= 
+await 
+_httpClient !
+.! "
+PostAsJsonAsync" 1
+(1 2
+$str $
+,$ %
+request 
+) 
+; 
+if 
+( 
+! 
+response 
+. 
+IsSuccessStatusCode -
+)- .
+{   
+return!! 
+false!! 
+;!! 
+}"" 
+var$$ 
+authResponse$$ 
+=$$ 
+await%% 
+response%% 
+.%% 
+Content%% &
+.&& 
+ReadFromJsonAsync&& &
+<&&& '
+AuthResponseDto&&' 6
+>&&6 7
+(&&7 8
+)&&8 9
+;&&9 :
+if(( 
+((( 
+authResponse(( 
+==(( 
+null((  $
+||((% '
+string)) 
+.)) 
+IsNullOrWhiteSpace)) )
+())) *
+authResponse))* 6
+.))6 7
+AccessToken))7 B
+)))B C
+)))C D
+{** 
+return++ 
+false++ 
+;++ 
+},, 
+await.. 
+SaveAuthDataAsync.. #
+(..# $
+authResponse..$ 0
+)..0 1
+;..1 2
+(00 
+(00 #
+CustomAuthStateProvider00 %
+)00% &
+_authStateProvider00& 8
+)008 9
+.11 $
+NotifyUserAuthentication11 )
+(11) *
+authResponse11* 6
+.116 7
+AccessToken117 B
+)11B C
+;11C D
+return33 
+true33 
+;33 
+}44 	
+public66 
+async66 
+Task66 
+LogoutAsync66 %
+(66% &
+)66& '
+{77 	
+await88 
+ClearAuthDataAsync88 $
+(88$ %
+)88% &
+;88& '
+(:: 
+(:: #
+CustomAuthStateProvider:: %
+)::% &
+_authStateProvider::& 8
+)::8 9
+.;; 
+NotifyUserLogout;; !
+(;;! "
+);;" #
+;;;# $
+}<< 	
+private>> 
+async>> 
+Task>> 
+SaveAuthDataAsync>> ,
+(>>, -
+AuthResponseDto>>- <
+authResponse>>= I
+)>>I J
+{?? 	
+await@@ 
 
-_jsRuntime&& 
-.&& 
-InvokeVoidAsync&& ,
-(&&, -
-$str&&- C
-,&&C D
-$str&&E P
-,&&P Q
-authResponse&&R ^
-.&&^ _
-AccessToken&&_ j
-)&&j k
-;&&k l
-((( 
-((( #
-CustomAuthStateProvider(( %
-)((% &
-_authStateProvider((& 8
-)((8 9
-.((9 :$
-NotifyUserAuthentication((: R
-(((R S
-authResponse((S _
-.((_ `
-AccessToken((` k
-)((k l
-;((l m
-return** 
-true** 
-;** 
-}++ 	
-public-- 
-async-- 
-Task-- 
-LogoutAsync-- %
-(--% &
-)--& '
-{.. 	
-await00 
+_jsRuntime@@ 
+.@@ 
+InvokeVoidAsync@@ ,
+(@@, -
+$strAA &
+,AA& '
+$strBB 
+,BB 
+authResponseCC 
+.CC 
+AccessTokenCC (
+)CC( )
+;CC) *
+awaitEE 
 
-_jsRuntime00 
-.00 
-InvokeVoidAsync00 ,
-(00, -
-$str00- F
-,00F G
-$str00H S
-)00S T
-;00T U
-(11 
-(11 #
-CustomAuthStateProvider11 %
-)11% &
-_authStateProvider11& 8
-)118 9
-.119 :
-NotifyUserLogout11: J
-(11J K
-)11K L
-;11L M
-}22 	
-}33 
-}44 ≥V
-mC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\AppointmentService.cs
+_jsRuntimeEE 
+.EE 
+InvokeVoidAsyncEE ,
+(EE, -
+$strFF &
+,FF& '
+$strGG 
+,GG 
+authResponseHH 
+.HH 
+RefreshTokenHH )
+)HH) *
+;HH* +
+awaitJJ 
+
+_jsRuntimeJJ 
+.JJ 
+InvokeVoidAsyncJJ ,
+(JJ, -
+$strKK &
+,KK& '
+$strLL 
+,LL 
+authResponseMM 
+.MM 
+EmailMM "
+)MM" #
+;MM# $
+awaitOO 
+
+_jsRuntimeOO 
+.OO 
+InvokeVoidAsyncOO ,
+(OO, -
+$strPP &
+,PP& '
+$strQQ 
+,QQ 
+authResponseRR 
+.RR 
+RoleRR !
+)RR! "
+;RR" #
+ifTT 
+(TT 
+authResponseTT 
+.TT 
+ReferenceIdTT (
+.TT( )
+HasValueTT) 1
+)TT1 2
+{UU 
+awaitVV 
+
+_jsRuntimeVV  
+.VV  !
+InvokeVoidAsyncVV! 0
+(VV0 1
+$strWW *
+,WW* +
+$strXX %
+,XX% &
+authResponseYY  
+.YY  !
+ReferenceIdYY! ,
+.YY, -
+ValueYY- 2
+.YY2 3
+ToStringYY3 ;
+(YY; <
+)YY< =
+)YY= >
+;YY> ?
+}ZZ 
+else[[ 
+{\\ 
+await]] 
+
+_jsRuntime]]  
+.]]  !
+InvokeVoidAsync]]! 0
+(]]0 1
+$str^^ -
+,^^- .
+$str__ %
+)__% &
+;__& '
+}`` 
+}aa 	
+privatecc 
+asynccc 
+Taskcc 
+ClearAuthDataAsynccc -
+(cc- .
+)cc. /
+{dd 	
+awaitee 
+
+_jsRuntimeee 
+.ee 
+InvokeVoidAsyncee ,
+(ee, -
+$strff )
+,ff) *
+$strgg 
+)gg 
+;gg 
+awaitii 
+
+_jsRuntimeii 
+.ii 
+InvokeVoidAsyncii ,
+(ii, -
+$strjj )
+,jj) *
+$strkk 
+)kk 
+;kk  
+awaitmm 
+
+_jsRuntimemm 
+.mm 
+InvokeVoidAsyncmm ,
+(mm, -
+$strnn )
+,nn) *
+$stroo 
+)oo 
+;oo 
+awaitqq 
+
+_jsRuntimeqq 
+.qq 
+InvokeVoidAsyncqq ,
+(qq, -
+$strrr )
+,rr) *
+$strss 
+)ss 
+;ss 
+awaituu 
+
+_jsRuntimeuu 
+.uu 
+InvokeVoidAsyncuu ,
+(uu, -
+$strvv )
+,vv) *
+$strww !
+)ww! "
+;ww" #
+}xx 	
+}yy 
+}zz ∂V
+pC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\AppointmentService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -2409,8 +2572,8 @@ httpClient $
 ;JJK L
 }KK 	
 }LL 
-}MM ˛
-gC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\Implementation\AdminService.cs
+}MM Å
+jC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\Implementation\AdminService.cs
 	namespace 	
 S3_HealthAxis
  
@@ -2526,8 +2689,8 @@ httpClient $
 ;a b
 } 	
 } 
-} ∂#
-cC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Services\CustomAuthStateProvider.cs
+} π#
+fC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Services\CustomAuthStateProvider.cs
 	namespace 	
 S3_HealthAxis
  
@@ -2769,8 +2932,8 @@ FromResult33! +
 ;447 8
 }55 	
 }66 
-}77 -
-JC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Program.cs
+}77 Û-
+MC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Program.cs
 var 
 builder 
 = "
@@ -3120,8 +3283,8 @@ HttpClient% /
 RunAsync;; 
 (;; 
 );;  
-;;;  !Œ
-QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\UserDto.cs
+;;;  !—
+TC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\UserDto.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3182,8 +3345,8 @@ QC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\UserDto.
 ;. /
 }0 1
 } 
-} ﬂ
-WC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\StatisticsDto.cs
+} ‚
+ZC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\StatisticsDto.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3234,8 +3397,8 @@ WC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\Statisti
 ;3 4
 }5 6
 } 
-} ˇ
-TC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\PatientDto.cs
+} Ç
+WC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\PatientDto.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3329,8 +3492,8 @@ PatientDto 
 ;' (
 }) *
 } 
-} §
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\LoginRequest.cs
+} ß
+YC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\LoginRequest.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3373,8 +3536,8 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\LoginReq
 Empty6 ;
 ;; <
 } 
-}		 ∂
-SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DoctorDto.cs
+}		 π
+VC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\DoctorDto.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3462,8 +3625,8 @@ SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DoctorDt
 ;' (
 }) *
 } 
-} ÷
-^C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DoctorCreationResult.cs
+} Ÿ
+aC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\DoctorCreationResult.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3517,8 +3680,8 @@ SC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DoctorDt
 }
 
  
-} ´
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\DashboardDto.cs
+} Æ
+YC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\DashboardDto.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3596,9 +3759,9 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\Dashboar
 ;3 4
 }5 6
 } 
-} ó
+} ö
 
-]C:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\CreateDoctorRequest.cs
+`C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\CreateDoctorRequest.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3668,9 +3831,9 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\Dashboar
 ;1 2
 }3 4
 } 
-} á
+} ä
 
-VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\AuthResponse.cs
+YC:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\AuthResponse.cs
 	namespace 	
 S3_HealthAxis
  
@@ -3741,8 +3904,8 @@ VC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\AuthResp
 Empty2 7
 ;7 8
 } 
-} §
-XC:\Users\287766\source\repos\S3_HealthAxis\S3_HealthAxis.Blazor\Models\AppointmentDto.cs
+} ß
+[C:\Users\287766\source\repos\S3_HealthAxisWeb\S3_HealthAxis.Blazor\Models\AppointmentDto.cs
 	namespace 	
 S3_HealthAxis
  
