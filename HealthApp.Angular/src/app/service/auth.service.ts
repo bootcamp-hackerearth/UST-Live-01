@@ -14,7 +14,6 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // LOGIN
   login(data: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/login`, data)
       .pipe(
@@ -27,7 +26,6 @@ export class AuthService {
       );
   }
 
-  // REGISTER 
   register(data: {
     email: string;
     password: string;
@@ -42,12 +40,10 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/patientregister`, data);
   }
 
-  // LOGOUT
   logout() {
     localStorage.clear();
   }
 
-  // HELPERS
   getToken(): string | null {
     return localStorage.getItem('token');
   }

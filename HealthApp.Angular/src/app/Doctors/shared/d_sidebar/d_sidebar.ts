@@ -6,12 +6,12 @@ import { CommonModule } from '@angular/common';
   selector: 'app-sidebar',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './d_sidebar.html',   
-  styleUrls: ['./d_sidebar.css']   
+  templateUrl: './d_sidebar.html',
+  styleUrls: ['./d_sidebar.css']
 })
 export class Sidebar {
 
-  constructor(private router: Router) {}
+  constructor(private readonly router: Router) {}
 
   logout() {
     localStorage.clear();

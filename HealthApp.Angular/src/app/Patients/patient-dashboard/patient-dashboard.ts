@@ -58,7 +58,6 @@ closeProfile() {
   this.showProfile = false;
 }
 
-  // LOAD PROFILE + RELATED DATA
   loadProfile() {
     this.patientService.getMyProfile().subscribe({
       next: (res) => {
@@ -73,7 +72,6 @@ closeProfile() {
     });
   }
 
-  // APPOINTMENTS
 loadAppointments() {
   this.appointmentService.getMyAppointments().subscribe({
     next: (res) => {
@@ -119,7 +117,6 @@ loadAppointments() {
 
 
 
-  // RECORDS
   loadRecords() {
     this.recordService.getMyRecords().subscribe({
       next: (res) => {
@@ -131,7 +128,6 @@ loadAppointments() {
     });
   }
 
-  // CANCEL APPOINTMENT
   cancel(id: number) {
     const reason = prompt('Enter cancel reason');
     if (!reason) return;
@@ -146,7 +142,6 @@ loadAppointments() {
     });
   }
 
-  // EDIT PROFILE
   toggleEdit() {
     this.editMode = !this.editMode;
   }

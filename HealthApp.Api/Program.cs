@@ -79,11 +79,13 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+var angularUrl = builder.Configuration["AppUrls:AngularUrl"];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular",
         policy => policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins(angularUrl!)
             .AllowAnyHeader()
             .AllowAnyMethod());
 });

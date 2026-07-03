@@ -1,17 +1,26 @@
 ﻿using HealthApp.Shared.Dto;
 
-public interface IAppointmentService
+namespace HealthApp.Blazor.Components.service.Interface
 {
-    Task<PagedResponse<AppointmentDto>> GetPagedAppointmentsAsync(int pageNumber, int pageSize);
+    public interface IAppointmentService
+    {
+        Task<PagedResponse<AppointmentDto>> GetPagedAppointmentsAsync(int pageNumber, int pageSize);
 
-    Task<PagedResponse<AppointmentDto>> GetFilteredAppointmentsAsync(int? patientId, int? doctorId,
-        int pageNumber, int pageSize);
+        Task<PagedResponse<AppointmentDto>> GetFilteredAppointmentsAsync(
+            int? patientId,
+            int? doctorId,
+            int pageNumber,
+            int pageSize);
 
-    Task<AppointmentDto?> GetAppointmentByIdAsync(int id);
+        Task<AppointmentDto?> GetAppointmentByIdAsync(int id);
 
-    Task<List<string>> CheckDoctorAvailabilityAsync(int doctorId, DateTime date);
+        Task<List<string>> CheckDoctorAvailabilityAsync(int doctorId, DateTime date);
 
-    Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync(int doctorId, DateTime fromDate, DateTime toDate);
+        Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync(
+            int doctorId,
+            DateTime fromDate,
+            DateTime toDate);
 
-    Task<int> GetAppointmentCountAsync();
+        Task<int> GetAppointmentCountAsync();
+    }
 }

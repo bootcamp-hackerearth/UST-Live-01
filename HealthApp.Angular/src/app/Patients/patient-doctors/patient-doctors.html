@@ -1,54 +1,117 @@
 <div class="dashboard">
   <app-sidebar class="sidebar"></app-sidebar>
 
-  <div class="main">
+  <main class="main">
     <section class="doctors-page">
+
+      <!-- HEADER -->
       <div class="page-header">
         <div>
-          <p class="eyebrow">Clinician network</p>
-          <h1>Available doctors</h1>
-          <p class="subtext">Select a specialist and connect with the right care team.</p>
+          <p class="eyebrow">Clinician Network</p>
+          <h1>Available Doctors</h1>
+          <p class="subtext">Find the right specialist and book your next consultation.</p>
         </div>
       </div>
 
+      <!-- FILTERS -->
       <div class="top-bar">
-        <select [(ngModel)]="specialisationSearch" (change)="filterDoctors()">
-          <option value="">All specialisations</option>
-          <option value="Endocrinologist">Endocrinologist</option>
-          <option value="Oncologist">Oncologist</option>
-          <option value="Gynecologist">Gynecologist</option>
-          <option value="OrthopedicSurgeon">OrthopedicSurgeon</option>
-          <option value="Psychiatrist">Psychiatrist</option>
-          <option value="Pediatrician">Pediatrician</option>
-          <option value="Neurologist">Neurologist</option>
-          <option value="Dermatologist">Dermatologist</option>
-          <option value="Cardiologist">Cardiologist</option>
-          <option value="GeneralPractitioner">GeneralPractitioner</option>
-          <option value="ENT">ENT</option>
-        </select>
+        <div class="filter-group">
+          <label>Specialisation</label>
+          <select [(ngModel)]="specialisationSearch" (change)="filterDoctors()">
+            <option value="">All specialisations</option>
+            <option value="Endocrinologist">Endocrinologist</option>
+            <option value="Oncologist">Oncologist</option>
+            <option value="Gynecologist">Gynecologist</option>
+            <option value="OrthopedicSurgeon">Orthopedic Surgeon</option>
+            <option value="Psychiatrist">Psychiatrist</option>
+            <option value="Pediatrician">Pediatrician</option>
+            <option value="Neurologist">Neurologist</option>
+            <option value="Dermatologist">Dermatologist</option>
+            <option value="Cardiologist">Cardiologist</option>
+            <option value="GeneralPractitioner">General Practitioner</option>
+            <option value="ENT">ENT</option>
+          </select>
+        </div>
 
-        <input type="text" placeholder="Search doctor name" [(ngModel)]="nameSearch" (input)="filterDoctors()" />
+        <div class="filter-group search">
+          <label>Search</label>
+          <input
+            type="text"
+            placeholder="Search doctor name"
+            [(ngModel)]="nameSearch"
+            (input)="filterDoctors()"
+          />
+        </div>
       </div>
 
+      <!-- DOCTOR GRID -->
       <div class="doctor-grid">
-        <div class="doctor-card" *ngFor="let d of paginatedDoctors">
-          <div class="doctor-badge">Specialist</div>
-          <h3>{{ d.fullName }}</h3>
-          <p><strong>Specialization:</strong> {{ d.specialisation }}</p>
-          <p><strong>Experience:</strong> {{ getExperience(d.practiceStartDate) }} years</p>
-          <p><strong>Email:</strong> {{ d.email }}</p>
+        <article class="doctor-card" *ngFor="let d of paginatedDoctors">
 
+          <div class="doctor-top">
+            <div class="doctor-avatar">
+              {{ d.fullName ? d.fullName.charAt(0) : 'D' }}
+            </div>
+
+            <div>
+              <span class="doctor-badge">Specialist</span>
+              <h3>{{ d.fullName }}</h3>
+            </div>
+          </div>
+
+          <div class="doctor-info">
+            <div>
+              <span>Specialisation</span>
+              <strong>{{ d.specialisation }}</strong>
+            </div>
+
+            <div>
+              <span>Experience</span>
+              <strong>{{ getExperience(d.practiceStartDate) }} years</strong>
+            </div>
+
+            <div class="email-row">
+              <span>Email</span>
+              <strong>{{ d.email }}</strong>
+            </div>
+          </div>
 
           <button class="book-btn" (click)="book(d)">
-            Book appointment</button>
-        </div>
+            Book Appointment
+          </button>
+
+        </article>
       </div>
 
-      <div class="pagination">
-        <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
-        <span>Page {{ pageNumber }} of {{ totalPages }}</span>
-        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+      <!-- EMPTY STATE -->
+      <div class="empty-state" *ngIf="paginatedDoctors.length === 0">
+        <div class="empty-icon">🔎</div>
+        <h3>No doctors found</h3>
+        <p>Try changing the search term or specialisation filter.</p>
       </div>
-    </section>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+  <button
+    class="page-btn"
+    (click)="prevPage()"
+    [disabled]="pageNumber === 1">
+    ‹ Prev
+  </button>
+
+  <div class="page-indicator">
+    <span>Page</span>
+    <strong>{{ pageNumber }}</strong>
+    <span>of {{ totalPages }}</span>
   </div>
+
+  <button
+    class="page-btn"
+    (click)="nextPage()"
+    [disabled]="pageNumber === totalPages">
+    Next ›
+  </button>
+</div>
+
+    </section>
+  </main>
 </div>

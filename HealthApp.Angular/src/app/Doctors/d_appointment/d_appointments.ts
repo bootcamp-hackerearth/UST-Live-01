@@ -28,44 +28,50 @@ export class DoctorAppointments implements OnInit {
 
   selected: any = null;
 
-  constructor(private appointmentService: AppointmentService) {}
+  constructor(private readonly appointmentService: AppointmentService) {}
 
   ngOnInit(): void {
     this.loadAppointments();
   }
 
   loadAppointments() {
-  this.appointmentService.getMyDoctorAppointments().subscribe({
-    next: (res: any) => {  
+    this.appointmentService.getMyDoctorAppointments().subscribe({
+      next: (res: any) => {
+        const appointments = this.formatAppointments(res);
 
-      console.log("API response:", res);
+        this.appointments = appointments;
+        this.filteredAppointments = appointments;
 
-      const list = res?.data || res || [];
+        this.updateCounts(appointments);
+        this.updatePagination();
+      },
+      error: (err) => {
+        console.error('Failed to load doctor appointments', err);
+      }
+    });
+  }
 
-      const data = list.map((a: any) => ({
-        ...a,
-        scheduledDate: a.scheduledDate ? new Date(a.scheduledDate) : null
-      }));
+  private formatAppointments(res: any): any[] {
+    const list = res?.data || res || [];
 
-      this.appointments = data;
-      this.filteredAppointments = data;
+    return list.map((appointment: any) => ({
+      ...appointment,
+      scheduledDate: appointment.scheduledDate
+        ? new Date(appointment.scheduledDate)
+        : null
+    }));
+  }
 
-      this.totalCount = data.length;
+  private updateCounts(appointments: any[]): void {
+    this.totalCount = appointments.length;
+    this.pendingCount = this.getStatusCount(appointments, 'Pending');
+    this.confirmedCount = this.getStatusCount(appointments, 'Confirmed');
+    this.completedCount = this.getStatusCount(appointments, 'Completed');
+  }
 
-      this.pendingCount = data.filter((a: any) => a.status === 'Pending').length;
-
-      this.confirmedCount = data.filter((a: any) => a.status === 'Confirmed').length;
-
-      this.completedCount = data.filter((a: any) => a.status === 'Completed').length;
-
-      this.updatePagination();
-    },
-
-    error: (err) => {
-      console.error('Failed to load doctor appointments', err);
-    }
-  });
-}
+  private getStatusCount(appointments: any[], status: string): number {
+    return appointments.filter((appointment: any) => appointment.status === status).length;
+  }
 
   updatePagination() {
     this.totalPages = Math.ceil(this.filteredAppointments.length / this.pageSize);
@@ -93,7 +99,6 @@ export class DoctorAppointments implements OnInit {
     }
   }
 
-  // VIEW MODAL
   view(data: any) {
     this.selected = data;
   }
@@ -102,7 +107,6 @@ export class DoctorAppointments implements OnInit {
     this.selected = null;
   }
 
-  // ACTIONS
   confirm(id: number) {
     this.appointmentService.confirmAppointment(id).subscribe(() => {
       this.loadAppointments();

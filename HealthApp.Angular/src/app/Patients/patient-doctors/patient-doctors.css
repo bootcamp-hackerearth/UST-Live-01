@@ -1,132 +1,348 @@
+/* =====================================================
+   PREMIUM COMPACT DOCTORS PAGE
+===================================================== */
+
+:host {
+  --bg-main: #f3f7fb;
+  --panel: #ffffff;
+  --text-main: #0f172a;
+  --text-soft: #334155;
+  --text-muted: #64748b;
+
+  --primary: #2563eb;
+  --primary-dark: #1e40af;
+  --primary-soft: #dbeafe;
+
+  --teal: #0f766e;
+  --teal-soft: #ccfbf1;
+
+  --purple: #7c3aed;
+  --border: #e2e8f0;
+
+  --shadow-sm: 0 10px 28px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 20px 48px rgba(15, 23, 42, 0.11);
+}
+
+/* LAYOUT */
 .dashboard {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f4f7fb 0%, #eef7fb 100%);
+  background:
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.13), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4fb 55%, #f8fafc 100%);
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  color: var(--text-main);
+}
+
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
 }
 
 .main {
   flex: 1;
-  padding: 24px 28px;
+  padding: 28px;
 }
 
+/* PAGE */
 .doctors-page {
-  width: 100%;
-  background: white;
-  border-radius: 24px;
-  padding: 24px;
-  box-shadow: 0 16px 44px rgba(15, 23, 42, 0.06);
+  min-height: calc(100vh - 56px);
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(14px);
 }
 
+/* HEADER */
 .page-header {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: #0f766e;
+  margin: 0 0 8px;
+  font-size: 12px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-weight: 700;
+  color: var(--primary-dark);
+  font-weight: 900;
 }
 
 .page-header h1 {
-  margin: 4px 0 6px;
-  font-size: 24px;
-  color: #111827;
+  margin: 0 0 8px;
+  font-size: 32px;
+  line-height: 1.12;
+  color: var(--text-main);
+  font-weight: 900;
 }
 
 .subtext {
-  color: #64748b;
   margin: 0;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
 }
 
+/* FILTERS */
 .top-bar {
+  display: grid;
+  grid-template-columns: 280px minmax(260px, 420px);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.filter-group {
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.filter-group label {
+  font-size: 12px;
+  font-weight: 850;
+  color: var(--text-muted);
 }
 
 .top-bar select,
 .top-bar input {
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid #dbe4ee;
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 1px solid #cbd5e1;
   background: #f8fafc;
-  min-width: 200px;
+  color: var(--text-main);
+  font-size: 14px;
+  outline: none;
+  transition: 0.18s ease;
 }
 
+.top-bar select:focus,
+.top-bar input:focus {
+  border-color: var(--primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+/* GRID */
 .doctor-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 16px;
 }
 
+/* CARD */
 .doctor-card {
-  background: linear-gradient(120deg, #ffffff 0%, #f8fcff 100%);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid #eaf0f7;
+  border-radius: 24px;
   padding: 18px;
-  border-radius: 16px;
-  border: 1px solid #ebf2f8;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.045);
+  transition: 0.22s ease;
+}
+
+.doctor-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), #38bdf8, var(--teal));
+}
+
+.doctor-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(37, 99, 235, 0.26);
+  box-shadow: var(--shadow-md);
+}
+
+/* CARD TOP */
+.doctor-top {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 16px;
+}
+
+.doctor-avatar {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-weight: 900;
+  font-size: 20px;
+  background: linear-gradient(135deg, var(--primary), var(--purple));
 }
 
 .doctor-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  background: #ecfeff;
-  color: #0f766e;
+  display: inline-flex;
+  width: max-content;
+  margin-bottom: 6px;
+  padding: 5px 10px;
   border-radius: 999px;
+  background: var(--teal-soft);
+  color: var(--teal);
   font-size: 11px;
-  font-weight: 700;
-  margin-bottom: 10px;
+  font-weight: 900;
 }
 
 .doctor-card h3 {
-  margin: 0 0 8px;
-  color: #111827;
+  margin: 0;
+  color: var(--text-main);
+  font-size: 18px;
+  font-weight: 900;
 }
 
-.doctor-card p {
-  margin: 6px 0;
-  color: #475569;
+/* INFO */
+.doctor-info {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
+.doctor-info div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.doctor-info div:last-child {
+  border-bottom: none;
+}
+
+.doctor-info span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.doctor-info strong {
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.email-row strong {
+  max-width: 175px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* BUTTON */
 .book-btn {
-  margin-top: 10px;
   width: 100%;
-  padding: 10px;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #0f766e, #14b8a6);
-  color: white;
+  height: 44px;
   border: none;
-  font-weight: 700;
+  cursor: pointer;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), #0ea5e9);
+  box-shadow: 0 14px 28px rgba(37, 99, 235, 0.2);
+  transition: 0.2s ease;
 }
 
-.pagination {
-  margin-top: 20px;
+.book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(37, 99, 235, 0.28);
+}
+
+/* EMPTY */
+.empty-state {
+  margin-top: 24px;
+  padding: 40px 24px;
+  text-align: center;
+  border-radius: 24px;
+  border: 1px dashed #cbd5e1;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+/* PREMIUM PAGINATION */
+.doctors-page .pagination {
+  margin-top: 26px;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 14px;
 }
 
-.pagination button {
-  padding: 8px 14px;
-  border-radius: 8px;
+.doctors-page .page-btn {
   border: none;
-  background: #0f766e;
-  color: white;
+  outline: none;
+  cursor: pointer;
+
+  padding: 10px 18px;
+  border-radius: 999px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  font-size: 14px;
+  font-weight: 800;
+
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s ease;
 }
 
-.pagination button:disabled {
-  background: #cbd5e1;
+.doctors-page .page-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2563eb, #0ea5e9);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.25);
 }
 
-@media (max-width: 760px) {
-  .dashboard {
-    flex-direction: column;
-  }
+.doctors-page .page-btn:disabled {
+  background: #eef2f7;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
 
-  .main {
-    padding: 16px;
-  }
+.doctors-page .page-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 9px 16px;
+  border-radius: 999px;
+
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.doctors-page .page-indicator strong {
+  min-width: 28px;
+  height: 28px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 900;
 }

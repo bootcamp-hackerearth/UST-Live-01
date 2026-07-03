@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Sidebar } from '../shared/d_sidebar/d_sidebar';
 
-import { healthrecordservice } from '../../Doctor.service/health-recordservice';
-import { doctorservice } from '../../Doctor.service/doctorservice';
+import { HealthRecordService } from '../../Doctor.service/health-recordservice';
+import { DoctorService } from '../../Doctor.service/doctorservice';
 
 @Component({
   selector: 'app-doctor-healthrecords',
@@ -24,116 +24,111 @@ export class DoctorHealthRecords implements OnInit {
   pageSize = 5;
   totalPages = 0;
 
+  doctor: any = null;
+  selected: any = null;
+
   form: any = {
     patientId: '',
     diagnosis: '',
     notes: ''
   };
 
-  constructor(private service: healthrecordservice,
-      private doctorService: doctorservice  ) {}
+  constructor(
+    private readonly service: HealthRecordService,
+    private readonly doctorService: DoctorService
+  ) {}
 
   ngOnInit(): void {
     this.load();
-      this.loadDoctor(); 
+    this.loadDoctor();
   }
-  doctor: any = null;
-  selected: any = null;
 
-view(data: any) {
-  this.selected = data;
-}
+  view(data: any) {
+    this.selected = data;
+  }
 
-closeView() {
-  this.selected = null;
-}
+  closeView() {
+    this.selected = null;
+  }
 
+  loadDoctor() {
+    this.doctorService.getMyProfile().subscribe({
+      next: (res) => {
+        this.doctor = res;
+        console.log('Doctor loaded:', res);
+      },
+      error: (err) => console.error('Failed to load doctor', err)
+    });
+  }
 
-loadDoctor() {
-  this.doctorService.getMyProfile().subscribe({
-    next: (res) => {
-      this.doctor = res;
-      console.log("Doctor loaded:", res);
-    },
-    error: (err) => console.error("Failed to load doctor", err)
-  });
-}
+  load() {
+    this.service.getDoctorRecords().subscribe({
+      next: (res: any) => {
 
+        const list = res?.data || res || [];
 
+        this.records = list;
+        this.filteredRecords = list;
 
-load() {
-  this.service.getDoctorRecords().subscribe({
-    next: (res: any) => {
-
-      const list = res?.data || res || [];
-
-      this.records = list;
-      this.filteredRecords = list;
-
-      this.updatePagination();
-    },
-    error: (err) => console.error('Failed to load records', err)
-  });
-}
-
+        this.updatePagination();
+      },
+      error: (err) => console.error('Failed to load records', err)
+    });
+  }
 
   create() {
-  if (this.doctor) {
-    this.form.doctorId = this.doctor.doctorId;
-    this.form.doctorName = this.doctor.fullName;
-  }
-
-  this.service.createRecord(this.form).subscribe({
-    next: () => {
-      this.showForm = false;
-
-      this.form = {
-        patientId: '',
-        doctorId: '',
-        patientName: '',
-        doctorName: '',
-        visitDate: '',
-        diagnosis: '',
-        prescription: '',
-        notes: ''
-      };
-
-      this.load();
-    },
-
-    error: (err) => {
-      console.error("Create error:", err.error);
+    if (this.doctor) {
+      this.form.doctorId = this.doctor.doctorId;
+      this.form.doctorName = this.doctor.fullName;
     }
-  });
-}
 
+    this.service.createRecord(this.form).subscribe({
+      next: () => {
+        this.showForm = false;
 
-updatePagination() {
-  this.totalPages = Math.ceil(this.filteredRecords.length / this.pageSize);
-  this.paginate();
-}
+        this.form = {
+          patientId: '',
+          doctorId: '',
+          patientName: '',
+          doctorName: '',
+          visitDate: '',
+          diagnosis: '',
+          prescription: '',
+          notes: ''
+        };
 
-paginate() {
-  const start = (this.pageNumber - 1) * this.pageSize;
-  const end = start + this.pageSize;
+        this.load();
+      },
 
-  this.paginatedRecords = this.filteredRecords.slice(start, end);
-}
+      error: (err) => {
+        console.error('Create error:', err.error);
+      }
+    });
+  }
 
-nextPage() {
-  if (this.pageNumber < this.totalPages) {
-    this.pageNumber++;
+  updatePagination() {
+    this.totalPages = Math.ceil(this.filteredRecords.length / this.pageSize);
     this.paginate();
   }
-}
 
-prevPage() {
-  if (this.pageNumber > 1) {
-    this.pageNumber--;
-    this.paginate();
+  paginate() {
+    const start = (this.pageNumber - 1) * this.pageSize;
+    const end = start + this.pageSize;
+
+    this.paginatedRecords = this.filteredRecords.slice(start, end);
   }
-}
 
-  
-  
+  nextPage() {
+    if (this.pageNumber < this.totalPages) {
+      this.pageNumber++;
+      this.paginate();
+    }
+  }
+
+  prevPage() {
+    if (this.pageNumber > 1) {
+      this.pageNumber--;
+      this.paginate();
+    }
+  }
 }

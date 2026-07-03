@@ -83,9 +83,10 @@ namespace HealthApp.Test.Service_Testing
             _patientRepo.Setup(x => x.GetByIdentityUserIdAsync("user1"))
                 .ReturnsAsync((Patient)null);
 
-            await Assert.ThrowsAsync<Exception>(() =>
+            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
                 _service.Add(dto, "user1"));
         }
+
 
         [Fact]
         public async Task Confirm_ShouldUpdateStatus()
@@ -196,6 +197,176 @@ namespace HealthApp.Test.Service_Testing
 
             result.Should().Contain("10:00 AM");
         }
+        [Fact]
+        public async Task GetAppointmentById_ShouldThrow_WhenNotFound()
+        {
+            _repo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync((Appointment)null);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(
+                () => _service.GetAppointmentById(1));
+        }
+        [Fact]
+        public async Task GetAppointmentById_ShouldReturnDto()
+        {
+            var appointment = new Appointment
+            {
+                AppointmentId = 1,
+                DoctorId = 1,
+                PatientId = 1
+            };
+
+            _repo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(appointment);
+
+            _patientRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Patient());
+
+            _doctorRepo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Doctor());
+
+            _mapper.Setup(x => x.Map<AppointmentDto>(appointment))
+                .Returns(new AppointmentDto());
+
+            var result = await _service.GetAppointmentById(1);
+
+            result.Should().NotBeNull();
+        }
+        [Fact]
+        public async Task Complete_ShouldThrow_WhenNotFound()
+        {
+            _repo.Setup(x => x.UpdateStatusAsync(1, "Completed"))
+                .ReturnsAsync((Appointment)null);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(
+                () => _service.CompleteAppointment(1));
+        }
+        [Fact]
+        public async Task Cancel_ShouldThrow_WhenNotFound()
+        {
+            _repo.Setup(x => x.CancelAppointmentAsync(1, "Reason"))
+                .ReturnsAsync((Appointment)null);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(
+                () => _service.CancelAppointment(1, "Reason"));
+        }
+        [Fact]
+        public async Task GetAppointmentsByDoctor_ShouldThrow_WhenDoctorNotFound()
+        {
+            _doctorRepo.Setup(x => x.GetByIdentityUserIdAsync("doc"))
+                .ReturnsAsync((Doctor)null);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(
+                () => _service.GetAppointmentsByDoctorAsync("doc"));
+        }
+        [Fact]
+        public async Task GetAppointmentsByUser_ShouldThrow_WhenPatientNotFound()
+        {
+            _patientRepo.Setup(x => x.GetByIdentityUserIdAsync("user"))
+                .ReturnsAsync((Patient)null);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(
+                () => _service.GetAppointmentsByUserAsync("user"));
+        }
+        [Fact]
+        public async Task CheckAvailability_ShouldReturnEmpty_WhenNull()
+        {
+            _repo.Setup(x => x.GetBookedSlotsAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<DateTime>()))
+                .ReturnsAsync((List<string>)null);
+
+            var result =
+                await _service.CheckDoctorAvailability(1, DateTime.Now);
+
+            result.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task GetUpcomingAppointments_ShouldReturnList()
+        {
+            var list = new List<Appointment>
+    {
+        new Appointment()
+    };
+
+            _repo.Setup(x => x.GetUpcomingByDoctorAsync(
+                1,
+                It.IsAny<DateTime>(),
+                It.IsAny<DateTime>()))
+                .ReturnsAsync(list);
+
+            _mapper.Setup(x =>
+                x.Map<List<AppointmentDto>>(It.IsAny<object>()))
+                .Returns(new List<AppointmentDto>());
+
+            var result = await _service.GetUpcomingAppointmentsByDoctor(
+                1,
+                DateTime.Now,
+                DateTime.Now.AddDays(1));
+
+            result.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task GetPagedAppointments_ShouldThrow_InvalidPageNumber()
+        {
+            await Assert.ThrowsAsync<AppointmentRuleException>(
+                () => _service.GetPagedAppointments(0, 10));
+        }
+        [Fact]
+        public async Task GetPagedAppointments_ShouldThrow_InvalidPageSize()
+        {
+            await Assert.ThrowsAsync<AppointmentRuleException>(
+                () => _service.GetPagedAppointments(1, 0));
+        }
+        [Fact]
+        public async Task GetPagedAppointments_ShouldReturnData()
+        {
+            _repo.Setup(x => x.GetPagedAppointmentsAsync(1, 10))
+                .ReturnsAsync((new List<Appointment>(), 1));
+
+            _mapper.Setup(x =>
+                x.Map<List<AppointmentDto>>(It.IsAny<object>()))
+                .Returns(new List<AppointmentDto>());
+
+            var result =
+                await _service.GetPagedAppointments(1, 10);
+
+            result.TotalCount.Should().Be(1);
+        }
+        [Fact]
+        public async Task Filtered_ShouldThrow_WhenIdsMissing()
+        {
+            await Assert.ThrowsAsync<AppointmentRuleException>(
+                () => _service.GetAppointmentsByPatientAndDoctorPaged(
+                    null,
+                    null,
+                    1,
+                    10));
+        }
+        [Fact]
+        public async Task Filtered_ShouldReturnData()
+        {
+            _repo.Setup(x =>
+                x.GetByPatientAndDoctor(
+                    1, null, 1, 10))
+                .ReturnsAsync((new List<Appointment>(), 1));
+
+            _mapper.Setup(x =>
+                x.Map<List<AppointmentDto>>(It.IsAny<object>()))
+                .Returns(new List<AppointmentDto>());
+
+            var result =
+                await _service.GetAppointmentsByPatientAndDoctorPaged(
+                    1,
+                    null,
+                    1,
+                    10);
+
+            result.TotalCount.Should().Be(1);
+        }
+
 
         [Fact]
         public async Task IsSlotBooked_ShouldReturnTrue()

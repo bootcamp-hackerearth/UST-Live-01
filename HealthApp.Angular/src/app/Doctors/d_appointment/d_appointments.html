@@ -4,7 +4,7 @@
 
   <div class="content">
 
-    <!-- ✅ HEADER -->
+    <!-- HEADER -->
     <header>
       <div>
         <p class="eyebrow">Doctor Panel</p>
@@ -13,7 +13,7 @@
       </div>
     </header>
 
-    <!-- ✅ STATS -->
+    <!-- STATS -->
     <div class="stats">
       <div class="card">
         <h3>Total</h3>
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <!-- ✅ LIST -->
+    <!-- LIST -->
     <div class="list">
 
       <div *ngFor="let a of paginatedAppointments" class="item">
@@ -67,7 +67,7 @@
 
     </div>
 
-    <!-- ✅ PAGINATION -->
+    <!-- PAGINATION -->
     <div class="pagination">
       <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
       <span>Page {{ pageNumber }} of {{ totalPages }}</span>
@@ -77,7 +77,7 @@
   </div>
 </div>
 
-<!-- ✅ VIEW MODAL -->
+<!-- VIEW MODAL -->
 <div class="profile-modal" *ngIf="selected">
   <div class="modal-box">
 

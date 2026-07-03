@@ -162,7 +162,16 @@ namespace HealthApp.Api.Service.Impl
 
         public async Task<(bool success, string message, string userId, string temporaryPassword)> RegisterDoctorByAdminAsync(DoctorRegisterDto request)
         {
-            const string temporaryPassword = "Doctor@01";
+
+            var temporaryPassword =
+                config["DoctorSettings:TemporaryPassword"];
+
+            if (string.IsNullOrWhiteSpace(temporaryPassword))
+            {
+                throw new InvalidOperationException(
+                    "Doctor temporary password is not configured.");
+            }
+
 
             if (request.PracticeStartDate == null)
             {

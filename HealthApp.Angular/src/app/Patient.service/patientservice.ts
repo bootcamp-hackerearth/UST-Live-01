@@ -13,8 +13,6 @@ export class PatientService {
 
   constructor(private http: HttpClient) {}
 
-  // User
-
   getMyProfile(): Observable<Patient> {
     return this.http.get<Patient>(`${this.baseUrl}/me`);
   }

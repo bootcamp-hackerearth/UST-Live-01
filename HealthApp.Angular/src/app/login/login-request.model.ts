@@ -30,36 +30,49 @@ export class LoginComponent {
     private router: Router
   ) {}
 
+ 
+
   login() {
-    const data = {
-      email: this.email,
-      password: this.password
-    };
+  const data = {
+    email: this.email,
+    password: this.password
+  };
 
-    this.authService.login(data).subscribe({
-      next: (res: LoginResponse) => {
-        if (res.success) {
-          
-          
-          if (res.role === 'Admin') {
-          window.location.href = 'https://localhost:7002/';
+  this.authService.login(data).subscribe({
+    next: (res: LoginResponse) => {
 
-        }
-        else if (res.role === 'User') {
-            this.router.navigate(['/patient-dashboard']);
-          } 
-          else if (res.role === 'Doctor') {
-            this.router.navigate(['/doctor-dashboard']);
-          }
-
-        } else {
-          alert(res.message);
-        }
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Login failed');
+      if (!res.success) {
+        alert(res.message);
+        return;
       }
-    });
-  }
+
+      localStorage.setItem('token', res.accessToken);
+      localStorage.setItem('role', res.role);
+
+      switch (res.role) {
+
+        case 'Admin':
+          window.location.href = 'https://localhost:7002/';
+          break;
+
+        case 'Doctor':
+          this.router.navigate(['/doctor-dashboard']);
+          break;
+
+        case 'User':
+          this.router.navigate(['/patient-dashboard']);
+          break;
+
+        default:
+          this.router.navigate(['/login']);
+      }
+    },
+
+    error: (err) => {
+      console.error(err);
+      alert('Login failed');
+    }
+  });
+}
+
 }

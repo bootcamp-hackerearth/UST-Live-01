@@ -4,11 +4,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class healthrecordservice {
+export class HealthRecordService {
 
-  private baseUrl = 'https://localhost:7066/api/HealthRecordApi';
+  private readonly baseUrl = 'https://localhost:7066/api/HealthRecordApi';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -18,9 +18,8 @@ export class healthrecordservice {
     });
   }
 
-
   createRecord(data: any) {
-    return this.http.post(`${this.baseUrl}`, data, {
+    return this.http.post(this.baseUrl, data, {
       headers: this.getHeaders()
     });
   }

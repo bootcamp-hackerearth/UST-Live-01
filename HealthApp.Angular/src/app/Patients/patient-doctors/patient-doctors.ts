@@ -86,7 +86,6 @@ export class PatientDoctors implements OnInit {
     this.totalPages = Math.ceil(this.filteredDoctors.length / this.pageSize);
   }
 
-  // ✅ EXPERIENCE
   getExperience(startDate?: Date): number {
     if (!startDate) return 0;
 
@@ -107,7 +106,6 @@ export class PatientDoctors implements OnInit {
     return years < 0 ? 0 : years;
   }
 
-  // ✅ ✅ ✅ CORRECT PLACE
   book(doctor: any) {
     console.log("Selected doctor:", doctor);
 

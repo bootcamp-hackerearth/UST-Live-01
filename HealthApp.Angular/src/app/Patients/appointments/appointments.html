@@ -1,88 +1,212 @@
 <div class="dashboard">
   <app-sidebar></app-sidebar>
 
-  <div class="main">
+  <main class="main">
     <section class="page-shell">
+
+      <!-- HEADER -->
       <div class="page-header">
         <div>
-          <p class="eyebrow">Care scheduling</p>
+          <p class="eyebrow">Care Scheduling</p>
           <h1>Appointments</h1>
-          <p class="subtext">Manage your upcoming consultations with clarity and confidence.</p>
+          <p class="subtext">
+            Manage consultations, track appointment status, and book care with confidence.
+          </p>
         </div>
-        <button class="primary-btn" (click)="openBooking()">+ Book appointment</button>
+
+        <button class="primary-btn" (click)="openBooking()">
+          + Book Appointment
+        </button>
       </div>
 
+      <!-- SUMMARY STRIP -->
+      <section class="summary-strip">
+        <div>
+          <span class="summary-label">Your care timeline</span>
+          <h2>Stay organized with every consultation.</h2>
+          <p>
+            Search, filter, and manage your appointments from one clean workspace.
+          </p>
+        </div>
+
+        <div class="summary-pill">
+          Live schedule
+        </div>
+      </section>
+
+      <!-- FILTERS -->
       <div class="filters">
-        <input
-          type="text"
-          placeholder="Search by doctor name"
-          [(ngModel)]="nameSearch"
-          (input)="filterAppointments()"
-        />
+        <div class="filter-field">
+          <label>Doctor</label>
+          <input
+            type="text"
+            placeholder="Search doctor name"
+            [(ngModel)]="nameSearch"
+            (input)="filterAppointments()"
+          />
+        </div>
 
-        <select [(ngModel)]="statusFilter" (change)="filterAppointments()">
-          <option value="">All status</option>
-          <option value="Pending">Pending</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
+        <div class="filter-field">
+          <label>Status</label>
+          <select [(ngModel)]="statusFilter" (change)="filterAppointments()">
+            <option value="">All status</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
 
-        <input type="date" [(ngModel)]="dateSearch" (change)="filterAppointments()" />
-      </div>
-
-      <div class="card-list">
-        <div class="card" *ngFor="let a of paginatedAppointments">
-          <div class="left">
-            <h3>{{ a.doctorName }}</h3>
-            <span class="status" [ngClass]="{
-              'pending': a.status === 'Pending',
-              'confirmed': a.status === 'Confirmed',
-              'completed': a.status === 'Completed',
-              'cancelled': a.status === 'Cancelled'
-            }">
-              {{ a.status }}
-            </span>
-          </div>
-
-          <div class="right">
-            <p><strong>Date:</strong> {{ a.scheduledDate | date:'MMM d, y' }}</p>
-            <p><strong>Time:</strong> {{ a.timeSlot }}</p>
-            <button *ngIf="a.status === 'Pending'" (click)="cancel(a.appointmentId)">Cancel</button>
-          </div>
+        <div class="filter-field">
+          <label>Date</label>
+          <input
+            type="date"
+            [(ngModel)]="dateSearch"
+            (change)="filterAppointments()"
+          />
         </div>
       </div>
 
-      <div *ngIf="paginatedAppointments.length === 0" class="empty">
-        No appointments found for the selected filters.
+      <!-- APPOINTMENT LIST -->
+      <div class="card-list" *ngIf="paginatedAppointments.length; else emptyBlock">
+
+        <article class="appointment-card" *ngFor="let a of paginatedAppointments">
+
+          <div class="appointment-left">
+            <div class="doctor-avatar">
+              {{ a.doctorName ? a.doctorName.charAt(0) : 'D' }}
+            </div>
+
+            <div>
+              <h3>{{ a.doctorName }}</h3>
+
+              <span
+                class="status"
+                [ngClass]="{
+                  'pending': a.status === 'Pending',
+                  'confirmed': a.status === 'Confirmed',
+                  'completed': a.status === 'Completed',
+                  'cancelled': a.status === 'Cancelled'
+                }">
+                {{ a.status }}
+              </span>
+            </div>
+          </div>
+
+          <div class="appointment-right">
+            <div class="date-box">
+              <span>Date</span>
+              <strong>{{ a.scheduledDate | date:'MMM d, y' }}</strong>
+            </div>
+
+            <div class="date-box">
+              <span>Time</span>
+              <strong>{{ a.timeSlot }}</strong>
+            </div>
+
+            <button
+              class="cancel-btn"
+              *ngIf="a.status === 'Pending'"
+              (click)="cancel(a.appointmentId)">
+              Cancel
+            </button>
+          </div>
+
+        </article>
       </div>
 
-      <div class="pagination">
-        <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
+      <!-- EMPTY -->
+      <ng-template #emptyBlock>
+        <div class="empty">
+          <div class="empty-icon">📭</div>
+          <h3>No appointments found</h3>
+          <p>No appointments match your selected filters right now.</p>
+        </div>
+      </ng-template>
+
+      <!-- PAGINATION -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button (click)="prevPage()" [disabled]="pageNumber === 1">
+          Prev
+        </button>
+
         <span>Page {{ pageNumber }} of {{ totalPages }}</span>
-        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+
+        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">
+          Next
+        </button>
       </div>
+
     </section>
-  </div>
+  </main>
 </div>
 
+<!-- BOOKING MODAL -->
 <div class="modal" *ngIf="showBookingModal">
   <div class="modal-box">
-    <h2>Book appointment</h2>
-    <input type="number" placeholder="Enter doctor ID" [(ngModel)]="selectedDoctorId" />
-    <input type="date" [(ngModel)]="selectedDate" (change)="checkSlots()" />
 
-    <div class="slots">
-      <button *ngFor="let s of availableSlots" (click)="selectedSlot = s" [class.active]="selectedSlot === s">
-        {{ s }}
+    <div class="modal-header">
+      <div>
+        <p class="eyebrow">New Consultation</p>
+        <h2>Book Appointment</h2>
+      </div>
+
+      <button class="close-btn" (click)="closeBooking()">×</button>
+    </div>
+
+    <!-- SELECTED DOCTOR -->
+    <div class="selected-doctor" *ngIf="selectedDoctor; else manualDoctor">
+      <span>Selected Doctor</span>
+      <strong>{{ selectedDoctor.fullName }}</strong>
+      <small>{{ selectedDoctor.specialisation }}</small>
+    </div>
+
+    <ng-template #manualDoctor>
+      <div class="form-group">
+        <label>Doctor ID</label>
+        <input
+          type="number"
+          placeholder="Enter doctor ID"
+          [(ngModel)]="selectedDoctorId"
+        />
+      </div>
+    </ng-template>
+
+    <div class="form-group">
+      <label>Appointment Date</label>
+      <input
+        type="date"
+        [(ngModel)]="selectedDate"
+        (change)="checkSlots()"
+      />
+    </div>
+
+    <div class="slot-section">
+      <label>Available Slots</label>
+
+      <div class="slots" *ngIf="availableSlots.length">
+        <button
+          *ngFor="let s of availableSlots"
+          (click)="selectedSlot = s"
+          [class.active]="selectedSlot === s">
+          {{ s }}
+        </button>
+      </div>
+
+      <p *ngIf="availableSlots.length === 0" class="no-slots">
+        No slots available for this date.
+      </p>
+    </div>
+
+    <div class="actions">
+      <button class="secondary-btn" (click)="closeBooking()">
+        Cancel
+      </button>
+
+      <button class="primary-btn" (click)="bookAppointment()">
+        Confirm Booking
       </button>
     </div>
 
-    <p *ngIf="availableSlots.length === 0" class="no-slots">No slots available for this date.</p>
-
-    <div class="actions">
-      <button class="secondary-btn" (click)="closeBooking()">Cancel</button>
-      <button class="primary-btn" (click)="bookAppointment()">Confirm</button>
-    </div>
   </div>
 </div>

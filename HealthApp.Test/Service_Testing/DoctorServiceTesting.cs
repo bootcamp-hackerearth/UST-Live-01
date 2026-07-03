@@ -256,5 +256,119 @@ namespace HealthApp.Test.Service_Testing
             await Assert.ThrowsAsync<BusinessRuleException>(() =>
                 _service.SearchBySpecialisationPagedAsync("", 1, 5));
         }
+
+        [Fact]
+        public async Task AddDoctor_ShouldThrow_WhenDtoIsNull()
+        {
+            await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _service.AddDoctorAsync(null));
+        }
+
+        [Fact]
+        public async Task AddDoctor_ShouldThrow_WhenNameMissing()
+        {
+            await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _service.AddDoctorAsync(new DoctorDto
+                {
+                    Email = "a@test.com",
+                    Specialisation = "Cardio",
+                    PracticeStartDate = DateTime.Now,
+                    ConsultationFee = 500,
+                    DoctorPhoneNumber = "123"
+                }));
+        }
+
+        [Fact]
+        public async Task AddDoctor_ShouldThrow_WhenEmailMissing()
+        {
+            await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _service.AddDoctorAsync(new DoctorDto
+                {
+                    FullName = "Doctor",
+                    Specialisation = "Cardio",
+                    PracticeStartDate = DateTime.Now,
+                    ConsultationFee = 500,
+                    DoctorPhoneNumber = "123"
+                }));
+        }
+
+        [Fact]
+        public async Task AddDoctor_ShouldThrow_WhenSpecialisationMissing()
+        {
+            await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _service.AddDoctorAsync(new DoctorDto
+                {
+                    FullName = "Doctor",
+                    Email = "a@test.com",
+                    PracticeStartDate = DateTime.Now,
+                    ConsultationFee = 500,
+                    DoctorPhoneNumber = "123"
+                }));
+        }
+
+        [Fact]
+        public async Task AddDoctor_ShouldThrow_WhenPracticeStartDateMissing()
+        {
+            await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _service.AddDoctorAsync(new DoctorDto
+                {
+                    FullName = "Doctor",
+                    Email = "a@test.com",
+                    Specialisation = "Cardio",
+                    ConsultationFee = 500,
+                    DoctorPhoneNumber = "123"
+                }));
+        }
+
+        [Fact]
+        public async Task AddDoctor_ShouldThrow_WhenPhoneMissing()
+        {
+            await Assert.ThrowsAsync<BusinessRuleException>(() =>
+                _service.AddDoctorAsync(new DoctorDto
+                {
+                    FullName = "Doctor",
+                    Email = "a@test.com",
+                    Specialisation = "Cardio",
+                    PracticeStartDate = DateTime.Now,
+                    ConsultationFee = 500
+                }));
+        }
+
+        [Fact]
+        public async Task UpdateDoctor_ShouldThrow_WhenUpdatedDoctorNull()
+        {
+            var dto = new DoctorDto
+            {
+                FullName = "Doctor",
+                Email = "a@test.com",
+                Specialisation = "Cardio",
+                PracticeStartDate = DateTime.Now,
+                ConsultationFee = 100,
+                DoctorPhoneNumber = "123"
+            };
+
+            _repo.Setup(x => x.getbyidAsync(1))
+                .ReturnsAsync(new Doctor { DoctorId = 1 });
+
+            _repo.Setup(x => x.getallAsync())
+                .ReturnsAsync(new List<Doctor>());
+
+            _repo.Setup(x => x.updateAsync(1, It.IsAny<Doctor>()))
+                .ReturnsAsync((Doctor)null);
+
+            await Assert.ThrowsAsync<EntityNotFoundException>(() =>
+                _service.UpdateDoctorByIdAsync(1, dto));
+        }
+
+
+
+
+
+
+
+
+
+
+
     }
 }

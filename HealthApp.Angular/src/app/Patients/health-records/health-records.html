@@ -1,40 +1,135 @@
 <div class="dashboard">
   <app-sidebar class="sidebar"></app-sidebar>
 
-  <div class="main">
+  <main class="main">
     <section class="records-shell">
+
+      <!-- HEADER -->
       <div class="page-header">
         <div>
-          <p class="eyebrow">Clinical records</p>
-          <h1>Health records</h1>
-          <p class="subtext">A secure summary of consultations, diagnoses, and follow-up care.</p>
+          <p class="eyebrow">Clinical Records</p>
+          <h1>Health Records</h1>
+          <p class="subtext">
+            Review diagnoses, prescriptions, visit history, and follow-up notes securely.
+          </p>
         </div>
       </div>
 
-      <div class="top-bar">
-        <input type="text" placeholder="Search by doctor name" [(ngModel)]="nameSearch" (input)="filterRecords()" />
-        <input type="date" [(ngModel)]="dateSearch" (change)="filterRecords()" />
-      </div>
+      <!-- SUMMARY / FILTER BAR -->
+      <div class="records-toolbar">
+        <div class="toolbar-info">
+          <span class="toolbar-icon">📄</span>
+          <div>
+            <h3>Medical Timeline</h3>
+            <p>{{ allRecords.length }} records available</p>
+          </div>
+        </div>
 
-      <div class="records-grid">
-        <div class="record-card" *ngFor="let r of paginatedRecords">
-          <div class="record-badge">Visit record</div>
-          <p><strong>Doctor:</strong> {{ r.doctorName }}</p>
-          <p><strong>Diagnosis:</strong> {{ r.diagnosis }}</p>
-          <p><strong>Prescription:</strong> {{ r.prescription }}</p>
-          <p><strong>Notes:</strong> {{ r.notes }}</p>
-          <p><strong>Visit date:</strong> {{ r.visitDate | date:'MMM d, y' }}</p>
-          <p><strong>Visit time:</strong> {{ r.visitDate | date:'shortTime' }}</p>
+        <div class="top-bar">
+          <div class="filter-field">
+            <label>Doctor</label>
+            <input
+              type="text"
+              placeholder="Search doctor"
+              [(ngModel)]="nameSearch"
+              (input)="filterRecords()"
+            />
+          </div>
+
+          <div class="filter-field">
+            <label>Visit Date</label>
+            <input
+              type="date"
+              [(ngModel)]="dateSearch"
+              (change)="filterRecords()"
+            />
+          </div>
         </div>
       </div>
 
-      <div *ngIf="allRecords.length === 0" class="empty">No records available yet.</div>
+      <!-- RECORD CARDS -->
+      <div class="records-grid" *ngIf="paginatedRecords.length; else emptyRecords">
 
+        <article class="record-card" *ngFor="let r of paginatedRecords">
+
+          <div class="record-header">
+            <div class="record-icon">
+              🩺
+            </div>
+
+            <div>
+              <span class="record-badge">Visit Record</span>
+              <h3>{{ r.doctorName }}</h3>
+            </div>
+          </div>
+
+          <div class="record-body">
+
+            <div class="info-row">
+              <span>Diagnosis</span>
+              <strong>{{ r.diagnosis }}</strong>
+            </div>
+
+            <div class="info-row">
+              <span>Prescription</span>
+              <strong>{{ r.prescription }}</strong>
+            </div>
+
+            <div class="info-row notes-row">
+              <span>Notes</span>
+              <strong>{{ r.notes || 'No notes added' }}</strong>
+            </div>
+
+          </div>
+
+          <div class="record-footer">
+            <div>
+              <span>Visit Date</span>
+              <strong>{{ r.visitDate | date:'MMM d, y' }}</strong>
+            </div>
+
+            <div>
+              <span>Visit Time</span>
+              <strong>{{ r.visitDate | date:'shortTime' }}</strong>
+            </div>
+          </div>
+
+        </article>
+
+      </div>
+
+      <!-- EMPTY STATE -->
+      <ng-template #emptyRecords>
+        <div class="empty">
+          <div class="empty-icon">📭</div>
+          <h3>No health records found</h3>
+          <p>Your consultation history will appear here once records are available.</p>
+        </div>
+      </ng-template>
+
+      <!-- PAGINATION - ALWAYS VISIBLE -->
       <div class="pagination">
-        <button (click)="prevPage()" [disabled]="pageNumber === 1">Prev</button>
-        <span>Page {{ pageNumber }} of {{ totalPages }}</span>
-        <button (click)="nextPage()" [disabled]="pageNumber === totalPages">Next</button>
+        <button
+          class="page-btn"
+          (click)="prevPage()"
+          [disabled]="pageNumber === 1">
+          ‹ Back
+        </button>
+
+        <div class="page-indicator">
+          <span>Page</span>
+          <strong>{{ pageNumber }}</strong>
+          <span>of {{ totalPages || 1 }}</span>
+        </div>
+
+        <button
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="pageNumber === totalPages || totalPages === 0">
+          Next ›
+        </button>
       </div>
+
     </section>
-  </div>
+  </main>
 </div>

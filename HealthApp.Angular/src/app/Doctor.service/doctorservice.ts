@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
-export class doctorservice {
+export class DoctorService {
 
-  private baseUrl = 'https://localhost:7066/api/doctors';
+  private readonly baseUrl = 'https://localhost:7066/api/doctors';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getMyProfile() {
     return this.http.get<any>(`${this.baseUrl}/me`, {
@@ -17,7 +16,7 @@ export class doctorservice {
     });
   }
 
-  private getHeaders() {
+  private getHeaders(): { Authorization: string } {
     return {
       Authorization: `Bearer ${localStorage.getItem('token')}`
     };

@@ -25,9 +25,12 @@ namespace HealthApp.Api.Service.Impl
             var doctors = await _repo.getallAsync();
 
             bool exists = doctors != null &&
-                          doctors.Any(d =>
-                              !string.IsNullOrWhiteSpace(d.Email) &&
-                              d.Email.ToLower() == dto.Email!.ToLower());
+               doctors.Any(d =>
+                   !string.IsNullOrWhiteSpace(d.Email) &&
+                   string.Equals(
+                       d.Email,
+                       dto.Email,
+                       StringComparison.OrdinalIgnoreCase));
 
             if (exists)
             {
@@ -77,10 +80,13 @@ namespace HealthApp.Api.Service.Impl
             var doctors = await _repo.getallAsync();
 
             bool duplicate = doctors != null &&
-                             doctors.Any(d =>
-                                 d.DoctorId != id &&
-                                 !string.IsNullOrWhiteSpace(d.Email) &&
-                                 d.Email.ToLower() == doctorDto.Email!.ToLower());
+                 doctors.Any(d =>
+                     d.DoctorId != id &&
+                     !string.IsNullOrWhiteSpace(d.Email) &&
+                     string.Equals(
+                         d.Email,
+                         doctorDto.Email,
+                         StringComparison.OrdinalIgnoreCase));
 
             if (duplicate)
             {
@@ -105,7 +111,7 @@ namespace HealthApp.Api.Service.Impl
             return _mapper.Map<DoctorDto>(updatedDoctor);
         }
 
-        private void ValidateDoctorId(int id)
+        private static void ValidateDoctorId(int id)
         {
             if (id <= 0)
             {
@@ -113,7 +119,7 @@ namespace HealthApp.Api.Service.Impl
             }
         }
 
-        private void ValidateDoctorDto(DoctorDto dto)
+        private static void ValidateDoctorDto(DoctorDto dto)
         {
             if (dto == null)
             {

@@ -1,40 +1,221 @@
-.sidebar {
-  width: 220px;
-  background: #1e293b;
-  color: white;
+/* ================================
+   PATIENT STYLE SIDEBAR - FIXED
+================================ */
+
+/* ANGULAR COMPONENT HOST */
+:host {
+  display: block;
+  width: 287px;
+  min-width: 287px;
+  flex: 0 0 287px;
   height: 100vh;
-  padding: 20px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 100%;
+  min-height: 100vh;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  padding: 32px 14px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #0f1b2d 0%, #10243a 55%, #0b1f33 100%);
+  color: #ffffff;
+  font-family: "Segoe UI", Arial, sans-serif;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-shadow: 8px 0 28px rgba(15, 23, 42, 0.22);
+}
+
+/* BRAND */
+.brand {
+  padding: 10px 0 28px;
+  margin-bottom: 18px;
 }
 
 .brand h2 {
   margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  white-space: nowrap;
 }
 
 .brand span {
-  color: #38bdf8;
+  color: #22d3c5;
 }
 
-ul {
+.brand p {
+  margin: 10px 0 0;
+  font-size: 16px;
+  color: #a9bdd4;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+/* MENU LIST */
+.sidebar ul {
   list-style: none;
   padding: 0;
-  margin-top: 30px;
+  margin: 0;
 }
 
-li {
-  padding: 12px;
+/* MENU ITEM */
+.sidebar li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  margin-bottom: 12px;
+  padding: 0 20px;
+  box-sizing: border-box;
+  border-radius: 13px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 500;
   cursor: pointer;
-  border-radius: 6px;
+  transition: all 0.25s ease;
+  user-select: none;
+  white-space: nowrap;
 }
 
-li:hover {
-  background: #334155;
+/* ICON */
+.sidebar li span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
 }
 
-.active {
-  background: #0ea5e9;
+/* HOVER */
+.sidebar li:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateX(3px);
 }
 
-.logout {
-  margin-top: 20px;
-  color: #f87171;
+/* ACTIVE */
+.sidebar li.active,
+.sidebar .active {
+  background: linear-gradient(135deg, #149f8f, #1fb5a5);
+  color: #ffffff;
+  font-weight: 800;
+  box-shadow: 0 12px 28px rgba(20, 159, 143, 0.28);
+}
+
+/* LOGOUT */
+.sidebar .logout {
+  margin-top: 36px;
+  color: #ffffff;
+  background: rgba(87, 36, 52, 0.8);
+  border: 1px solid rgba(248, 113, 113, 0.12);
+}
+
+.sidebar .logout:hover {
+  background: rgba(108, 45, 63, 0.95);
+  color: #ffffff;
+  transform: translateX(3px);
+}
+
+/* REMOVE EXTRA INDICATOR */
+.sidebar li::before {
+  display: none;
+}
+
+/* SCROLLBAR */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* RESPONSIVE */
+@media (max-width: 760px) {
+  :host {
+    width: 100%;
+    min-width: 100%;
+    flex: none;
+    height: auto;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    position: relative;
+    padding: 20px 14px;
+  }
+
+  .brand {
+    padding-bottom: 18px;
+    margin-bottom: 14px;
+  }
+
+  .brand h2 {
+    font-size: 22px;
+  }
+
+  .brand p {
+    font-size: 14px;
+  }
+
+  .sidebar li {
+    font-size: 16px;
+    min-height: 48px;
+    padding: 0 16px;
+  }
+
+  .sidebar .logout {
+    margin-top: 16px;
+  }
+}
+
+.dashboard,
+.records-dashboard {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.dashboard app-sidebar,
+.records-dashboard app-sidebar {
+  display: block;
+  width: 287px;
+  min-width: 287px;
+  flex: 0 0 287px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  width: calc(100% - 287px);
+  box-sizing: border-box;
+}
+
+@media (max-width: 760px) {
+  .dashboard,
+  .records-dashboard {
+    flex-direction: column;
+  }
+
+  .dashboard app-sidebar,
+  .records-dashboard app-sidebar {
+    width: 100%;
+    min-width: 100%;
+    flex: none;
+  }
+
+  .content {
+    width: 100%;
+  }
 }

@@ -3,6 +3,7 @@ using HealthApp.Shared.Dto;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace HealthApp.Blazor.Components.service.Impl
 {
@@ -17,7 +18,7 @@ namespace HealthApp.Blazor.Components.service.Impl
             _authService = authService;
         }
 
-        private async Task PrepareRequest()
+        private async Task PrepareRequestAsync()
         {
             await _authService.InitializeAsync();
 
@@ -30,144 +31,101 @@ namespace HealthApp.Blazor.Components.service.Impl
             }
         }
 
-        private async Task HandleUnauthorized(HttpResponseMessage response)
+        private async Task HandleUnauthorizedAsync(HttpResponseMessage response)
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized)
             {
                 await _authService.LogoutAsync();
-                throw new Exception("Session expired. Please login again.");
+                throw new UnauthorizedAccessException("Session expired. Please login again.");
             }
         }
 
-        public async Task<PagedResponse<AppointmentDto>> GetPagedAppointmentsAsync(
-            int pageNumber,
-            int pageSize)
+        private async Task<T> GetAsync<T>(string url, T fallbackValue)
         {
             try
             {
-                await PrepareRequest();
+                await PrepareRequestAsync();
 
-                var response = await _httpClient.GetAsync(
-                    $"/api/appointments/paged?pageNumber={pageNumber}&pageSize={pageSize}");
+                using var response = await _httpClient.GetAsync(url);
 
-                await HandleUnauthorized(response);
+                await HandleUnauthorizedAsync(response);
 
                 if (!response.IsSuccessStatusCode)
-                    return new PagedResponse<AppointmentDto>();
+                {
+                    return fallbackValue;
+                }
 
-                return await response.Content.ReadFromJsonAsync<PagedResponse<AppointmentDto>>()
-                       ?? new PagedResponse<AppointmentDto>();
+                return await response.Content.ReadFromJsonAsync<T>() ?? fallbackValue;
             }
-            catch
+            catch (HttpRequestException)
             {
-                return new PagedResponse<AppointmentDto>();
+                return fallbackValue;
+            }
+            catch (NotSupportedException)
+            {
+                return fallbackValue;
+            }
+            catch (JsonException)
+            {
+                return fallbackValue;
             }
         }
 
-        public async Task<PagedResponse<AppointmentDto>> GetFilteredAppointmentsAsync(
+        public Task<PagedResponse<AppointmentDto>> GetPagedAppointmentsAsync(
+            int pageNumber,
+            int pageSize)
+        {
+            var url = $"/api/appointments/paged?pageNumber={pageNumber}&pageSize={pageSize}";
+
+            return GetAsync(url, new PagedResponse<AppointmentDto>());
+        }
+
+        public Task<PagedResponse<AppointmentDto>> GetFilteredAppointmentsAsync(
             int? patientId,
             int? doctorId,
             int pageNumber,
             int pageSize)
         {
-            try
-            {
-                await PrepareRequest();
+            var url =
+                $"/api/appointments/filter-paged?patientId={patientId}" +
+                $"&doctorId={doctorId}" +
+                $"&pageNumber={pageNumber}" +
+                $"&pageSize={pageSize}";
 
-                var url =
-                    $"/api/appointments/filter-paged?patientId={patientId}" +
-                    $"&doctorId={doctorId}" +
-                    $"&pageNumber={pageNumber}" +
-                    $"&pageSize={pageSize}";
-
-                var response = await _httpClient.GetAsync(url);
-
-                await HandleUnauthorized(response);
-
-                if (!response.IsSuccessStatusCode)
-                    return new PagedResponse<AppointmentDto>();
-
-                return await response.Content.ReadFromJsonAsync<PagedResponse<AppointmentDto>>()
-                       ?? new PagedResponse<AppointmentDto>();
-            }
-            catch
-            {
-                return new PagedResponse<AppointmentDto>();
-            }
+            return GetAsync(url, new PagedResponse<AppointmentDto>());
         }
 
-        public async Task<AppointmentDto?> GetAppointmentByIdAsync(int id)
+        public Task<AppointmentDto?> GetAppointmentByIdAsync(int id)
         {
-            try
-            {
-                await PrepareRequest();
+            var url = $"/api/appointments/{id}";
 
-                var response = await _httpClient.GetAsync($"/api/appointments/{id}");
-
-                await HandleUnauthorized(response);
-
-                if (!response.IsSuccessStatusCode)
-                    return null;
-
-                return await response.Content.ReadFromJsonAsync<AppointmentDto>();
-            }
-            catch
-            {
-                return null;
-            }
+            return GetAsync<AppointmentDto?>(url, null);
         }
 
-        public async Task<List<string>> CheckDoctorAvailabilityAsync(int doctorId, DateTime date)
+        public Task<List<string>> CheckDoctorAvailabilityAsync(int doctorId, DateTime date)
         {
-            try
-            {
-                await PrepareRequest();
+            var url = $"/api/appointments/doctor/{doctorId}/availability?date={date:yyyy-MM-dd}";
 
-                var response = await _httpClient.GetAsync(
-                    $"/api/appointments/doctor/{doctorId}/availability?date={date:yyyy-MM-dd}");
-
-                await HandleUnauthorized(response);
-
-                if (!response.IsSuccessStatusCode)
-                    return new List<string>();
-
-                return await response.Content.ReadFromJsonAsync<List<string>>()
-                       ?? new List<string>();
-            }
-            catch
-            {
-                return new List<string>();
-            }
+            return GetAsync(url, new List<string>());
         }
 
-        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync(
-            int doctorId, DateTime fromDate, DateTime toDate)
+        public Task<List<AppointmentDto>> GetUpcomingAppointmentsAsync(
+            int doctorId,
+            DateTime fromDate,
+            DateTime toDate)
         {
-            try
-            {
-                await PrepareRequest();
+            var url =
+                $"/api/appointments/doctor/{doctorId}/upcoming" +
+                $"?fromDate={fromDate:yyyy-MM-dd}" +
+                $"&toDate={toDate:yyyy-MM-dd}";
 
-                var response = await _httpClient.GetAsync(
-                    $"/api/appointments/doctor/{doctorId}/upcoming?fromDate={fromDate:yyyy-MM-dd}&toDate={toDate:yyyy-MM-dd}");
-
-                await HandleUnauthorized(response);
-
-                if (!response.IsSuccessStatusCode)
-                    return new List<AppointmentDto>();
-
-                return await response.Content.ReadFromJsonAsync<List<AppointmentDto>>()
-                       ?? new List<AppointmentDto>();
-            }
-            catch
-            {
-                return new List<AppointmentDto>();
-            }
+            return GetAsync(url, new List<AppointmentDto>());
         }
 
         public async Task<int> GetAppointmentCountAsync()
         {
-            var res = await GetPagedAppointmentsAsync(1, 1);
-            return res.TotalRecords;
+            var response = await GetPagedAppointmentsAsync(1, 1);
+            return response.TotalRecords;
         }
     }
 }

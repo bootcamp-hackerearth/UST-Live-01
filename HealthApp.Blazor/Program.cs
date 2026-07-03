@@ -1,3 +1,4 @@
+
 using HealthApp.Blazor.Components;
 using HealthApp.Blazor.Components.service.Impl;
 using HealthApp.Blazor.Components.service.Interface;
@@ -17,10 +18,11 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 
 
+var apiBaseUrl = builder.Configuration["AppUrls:ApiBaseUrl"];
 
 builder.Services.AddScoped(sp => new HttpClient
 {
-    BaseAddress = new Uri("https://localhost:7066/")
+    BaseAddress = new Uri(apiBaseUrl!)
 });
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -38,4 +40,4 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
-app.Run();
+await app.RunAsync();

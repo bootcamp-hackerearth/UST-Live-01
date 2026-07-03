@@ -27,13 +27,15 @@ namespace HealthApp.Api.Service.Impl
             _mapper = mapper;
         }
 
+        private const string AppointmentEntity = "Appointment";
+
         public async Task<object> Add(AppointmentDto dto, string identityUserId)
         {
             var patient = await _patientRepository
                 .GetByIdentityUserIdAsync(identityUserId);
 
             if (patient == null)
-                throw new Exception("Patient not found");
+                throw new EntityNotFoundException("Patient", 0);
 
             var appointment = new Appointment
             {
@@ -44,32 +46,179 @@ namespace HealthApp.Api.Service.Impl
                 Status = "Pending"
             };
 
-
-            var isBooked = await _repo.IsSlotBookedAsync(dto.DoctorId,
-                dto.ScheduledDate,dto.TimeSlot);
+            var isBooked = await _repo.IsSlotBookedAsync(
+                dto.DoctorId,
+                dto.ScheduledDate,
+                dto.TimeSlot);
 
             if (isBooked)
                 throw new AppointmentRuleException("Slot already booked");
 
             await _repo.addAsync(appointment);
-            return new { message = "Appointment booked successfully" };
+
+            return new
+            {
+                message = "Appointment booked successfully"
+            };
         }
 
-
-        public async Task<AppointmentDto> GetAppointmentById(int id)
+        public async Task<AppointmentDto> GetAppointmentById(int appointmentId)
         {
-            var a = await _repo.getbyidAsync(id);
+            var appointment = await _repo.getbyidAsync(appointmentId);
 
-            if (a == null)
-                throw new EntityNotFoundException("Appointment", id);
+            if (appointment == null)
+                throw new EntityNotFoundException(
+                    AppointmentEntity,
+                    appointmentId);
 
-            await LoadNavigation(a);
+            await LoadNavigation(appointment);
 
-            return _mapper.Map<AppointmentDto>(a);
+            return _mapper.Map<AppointmentDto>(appointment);
+        }
+
+        public async Task<AppointmentDto> CancelAppointment(
+            int appointmentId,
+            string reason)
+        {
+            if (string.IsNullOrWhiteSpace(reason))
+                throw new AppointmentRuleException("Reason required");
+
+            var saved =
+                await _repo.CancelAppointmentAsync(
+                    appointmentId,
+                    reason);
+
+            if (saved == null)
+                throw new EntityNotFoundException(
+                    AppointmentEntity,
+                    appointmentId);
+
+            return _mapper.Map<AppointmentDto>(saved);
+        }
+
+        public async Task<AppointmentDto> ConfirmAppointment(
+            int appointmentId)
+        {
+            var saved =
+                await _repo.UpdateStatusAsync(
+                    appointmentId,
+                    "Confirmed");
+
+            if (saved == null)
+                throw new EntityNotFoundException(
+                    AppointmentEntity,
+                    appointmentId);
+
+            return _mapper.Map<AppointmentDto>(saved);
+        }
+
+        public async Task<AppointmentDto> CompleteAppointment(
+            int appointmentId)
+        {
+            var saved =
+                await _repo.UpdateStatusAsync(
+                    appointmentId,
+                    "Completed");
+
+            if (saved == null)
+                throw new EntityNotFoundException(
+                    AppointmentEntity,
+                    appointmentId);
+
+            return _mapper.Map<AppointmentDto>(saved);
+        }
+
+        public async Task<List<string>> CheckDoctorAvailability(
+            int doctorId,
+            DateTime date)
+        {
+            var list = await _repo.GetBookedSlotsAsync(
+                doctorId,
+                date);
+
+            return list ?? new List<string>();
+        }
+
+        public async Task<bool> IsSlotBooked(
+            int doctorId,
+            DateTime date,
+            string timeSlot)
+        {
+            return await _repo.IsSlotBookedAsync(
+                doctorId,
+                date,
+                timeSlot);
+        }
+
+        public async Task<List<AppointmentDto>>
+            GetUpcomingAppointmentsByDoctor(
+                int doctorId,
+                DateTime fromDate,
+                DateTime toDate)
+        {
+            var list =
+                await _repo.GetUpcomingByDoctorAsync(
+                    doctorId,
+                    fromDate,
+                    toDate);
+
+            return _mapper.Map<List<AppointmentDto>>(
+                list ?? new List<Appointment>());
+        }
+
+        private async Task LoadNavigation(Appointment appointment)
+        {
+            if (appointment.Patient == null)
+            {
+                appointment.Patient =
+                    await _patientRepository.getbyidAsync(
+                        appointment.PatientId);
+            }
+
+            if (appointment.Doctor == null)
+            {
+                appointment.Doctor =
+                    await _doctorRepository.getbyidAsync(
+                        appointment.DoctorId);
+            }
+        }
+
+        public async Task<List<AppointmentDto>>
+            GetAppointmentsByUserAsync(string identityUserId)
+        {
+            var patient =
+                await _patientRepository
+                    .GetByIdentityUserIdAsync(identityUserId);
+
+            if (patient == null)
+                throw new EntityNotFoundException("Patient", 0);
+
+            var list =
+                await _repo.GetByPatientIdAsync(patient.PatientId);
+
+            return _mapper.Map<List<AppointmentDto>>(
+                list ?? new List<Appointment>());
+        }
+
+        public async Task<List<AppointmentDto>>
+            GetAppointmentsByDoctorAsync(string identityUserId)
+        {
+            var doctor =
+                await _doctorRepository
+                    .GetByIdentityUserIdAsync(identityUserId);
+
+            if (doctor == null)
+                throw new EntityNotFoundException("Doctor", 0);
+
+            var list =
+                await _repo.GetByDoctorIdAsync(doctor.DoctorId);
+
+            return _mapper.Map<List<AppointmentDto>>(
+                list ?? new List<Appointment>());
         }
 
         public async Task<(List<AppointmentDto> Items, int TotalCount)>
-            GetPagedAppointments(int pageNumber, int pageSize)
+    GetPagedAppointments(int pageNumber, int pageSize)
         {
             if (pageNumber <= 0)
                 throw new AppointmentRuleException("Invalid page number");
@@ -78,26 +227,32 @@ namespace HealthApp.Api.Service.Impl
                 throw new AppointmentRuleException("Invalid page size");
 
             var (items, total) =
-                await _repo.GetPagedAppointmentsAsync(pageNumber, pageSize);
+                await _repo.GetPagedAppointmentsAsync(
+                    pageNumber,
+                    pageSize);
 
             return (_mapper.Map<List<AppointmentDto>>(items), total);
         }
 
+
         public async Task<(List<AppointmentDto> Items, int TotalCount)>
-            GetAppointmentsByPatientAndDoctorPaged(
-                int? patientId,
-                int? doctorId,
-                int pageNumber,
-                int pageSize)
+    GetAppointmentsByPatientAndDoctorPaged(
+        int? patientId,
+        int? doctorId,
+        int pageNumber,
+        int pageSize)
         {
             if (!patientId.HasValue && !doctorId.HasValue)
-                throw new AppointmentRuleException("Provide patient or doctor");
+                throw new AppointmentRuleException(
+                    "Provide patient or doctor");
 
             if (pageNumber <= 0)
-                throw new AppointmentRuleException("Invalid page number");
+                throw new AppointmentRuleException(
+                    "Invalid page number");
 
             if (pageSize <= 0)
-                throw new AppointmentRuleException("Invalid page size");
+                throw new AppointmentRuleException(
+                    "Invalid page size");
 
             var (items, total) =
                 await _repo.GetByPatientAndDoctor(
@@ -109,90 +264,7 @@ namespace HealthApp.Api.Service.Impl
             return (_mapper.Map<List<AppointmentDto>>(items), total);
         }
 
-        public async Task<AppointmentDto> CancelAppointment(int id, string reason)
-        {
-            if (string.IsNullOrWhiteSpace(reason))
-                throw new AppointmentRuleException("Reason required");
-
-            var saved = await _repo.CancelAppointmentAsync(id, reason);
-
-            if (saved == null)
-                throw new EntityNotFoundException("Appointment", id);
-
-            return _mapper.Map<AppointmentDto>(saved);
-        }
-
-        public async Task<AppointmentDto> ConfirmAppointment(int id)
-        {
-            var saved = await _repo.UpdateStatusAsync(id, "Confirmed");
-
-            if (saved == null)
-                throw new EntityNotFoundException("Appointment", id);
-
-            return _mapper.Map<AppointmentDto>(saved);
-        }
-
-        public async Task<AppointmentDto> CompleteAppointment(int id)
-        {
-            var saved = await _repo.UpdateStatusAsync(id, "Completed");
-
-            if (saved == null)
-                throw new EntityNotFoundException("Appointment", id);
-
-            return _mapper.Map<AppointmentDto>(saved);
-        }
-
-        public async Task<List<string>> CheckDoctorAvailability(int doctorId, DateTime date)
-        {
-            var list = await _repo.GetBookedSlotsAsync(doctorId, date);
-            return list ?? new List<string>();
-        }
-
-        public async Task<bool> IsSlotBooked(int doctorId, DateTime date, string timeSlot)
-        {
-            return await _repo.IsSlotBookedAsync(doctorId, date, timeSlot);
-        }
-
-        public async Task<List<AppointmentDto>> GetUpcomingAppointmentsByDoctor(
-            int doctorId, DateTime from, DateTime to)
-        {
-            var list = await _repo.GetUpcomingByDoctorAsync(doctorId, from, to);
-
-            return _mapper.Map<List<AppointmentDto>>(list ?? new List<Appointment>());
-        }
-
-        private async Task LoadNavigation(Appointment a)
-        {
-            if (a.Patient == null)
-                a.Patient = await _patientRepository.getbyidAsync(a.PatientId);
-
-            if (a.Doctor == null)
-                a.Doctor = await _doctorRepository.getbyidAsync(a.DoctorId);
-        }
-
-        public async Task<List<AppointmentDto>> GetAppointmentsByUserAsync(string identityUserId)
-        {
-            var patient = await _patientRepository.GetByIdentityUserIdAsync(identityUserId);
-
-            if (patient == null)
-                throw new EntityNotFoundException("Patient", 0);
-
-            var list = await _repo.GetByPatientIdAsync(patient.PatientId);
-
-            return _mapper.Map<List<AppointmentDto>>(list ?? new List<Appointment>());
-        }
 
 
-        public async Task<List<AppointmentDto>> GetAppointmentsByDoctorAsync(string identityUserId)
-        {
-            var doctor = await _doctorRepository.GetByIdentityUserIdAsync(identityUserId);
-
-            if (doctor == null)
-                throw new EntityNotFoundException("Doctor", 0);
-
-            var list = await _repo.GetByDoctorIdAsync(doctor.DoctorId);
-
-            return _mapper.Map<List<AppointmentDto>>(list ?? new List<Appointment>());
-        }
     }
 }

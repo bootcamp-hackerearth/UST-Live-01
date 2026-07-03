@@ -1,277 +1,437 @@
-/* ✅ BASE */
+/* ================================
+   PATIENT STYLE HEALTH RECORDS UI
+================================ */
+
+/* BASE */
 .records-dashboard {
   display: flex;
   min-height: 100vh;
-  background: #f4f6f8;
-  font-family: "Segoe UI", Arial;
+  background: #f3f7fb;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #071126;
 }
 
+/* SIDEBAR SPACE */
 .sidebar {
-  width: 240px;
+  width: 287px;
+  flex-shrink: 0;
+  background: #0f1b2d;
 }
 
-/* ✅ CONTENT */
+/* CONTENT */
 .content {
   flex: 1;
-  padding: 24px 28px;
+  min-height: 100vh;
+  padding: 38px 36px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #f6f9fd 0%, #eef6ff 45%, #eefdff 100%);
+  overflow-x: hidden;
 }
 
-/* ✅ HEADER */
+/* HEADER */
 header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 34px;
 }
 
 .eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: #6b7280;
+  margin: 0 0 10px;
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  color: #071126;
   text-transform: uppercase;
+  font-weight: 900;
 }
 
 header h1 {
-  font-size: 22px;
-  color: #111827;
-  margin: 6px 0;
+  margin: 0 0 10px;
+  font-size: 38px;
+  line-height: 1.1;
+  color: #071126;
+  font-weight: 950;
+  letter-spacing: -0.04em;
 }
 
 .subtext {
-  font-size: 13px;
-  color: #6b7280;
+  margin: 0;
+  font-size: 16px;
+  color: #1f2937;
 }
 
-/* ✅ BUTTON */
+/* ADD BUTTON */
 .add-btn {
-  padding: 8px 14px;
   border: none;
-  border-radius: 6px;
-  background: #1f2937;
-  color: white;
-  font-size: 13px;
+  outline: none;
+  padding: 15px 28px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 18px 34px rgba(37, 99, 235, 0.28);
+  transition: all 0.25s ease;
+  white-space: nowrap;
 }
 
 .add-btn:hover {
-  background: #374151;
+  transform: translateY(-3px);
+  box-shadow: 0 24px 42px rgba(37, 99, 235, 0.34);
 }
 
-/* ✅ RECORD LIST */
+.add-btn:active {
+  transform: scale(0.97);
+}
+
+/* RECORD LIST */
 .records-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  align-items: start;
 }
 
-/* ✅ RECORD CARD */
+/* RECORD CARD */
 .record-card {
+  position: relative;
+  min-height: 125px;
   display: flex;
   justify-content: space-between;
-  padding: 14px 16px;
-  border-bottom: 1px solid #e5e7eb;
-  background: white;
+  gap: 18px;
+  padding: 28px 24px 24px 30px;
+  background: #ffffff;
+  border: 1px solid #e4edf7;
+  border-radius: 24px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.07);
+  transition: all 0.25s ease;
+  overflow: hidden;
 }
 
+.record-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+  width: 5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #2563eb, #16c7b7);
+}
+
+.record-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 26px 52px rgba(15, 23, 42, 0.12);
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+/* RECORD TEXT */
 .record-card strong {
-  font-size: 14px;
-  color: #111827;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 19px;
+  color: #071126;
+  font-weight: 950;
+  letter-spacing: -0.02em;
 }
 
 .record-card p {
-  font-size: 12px;
-  color: #6b7280;
-  margin: 2px 0;
+  margin: 5px 0;
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
 }
 
-/* ✅ META */
-.meta {
-  text-align: right;
-}
-
-/* ✅ MODAL */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.35);
-  display: flex;
-  justify-content: center;
+/* DATE BADGE */
+.record-card .date {
+  display: inline-flex;
   align-items: center;
-}
-
-.modal-box {
-  background: white;
-  padding: 18px;
-  border-radius: 6px;
-  width: 340px;
-}
-
-.modal-box h2 {
-  margin-bottom: 10px;
-}
-
-/* ✅ INPUT */
-.modal-box input {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
+  margin-top: 14px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: #edf6ff;
+  color: #2563eb;
   font-size: 13px;
+  font-weight: 900;
 }
 
-/* ✅ ACTIONS */
-.actions {
+/* VIEW BUTTON AREA */
+.meta {
   display: flex;
-  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
-.actions button {
-  flex: 1;
-  padding: 6px;
-  border-radius: 4px;
-  border: none;
-  background: #1f2937;
-  color: white;
-}
-
-.actions .cancel {
-  background: #e5e7eb;
-  color: #111827;
-}
-.records-dashboard {
-  display: flex;
-  min-height: 100vh;
-  background: #f4f6f8;
-}
-
-.content {
-  flex: 1;
-  padding: 24px;
-}
-
-/* ✅ HEADER */
-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.eyebrow {
-  font-size: 11px;
-  color: #6b7280;
-  text-transform: uppercase;
-}
-
-header h1 {
-  font-size: 22px;
-  color: #111827;
-}
-
-.subtext {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-/* ✅ BUTTON */
-.add-btn {
-  background: #111827;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-}
-
-/* ✅ LIST */
-.record-card {
-  display: flex;
-  justify-content: space-between;
-  padding: 14px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.record-card strong {
-  font-size: 14px;
-}
-
-.record-card p {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-/* ✅ BUTTON */
+/* VIEW BUTTON */
 .meta button {
-  border: 1px solid #111827;
-  background: white;
-  padding: 5px 10px;
+  border: 1px solid #cbd7e6;
+  background: #ffffff;
+  color: #071126;
+  padding: 10px 18px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.22s ease;
 }
 
 .meta button:hover {
-  background: #111827;
-  color: white;
+  background: #071126;
+  color: #ffffff;
+  border-color: #071126;
+  box-shadow: 0 12px 24px rgba(7, 17, 38, 0.22);
 }
 
-/* ✅ MODAL */
+/* MODAL BACKDROP */
 .modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  z-index: 1000;
+  background: rgba(7, 17, 38, 0.58);
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.modal-box {
-  width: 380px;
-  background: white;
   padding: 20px;
-  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
 }
 
+/* MODAL BOX */
+.modal-box {
+  width: 455px;
+  max-width: 100%;
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 26px;
+  border: 1px solid #e4edf7;
+  box-shadow: 0 32px 85px rgba(7, 17, 38, 0.35);
+  animation: scaleIn 0.22s ease;
+}
+
+.modal-box h2 {
+  margin: 0 0 20px;
+  font-size: 24px;
+  color: #071126;
+  font-weight: 950;
+  letter-spacing: -0.03em;
+}
+
+.modal-box p {
+  margin: 11px 0;
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.65;
+}
+
+.modal-box p strong {
+  color: #071126;
+}
+
+/* INPUTS */
 .modal-box input,
 .modal-box textarea {
   width: 100%;
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  box-sizing: border-box;
+  margin-bottom: 13px;
+  padding: 13px 15px;
+  border: 1px solid #d5e0ec;
+  border-radius: 16px;
+  font-size: 14px;
+  color: #071126;
+  background: #f8fbff;
+  outline: none;
+  transition: all 0.22s ease;
 }
 
+.modal-box textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.modal-box input:focus,
+.modal-box textarea:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.modal-box input::placeholder,
+.modal-box textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* ACTION BUTTONS */
 .actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .actions button {
   flex: 1;
-  background: #111827;
-  color: white;
-  padding: 8px;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #2563eb, #14b8a6);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(37, 99, 235, 0.25);
 }
 
 .actions .cancel {
-  background: #e5e7eb;
-  color: #111827;
+  background: #e8eef5;
+  color: #071126;
 }
+
+.actions .cancel:hover {
+  background: #d8e2ec;
+  box-shadow: none;
+}
+
+/* PAGINATION */
 .pagination {
-  margin-top: 16px;
+  margin: 32px auto 0;
   display: flex;
   justify-content: center;
-  gap: 12px;
   align-items: center;
+  gap: 14px;
+  width: fit-content;
+  padding: 15px 20px;
+  background: #ffffff;
+  border: 1px solid #e4edf7;
+  border-radius: 20px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
 }
 
 .pagination button {
-  padding: 6px 12px;
-  border: 1px solid #111827;
-  background: white;
-  border-radius: 6px;
+  padding: 10px 18px;
+  border: 1px solid #cbd7e6;
+  background: #ffffff;
+  color: #071126;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 900;
   cursor: pointer;
+  transition: all 0.22s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: #071126;
+  color: #ffffff;
+  border-color: #071126;
 }
 
 .pagination button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 .pagination span {
-  font-size: 13px;
-  color: #374151;
+  font-size: 14px;
+  color: #334155;
+  font-weight: 900;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* RESPONSIVE */
+@media (max-width: 1350px) {
+  .records-list {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .records-dashboard {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .content {
+    padding: 24px;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .add-btn {
+    width: 100%;
+  }
+
+  .records-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .content {
+    padding: 16px;
+  }
+
+  header h1 {
+    font-size: 28px;
+  }
+
+  .subtext {
+    font-size: 14px;
+  }
+
+  .record-card {
+    flex-direction: column;
+    border-radius: 20px;
+  }
+
+  .meta {
+    justify-content: flex-start;
+  }
+
+  .meta button {
+    width: 100%;
+  }
+
+  .pagination {
+    width: 100%;
+    box-sizing: border-box;
+    flex-wrap: wrap;
+  }
+
+  .modal-box {
+    padding: 22px;
+    border-radius: 22px;
+  }
 }

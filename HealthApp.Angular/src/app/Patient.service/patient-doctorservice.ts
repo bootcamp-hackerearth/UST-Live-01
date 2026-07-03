@@ -13,7 +13,6 @@ export class DoctorService {
 
   constructor(private http: HttpClient) {}
 
-  // Public for users
 
   getActiveDoctors(pageNumber: number = 1, pageSize: number = 10): Observable<any> {
     return this.http.get(

@@ -38,6 +38,8 @@ form: RegisterForm = {
     this.authService.register(this.form).subscribe({
       next: (res) => {
         alert(res.message);
+        window.location.href = '/login';
+        
       },
       error: (err) => {
         alert(err.error);  

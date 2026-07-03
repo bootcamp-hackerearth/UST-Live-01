@@ -13,13 +13,11 @@ export class HealthRecordService {
 
   constructor(private http: HttpClient) {}
 
-  // User
 
   getMyRecords(): Observable<HealthRecord[]> {
     return this.http.get<HealthRecord[]>(`${this.baseUrl}/me`);
   }
 
-  // Doctor
 
   getDoctorRecords(): Observable<HealthRecord[]> {
     return this.http.get<HealthRecord[]>(`${this.baseUrl}/doctor/me`);

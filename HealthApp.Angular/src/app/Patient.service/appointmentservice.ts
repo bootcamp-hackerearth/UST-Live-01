@@ -22,7 +22,6 @@ export class AppointmentService {
 
   }
 
-  // GET MY APPOINTMENTS
   getMyAppointments(): Observable<any[]> {
     return this.http.get<any[]>(
       `${this.baseUrl}/me`,
@@ -30,7 +29,6 @@ export class AppointmentService {
     );
   }
 
-  //  BOOK APPOINTMENT
   bookAppointment(data: {
     doctorId: number;
     scheduledDate: string;
@@ -46,7 +44,6 @@ export class AppointmentService {
     );
   }
 
-  //  CANCEL APPOINTMENT
   cancelAppointment(id: number, reason: string): Observable<any> {
     return this.http.put(
       `${this.baseUrl}/${id}/cancel?reason=${encodeURIComponent(reason)}`,
@@ -55,7 +52,6 @@ export class AppointmentService {
     );
   }
 
-  // CHECK SLOT AVAILABILITY
   checkDoctorAvailability(doctorId: number, date: Date): Observable<string[]> {
     return this.http.get<string[]>(
       `${this.baseUrl}/doctor/${doctorId}/availability?date=${date.toISOString()}`,

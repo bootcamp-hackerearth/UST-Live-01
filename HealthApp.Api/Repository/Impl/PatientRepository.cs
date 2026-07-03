@@ -30,8 +30,12 @@ namespace HealthApp.Api.Repository.Impl
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                query = query.Where(p => p.FullName.Contains(search) ||
-                    p.Email.Contains(search) ||  p.PatientId.ToString().Contains(search));
+
+                query = query.Where(p =>
+                    (p.FullName != null && p.FullName.Contains(search)) ||
+                    (p.Email != null && p.Email.Contains(search)) ||
+                    p.PatientId.ToString().Contains(search));
+
             }
 
             var totalCount = await query.CountAsync(cd);
@@ -55,9 +59,15 @@ namespace HealthApp.Api.Repository.Impl
                 query = query.Where(p => p.PatientId != excludeId.Value);
             }
 
+
             return await query.AnyAsync(p =>
                 p.Email != null &&
-                p.Email.ToLower() == email.ToLower(), cd);
+                string.Equals(
+                    p.Email,
+                    email,
+                    StringComparison.OrdinalIgnoreCase),
+                cd);
+
         }
     }
 

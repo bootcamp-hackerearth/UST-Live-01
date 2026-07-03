@@ -6,9 +6,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class AppointmentService {
 
-  private baseUrl = 'https://localhost:7066/api/appointments';
+  private readonly baseUrl = 'https://localhost:7066/api/appointments';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
