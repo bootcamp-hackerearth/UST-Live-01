@@ -1,5 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @implements IDisposable
+
 @inject AuthService AuthService
 @inject TokenService TokenService
 @inject NavigationManager NavigationManager
@@ -23,8 +24,9 @@
                     <span>@currentDate</span>
                     <strong>@currentTime</strong>
                 </div>
+
                 <div class="axis-profile-menu" @onclick:stopPropagation="true">
-                
+
                     <button type="button"
                             class="axis-profile-btn"
                             @onclick="ToggleProfileMenu">
@@ -72,6 +74,403 @@
     </main>
 
 </div>
+
+<style>
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    .axis-admin-shell {
+        min-height: 100vh;
+        display: flex;
+        background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 30%), linear-gradient(135deg, #020617, #0f172a);
+        overflow-x: hidden;
+    }
+
+        .axis-admin-shell aside,
+        .axis-admin-shell .axis-sidebar,
+        .axis-admin-shell .admin-sidebar,
+        .axis-admin-shell .sidebar {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            overflow: hidden !important;
+            z-index: 1000;
+            scrollbar-width: none !important;
+        }
+
+            .axis-admin-shell aside::-webkit-scrollbar,
+            .axis-admin-shell .axis-sidebar::-webkit-scrollbar,
+            .axis-admin-shell .admin-sidebar::-webkit-scrollbar,
+            .axis-admin-shell .sidebar::-webkit-scrollbar {
+                display: none !important;
+            }
+
+    .axis-main-area {
+        width: calc(100% - 300px);
+        margin-left: 300px;
+        min-height: 100vh;
+        padding: 16px 18px 22px;
+        overflow-x: hidden;
+    }
+
+    .axis-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 900;
+        min-height: 92px;
+        padding: 18px 24px;
+        border-radius: 28px;
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.22), transparent 30%), rgba(15, 23, 42, 0.88);
+        backdrop-filter: blur(16px);
+        color: #ffffff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 18px 45px rgba(2, 6, 23, 0.24);
+    }
+
+    .axis-top-label {
+        display: block;
+        margin-bottom: 8px;
+        color: #67e8f9;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+    }
+
+    .axis-topbar h2 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.1;
+    }
+
+    .axis-topbar p {
+        margin: 8px 0 0;
+        color: #cbd5e1;
+        font-weight: 700;
+    }
+
+    .axis-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .axis-date-time-chip {
+        min-width: 170px;
+        padding: 13px 18px;
+        border-radius: 20px;
+        background: rgba(148, 163, 184, 0.14);
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        text-align: center;
+    }
+
+        .axis-date-time-chip span,
+        .axis-date-time-chip strong {
+            display: block;
+            color: #e2e8f0;
+            font-weight: 900;
+        }
+
+    .axis-profile-menu {
+        position: relative;
+    }
+
+    .axis-profile-btn {
+        width: 56px;
+        height: 56px;
+        border: none;
+        border-radius: 20px;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 900;
+        cursor: pointer;
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+    }
+
+    .axis-profile-dropdown {
+        position: absolute;
+        top: 72px;
+        right: 0;
+        width: 260px;
+        z-index: 1200;
+        padding: 14px;
+        border-radius: 22px;
+        background: #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    .axis-profile-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 12px;
+        margin-bottom: 10px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .axis-profile-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        color: #ffffff;
+        font-weight: 900;
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+    }
+
+    .axis-profile-head h4 {
+        margin: 0;
+        color: #ffffff;
+    }
+
+    .axis-profile-head p {
+        margin: 3px 0 0;
+        color: #94a3b8;
+        font-size: 13px;
+    }
+
+    .axis-dropdown-link,
+    .axis-dropdown-logout {
+        width: 100%;
+        border: none;
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-top: 8px;
+        text-align: left;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .axis-dropdown-link {
+        color: #e2e8f0;
+        background: rgba(148, 163, 184, 0.12);
+    }
+
+    .axis-dropdown-logout {
+        color: #fecaca;
+        background: rgba(239, 68, 68, 0.16);
+    }
+
+    .axis-page-content {
+        max-width: 1340px;
+        margin: 16px auto 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .doctor-list-card,
+    .profile-page-card,
+    .panel,
+    .stat-card {
+        box-sizing: border-box;
+    }
+
+    .doctor-list-card,
+    .profile-page-card,
+    .panel {
+        padding: 22px !important;
+        border-radius: 26px !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .table-wrapper {
+        width: 100% !important;
+        overflow-x: hidden !important;
+    }
+
+    .modern-table {
+        width: 100% !important;
+        table-layout: fixed !important;
+        border-collapse: separate !important;
+        border-spacing: 0 10px !important;
+    }
+
+        .modern-table th,
+        .modern-table td {
+            padding: 11px 10px !important;
+            font-size: 13px !important;
+            vertical-align: middle !important;
+            white-space: normal !important;
+            word-break: normal !important;
+        }
+
+        .modern-table td {
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+    .doctor-profile-cell {
+        gap: 9px !important;
+        min-width: 0 !important;
+    }
+
+    .doctor-avatar {
+        width: 42px !important;
+        height: 42px !important;
+        min-width: 42px !important;
+        font-size: 18px !important;
+    }
+
+    .doctor-profile-cell h4 {
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+        margin: 0 !important;
+    }
+
+    .doctor-profile-cell span {
+        font-size: 11px !important;
+    }
+
+    .specialisation-pill,
+    .status-badge,
+    .role-badge {
+        padding: 6px 9px !important;
+        font-size: 11px !important;
+        max-width: 135px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .modern-table .action-column,
+    .modern-table td:last-child {
+        text-align: right !important;
+        overflow: visible !important;
+    }
+
+        .modern-table .action-column > div,
+        .modern-table td:last-child > div,
+        .patient-actions,
+        .user-actions,
+        .report-actions {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            width: 135px !important;
+            margin-left: auto !important;
+            flex-wrap: nowrap !important;
+        }
+
+    .view-user-btn,
+    .confirm-appointment-btn,
+    .change-status-btn,
+    .edit-doctor-btn,
+    .primary-btn,
+    .secondary-btn,
+    .small-view-btn,
+    .small-edit-btn,
+    .small-reset-btn,
+    .small-confirm-btn,
+    .small-cancel-btn,
+    .small-clear-btn,
+    .small-refresh-btn {
+        min-height: 34px !important;
+        height: auto !important;
+        padding: 7px 10px !important;
+        border-radius: 999px !important;
+        font-size: 12px !important;
+        font-weight: 900 !important;
+        line-height: 1.1 !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+    }
+
+    .modern-table .primary-btn,
+    .modern-table .secondary-btn,
+    .modern-table .view-user-btn,
+    .modern-table .confirm-appointment-btn,
+    .modern-table .change-status-btn,
+    .modern-table .edit-doctor-btn,
+    .modern-table .small-view-btn,
+    .modern-table .small-edit-btn,
+    .modern-table .small-reset-btn,
+    .modern-table .small-confirm-btn,
+    .modern-table .small-cancel-btn {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 135px !important;
+    }
+
+    .doctor-search-box input,
+    .doctor-filter-box select,
+    .form-control {
+        max-width: 100% !important;
+    }
+
+    .modal-backdrop-custom {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 2147483000 !important;
+        background: rgba(2, 6, 23, 0.84) !important;
+        backdrop-filter: blur(10px) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 24px !important;
+    }
+
+    .doctor-dialog,
+    .patient-dialog,
+    .user-detail-dialog,
+    .reset-dialog {
+        position: relative !important;
+        z-index: 2147483001 !important;
+        max-height: 88vh !important;
+        overflow-y: auto !important;
+    }
+
+    .axis-admin-shell:has(.modal-backdrop-custom) .axis-topbar,
+    .axis-admin-shell:has(.modal-backdrop-custom) aside,
+    .axis-admin-shell:has(.modal-backdrop-custom) .axis-sidebar,
+    .axis-admin-shell:has(.modal-backdrop-custom) .admin-sidebar,
+    .axis-admin-shell:has(.modal-backdrop-custom) .sidebar {
+        display: none !important;
+    }
+
+    .axis-admin-shell:has(.modal-backdrop-custom) .axis-main-area {
+        margin-left: 0 !important;
+        width: 100vw !important;
+        padding: 0 !important;
+    }
+
+    @@media (max-width: 1100px) {
+        .axis-admin-shell aside,
+        .axis-admin-shell .axis-sidebar,
+        .axis-admin-shell .admin-sidebar,
+        .axis-admin-shell .sidebar {
+            width: 260px;
+        }
+
+        .axis-main-area {
+            width: calc(100% - 260px);
+            margin-left: 260px;
+            padding: 16px;
+        }
+
+        .axis-topbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .axis-top-actions {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
 
 @code {
     private bool showProfileMenu;

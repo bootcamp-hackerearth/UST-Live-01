@@ -1,115 +1,170 @@
 ﻿@page "/dashboard"
 @attribute [Authorize(Roles = "Admin")]
+
+@using System.Net.Http
+@using System.Text.Json
+@using HealthAxis.Shared.DTO.AdminDtos
+
 @inject AuthService AuthService
 @inject DoctorAdminService DoctorService
 @inject UserAdminService UserService
-@inject ReportService ReportService
+@inject AppointmentReportAdminService AppointmentReportService
 @inject NavigationManager NavigationManager
 
-<h1>Admin Dashboard</h1>
-
-<p class="page-subtitle">
-    Overview of hospital operations, users, doctors and appointments.
-</p>
-
-<section class="stats-grid">
-
-    <div class="stat-card">
-        <div class="stat-icon blue">👨‍⚕️</div>
+<section class="dashboard-page">
+    <section class="page-header">
         <div>
-            <p>Total Doctors</p>
-            <h2>@doctors.Count</h2>
-            <span>@doctors.Count(d => d.IsActive) active doctors</span>
+            
+            <h1>Admin Dashboard</h1>
+           
         </div>
-    </div>
 
-    <div class="stat-card">
-        <div class="stat-icon green">👥</div>
-        <div>
-            <p>Total Users</p>
-            <h2>@users.Count</h2>
-            <span>Patients, doctors and admins</span>
+       
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <div class="alert error">
+            @errorMessage
         </div>
-    </div>
+    }
 
-    <div class="stat-card">
-        <div class="stat-icon orange">📅</div>
-        <div>
-            <p>Appointments</p>
-            <h2>@reports.Count</h2>
-            <span>Static appointment records</span>
+    @if (isLoading)
+    {
+        <div class="alert info">
+            Loading dashboard data...
         </div>
-    </div>
+    }
 
-    <div class="stat-card">
-        <div class="stat-icon purple">✅</div>
-        <div>
-            <p>Completed Visits</p>
-            <h2>@reports.Count(r => r.Status == "Completed")</h2>
-            <span>Completed appointments</span>
-        </div>
-    </div>
+    <section class="stats-grid">
 
-</section>
+        <div class="stat-card">
+            <div class="stat-icon blue">👨‍⚕️</div>
 
-<section class="dashboard-grid">
-
-    <div class="panel">
-        <div class="panel-heading">
             <div>
-                <h3>Recent Appointments</h3>
-                <p>Latest hospital bookings</p>
+                <p>Total Doctors</p>
+                <h2>@doctors.Count</h2>
+                <span>@ActiveDoctorCount active doctors</span>
             </div>
         </div>
 
-        @foreach (var appointment in reports.Take(3))
-        {
-            <div class="appointment-card">
+        <div class="stat-card">
+            <div class="stat-icon green">👥</div>
+
+            <div>
+                <p>Total Users</p>
+                <h2>@users.Count</h2>
+                <span>Patients, doctors and admins</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon orange">📅</div>
+
+            <div>
+                <p>Appointments</p>
+                <h2>@appointments.Count</h2>
+                <span>Total appointment records</span>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon purple">✅</div>
+
+            <div>
+                <p>Completed Visits</p>
+                <h2>@CompletedAppointmentCount</h2>
+                <span>Completed appointments</span>
+            </div>
+        </div>
+
+    </section>
+
+    <section class="dashboard-grid">
+
+        <div class="panel">
+            <div class="panel-heading">
                 <div>
-                    <h4>@appointment.PatientName</h4>
-                    <p>@appointment.Specialisation • @appointment.DoctorName</p>
+                    <h3>Recent Appointments</h3>
+                    <p>Latest hospital bookings</p>
                 </div>
-
-                <span class="time-pill">@appointment.TimeSlot</span>
             </div>
-        }
-    </div>
 
-    <div class="panel">
-        <div class="panel-heading">
-            <div>
-                <h3>Appointment Status</h3>
-                <p>Hospital flow summary</p>
+            @if (appointments.Count == 0)
+            {
+                <div class="empty-box">
+                    No appointments found.
+                </div>
+            }
+            else
+            {
+                @foreach (var appointment in appointments.Take(4))
+                {
+                    <div class="appointment-card">
+                        <div>
+                            <h4>@GetSafeText(appointment.PatientName, "Patient")</h4>
+                            <p>
+                                @GetSafeText(appointment.Specialisation, "Specialisation")
+                                •
+                                @GetSafeText(appointment.DoctorName, "Doctor")
+                            </p>
+                        </div>
+
+                        <span class="time-pill">
+                            @GetSafeText(appointment.TimeSlot, "Not assigned")
+                        </span>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <h3>Appointment Status</h3>
+                    <p>Hospital flow summary</p>
+                </div>
+            </div>
+
+            <div class="status-item">
+                <span class="dot pending"></span>
+                <p>Pending - @CountByStatus("Pending")</p>
+            </div>
+
+            <div class="status-item">
+                <span class="dot confirmed"></span>
+                <p>Confirmed - @CountByStatus("Confirmed")</p>
+            </div>
+
+            <div class="status-item">
+                <span class="dot completed"></span>
+                <p>Completed - @CountByStatus("Completed")</p>
+            </div>
+
+            <div class="status-item">
+                <span class="dot cancelled"></span>
+                <p>Cancelled - @CountByStatus("Cancelled")</p>
             </div>
         </div>
 
-        <div class="status-item">
-            <span class="dot pending"></span>
-            <p>Pending - @reports.Count(r => r.Status == "Pending")</p>
-        </div>
-
-        <div class="status-item">
-            <span class="dot confirmed"></span>
-            <p>Confirmed - @reports.Count(r => r.Status == "Confirmed")</p>
-        </div>
-
-        <div class="status-item">
-            <span class="dot completed"></span>
-            <p>Completed - @reports.Count(r => r.Status == "Completed")</p>
-        </div>
-
-        <div class="status-item">
-            <span class="dot cancelled"></span>
-            <p>Cancelled - @reports.Count(r => r.Status == "Cancelled")</p>
-        </div>
-    </div>
-
+    </section>
 </section>
 
 @code {
+    private readonly List<string> loadErrors = new();
+
     private List<DoctorDto> doctors = new();
     private List<AdminUserDto> users = new();
-    private List<AppointmentReportDto> reports = new();
+    private List<AdminAppointmentDetailDto> appointments = new();
+
+    private bool isLoading;
+    private string errorMessage = string.Empty;
+
+    private int ActiveDoctorCount =>
+        doctors.Count(doctor => doctor.IsActive);
+
+    private int CompletedAppointmentCount =>
+        CountByStatus("Completed");
 
     protected override async Task OnInitializedAsync()
     {
@@ -119,8 +174,105 @@
             return;
         }
 
-        doctors = await DoctorService.GetAllDoctorsAsync();
-        users = await UserService.GetAllUsersAsync();
-        reports = await ReportService.GetAppointmentReportsAsync();
+        await LoadDashboardAsync();
+    }
+
+    private async Task LoadDashboardAsync()
+    {
+        isLoading = true;
+        errorMessage = string.Empty;
+        loadErrors.Clear();
+
+        await LoadDoctorsAsync();
+        await LoadUsersAsync();
+        await LoadAppointmentsAsync();
+
+        errorMessage = string.Join(" ", loadErrors);
+        isLoading = false;
+    }
+
+    private async Task LoadDoctorsAsync()
+    {
+        try
+        {
+            doctors = await DoctorService.GetAllDoctorsAsync();
+        }
+        catch (HttpRequestException)
+        {
+            doctors = new List<DoctorDto>();
+            loadErrors.Add("Could not load doctors.");
+        }
+        catch (JsonException)
+        {
+            doctors = new List<DoctorDto>();
+            loadErrors.Add("Doctor data format is invalid.");
+        }
+        catch (InvalidOperationException)
+        {
+            doctors = new List<DoctorDto>();
+            loadErrors.Add("Doctor service is not available.");
+        }
+    }
+
+    private async Task LoadUsersAsync()
+    {
+        try
+        {
+            users = await UserService.GetAllUsersAsync();
+        }
+        catch (HttpRequestException)
+        {
+            users = new List<AdminUserDto>();
+            loadErrors.Add("Could not load users.");
+        }
+        catch (JsonException)
+        {
+            users = new List<AdminUserDto>();
+            loadErrors.Add("User data format is invalid.");
+        }
+        catch (InvalidOperationException)
+        {
+            users = new List<AdminUserDto>();
+            loadErrors.Add("User service is not available.");
+        }
+    }
+
+    private async Task LoadAppointmentsAsync()
+    {
+        try
+        {
+            appointments = await AppointmentReportService.GetAppointmentDetailsAsync();
+        }
+        catch (HttpRequestException)
+        {
+            appointments = new List<AdminAppointmentDetailDto>();
+            loadErrors.Add("Could not load appointments.");
+        }
+        catch (JsonException)
+        {
+            appointments = new List<AdminAppointmentDetailDto>();
+            loadErrors.Add("Appointment data format is invalid.");
+        }
+        catch (InvalidOperationException)
+        {
+            appointments = new List<AdminAppointmentDetailDto>();
+            loadErrors.Add("Appointment service is not available.");
+        }
+    }
+
+    private int CountByStatus(string status)
+    {
+        return appointments.Count(appointment =>
+            string.Equals(
+                appointment.Status,
+                status,
+                StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string GetSafeText(string? value, string fallback)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? fallback
+            : value.Trim();
     }
 }

@@ -268,7 +268,7 @@ export class UpcomingAppointments {
 
   private updateAppointmentStatus(
     appointment: Appointment,
-    status: AppointmentStatusCode,
+    status: number,
     successMessage: string,
     failureMessage: string,
     cancellationReason?: string | null

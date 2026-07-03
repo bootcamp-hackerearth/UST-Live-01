@@ -12,6 +12,7 @@ namespace HealthAxis_Admin.Services
 
         public PatientAdminService(HttpClient httpClient)
         {
+            ArgumentNullException.ThrowIfNull(httpClient);
             _httpClient = httpClient;
         }
 
@@ -27,6 +28,11 @@ namespace HealthAxis_Admin.Services
             int patientId,
             UpdateAdminPatientDto patientDto)
         {
+            if (patientId <= 0)
+            {
+                return (false, "Invalid patient selected.");
+            }
+
             using var response = await _httpClient.PutAsJsonAsync(
                 $"{PatientsEndpoint}/{patientId}",
                 patientDto);
@@ -42,6 +48,11 @@ namespace HealthAxis_Admin.Services
         public async Task<List<AdminPatientAppointmentDto>> GetPatientAppointmentsAsync(
             int patientId)
         {
+            if (patientId <= 0)
+            {
+                return new List<AdminPatientAppointmentDto>();
+            }
+
             var appointments = await _httpClient.GetFromJsonAsync<List<AdminPatientAppointmentDto>>(
                 $"{PatientsEndpoint}/{patientId}/appointments");
 
@@ -65,6 +76,11 @@ namespace HealthAxis_Admin.Services
                 if (document.RootElement.TryGetProperty("message", out var messageElement))
                 {
                     return messageElement.GetString() ?? "Request failed.";
+                }
+
+                if (document.RootElement.TryGetProperty("title", out var titleElement))
+                {
+                    return titleElement.GetString() ?? "Request failed.";
                 }
             }
             catch (JsonException)

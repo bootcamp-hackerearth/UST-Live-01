@@ -3,13 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { Doctor } from '../models/doctor.model';
 import { Patient } from '../models/patient.model';
 import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
+
+
+export interface DoctorStatusResponse {
+  message: string;
+  isActive: boolean;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class DoctorService {
   private readonly http = inject(HttpClient);
-  private readonly doctorUrl = `${environment.apiBaseUrl}/Doctor`;
+  private readonly doctorUrl = `${environment.apiBaseUrl}/doctors`;
 
   getAllDoctors() {
     return this.http.get<Doctor[]>(this.doctorUrl);
@@ -33,5 +40,12 @@ export class DoctorService {
 
   getMyPatientById(patientId: number) {
     return this.http.get<Patient>(`${this.doctorUrl}/me/patients/${patientId}`);
-  }
+ 
+ }
+ updateMyStatus(isActive: boolean): Observable<DoctorStatusResponse> {
+  return this.http.put<DoctorStatusResponse>(
+    `${this.doctorUrl}/me/status`,
+    { isActive }
+  );
+}
 }

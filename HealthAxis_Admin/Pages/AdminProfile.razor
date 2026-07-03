@@ -1,170 +1,331 @@
 ﻿@page "/admin-profile"
+@attribute [Authorize(Roles = "Admin")]
+
+@using System.Net.Http
+@using System.Text.Json
 @using HealthAxis.Shared.DTO.AdminDtos
+
 @inject AdminProfileService ProfileService
 @inject AuthService AuthService
+@inject NavigationManager NavigationManager
 
-<h1>Admin Profile</h1>
+<section class="admin-profile-page">
 
-<p class="page-subtitle">
-    View and update admin details, and change account password.
-</p>
+    
 
-<section class="profile-grid">
+      
 
-    <div class="profile-page-card">
-        <div class="panel-heading">
+  
+
+    <section class="profile-card">
+
+        <div class="profile-top">
+            <div class="admin-avatar">
+                @GetInitial(profile.Email)
+            </div>
+
             <div>
-                <h3>Profile Details</h3>
-                <p>Update email and phone number.</p>
+                <p>Administrator Account</p>
+               <h1>Admin Profile</h1>
+                
             </div>
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(profileMessage))
-        {
-            <div class="@profileMessageClass">
-                @profileMessage
-            </div>
-        }
+        <div class="profile-details-grid">
 
-        <EditForm Model="@profileForm" OnValidSubmit="UpdateProfile">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="form-group">
-                <label>Email</label>
-
-                <InputText class="form-control"
-                           @bind-Value="profileForm.Email" />
-
-                <ValidationMessage For="@(() => profileForm.Email)" />
+            <div class="detail-box">
+                <span>Email Address</span>
+                <strong>@GetSafeText(profile.Email, "Not available")</strong>
+               
             </div>
 
-            <div class="form-group">
-                <label>Phone Number</label>
-
-                <InputText class="form-control"
-                           @bind-Value="profileForm.PhoneNumber" />
-
-                <ValidationMessage For="@(() => profileForm.PhoneNumber)" />
+            <div class="detail-box">
+                <span>Phone Number</span>
+                <strong>@GetSafeText(profile.PhoneNumber, "Not available")</strong>
+               
             </div>
 
-            <div class="button-row">
-                <button type="submit" class="primary-btn">
-                    Update Profile
-                </button>
-            </div>
-        </EditForm>
-    </div>
+            
 
-    <div class="profile-page-card">
-        <div class="panel-heading">
-            <div>
-                <h3>Change Password</h3>
-                <p>Update admin login password securely.</p>
+            <div class="detail-box">
+                <span>Account Status</span>
+                <strong class="active-text">Active</strong>
+                <small>Workspace access is enabled.</small>
             </div>
+
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(passwordMessage))
-        {
-            <div class="@passwordMessageClass">
-                @passwordMessage
-            </div>
-        }
+        
 
-        <EditForm Model="@passwordForm" OnValidSubmit="ChangePassword">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-
-            <div class="form-group">
-                <label>Current Password</label>
-
-                <InputText type="password"
-                           class="form-control"
-                           @bind-Value="passwordForm.CurrentPassword" />
-
-                <ValidationMessage For="@(() => passwordForm.CurrentPassword)" />
-            </div>
-
-            <div class="form-group">
-                <label>New Password</label>
-
-                <InputText type="password"
-                           class="form-control"
-                           @bind-Value="passwordForm.NewPassword" />
-
-                <ValidationMessage For="@(() => passwordForm.NewPassword)" />
-            </div>
-
-            <div class="form-group">
-                <label>Confirm Password</label>
-
-                <InputText type="password"
-                           class="form-control"
-                           @bind-Value="passwordForm.ConfirmPassword" />
-
-                <ValidationMessage For="@(() => passwordForm.ConfirmPassword)" />
-            </div>
-
-            <div class="button-row">
-                <button type="submit" class="primary-btn">
-                    Change Password
-                </button>
-            </div>
-        </EditForm>
-    </div>
+    </section>
 
 </section>
 
+<style>
+    .admin-profile-page {
+        display: grid;
+        gap: 22px;
+    }
+
+    .page-header {
+        padding: 30px;
+        border-radius: 30px;
+        color: #ffffff;
+        background: radial-gradient(circle at top right, rgba(124, 58, 237, 0.28), transparent 30%), linear-gradient(135deg, #020617, #075985);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 18px;
+        box-shadow: 0 20px 50px rgba(7, 89, 133, 0.2);
+    }
+
+        .page-header p {
+            margin: 0;
+            color: #7dd3fc;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+        }
+
+        .page-header h1 {
+            margin: 8px 0 6px;
+            font-size: 40px;
+        }
+
+        .page-header span {
+            color: #dbeafe;
+            line-height: 1.6;
+            font-weight: 700;
+        }
+
+    .refresh-button {
+        border: none;
+        border-radius: 999px;
+        padding: 13px 20px;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+        .refresh-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+    .error-box,
+    .success-box,
+    .info-box {
+        padding: 14px 16px;
+        border-radius: 16px;
+        font-weight: 900;
+    }
+
+    .error-box {
+        background: rgba(239, 68, 68, 0.18);
+        color: #fecaca;
+        border: 1px solid rgba(248, 113, 113, 0.35);
+    }
+
+    .success-box {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .info-box {
+        background: rgba(14, 165, 233, 0.18);
+        color: #bae6fd;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .profile-card {
+        border: 1px solid rgba(148, 163, 184, 0.24);
+        border-radius: 30px;
+        padding: 28px;
+        background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.12), transparent 35%), rgba(15, 23, 42, 0.72);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+    }
+
+    .profile-top {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 26px;
+    }
+
+    .admin-avatar {
+        width: 76px;
+        height: 76px;
+        border-radius: 24px;
+        display: grid;
+        place-items: center;
+        color: #ffffff;
+        font-size: 34px;
+        font-weight: 900;
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+        box-shadow: 0 14px 30px rgba(14, 165, 233, 0.25);
+    }
+
+    .profile-top p {
+        margin: 0;
+        color: #7dd3fc;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 900;
+    }
+
+    .profile-top h2 {
+        margin: 6px 0;
+        color: #ffffff;
+        font-size: 30px;
+        word-break: break-word;
+    }
+
+    .profile-top span {
+        color: #cbd5e1;
+        font-weight: 700;
+    }
+
+    .profile-details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .detail-box {
+        padding: 18px;
+        border-radius: 20px;
+        background: rgba(30, 41, 59, 0.82);
+        border: 1px solid rgba(148, 163, 184, 0.24);
+    }
+
+        .detail-box span {
+            display: block;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 900;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .detail-box strong {
+            display: block;
+            color: #ffffff;
+            font-size: 18px;
+            word-break: break-word;
+        }
+
+        .detail-box small {
+            display: block;
+            margin-top: 8px;
+            color: #cbd5e1;
+            font-weight: 700;
+        }
+
+    .active-text {
+        color: #86efac !important;
+    }
+
+    .profile-note {
+        margin-top: 20px;
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(14, 165, 233, 0.12);
+        border: 1px solid rgba(56, 189, 248, 0.24);
+        color: #dbeafe;
+        line-height: 1.6;
+        font-weight: 800;
+    }
+
+    @@media (max-width: 900px) {
+        .page-header,
+        .profile-top {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .profile-details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .refresh-button {
+            width: 100%;
+        }
+    }
+</style>
+
 @code {
-    private UpdateAdminProfileDto profileForm = new();
+    private AdminProfileDto profile = new();
 
-    private AdminChangePasswordDto passwordForm = new();
-
-    private string profileMessage = string.Empty;
-
-    private string profileMessageClass = "success-box";
-
-    private string passwordMessage = string.Empty;
-
-    private string passwordMessageClass = "success-box";
+    private bool isLoading;
+    private string message = string.Empty;
+    private string messageClass = "success-box";
 
     protected override async Task OnInitializedAsync()
     {
+        if (!AuthService.IsLoggedIn)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        await LoadProfileAsync();
+    }
+
+    private async Task LoadProfileAsync()
+    {
+        isLoading = true;
+        message = string.Empty;
+
         try
         {
-            var profile = await ProfileService.GetProfileAsync();
-
-            profileForm = new UpdateAdminProfileDto
-            {
-                Email = profile.Email,
-                PhoneNumber = profile.PhoneNumber
-            };
+            profile = await ProfileService.GetProfileAsync();
         }
-        catch (Exception ex)
+        catch (HttpRequestException)
         {
-            profileMessage = $"Profile loading failed: {ex.Message}";
-            profileMessageClass = "error-box";
+            profile = new AdminProfileDto();
+            ShowMessage("Could not load admin profile.", false);
+        }
+        catch (JsonException)
+        {
+            profile = new AdminProfileDto();
+            ShowMessage("Admin profile data format is invalid.", false);
+        }
+        catch (InvalidOperationException)
+        {
+            profile = new AdminProfileDto();
+            ShowMessage("Admin profile service is not available.", false);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
-    private async Task UpdateProfile()
+    private void ShowMessage(string text, bool isSuccess)
     {
-        var result = await ProfileService.UpdateProfileAsync(profileForm);
-
-        profileMessage = result.Message;
-        profileMessageClass = result.Success ? "success-box" : "error-box";
+        message = text;
+        messageClass = isSuccess ? "success-box" : "error-box";
     }
 
-    private async Task ChangePassword()
+    private static string GetInitial(string? value)
     {
-        var result = await ProfileService.ChangePasswordAsync(passwordForm);
-
-        passwordMessage = result.Message;
-        passwordMessageClass = result.Success ? "success-box" : "error-box";
-
-        if (result.Success)
+        if (string.IsNullOrWhiteSpace(value))
         {
-            passwordForm = new AdminChangePasswordDto();
+            return "A";
         }
+
+        return value.Trim()[..1].ToUpperInvariant();
+    }
+
+    private static string GetSafeText(string? value, string fallback)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? fallback
+            : value.Trim();
     }
 }

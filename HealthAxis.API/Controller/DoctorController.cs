@@ -1,20 +1,23 @@
-﻿using HealthAxis.API.Services;
+﻿using HealthAxis.API.Data;
+using HealthAxis.API.DTOs.DoctorDtos;
+using HealthAxis.API.Services;
 using HealthAxis.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-
 namespace HealthAxis.API.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
     public class DoctorController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
         private readonly IDoctorService _doctorService;
         private readonly IPatientService _patientService;
-
-        public DoctorController(IDoctorService doctorService,IPatientService patientService)
+        public DoctorController(ApplicationDbContext context, IDoctorService doctorService, IPatientService patientService)
         {
+            _context = context;
             _doctorService = doctorService;
             _patientService = patientService;
         }
@@ -52,6 +55,46 @@ namespace HealthAxis.API.Controller
                 doctor.DoctorId);
 
             return Ok(patients);
+        }
+
+        [Authorize(Roles = "Doctor")]
+        [HttpPut("me/status")]
+        [Authorize(Roles = "Doctor")]
+        [HttpPut("me/status")]
+        public async Task<IActionResult> UpdateMyStatus(UpdateDoctorStatusDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Doctor user id claim is missing."
+                });
+            }
+
+            var doctor = await _context.Doctors
+                .FirstOrDefaultAsync(item => item.UserId == userId);
+
+            if (doctor is null)
+            {
+                return NotFound(new
+                {
+                    message = "Doctor profile not found."
+                });
+            }
+
+            doctor.IsActive = dto.IsActive;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = dto.IsActive
+                    ? "You are now active."
+                    : "You are now inactive.",
+                isActive = doctor.IsActive
+            });
         }
 
         [HttpGet("me/patients/{patientId}")]

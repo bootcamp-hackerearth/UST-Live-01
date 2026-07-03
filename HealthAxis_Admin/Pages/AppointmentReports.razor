@@ -1,13 +1,17 @@
 ﻿@page "/appointment-reports"
 @attribute [Authorize(Roles = "Admin")]
-@using HealthAxis.Shared.DTO.AdminDtos
-@inject AppointmentReportAdminService ReportService
 
-<h1>Appointment Reports</h1>
+@using HealthAxis.Shared.DTO.AdminDtos
+
+@inject AuthService AuthService
+@inject AppointmentReportAdminService ReportService
+@inject NavigationManager NavigationManager
+
+@* <h1>Appointment Reports</h1>
 
 <p class="page-subtitle">
     View patient appointments, assigned doctors, appointment date, time and current status.
-</p>
+</p> *@
 
 <section class="doctor-list-card">
 
@@ -16,6 +20,13 @@
             <h3>Appointment Details</h3>
             <p>All appointments with patient and doctor information.</p>
         </div>
+
+        <button type="button"
+                class="small-refresh-btn"
+                disabled="@isLoading"
+                @onclick="LoadReportsAsync">
+            @(isLoading ? "Loading..." : "Refresh")
+        </button>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(message))
@@ -42,15 +53,25 @@
                 <option value="@CancelledStatus">Cancelled</option>
             </select>
         </div>
+
+        <button type="button"
+                class="small-clear-btn"
+                @onclick="ClearFilters">
+            Clear
+        </button>
     </div>
 
     @if (isLoading)
     {
-        <p>Loading appointment reports...</p>
+        <div class="empty-box">
+            Loading appointment reports...
+        </div>
     }
-    else if (!FilteredReports.Any())
+    else if (FilteredReports.Count == 0)
     {
-        <p>No appointment reports found.</p>
+        <div class="empty-box">
+            No appointment reports found.
+        </div>
     }
     else
     {
@@ -79,45 +100,56 @@
                                     </div>
 
                                     <div>
-                                        <h4>@report.PatientName</h4>
+                                        <h4>@GetSafeText(report.PatientName, "Patient")</h4>
                                         <span>Patient ID: @report.PatientId</span>
                                     </div>
                                 </div>
                             </td>
 
-                            <td>@report.DoctorName</td>
+                            <td>@GetSafeText(report.DoctorName, "Doctor")</td>
 
                             <td>
                                 <span class="specialisation-pill">
-                                    @report.Specialisation
+                                    @GetSafeText(report.Specialisation, "N/A")
                                 </span>
                             </td>
 
                             <td>@report.ScheduledDate.ToString("dd MMM yyyy")</td>
 
-                            <td>@report.TimeSlot</td>
+                            <td>@GetSafeText(report.TimeSlot, "Not assigned")</td>
 
                             <td>
                                 <span class="@GetStatusBadgeClass(report.Status)">
-                                    @report.Status
+                                    @GetSafeText(report.Status, "Pending")
                                 </span>
                             </td>
 
-                            <td>
+                            <td class="action-column">
                                 <div class="report-actions">
 
                                     <button type="button"
-                                            class="view-user-btn"
+                                            class="small-view-btn"
                                             @onclick="() => OpenReportDialog(report)">
-                                        View Report
+                                        View
                                     </button>
 
                                     @if (IsPending(report.Status))
                                     {
                                         <button type="button"
-                                                class="confirm-appointment-btn"
-                                                @onclick="() => ConfirmAppointment(report.AppointmentId)">
-                                            Confirm
+                                                class="small-confirm-btn"
+                                                disabled="@IsProcessing(report.AppointmentId)"
+                                                @onclick="() => ConfirmAppointmentAsync(report.AppointmentId)">
+                                            @(IsProcessing(report.AppointmentId) ? "..." : "Confirm")
+                                        </button>
+                                    }
+
+                                    @if (CanCancel(report.Status))
+                                    {
+                                        <button type="button"
+                                                class="small-cancel-btn"
+                                                disabled="@IsProcessing(report.AppointmentId)"
+                                                @onclick="() => CancelAppointmentAsync(report.AppointmentId)">
+                                            @(IsProcessing(report.AppointmentId) ? "..." : "Cancel")
                                         </button>
                                     }
 
@@ -237,6 +269,218 @@
     </div>
 }
 
+@if (showResultDialog)
+{
+    <div class="modal-backdrop-custom">
+        <div class="result-dialog">
+
+            <div class="result-icon @(isResultSuccess ? "success-icon" : "error-icon")">
+                @(isResultSuccess ? "✓" : "!")
+            </div>
+
+            <h3>@resultTitle</h3>
+
+            <p>@resultMessage</p>
+
+            <button type="button"
+                    class="result-ok-btn"
+                    @onclick="CloseResultDialog">
+                OK
+            </button>
+
+        </div>
+    </div>
+}
+
+<style>
+    .report-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .small-view-btn,
+    .small-confirm-btn,
+    .small-cancel-btn,
+    .small-refresh-btn,
+    .small-clear-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 8px 13px;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .small-view-btn {
+        background: rgba(14, 165, 233, 0.18);
+        color: #7dd3fc;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .small-confirm-btn {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .small-cancel-btn {
+        background: rgba(239, 68, 68, 0.18);
+        color: #fecaca;
+        border: 1px solid rgba(248, 113, 113, 0.35);
+    }
+
+    .small-refresh-btn {
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+        color: #ffffff;
+    }
+
+    .small-clear-btn {
+        background: rgba(148, 163, 184, 0.18);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+        .small-view-btn:hover,
+        .small-confirm-btn:hover,
+        .small-cancel-btn:hover,
+        .small-refresh-btn:hover,
+        .small-clear-btn:hover {
+            transform: translateY(-1px);
+        }
+
+    .small-view-btn:disabled,
+    .small-confirm-btn:disabled,
+    .small-cancel-btn:disabled,
+    .small-refresh-btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .action-column {
+        text-align: right;
+    }
+
+    .empty-box {
+        padding: 22px;
+        border-radius: 18px;
+        background: rgba(148, 163, 184, 0.12);
+        color: #cbd5e1;
+        font-weight: 800;
+    }
+
+    .result-dialog {
+        width: min(420px, 92vw);
+        background: #0f172a;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        border-radius: 28px;
+        padding: 28px;
+        text-align: center;
+        color: #ffffff;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+    }
+
+    .result-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 16px;
+        font-size: 34px;
+        font-weight: 900;
+    }
+
+    .success-icon {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .error-icon {
+        background: rgba(239, 68, 68, 0.18);
+        color: #fecaca;
+        border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .result-dialog h3 {
+        margin: 0 0 10px;
+        font-size: 26px;
+    }
+
+    .result-dialog p {
+        margin: 0;
+        color: #cbd5e1;
+        line-height: 1.6;
+        font-weight: 700;
+    }
+
+    .result-ok-btn {
+        margin-top: 22px;
+        border: none;
+        border-radius: 16px;
+        padding: 12px 28px;
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+        color: #ffffff;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    @@media (max-width: 900px) {
+        .report-actions {
+            justify-content: flex-start;
+        }
+
+        .small-view-btn,
+        .small-confirm-btn,
+        .small-cancel-btn,
+        .small-refresh-btn,
+        .small-clear-btn {
+            width: 100%;
+        }
+
+        .action-column {
+            text-align: left;
+        }
+    }
+    .user-toolbar {
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) 220px 90px;
+    gap: 16px;
+    align-items: center;
+}
+
+.doctor-search-box {
+    width: 100%;
+}
+
+.doctor-filter-box {
+    width: 100%;
+}
+
+.small-clear-btn {
+    width: 90px !important;
+    height: 46px;
+    padding: 0 14px !important;
+    justify-self: start;
+}
+
+@@media (max-width: 900px) {
+    .user-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .small-clear-btn {
+        width: 100% !important;
+    }
+}
+    
+</style>
+
 @code {
     private const int FirstPageNumber = 1;
     private const int MinimumPaginationPages = 1;
@@ -258,11 +502,17 @@
     private string message = string.Empty;
     private string messageClass = "success-box";
 
+    private string resultTitle = string.Empty;
+    private string resultMessage = string.Empty;
+
     private bool isLoading;
     private bool showReportDialog;
+    private bool showResultDialog;
+    private bool isResultSuccess;
 
     private int currentPage = FirstPageNumber;
     private int messageVersion;
+    private int processingAppointmentId;
 
     private List<AdminAppointmentDetailDto> FilteredReports
     {
@@ -276,7 +526,8 @@
                     ContainsIgnoreCase(report.PatientName, searchText) ||
                     ContainsIgnoreCase(report.DoctorName, searchText) ||
                     ContainsIgnoreCase(report.Status, searchText) ||
-                    ContainsIgnoreCase(report.Specialisation, searchText));
+                    ContainsIgnoreCase(report.Specialisation, searchText) ||
+                    report.AppointmentId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase));
             }
 
             if (!string.Equals(
@@ -308,17 +559,34 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadReports();
+        if (!AuthService.IsLoggedIn)
+        {
+            NavigationManager.NavigateTo("/");
+            return;
+        }
+
+        await LoadReportsAsync();
     }
 
-    private async Task LoadReports()
+    private async Task LoadReportsAsync()
     {
         isLoading = true;
+        message = string.Empty;
 
         try
         {
             reports = await ReportService.GetAppointmentDetailsAsync();
             currentPage = FirstPageNumber;
+        }
+        catch (HttpRequestException)
+        {
+            reports = new List<AdminAppointmentDetailDto>();
+            ShowInlineMessage("Could not load appointment reports.", false);
+        }
+        catch (InvalidOperationException)
+        {
+            reports = new List<AdminAppointmentDetailDto>();
+            ShowInlineMessage("Appointment report service is not available.", false);
         }
         finally
         {
@@ -326,15 +594,47 @@
         }
     }
 
-    private async Task ConfirmAppointment(int appointmentId)
+    private async Task ConfirmAppointmentAsync(int appointmentId)
     {
-        var result = await ReportService.ConfirmAppointmentAsync(appointmentId);
+        await UpdateAppointmentAsync(
+            appointmentId,
+            ReportService.ConfirmAppointmentAsync,
+            "Appointment Confirmed");
+    }
 
-        ShowMessage(result.Message, result.Success);
+    private async Task CancelAppointmentAsync(int appointmentId)
+    {
+        await UpdateAppointmentAsync(
+            appointmentId,
+            ReportService.CancelAppointmentAsync,
+            "Appointment Cancelled");
+    }
+
+    private async Task UpdateAppointmentAsync(
+        int appointmentId,
+        Func<int, Task<(bool Success, string Message)>> updateAction,
+        string successTitle)
+    {
+        if (appointmentId <= 0)
+        {
+            ShowResult("Invalid Appointment", "Invalid appointment selected.", false);
+            return;
+        }
+
+        processingAppointmentId = appointmentId;
+
+        var result = await updateAction(appointmentId);
+
+        processingAppointmentId = 0;
+
+        ShowResult(
+            result.Success ? successTitle : "Action Failed",
+            result.Message,
+            result.Success);
 
         if (result.Success)
         {
-            await LoadReports();
+            await LoadReportsAsync();
         }
     }
 
@@ -348,6 +648,20 @@
     {
         selectedReport = null;
         showReportDialog = false;
+    }
+
+    private void CloseResultDialog()
+    {
+        showResultDialog = false;
+        resultTitle = string.Empty;
+        resultMessage = string.Empty;
+    }
+
+    private void ClearFilters()
+    {
+        searchText = string.Empty;
+        selectedStatus = AllStatusOption;
+        currentPage = FirstPageNumber;
     }
 
     private void GoToPreviousPage()
@@ -366,13 +680,24 @@
         }
     }
 
-    private void ShowMessage(string text, bool isSuccess)
+    private void ShowInlineMessage(string text, bool isSuccess)
     {
         message = text;
         messageClass = isSuccess ? "success-box" : "error-box";
 
         messageVersion++;
         _ = ClearMessageAfterDelayAsync(messageVersion);
+    }
+
+    private void ShowResult(
+        string title,
+        string text,
+        bool isSuccess)
+    {
+        resultTitle = title;
+        resultMessage = text;
+        isResultSuccess = isSuccess;
+        showResultDialog = true;
     }
 
     private async Task ClearMessageAfterDelayAsync(int version)
@@ -384,6 +709,11 @@
             message = string.Empty;
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    private bool IsProcessing(int appointmentId)
+    {
+        return processingAppointmentId == appointmentId;
     }
 
     private static bool ContainsIgnoreCase(
@@ -404,12 +734,31 @@
         return name.Trim()[..1].ToUpperInvariant();
     }
 
+    private static string GetSafeText(string? value, string fallback)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? fallback
+            : value.Trim();
+    }
+
     private static bool IsPending(string status)
     {
         return string.Equals(
             status,
             PendingStatus,
             StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool CanCancel(string status)
+    {
+        return string.Equals(
+                status,
+                PendingStatus,
+                StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(
+                status,
+                ConfirmedStatus,
+                StringComparison.OrdinalIgnoreCase);
     }
 
     private static string GetStatusBadgeClass(string status)
@@ -423,4 +772,4 @@
             _ => "status-badge"
         };
     }
-}
+}s

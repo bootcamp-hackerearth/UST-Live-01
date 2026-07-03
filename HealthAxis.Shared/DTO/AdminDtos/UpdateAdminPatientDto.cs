@@ -16,7 +16,7 @@ namespace HealthAxis.Shared.DTO.AdminDtos
         public string Gender { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Phone number is required.")]
-        [RegularExpression(@"^[6-9]\d{9}$", ErrorMessage = "Phone number must be a valid 10-digit Indian mobile number.")]
+        [RegularExpression(@"^[1-9]\d{9}$", ErrorMessage = "Phone number must be a valid 10-digit mobile number.")]
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required.")]

@@ -1,6 +1,10 @@
 ﻿@page "/patients"
 @attribute [Authorize(Roles = "Admin")]
+
+@using System.Net.Http
+@using System.Text.Json
 @using HealthAxis.Shared.DTO.AdminDtos
+
 @inject PatientAdminService PatientService
 
 <h1>Patient Management</h1>
@@ -9,7 +13,7 @@
     View patient records, edit patient details, and check patient appointments.
 </p>
 
-<section class="doctor-list-card">
+<section class="doctor-list-card patient-admin-card">
 
     <div class="doctor-list-header">
         <div>
@@ -17,12 +21,12 @@
             <p>All registered patients from database.</p>
         </div>
 
-        <div class="doctor-search-box">
-            <input type="text"
-                   placeholder="Search patient name, phone, email"
-                   value="@searchText"
-                   @oninput="OnSearchInput" />
-        </div>
+        <button type="button"
+                class="small-refresh-btn"
+                disabled="@isLoading"
+                @onclick="LoadPatientsAsync">
+            @(isLoading ? "Loading..." : "Refresh")
+        </button>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(message))
@@ -32,25 +36,44 @@
         </div>
     }
 
+    <div class="patient-toolbar">
+        <div class="doctor-search-box">
+            <input type="text"
+                   placeholder="Search patient name, phone, email, gender..."
+                   value="@searchText"
+                   @oninput="OnSearchInput" />
+        </div>
+
+        <button type="button"
+                class="small-clear-btn"
+                @onclick="ClearSearch">
+            Clear
+        </button>
+    </div>
+
     @if (isLoading)
     {
-        <p>Loading patients from database...</p>
+        <div class="empty-box">
+            Loading patients from database...
+        </div>
     }
-    else if (!FilteredPatients.Any())
+    else if (FilteredPatients.Count == 0)
     {
-        <p>No patients found.</p>
+        <div class="empty-box">
+            No patients found.
+        </div>
     }
     else
     {
         <div class="table-wrapper">
-            <table class="modern-table">
+            <table class="modern-table patients-table">
                 <thead>
                     <tr>
                         <th>Patient</th>
                         <th>Date of Birth</th>
                         <th>Gender</th>
                         <th>Phone</th>
-                        <th>Appointments</th>
+                        <th>Email</th>
                         <th class="action-column">Actions</th>
                     </tr>
                 </thead>
@@ -66,7 +89,7 @@
                                     </div>
 
                                     <div>
-                                        <h4>@patient.FullName</h4>
+                                        <h4>@GetSafeText(patient.FullName, "Patient")</h4>
                                         <span>ID: @patient.PatientId</span>
                                     </div>
                                 </div>
@@ -74,26 +97,26 @@
 
                             <td>@patient.DateOfBirth.ToString("dd MMM yyyy")</td>
 
-                            <td>@patient.Gender</td>
+                            <td>@GetSafeText(patient.Gender, "Not available")</td>
 
-                            <td>@patient.PhoneNumber</td>
+                            <td>@DisplayValue(patient.PhoneNumber)</td>
 
-                            
+                            <td>@DisplayValue(patient.Email)</td>
 
-                            <td>
-                                <button type="button"
-                                        class="view-user-btn"
-                                        @onclick="() => OpenAppointmentsDialog(patient)">
-                                    View Appointments
-                                </button>
-                            </td>
+                            <td class="action-column">
+                                <div class="patient-actions">
+                                    <button type="button"
+                                            class="small-view-btn"
+                                            @onclick="() => OpenAppointmentsDialogAsync(patient)">
+                                        Appointments
+                                    </button>
 
-                            <td>
-                                <button type="button"
-                                        class="view-user-btn"
-                                        @onclick="() => OpenEditDialog(patient)">
-                                    Edit
-                                </button>
+                                    <button type="button"
+                                            class="small-edit-btn"
+                                            @onclick="() => OpenEditDialog(patient)">
+                                        Edit
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -101,24 +124,24 @@
             </table>
         </div>
 
-        @if (TotalPages > MinimumPaginationPages)
+        @if (FilteredPatients.Count > PageSize)
         {
-            <div class="pagination-bar">
+            <div class="pagination-bar patient-pagination">
 
                 <button type="button"
-                        class="secondary-btn"
+                        class="secondary-btn page-btn"
                         disabled="@(currentPage == FirstPageNumber)"
                         @onclick="GoToPreviousPage">
                     Previous
                 </button>
 
-                <span>
+                <span class="page-info">
                     Page @currentPage of @TotalPages
-                    • Total @FilteredPatients.Count patients
+                    • Showing @PagedPatients.Count of @FilteredPatients.Count patients
                 </span>
 
                 <button type="button"
-                        class="secondary-btn"
+                        class="secondary-btn page-btn"
                         disabled="@(currentPage == TotalPages)"
                         @onclick="GoToNextPage">
                     Next
@@ -133,7 +156,7 @@
 @if (showEditDialog)
 {
     <div class="modal-backdrop-custom">
-        <div class="doctor-dialog">
+        <div class="doctor-dialog patient-edit-dialog">
 
             <div class="dialog-header">
                 <div>
@@ -141,16 +164,18 @@
                     <p>Update patient information.</p>
                 </div>
 
-                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseDialogs">
                     ×
                 </button>
             </div>
 
-            <EditForm Model="@editForm" OnValidSubmit="SavePatient">
+            <EditForm Model="@editForm" OnValidSubmit="SavePatientAsync">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
-                <div class="form-grid">
+                <div class="form-grid patient-form-grid">
 
                     <div class="form-group">
                         <label>Full Name</label>
@@ -165,6 +190,7 @@
                     <div class="form-group">
                         <label>Gender</label>
                         <InputSelect class="form-control" @bind-Value="editForm.Gender">
+                            <option value="">Select Gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                             <option value="Other">Other</option>
@@ -176,21 +202,24 @@
                         <InputText class="form-control" @bind-Value="editForm.PhoneNumber" />
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label>Email</label>
                         <InputText class="form-control" @bind-Value="editForm.Email" />
                     </div>
 
-                  
-
                 </div>
 
                 <div class="dialog-actions">
-                    <button type="submit" class="primary-btn">
-                        Save Changes
+                    <button type="submit"
+                            class="primary-btn"
+                            disabled="@isSaving">
+                        @(isSaving ? "Saving..." : "Save Changes")
                     </button>
 
-                    <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                    <button type="button"
+                            class="secondary-btn"
+                            disabled="@isSaving"
+                            @onclick="CloseDialogs">
                         Cancel
                     </button>
                 </div>
@@ -203,7 +232,7 @@
 @if (showAppointmentsDialog && selectedPatient is not null)
 {
     <div class="modal-backdrop-custom">
-        <div class="doctor-dialog user-detail-dialog">
+        <div class="doctor-dialog user-detail-dialog patient-appointments-dialog">
 
             <div class="dialog-header">
                 <div>
@@ -211,14 +240,24 @@
                     <p>Appointments booked by this patient.</p>
                 </div>
 
-                <button type="button" class="dialog-close-btn" @onclick="CloseDialogs">
+                <button type="button"
+                        class="dialog-close-btn"
+                        @onclick="CloseDialogs">
                     ×
                 </button>
             </div>
 
-            @if (!patientAppointments.Any())
+            @if (isLoadingAppointments)
             {
-                <p>No appointments found for this patient.</p>
+                <div class="empty-box">
+                    Loading appointments...
+                </div>
+            }
+            else if (patientAppointments.Count == 0)
+            {
+                <div class="empty-box">
+                    No appointments found for this patient.
+                </div>
             }
             else
             {
@@ -238,10 +277,10 @@
                             @foreach (var appointment in patientAppointments)
                             {
                                 <tr>
-                                    <td>@appointment.DoctorName</td>
-                                    <td>@appointment.Specialisation</td>
+                                    <td>@GetSafeText(appointment.DoctorName, "Doctor")</td>
+                                    <td>@GetSafeText(appointment.Specialisation, "N/A")</td>
                                     <td>@appointment.ScheduledDate.ToString("dd MMM yyyy")</td>
-                                    <td>@appointment.TimeSlot</td>
+                                    <td>@GetSafeText(appointment.TimeSlot, "Not assigned")</td>
                                     <td>
                                         <span class="@GetStatusBadgeClass(appointment.Status)">
                                             @appointment.Status
@@ -255,7 +294,9 @@
             }
 
             <div class="dialog-actions">
-                <button type="button" class="secondary-btn" @onclick="CloseDialogs">
+                <button type="button"
+                        class="secondary-btn"
+                        @onclick="CloseDialogs">
                     Close
                 </button>
             </div>
@@ -264,10 +305,174 @@
     </div>
 }
 
+<style>
+    .patient-admin-card {
+        max-width: 100%;
+    }
+
+    .patient-toolbar {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) 90px;
+        gap: 14px;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+    .small-refresh-btn,
+    .small-clear-btn,
+    .small-view-btn,
+    .small-edit-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 8px 13px;
+        font-size: 13px;
+        font-weight: 900;
+        cursor: pointer;
+        white-space: nowrap;
+    }
+
+    .small-refresh-btn {
+        background: linear-gradient(135deg, #0ea5e9, #7c3aed);
+        color: #ffffff;
+    }
+
+    .small-clear-btn {
+        height: 46px;
+        width: 90px;
+        background: rgba(148, 163, 184, 0.18);
+        color: #e2e8f0;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .small-view-btn {
+        background: rgba(14, 165, 233, 0.18);
+        color: #7dd3fc;
+        border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .small-edit-btn {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+        .small-refresh-btn:disabled,
+        .small-view-btn:disabled,
+        .small-edit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+    .patient-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .action-column {
+        text-align: right;
+    }
+
+    .patients-table th,
+    .patients-table td {
+        vertical-align: middle;
+    }
+
+    .empty-box {
+        padding: 22px;
+        border-radius: 18px;
+        background: rgba(148, 163, 184, 0.12);
+        color: #cbd5e1;
+        font-weight: 800;
+    }
+
+    .patient-edit-dialog {
+        width: min(860px, 94vw);
+    }
+
+    .patient-appointments-dialog {
+        width: min(920px, 94vw);
+    }
+
+    .patient-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    .pagination-bar {
+        margin-top: 20px;
+    }
+
+    @@media (max-width: 900px) {
+        .patient-toolbar,
+        .patient-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .small-clear-btn,
+        .small-refresh-btn,
+        .small-view-btn,
+        .small-edit-btn {
+            width: 100%;
+        }
+
+        .patient-actions {
+            justify-content: flex-start;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .action-column {
+            text-align: left;
+        }
+    }
+
+    .patient-pagination {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .page-btn {
+        min-width: 110px !important;
+        height: 42px !important;
+        padding: 8px 16px !important;
+        border-radius: 14px !important;
+        font-size: 13px !important;
+    }
+
+    .page-info {
+        color: #cbd5e1;
+        font-weight: 900;
+        font-size: 14px;
+    }
+
+    @@media (max-width: 700px) {
+        .patient-pagination {
+            flex-direction: column;
+        }
+
+        .page-btn {
+            width: 100% !important;
+        }
+    }
+</style>
+
 @code {
     private const int FirstPageNumber = 1;
     private const int MinimumPaginationPages = 1;
-    private const int PageSize = 8;
+    private const int PageSize = 5;
     private const int MessageAutoHideMilliseconds = 3000;
 
     private List<AdminPatientDto> patients = new();
@@ -281,6 +486,8 @@
     private string messageClass = "success-box";
 
     private bool isLoading;
+    private bool isSaving;
+    private bool isLoadingAppointments;
     private bool showEditDialog;
     private bool showAppointmentsDialog;
 
@@ -302,7 +509,8 @@
                     ContainsIgnoreCase(patient.FullName, searchText) ||
                     ContainsIgnoreCase(patient.PhoneNumber, searchText) ||
                     ContainsIgnoreCase(patient.Email, searchText) ||
-                    ContainsIgnoreCase(patient.Gender, searchText))
+                    ContainsIgnoreCase(patient.Gender, searchText) ||
+                    patient.PatientId.ToString().Contains(searchText, StringComparison.OrdinalIgnoreCase))
                 .ToList();
         }
     }
@@ -320,17 +528,33 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadPatients();
+        await LoadPatientsAsync();
     }
 
-    private async Task LoadPatients()
+    private async Task LoadPatientsAsync()
     {
         isLoading = true;
+        message = string.Empty;
 
         try
         {
             patients = await PatientService.GetPatientsAsync();
             currentPage = FirstPageNumber;
+        }
+        catch (HttpRequestException)
+        {
+            patients = new List<AdminPatientDto>();
+            ShowMessage("Could not load patients.", false);
+        }
+        catch (JsonException)
+        {
+            patients = new List<AdminPatientDto>();
+            ShowMessage("Patient data format is invalid.", false);
+        }
+        catch (InvalidOperationException)
+        {
+            patients = new List<AdminPatientDto>();
+            ShowMessage("Patient service is not available.", false);
         }
         finally
         {
@@ -341,6 +565,12 @@
     private void OnSearchInput(ChangeEventArgs args)
     {
         searchText = args.Value?.ToString() ?? string.Empty;
+        currentPage = FirstPageNumber;
+    }
+
+    private void ClearSearch()
+    {
+        searchText = string.Empty;
         currentPage = FirstPageNumber;
     }
 
@@ -355,42 +585,80 @@
             DateOfBirth = patient.DateOfBirth,
             Gender = patient.Gender,
             PhoneNumber = patient.PhoneNumber,
-            Email = patient.Email,
-           
+            Email = patient.Email
         };
 
         showEditDialog = true;
     }
 
-    private async Task SavePatient()
+    private async Task SavePatientAsync()
     {
+        if (editingPatientId <= 0)
+        {
+            ShowMessage("Invalid patient selected.", false);
+            return;
+        }
+
+        isSaving = true;
+
         var result = await PatientService.UpdatePatientAsync(
             editingPatientId,
             editForm);
+
+        isSaving = false;
 
         ShowMessage(result.Message, result.Success);
 
         if (result.Success)
         {
             CloseDialogs();
-            await LoadPatients();
+            await LoadPatientsAsync();
         }
     }
 
-    private async Task OpenAppointmentsDialog(AdminPatientDto patient)
+    private async Task OpenAppointmentsDialogAsync(AdminPatientDto patient)
     {
         selectedPatient = patient;
-        patientAppointments = await PatientService.GetPatientAppointmentsAsync(patient.PatientId);
+        patientAppointments = new List<AdminPatientAppointmentDto>();
         showAppointmentsDialog = true;
+        isLoadingAppointments = true;
+
+        try
+        {
+            patientAppointments = await PatientService.GetPatientAppointmentsAsync(
+                patient.PatientId);
+        }
+        catch (HttpRequestException)
+        {
+            ShowMessage("Could not load patient appointments.", false);
+        }
+        catch (JsonException)
+        {
+            ShowMessage("Appointment data format is invalid.", false);
+        }
+        catch (InvalidOperationException)
+        {
+            ShowMessage("Appointment service is not available.", false);
+        }
+        finally
+        {
+            isLoadingAppointments = false;
+        }
     }
 
     private void CloseDialogs()
     {
+        if (isSaving)
+        {
+            return;
+        }
+
         selectedPatient = null;
         showEditDialog = false;
         showAppointmentsDialog = false;
         editingPatientId = 0;
         patientAppointments = new List<AdminPatientAppointmentDto>();
+        editForm = new UpdateAdminPatientDto();
     }
 
     private void GoToPreviousPage()
@@ -435,14 +703,21 @@
             value.Contains(searchValue, StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string DisplayValue(string value)
+    private static string DisplayValue(string? value)
     {
         return string.IsNullOrWhiteSpace(value)
             ? "Not available"
-            : value;
+            : value.Trim();
     }
 
-    private static string GetInitial(string name)
+    private static string GetSafeText(string? value, string fallback)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? fallback
+            : value.Trim();
+    }
+
+    private static string GetInitial(string? name)
     {
         if (string.IsNullOrWhiteSpace(name))
         {

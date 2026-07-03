@@ -16,6 +16,7 @@ namespace HealthAxis_Admin.Services
 
         public AppointmentReportAdminService(HttpClient httpClient)
         {
+            ArgumentNullException.ThrowIfNull(httpClient);
             _httpClient = httpClient;
         }
 
@@ -27,12 +28,37 @@ namespace HealthAxis_Admin.Services
             return reports ?? new List<AdminAppointmentDetailDto>();
         }
 
-        public async Task<(bool Success, string Message)> ConfirmAppointmentAsync(
+        public Task<(bool Success, string Message)> ConfirmAppointmentAsync(
             int appointmentId)
         {
+            return UpdateAppointmentStatusAsync(
+                appointmentId,
+                "Confirmed",
+                "Appointment confirmed successfully.");
+        }
+
+        public Task<(bool Success, string Message)> CancelAppointmentAsync(
+            int appointmentId)
+        {
+            return UpdateAppointmentStatusAsync(
+                appointmentId,
+                "Cancelled",
+                "Appointment cancelled successfully.");
+        }
+
+        private async Task<(bool Success, string Message)> UpdateAppointmentStatusAsync(
+            int appointmentId,
+            string status,
+            string successMessage)
+        {
+            if (appointmentId <= 0)
+            {
+                return (false, "Invalid appointment selected.");
+            }
+
             var statusDto = new AdminUpdateAppointmentStatusDto
             {
-                Status = "Confirmed"
+                Status = status
             };
 
             using var response = await _httpClient.PutAsJsonAsync(
@@ -41,7 +67,7 @@ namespace HealthAxis_Admin.Services
 
             if (response.IsSuccessStatusCode)
             {
-                return (true, "Appointment confirmed successfully.");
+                return (true, successMessage);
             }
 
             var errorMessage = await ReadErrorMessageAsync(response);
@@ -66,6 +92,11 @@ namespace HealthAxis_Admin.Services
                 if (document.RootElement.TryGetProperty("message", out var messageElement))
                 {
                     return messageElement.GetString() ?? "Request failed.";
+                }
+
+                if (document.RootElement.TryGetProperty("title", out var titleElement))
+                {
+                    return titleElement.GetString() ?? "Request failed.";
                 }
             }
             catch (JsonException)

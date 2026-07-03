@@ -5,6 +5,22 @@
   </div>
 
   <div class="topbar-right">
+    @if (authService.role() === 'Doctor') {
+      <button
+        type="button"
+        class="doctor-status-toggle"
+        [class.inactive]="!isDoctorActive()"
+        [disabled]="statusUpdating()"
+        (click)="toggleDoctorStatus()"
+      >
+        @if (statusUpdating()) {
+          Updating...
+        } @else {
+          {{ isDoctorActive() ? 'Active' : 'Inactive' }}
+        }
+      </button>
+    }
+
     <div class="time-card">
       <span>🕘</span>
 
@@ -53,3 +69,15 @@
     </div>
   </div>
 </header>
+
+@if (statusMessage()) {
+  <div class="doctor-status-message success">
+    {{ statusMessage() }}
+  </div>
+}
+
+@if (statusError()) {
+  <div class="doctor-status-message error">
+    {{ statusError() }}
+  </div>
+}
