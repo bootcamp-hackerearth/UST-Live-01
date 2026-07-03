@@ -73,7 +73,12 @@
         <input type="date"
                [ngModel]="selectedDate()"
                (ngModelChange)="selectedDate.set($event); loadSlots()"
-               [min]="today" />
+               [min]="today"
+               [max]="maxBookingDate" />
+
+        <small class="date-help-text">
+          Appointments can be booked only from today up to 6 months ahead.
+        </small>
       </div>
 
       <div class="slots-heading-row">
@@ -123,12 +128,12 @@
           <small>Past</small>
           }
 
-          @if (slot.isPatientBusy) {
-          <small>Your booking</small>
+          @if (slot.isBooked) {
+          <small>Booked</small>
           }
 
-          @if (slot.isBooked && !slot.isPatientBusy) {
-          <small>Booked</small>
+          @if (slot.isPatientBusy) {
+          <small>Your Slot</small>
           }
         </button>
         }

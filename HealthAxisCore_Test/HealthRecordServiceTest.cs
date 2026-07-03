@@ -763,5 +763,273 @@ namespace HealthAxisCore_Api.Tests.Services
             await Assert.ThrowsAsync<UnauthorizedException>(() =>
                 service.GetByIdAsync(1, CreateUser("Doctor"), ct));
         }
+        [Fact]
+        public async Task GetByPatientIdAsync_WhenPatientClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Patient");
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetByPatientIdAsync(10, ct))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByPatientIdAsync(10, user, ct));
+
+            Assert.Equal("PatientId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByPatientIdAsync_WhenPatientRequestsAnotherPatientsRecords_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Patient", patientId: 99);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetByPatientIdAsync(10, ct))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByPatientIdAsync(10, user, ct));
+
+            Assert.Equal("You can view only your own health records", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByPatientIdAsync_WhenDoctorClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Doctor");
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetByPatientIdAsync(10, ct))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByPatientIdAsync(10, user, ct));
+
+            Assert.Equal("DoctorId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByPatientIdAsync_WhenDoctorRequestsRecords_ShouldReturnOnlyDoctorRecords()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Doctor", doctorId: 20);
+
+            var records = new List<HealthRecord>
+    {
+        CreateHealthRecord(healthRecordId: 1, patientId: 10, doctorId: 20),
+        CreateHealthRecord(healthRecordId: 2, patientId: 10, doctorId: 99)
+    };
+
+            var filteredRecords = records
+                .Where(record => record.DoctorId == 20)
+                .ToList();
+
+            var expectedDtos = new List<HealthRecordDto>
+    {
+        CreateHealthRecordDto(healthRecordId: 1, patientId: 10, doctorId: 20)
+    };
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetByPatientIdAsync(10, ct))
+                .ReturnsAsync(records);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<List<HealthRecordDto>>(
+                    It.Is<List<HealthRecord>>(list =>
+                        list.Count == 1 &&
+                        list[0].DoctorId == 20)))
+                .Returns(expectedDtos);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock,
+                mapperMock: mapperMock);
+
+            var result = await service.GetByPatientIdAsync(10, user, ct);
+
+            Assert.Single(result);
+            Assert.Equal(20, result[0].DoctorId);
+        }
+
+        [Fact]
+        public async Task GetByPatientIdAsync_WhenUserHasUnsupportedRole_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Unknown");
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetByPatientIdAsync(10, ct))
+                .ReturnsAsync(new List<HealthRecord>());
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByPatientIdAsync(10, user, ct));
+
+            Assert.Equal("Unauthorized access", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenAdmin_ShouldReturnRecordWithoutOwnershipCheck()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Admin");
+
+            var record = CreateHealthRecord(
+                healthRecordId: 5,
+                patientId: 10,
+                doctorId: 20);
+
+            var expectedDto = CreateHealthRecordDto(
+                healthRecordId: 5,
+                patientId: 10,
+                doctorId: 20);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetDetailsAsync(5, ct))
+                .ReturnsAsync(record);
+
+            var mapperMock = new Mock<IMapper>();
+
+            mapperMock
+                .Setup(x => x.Map<HealthRecordDto>(record))
+                .Returns(expectedDto);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock,
+                mapperMock: mapperMock);
+
+            var result = await service.GetByIdAsync(5, user, ct);
+
+            Assert.Equal(5, result.HealthRecordId);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenPatientClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Patient");
+
+            var record = CreateHealthRecord(patientId: 10);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetDetailsAsync(1, ct))
+                .ReturnsAsync(record);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(1, user, ct));
+
+            Assert.Equal("PatientId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenPatientAccessesAnotherPatientsRecord_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Patient", patientId: 99);
+
+            var record = CreateHealthRecord(patientId: 10);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetDetailsAsync(1, ct))
+                .ReturnsAsync(record);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(1, user, ct));
+
+            Assert.Equal("You can view only your own health records", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenDoctorClaimMissing_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Doctor");
+
+            var record = CreateHealthRecord(doctorId: 20);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetDetailsAsync(1, ct))
+                .ReturnsAsync(record);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(1, user, ct));
+
+            Assert.Equal("DoctorId claim missing", exception.Message);
+        }
+
+        [Fact]
+        public async Task GetByIdAsync_WhenDoctorAccessesAnotherDoctorsRecord_ShouldThrowUnauthorizedException()
+        {
+            var ct = CancellationToken.None;
+
+            var user = CreateUser(role: "Doctor", doctorId: 99);
+
+            var record = CreateHealthRecord(doctorId: 20);
+
+            var healthRecordRepositoryMock = new Mock<IHealthRecordRepository>();
+
+            healthRecordRepositoryMock
+                .Setup(x => x.GetDetailsAsync(1, ct))
+                .ReturnsAsync(record);
+
+            var service = CreateService(
+                healthRecordRepositoryMock: healthRecordRepositoryMock);
+
+            var exception = await Assert.ThrowsAsync<UnauthorizedException>(
+                () => service.GetByIdAsync(1, user, ct));
+
+            Assert.Equal("You can view only health records written by you", exception.Message);
+        }
     }
 }

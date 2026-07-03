@@ -264,8 +264,8 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             patient.IsActive = isActive;
 
-            var user = userManager.Users
-                .FirstOrDefault(user => user.PatientId == patientId);
+            var user = await userManager.Users
+                .FirstOrDefaultAsync(user => user.PatientId == patientId);
 
             if (user != null)
             {
@@ -293,8 +293,8 @@ namespace HealthAxisCore_Api.Services.Implementation
 
             doctor.IsActive = isActive;
 
-            var user = userManager.Users
-                .FirstOrDefault(user => user.DoctorId == doctorId);
+            var user = await userManager.Users
+                .FirstOrDefaultAsync(user => user.DoctorId == doctorId);
 
             if (user != null)
             {

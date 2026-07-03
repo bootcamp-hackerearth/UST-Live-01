@@ -377,3 +377,15 @@
   .slot-button.patient-busy-slot small {
     color: #7f1d1d;
   }
+
+.date-help-text {
+  display: block;
+  margin-top: 7px;
+  color: #1f4e5f;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+html[data-theme="dark"] .date-help-text {
+  color: #dbeafe;
+}

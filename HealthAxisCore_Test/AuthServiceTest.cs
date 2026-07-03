@@ -982,5 +982,236 @@ namespace HealthAxisCore_Api.Tests.Services
             jwtServiceMock.Verify(x => x.GenerateRefreshToken(), Times.Once);
             jwtServiceMock.Verify(x => x.GenerateAccessTokenAsync(It.Is<ApplicationUser>(u => u.Id == user.Id)), Times.Once);
         }
+        [Fact]
+        public async Task RegisterPatientAsync_WhenEmailDomainIsHealthAxis_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var request = CreateRegisterPatientDto(
+                email: "patient@healthaxis.com");
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.RegisterPatientAsync(request));
+
+            Assert.Equal("Patients cannot register using HealthAxis email domain", exception.Message);
+        }
+
+        [Fact]
+        public async Task RegisterPatientAsync_WhenDateOfBirthIsFuture_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var request = CreateRegisterPatientDto();
+
+            request.DateOfBirth = DateTime.UtcNow.Date.AddDays(1);
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.RegisterPatientAsync(request));
+
+            Assert.Equal("Date of birth cannot be greater than today's date", exception.Message);
+        }
+
+        [Fact]
+        public async Task RegisterPatientAsync_WhenDateOfBirthIsTooOld_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var request = CreateRegisterPatientDto();
+
+            request.DateOfBirth = DateTime.UtcNow.Date.AddYears(-121);
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.RegisterPatientAsync(request));
+
+            Assert.Equal("Please enter a valid date of birth", exception.Message);
+        }
+
+        [Fact]
+        public async Task ForgotPasswordAsync_WhenUserNotFound_ShouldThrowNotFoundException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ForgotPasswordDto
+            {
+                Email = "missing@test.com"
+            };
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.ForgotPasswordAsync(request));
+
+            Assert.Equal("User not found", exception.Message);
+        }
+
+        [Fact]
+        public async Task ForgotPasswordAsync_WhenUserExists_ShouldReturnResetToken()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser(
+                email: "user@test.com");
+
+            var request = new ForgotPasswordDto
+            {
+                Email = user.Email!
+            };
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync(user);
+
+            userManagerMock
+                .Setup(x => x.GeneratePasswordResetTokenAsync(user))
+                .ReturnsAsync("reset-token");
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var result = await service.ForgotPasswordAsync(request);
+
+            Assert.Equal("Password reset token generated successfully", result.Message);
+            Assert.Equal("reset-token", result.ResetToken);
+        }
+
+        [Fact]
+        public async Task ResetPasswordAsync_WhenUserNotFound_ShouldThrowNotFoundException()
+        {
+            using var context = CreateDbContext();
+
+            var request = new ResetPasswordDto
+            {
+                Email = "missing@test.com",
+                Token = "token",
+                NewPassword = "NewPassword@123"
+            };
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync((ApplicationUser?)null);
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<NotFoundException>(
+                () => service.ResetPasswordAsync(request));
+
+            Assert.Equal("User not found", exception.Message);
+        }
+
+        [Fact]
+        public async Task ResetPasswordAsync_WhenResetFails_ShouldThrowInvalidException()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser();
+
+            var request = new ResetPasswordDto
+            {
+                Email = user.Email!,
+                Token = "bad-token",
+                NewPassword = "NewPassword@123"
+            };
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync(user);
+
+            userManagerMock
+                .Setup(x => x.ResetPasswordAsync(user, request.Token, request.NewPassword))
+                .ReturnsAsync(IdentityResult.Failed(
+                    new IdentityError
+                    {
+                        Description = "Invalid token"
+                    }));
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var exception = await Assert.ThrowsAsync<InvalidException>(
+                () => service.ResetPasswordAsync(request));
+
+            Assert.Contains("Invalid token", exception.Message);
+        }
+
+        [Fact]
+        public async Task ResetPasswordAsync_WhenValid_ShouldReturnSuccessMessage()
+        {
+            using var context = CreateDbContext();
+
+            var user = CreateApplicationUser();
+
+            var request = new ResetPasswordDto
+            {
+                Email = user.Email!,
+                Token = "valid-token",
+                NewPassword = "NewPassword@123"
+            };
+
+            var userManagerMock = CreateUserManagerMock();
+
+            userManagerMock
+                .Setup(x => x.FindByEmailAsync(request.Email))
+                .ReturnsAsync(user);
+
+            userManagerMock
+                .Setup(x => x.ResetPasswordAsync(user, request.Token, request.NewPassword))
+                .ReturnsAsync(IdentityResult.Success);
+
+            var service = CreateService(
+                context,
+                userManagerMock: userManagerMock);
+
+            var result = await service.ResetPasswordAsync(request);
+
+            Assert.Equal("Password reset successfully", result);
+        }
     }
 }

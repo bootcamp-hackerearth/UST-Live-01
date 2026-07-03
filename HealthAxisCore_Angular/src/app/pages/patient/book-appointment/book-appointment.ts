@@ -38,18 +38,15 @@ interface SlotView {
 export class BookAppointment {
   doctorId = 0;
 
-  doctor = signal<DoctorDto | null>
-    (null);
+  doctor = signal<DoctorDto | null>(null);
 
   selectedDate = signal('');
 
   selectedSlot = signal('');
 
-  availableSlots = signal<string[]>
-    ([]);
+  availableSlots = signal<string[]>([]);
 
-  patientBookedSlots = signal<string[]>
-    ([]);
+  patientBookedSlots = signal<string[]>([]);
 
   isLoading = signal(false);
 
@@ -60,6 +57,8 @@ export class BookAppointment {
   successMessage = signal('');
 
   today = this.getTodayDate();
+
+  maxBookingDate = this.getMaxBookingDate();
 
   private readonly workingSlots = [
     '09:00',
@@ -72,54 +71,53 @@ export class BookAppointment {
     '16:00'
   ];
 
-  slotViews = computed<SlotView[]>
-    (() => {
-      const selectedDate = this.selectedDate();
+  slotViews = computed<SlotView[]>(() => {
+    const selectedDate = this.selectedDate();
 
-      const availableSlots = this.availableSlots();
+    const availableSlots = this.availableSlots();
 
-      const patientBookedSlots = this.patientBookedSlots();
+    const patientBookedSlots = this.patientBookedSlots();
 
-      return this.workingSlots.map(slot => {
-        const isPast = this.isPastSlot(selectedDate, slot);
+    return this.workingSlots.map(slot => {
+      const isPast = this.isPastSlot(selectedDate, slot);
 
-        const isReturnedAsAvailable = availableSlots.includes(slot);
+      const isReturnedAsAvailable = availableSlots.includes(slot);
 
-        const isPatientBusy = patientBookedSlots.includes(slot);
+      const isPatientBusy = patientBookedSlots.includes(slot);
 
-        const isBooked =
-          !!selectedDate &&
-          !isPast &&
-          !isReturnedAsAvailable;
+      const isBooked =
+        !!selectedDate &&
+        !isPast &&
+        !isReturnedAsAvailable;
 
-        const isAvailable =
-          !!selectedDate &&
-          isReturnedAsAvailable &&
-          !isPast &&
-          !isPatientBusy;
+      const isAvailable =
+        !!selectedDate &&
+        isReturnedAsAvailable &&
+        !isPast &&
+        !isPatientBusy;
 
-        let label = 'Available';
+      let label = 'Available';
 
-        if (!selectedDate) {
-          label = 'Select date';
-        } else if (isPast) {
-          label = 'Past slot';
-        } else if (isPatientBusy) {
-          label = 'You already have another appointment at this time';
-        } else if (isBooked) {
-          label = 'Booked';
-        }
+      if (!selectedDate) {
+        label = 'Select date';
+      } else if (isPast) {
+        label = 'Past slot';
+      } else if (isPatientBusy) {
+        label = 'You already have another appointment at this time';
+      } else if (isBooked) {
+        label = 'Booked';
+      }
 
-        return {
-          time: slot,
-          isAvailable,
-          isPast,
-          isBooked,
-          isPatientBusy,
-          label
-        };
-      });
+      return {
+        time: slot,
+        isAvailable,
+        isPast,
+        isBooked,
+        isPatientBusy,
+        label
+      };
     });
+  });
 
   constructor(
     private route: ActivatedRoute,
@@ -162,6 +160,11 @@ export class BookAppointment {
 
     if (this.selectedDate() < this.today) {
       this.errorMessage.set('Cannot check availability for a past date.');
+      return;
+    }
+
+    if (this.selectedDate() > this.maxBookingDate) {
+      this.errorMessage.set('Appointments can be booked only up to 6 months from today.');
       return;
     }
 
@@ -242,6 +245,16 @@ export class BookAppointment {
       return;
     }
 
+    if (this.selectedDate() < this.today) {
+      this.errorMessage.set('Cannot book an appointment for a past date.');
+      return;
+    }
+
+    if (this.selectedDate() > this.maxBookingDate) {
+      this.errorMessage.set('Appointments can be booked only up to 6 months from today.');
+      return;
+    }
+
     if (!this.selectedSlot()) {
       this.errorMessage.set('Please select an available time slot.');
       return;
@@ -287,6 +300,14 @@ export class BookAppointment {
     }
 
     if (!this.selectedDate() || !this.selectedSlot()) {
+      return false;
+    }
+
+    if (this.selectedDate() < this.today) {
+      return false;
+    }
+
+    if (this.selectedDate() > this.maxBookingDate) {
       return false;
     }
 
@@ -355,6 +376,20 @@ export class BookAppointment {
     const month = String(today.getMonth() + 1).padStart(2, '0');
 
     const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  private getMaxBookingDate(): string {
+    const maxDate = new Date();
+
+    maxDate.setMonth(maxDate.getMonth() + 6);
+
+    const year = maxDate.getFullYear();
+
+    const month = String(maxDate.getMonth() + 1).padStart(2, '0');
+
+    const day = String(maxDate.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
   }

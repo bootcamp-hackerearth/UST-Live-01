@@ -309,7 +309,7 @@ namespace HealthAxisCore_Api.Services.Implementation
         }
         public async Task<string> ChangeFirstLoginPasswordAsync(
     ChangeFirstLoginPasswordDto request,
-    ClaimsPrincipal claimsPrincipal,
+    ClaimsPrincipal users,
     CancellationToken ct = default)
         {
             if (request.NewPassword != request.ConfirmPassword)
@@ -317,7 +317,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new InvalidException("New password and confirm password do not match");
             }
 
-            var userId = claimsPrincipal
+            var userId = users
                 .FindFirst(ClaimTypes.NameIdentifier)
                 ?.Value;
 
@@ -385,7 +385,7 @@ namespace HealthAxisCore_Api.Services.Implementation
 
         public async Task<string> ChangePasswordAsync(
     ChangePasswordDto request,
-    ClaimsPrincipal claimsPrincipal,
+    ClaimsPrincipal users,
     CancellationToken ct = default)
         {
             if (request.NewPassword != request.ConfirmPassword)
@@ -393,7 +393,7 @@ namespace HealthAxisCore_Api.Services.Implementation
                 throw new InvalidException("New password and confirm password do not match");
             }
 
-            var userId = claimsPrincipal
+            var userId = users
                 .FindFirst(ClaimTypes.NameIdentifier)
                 ?.Value;
 
