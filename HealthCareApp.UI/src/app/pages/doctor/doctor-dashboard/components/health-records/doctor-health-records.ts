@@ -31,7 +31,7 @@ export class DoctorHealthRecords implements OnInit {
   selectedRecord?: HealthRecordDto;
   isModalOpen = false;
 
-  constructor(private healthRecordApiService: HealthRecordApiService) {
+  constructor(private readonly healthRecordApiService: HealthRecordApiService) {
   }
 
   ngOnInit(): void {

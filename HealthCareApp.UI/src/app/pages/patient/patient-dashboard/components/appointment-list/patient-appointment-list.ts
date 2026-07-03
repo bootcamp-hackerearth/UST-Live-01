@@ -46,7 +46,7 @@ export class PatientAppointmentList {
 
   @Output() refreshDashboard = new EventEmitter<void>();
 
-  constructor(private appointmentApiService: AppointmentApiService) {
+  constructor(private readonly appointmentApiService: AppointmentApiService) {
     this.loadAppointments();
   }
 

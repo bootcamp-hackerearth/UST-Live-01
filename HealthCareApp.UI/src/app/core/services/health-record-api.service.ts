@@ -28,7 +28,7 @@ export interface AddHealthRecordRequest {
 export class HealthRecordApiService {
   private readonly apiUrl = 'https://localhost:7250/api/HealthRecords';
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
   }
 
   getMyHealthRecords(query: HealthRecordQuery): Observable<PagedResponse<HealthRecordDto>> {

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HealthCareApp.Shared.Dtos.Patients;
-using HealthCareApp.Shared.Dtos.Auth;
 
 
 namespace HealthCareApp.Controllers

@@ -1,7 +1,9 @@
 <section class="dd-page">
 
-  <aside class="dd-sidebar" [class.open]="isSidebarOpen">
-
+<aside
+  class="dd-sidebar"
+  [class.open]="isSidebarOpen"
+  aria-label="Doctor dashboard navigation">
     <div class="dd-brand">
       <div class="dd-brand-logo">
         HX
@@ -246,8 +248,9 @@
               </div>
             </div>
 
-            <aside class="dd-chart-card">
-              <div class="dd-donut-wrap">
+<aside
+  class="dd-chart-card"
+  aria-label="Doctor dashboard overview chart">              <div class="dd-donut-wrap">
                 <div class="dd-donut" [style.background]="chartBackground">
                   <div class="dd-donut-center">
 <strong>{{ totalOverviewCount }}</strong>                    <span>Total Items</span>

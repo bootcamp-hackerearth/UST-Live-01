@@ -81,8 +81,8 @@ export class DoctorAppointmentList implements OnInit {
   @Output() doctorToast = new EventEmitter<DoctorToastEvent>();
 
   constructor(
-    private appointmentApiService: AppointmentApiService,
-    private healthRecordApiService: HealthRecordApiService
+    private readonly appointmentApiService: AppointmentApiService,
+    private readonly healthRecordApiService: HealthRecordApiService
   ) {
   }
 

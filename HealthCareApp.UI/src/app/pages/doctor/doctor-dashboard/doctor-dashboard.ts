@@ -95,11 +95,11 @@ export class DoctorDashboard implements OnInit, OnDestroy {
   private toastTimer?: ReturnType<typeof setTimeout>;
 
   constructor(
-    private authService: AuthService,
-    private doctorApiService: DoctorApiService,
-    private appointmentApiService: AppointmentApiService,
-    private healthRecordApiService: HealthRecordApiService,
-    private router: Router
+    private readonly authService: AuthService,
+    private readonly doctorApiService: DoctorApiService,
+    private readonly appointmentApiService: AppointmentApiService,
+    private readonly healthRecordApiService: HealthRecordApiService,
+    private readonly router: Router
   ) {
   }
 
@@ -138,20 +138,19 @@ export class DoctorDashboard implements OnInit, OnDestroy {
     return this.recentHealthRecords[0];
   }
 
-get totalOverviewCount(): number {
-  return (
-    this.summary.upcomingCount +
-    this.summary.pendingCount +
-    this.summary.confirmedCount +
-    this.summary.completedCount +
-    this.summary.healthRecordCount
-  );
-}
+  get totalOverviewCount(): number {
+    return (
+      this.summary.upcomingCount +
+      this.summary.pendingCount +
+      this.summary.confirmedCount +
+      this.summary.completedCount +
+      this.summary.healthRecordCount
+    );
+  }
 
-get chartTotalCount(): number {
-  return this.totalOverviewCount > 0 ? this.totalOverviewCount : 1;
-}
-
+  get chartTotalCount(): number {
+    return this.totalOverviewCount > 0 ? this.totalOverviewCount : 1;
+  }
 
   get upcomingPercentage(): number {
     return this.calculatePercentage(this.summary.upcomingCount);
@@ -404,11 +403,15 @@ get chartTotalCount(): number {
       next: (result) => {
         this.doctor = result.doctor;
 
-        this.upcomingAppointments = result.upcomingAppointments.sort(
+        const sortedUpcomingAppointments = [...result.upcomingAppointments];
+
+        sortedUpcomingAppointments.sort(
           (a: AppointmentDto, b: AppointmentDto) =>
             new Date(a.scheduledDate).getTime() -
             new Date(b.scheduledDate).getTime()
         );
+
+        this.upcomingAppointments = sortedUpcomingAppointments;
 
         this.recentHealthRecords = result.healthRecords.items;
 
@@ -431,10 +434,9 @@ get chartTotalCount(): number {
     });
   }
 
- private calculatePercentage(value: number): number {
-  return Math.round((value / this.chartTotalCount) * 100);
-}
-
+  private calculatePercentage(value: number): number {
+    return Math.round((value / this.chartTotalCount) * 100);
+  }
 
   private resetPasswordForm(): void {
     this.passwordForm = {

@@ -49,7 +49,7 @@ export class AuthService {
   private readonly expiryKey = 'healthaxis_token_expiry';
   private readonly mustChangePasswordKey = 'healthaxis_must_change_password';
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
   }
 
   login(request: LoginRequest): Observable<AuthResponse> {
@@ -182,8 +182,8 @@ export class AuthService {
     }
 
     const base64Payload = tokenParts[1]
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
+      .replaceAll(/-/g, '+')
+      .replaceAll(/_/g, '/');
 
     const decodedPayload = atob(base64Payload);
 

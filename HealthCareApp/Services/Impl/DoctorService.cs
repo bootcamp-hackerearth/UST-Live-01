@@ -7,6 +7,7 @@ using HealthCareApp.Shared.Dtos.Doctors;
 using HealthCareApp.Shared.Dtos.Pagination;
 using HealthCareApp.Shared.Enums;
 using Microsoft.AspNetCore.Identity;
+using System.Text.RegularExpressions;
 
 namespace HealthCareApp.Services
 {
@@ -20,6 +21,11 @@ namespace HealthCareApp.Services
         private const string DoctorEntityName = "Doctor";
         private const string DoctorRoleName = "Doctor";
         private const string DoctorDetailsRequiredMessage = "Doctor details are required.";
+
+        private static readonly Regex DoctorFullNameRegex = new(
+            @"^[A-Za-z]+(?: [A-Za-z]+)*$",
+            RegexOptions.Compiled | RegexOptions.CultureInvariant,
+            TimeSpan.FromMilliseconds(250));
 
         public async Task<List<DoctorDto>> GetAllDoctorsAsync()
         {
@@ -46,27 +52,27 @@ namespace HealthCareApp.Services
             {
                 string searchTerm = query.SearchTerm.Trim();
 
-                filteredDoctors = filteredDoctors.Where(d =>
-                    d.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    d.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
+                filteredDoctors = filteredDoctors.Where(doctor =>
+                    doctor.DoctorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    doctor.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase));
             }
 
             if (query.Specialisation is not null)
             {
-                filteredDoctors = filteredDoctors.Where(d =>
-                    d.Specialisation == query.Specialisation.Value);
+                filteredDoctors = filteredDoctors.Where(doctor =>
+                    doctor.Specialisation == query.Specialisation.Value);
             }
 
             if (query.IsActive is not null)
             {
-                filteredDoctors = filteredDoctors.Where(d =>
-                    d.IsActive == query.IsActive.Value);
+                filteredDoctors = filteredDoctors.Where(doctor =>
+                    doctor.IsActive == query.IsActive.Value);
             }
 
             int totalRecords = filteredDoctors.Count();
 
             var pagedDoctors = filteredDoctors
-                .OrderBy(d => d.DoctorId)
+                .OrderBy(doctor => doctor.DoctorId)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -151,7 +157,7 @@ namespace HealthCareApp.Services
 
             if (!createUserResult.Succeeded)
             {
-                var errors = string.Join(",", createUserResult.Errors.Select(e => e.Description));
+                var errors = string.Join(",", createUserResult.Errors.Select(error => error.Description));
                 throw new BusinessRuleException(errors);
             }
 
@@ -166,7 +172,7 @@ namespace HealthCareApp.Services
             {
                 await userManager.DeleteAsync(identityUser);
 
-                var errors = string.Join(",", roleResult.Errors.Select(e => e.Description));
+                var errors = string.Join(",", roleResult.Errors.Select(error => error.Description));
                 throw new BusinessRuleException(errors);
             }
 
@@ -255,7 +261,9 @@ namespace HealthCareApp.Services
             return mapper.Map<DoctorDto>(doctor);
         }
 
-        public async Task<List<SlotAvailabilityDto>> GetDoctorAvailabilityAsync(int doctorId, DateTime? date)
+        public async Task<List<SlotAvailabilityDto>> GetDoctorAvailabilityAsync(
+            int doctorId,
+            DateTime? date)
         {
             ValidateDoctorId(doctorId);
 
@@ -340,9 +348,7 @@ namespace HealthCareApp.Services
 
             string trimmedFullName = fullName.Trim();
 
-            if (!System.Text.RegularExpressions.Regex.IsMatch(
-                    trimmedFullName,
-                    @"^[A-Za-z]+(?: [A-Za-z]+)*$"))
+            if (!DoctorFullNameRegex.IsMatch(trimmedFullName))
             {
                 throw new BusinessRuleException(
                     "Doctor name can contain only letters and single spaces between words.");

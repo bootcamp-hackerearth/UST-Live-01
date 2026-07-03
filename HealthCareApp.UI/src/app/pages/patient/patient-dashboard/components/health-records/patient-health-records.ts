@@ -1,4 +1,4 @@
-import { Component,OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize, timeout } from 'rxjs';
 
@@ -31,10 +31,10 @@ export class PatientHealthRecords {
   selectedRecord?: HealthRecordDto;
   isModalOpen = false;
 
-  constructor(private healthRecordApiService: HealthRecordApiService) {
+  constructor(private readonly healthRecordApiService: HealthRecordApiService) {
     this.loadRecords();
   }
-
+  
   get hasActiveFilters(): boolean {
     return (
       this.searchTerm.trim().length > 0 ||

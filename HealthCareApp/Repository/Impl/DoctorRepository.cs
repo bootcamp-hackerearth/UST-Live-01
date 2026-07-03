@@ -1,12 +1,8 @@
 ﻿using HealthCareApp.Data;
-
 using HealthCareApp.Models;
-
 using HealthCareApp.Repository.Interface;
-
-using Microsoft.EntityFrameworkCore;
-
 using HealthCareApp.Shared.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthCareApp.Repository.Impl
 {
@@ -14,7 +10,8 @@ namespace HealthCareApp.Repository.Impl
     {
         private readonly HealthAxisDbContext _context;
 
-        public DoctorRepository(HealthAxisDbContext context) : base(context)
+        public DoctorRepository(HealthAxisDbContext context)
+            : base(context)
         {
             _context = context;
         }
@@ -22,38 +19,48 @@ namespace HealthCareApp.Repository.Impl
         public async Task<List<Doctor>> GetAllActiveAsync(CancellationToken ct = default)
         {
             return await _context.Doctors
-                .Where(d => d.IsActive)
+                .Where(doctor => doctor.IsActive)
                 .ToListAsync(ct);
         }
 
-        public async Task<List<Doctor>> GetBySpecialisationAsync(SpecialisationType specialisation, CancellationToken ct = default)
+        public async Task<List<Doctor>> GetBySpecialisationAsync(
+            SpecialisationType specialisation,
+            CancellationToken ct = default)
         {
             return await _context.Doctors
-                .Where(d => d.Specialisation == specialisation)
+                .Where(doctor => doctor.Specialisation == specialisation)
                 .ToListAsync(ct);
         }
 
-        public async Task<List<Doctor>> GetActiveBySpecialisationAsync(SpecialisationType specialisation, CancellationToken ct = default)
+        public async Task<List<Doctor>> GetActiveBySpecialisationAsync(
+            SpecialisationType specialisation,
+            CancellationToken ct = default)
         {
             return await _context.Doctors
-                .Where(d => d.IsActive && d.Specialisation == specialisation)
+                .Where(doctor =>
+                    doctor.IsActive &&
+                    doctor.Specialisation == specialisation)
                 .ToListAsync(ct);
-
         }
-        public async Task<bool> ExistsByEmailAsync(string email, CancellationToken ct = default)
+
+        public async Task<bool> ExistsByEmailAsync(
+            string email,
+            CancellationToken ct = default)
         {
-            string normalizedEmail = email.ToUpperInvariant();
+            string normalizedEmail = email.Trim().ToLower();
 
             return await _context.Doctors
-                .AnyAsync(d => d.Email.ToUpper() == normalizedEmail, ct);
+                .AnyAsync(doctor => doctor.Email == normalizedEmail, ct);
         }
+
         public async Task<Doctor?> GetByIdentityUserIdAsync(
-    string identityUserId,
-    CancellationToken ct = default)
+            string identityUserId,
+            CancellationToken ct = default)
         {
             return await _context.Doctors
-                .FirstOrDefaultAsync(d => d.IdentityUserId == identityUserId, ct);
+                .FirstOrDefaultAsync(
+                    doctor => doctor.IdentityUserId == identityUserId,
+                    ct);
         }
-
     }
-    }
+}

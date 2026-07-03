@@ -54,8 +54,8 @@ export class DoctorProfile implements OnInit {
   @Output() doctorToast = new EventEmitter<DoctorToastEvent>();
 
   constructor(
-    private doctorApiService: DoctorApiService,
-    private authService: AuthService
+    private readonly doctorApiService: DoctorApiService,
+    private readonly authService: AuthService
   ) {
   }
 

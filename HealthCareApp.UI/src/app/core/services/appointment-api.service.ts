@@ -50,7 +50,7 @@ interface ApiAppointmentDto {
 export class AppointmentApiService {
   private readonly apiUrl = 'https://localhost:7250/api/Appointments';
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
   }
 
   bookAppointment(request: BookAppointmentRequest): Observable<AppointmentDto> {

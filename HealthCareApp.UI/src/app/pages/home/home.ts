@@ -73,9 +73,9 @@ export class Home implements OnInit {
 
   todayDate = '';
 
-  namePattern = '^[A-Za-z][A-Za-z\\s]{1,99}$';
-  phonePattern = '^[0-9]{10}$';
-  passwordPattern = '^(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,}$';
+namePattern = String.raw`^[A-Za-z][A-Za-z\s]{1,99}$`;
+phonePattern = '^[0-9]{10}$';
+passwordPattern = String.raw`^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$`;
 
   genderOptions: string[] = [
     'Male',
@@ -127,11 +127,11 @@ export class Home implements OnInit {
     confirmPassword: ''
   };
 
-  constructor(
-    private router: Router,
-    private authService: AuthService
-  ) {
-  }
+ constructor(
+  private readonly router: Router,
+  private readonly authService: AuthService
+) {
+}
 
   ngOnInit(): void {
     this.todayDate = new Date().toISOString().split('T')[0];
@@ -324,9 +324,8 @@ export class Home implements OnInit {
     if (role === 'Admin') {
       const token = this.authService.getToken();
 
-      window.location.href =
-        `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
-
+    globalThis.location.href =
+  `https://localhost:7075/admin-login-bridge?token=${encodeURIComponent(token)}`;
       return;
     }
 

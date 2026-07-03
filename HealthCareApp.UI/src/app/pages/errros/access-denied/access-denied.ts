@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrl: './access-denied.css'
 })
 export class AccessDenied {
-  constructor(private router: Router) {
+  constructor(private readonly router: Router) {
   }
 
   goHome(): void {

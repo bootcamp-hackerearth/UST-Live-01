@@ -14,9 +14,10 @@ namespace HealthCareApp.Repository.Impl
         {
             _context = context;
         }
+
         public async Task<List<Appointment>> GetAppointmentsByDateAsync(
-    DateTime scheduledDate,
-    CancellationToken ct = default)
+            DateTime scheduledDate,
+            CancellationToken ct = default)
         {
             var selectedDate = scheduledDate.Date;
 
@@ -25,6 +26,7 @@ namespace HealthCareApp.Repository.Impl
                 .Where(a => a.ScheduledDate.Date == selectedDate)
                 .ToListAsync(ct);
         }
+
         public async Task<List<Appointment>> GetAppointmentsForFilterOptionsAsync(CancellationToken ct = default)
         {
             return await _context.Appointments
@@ -45,12 +47,12 @@ namespace HealthCareApp.Repository.Impl
                 .ToListAsync(ct);
         }
 
-        public new async Task<Appointment?> GetByIdAsync(int appointmentId, CancellationToken ct = default)
+        public new async Task<Appointment?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Doctor)
-                .FirstOrDefaultAsync(a => a.AppointmentId == appointmentId, ct);
+                .FirstOrDefaultAsync(a => a.AppointmentId == id, ct);
         }
 
         public async Task<List<Appointment>> GetByPatientIdAsync(int patientId, CancellationToken ct = default)
@@ -94,10 +96,11 @@ namespace HealthCareApp.Repository.Impl
                 .OrderBy(a => a.ScheduledDate)
                 .ToListAsync(ct);
         }
+
         public async Task<List<string>> GetBookedTimeSlotsByDoctorAndDateAsync(
-    int doctorId,
-    DateTime date,
-    CancellationToken ct = default)
+            int doctorId,
+            DateTime date,
+            CancellationToken ct = default)
         {
             var selectedDate = date.Date;
 
@@ -111,6 +114,7 @@ namespace HealthCareApp.Repository.Impl
                 .Distinct()
                 .ToListAsync(ct);
         }
+
         public async Task<List<Appointment>> GetUpcomingAppointmentsByPatientIdAsync(int patientId, CancellationToken ct = default)
         {
             return await _context.Appointments

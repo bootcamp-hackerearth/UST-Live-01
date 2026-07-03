@@ -1,13 +1,10 @@
-﻿using HealthCareApp.Shared.Dtos.Auth;
-using HealthCareApp.Services;
+﻿using HealthCareApp.Services;
+using HealthCareApp.Shared.Dtos.Pagination;
+using HealthCareApp.Shared.Dtos.Patients;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using HealthCareApp.Shared.Dtos.Pagination;
-using HealthCareApp.Shared.Dtos.Patients;
-
-
 
 namespace HealthCareApp.Controllers
 {
@@ -15,6 +12,8 @@ namespace HealthCareApp.Controllers
     [ApiController]
     public class PatientsController : ControllerBase
     {
+        private const string InvalidUserTokenMessage = "Invalid user token.";
+
         private readonly IPatientService _patientService;
         private readonly IHealthRecordService _healthRecordService;
 
@@ -25,10 +24,11 @@ namespace HealthCareApp.Controllers
             _patientService = patientService;
             _healthRecordService = healthRecordService;
         }
+
         [HttpGet("{patientId:int}/health-records")]
         [Authorize(
-    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-    Roles = "Doctor")]
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Doctor")]
         public async Task<IActionResult> GetPatientHealthRecords([FromRoute] int patientId)
         {
             var identityUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -37,7 +37,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -47,11 +47,11 @@ namespace HealthCareApp.Controllers
 
             return Ok(records);
         }
-        // Admin only: view all patients.
+
         [HttpGet]
         [Authorize(
-    AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
-    Roles = "Admin")]
+            AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
+            Roles = "Admin")]
         public async Task<IActionResult> GetAllPatients([FromQuery] PatientPaginationQueryDto query)
         {
             var patients = await _patientService.GetAllPatientsPagedAsync(query);
@@ -59,8 +59,6 @@ namespace HealthCareApp.Controllers
             return Ok(patients);
         }
 
-        // Patient only: view own profile.
-        // Uses logged-in user's IdentityUserId from JWT token.
         [HttpGet("me")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -73,7 +71,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -82,8 +80,6 @@ namespace HealthCareApp.Controllers
             return Ok(patient);
         }
 
-        // Patient only: update own profile.
-        // Uses logged-in user's IdentityUserId from JWT token.
         [HttpPut("me")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -96,7 +92,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -105,8 +101,6 @@ namespace HealthCareApp.Controllers
             return Ok(patient);
         }
 
-        // Patient only: view own health records.
-        // Patient cannot change patientId in URL here.
         [HttpGet("me/health-records")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -119,7 +113,7 @@ namespace HealthCareApp.Controllers
             {
                 return Unauthorized(new
                 {
-                    Message = "Invalid user token."
+                    Message = InvalidUserTokenMessage
                 });
             }
 
@@ -130,8 +124,6 @@ namespace HealthCareApp.Controllers
             return Ok(records);
         }
 
-        // Admin only: view patient by id.
-        // Patient should not use this anymore.
         [HttpGet("{patientId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -143,8 +135,6 @@ namespace HealthCareApp.Controllers
             return Ok(patient);
         }
 
-        // Admin only: update patient by id.
-        // Patient should use PUT /api/Patients/me instead.
         [HttpPut("{patientId:int}")]
         [Authorize(
             AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,
@@ -157,9 +147,5 @@ namespace HealthCareApp.Controllers
 
             return Ok(patient);
         }
-
-        // Admin and Doctor: view patient health records by patient id.
-        // Patient should use GET /api/Patients/me/health-records instead.
-      
     }
 }

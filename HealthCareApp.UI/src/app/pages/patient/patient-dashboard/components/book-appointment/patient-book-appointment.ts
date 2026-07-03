@@ -60,10 +60,10 @@ export class PatientBookAppointment implements OnInit {
   @Output() bookingSuccess = new EventEmitter<void>();
 
   constructor(
-    private patientApiService: PatientApiService,
-    private doctorApiService: DoctorApiService,
-    private appointmentApiService: AppointmentApiService,
-    private cdr: ChangeDetectorRef
+    private readonly patientApiService: PatientApiService,
+    private readonly doctorApiService: DoctorApiService,
+    private readonly appointmentApiService: AppointmentApiService,
+    private readonly cdr: ChangeDetectorRef
   ) {
     this.todayDate = new Date().toISOString().split('T')[0];
     this.maxBookingDate = this.getDateAfterDays(30);
@@ -135,13 +135,17 @@ export class PatientBookAppointment implements OnInit {
       next: (doctors: DoctorDto[]) => {
         this.doctors = doctors ?? [];
 
-        this.specialisations = Array.from(
+        const specialisations = Array.from(
           new Set(
             this.doctors
               .filter((doctor: DoctorDto) => doctor.isActive)
               .map((doctor: DoctorDto) => doctor.specialisation)
           )
-        ).sort();
+        );
+
+        specialisations.sort();
+
+        this.specialisations = specialisations;
 
         if (this.doctors.length === 0) {
           this.message = 'No active doctors are available for booking right now.';
@@ -306,7 +310,7 @@ export class PatientBookAppointment implements OnInit {
       return false;
     }
 
-    return slotStartTime.getTime() <= new Date().getTime();
+    return slotStartTime.getTime() <= Date.now();
   }
 
   isFutureBeyondBookingWindow(): boolean {
@@ -522,7 +526,7 @@ export class PatientBookAppointment implements OnInit {
 
   private scrollDownForSpecialisationSearch(): void {
     setTimeout(() => {
-      window.scrollBy({
+      globalThis.scrollBy({
         top: 260,
         behavior: 'smooth'
       });
@@ -551,7 +555,8 @@ export class PatientBookAppointment implements OnInit {
       return null;
     }
 
-    const match = startTime.match(/^(\d{1,2}):(\d{2})\s?(AM|PM)$/i);
+    const slotTimeRegex = /^(\d{1,2}):(\d{2})\s?(AM|PM)$/i;
+    const match = slotTimeRegex.exec(startTime);
 
     if (!match) {
       return null;

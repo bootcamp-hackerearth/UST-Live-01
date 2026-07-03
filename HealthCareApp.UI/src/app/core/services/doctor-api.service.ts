@@ -33,7 +33,7 @@ interface ApiSlotAvailabilityDto {
 export class DoctorApiService {
   private readonly apiUrl = 'https://localhost:7250/api/Doctors';
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
   }
 
   getMyProfile(): Observable<DoctorDto> {
@@ -136,7 +136,7 @@ export class DoctorApiService {
 
   private formatSpecialisationText(value: string): string {
     return value
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replaceAll(/([a-z])([A-Z])/g, '$1 $2')
       .replace('GeneralPractitioner', 'General Practitioner')
       .replace('OrthopedicSurgeon', 'Orthopedic Surgeon');
   }

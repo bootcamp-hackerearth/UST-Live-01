@@ -31,7 +31,7 @@ interface ApiPatientDto {
 export class PatientApiService {
   private readonly apiUrl = 'https://localhost:7250/api/Patients';
 
-  constructor(private http: HttpClient) {
+  constructor(private readonly http: HttpClient) {
   }
 
   getMyProfile(): Observable<PatientDto> {

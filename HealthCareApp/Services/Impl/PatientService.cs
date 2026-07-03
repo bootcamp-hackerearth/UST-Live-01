@@ -29,10 +29,7 @@ namespace HealthCareApp.Services
 
         public async Task<PagedResponse<PatientDto>> GetAllPatientsPagedAsync(PatientPaginationQueryDto query)
         {
-            if (query is null)
-            {
-                query = new PatientPaginationQueryDto();
-            }
+            query ??= new PatientPaginationQueryDto();
 
             int pageNumber = query.PageNumber <= 0 ? 1 : query.PageNumber;
 
@@ -48,38 +45,38 @@ namespace HealthCareApp.Services
             {
                 string searchTerm = query.SearchTerm.Trim();
 
-                filteredPatients = filteredPatients.Where(p =>
-                    p.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    p.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    p.PhoneNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                    (!string.IsNullOrWhiteSpace(p.InsuranceID) &&
-                     p.InsuranceID.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
+                filteredPatients = filteredPatients.Where(patient =>
+                    patient.PatientName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    patient.Email.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    patient.PhoneNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    (!string.IsNullOrWhiteSpace(patient.InsuranceID) &&
+                     patient.InsuranceID.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)));
             }
 
             if (query.Gender is not null)
             {
-                filteredPatients = filteredPatients.Where(p =>
-                    p.Gender == query.Gender.Value);
+                filteredPatients = filteredPatients.Where(patient =>
+                    patient.Gender == query.Gender.Value);
             }
 
             if (query.HasInsurance is not null)
             {
                 if (query.HasInsurance.Value)
                 {
-                    filteredPatients = filteredPatients.Where(p =>
-                        !string.IsNullOrWhiteSpace(p.InsuranceID));
+                    filteredPatients = filteredPatients.Where(patient =>
+                        !string.IsNullOrWhiteSpace(patient.InsuranceID));
                 }
                 else
                 {
-                    filteredPatients = filteredPatients.Where(p =>
-                        string.IsNullOrWhiteSpace(p.InsuranceID));
+                    filteredPatients = filteredPatients.Where(patient =>
+                        string.IsNullOrWhiteSpace(patient.InsuranceID));
                 }
             }
 
             int totalRecords = filteredPatients.Count();
 
             var pagedPatients = filteredPatients
-                .OrderBy(p => p.PatientId)
+                .OrderBy(patient => patient.PatientId)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -117,6 +114,7 @@ namespace HealthCareApp.Services
             string patientName = dto.FullName.Trim().ToLower();
             string email = dto.Email.Trim().ToLower();
             string phoneNumber = dto.PhoneNumber.Trim();
+            string insuranceId = dto.InsuranceId?.Trim() ?? string.Empty;
             DateTime dateOfBirth = dto.DateOfBirth.Date;
 
             bool duplicate = await repository.IsDuplicatePatientAsync(
@@ -132,6 +130,10 @@ namespace HealthCareApp.Services
 
             var patient = mapper.Map<Patient>(dto);
 
+            patient.PatientName = patientName;
+            patient.Email = email;
+            patient.PhoneNumber = phoneNumber;
+            patient.InsuranceID = insuranceId;
             patient.DateOfBirth = dateOfBirth;
             patient.CreatedDate = DateTime.Now;
 
@@ -156,6 +158,7 @@ namespace HealthCareApp.Services
             string patientName = dto.FullName.Trim().ToLower();
             string email = dto.Email.Trim().ToLower();
             string phoneNumber = dto.PhoneNumber.Trim();
+            string insuranceId = dto.InsuranceId?.Trim() ?? string.Empty;
             DateTime dateOfBirth = dto.DateOfBirth.Date;
 
             bool duplicate = await repository.IsDuplicatePatientAsync(
@@ -173,8 +176,13 @@ namespace HealthCareApp.Services
             var patient = mapper.Map<Patient>(dto);
 
             patient.PatientId = patientId;
+            patient.PatientName = patientName;
+            patient.Email = email;
+            patient.PhoneNumber = phoneNumber;
+            patient.InsuranceID = insuranceId;
             patient.DateOfBirth = dateOfBirth;
             patient.CreatedDate = existingPatient.CreatedDate;
+            patient.IdentityUserId = existingPatient.IdentityUserId;
 
             var updatedPatient = await repository.UpdateAsync(patientId, patient);
 
@@ -215,15 +223,11 @@ namespace HealthCareApp.Services
                 throw new BusinessRuleException("Patient details are required.");
             }
 
-            if (dto.DateOfBirth.Date < MinimumDateOfBirth)
-            {
-                throw new BusinessRuleException("Date of birth cannot be before 01 Jan 1900.");
-            }
-
-            if (dto.DateOfBirth.Date > DateTime.Today)
-            {
-                throw new BusinessRuleException("Date of birth cannot be a future date.");
-            }
+            ValidatePatientCommonFields(
+                dto.FullName,
+                dto.DateOfBirth,
+                dto.Email,
+                dto.PhoneNumber);
 
             var existingPatient = await repository.GetByIdentityUserIdAsync(identityUserId);
 
@@ -232,11 +236,20 @@ namespace HealthCareApp.Services
                 throw new EntityNotFoundException("Patient profile for logged-in user", 0);
             }
 
+            string patientName = dto.FullName.Trim().ToLower();
+            string phoneNumber = dto.PhoneNumber.Trim();
+            string insuranceId = dto.InsuranceId?.Trim() ?? string.Empty;
+            DateTime dateOfBirth = dto.DateOfBirth.Date;
+
             var patient = mapper.Map<Patient>(dto);
 
             patient.PatientId = existingPatient.PatientId;
+            patient.PatientName = patientName;
             patient.IdentityUserId = existingPatient.IdentityUserId;
-            patient.Email = existingPatient.Email;
+            patient.Email = existingPatient.Email.Trim().ToLower();
+            patient.PhoneNumber = phoneNumber;
+            patient.InsuranceID = insuranceId;
+            patient.DateOfBirth = dateOfBirth;
             patient.CreatedDate = existingPatient.CreatedDate;
 
             var updatedPatient = await repository.UpdateAsync(existingPatient.PatientId, patient);
