@@ -1,6 +1,0 @@
-projectKey=HealthCare-APP
-serverUrl=http://localhost:9000
-serverVersion=26.1.0.118079
-dashboardUrl=http://localhost:9000/dashboard?id=HealthCare-APP
-ceTaskId=e5bc7887-36f3-4ab5-82d2-aa14f87b8066
-ceTaskUrl=http://localhost:9000/api/ce/task?id=e5bc7887-36f3-4ab5-82d2-aa14f87b8066

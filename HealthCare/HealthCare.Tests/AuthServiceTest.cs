@@ -1,15 +1,17 @@
-﻿using Xunit;
-using Moq;
-using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using HealthCare.Api.Services.Implementations;
-using HealthCare.Api.Repositories.Interfaces;
-using HealthCare.Api.Data;
+﻿using AutoMapper;
 using Healthcare.Shared.DTOs.Authentication;
-using HealthCare.Api.Models;
-using Microsoft.EntityFrameworkCore;
 using Healthcare.Shared.DTOs.Patient;
+using HealthCare.Api.Data;
+using HealthCare.Api.Models;
+using HealthCare.Api.Repositories.Interfaces;
+using HealthCare.Api.Services.Implementations;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
+
 
 namespace HealthCare.Api.Tests
 {
@@ -29,23 +31,25 @@ namespace HealthCare.Api.Tests
             _mapperMock = new Mock<IMapper>();
             _patientRepoMock = new Mock<IPatientRepository>();
             _doctorRepoMock = new Mock<IDoctorRepository>();
-            _configMock = new Mock<IConfiguration>();
 
-            //  JWT config setup
-
-            var configMock = new Mock<IConfiguration>();
             var sectionMock = new Mock<IConfigurationSection>();
 
-            sectionMock.Setup(s => s["Key"]).Returns("THIS_IS_A_SECRET_KEY_1234567891234");
-            sectionMock.Setup(s => s["Issuer"]).Returns("TestIssuer");
-            sectionMock.Setup(s => s["Audience"]).Returns("TestAudience");
-            sectionMock.Setup(s => s["AccessTokenExpirationMinutes"]).Returns("60");
+            sectionMock.Setup(s => s["Key"])
+                .Returns("THIS_IS_A_SECRET_KEY_1234567891234");
 
-            configMock.Setup(c => c.GetSection("Jwt"))
-                      .Returns(sectionMock.Object);
+            sectionMock.Setup(s => s["Issuer"])
+                .Returns("TestIssuer");
 
-            _configMock = configMock;
+            sectionMock.Setup(s => s["Audience"])
+                .Returns("TestAudience");
 
+            sectionMock.Setup(s => s["AccessTokenExpirationMinutes"])
+                .Returns("60");
+
+            _configMock = new Mock<IConfiguration>();
+
+            _configMock.Setup(c => c.GetSection("Jwt"))
+                .Returns(sectionMock.Object);
 
             var options = new DbContextOptionsBuilder<HealthCareDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -62,14 +66,20 @@ namespace HealthCare.Api.Tests
                 _context
             );
         }
-
         private Mock<UserManager<IdentityUser>> GetUserManagerMock()
         {
             var store = new Mock<IUserStore<IdentityUser>>();
 
             return new Mock<UserManager<IdentityUser>>(
                 store.Object,
-                null, null, null, null, null, null, null, null
+                Mock.Of<IOptions<IdentityOptions>>(),
+                Mock.Of<IPasswordHasher<IdentityUser>>(),
+                new List<IUserValidator<IdentityUser>>(),
+                new List<IPasswordValidator<IdentityUser>>(),
+                Mock.Of<ILookupNormalizer>(),
+                new IdentityErrorDescriber(),
+                Mock.Of<IServiceProvider>(),
+                Mock.Of<ILogger<UserManager<IdentityUser>>>()
             );
         }
 
@@ -134,7 +144,7 @@ namespace HealthCare.Api.Tests
             };
 
             _userManagerMock.Setup(u => u.FindByEmailAsync(dto.Email))
-                .ReturnsAsync((IdentityUser)null);
+                .ReturnsAsync((IdentityUser?)null);
 
             _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>(), dto.Password))
                 .ReturnsAsync(IdentityResult.Success);
@@ -179,7 +189,7 @@ namespace HealthCare.Api.Tests
             };
 
             _userManagerMock.Setup(u => u.FindByEmailAsync(dto.Email))
-                .ReturnsAsync((IdentityUser)null);
+                .ReturnsAsync((IdentityUser?)null);
 
             _userManagerMock.Setup(u => u.CreateAsync(It.IsAny<IdentityUser>(), dto.Password))
                 .ReturnsAsync(IdentityResult.Success);
@@ -202,7 +212,7 @@ namespace HealthCare.Api.Tests
         public async Task LoginAsync_ShouldThrow_WhenUserNotFound()
         {
             _userManagerMock.Setup(u => u.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((IdentityUser)null);
+                .ReturnsAsync((IdentityUser?)null);
 
             await Assert.ThrowsAsync<Exception>(() =>
                 _service.LoginAsync(new LoginDto
@@ -253,7 +263,7 @@ namespace HealthCare.Api.Tests
                 .ReturnsAsync(new List<string> { "Patient" });
 
             _patientRepoMock.Setup(p => p.GetByUserIdAsync(user.Id))
-                .ReturnsAsync((Patient)null);
+                .ReturnsAsync((Patient?)null);
 
             await Assert.ThrowsAsync<Exception>(() =>
                 _service.LoginAsync(new LoginDto
@@ -307,7 +317,7 @@ namespace HealthCare.Api.Tests
                 .ReturnsAsync(new List<string> { "Doctor" });
 
             _doctorRepoMock.Setup(d => d.GetByUserIdAsync(user.Id))
-                .ReturnsAsync((Doctor)null);
+                .ReturnsAsync((Doctor?)null);
 
             await Assert.ThrowsAsync<Exception>(() =>
                 _service.LoginAsync(new LoginDto

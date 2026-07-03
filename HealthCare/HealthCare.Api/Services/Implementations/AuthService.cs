@@ -111,7 +111,7 @@ namespace HealthCare.Api.Services.Implementations
             await _doctorRepo.AddAsync(doctor);
             await _context.SaveChangesAsync();
 
-            await _doctorRepo.CreateSlots(doctor.DoctorId, dto.TimeSlots);
+            await _doctorRepo.CreateSlots( doctor.DoctorId, dto.TimeSlots ?? new List<string>());
             await _context.SaveChangesAsync();
         }
 
@@ -121,12 +121,12 @@ namespace HealthCare.Api.Services.Implementations
             var user = await _userManager.FindByEmailAsync(dto.Email);
 
             if (user == null)
-                return null;
+                throw new Exception("User not found");
 
             var validPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
 
             if (!validPassword)
-                return null;
+                throw new Exception("Invalid password");
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -166,7 +166,7 @@ namespace HealthCare.Api.Services.Implementations
             }
             else
             {
-                throw new Exception("Doctor record not found");
+                throw new Exception("Unknown role");
             }
 
             return new AuthorResponseDto
@@ -194,11 +194,18 @@ namespace HealthCare.Api.Services.Implementations
             if (user == null)
                 throw new InvalidOperationException("User not found");
 
+            if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+                throw new ArgumentException("Current password is required");
+
+            if (string.IsNullOrWhiteSpace(dto.NewPassword))
+                throw new ArgumentException("New password is required");
+
             var result = await _userManager.ChangePasswordAsync(
                 user,
                 dto.CurrentPassword,
                 dto.NewPassword
             );
+
 
             if (!result.Succeeded)
                 throw new InvalidOperationException(

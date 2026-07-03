@@ -1,0 +1,3 @@
+V
+csharpsquidS1125'System.Exception' should not be thrown by user code.2
+ÙÙ 7

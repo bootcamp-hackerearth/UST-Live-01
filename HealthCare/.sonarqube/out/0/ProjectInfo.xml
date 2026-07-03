@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ProjectInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
-  <ProjectName>HealthCare.Api</ProjectName>
+  <ProjectName>Healthcare.Shared</ProjectName>
   <ProjectLanguage>C#</ProjectLanguage>
   <ProjectType>Product</ProjectType>
-  <ProjectGuid>8c953d2d-3e48-3ee0-cfcd-1b5df03c371a</ProjectGuid>
-  <FullPath>C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Api\HealthCare.Api.csproj</FullPath>
+  <ProjectGuid>e5f33f6d-2a5c-9b75-2722-0da94bad4863</ProjectGuid>
+  <FullPath>C:\Users\310521\source\repos\UST-Live-01\HealthCare\Healthcare.Shared\Healthcare.Shared.csproj</FullPath>
   <IsExcluded>false</IsExcluded>
   <AnalysisResultFiles>
     <AnalysisResultFile Id="FilesToAnalyze" Location="C:\Users\310521\source\repos\UST-Live-01\HealthCare\.sonarqube\conf\0\FilesToAnalyze.txt" />

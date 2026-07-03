@@ -7,10 +7,7 @@ import { AppointmentService } from '../../../core/services/appointment.service';
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule
-  ],
+  imports: [CommonModule,RouterModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })

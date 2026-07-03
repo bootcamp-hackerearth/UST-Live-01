@@ -1,266 +1,294 @@
-﻿//using AutoMapper;
-//using HealthCare.Api.Data;
-//using Healthcare.Shared.DTOs;
-//using Healthcare.Shared.DTOs.Patient;
-//using HealthCare.Api.Exceptions;
-//using HealthCare.Api.Models;
-//using HealthCare.Api.Repositories.Interfaces;
-//using HealthCare.Api.Services.Implementations;
-//using Microsoft.EntityFrameworkCore;
-//using Moq;
-//using System.Linq.Expressions;
+﻿using AutoMapper;
+using HealthCare.Api.Data;
+using Healthcare.Shared.DTOs;
+using Healthcare.Shared.DTOs.Patient;
+using HealthCare.Api.Exceptions;
+using HealthCare.Api.Models;
+using HealthCare.Api.Repositories.Interfaces;
+using HealthCare.Api.Services.Implementations;
+using Microsoft.EntityFrameworkCore;
+using Moq;
+using System.Linq.Expressions;
 
-//namespace HealthCare.Api.Tests
-//{
-//    public class PatientServiceTests
-//    {
-//        private readonly Mock<IRepository<Patient>> _repoMock;
-//        private readonly Mock<IMapper> _mapperMock;
-//        private readonly HealthCareDbContext _context;
-//        private readonly PatientService _service;
-
-//        public PatientServiceTests()
-//        {
-//            _repoMock = new Mock<IRepository<Patient>>();
-//            _mapperMock = new Mock<IMapper>();
-
-//            var options = new DbContextOptionsBuilder<HealthCareDbContext>()
-//                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-//                .Options;
-
-//            _context = new HealthCareDbContext(options);
-
-//            _service = new PatientService(
-//                _repoMock.Object,
-//                _context,
-//                _mapperMock.Object
-//            );
-//        }
+namespace HealthCare.Api.Tests
+{
+    public class PatientServiceTests
+    {
+        private readonly Mock<IRepository<Patient>> _repoMock;
+        private readonly Mock<IMapper> _mapperMock;
+        private readonly HealthCareDbContext _context;
+        private readonly PatientService _service;
+        private readonly Mock<IPatientRepository> _patientRepoMock;
 
 
-//        //  GetById Success
-//        [Fact]
-//        public async Task GetByIdAsync_ShouldReturnPatient_WhenExists()
-//        {
-//            var patient = new Patient { PatientId = 1 };
-//            var dto = new PatientListDto();
+        public PatientServiceTests()
+        {
+            _repoMock = new Mock<IRepository<Patient>>();
+            _mapperMock = new Mock<IMapper>();
+            _patientRepoMock = new Mock<IPatientRepository>();
 
-//            _repoMock.Setup(r => r.GetProfileAsync(1)).ReturnsAsync(patient);
-//            _mapperMock.Setup(m => m.Map<PatientListDto>(patient)).Returns(dto);
+            var options = new DbContextOptionsBuilder<HealthCareDbContext>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
 
-//            var result = await _service.GetByIdAsync(1);
+            _context = new HealthCareDbContext(options);
 
-//            Assert.NotNull(result);
-//        }
-//        //  GetById Not Found
-//        [Fact]
-//        public async Task GetByIdAsync_ShouldThrow_WhenNotFound()
-//        {
-//            _repoMock.Setup(r => r.GetProfileAsync(1))
-//                     .ReturnsAsync((Patient)null);
+            _service = new PatientService(
+                _repoMock.Object,
+                _context,
+                _mapperMock.Object,
+                _patientRepoMock.Object
+            );
+        }
 
-//            await Assert.ThrowsAsync<PatientNotFoundException>(() =>
-//                _service.GetByIdAsync(1));
-//        }
+        //get my profile
+        [Fact]
+        public async Task GetByProfileAsync_ShouldReturnPatient_WhenExists()
+        {
+            var dto = new PatientListDto { FullName = "John" };
 
-//        //  Add
-//        [Fact]
-//        public async Task AddAsync_ShouldAddPatient()
-//        {
-//            var dto = new CreatePatientDto
-//            {
-//                FullName = "Test User"
-//            };
+            _patientRepoMock
+                .Setup(r => r.GetMyProfileAsync(1))
+                .ReturnsAsync(dto);
 
-//            await _service.AddAsync(dto);
+            var result = await _service.GetByIdAsync(1);
 
-//            _repoMock.Verify(r => r.AddAsync(It.IsAny<Patient>()), Times.Once);
-//        }
-
-//        //  Update
-//        [Fact]
-//        public async Task UpdateAsync_ShouldUpdatePatient()
-//        {
-//            var patient = new Patient { PatientId = 1 };
-
-//            _repoMock.Setup(r => r.GetProfileAsync(1))
-//                     .ReturnsAsync(patient);
-
-//            await _service.UpdateAsync(1, new UpdatePatientDto
-//            {
-//                FullName = "Updated"
-//            });
-
-//            _repoMock.Verify(r => r.UpdateAsync(patient), Times.Once);
-//        }
-
-//        //  Update Not Found
-//        [Fact]
-//        public async Task UpdateAsync_ShouldThrow_WhenNotFound()
-//        {
-//            _repoMock.Setup(r => r.GetProfileAsync(1))
-//                     .ReturnsAsync((Patient)null);
+            Assert.NotNull(result);
+        }
 
 
-//            await Assert.ThrowsAsync<PatientNotFoundException>(() =>
-//                _service.UpdateAsync(1, new UpdatePatientDto()));
 
-//        }
+        //  GetById Success
+        [Fact]
+        public async Task GetByIdAsync_ShouldReturnPatient_WhenExists()
+        {
+            var dto = new PatientListDto
+            {
+                PatientId = 1,
+                FullName = "John"
+            };
 
-//        //  Delete
-//        [Fact]
-//        public async Task DeleteAsync_ShouldDeletePatient()
-//        {
-//            var patient = new Patient { PatientId = 1 };
+            _patientRepoMock
+                .Setup(r => r.GetMyProfileAsync(1))
+                .ReturnsAsync(dto);
 
-//            _repoMock.Setup(r => r.GetProfileAsync(1))
-//                     .ReturnsAsync(patient);
+            var result = await _service.GetByIdAsync(1);
 
-//            await _service.DeleteAsync(1);
+            Assert.NotNull(result);
+            Assert.Equal("John", result.FullName);
+        }
 
-//            _repoMock.Verify(r => r.DeleteAsync(1), Times.Once);
-//        }
+        //  GetById Not Found
+        [Fact]
+        public async Task GetByIdAsync_ShouldThrow_WhenNotFound()
+        {
+            _patientRepoMock
+                .Setup(r => r.GetMyProfileAsync(1))
+                .ReturnsAsync((PatientListDto?)null);
 
-//        //  Delete Not Found
-//        [Fact]
-//        public async Task DeleteAsync_ShouldThrow_WhenNotFound()
-//        {
-//            _repoMock.Setup(r => r.GetProfileAsync(1))
-//                     .ReturnsAsync((Patient)null);
-
-
-//            await Assert.ThrowsAsync<PatientNotFoundException>(() =>
-//                _service.DeleteAsync(1));
-
-//        }
-
-//        //  Search (uses DB, not repo)
-//        [Fact]
-//        public async Task SearchByNameAsync_ShouldReturnMatchingPatients()
-//        {
-//            _context.Patients.Add(new Patient { FullName = "Sam" , Gender = "Male" });
-//            _context.Patients.Add(new Patient { FullName = "Sanjay", Gender = "Female" });
-//            await _context.SaveChangesAsync();
-
-//            var patients = await _context.Patients.ToListAsync();
-//            Assert.Equal(2, patients.Count);
-
-//        }
-
-//        //filter
-
-//        [Fact]
-//        public async Task GetAllAsync_ShouldFilter_ByName_Only()
-//        {
-//            var filter = new PatientFilter
-//            {
-//                FullName = "John",
-//                HasInsurance = null
-//            };
-
-//            var patients = new List<Patient> { new Patient { FullName = "John" } };
-
-//            var paged = new PagedResult<Patient>
-//            {
-//                Items = patients,
-//                PageNumber = 1,
-//                PageSize = 10,
-//                TotalCount = 1
-//            };
-
-//            _repoMock.Setup(r => r.GetAllAsync(
-//                It.IsAny<int>(),
-//                It.IsAny<int>(),
-//                It.IsAny<Expression<Func<Patient, bool>>>()))
-//                .ReturnsAsync(paged);
-
-//            _mapperMock.Setup(m => m.Map<IEnumerable<PatientListDto>>(patients))
-//                .Returns(new List<PatientListDto> { new PatientListDto() });
-
-//            var result = await _service.GetAllAsync(filter);
-
-//            Assert.NotNull(result);
-//        }
-//        //without filter
-//        [Fact]
-//        public async Task GetAllAsync_ShouldFilter_ByName_And_HasInsurance()
-//        {
-//            var filter = new PatientFilter
-//            {
-//                FullName = "John",
-//                HasInsurance = true
-//            };
-
-//            var patients = new List<Patient> { new Patient { FullName = "John" } };
-
-//            var paged = new PagedResult<Patient>
-//            {
-//                Items = patients,
-//                PageNumber = 1,
-//                PageSize = 10,
-//                TotalCount = 1
-//            };
-
-//            _repoMock.Setup(r => r.GetAllAsync(
-//                It.IsAny<int>(),
-//                It.IsAny<int>(),
-//                It.IsAny<Expression<Func<Patient, bool>>>()))
-//                .ReturnsAsync(paged);
-
-//            _mapperMock.Setup(m => m.Map<IEnumerable<PatientListDto>>(patients))
-//                .Returns(new List<PatientListDto> { new PatientListDto() });
-
-//            var result = await _service.GetAllAsync(filter);
-
-//            Assert.NotNull(result);
-//        }
+            await Assert.ThrowsAsync<PatientNotFoundException>(() =>
+                _service.GetByIdAsync(1));
+        }
 
 
-//        //  Update Status
-//        [Fact]
-//        public async Task UpdateStatusAsync_ShouldUpdateStatus()
-//        {
-//            var patient = new Patient { PatientId = 1, IsActive = true };
+        //  Add
+        [Fact]
+        public async Task AddAsync_ShouldAddPatient()
+        {
+            var dto = new CreatePatientDto
+            {
+                FullName = "Test User"
+            };
 
-//            _repoMock.Setup(r => r.GetProfileAsync(1))
-//                     .ReturnsAsync(patient);
+            await _service.AddAsync(dto);
 
-//            await _service.UpdateStatusAsync(1, false);
+            _repoMock.Verify(r => r.AddAsync(It.IsAny<Patient>()), Times.Once);
+        }
 
-//            Assert.False(patient.IsActive);
-//            _repoMock.Verify(r => r.UpdateAsync(patient), Times.Once);
-//        }
+        //  Update
+        [Fact]
+        public async Task UpdateAsync_ShouldUpdatePatient()
+        {
+            var patient = new Patient { PatientId = 1 };
 
-//        //Paging
-//        [Fact]
-//        public async Task GetAllAsync_ShouldApplyFilters_AndReturnPagedResult()
-//        {
-//            _context.Patients.AddRange(
-//                new Patient { FullName = "Sam", InsuranceId = "1" },
-//                new Patient { FullName = "Sanjay", InsuranceId = null },
-//                new Patient { FullName = "Samuel", InsuranceId = "2" }
-//            );
+            _repoMock.Setup(r => r.GetProfileAsync(1))
+                     .ReturnsAsync(patient);
 
-//            await _context.SaveChangesAsync();
+            await _service.UpdateAsync(1, new UpdatePatientDto
+            {
+                FullName = "Updated"
+            });
 
-//            var filter = new PatientFilter
-//            {
-//                FullName = "Sam",
-//                HasInsurance = true,
-//                PageNumber = 1,
-//                PageSize = 10
-//            };
+            _repoMock.Verify(r => r.UpdateAsync(patient), Times.Once);
+        }
 
-//            _mapperMock.Setup(m => m.Map<IEnumerable<PatientListDto>>(It.IsAny<IEnumerable<Patient>>()))
-//                .Returns((IEnumerable<Patient> src) =>
-//                    src.Select(p => new PatientListDto { FullName = p.FullName }));
+        //  Update Not Found
+        [Fact]
+        public async Task UpdateAsync_ShouldThrow_WhenNotFound()
+        {
+            _repoMock.Setup(r => r.GetProfileAsync(1))
+                     .ReturnsAsync((Patient?)null);
 
-//            // Act
-//            var result = await _service.GetAllAsync(filter);
 
-//            // Assert
-//            Assert.Equal(2, result.TotalCount);
-//            Assert.Equal(2, result.Items.Count());
-//        }
-//    }
-//}
+            await Assert.ThrowsAsync<PatientNotFoundException>(() =>
+                _service.UpdateAsync(1, new UpdatePatientDto()));
+
+        }
+
+        //  Delete
+        [Fact]
+        public async Task DeleteAsync_ShouldDeletePatient()
+        {
+            var patient = new Patient { PatientId = 1 };
+
+            _repoMock.Setup(r => r.GetProfileAsync(1))
+                     .ReturnsAsync(patient);
+
+            await _service.DeleteAsync(1);
+
+            _repoMock.Verify(r => r.DeleteAsync(1), Times.Once);
+        }
+
+        //  Delete Not Found
+        [Fact]
+        public async Task DeleteAsync_ShouldThrow_WhenNotFound()
+        {
+            _repoMock.Setup(r => r.GetProfileAsync(1))
+                     .ReturnsAsync((Patient?)null);
+
+
+            await Assert.ThrowsAsync<PatientNotFoundException>(() =>
+                _service.DeleteAsync(1));
+
+        }
+
+        //  Search (uses DB, not repo)
+        [Fact]
+        public async Task SearchByNameAsync_ShouldReturnMatchingPatients()
+        {
+            _context.Patients.Add(new Patient { FullName = "Sam", Gender = "Male" });
+            _context.Patients.Add(new Patient { FullName = "Sanjay", Gender = "Female" });
+            await _context.SaveChangesAsync();
+
+            var patients = await _context.Patients.ToListAsync();
+            Assert.Equal(2, patients.Count);
+
+        }
+
+        //filter
+
+        [Fact]
+        public async Task GetAllAsync_ShouldFilter_ByName_Only()
+        {
+            var filter = new PatientFilter
+            {
+                FullName = "John",
+                HasInsurance = null
+            };
+
+            var patients = new List<Patient> { new Patient { FullName = "John" , Gender = "Male" } };
+
+            var paged = new PagedResult<Patient>
+            {
+                Items = patients,
+                PageNumber = 1,
+                PageSize = 10,
+                TotalCount = 1
+            };
+
+            _repoMock.Setup(r => r.GetAllAsync(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<Expression<Func<Patient, bool>>>()))
+                .ReturnsAsync(paged);
+
+            _mapperMock.Setup(m => m.Map<IEnumerable<PatientListDto>>(patients))
+                .Returns(new List<PatientListDto> { new PatientListDto() });
+
+            var result = await _service.GetAllAsync(filter);
+
+            Assert.NotNull(result);
+        }
+        //without filter
+        [Fact]
+        public async Task GetAllAsync_ShouldFilter_ByName_And_HasInsurance()
+        {
+            var filter = new PatientFilter
+            {
+                FullName = "John",
+                HasInsurance = true
+            };
+
+            var patients = new List<Patient> { new Patient { FullName = "John" , Gender = "Male" } };
+
+            var paged = new PagedResult<Patient>
+            {
+                Items = patients,
+                PageNumber = 1,
+                PageSize = 10,
+                TotalCount = 1
+            };
+
+            _repoMock.Setup(r => r.GetAllAsync(
+                It.IsAny<int>(),
+                It.IsAny<int>(),
+                It.IsAny<Expression<Func<Patient, bool>>>()))
+                .ReturnsAsync(paged);
+
+            _mapperMock.Setup(m => m.Map<IEnumerable<PatientListDto>>(patients))
+                .Returns(new List<PatientListDto> { new PatientListDto() });
+
+            var result = await _service.GetAllAsync(filter);
+
+            Assert.NotNull(result);
+        }
+
+
+        //  Update Status
+        [Fact]
+        public async Task UpdateStatusAsync_ShouldUpdateStatus()
+        {
+            var patient = new Patient { PatientId = 1, IsActive = true };
+
+            _repoMock.Setup(r => r.GetProfileAsync(1))
+                     .ReturnsAsync(patient);
+
+            await _service.UpdateStatusAsync(1, false);
+
+            Assert.False(patient.IsActive);
+            _repoMock.Verify(r => r.UpdateAsync(patient), Times.Once);
+        }
+
+        //Paging
+        [Fact]
+        public async Task GetAllAsync_ShouldApplyFilters_AndReturnPagedResult()
+        {
+            _context.Patients.AddRange(
+                new Patient { FullName = "Sam", InsuranceId = "1", Gender = "Male" },
+                new Patient { FullName = "Sanjay", InsuranceId = null, Gender = "Male" },
+                new Patient { FullName = "Samuel", InsuranceId = "2", Gender = "Male" }
+            );
+
+            await _context.SaveChangesAsync();
+
+            var filter = new PatientFilter
+            {
+                FullName = "Sam",
+                HasInsurance = true,
+                PageNumber = 1,
+                PageSize = 10
+            };
+
+            _mapperMock.Setup(m => m.Map<IEnumerable<PatientListDto>>(It.IsAny<IEnumerable<Patient>>()))
+                .Returns((IEnumerable<Patient> src) =>
+                    src.Select(p => new PatientListDto { FullName = p.FullName }));
+
+            // Act
+            var result = await _service.GetAllAsync(filter);
+
+            // Assert
+            Assert.Equal(2, result.TotalCount);
+            Assert.Equal(2, result.Items.Count());
+        }
+    }
+}

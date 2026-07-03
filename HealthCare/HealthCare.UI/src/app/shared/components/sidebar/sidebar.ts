@@ -57,7 +57,7 @@ export class SidebarComponent {
       Doctor: [
         { label: 'Dashboard', icon: '🏠', link: '/doctor/dashboard' },
         { label: "My Schedule", icon: '📅', link: '/doctor/schedule' },
-        { label: 'Add Health Record', icon: '🩺', link: '/doctor/health-record' },
+        //{ label: 'Add Health Record', icon: '🩺', link: '/doctor/health-record' },
         { label: 'Add Leave', icon: '🌴', link: '/doctor/leave' },
         { label: 'My Profile', icon: '👤', link: '/doctor/profile' }
       ]

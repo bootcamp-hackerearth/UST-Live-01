@@ -45,10 +45,6 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-
-        [HttpPut("{id:int}")]
-        [Authorize(Roles = "Doctor")]
-
         public async Task UpdateAsync(int id,UpdateHealthRecordDto dto)
         {
             var record = await _repository.GetProfileAsync(id);
@@ -61,9 +57,6 @@ namespace HealthCare.Api.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-
-        [HttpDelete("{id:int}")]
-        [Authorize(Roles = "Admin")]
 
         public async Task DeleteAsync(int id)
         {
@@ -81,8 +74,6 @@ namespace HealthCare.Api.Services.Implementations
             return record == null ? null : _mapper.Map<HealthRecordListDto?>(record);
         }
 
-        [HttpGet]
-        [Authorize(Roles = "Admin,Doctor")]
         public async Task<PagedResult<HealthRecordListDto>> GetAllAsync(HealthRecordFilter filter)
         {
             // Build predicate (date filtering)
@@ -132,7 +123,6 @@ namespace HealthCare.Api.Services.Implementations
 
             return _mapper.Map<List<HealthRecordListDto>>(records);
         }
-
 
     }
 }

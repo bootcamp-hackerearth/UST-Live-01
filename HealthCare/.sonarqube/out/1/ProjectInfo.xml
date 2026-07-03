@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ProjectInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
-  <ProjectName>HealthCare.Tests</ProjectName>
+  <ProjectName>HealthCareAdmin.UI</ProjectName>
   <ProjectLanguage>C#</ProjectLanguage>
-  <ProjectType>Test</ProjectType>
-  <ProjectGuid>8f4755f7-c31c-4783-98c1-ab8fa90e55dc</ProjectGuid>
-  <FullPath>C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCare.Tests\HealthCare.Tests.csproj</FullPath>
+  <ProjectType>Product</ProjectType>
+  <ProjectGuid>7402248c-c324-4114-8874-1586e560b850</ProjectGuid>
+  <FullPath>C:\Users\310521\source\repos\UST-Live-01\HealthCare\HealthCareAdmin.UI\HealthCareAdmin.UI.csproj</FullPath>
   <IsExcluded>false</IsExcluded>
   <AnalysisResultFiles>
     <AnalysisResultFile Id="FilesToAnalyze" Location="C:\Users\310521\source\repos\UST-Live-01\HealthCare\.sonarqube\conf\1\FilesToAnalyze.txt" />

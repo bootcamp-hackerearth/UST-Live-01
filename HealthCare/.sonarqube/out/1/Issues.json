@@ -12,18 +12,18 @@
       },
       "results": [
         {
-          "ruleId": "CS8600",
+          "ruleId": "CS8604",
           "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
+          "message": "Possible null reference argument for parameter 'jsRuntime' in 'ValueTask<string> JSRuntimeExtensions.InvokeAsync<string>(IJSRuntime jsRuntime, string identifier, params object?[]? args)'.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/PatientServiceTest.cs",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
                 "region": {
-                  "startLine": 60,
-                  "startColumn": 36,
-                  "endLine": 60,
-                  "endColumn": 49
+                  "startLine": 114,
+                  "startColumn": 27,
+                  "endLine": 114,
+                  "endColumn": 29
                 }
               }
             }
@@ -33,18 +33,18 @@
           }
         },
         {
-          "ruleId": "CS8620",
+          "ruleId": "CS8602",
           "level": "warning",
-          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
+          "message": "Dereference of a possibly null reference.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/PatientServiceTest.cs",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
                 "region": {
-                  "startLine": 59,
+                  "startLine": 119,
                   "startColumn": 13,
-                  "endLine": 59,
-                  "endColumn": 52
+                  "endLine": 119,
+                  "endColumn": 16
                 }
               }
             }
@@ -54,18 +54,39 @@
           }
         },
         {
-          "ruleId": "CS8625",
+          "ruleId": "CS8605",
           "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
+          "message": "Unboxing a possibly null value.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
                 "region": {
-                  "startLine": 71,
+                  "startLine": 161,
+                  "startColumn": 79,
+                  "endLine": 161,
+                  "endColumn": 92
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS8602",
+          "level": "warning",
+          "message": "Dereference of a possibly null reference.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
+                "region": {
+                  "startLine": 271,
                   "startColumn": 17,
-                  "endLine": 71,
-                  "endColumn": 21
+                  "endLine": 271,
+                  "endColumn": 41
                 }
               }
             }
@@ -75,606 +96,18 @@
           }
         },
         {
-          "ruleId": "CS8625",
+          "ruleId": "CS8602",
           "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
+          "message": "Dereference of a possibly null reference.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 23,
-                  "endLine": 71,
-                  "endColumn": 27
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8625",
-          "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 29,
-                  "endLine": 71,
-                  "endColumn": 33
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8625",
-          "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 35,
-                  "endLine": 71,
-                  "endColumn": 39
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8625",
-          "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 41,
-                  "endLine": 71,
-                  "endColumn": 45
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8625",
-          "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 47,
-                  "endLine": 71,
-                  "endColumn": 51
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8625",
-          "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 53,
-                  "endLine": 71,
-                  "endColumn": 57
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8625",
-          "level": "warning",
-          "message": "Cannot convert null literal to non-nullable reference type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 59,
-                  "endLine": 71,
-                  "endColumn": 63
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AppointmentServiceTest.cs",
-                "region": {
-                  "startLine": 78,
-                  "startColumn": 31,
-                  "endLine": 78,
-                  "endColumn": 48
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IAppointmentRepository, Task<Appointment>>' cannot be used for parameter 'mock' of type 'IReturns<IAppointmentRepository, Task<Appointment?>>' in 'IReturnsResult<IAppointmentRepository> ReturnsExtensions.ReturnsAsync<IAppointmentRepository, Appointment?>(IReturns<IAppointmentRepository, Task<Appointment?>> mock, Appointment? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AppointmentServiceTest.cs",
-                "region": {
-                  "startLine": 77,
-                  "startColumn": 13,
-                  "endLine": 77,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/DoctorServiceTest.cs",
-                "region": {
-                  "startLine": 77,
-                  "startColumn": 31,
-                  "endLine": 77,
-                  "endColumn": 43
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IDoctorRepository, Task<Doctor>>' cannot be used for parameter 'mock' of type 'IReturns<IDoctorRepository, Task<Doctor?>>' in 'IReturnsResult<IDoctorRepository> ReturnsExtensions.ReturnsAsync<IDoctorRepository, Doctor?>(IReturns<IDoctorRepository, Task<Doctor?>> mock, Doctor? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/DoctorServiceTest.cs",
-                "region": {
-                  "startLine": 76,
-                  "startColumn": 13,
-                  "endLine": 76,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/HealthRecordServiceTest.cs",
-                "region": {
-                  "startLine": 72,
-                  "startColumn": 31,
-                  "endLine": 72,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IHealthRecordRepository, Task<HealthRecord>>' cannot be used for parameter 'mock' of type 'IReturns<IHealthRecordRepository, Task<HealthRecord?>>' in 'IReturnsResult<IHealthRecordRepository> ReturnsExtensions.ReturnsAsync<IHealthRecordRepository, HealthRecord?>(IReturns<IHealthRecordRepository, Task<HealthRecord?>> mock, HealthRecord? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/HealthRecordServiceTest.cs",
-                "region": {
-                  "startLine": 71,
-                  "startColumn": 13,
-                  "endLine": 71,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/PatientServiceTest.cs",
-                "region": {
-                  "startLine": 102,
-                  "startColumn": 36,
-                  "endLine": 102,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/PatientServiceTest.cs",
-                "region": {
-                  "startLine": 101,
-                  "startColumn": 13,
-                  "endLine": 101,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/HealthRecordServiceTest.cs",
-                "region": {
-                  "startLine": 96,
-                  "startColumn": 31,
-                  "endLine": 96,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IHealthRecordRepository, Task<HealthRecord>>' cannot be used for parameter 'mock' of type 'IReturns<IHealthRecordRepository, Task<HealthRecord?>>' in 'IReturnsResult<IHealthRecordRepository> ReturnsExtensions.ReturnsAsync<IHealthRecordRepository, HealthRecord?>(IReturns<IHealthRecordRepository, Task<HealthRecord?>> mock, HealthRecord? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/HealthRecordServiceTest.cs",
-                "region": {
-                  "startLine": 95,
-                  "startColumn": 13,
-                  "endLine": 95,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AppointmentServiceTest.cs",
-                "region": {
-                  "startLine": 102,
-                  "startColumn": 31,
-                  "endLine": 102,
-                  "endColumn": 48
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IAppointmentRepository, Task<Appointment>>' cannot be used for parameter 'mock' of type 'IReturns<IAppointmentRepository, Task<Appointment?>>' in 'IReturnsResult<IAppointmentRepository> ReturnsExtensions.ReturnsAsync<IAppointmentRepository, Appointment?>(IReturns<IAppointmentRepository, Task<Appointment?>> mock, Appointment? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AppointmentServiceTest.cs",
-                "region": {
-                  "startLine": 101,
-                  "startColumn": 13,
-                  "endLine": 101,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/PatientServiceTest.cs",
-                "region": {
-                  "startLine": 129,
-                  "startColumn": 36,
-                  "endLine": 129,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IRepository<Patient>, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IRepository<Patient>, Task<Patient?>>' in 'IReturnsResult<IRepository<Patient>> ReturnsExtensions.ReturnsAsync<IRepository<Patient>, Patient?>(IReturns<IRepository<Patient>, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/PatientServiceTest.cs",
-                "region": {
-                  "startLine": 128,
-                  "startColumn": 13,
-                  "endLine": 128,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/DoctorServiceTest.cs",
-                "region": {
-                  "startLine": 101,
-                  "startColumn": 31,
-                  "endLine": 101,
-                  "endColumn": 43
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IDoctorRepository, Task<Doctor>>' cannot be used for parameter 'mock' of type 'IReturns<IDoctorRepository, Task<Doctor?>>' in 'IReturnsResult<IDoctorRepository> ReturnsExtensions.ReturnsAsync<IDoctorRepository, Doctor?>(IReturns<IDoctorRepository, Task<Doctor?>> mock, Doctor? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/DoctorServiceTest.cs",
-                "region": {
-                  "startLine": 100,
-                  "startColumn": 13,
-                  "endLine": 100,
-                  "endColumn": 52
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 136,
-                  "startColumn": 31,
-                  "endLine": 136,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 181,
-                  "startColumn": 31,
-                  "endLine": 181,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 204,
-                  "startColumn": 31,
-                  "endLine": 204,
-                  "endColumn": 49
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 255,
-                  "startColumn": 31,
-                  "endLine": 255,
-                  "endColumn": 44
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8620",
-          "level": "warning",
-          "message": "Argument of type 'ISetup<IPatientRepository, Task<Patient>>' cannot be used for parameter 'mock' of type 'IReturns<IPatientRepository, Task<Patient?>>' in 'IReturnsResult<IPatientRepository> ReturnsExtensions.ReturnsAsync<IPatientRepository, Patient?>(IReturns<IPatientRepository, Task<Patient?>> mock, Patient? value)' due to differences in the nullability of reference types.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
-                "region": {
-                  "startLine": 254,
-                  "startColumn": 13,
-                  "endLine": 254,
-                  "endColumn": 69
-                }
-              }
-            }
-          ],
-          "properties": {
-            "warningLevel": 1
-          }
-        },
-        {
-          "ruleId": "CS8600",
-          "level": "warning",
-          "message": "Converting null literal or possible null value to non-nullable type.",
-          "locations": [
-            {
-              "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
                 "region": {
                   "startLine": 309,
-                  "startColumn": 31,
+                  "startColumn": 18,
                   "endLine": 309,
-                  "endColumn": 43
+                  "endColumn": 42
                 }
               }
             }
@@ -684,17 +117,185 @@
           }
         },
         {
-          "ruleId": "S2699",
+          "ruleId": "CS8602",
           "level": "warning",
-          "message": "Add at least one assertion to this test case.",
+          "message": "Dereference of a possibly null reference.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/UnitTest1.cs",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
                 "region": {
-                  "startLine": 6,
-                  "startColumn": 21,
-                  "endLine": 6,
+                  "startLine": 314,
+                  "startColumn": 13,
+                  "endLine": 314,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CS0169",
+          "level": "warning",
+          "message": "The field 'Dashboard.totalDoctors' is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 100,
+                  "startColumn": 17,
+                  "endLine": 100,
+                  "endColumn": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "CS0169",
+          "level": "warning",
+          "message": "The field 'Dashboard.totalPatients' is never used",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 101,
+                  "startColumn": 17,
+                  "endLine": 101,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 3
+          }
+        },
+        {
+          "ruleId": "S1144",
+          "level": "warning",
+          "message": "Remove the unused private field 'totalDoctors'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 100,
+                  "startColumn": 5,
+                  "endLine": 100,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1144",
+          "level": "warning",
+          "message": "Remove the unused private field 'totalPatients'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 101,
+                  "startColumn": 5,
+                  "endLine": 101,
+                  "endColumn": 31
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1144",
+          "level": "warning",
+          "message": "Remove the unused private method 'LoadDashboard'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 127,
+                  "startColumn": 24,
+                  "endLine": 127,
+                  "endColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S4487",
+          "level": "warning",
+          "message": "Remove this unread private field 'totalAppointments' or refactor the code to use its value.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 102,
+                  "startColumn": 17,
+                  "endLine": 102,
+                  "endColumn": 34
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S4487",
+          "level": "warning",
+          "message": "Remove this unread private field 'pending' or refactor the code to use its value.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 104,
+                  "startColumn": 17,
+                  "endLine": 104,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S4487",
+          "level": "warning",
+          "message": "Remove this unread private field 'confirmed' or refactor the code to use its value.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 105,
+                  "startColumn": 17,
+                  "endLine": 105,
                   "endColumn": 26
                 }
               }
@@ -705,18 +306,262 @@
           }
         },
         {
-          "ruleId": "CA1822",
-          "level": "note",
-          "message": "Member 'GetUserManagerMock' does not access instance data and can be marked as static",
+          "ruleId": "S4487",
+          "level": "warning",
+          "message": "Remove this unread private field 'completed' or refactor the code to use its value.",
           "locations": [
             {
               "resultFile": {
-                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCare.Tests/AuthServiceTest.cs",
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
                 "region": {
-                  "startLine": 65,
+                  "startLine": 106,
+                  "startColumn": 17,
+                  "endLine": 106,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S4487",
+          "level": "warning",
+          "message": "Remove this unread private field 'cancelled' or refactor the code to use its value.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 107,
+                  "startColumn": 17,
+                  "endLine": 107,
+                  "endColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make 'availableSlots' 'readonly'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
+                "region": {
+                  "startLine": 239,
+                  "startColumn": 26,
+                  "endLine": 239,
+                  "endColumn": 40
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make 'specialisations' 'readonly'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/RegisterDoctorModal.razor",
+                "region": {
+                  "startLine": 365,
+                  "startColumn": 26,
+                  "endLine": 365,
+                  "endColumn": 41
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make 'pageSize' 'readonly'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Patient/PatientList.razor",
+                "region": {
+                  "startLine": 206,
+                  "startColumn": 17,
+                  "endLine": 206,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2933",
+          "level": "warning",
+          "message": "Make 'pageSize' 'readonly'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Doctor/DoctorList.razor",
+                "region": {
+                  "startLine": 208,
+                  "startColumn": 17,
+                  "endLine": 208,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S2486",
+          "level": "warning",
+          "message": "Handle the exception or explain in a comment why it can be ignored.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Services/AuthService.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 21,
+                  "endLine": 32,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S108",
+          "level": "warning",
+          "message": "Either remove or fill this block of code.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Services/AuthService.cs",
+                "region": {
+                  "startLine": 32,
+                  "startColumn": 27,
+                  "endLine": 32,
+                  "endColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1075",
+          "level": "warning",
+          "message": "Refactor your code not to use hardcoded absolute paths or URIs.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Program.cs",
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 23,
+                  "endLine": 15,
+                  "endColumn": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "CA1854",
+          "level": "note",
+          "message": "Prefer a 'TryGetValue' call over a Dictionary indexer access guarded by a 'ContainsKey' check to avoid double lookup",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Services/AuthService.cs",
+                "region": {
+                  "startLine": 29,
                   "startColumn": 49,
-                  "endLine": 65,
-                  "endColumn": 67
+                  "endLine": 29,
+                  "endColumn": 80
+                }
+              }
+            }
+          ],
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Services/AuthService.cs",
+                "region": {
+                  "startLine": 30,
+                  "startColumn": 43,
+                  "endLine": 30,
+                  "endColumn": 62
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1481",
+          "level": "warning",
+          "message": "Remove the unused local variable 'doctorResult'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 130,
+                  "startColumn": 13,
+                  "endLine": 130,
+                  "endColumn": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "warningLevel": 1
+          }
+        },
+        {
+          "ruleId": "S1481",
+          "level": "warning",
+          "message": "Remove the unused local variable 'patientResult'.",
+          "locations": [
+            {
+              "resultFile": {
+                "uri": "file:///C:/Users/310521/source/repos/UST-Live-01/HealthCare/HealthCareAdmin.UI/Pages/Dashboard/Dashboard.razor",
+                "region": {
+                  "startLine": 139,
+                  "startColumn": 13,
+                  "endLine": 139,
+                  "endColumn": 26
                 }
               }
             }
@@ -727,27 +572,26 @@
         }
       ],
       "rules": {
-        "CA1822": {
-          "id": "CA1822",
-          "shortDescription": "Mark members as static",
-          "fullDescription": "Members that do not access instance data or call instance methods can be marked as static. After you mark the methods as static, the compiler will emit nonvirtual call sites to these members. This can give you a measurable performance gain for performance-sensitive code.",
+        "CA1854": {
+          "id": "CA1854",
+          "shortDescription": "Prefer the 'IDictionary.TryGetValue(TKey, out TValue)' method",
+          "fullDescription": "Prefer a 'TryGetValue' call over a Dictionary indexer access guarded by a 'ContainsKey' check. 'ContainsKey' and the indexer both would lookup the key under the hood, so using 'TryGetValue' removes the extra lookup.",
           "defaultLevel": "note",
-          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822",
+          "helpUri": "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1854",
           "properties": {
             "category": "Performance",
             "isEnabledByDefault": true,
             "tags": [
-              "PortedFromFxCop",
               "Telemetry",
               "EnabledRuleInAggressiveMode"
             ]
           }
         },
-        "CS8600": {
-          "id": "CS8600",
-          "shortDescription": "Converting null literal or possible null value to non-nullable type.",
+        "CS0169": {
+          "id": "CS0169",
+          "shortDescription": "Field is never used",
           "defaultLevel": "warning",
-          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8600)",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS0169)",
           "properties": {
             "category": "Compiler",
             "isEnabledByDefault": true,
@@ -757,11 +601,11 @@
             ]
           }
         },
-        "CS8620": {
-          "id": "CS8620",
-          "shortDescription": "Argument cannot be used for parameter due to differences in the nullability of reference types.",
+        "CS8602": {
+          "id": "CS8602",
+          "shortDescription": "Dereference of a possibly null reference.",
           "defaultLevel": "warning",
-          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8620)",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8602)",
           "properties": {
             "category": "Compiler",
             "isEnabledByDefault": true,
@@ -771,11 +615,11 @@
             ]
           }
         },
-        "CS8625": {
-          "id": "CS8625",
-          "shortDescription": "Cannot convert null literal to non-nullable reference type.",
+        "CS8604": {
+          "id": "CS8604",
+          "shortDescription": "Possible null reference argument.",
           "defaultLevel": "warning",
-          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8625)",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8604)",
           "properties": {
             "category": "Compiler",
             "isEnabledByDefault": true,
@@ -785,17 +629,132 @@
             ]
           }
         },
-        "S2699": {
-          "id": "S2699",
-          "shortDescription": "Tests should include assertions",
-          "fullDescription": "The rule targets test methods that lack an assertion and consist solely of an action and, optionally, a setup.",
+        "CS8605": {
+          "id": "CS8605",
+          "shortDescription": "Unboxing a possibly null value.",
           "defaultLevel": "warning",
-          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2699",
+          "helpUri": "https://msdn.microsoft.com/query/roslyn.query?appId=roslyn&k=k(CS8605)",
           "properties": {
-            "category": "Blocker Code Smell",
+            "category": "Compiler",
+            "isEnabledByDefault": true,
+            "tags": [
+              "Compiler",
+              "Telemetry"
+            ]
+          }
+        },
+        "S1075": {
+          "id": "S1075",
+          "shortDescription": "URIs should not be hardcoded",
+          "fullDescription": "Hard-coding a URI makes it difficult to test a program for a variety of reasons:",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1075",
+          "properties": {
+            "category": "Minor Code Smell",
             "isEnabledByDefault": true,
             "tags": [
               "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S108": {
+          "id": "S108",
+          "shortDescription": "Nested blocks of code should not be left empty",
+          "fullDescription": "An empty code block is confusing. It will require some effort from maintainers to determine if it is intentional or indicates the implementation is incomplete.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-108",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S1144": {
+          "id": "S1144",
+          "shortDescription": "Unused private types or members should be removed",
+          "fullDescription": "This rule raises an issue when a private/internal type or member is never referenced in the code.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1144",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S1481": {
+          "id": "S1481",
+          "shortDescription": "Unused local variables should be removed",
+          "fullDescription": "An unused local variable is a variable that has been declared but is not used anywhere in the block of code where it is defined. It is dead code, contributing to unnecessary complexity and leading to confusion when reading the code. Therefore, it should be removed from your code to maintain clarity and efficiency.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-1481",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S2486": {
+          "id": "S2486",
+          "shortDescription": "Generic exceptions should not be ignored",
+          "fullDescription": "When exceptions occur, it is usually a bad idea to simply ignore them. Instead, it is better to handle them properly, or at least to log them.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2486",
+          "properties": {
+            "category": "Minor Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S2933": {
+          "id": "S2933",
+          "shortDescription": "Fields that are only assigned in the constructor should be \"readonly\"",
+          "fullDescription": "readonly fields can only be assigned in a class constructor. If a class has a field that’s not marked readonly but is only set in the constructor, it could cause confusion about the field’s intended use. To avoid confusion, such fields should be marked readonly to make their intended use explicit, and to prevent future maintainers from inadvertently changing their use.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-2933",
+          "properties": {
+            "category": "Major Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
+              "TestSourceScope",
+              "SonarWay"
+            ]
+          }
+        },
+        "S4487": {
+          "id": "S4487",
+          "shortDescription": "Unread \"private\" fields should be removed",
+          "fullDescription": "Private fields which are written but never read are a case of \"dead store\". Changing the value of such a field is useless and most probably indicates an error in the code.",
+          "defaultLevel": "warning",
+          "helpUri": "https://rules.sonarsource.com/csharp/RSPEC-4487",
+          "properties": {
+            "category": "Critical Code Smell",
+            "isEnabledByDefault": true,
+            "tags": [
+              "C#",
+              "MainSourceScope",
               "TestSourceScope",
               "SonarWay"
             ]

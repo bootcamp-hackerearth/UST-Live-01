@@ -38,7 +38,7 @@ namespace HealthCare.Api.Services.Implementations
             var patient = await _repository.GetProfileAsync(id);
             if (patient == null)
                 throw new PatientNotFoundException(id);
-            _mapper.Map(dto,patient);
+            _mapper.Map(dto, patient);
 
             await _repository.UpdateAsync(patient);
             await _context.SaveChangesAsync();

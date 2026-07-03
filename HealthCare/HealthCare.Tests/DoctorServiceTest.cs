@@ -74,7 +74,7 @@ namespace HealthCare.Api.Tests
         public async Task UpdateAsync_ShouldThrow_WhenNotFound()
         {
             _repoMock.Setup(r => r.GetProfileAsync(1))
-                .ReturnsAsync((Doctor)null);
+                .ReturnsAsync((Doctor?)null);
 
             await Assert.ThrowsAsync<DoctorNotFoundException>(() =>
                 _service.UpdateAsync(1, new UpdateDoctorDto()));
@@ -98,7 +98,7 @@ namespace HealthCare.Api.Tests
         public async Task DeleteAsync_ShouldThrow_WhenNotFound()
         {
             _repoMock.Setup(r => r.GetProfileAsync(1))
-                .ReturnsAsync((Doctor)null);
+                .ReturnsAsync((Doctor?)null);
 
             await Assert.ThrowsAsync<DoctorNotFoundException>(() =>
                 _service.DeleteAsync(1));
@@ -123,25 +123,25 @@ namespace HealthCare.Api.Tests
         [Fact]
         public async Task GetAllAsync_ShouldReturnPagedDoctors()
         {
-            var doctors = new List<Doctor> { new Doctor() };
 
-            var paged = new PagedResult<Doctor>
+            _context.Doctors.Add(new Doctor
             {
-                Items = doctors,
-                PageNumber = 1,
-                PageSize = 10,
-                TotalCount = 1
-            };
+                DoctorId = 1,
+                UserId = "user-1",
+                FullName = "Doctor One",
+                Specialisation = "Cardiology"
+            });
 
-            _repoMock.Setup(r => r.GetAllAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<Expression<Func<Doctor, bool>>>(),
-                It.IsAny<Func<IQueryable<Doctor>, IOrderedQueryable<Doctor>>>()))
-                .ReturnsAsync(paged);
 
-            _mapperMock.Setup(m => m.Map<IEnumerable<DoctorListDto>>(doctors))
-                .Returns(new List<DoctorListDto> { new DoctorListDto() });
+            await _context.SaveChangesAsync();
+
+            _mapperMock
+                .Setup(m => m.Map<IEnumerable<DoctorListDto>>(
+                    It.IsAny<IEnumerable<Doctor>>()))
+                .Returns(new List<DoctorListDto>
+                {
+            new DoctorListDto()
+                });
 
             var result = await _service.GetAllAsync(new DoctorFilter());
 
