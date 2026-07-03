@@ -8,45 +8,25 @@ export class PatientService {
 
   constructor(private http: HttpClient) {}
 
+  // ================= PATIENT =================
+
   getPatient(id: string) {
     return this.http.get(`${this.API}/Patient/${id}`);
   }
 
   updatePatient(id: string, data: any) {
-    return this.http.put(`${this.API}/Patient/${id}`, data);
+    return this.http.put(
+      `${this.API}/Patient/${id}`,
+      data,
+      { responseType: 'text' }
+    );
   }
 
-  getAppointments(
-    patientId: string,
-    pageNumber: number = 1,
-    pageSize: number = 10
-  ) {
-    const params = new HttpParams()
-      .set('pageNumber', pageNumber)
-      .set('pageSize', pageSize);
+  // ================= DOCTORS =================
 
-    return this.http.get(`${this.API}/Appointment/patient/${patientId}`, { params });
-  }
-
-  getHealthRecords(
-    patientId: string,
-    pageNumber: number = 1,
-    pageSize: number = 10
-  ) {
-    const params = new HttpParams()
-      .set('pageNumber', pageNumber)
-      .set('pageSize', pageSize);
-
-    return this.http.get(`${this.API}/HealthRecord/patient/${patientId}`, { params });
-  }
-
-  /**
-   * Loads doctors. For frontend filtering, we load enough records.
-   * If your backend has a separate all-doctors endpoint, replace /Doctor/available accordingly.
-   */
   getDoctors(
     pageNumber: number = 1,
-    pageSize: number = 1000,
+    pageSize: number = 10,
     search: string = '',
     specialisation: string = '',
     status: string = ''
@@ -70,15 +50,51 @@ export class PatientService {
     return this.http.get(`${this.API}/Doctor/available`, { params });
   }
 
+  // ================= APPOINTMENTS =================
+
+  getAppointments(
+    patientId: string,
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ) {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+
+    return this.http.get(`${this.API}/Appointment/patient/${patientId}`, { params });
+  }
+
   bookAppointment(data: any) {
     return this.http.post(`${this.API}/Appointment`, data);
   }
 
-  cancelAppointment(id: number) {
+  cancelAppointment(appointmentId: number) {
     return this.http.post(
-      `${this.API}/Appointment/cancel/${id}?reason=Cancelled by patient`,
+      `${this.API}/Appointment/cancel/${appointmentId}?reason=${encodeURIComponent('Cancelled by patient')}`,
       {},
       { responseType: 'text' }
     );
+  }
+
+  getBookedSlots(doctorId: number, date: string) {
+    const params = new HttpParams()
+      .set('doctorId', doctorId)
+      .set('date', date);
+
+    return this.http.get<string[]>(`${this.API}/Appointment/booked-slots`, { params });
+  }
+
+  // ================= HEALTH RECORDS =================
+
+  getHealthRecords(
+    patientId: string,
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ) {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+
+    return this.http.get(`${this.API}/HealthRecord/patient/${patientId}`, { params });
   }
 }

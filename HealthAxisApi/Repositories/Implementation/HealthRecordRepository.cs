@@ -19,5 +19,11 @@ namespace HealthAxisCore_Api.Repositories
                 .Where(hr => hr.PatientId == patientId)
                 .ToListAsync();
         }
+
+        public async Task<bool> ExistsByAppointmentIdAsync(int appointmentId)
+        {
+            return await _context.HealthRecords
+                .AnyAsync(hr => hr.AppointmentId == appointmentId);
+        }
     }
 }

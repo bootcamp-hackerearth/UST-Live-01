@@ -30,6 +30,8 @@ namespace HealthAxisCore_Api.Services.Interfaces
 
         Task<bool> CancelAsync(int id, string reason);
 
+        Task<IEnumerable<string>> GetBookedSlotsAsync(int doctorId, DateTime date);
+
         Task<PagedResponseDTO<AppointmentResponseDTO>> GetPagedAsync(
             int pageNumber,
             int pageSize,

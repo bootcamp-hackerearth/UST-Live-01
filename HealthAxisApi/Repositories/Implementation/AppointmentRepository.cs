@@ -77,5 +77,18 @@ namespace HealthAxisCore_Api.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<IEnumerable<string>> GetBookedSlotsAsync(int doctorId, DateTime date)
+        {
+            return await _context.Appointments
+                .Where(a =>
+                    a.DoctorId == doctorId &&
+                    a.ScheduledDate.Date == date.Date &&
+                    (a.Status == AppointmentStatus.Pending ||
+                     a.Status == AppointmentStatus.Confirmed))
+                .Select(a => a.TimeSlot)
+                .Distinct()
+                .ToListAsync();
+        }
     }
 }

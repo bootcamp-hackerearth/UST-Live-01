@@ -20,5 +20,7 @@ namespace HealthAxisCore_Api.Repositories
         Task ConfirmAppointment(int id);
 
         Task CompleteAppointment(int id);
+
+        Task<IEnumerable<string>> GetBookedSlotsAsync(int doctorId, DateTime date);
     }
 }

@@ -30,6 +30,9 @@ export class PatientDashboardComponent {
   doctors: any[] = [];
   bookingDoctors: any[] = [];
 
+  bookedSlots: string[] = [];
+  isLoadingBookedSlots = false;
+
   bookingError = '';
   bookingSuccess = '';
   bookingSubmitted = false;
@@ -45,18 +48,26 @@ export class PatientDashboardComponent {
 
   maxBookingDate: string = this.getDateAfterDays(30);
 
-  timeSlots: string[] = [
-    '09:00',
-    '10:00',
-    '11:00',
-    '12:00',
-    '14:00',
-    '15:00',
-    '16:00',
-    '17:00'
+  timeSlots = [
+    { start: '08:00', end: '08:30', label: '08:00 AM - 08:30 AM' },
+    { start: '08:30', end: '09:00', label: '08:30 AM - 09:00 AM' },
+    { start: '09:00', end: '09:30', label: '09:00 AM - 09:30 AM' },
+    { start: '09:30', end: '10:00', label: '09:30 AM - 10:00 AM' },
+    { start: '10:00', end: '10:30', label: '10:00 AM - 10:30 AM' },
+    { start: '10:30', end: '11:00', label: '10:30 AM - 11:00 AM' },
+    { start: '11:00', end: '11:30', label: '11:00 AM - 11:30 AM' },
+    { start: '11:30', end: '12:00', label: '11:30 AM - 12:00 PM' },
+    { start: '12:00', end: '12:30', label: '12:00 PM - 12:30 PM' },
+    { start: '12:30', end: '01:00', label: '12:30 PM - 01:00 PM' },
+    { start: '14:00', end: '14:30', label: '02:00 PM - 02:30 PM' },
+    { start: '14:30', end: '15:00', label: '02:30 PM - 03:00 PM' },
+    { start: '15:00', end: '15:30', label: '03:00 PM - 03:30 PM' },
+    { start: '15:30', end: '16:00', label: '03:30 PM - 04:00 PM' },
+    { start: '16:00', end: '16:30', label: '04:00 PM - 04:30 PM' },
+    { start: '16:30', end: '17:00', label: '04:30 PM - 05:00 PM' },
+    { start: '17:00', end: '17:30', label: '05:00 PM - 05:30 PM' },
+    { start: '17:30', end: '18:00', label: '05:30 PM - 06:00 PM' }
   ];
-
-  // ================= PAGINATION =================
 
   appointmentPageNumber = 1;
   appointmentPageSize = 6;
@@ -73,13 +84,9 @@ export class PatientDashboardComponent {
   doctorTotalPages = 1;
   doctorTotalCount = 0;
 
-  // ================= FIND DOCTOR FILTERS =================
-
   doctorSearch = '';
   findDoctorSpecialisation = '';
   doctorStatus = '';
-
-  // ================= BOOKING FILTER =================
 
   bookingSpecialisation = '';
 
@@ -187,15 +194,11 @@ export class PatientDashboardComponent {
     }
   }
 
-  // ================= DATE HELPERS =================
-
   private getDateAfterDays(days: number): string {
     const date = new Date();
     date.setDate(date.getDate() + days);
     return date.toISOString().split('T')[0];
   }
-
-  // ================= RESPONSE HELPERS =================
 
   private extractItems(res: any): any[] {
     if (Array.isArray(res)) {
@@ -234,8 +237,6 @@ export class PatientDashboardComponent {
       || 1;
   }
 
-  // ================= DOCTOR HELPERS =================
-
   getDoctorSpecialisationValue(doctor: any): number | string {
     return doctor?.specialisation ?? doctor?.specialization ?? '';
   }
@@ -265,10 +266,6 @@ export class PatientDashboardComponent {
       return false;
     }
 
-    /**
-     * If backend /Doctor/available returns only available doctors
-     * and does not include isActive, treat returned doctors as active.
-     */
     return true;
   }
 
@@ -366,8 +363,6 @@ export class PatientDashboardComponent {
       this.doctorPageNumber = 1;
     }
   }
-
-  // ================= LOAD DATA =================
 
   loadPatient(patientId: string) {
     this.patientService.getPatient(patientId).subscribe({
@@ -478,7 +473,45 @@ export class PatientDashboardComponent {
       });
   }
 
-  // ================= FILTER METHODS =================
+  loadBookedSlotsIfReady() {
+    this.bookedSlots = [];
+
+    if (!this.bookingData.doctorId || !this.bookingData.scheduledDate) {
+      return;
+    }
+
+    this.isLoadingBookedSlots = true;
+
+    this.patientService
+      .getBookedSlots(
+        Number(this.bookingData.doctorId),
+        this.bookingData.scheduledDate
+      )
+      .subscribe({
+        next: (res: string[]) => {
+          this.bookedSlots = (res || []).map(slot => this.normalizeSlot(slot));
+
+          if (
+            this.bookingData.timeSlot &&
+            this.isSlotUnavailable(this.bookingData.timeSlot)
+          ) {
+            this.bookingData.timeSlot = '';
+          }
+        },
+        error: (err) => {
+          console.error('Booked slots load error:', err);
+          this.bookedSlots = [];
+
+          this.toast.error(
+            'Unable to load slot availability',
+            this.getErrorMessage(err)
+          );
+        },
+        complete: () => {
+          this.isLoadingBookedSlots = false;
+        }
+      });
+  }
 
   onFindSpecialisationChange() {
     this.doctorPageNumber = 1;
@@ -505,11 +538,25 @@ export class PatientDashboardComponent {
 
   onBookingSpecialisationChange() {
     this.bookingData.doctorId = '';
+    this.bookingData.timeSlot = '';
+    this.bookedSlots = [];
     this.bookingError = '';
     this.bookingSuccess = '';
   }
 
-  // ================= PAGINATION =================
+  onBookingDoctorChange() {
+    this.bookingData.timeSlot = '';
+    this.bookingError = '';
+    this.bookingSuccess = '';
+    this.loadBookedSlotsIfReady();
+  }
+
+  onBookingDateChange() {
+    this.bookingData.timeSlot = '';
+    this.bookingError = '';
+    this.bookingSuccess = '';
+    this.loadBookedSlotsIfReady();
+  }
 
   goToAppointmentPage(page: number) {
     if (page < 1 || page > this.appointmentTotalPages) {
@@ -541,11 +588,11 @@ export class PatientDashboardComponent {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
-  // ================= BOOKING =================
-
   selectDoctorForBooking(doctor: any) {
     this.bookingSpecialisation = this.getDoctorSpecialisationName(doctor);
     this.bookingData.doctorId = String(doctor.doctorId);
+    this.bookingData.timeSlot = '';
+    this.bookedSlots = [];
 
     const exists = this.bookingDoctors.some(
       d => String(d.doctorId) === String(doctor.doctorId)
@@ -559,10 +606,129 @@ export class PatientDashboardComponent {
     this.bookingSuccess = '';
     this.activeTab = 'book';
 
+    this.loadBookedSlotsIfReady();
+
     this.toast.info(
       'Doctor selected',
       `${doctor.doctorName} has been selected for appointment booking.`
     );
+  }
+
+  normalizeSlot(slot: string): string {
+    if (!slot) {
+      return '';
+    }
+
+    let value = String(slot).trim();
+
+    if (value.includes('-')) {
+      value = value.split('-')[0].trim();
+    }
+
+    if (/^\d{1,2}:\d{2}\s*(AM|PM)$/i.test(value)) {
+      const match = value.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+      if (match) {
+        let hours = Number(match[1]);
+        const minutes = match[2];
+        const meridian = match[3].toUpperCase();
+
+        if (meridian === 'PM' && hours < 12) {
+          hours += 12;
+        }
+
+        if (meridian === 'AM' && hours === 12) {
+          hours = 0;
+        }
+
+        return `${String(hours).padStart(2, '0')}:${minutes}`;
+      }
+    }
+
+    if (value.length >= 5) {
+      return value.substring(0, 5);
+    }
+
+    return value;
+  }
+
+  isSlotBooked(slotStart: string): boolean {
+    const normalizedSlot = this.normalizeSlot(slotStart);
+
+    return this.bookedSlots.some(
+      booked => this.normalizeSlot(booked) === normalizedSlot
+    );
+  }
+
+  isSlotPast(slotStart: string): boolean {
+    if (!this.bookingData.scheduledDate) {
+      return false;
+    }
+
+    if (this.bookingData.scheduledDate !== this.todayDate) {
+      return false;
+    }
+
+    const selectedDateTime = new Date(
+      `${this.bookingData.scheduledDate}T${this.normalizeSlot(slotStart)}`
+    );
+
+    return selectedDateTime <= new Date();
+  }
+
+  isSlotUnavailable(slotStart: string): boolean {
+    return this.isSlotBooked(slotStart) || this.isSlotPast(slotStart);
+  }
+
+  isSlotSelected(slotStart: string): boolean {
+    return this.normalizeSlot(this.bookingData.timeSlot) === this.normalizeSlot(slotStart);
+  }
+
+  getSlotStatusText(slotStart: string): string {
+    if (this.isSlotBooked(slotStart)) {
+      return 'Booked';
+    }
+
+    if (this.isSlotPast(slotStart)) {
+      return 'Past';
+    }
+
+    if (this.isSlotSelected(slotStart)) {
+      return 'Selected';
+    }
+
+    return 'Available';
+  }
+
+  selectTimeSlot(slotStart: string) {
+    this.bookingError = '';
+    this.bookingSuccess = '';
+
+    if (!this.bookingData.doctorId) {
+      this.bookingError = 'Please select a doctor first.';
+      this.toast.warning('Doctor required', this.bookingError);
+      return;
+    }
+
+    if (!this.bookingData.scheduledDate) {
+      this.bookingError = 'Please select an appointment date first.';
+      this.toast.warning('Date required', this.bookingError);
+      return;
+    }
+
+    if (this.isSlotBooked(slotStart)) {
+      this.bookingError = 'This time slot is already booked. Please choose another slot.';
+      this.toast.warning('Slot unavailable', this.bookingError);
+      return;
+    }
+
+    if (this.isSlotPast(slotStart)) {
+      this.bookingError = 'This time slot has already passed. Please choose another slot.';
+      this.toast.warning('Slot unavailable', this.bookingError);
+      return;
+    }
+
+    this.bookingData.timeSlot = this.normalizeSlot(slotStart);
   }
 
   validateBooking(): boolean {
@@ -613,7 +779,17 @@ export class PatientDashboardComponent {
     }
 
     if (!this.bookingData.timeSlot) {
-      this.bookingError = 'Please select a time slot.';
+      this.bookingError = 'Please select an available time slot.';
+      return false;
+    }
+
+    if (this.isSlotBooked(this.bookingData.timeSlot)) {
+      this.bookingError = 'This time slot is already booked. Please choose another slot.';
+      return false;
+    }
+
+    if (this.isSlotPast(this.bookingData.timeSlot)) {
+      this.bookingError = 'This time slot has already passed. Please choose another slot.';
       return false;
     }
 
@@ -682,6 +858,7 @@ export class PatientDashboardComponent {
 
         this.bookingSpecialisation = '';
         this.bookingSubmitted = false;
+        this.bookedSlots = [];
 
         this.appointmentPageNumber = 1;
         this.loadAppointments(patientId);
@@ -697,13 +874,6 @@ export class PatientDashboardComponent {
         this.bookingSuccess = '';
         this.bookingError = this.getErrorMessage(err);
 
-        /**
-         * Backend appointment validation messages will show here.
-         * Example:
-         * - Doctor already booked
-         * - Same patient already has appointment on this date
-         * - Booking only allowed 30 days in advance
-         */
         this.toast.error('Booking failed', this.bookingError);
       }
     });
@@ -746,8 +916,6 @@ export class PatientDashboardComponent {
       }
     });
   }
-
-  // ================= PROFILE =================
 
   editProfile() {
     this.profileMode = 'edit';
@@ -844,8 +1012,6 @@ export class PatientDashboardComponent {
       }
     });
   }
-
-  // ================= PASSWORD =================
 
   validatePasswordChange(): boolean {
     this.passwordError = '';
@@ -951,16 +1117,74 @@ export class PatientDashboardComponent {
   }
 
   private getErrorMessage(err: any): string {
+    if (!err) {
+      return 'Something went wrong. Please try again.';
+    }
+
+    if (err.status === 0) {
+      return 'Unable to connect to server. Please check if backend is running.';
+    }
+
     if (typeof err.error === 'string') {
-      return err.error;
+      try {
+        const parsed = JSON.parse(err.error);
+
+        return parsed.message
+          || parsed.Message
+          || parsed.error
+          || parsed.Error
+          || parsed.title
+          || parsed.Title
+          || parsed.detail
+          || parsed.Detail
+          || err.error;
+      } catch {
+        return err.error;
+      }
     }
 
     if (err.error?.message) {
       return err.error.message;
     }
 
+    if (err.error?.Message) {
+      return err.error.Message;
+    }
+
     if (err.error?.errors) {
-      return JSON.stringify(err.error.errors);
+      const errors = err.error.errors;
+
+      if (Array.isArray(errors)) {
+        return errors.join(', ');
+      }
+
+      if (typeof errors === 'object') {
+        return Object.values(errors)
+          .flat()
+          .join(', ');
+      }
+
+      return String(errors);
+    }
+
+    if (err.error?.Errors) {
+      const errors = err.error.Errors;
+
+      if (Array.isArray(errors)) {
+        return errors.join(', ');
+      }
+
+      if (typeof errors === 'object') {
+        return Object.values(errors)
+          .flat()
+          .join(', ');
+      }
+
+      return String(errors);
+    }
+
+    if (err.message) {
+      return err.message;
     }
 
     return 'Something went wrong. Please try again.';

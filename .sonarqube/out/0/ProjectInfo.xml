@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ProjectInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.sonarsource.com/msbuild/integration/2015/1">
-  <ProjectName>HealthAxisCore_Api</ProjectName>
+  <ProjectName>HealthAxis.Shared</ProjectName>
   <ProjectLanguage>C#</ProjectLanguage>
-  <ProjectType>Test</ProjectType>
-  <ProjectGuid>05bd55ab-6eeb-7356-0349-b0f2f9348407</ProjectGuid>
-  <FullPath>C:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\HealthAxisCore_Api.csproj</FullPath>
+  <ProjectType>Product</ProjectType>
+  <ProjectGuid>6723e7db-d57b-40f0-b624-93a3a9940295</ProjectGuid>
+  <FullPath>C:\Users\287802\source\repos\HealthAxisApi\HealthAxis_Shared\HealthAxis.Shared.csproj</FullPath>
   <IsExcluded>false</IsExcluded>
   <AnalysisResultFiles>
     <AnalysisResultFile Id="FilesToAnalyze" Location="C:\Users\287802\source\repos\HealthAxisApi\.sonarqube\conf\0\FilesToAnalyze.txt" />

@@ -1,4 +1,5 @@
-﻿@page "/admin/doctors"
+﻿@using HealthAxisAdminLayout.Layout
+@page "/admin/doctors"
 @attribute [Authorize(Roles = "Admin")]
 
 @using Microsoft.AspNetCore.Authorization
@@ -517,11 +518,17 @@
     }
 
 </div>
-
+<GenericModal
+    @ref="statusModal"
+    OnConfirm="ConfirmToggleStatus" />
 @code {
     private List<DoctorResponseDTO> doctors = new();
 
     private CreateDoctorDTO doctorForm = new();
+
+    private GenericModal? statusModal;
+
+    private DoctorResponseDTO? selectedDoctor;
 
     private string message = string.Empty;
 
@@ -847,27 +854,46 @@
     {
         if (doctor.IsActive)
         {
-            var confirm = await JS.InvokeAsync<bool>(
-                "confirm",
-                $"Are you sure you want to deactivate Dr. {doctor.DoctorName}?"
-            );
+            selectedDoctor = doctor;
 
-            if (!confirm)
-            {
-                return;
-            }
+            statusModal?.Show(
+                "Deactivate Doctor",
+                $"Are you sure you want to deactivate Dr. {doctor.DoctorName}?",
+                "Deactivate",
+                "btn btn-warning");
+
+            return;
         }
 
+        await UpdateDoctorStatus(doctor);
+    }
+    private async Task ConfirmToggleStatus()
+    {
+        if (selectedDoctor != null)
+        {
+            await UpdateDoctorStatus(selectedDoctor);
+            selectedDoctor = null;
+        }
+    }
+
+    private async Task UpdateDoctorStatus(DoctorResponseDTO doctor)
+    {
         isLoading = true;
         message = string.Empty;
 
         try
         {
-            var success = await DoctorService.SetDoctorStatusAsync(doctor.DoctorId, !doctor.IsActive);
+            var success = await DoctorService.SetDoctorStatusAsync(
+                doctor.DoctorId,
+                !doctor.IsActive);
 
             if (success)
             {
-                SetSuccessMessage(doctor.IsActive ? "Doctor deactivated successfully." : "Doctor activated successfully.");
+                SetSuccessMessage(
+                    doctor.IsActive
+                        ? "Doctor deactivated successfully."
+                        : "Doctor activated successfully.");
+
                 await LoadDoctors();
             }
             else
@@ -884,6 +910,8 @@
             isLoading = false;
         }
     }
+
+        
 
     private async Task OpenDoctorAppointments(DoctorResponseDTO doctor)
     {
@@ -1072,4 +1100,5 @@
         message = text;
         messageCssClass = "alert alert-danger";
     }
+    
 }

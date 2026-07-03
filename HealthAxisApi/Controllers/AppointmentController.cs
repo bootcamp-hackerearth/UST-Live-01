@@ -112,6 +112,17 @@ namespace HealthAxisCore_Api.Controllers
             return Ok(await _service.FilterAsync(status, startDate, endDate));
         }
 
+        [HttpGet("booked-slots")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Patient,Doctor,Admin")]
+        public async Task<IActionResult> GetBookedSlots(
+            int doctorId,
+            DateTime date)
+        {
+            var result = await _service.GetBookedSlotsAsync(doctorId, date);
+
+            return Ok(result);
+        }
+
         [HttpPost("confirm/{id}")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Doctor,Admin")]
         public async Task<IActionResult> Confirm(int id)

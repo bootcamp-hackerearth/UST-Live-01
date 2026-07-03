@@ -92,7 +92,9 @@
 
         <div class="hero-content">
           <p class="small-label">Welcome doctor</p>
+
           <h1>{{ doctor.doctorName }}</h1>
+
           <p>
             Review appointment requests, confirm consultations, complete appointments,
             and create patient health records after consultation completion.
@@ -227,7 +229,7 @@
               <span>🩺</span>
               <div>
                 <strong>Patient Records</strong>
-                <p>Create health records only after appointments are completed.</p>
+                <p>Select an appointment first, then create records after completion.</p>
               </div>
             </button>
 
@@ -374,10 +376,11 @@
 
         <div class="section-header">
           <p class="small-label">Patient details</p>
+
           <h1>{{ selectedPatient?.patientName || 'Select an appointment' }}</h1>
 
           <p *ngIf="!selectedPatient">
-            Choose an appointment and click “View Patient” to manage patient records.
+            Choose an appointment and click “View Patient” to view patient history and manage health records.
           </p>
 
           <p *ngIf="selectedAppointment">
@@ -409,8 +412,16 @@
 
             <div>
               <h4>{{ r.diagnosis }}</h4>
+
               <p>{{ r.prescription }}</p>
-              <span>{{ (r.visitDate || r.date) | date:'mediumDate' }}</span>
+
+              <span>
+                {{ (r.visitDate || r.date) | date:'mediumDate' }}
+              </span>
+
+              <span *ngIf="r.appointmentId">
+                Appointment #{{ r.appointmentId }}
+              </span>
             </div>
           </article>
 
@@ -449,7 +460,7 @@
 
       </div>
 
-      <!-- RIGHT CREATE HEALTH RECORD FORM - ONLY COMPLETED -->
+      <!-- RIGHT CREATE HEALTH RECORD FORM - ONLY COMPLETED AND NO EXISTING RECORD -->
       <form
         class="record-form"
         *ngIf="selectedAppointment && canCreateHealthRecord()"
@@ -458,16 +469,23 @@
         <h3>Create Health Record</h3>
 
         <div class="field">
-          <label>Visit Date</label>
+          <label>Visit Date / Time</label>
+
           <input
             type="datetime-local"
             [(ngModel)]="healthRecordForm.visitDate"
             name="visitDate"
+            readonly
           />
+
+          <small class="field-hint">
+            Visit date and time are based on the completed appointment slot.
+          </small>
         </div>
 
         <div class="field">
           <label>Diagnosis</label>
+
           <input
             type="text"
             [(ngModel)]="healthRecordForm.diagnosis"
@@ -478,6 +496,7 @@
 
         <div class="field">
           <label>Prescription</label>
+
           <input
             type="text"
             [(ngModel)]="healthRecordForm.prescription"
@@ -488,6 +507,7 @@
 
         <div class="field">
           <label>Notes</label>
+
           <textarea
             [(ngModel)]="healthRecordForm.notes"
             name="notes"
@@ -509,10 +529,35 @@
 
       </form>
 
+      <!-- ALREADY ADDED HEALTH RECORD STATE -->
+      <div
+        class="record-form empty-form-card"
+        *ngIf="selectedAppointment && hasHealthRecordForSelectedAppointment()">
+
+        <h3>Health Record Already Added</h3>
+
+        <p>
+          A health record already exists for this appointment. Only one health record is allowed per appointment.
+        </p>
+
+        <div class="appointment-details" style="margin-top: 18px;">
+          <p>
+            <strong>Appointment ID</strong>
+            <span>{{ selectedAppointment.appointmentId }}</span>
+          </p>
+
+          <p>
+            <strong>Status</strong>
+            <span>{{ getAppointmentStatus(selectedAppointment) }}</span>
+          </p>
+        </div>
+
+      </div>
+
       <!-- LOCKED HEALTH RECORD STATE -->
       <div
         class="record-form empty-form-card"
-        *ngIf="selectedAppointment && !canCreateHealthRecord()">
+        *ngIf="selectedAppointment && !canCreateHealthRecord() && !hasHealthRecordForSelectedAppointment()">
 
         <h3>Health Record Locked</h3>
 
@@ -540,7 +585,7 @@
       <!-- EMPTY FORM PLACEHOLDER -->
       <div class="record-form empty-form-card" *ngIf="!selectedAppointment">
         <h3>Create Health Record</h3>
-        <p>Select an appointment first, then click “View Patient” to create a record.</p>
+        <p>Select an appointment first, then click “View Patient” to create or view patient health records.</p>
       </div>
 
     </section>

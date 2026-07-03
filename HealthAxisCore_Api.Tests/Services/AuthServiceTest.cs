@@ -150,32 +150,41 @@ namespace HealthAxisCore_Api.Tests.Services
         [Fact]
         public async Task RefreshTokenAsync_WhenValidToken_ShouldReturnNewAccessToken()
         {
+            // Arrange
             var user = new ApplicationUser
             {
                 Id = "user-1",
                 Email = "user@test.com",
-                UserName = "user@test.com"
+                UserName = "user@test.com",
+                Role = "User"
             };
+
+            _context.Users.Add(user);
 
             var token = new RefreshToken
             {
                 Token = "valid-token",
                 UserId = user.Id,
                 User = user,
-                Expires = DateTime.UtcNow.AddDays(1)
+                Expires = DateTime.UtcNow.AddDays(1),
+                IsRevoked = false
             };
 
             _context.RefreshTokens.Add(token);
+
             await _context.SaveChangesAsync();
 
             _userManagerMock
-                .Setup(x => x.GetRolesAsync(user))
+                .Setup(x => x.GetRolesAsync(It.IsAny<ApplicationUser>()))
                 .ReturnsAsync(new List<string> { "User" });
 
+            // Act
             var result = await _authService.RefreshTokenAsync("valid-token");
 
+            // Assert
             result.Should().NotBeNull();
-            result.Token.Should().NotBeNullOrWhiteSpace();
+            result.Token.Should().NotBeNull();
+            result.Token.Should().NotBeEmpty();
         }
 
         // ========================

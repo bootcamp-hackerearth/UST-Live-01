@@ -1,1 +1,1 @@
-zRcC:\Users\287802\source\repos\HealthAxisApi\HealthAxisCore_Api.Tests\HealthAxisCore_Api.Tests.csproj¢net10.0òCSharp14
+iRRC:\Users\287802\source\repos\HealthAxisApi\HealthAxisApi\HealthAxisCore_Api.csproj¢net10.0òCSharp14

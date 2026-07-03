@@ -159,7 +159,7 @@ namespace HealthAxisCore_Api.Services.Implementations
 
             if (!isAvailable)
             {
-                throw new AppointmentRuleException("Doctor not available for the selected date.");
+                throw new AppointmentRuleException("Doctor not available for the selected date");
             }
 
             var existingAppointments = await _repository.GetAllAsync();
@@ -365,6 +365,28 @@ namespace HealthAxisCore_Api.Services.Implementations
             return true;
         }
 
+        public async Task<IEnumerable<string>> GetBookedSlotsAsync(int doctorId, DateTime date)
+        {
+            if (doctorId <= 0)
+            {
+                throw new AppointmentRuleException("Doctor ID is required.");
+            }
+
+            if (date == default)
+            {
+                throw new AppointmentRuleException("Appointment date is required.");
+            }
+
+            var bookedSlots = await _repository.GetBookedSlotsAsync(doctorId, date);
+
+            return bookedSlots
+                .Select(slot => NormalizeTimeSlot(slot))
+                .Where(slot => !string.IsNullOrWhiteSpace(slot))
+                .Distinct()
+                .OrderBy(slot => slot)
+                .ToList();
+        }
+
         private bool IsActiveAppointmentStatus(AppointmentStatus status)
         {
             return status == AppointmentStatus.Pending ||
@@ -418,6 +440,11 @@ namespace HealthAxisCore_Api.Services.Implementations
             if (string.IsNullOrWhiteSpace(value))
             {
                 return string.Empty;
+            }
+
+            if (value.Contains("-"))
+            {
+                value = value.Split('-')[0].Trim();
             }
 
             if (TimeSpan.TryParse(value, out var parsedTimeSpan))

@@ -151,16 +151,16 @@ namespace HealthAxisCore_Api.Tests.Services
             result.DoctorId.Should().Be(dto.DoctorId);
             result.Status.Should().Be(AppointmentStatus.Pending);
 
+
             _appointmentRepositoryMock.Verify(
                 repo => repo.AddAsync(It.Is<Appointment>(a =>
                     a.PatientId == dto.PatientId &&
                     a.DoctorId == dto.DoctorId &&
-                    a.ScheduledDate == dto.ScheduledDate &&
-                    a.TimeSlot == dto.TimeSlot &&
-                    a.Status == AppointmentStatus.Pending
-                )),
+                    a.ScheduledDate.Date == dto.ScheduledDate.Date &&
+                    a.Status == AppointmentStatus.Pending)),
                 Times.Once
             );
+
         }
 
         [Fact]

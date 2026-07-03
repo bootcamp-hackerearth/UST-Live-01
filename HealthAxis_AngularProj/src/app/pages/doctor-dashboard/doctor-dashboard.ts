@@ -34,8 +34,6 @@ export class DoctorDashboardComponent {
   recordError = '';
   recordSuccess = '';
 
-  // ================= PAGINATION =================
-
   appointmentPageNumber = 1;
   appointmentPageSize = 6;
   appointmentTotalPages = 1;
@@ -46,7 +44,6 @@ export class DoctorDashboardComponent {
   recordTotalPages = 1;
   recordTotalCount = 0;
 
-  // Optional filters if backend supports them
   appointmentSearch = '';
   appointmentStatus = '';
 
@@ -109,8 +106,6 @@ export class DoctorDashboardComponent {
     this.clearMessages();
   }
 
-  // ================= RESPONSE HELPERS =================
-
   private extractItems(res: any): any[] {
     if (Array.isArray(res)) {
       return res;
@@ -148,8 +143,6 @@ export class DoctorDashboardComponent {
       || 1;
   }
 
-  // ================= STATUS HELPERS =================
-
   getAppointmentStatus(appointment: any): string {
     return this.statusMap[appointment?.status] || 'Unknown';
   }
@@ -168,12 +161,21 @@ export class DoctorDashboardComponent {
     return status !== 'Cancelled' && status !== 'Completed';
   }
 
-  canCreateHealthRecord(): boolean {
-    return !!this.selectedAppointment &&
-      this.getAppointmentStatus(this.selectedAppointment) === 'Completed';
+  hasHealthRecordForSelectedAppointment(): boolean {
+    if (!this.selectedAppointment?.appointmentId) {
+      return false;
+    }
+
+    return this.patientRecords.some(
+      record => Number(record.appointmentId) === Number(this.selectedAppointment.appointmentId)
+    );
   }
 
-  // ================= COUNTS =================
+  canCreateHealthRecord(): boolean {
+    return !!this.selectedAppointment &&
+      this.getAppointmentStatus(this.selectedAppointment) === 'Completed' &&
+      !this.hasHealthRecordForSelectedAppointment();
+  }
 
   get pendingCount(): number {
     return this.appointments.filter(
@@ -198,8 +200,6 @@ export class DoctorDashboardComponent {
       a => this.statusMap[a.status] === 'Cancelled'
     ).length;
   }
-
-  // ================= LOAD DATA =================
 
   loadDoctor(doctorId: string) {
     this.doctorService.getDoctor(doctorId).subscribe({
@@ -246,6 +246,9 @@ export class DoctorDashboardComponent {
 
             if (updatedSelectedAppointment) {
               this.selectedAppointment = updatedSelectedAppointment;
+
+              this.healthRecordForm.visitDate =
+                this.buildVisitDateTimeFromAppointment(updatedSelectedAppointment);
             }
           }
         },
@@ -301,8 +304,6 @@ export class DoctorDashboardComponent {
       });
   }
 
-  // ================= PAGINATION METHODS =================
-
   goToAppointmentPage(page: number) {
     if (page < 1 || page > this.appointmentTotalPages) {
       return;
@@ -328,8 +329,6 @@ export class DoctorDashboardComponent {
   getPaginationPages(totalPages: number): number[] {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
-
-  // ================= APPOINTMENT ACTIONS =================
 
   async confirmAppointment(appointmentId: number) {
     const confirmed = await this.confirm.confirm({
@@ -399,6 +398,9 @@ export class DoctorDashboardComponent {
             ...this.selectedAppointment,
             status: 3
           };
+
+          this.healthRecordForm.visitDate =
+            this.buildVisitDateTimeFromAppointment(this.selectedAppointment);
         }
 
         this.loadAppointments(this.auth.getReferenceId());
@@ -464,8 +466,6 @@ export class DoctorDashboardComponent {
     });
   }
 
-  // ================= PATIENT DETAILS =================
-
   viewPatientDetails(appointment: any) {
     this.clearMessages();
 
@@ -508,18 +508,80 @@ export class DoctorDashboardComponent {
       patientId: Number(patientId),
       doctorId: Number(this.auth.getReferenceId()),
       appointmentId: Number(appointment.appointmentId),
-      visitDate: new Date().toISOString().slice(0, 16),
+      visitDate: this.buildVisitDateTimeFromAppointment(appointment),
       diagnosis: '',
       prescription: '',
       notes: ''
     };
   }
 
-  // ================= HEALTH RECORD =================
+  private buildVisitDateTimeFromAppointment(appointment: any): string {
+    const scheduledDate =
+      appointment?.scheduledDate ||
+      appointment?.appointmentDate ||
+      appointment?.date;
+
+    const timeSlot = appointment?.timeSlot;
+
+    if (!scheduledDate || !timeSlot) {
+      return new Date().toISOString().slice(0, 16);
+    }
+
+    const datePart = String(scheduledDate).split('T')[0];
+
+    let timePart = String(timeSlot).trim();
+
+    if (timePart.includes('-')) {
+      timePart = timePart.split('-')[0].trim();
+    }
+
+    const amPmMatch = timePart.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+
+    if (amPmMatch) {
+      let hours = Number(amPmMatch[1]);
+      const minutes = amPmMatch[2];
+      const meridian = amPmMatch[3].toUpperCase();
+
+      if (meridian === 'PM' && hours < 12) {
+        hours += 12;
+      }
+
+      if (meridian === 'AM' && hours === 12) {
+        hours = 0;
+      }
+
+      return `${datePart}T${String(hours).padStart(2, '0')}:${minutes}`;
+    }
+
+    if (timePart.includes(' ')) {
+      const parsed = new Date(`${datePart} ${timePart}`);
+
+      if (!isNaN(parsed.getTime())) {
+        const year = parsed.getFullYear();
+        const month = String(parsed.getMonth() + 1).padStart(2, '0');
+        const day = String(parsed.getDate()).padStart(2, '0');
+        const hours = String(parsed.getHours()).padStart(2, '0');
+        const minutes = String(parsed.getMinutes()).padStart(2, '0');
+
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      }
+    }
+
+    if (timePart.length >= 5) {
+      timePart = timePart.substring(0, 5);
+    }
+
+    return `${datePart}T${timePart}`;
+  }
 
   validateHealthRecord(): boolean {
     this.recordError = '';
     this.recordSuccess = '';
+
+    if (this.hasHealthRecordForSelectedAppointment()) {
+      this.recordError = 'Health record already exists for this appointment.';
+      return false;
+    }
 
     if (!this.canCreateHealthRecord()) {
       this.recordError = 'Health record can be added only after the appointment is completed.';
@@ -555,6 +617,17 @@ export class DoctorDashboardComponent {
   }
 
   async createHealthRecord() {
+    if (this.hasHealthRecordForSelectedAppointment()) {
+      this.recordError = 'Health record already exists for this appointment.';
+
+      this.toast.warning(
+        'Health record already exists',
+        this.recordError
+      );
+
+      return;
+    }
+
     if (!this.canCreateHealthRecord()) {
       this.recordError = 'Health record can be added only after the appointment is completed.';
 
@@ -627,8 +700,6 @@ export class DoctorDashboardComponent {
     });
   }
 
-  // ================= SHARED =================
-
   clearMessages() {
     this.actionError = '';
     this.actionSuccess = '';
@@ -648,16 +719,98 @@ export class DoctorDashboardComponent {
   }
 
   private getErrorMessage(err: any): string {
+    if (!err) {
+      return 'Something went wrong. Please try again.';
+    }
+
+    if (err.status === 0) {
+      return 'Unable to connect to server. Please check if backend is running.';
+    }
+
     if (typeof err.error === 'string') {
-      return err.error;
+      try {
+        const parsed = JSON.parse(err.error);
+
+        return parsed.message
+          || parsed.Message
+          || parsed.error
+          || parsed.Error
+          || parsed.title
+          || parsed.Title
+          || parsed.detail
+          || parsed.Detail
+          || err.error;
+      } catch {
+        return err.error;
+      }
     }
 
     if (err.error?.message) {
       return err.error.message;
     }
 
+    if (err.error?.Message) {
+      return err.error.Message;
+    }
+
+    if (err.error?.error) {
+      return err.error.error;
+    }
+
+    if (err.error?.Error) {
+      return err.error.Error;
+    }
+
+    if (err.error?.title) {
+      return err.error.title;
+    }
+
+    if (err.error?.Title) {
+      return err.error.Title;
+    }
+
+    if (err.error?.detail) {
+      return err.error.detail;
+    }
+
+    if (err.error?.Detail) {
+      return err.error.Detail;
+    }
+
     if (err.error?.errors) {
-      return JSON.stringify(err.error.errors);
+      const errors = err.error.errors;
+
+      if (Array.isArray(errors)) {
+        return errors.join(', ');
+      }
+
+      if (typeof errors === 'object') {
+        return Object.values(errors)
+          .flat()
+          .join(', ');
+      }
+
+      return String(errors);
+    }
+
+    if (err.error?.Errors) {
+      const errors = err.error.Errors;
+
+      if (Array.isArray(errors)) {
+        return errors.join(', ');
+      }
+
+      if (typeof errors === 'object') {
+        return Object.values(errors)
+          .flat()
+          .join(', ');
+      }
+
+      return String(errors);
+    }
+
+    if (err.message) {
+      return err.message;
     }
 
     return 'Something went wrong. Please try again.';
